@@ -6,7 +6,7 @@ const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "daikin-connect-secret-key-change-in-production"
 );
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const session = request.cookies.get("session")?.value;
   const { pathname } = request.nextUrl;
 
@@ -23,11 +23,7 @@ export async function middleware(request: NextRequest) {
   // 3. Role-based protection for User Management
   if (pathname.startsWith("/dashboard/users") && session) {
     try {
-      const { payload } = await jwtVerify(session, JWT_SECRET);
-      // We'll need to check role here. 
-      // For performance, we can't easily DB check here without an API, 
-      // but we can trust the JWT if we included role in it and it's not expired.
-      // (Currently getSession is used in Layout which is more secure as it checks DB)
+      await jwtVerify(session, JWT_SECRET);
     } catch (e) {
       return NextResponse.redirect(new URL("/", request.url));
     }

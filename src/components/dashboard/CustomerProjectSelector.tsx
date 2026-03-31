@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ChevronDown, Building2, LayoutGrid, Globe } from "lucide-react";
+import { ChevronDown, Building2, LayoutGrid } from "lucide-react";
 import { getFilterOptions } from "@/app/actions/dashboard";
 
 interface Props {
@@ -17,7 +17,9 @@ export default function CustomerProjectSelector({ onFilterChange }: Props) {
   useEffect(() => {
     async function load() {
       const res = await getFilterOptions();
-      if (res.success) setData(res.data);
+      if (res && 'success' in res && res.success) {
+        setData(res.data as any[]);
+      }
     }
     load();
   }, []);

@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getUnitByToken, submitActivityFromPassport, updateUnitInfoFromPassport } from "@/app/actions/passport";
 import { 
-  Building2, MapPin, Search, Hammer, Activity, Wrench,
+  Building2, MapPin, Search, Hammer, Activity, Wrench, ChevronRight,
   ClipboardCheck, HardHat, FileText, CheckCircle2, AlertTriangle, Edit3, Save, X,
   History as HistoryIcon
 } from "lucide-react";
@@ -67,7 +67,7 @@ export default function PassportLandingPage() {
         setHistoryLoading(true);
         const hRes = await getUnitHistory(res.data.id);
         if (hRes && 'success' in hRes) {
-          const sortedHistory = [...hRes.data].sort((a, b) => {
+          const sortedHistory = [...(hRes.data as any[])].sort((a, b) => {
             const dateA = a.date instanceof Date ? a.date.getTime() : (a.date ? new Date(a.date).getTime() : 0);
             const dateB = b.date instanceof Date ? b.date.getTime() : (b.date ? new Date(b.date).getTime() : 0);
             return dateB - dateA;
@@ -137,7 +137,6 @@ export default function PassportLandingPage() {
       
       const compressedFile = await imageCompression(file, options);
       
-      // Simulasi upload - Konversi ke Base64 (Idealnya upload ke OneDrive via API Action)
       const reader = new FileReader();
       reader.readAsDataURL(compressedFile);
       reader.onloadend = () => {
@@ -192,7 +191,7 @@ export default function PassportLandingPage() {
 
   return (
     <div className="min-h-screen bg-slate-100 flex justify-center">
-      <div className="w-full max-w-md bg-white shadow-2xl min-h-screen flex flex-col relative overflow-hidden">
+      <div className="w-full max-md bg-white shadow-2xl min-h-screen flex flex-col relative overflow-hidden">
         
         {/* Header Art */}
         <div className="bg-[#003366] text-white p-8 relative overflow-hidden shrink-0">
@@ -202,7 +201,7 @@ export default function PassportLandingPage() {
               <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00a1e4] mb-2 cursor-pointer" onClick={() => router.push('/dashboard')}>DAIKIN CONNECT</h2>
               <h1 className="text-3xl font-black tracking-tight">{unit.tag_number || "NO-TAG"}</h1>
               <p className="text-sm font-medium opacity-80 mt-1 flex items-center gap-1">
-                <Building2 size={14} /> {unit.projects?.name}
+                <Building2 size={14} /> {unit.projectName}
               </p>
             </div>
             
@@ -244,25 +243,7 @@ export default function PassportLandingPage() {
             onClick={() => setActiveTab("report")}
             className={`flex-1 py-4 text-xs font-bold tracking-wide transition-all ${activeTab === "report" ? 'text-rose-500 border-b-2 border-rose-500' : 'text-slate-400 bg-slate-50 border-b-2 border-transparent'}`}
           >
-            <span className="flex items-center justify-center gap-1"><AlertTriangle size={14}/> Lapor Masalah</span>
-          </button>
-          <button 
-            onClick={() => setActiveTab("audit")}
-            className={`flex-1 py-4 text-xs font-bold tracking-wide transition-all ${activeTab === "audit" ? 'text-emerald-500 border-b-2 border-emerald-500' : 'text-slate-400 bg-slate-50 border-b-2 border-transparent'}`}
-          >
-            <span className="flex items-center justify-center gap-1"><FileText size={14}/> Audit</span>
-          </button>
-          <button 
-            onClick={() => setActiveTab("preventive")}
-            className={`flex-1 py-4 text-xs font-bold tracking-wide transition-all ${activeTab === "preventive" ? 'text-indigo-500 border-b-2 border-indigo-500' : 'text-slate-400 bg-slate-50 border-b-2 border-transparent'}`}
-          >
-            <span className="flex items-center justify-center gap-1"><Wrench size={14}/> PM</span>
-          </button>
-          <button 
-            onClick={() => setActiveTab("corrective")}
-            className={`flex-1 py-4 text-xs font-bold tracking-wide transition-all ${activeTab === "corrective" ? 'text-rose-500 border-b-2 border-rose-500' : 'text-slate-400 bg-slate-50 border-b-2 border-transparent'}`}
-          >
-            <span className="flex items-center justify-center gap-1"><AlertTriangle size={14}/> CM</span>
+            <span className="flex items-center justify-center gap-1"><AlertTriangle size={14}/> Lapor</span>
           </button>
           <button 
             onClick={() => setActiveTab("history")}
@@ -354,32 +335,32 @@ export default function PassportLandingPage() {
                       <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg border border-indigo-100 mb-6">
                         <Activity className="text-indigo-500 animate-pulse" size={32} />
                       </div>
-                      <h3 className="text-xl font-black text-indigo-900 uppercase tracking-tight">Perbaikan Selesai?</h3>
+                      <h3 className="text-xl font-black text-indigo-900 uppercase tracking-tight">Dalam Perbaikan</h3>
                       <p className="text-sm text-indigo-600 font-bold mt-4 leading-relaxed">
-                        Teknisi kami telah melaporkan perbaikan pada unit ini. Mohon login ke portal resmi untuk melakukan verifikasi akhir dan merubah status unit menjadi Normal.
+                        Teknisi kami sedang menangani unit ini. Mohon login ke portal resmi untuk detail progres.
                       </p>
                       <button 
                         onClick={() => router.push('/dashboard')}
-                        className="w-full mt-10 py-4 bg-[#003366] text-white rounded-2xl text-sm font-black uppercase tracking-[0.2em] shadow-xl shadow-blue-900/20 hover:scale-[1.02] transition-transform flex items-center justify-center gap-3"
+                        className="w-full mt-10 py-4 bg-[#003366] text-white rounded-2xl text-sm font-black uppercase tracking-[0.2em] shadow-xl shadow-blue-900/20 flex items-center justify-center gap-3"
                       >
-                         Login Ke Portal <ChevronRight size={18} />
+                         Dashboard Portal <ChevronRight size={18} />
                       </button>
                    </div>
                 ) : complaintMsg ? (
                   <div className="bg-rose-50 border border-rose-200 rounded-3xl p-8 flex flex-col items-center text-center">
                     <CheckCircle2 className="w-16 h-16 text-rose-500 mb-4" />
-                    <h3 className="text-xl font-black text-rose-800 uppercase tracking-tight">Pengaduan Terkirim!</h3>
-                    <p className="text-sm text-rose-600 font-bold mt-2">Masalah telah kami catat. Status unit otomatis berubah menjadi "Problem".</p>
+                    <h3 className="text-xl font-black text-rose-800 uppercase tracking-tight">Terkirim!</h3>
+                    <p className="text-sm text-rose-600 font-bold mt-2">Masalah telah kami catat.</p>
                   </div>
                 ) : (
                   <form onSubmit={handleComplaintSubmit} className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xl shadow-slate-200/40 space-y-6">
                     <div className="space-y-2">
-                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Nama / Posisi Pelapor</label>
+                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Nama Pelapor</label>
                        <input 
                          type="text" required value={complaintForm.customerName} 
                          onChange={e => setComplaintForm({ ...complaintForm, customerName: e.target.value })}
-                         placeholder="Contoh: Budi - Tenant Mall L1"
-                         className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-500/10 placeholder:text-slate-300"
+                         placeholder="Nama Anda"
+                         className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-500/10"
                        />
                     </div>
 
@@ -388,113 +369,20 @@ export default function PassportLandingPage() {
                        <textarea 
                          required rows={4} value={complaintForm.description}
                          onChange={e => setComplaintForm({ ...complaintForm, description: e.target.value })}
-                         placeholder="Jelaskan masalah seperti: AC Bocor, Tidak Dingin, Berisik, dll..."
-                         className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-500/10 placeholder:text-slate-300"
+                         placeholder="Jelaskan masalah..."
+                         className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-500/10"
                        />
-                    </div>
-
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Foto Bukti (Opsional)</label>
-                       <div className="relative group">
-                          <input 
-                            type="file" accept="image/*" capture="environment"
-                            onChange={handleImageUpload}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                          />
-                          <div className={`w-full py-10 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center transition-all
-                            ${complaintForm.photoUrl ? 'border-[#00a1e4] bg-blue-50' : 'border-slate-200 bg-slate-50 group-hover:bg-slate-100'}`}>
-                             {isCompressing ? (
-                               <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#00a1e4] border-t-transparent" />
-                             ) : complaintForm.photoUrl ? (
-                               <img src={complaintForm.photoUrl} className="h-24 w-24 object-cover rounded-xl shadow-md" alt="Preview" />
-                             ) : (
-                               <>
-                                 <Activity className="text-slate-400 mb-2" size={24} />
-                                 <p className="text-[10px] font-black text-slate-400 uppercase">Ambil Foto / Upload</p>
-                               </>
-                             )}
-                          </div>
-                       </div>
                     </div>
 
                     <button 
                       type="submit" disabled={isPending || isCompressing}
-                      className="w-full py-4 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl text-sm font-black uppercase tracking-[0.2em] shadow-xl shadow-rose-200 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale"
+                      className="w-full py-4 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl text-sm font-black uppercase tracking-[0.2em] shadow-xl shadow-rose-200 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                     >
-                      {isPending ? "Mengirim..." : "Laporkan Masalah"}
+                      {isPending ? "Mengirim..." : "Kirim Laporan"}
                       <AlertTriangle size={18} />
                     </button>
                   </form>
                 )}
-              </motion.div>
-            ) : activeTab === "audit" ? (
-              <motion.div 
-                key="audit" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}
-                className="space-y-4"
-              >
-                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-6 text-center">
-                  <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <FileText className="w-8 h-8 text-emerald-600" />
-                  </div>
-                  <h3 className="text-xl font-black text-emerald-900 mb-2">Form Pengukuran Digital</h3>
-                  <p className="text-sm text-emerald-700 font-medium mb-6 leading-relaxed">
-                    Lengkap dengan pengukuran Air Side (DB/WB/RH), Air Velocity Matrix (15 titik), 
-                    Chilled Water, Electrical, Accessories, dan dokumentasi foto. 
-                    Laporan PDF resmi akan di-generate secara otomatis.
-                  </p>
-                  <button 
-                    onClick={() => router.push(`/passport/${token}/audit`)}
-                    className="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-black uppercase tracking-widest shadow-lg shadow-emerald-200 transition-all flex items-center justify-center gap-2"
-                  >
-                    <ClipboardCheck size={18} /> Mulai Form Audit
-                  </button>
-                </div>
-              </motion.div>
-            ) : activeTab === "preventive" ? (
-              <motion.div 
-                key="preventive" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}
-                className="space-y-4"
-              >
-                <div className="bg-gradient-to-br from-indigo-50 to-violet-50 border border-indigo-200 rounded-2xl p-6 text-center">
-                  <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Wrench className="w-8 h-8 text-indigo-600" />
-                  </div>
-                  <h3 className="text-xl font-black text-indigo-900 mb-2">Maintenance Checksheet</h3>
-                  <p className="text-sm text-indigo-700 font-medium mb-6 leading-relaxed">
-                    Checksheet FCU/AHU: Power, Ampere, Pressure & Temperature (Before/After), 
-                    Cleaning checklist, V-Belt & Bearing check, serta dokumentasi foto. 
-                    PDF Maintenance Report otomatis di-generate.
-                  </p>
-                  <button 
-                    onClick={() => router.push(`/passport/${token}/preventive`)}
-                    className="w-full py-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl text-sm font-black uppercase tracking-widest shadow-lg shadow-indigo-200 transition-all flex items-center justify-center gap-2"
-                  >
-                    <ClipboardCheck size={18} /> Mulai Form Preventive
-                  </button>
-                </div>
-              </motion.div>
-            ) : activeTab === "corrective" ? (
-              <motion.div 
-                key="corrective" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}
-                className="space-y-4"
-              >
-                <div className="bg-gradient-to-br from-rose-50 to-pink-50 border border-rose-200 rounded-2xl p-6 text-center">
-                  <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <AlertTriangle className="w-8 h-8 text-rose-600" />
-                  </div>
-                  <h3 className="text-xl font-black text-rose-900 mb-2">Corrective Maintenance</h3>
-                  <p className="text-sm text-rose-700 font-medium mb-6 leading-relaxed">
-                    Laporkan masalah dan tindakan perbaikan. Meliputi Case/Complaint, 
-                    Root Cause Analysis, Temporary & Permanent Action, Recommendation, 
-                    PIC Contact, dan dokumentasi foto.
-                  </p>
-                  <button 
-                    onClick={() => router.push(`/passport/${token}/corrective`)}
-                    className="w-full py-4 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-sm font-black uppercase tracking-widest shadow-lg shadow-rose-200 transition-all flex items-center justify-center gap-2"
-                  >
-                    <AlertTriangle size={18} /> Mulai Form Corrective
-                  </button>
-                </div>
               </motion.div>
             ) : activeTab === "history" ? (
               <motion.div 
@@ -503,13 +391,12 @@ export default function PassportLandingPage() {
               >
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-sm font-black text-[#003366] uppercase tracking-widest">Service Log</h3>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{unitHistory.length} Events</span>
                 </div>
                 
                 {historyLoading ? (
                   <div className="py-20 text-center flex flex-col items-center gap-4">
                     <div className="w-10 h-10 border-4 border-slate-100 border-t-[#00a1e4] rounded-full animate-spin"></div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Loading History...</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Loading...</p>
                   </div>
                 ) : (
                   <UnitHistoryTimeline history={unitHistory} />
@@ -543,4 +430,3 @@ function EditInput({ label, value, onChange, isSelect = false, options = [] }: {
     </div>
   );
 }
-

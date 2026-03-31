@@ -2,51 +2,119 @@
 
 import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
+import { revalidatePath } from "next/cache";
 
 /**
  * Public API for fetching unit details by QR token
  */
 export async function getUnitByToken(token: string) {
   try {
-    const unit = await (prisma.units as any).findUnique({
+    const unit = await prisma.units.findFirst({
       where: { qr_code_token: token },
       include: {
-        projects: { 
-          select: { 
-            name: true, 
-            customer_id: true,
-            customers: { select: { name: true } }
-          } 
+        projects: {
+          include: {
+            customers: {
+              select: { name: true }
+            }
+          }
         }
       }
-    } as any);
+    });
 
-    if (!unit) return { error: "Unit not found or token invalid." };
+    if (!unit) return { error: "Unit not found" };
 
-    return { 
-      success: true, 
+    return {
+      success: true,
       data: {
-        ...unit,
-        id: unit.id.toString(),
-        project_name: unit.projects?.name || "-",
-        customer_name: unit.projects?.customers?.name || "-"
-      } 
+        id: unit.id,
+        tag_number: unit.tag_number,
+        model: unit.model,
+        serial_number: unit.serial_number,
+        area: unit.area,
+        status: unit.status,
+        unit_type: unit.unit_type,
+        brand: unit.brand,
+        capacity: unit.capacity,
+        building_floor: unit.building_floor,
+        room_tenant: unit.room_tenant,
+        projectName: unit.projects?.name,
+        customerName: unit.projects?.customers?.name
+      }
     };
-  } catch (error: any) {
-    console.error("Fetch unit by token error:", error);
-    return { error: "Failed to locate unit." };
+  } catch (error) {
+    console.error("Prisma error:", error);
+    return { error: "Database error" };
   }
 }
 
 /**
- * Update Unit Information from Passport (Field Engineer)
+ * Service actions for Passport
  */
-export async function updateUnitInfoFromPassport(token: string, data: { unit_type: string, brand: string, model: string, capacity: string }) {
+export async function updateUnitStatusFromPassport(unitId: number, status: string) {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
   try {
-    const unit = await prisma.units.findUnique({ where: { qr_code_token: token } });
+    await prisma.units.update({
+      where: { id: unitId },
+      data: { status: status as any }
+    });
+    
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error) {
+    return { error: "Update failed" };
+  }
+}
+
+/**
+ * Submit activity from public passport landing
+ */
+export async function submitActivityFromPassport(token: string, data: any) {
+  try {
+    const unit = await prisma.units.findFirst({ where: { qr_code_token: token } });
     if (!unit) return { error: "Unit not found" };
 
-    await (prisma.units as any).update({
+    await prisma.activities.create({
+      data: {
+        unit_id: unit.id,
+        service_date: new Date(),
+        type: data.type,
+        engineer_note: data.notes,
+        inspector_name: data.reporterName,
+        status: "Submitted"
+      }
+    });
+
+    // Update unit status if it's a complaint or maintenance report
+    if (data.type === "Corrective" || data.type === "Problem") {
+      await prisma.units.update({
+        where: { id: unit.id },
+        data: { status: "Problem" }
+      });
+    }
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error) {
+    console.error("Submit activity error:", error);
+    return { error: "Failed to submit activity" };
+  }
+}
+
+/**
+ * Update unit info from passport (Edit mode)
+ */
+export async function updateUnitInfoFromPassport(token: string, data: any) {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
+  try {
+    const unit = await prisma.units.findFirst({ where: { qr_code_token: token } });
+    if (!unit) return { error: "Unit not found" };
+
+    await prisma.units.update({
       where: { id: unit.id },
       data: {
         unit_type: data.unit_type,
@@ -56,69 +124,9 @@ export async function updateUnitInfoFromPassport(token: string, data: { unit_typ
       }
     });
 
+    revalidatePath("/dashboard");
     return { success: true };
-  } catch (error: any) {
-    console.error("Update unit info error:", error);
-    return { error: "Failed to update unit information" };
-  }
-}
-
-/**
- * Generate a random token for a new unit
- */
-export async function generateNewQrToken(unitId: number) {
-  const session = await getSession();
-  if (!session) return { error: "Unauthorized access" };
-
-  try {
-    const crypto = require('crypto');
-    const newToken = crypto.randomBytes(16).toString('hex');
-
-    await prisma.units.update({
-      where: { id: unitId },
-      data: { qr_code_token: newToken }
-    });
-
-    return { success: true, token: newToken };
-  } catch (error: any) {
-    console.error("Generate token error:", error);
-    return { error: "Failed to generate token." };
-  }
-}
-
-/**
- * Quick action submission for an activity directly from the passport landing page
- */
-export async function submitActivityFromPassport(token: string, data: { type: string, notes: string, reporterName: string }) {
-  try {
-    const unit = await prisma.units.findUnique({ where: { qr_code_token: token } });
-    if (!unit) return { error: "Invalid Unit Data" };
-
-    // Simply log this activity into the activities table
-    await prisma.activities.create({
-      data: {
-        unit_id: unit.id,
-        type: data.type,
-        inspector_name: data.reporterName,
-        engineer_note: data.notes,
-        service_date: new Date(),
-        status: "Completed" 
-      }
-    });
-
-    // If corrective reported, change unit status to On_Progress (Waiting for customer verification)
-    if (data.type === "Corrective") {
-      await (prisma.units as any).update({
-        where: { id: unit.id },
-        data: { status: "On_Progress" } 
-      } as any);
-      
-      revalidatePath("/dashboard");
-    }
-
-    return { success: true };
-  } catch (error: any) {
-    console.error("Submit activity via passport error:", error);
-    return { error: "Submission failed" };
+  } catch (error) {
+    return { error: "Update failed" };
   }
 }
