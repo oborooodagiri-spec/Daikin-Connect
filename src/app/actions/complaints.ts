@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
 import { revalidatePath } from "next/cache";
+import { serializePrisma } from "@/lib/serialize";
 
 /**
  * Submit a new complaint from the Passport (QR) page.
@@ -40,7 +41,7 @@ export async function submitComplaint(token: string, data: {
     revalidatePath(`/passport/${token}`);
     revalidatePath("/dashboard", "layout");
     
-    return { success: true };
+    return serializePrisma({ success: true });
   } catch (error: any) {
     console.error("Submit complaint error:", error);
     return { error: "Failed to submit complaint" };
@@ -78,7 +79,7 @@ export async function resolveComplaint(unitId: number) {
     });
 
     revalidatePath("/dashboard");
-    return { success: true };
+    return serializePrisma({ success: true });
   } catch (error: any) {
     console.error("Resolve complaint error:", error);
     return { error: "Failed to resolve complaint" };
@@ -97,7 +98,7 @@ export async function getUserAssignedProjects() {
     include: { projects: true }
   });
 
-  return access.map(a => a.projects).filter(Boolean);
+  return serializePrisma(access.map(a => a.projects).filter(Boolean));
 }
 
 /**
@@ -131,7 +132,7 @@ export async function getProjectComplaints(projectId?: string) {
       }
     });
 
-    return {
+    return serializePrisma({
       success: true,
       data: complaints.map((c: any) => ({
         id: c.id,
@@ -144,7 +145,7 @@ export async function getProjectComplaints(projectId?: string) {
         unit_model: c.units?.model || "N/A",
         unit_area: c.units?.area || "N/A"
       }))
-    };
+    });
   } catch (error) {
     console.error("Get project complaints error:", error);
     return { error: "Failed to fetch complaints" };

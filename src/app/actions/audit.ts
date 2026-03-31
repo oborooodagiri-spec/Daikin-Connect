@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { serializePrisma } from "@/lib/serialize";
+import { Decimal } from "@prisma/client/runtime/library";
 
 export async function createAuditActivity(data: any) {
   try {
@@ -118,6 +119,6 @@ export async function createAuditActivity(data: any) {
     return serializePrisma({ success: true, id: newActivity.id });
   } catch (error: any) {
     console.error("Audit DB Save Error:", error);
-    return { success: false, error: error.message };
+    return serializePrisma({ success: false, error: (error as any).message }) as any;
   }
 }

@@ -206,7 +206,7 @@ export default function UnitsPage() {
   const handleResolve = async (unitId: number) => {
     if (!confirm("Are you sure this unit is now working normally?")) return;
     setLoading(true);
-    const res = await resolveComplaint(unitId);
+    const res = await resolveComplaint(unitId) as any;
     if (res.success) {
       alert("Unit status has been restored to Normal.");
       fetchData();
@@ -226,17 +226,18 @@ export default function UnitsPage() {
       res = await createUnit(projectId, formData);
     }
 
-    if (res.success) {
+    const response = res as any;
+    if (response.success) {
       closeModal();
       await fetchData();
     } else {
-      alert(res.error || "Gagal menyimpan unit.");
+      alert(response.error || "Gagal menyimpan unit.");
       setLoading(false);
     }
   };
 
   const handleExport = async () => {
-    const res = await exportUnitsExcel(projectId);
+    const res = await exportUnitsExcel(projectId) as any;
     if (res.success && res.base64) {
       const link = document.createElement("a");
       link.href = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," + res.base64;
@@ -255,7 +256,7 @@ export default function UnitsPage() {
     const reader = new FileReader();
     reader.onload = async (evt) => {
       const b64 = (evt.target?.result as string).split(",")[1];
-      const res = await importUnitsExcel(projectId, b64);
+      const res = await importUnitsExcel(projectId, b64) as any;
       if (res.success) {
         alert(`Successfully imported ${res.imported} units!`);
         fetchData();
