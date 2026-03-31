@@ -3,24 +3,78 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --daikin-blue: #00a1e4;
+  --navy-blue: #003366;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-daikin: var(--daikin-blue);
+  --color-navy: var(--navy-blue);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    @apply antialiased;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
 }
+
+.animate-fade-in {
+  animation: fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ================= PRINT STYLES ================= */
+@media print {
+  /* Hide everything on screen except the report */
+  body * {
+    visibility: hidden;
+  }
+  
+  .print-safe,
+  .print-safe * {
+    visibility: visible;
+  }
+  
+  /* Position the print-safe container precisely */
+  .print-safe {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 210mm;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Standard A4 Page Setup */
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  /* Ensure backgrounds and colors print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Avoid breaking middle of tables if possible */
+  table, tr, td {
+    page-break-inside: avoid;
+  }
+
+  /* Force page breaks for multi-page reports */
+  .page-break {
+    page-break-after: always;
+  }
+}
+

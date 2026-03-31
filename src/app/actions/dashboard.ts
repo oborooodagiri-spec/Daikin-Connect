@@ -1,61 +1,322 @@
 "use server";
 
-import { PrismaClient } from "../../generated/prisma";
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
+import { getSession } from "./auth";
+import { serializePrisma } from "@/lib/serialize";
+import { unstable_noStore as noStore } from "next/cache";
 
-export async function getDashboardData(locationFilter: string) {
-  // We use raw queries here as the exact schema wasn't introspected yet.
-  // Wait for `npx prisma db pull` and `npx prisma generate` to be run by you!
-  // If tables are named exactly 'corrective', 'preventive', and 'audit':
+/**
+ * Access Control Helper
+ */
+async function getAccessibleProjectIds() {
+  const session = await getSession();
+  if (!session) return [];
+  if (session.isInternal) return null; // All access
+
+  const access = await prisma.user_project_access.findMany({
+    where: { user_id: parseInt(session.userId, 10) },
+    select: { project_id: true }
+  });
+  return access.map(a => a.project_id);
+}
+
+/**
+ * Fetch Filter Options (Hierarchical)
+ */
+export async function getFilterOptions() {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
+  const accessibleIds = await getAccessibleProjectIds();
+
+  const customers = await (prisma.customers as any).findMany({
+    where: { is_active: true },
+    select: {
+      id: true,
+      name: true,
+      projects: {
+        where: accessibleIds ? { id: { in: accessibleIds } } : {},
+        select: { id: true, name: true }
+      }
+    },
+    orderBy: { name: "asc" }
+  });
+
+  return serializePrisma({ success: true, data: customers.map((c: any) => ({
+    ...c,
+    projects: c.projects.map((p: any) => ({ id: p.id.toString(), name: p.name }))
+  })) });
+}
+
+/**
+ * Main Dashboard Stats (Refined 3-Tier)
+ */
+export async function getDashboardData(filters: { customerId?: string; projectId?: string }) {
+  noStore();
   try {
-    const data = await prisma.$transaction([
-      prisma.$queryRawUnsafe(`SELECT COUNT(*) as count FROM corrective ${locationFilter !== "All" ? 'WHERE location = "' + locationFilter + '"' : ''}`),
-      prisma.$queryRawUnsafe(`SELECT COUNT(*) as count FROM preventive ${locationFilter !== "All" ? 'WHERE location = "' + locationFilter + '"' : ''}`),
-      prisma.$queryRawUnsafe(`SELECT COUNT(*) as count FROM audit ${locationFilter !== "All" ? 'WHERE location = "' + locationFilter + '"' : ''}`)
+    const accessibleIds = await getAccessibleProjectIds();
+    
+    // Dates
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    
+    const currentMonth = now.getMonth() + 1;
+    const currentYear = now.getFullYear();
+
+    // 1. Build where clause based on filter + permissions
+    const unitWhere: any = {};
+    const baseActivityWhere: any = {};
+
+    if (filters.projectId) {
+      unitWhere.project_ref_id = BigInt(filters.projectId);
+      baseActivityWhere.units = { project_ref_id: BigInt(filters.projectId) };
+    } else if (filters.customerId) {
+      unitWhere.projects = { customer_id: parseInt(filters.customerId) };
+      baseActivityWhere.units = { projects: { customer_id: parseInt(filters.customerId) } };
+    }
+
+    // Apply security constraints
+    if (accessibleIds) {
+      const ids = accessibleIds.map(id => BigInt(id));
+      if (unitWhere.project_ref_id) {
+        if (!ids.includes(unitWhere.project_ref_id)) return emptyStats();
+      } else {
+        unitWhere.project_ref_id = { in: ids };
+        baseActivityWhere.units = { ...baseActivityWhere.units, project_ref_id: { in: ids } };
+      }
+    }
+
+    // 2. Fetch Actuals for Daily, Monthly, Total
+    const fetchTypeActuals = async (type: string) => {
+      const [daily, monthly, total] = await Promise.all([
+        (prisma.service_activities as any).count({ 
+          where: { ...baseActivityWhere, type, service_date: { gte: startOfToday, lte: endOfToday } } 
+        }),
+        (prisma.service_activities as any).count({ 
+          where: { ...baseActivityWhere, type, service_date: { gte: startOfMonth } } 
+        }),
+        (prisma.service_activities as any).count({ 
+          where: { ...baseActivityWhere, type, service_date: { gte: startOfYear } } 
+        }),
+      ]);
+      return { daily, monthly, total };
+    };
+
+    // 3. Fetch Targets for Daily, Monthly, Year
+    const fetchTypeTargets = async (type: string) => {
+      const targets = await (prisma.schedule_targets as any).findMany({
+        where: {
+          type,
+          month: currentMonth,
+          year: currentYear,
+          ...(filters.projectId ? { project_id: BigInt(filters.projectId) } : {}),
+          ...(accessibleIds ? { project_id: { in: accessibleIds.map(id => BigInt(id)) } } : {})
+        }
+      });
+      
+      const monthly = targets.reduce((sum: number, t: any) => sum + (t.monthly_target || 0), 0);
+      const daily = targets.reduce((sum: number, t: any) => sum + (t.daily_target || 0), 0);
+      
+      return { 
+        daily: daily || Math.ceil(monthly / 20) || 1, 
+        monthly: monthly || 0,
+        total: monthly * (now.getMonth() + 1)
+      };
+    };
+
+    const [
+      auditActual, auditTarget, 
+      pmActual, pmTargetMetrics, 
+      corActual,
+      totalUnits,
+      activeProjects,
+      totalCustomers
+    ] = await Promise.all([
+      fetchTypeActuals("Audit"),
+      fetchTypeTargets("Audit"),
+      fetchTypeActuals("Preventive"),
+      fetchTypeTargets("Preventive"),
+      fetchTypeActuals("Corrective"),
+      (prisma.units as any).count({ where: unitWhere }),
+      (prisma.projects as any).count({ 
+        where: { 
+          status: "active", 
+          ...(filters.customerId ? { customer_id: parseInt(filters.customerId) } : {}),
+          ...(accessibleIds ? { id: { in: accessibleIds } } : {})
+        } 
+      }),
+      filters.customerId ? 1 : (prisma.customers as any).count({ where: { is_active: true } })
     ]);
 
-    const correctiveCount = Number((data[0] as any)[0]?.count || 0);
-    const preventiveCount = Number((data[1] as any)[0]?.count || 0);
-    const auditCount = Number((data[2] as any)[0]?.count || 0);
-
-    const totalAssets = correctiveCount + preventiveCount + auditCount;
-
     return {
-      corrective: correctiveCount,
-      preventive: preventiveCount,
-      audit: auditCount,
-      databaseAssets: totalAssets,
-      totalCustomers: 2, // Dummy config
-      activeSites: 1, // Dummy config
+      audit: { actual: auditActual, target: auditTarget },
+      preventive: { actual: pmActual, target: pmTargetMetrics },
+      corrective: { actual: corActual, target: { daily: 0, monthly: 0, total: 0 } }, 
+      databaseAssets: totalUnits,
+      activeSites: activeProjects,
+      totalCustomers: totalCustomers,
     };
-  } catch (err) {
-    console.error("Please run `npx prisma db pull` and ensure table structure matches query: ", err);
-    return {
-      corrective: 0,
-      preventive: 0,
-      audit: 0,
-      databaseAssets: 0,
-      totalCustomers: 0,
-      activeSites: 0,
-    };
+  } catch (error) {
+    console.error("Dashboard Stats Error:", error);
+    return emptyStats();
   }
 }
 
-export async function getTrendChartData(locationFilter: string) {
-  // Returns dummy formatted data matching "Jan", "Feb" ... "Dec"
-  // Assuming the user implements `CREATED_AT` parsing in actual SQL table
-  return [
-    { name: "Jan", audit: 0, preventive: 0, corrective: 0 },
-    { name: "Feb", audit: 0, preventive: 0, corrective: 0 },
-    { name: "Mar", audit: 18, preventive: 18, corrective: 4 },
-    { name: "Apr", audit: 0, preventive: 0, corrective: 0 },
-    { name: "May", audit: 0, preventive: 0, corrective: 0 },
-    { name: "Jun", audit: 0, preventive: 0, corrective: 0 },
-    { name: "Jul", audit: 0, preventive: 0, corrective: 0 },
-    { name: "Aug", audit: 0, preventive: 0, corrective: 0 },
-    { name: "Sep", audit: 0, preventive: 0, corrective: 0 },
-    { name: "Oct", audit: 0, preventive: 0, corrective: 0 },
-    { name: "Nov", audit: 0, preventive: 0, corrective: 0 },
-    { name: "Dec", audit: 0, preventive: 0, corrective: 0 }
-  ];
+export async function getHealthStats(filters: { customerId?: string; projectId?: string }) {
+   return [];
+}
+
+function emptyStats() {
+  return { 
+    audit: { actual: { daily:0, monthly:0, total:0 }, target: { daily:0, monthly:0, total:0 } }, 
+    preventive: { actual: { daily:0, monthly:0, total:0 }, target: { daily:0, monthly:0, total:0 } }, 
+    corrective: { actual: { daily:0, monthly:0, total:0 }, target: { daily:0, monthly:0, total:0 } }, 
+    databaseAssets: 0, activeSites: 0, totalCustomers: 0 
+  };
+}
+
+/**
+ * Real-Time Trend Data (By Month)
+ */
+export async function getTrendChartData(filters: { customerId?: string; projectId?: string }) {
+  noStore();
+  try {
+    const activityWhere: any = {};
+    if (filters.projectId) {
+      activityWhere.units = { project_ref_id: BigInt(filters.projectId) };
+    } else if (filters.customerId) {
+      activityWhere.units = { projects: { customer_id: parseInt(filters.customerId) } };
+    }
+
+    const startOfYear = new Date(new Date().getFullYear(), 0, 1);
+    
+    const activities = await (prisma.service_activities as any).findMany({
+      where: {
+        ...activityWhere,
+        service_date: { gte: startOfYear }
+      },
+      select: { service_date: true, type: true }
+    });
+
+    const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+    const currentMonth = new Date().getMonth();
+    
+    const chartData = months.slice(0, currentMonth + 1).map((name, i) => {
+      const monthActivities = activities.filter((a: any) => a.service_date && new Date(a.service_date).getMonth() === i);
+      return {
+        name,
+        audit: monthActivities.filter((a: any) => a.type === "Audit").length,
+        preventive: monthActivities.filter((a: any) => a.type === "Preventive").length,
+        corrective: monthActivities.filter((a: any) => a.type === "Corrective").length,
+      };
+    });
+
+    return serializePrisma(chartData);
+  } catch (error) {
+    return [];
+  }
+}
+
+/**
+ * Recent Activity Feed
+ */
+export async function getRecentActivities(filters: { customerId?: string; projectId?: string }) {
+  noStore();
+  try {
+    const activityWhere: any = {};
+    if (filters.projectId) {
+      activityWhere.units = { project_ref_id: BigInt(filters.projectId) };
+    } else if (filters.customerId) {
+      activityWhere.units = { projects: { customer_id: parseInt(filters.customerId) } };
+    }
+
+    const recent = await (prisma.service_activities as any).findMany({
+      where: activityWhere,
+      take: 8,
+      orderBy: { created_at: "desc" },
+      include: {
+        units: { select: { tag_number: true, location: true, area: true } }
+      }
+    });
+
+    return serializePrisma(recent.map((r: any) => ({
+      id: r.id.toString(),
+      type: r.type,
+      engineer: r.inspector_name || "Unknown",
+      unit_tag: r.units?.tag_number || "Unknown Unit",
+      location: r.units?.area || r.units?.location || "-",
+      at: r.created_at?.toISOString() || ""
+    })));
+  } catch (err) {
+    return [];
+  }
+}
+
+/**
+ * Unit Health Stats breakdown
+ */
+export async function getUnitHealthStats(filters: { customerId?: string; projectId?: string }) {
+  noStore();
+  try {
+    const unitWhere: any = {};
+    if (filters.projectId) {
+      unitWhere.project_ref_id = BigInt(filters.projectId);
+    } else if (filters.customerId) {
+      unitWhere.projects = { customer_id: parseInt(filters.customerId) };
+    }
+
+    const stats = await prisma.units.groupBy({
+      by: ["status"],
+      where: unitWhere,
+      _count: true
+    } as any);
+
+    return serializePrisma(stats.map((s: any) => ({
+      status: s.status || "Unknown",
+      count: s._count
+    })));
+  } catch (err) {
+    return [];
+  }
+}
+
+/**
+ * Fetch top units by status for widgets
+ */
+export async function getDetailedUnitStatus(filters: { customerId?: string; projectId?: string }) {
+  noStore();
+  try {
+    const unitWhere: any = {};
+    if (filters.projectId) {
+      unitWhere.project_ref_id = BigInt(filters.projectId);
+    } else if (filters.customerId) {
+      unitWhere.projects = { customer_id: parseInt(filters.customerId) };
+    }
+
+    const [problems, progress] = await Promise.all([
+      (prisma.units as any).findMany({
+        where: { ...unitWhere, status: { in: ["Problem", "Critical", "Warning"] } },
+        take: 5,
+        orderBy: { created_at: "desc" },
+        include: { projects: { select: { name: true } } }
+      }),
+      (prisma.units as any).findMany({
+        where: { ...unitWhere, status: { in: ["On_Progress", "Pending"] } },
+        take: 5,
+        orderBy: { created_at: "desc" },
+        include: { projects: { select: { name: true } } }
+      })
+    ]);
+
+    return serializePrisma({
+      success: true,
+      problems,
+      progress
+    });
+  } catch (err) {
+    return { success: false, problems: [], progress: [] };
+  }
 }
