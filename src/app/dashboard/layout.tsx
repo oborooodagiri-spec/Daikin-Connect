@@ -26,12 +26,6 @@ export default async function DashboardLayout({
     dashboardHref = `/dashboard/customers/${p.customer_id}/projects/${p.id}/units`;
   }
 
-  // Wrapper for logout to be used in client component
-  const handleLogoutAction = async () => {
-    "use server";
-    await logout();
-  };
-
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex font-sans overflow-x-hidden">
       
@@ -39,19 +33,19 @@ export default async function DashboardLayout({
       <DashboardSidebarClient 
         session={session} 
         dashboardHref={dashboardHref} 
-        logout={handleLogoutAction} 
+        logout={logout} 
       />
 
       {/* Main Content Area */}
       <div className="flex-1 transition-all duration-500 ml-0 md:ml-72 min-w-0">
         <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 md:px-8 flex items-center justify-between sticky top-0 z-[40]">
-           {/* Placeholder for Mobile Spacer */}
            <div className="w-10 h-10 md:hidden" />
 
            <div className="flex items-center gap-2 md:gap-6">
+             {/* Dynamic Date moved to a safer rendering style or Client-only component if needed */}
              <div className="hidden sm:block text-right">
                <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter leading-none mb-1">SYSTEM CONNECTED</p>
-               <p className="text-xs font-bold text-[#00a1e4] tracking-tight">{new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+               <p className="text-xs font-bold text-[#00a1e4] tracking-tight">{new Date().getFullYear()} DAIKIN CONNECT ONLINE</p>
              </div>
              
              <div className="h-8 w-[1px] bg-slate-200 hidden sm:block"></div>
@@ -59,7 +53,7 @@ export default async function DashboardLayout({
              <div className="flex items-center gap-3">
                <div className="text-right">
                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter leading-none">Logged in as</p>
-                 <p className="text-xs font-bold text-slate-800 tracking-tight max-w-[120px] truncate">{session?.email}</p>
+                 <p className="text-xs font-bold text-slate-800 tracking-tight max-w-[120px] truncate uppercase">{session?.name}</p>
                </div>
                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#003366] to-blue-600 border border-white/20 flex items-center justify-center font-black text-white shadow-lg shadow-blue-900/10">
                  {session?.name?.charAt(0)}
