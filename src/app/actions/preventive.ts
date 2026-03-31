@@ -1,8 +1,7 @@
 "use server";
 
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
+import { serializePrisma } from "@/lib/serialize";
 
 export async function createPreventiveActivity(data: any) {
   try {
@@ -46,7 +45,7 @@ export async function createPreventiveActivity(data: any) {
       });
     }
 
-    return { success: true, id: newActivity.id };
+    return serializePrisma({ success: true, id: newActivity.id });
   } catch (error: any) {
     console.error("Preventive DB Save Error:", error);
     return { success: false, error: error.message };

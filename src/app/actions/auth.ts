@@ -6,6 +6,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { sendRegistrationReceivedEmail } from "@/lib/mail";
+import { serializePrisma } from "@/lib/serialize";
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "daikin-connect-secret-key-change-in-production"
@@ -142,13 +143,13 @@ export async function getSession() {
       ["super_admin", "admin", "administrator", "internal", "engineer", "sales engineer", "management"].includes(r)
     );
 
-    return {
+    return serializePrisma({
       userId: user.id.toString(),
       email: user.email,
       name: user.name,
       roles: roles,
       isInternal: isInternal
-    };
+    });
   } catch {
     return null;
   }

@@ -1,9 +1,7 @@
 "use server";
 
-import { PrismaClient } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime/library";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
+import { serializePrisma } from "@/lib/serialize";
 
 export async function createAuditActivity(data: any) {
   try {
@@ -117,7 +115,7 @@ export async function createAuditActivity(data: any) {
 
     // No unit update payload needed for now unless we add an explicitly defined column
 
-    return { success: true, id: newActivity.id };
+    return serializePrisma({ success: true, id: newActivity.id });
   } catch (error: any) {
     console.error("Audit DB Save Error:", error);
     return { success: false, error: error.message };

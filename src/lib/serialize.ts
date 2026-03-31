@@ -14,16 +14,16 @@ export function serializePrisma<T>(data: T): T {
     return data.map((item) => serializePrisma(item)) as unknown as T;
   }
 
+  // Handle BigInt
+  if (typeof data === "bigint") {
+    return (data as any).toString() as unknown as T;
+  }
+
   // Handle Objects
   if (typeof data === "object") {
     // Handle Prisma Decimal
     if (data instanceof Decimal) {
       return data.toNumber() as unknown as T;
-    }
-
-    // Handle BigInt
-    if (typeof data === "bigint") {
-      return (data as any).toString() as unknown as T;
     }
 
     // Handle standard objects (not Dates or other special objects we want to keep)

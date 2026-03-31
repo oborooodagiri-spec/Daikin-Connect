@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
 import { revalidatePath } from "next/cache";
+import { serializePrisma } from "@/lib/serialize";
 
 /**
  * Public API for fetching unit details by QR token
@@ -24,7 +25,7 @@ export async function getUnitByToken(token: string) {
 
     if (!unit) return { error: "Unit not found" };
 
-    return {
+    return serializePrisma({
       success: true,
       data: {
         id: unit.id,
@@ -41,7 +42,7 @@ export async function getUnitByToken(token: string) {
         projectName: unit.projects?.name,
         customerName: unit.projects?.customers?.name
       }
-    };
+    });
   } catch (error) {
     console.error("Prisma error:", error);
     return { error: "Database error" };

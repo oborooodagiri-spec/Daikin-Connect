@@ -3,6 +3,8 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
+import { serializePrisma } from "@/lib/serialize";
+
 export async function createCorrectiveActivity(data: any) {
   try {
     const {
@@ -76,7 +78,7 @@ export async function createCorrectiveActivity(data: any) {
 
     revalidatePath("/dashboard", "layout");
 
-    return { success: true, id: newActivity.id };
+    return serializePrisma({ success: true, id: newActivity.id });
   } catch (error: any) {
     console.error("Corrective DB Save Error:", error);
     return { success: false, error: error.message };
