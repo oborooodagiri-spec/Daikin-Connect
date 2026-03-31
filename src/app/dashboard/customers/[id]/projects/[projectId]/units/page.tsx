@@ -18,7 +18,6 @@ import QRCode from "react-qr-code";
 import { motion, AnimatePresence } from "framer-motion";
 import UnitHistoryTimeline from "@/components/UnitHistoryTimeline";
 import UnitDetailModal from "@/components/UnitDetailModal";
-import ScheduleDashboardWidget from "@/components/dashboard/ScheduleDashboardWidget";
 
 export default function UnitsPage() {
   const params = useParams();
@@ -314,10 +313,6 @@ export default function UnitsPage() {
         ))}
       </div>
 
-      {/* OPERATION SCHEDULE WIDGET */}
-      <div className="mb-8">
-        <ScheduleDashboardWidget projectId={projectId} />
-      </div>
 
       {/* QUICK STATUS WIDGETS */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
