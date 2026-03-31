@@ -260,7 +260,7 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
         photos: uploadedPhotos
       };
 
-      const dbRes = await createPreventiveActivity(dbPayload);
+      const dbRes = await createPreventiveActivity(dbPayload) as any;
       if (dbRes.success) {
         setSuccess(true);
       } else {

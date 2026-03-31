@@ -242,7 +242,7 @@ export default function CorrectiveFormClient({ unit }: { unit: any }) {
         photos: uploadedPhotos,
       };
 
-      const dbRes = await createCorrectiveActivity(dbPayload);
+      const dbRes = await createCorrectiveActivity(dbPayload) as any;
       if (dbRes.success) {
         setSuccess(true);
       } else {

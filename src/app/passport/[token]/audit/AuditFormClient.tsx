@@ -286,7 +286,7 @@ export default function AuditFormClient({ unit }: { unit: any }) {
         photos: uploadedPhotos
       };
 
-      const dbRes = await createAuditActivity(dbPayload);
+      const dbRes = await createAuditActivity(dbPayload) as any;
       if (dbRes.success) {
         setSuccess(true);
       } else {
