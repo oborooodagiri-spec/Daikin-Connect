@@ -60,7 +60,7 @@ export default function PassportLandingPage() {
 
   useEffect(() => {
     async function loadData() {
-      const res = await getUnitByToken(token);
+      const res = await getUnitByToken(token) as any;
       if (res.success) {
         setUnit(res.data);
         setEditForm({
@@ -95,7 +95,7 @@ export default function PassportLandingPage() {
 
   const handleUpdateUnit = () => {
     startTransition(async () => {
-      const res = await updateUnitInfoFromPassport(token, editForm);
+      const res = await updateUnitInfoFromPassport(token, editForm) as any;
       if (res.success) {
         setUnit({ ...unit, ...editForm });
         setIsEditing(false);
@@ -138,7 +138,7 @@ export default function PassportLandingPage() {
   const handleComplaintSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     startTransition(async () => {
-      const res = await submitComplaint(token, complaintForm);
+      const res = await submitComplaint(token, complaintForm) as any;
       if (res.success) {
         setComplaintMsg(true);
         setTimeout(() => {
