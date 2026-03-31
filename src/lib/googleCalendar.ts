@@ -5,7 +5,7 @@ import { google } from 'googleapis';
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI || 'http://localhost:3000/api/google/oauth'
+  process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI || 'https://daikin-connect.com/api/google/oauth'
 );
 
 // If using a Service Account instead:

@@ -77,7 +77,7 @@ export async function sendAccountSuspendedEmail(to: string, name: string) {
 export async function sendPasswordResetEmail(to: string, name: string, resetToken: string) {
   console.log(`[MAIL] Attempting to send Password Reset to ${to}...`);
   try {
-    const resetLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password/${resetToken}`;
+    const resetLink = `${process.env.NEXT_PUBLIC_APP_URL || 'https://daikin-connect.com'}/reset-password/${resetToken}`;
     
     const info = await transporter.sendMail({
       from: fromEmail,

@@ -3,9 +3,13 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Lock, User, AlertCircle, ArrowRight, CheckCircle2, Eye, EyeOff, Activity, ShieldCheck, Database } from "lucide-react";
+import { 
+  Mail, Lock, User, AlertCircle, ArrowRight, CheckCircle2, Eye, EyeOff, 
+  Activity, ShieldCheck, Database, Zap, ClipboardCheck, History 
+} from "lucide-react";
 
 import { login, register } from "./actions/auth";
+import { APP_VERSION } from "@/lib/version";
 
 export default function LoginPage() {
   const [isRequestMode, setIsRequestMode] = useState(false);
@@ -99,39 +103,52 @@ export default function LoginPage() {
           </h1>
           
           <p className="text-slate-400 text-sm font-medium tracking-wide max-w-sm leading-relaxed mb-12">
-            Centralized performance monitoring and digitalized reporting command center for Daikin infrastructure.
+            Centralized performance monitoring and digitalized reporting system.
           </p>
 
-          <div className="space-y-4">
-            <div className="flex items-center gap-4 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md">
-              <div className="bg-blue-500/20 p-2.5 rounded-xl text-blue-400">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-0.5">End-to-End Encryption</h4>
-                <p className="text-[10px] text-slate-400">Military-grade data protection</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-4 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md opacity-70">
-              <div className="bg-emerald-500/20 p-2.5 rounded-xl text-emerald-400">
-                <Database className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-0.5">Real-time Synchronization</h4>
-                <p className="text-[10px] text-slate-400">Live operational metrics</p>
-              </div>
-            </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <MarketingCard 
+              icon={<ShieldCheck className="w-5 h-5" />} 
+              title="End-to-End Encryption" 
+              desc="Military-grade data protection"
+              color="blue"
+            />
+            <MarketingCard 
+              icon={<Database className="w-5 h-5" />} 
+              title="Real-time Synchronization" 
+              desc="Live operational metrics"
+              color="emerald"
+            />
+            <MarketingCard 
+              icon={<Zap className="w-5 h-5" />} 
+              title="Predictive Maintenance" 
+              desc="Early failure detection"
+              color="amber"
+              opacity={0.8}
+            />
+            <MarketingCard 
+              icon={<ClipboardCheck className="w-5 h-5" />} 
+              title="Automated Compliance" 
+              desc="Audit-ready digital reports"
+              color="cyan"
+              opacity={0.8}
+            />
           </div>
         </motion.div>
 
          {/* Quality Assurance Section */}
-         <div className="mt-auto pt-16">
+         <div className="mt-auto pt-12">
             <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Certified & Compliant By</p>
-            <div className="flex items-center gap-6 opacity-30 hover:opacity-100 transition-all duration-700 grayscale hover:grayscale-0">
-              <img src="/kan1.jpg" className="h-6 w-auto object-contain brightness-0 invert" alt="KAN" />
-              <img src="/green-building-council-1.png" className="h-6 w-auto object-contain brightness-0 invert" alt="Green Building Council" />
-              <img src="/TUVnord-.png" className="h-6 w-auto object-contain brightness-0 invert" alt="TUV Nord" />
+            <div className="flex items-center gap-6 opacity-60 hover:opacity-100 transition-all duration-700">
+              <div className="bg-white p-1 rounded-sm shadow-lg overflow-hidden">
+                <img src="/kan1.jpg" className="h-6 w-auto object-contain" alt="KAN" />
+              </div>
+              <div className="bg-white p-1 rounded-sm shadow-lg overflow-hidden">
+                <img src="/green-building-council-1.png" className="h-6 w-auto object-contain" alt="Green Building Council" />
+              </div>
+              <div className="bg-white p-1 rounded-sm shadow-lg overflow-hidden">
+                <img src="/TUVnord-.png" className="h-6 w-auto object-contain" alt="TUV Nord" />
+              </div>
             </div>
           </div>
       </div>
@@ -303,7 +320,31 @@ export default function LoginPage() {
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
             © 2026 VALUE ENGINEERING SERVICES <span className="text-[#00a1e4] mx-2">•</span> D2
           </p>
+          <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.25em] mt-2">
+            {APP_VERSION}
+          </p>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function MarketingCard({ icon, title, desc, color, opacity = 1 }: { icon: any, title: string, desc: string, color: string, opacity?: number }) {
+  const colorMap: any = {
+    blue: "bg-blue-500/20 text-blue-400 border-white/10",
+    emerald: "bg-emerald-500/20 text-emerald-400 border-white/10",
+    amber: "bg-amber-500/20 text-amber-400 border-white/10",
+    cyan: "bg-cyan-500/20 text-cyan-400 border-white/10"
+  };
+
+  return (
+    <div className={`flex items-center gap-4 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md transition-all hover:bg-white/10 hover:scale-[1.02]`} style={{ opacity }}>
+      <div className={`${colorMap[color].split(' ')[0]} ${colorMap[color].split(' ')[1]} p-2.5 rounded-xl`}>
+        {icon}
+      </div>
+      <div>
+        <h4 className="text-[10px] font-bold text-white uppercase tracking-wider mb-0.5">{title}</h4>
+        <p className="text-[9px] text-slate-400 font-medium leading-tight">{desc}</p>
       </div>
     </div>
   );

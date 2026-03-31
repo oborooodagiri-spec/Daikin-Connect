@@ -4,15 +4,20 @@ import { useEffect, useState, useTransition } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getUnitByToken, submitActivityFromPassport, updateUnitInfoFromPassport } from "@/app/actions/passport";
 import { 
-  Building2, MapPin, Search, Hammer, Activity, Wrench, ChevronRight,
+  Building2, MapPin, Search, Hammer, Activity, Wrench, ChevronRight, ChevronLeft,
   ClipboardCheck, HardHat, FileText, CheckCircle2, AlertTriangle, Edit3, Save, X,
-  History as HistoryIcon
+  History as HistoryIcon, Camera, Printer, Trash2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { updateUnitStatus, getUnitHistory } from "@/app/actions/units";
 import { submitComplaint } from "@/app/actions/complaints";
 import UnitHistoryTimeline from "@/components/UnitHistoryTimeline";
 import imageCompression from "browser-image-compression";
+
+// Import Form Components
+import PreventiveFormClient from "./preventive/PreventiveFormClient";
+import CorrectiveFormClient from "./corrective/CorrectiveFormClient";
+import AuditFormClient from "./audit/AuditFormClient";
 
 export default function PassportLandingPage() {
   const params = useParams();
@@ -23,15 +28,16 @@ export default function PassportLandingPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [activeTab, setActiveTab] = useState<"info" | "report" | "audit" | "preventive" | "corrective" | "history">("info");
+  const [activeTab, setActiveTab] = useState<"info" | "corrective" | "preventive" | "audit" | "history" | "complaint">("info");
+  
+  // States for showing forms
+  const [showFormCorrective, setShowFormCorrective] = useState(false);
+  const [showFormPreventive, setShowFormPreventive] = useState(false);
+  const [showFormAudit, setShowFormAudit] = useState(false);
+
   const [unitHistory, setUnitHistory] = useState<any[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    reporterName: "",
-    type: "Preventive",
-    notes: ""
-  });
-
+  
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
     unit_type: "",
@@ -41,14 +47,15 @@ export default function PassportLandingPage() {
   });
   
   const [isPending, startTransition] = useTransition();
-  const [successMsg, setSuccessMsg] = useState(false);
   const [complaintMsg, setComplaintMsg] = useState(false);
 
+  // Complaint Form State
   const [complaintForm, setComplaintForm] = useState({
     customerName: "",
     description: "",
     photoUrl: ""
   });
+  const [complaintPhotoPreview, setComplaintPhotoPreview] = useState<string | null>(null);
   const [isCompressing, setIsCompressing] = useState(false);
 
   useEffect(() => {
@@ -63,18 +70,7 @@ export default function PassportLandingPage() {
           capacity: res.data.capacity || ""
         });
         
-        // Load history as well
-        setHistoryLoading(true);
-        const hRes = await getUnitHistory(res.data.id);
-        if (hRes && 'success' in hRes) {
-          const sortedHistory = [...(hRes.data as any[])].sort((a, b) => {
-            const dateA = a.date instanceof Date ? a.date.getTime() : (a.date ? new Date(a.date).getTime() : 0);
-            const dateB = b.date instanceof Date ? b.date.getTime() : (b.date ? new Date(b.date).getTime() : 0);
-            return dateB - dateA;
-          });
-          setUnitHistory(sortedHistory);
-        }
-        setHistoryLoading(false);
+        loadHistory(res.data.id);
       } else {
         setError(res.error || "Malfuctioned QR Code.");
       }
@@ -83,21 +79,18 @@ export default function PassportLandingPage() {
     loadData();
   }, [token]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    startTransition(async () => {
-      const res = await submitActivityFromPassport(token, formData);
-      if (res.success) {
-        setSuccessMsg(true);
-        setTimeout(() => {
-          setSuccessMsg(false);
-          setActiveTab("info");
-          setFormData({ reporterName: "", type: "Preventive", notes: "" });
-        }, 3000);
-      } else {
-        alert(res.error || "Gagal Mengirim Laporan");
-      }
-    });
+  const loadHistory = async (unitId: string) => {
+    setHistoryLoading(true);
+    const hRes = await getUnitHistory(unitId);
+    if (hRes && 'success' in hRes) {
+      const sortedHistory = [...(hRes.data as any[])].sort((a, b) => {
+        const dateA = a.date instanceof Date ? a.date.getTime() : (a.date ? new Date(a.date).getTime() : 0);
+        const dateB = b.date instanceof Date ? b.date.getTime() : (b.date ? new Date(b.date).getTime() : 0);
+        return dateB - dateA;
+      });
+      setUnitHistory(sortedHistory);
+    }
+    setHistoryLoading(false);
   };
 
   const handleUpdateUnit = () => {
@@ -112,41 +105,34 @@ export default function PassportLandingPage() {
     });
   };
 
-  const handleStatusChange = async (newStatus: string) => {
-    startTransition(async () => {
-       const res = await updateUnitStatus(unit.id, newStatus);
-       if (res.success) {
-         setUnit({ ...unit, status: newStatus });
-       } else {
-         alert("Gagal memperbarui status.");
-       }
-    });
-  };
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleComplaintPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setIsCompressing(true);
     try {
-      const options = {
-        maxSizeMB: 0.5, // Maksimal 500KB
-        maxWidthOrHeight: 1280,
-        useWebWorker: true,
-      };
+      const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1280, useWebWorker: true };
+      const compressed = await imageCompression(file, options);
       
-      const compressedFile = await imageCompression(file, options);
-      
-      const reader = new FileReader();
-      reader.readAsDataURL(compressedFile);
-      reader.onloadend = () => {
-        setComplaintForm(prev => ({ ...prev, photoUrl: reader.result as string }));
-        setIsCompressing(false);
-      };
-    } catch (error) {
-      console.error("Compression error:", error);
-      setIsCompressing(false);
+      // Upload to server API
+      const formData = new FormData();
+      formData.append("file", compressed);
+      formData.append("folder", "complaints");
+
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+
+      if (data.success) {
+        setComplaintForm({ ...complaintForm, photoUrl: data.url });
+        setComplaintPhotoPreview(URL.createObjectURL(compressed));
+      } else {
+        alert("Gagal upload foto.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error kompresi foto.");
     }
+    setIsCompressing(false);
   };
 
   const handleComplaintSubmit = async (e: React.FormEvent) => {
@@ -159,6 +145,7 @@ export default function PassportLandingPage() {
           setComplaintMsg(false);
           setActiveTab("info");
           setComplaintForm({ customerName: "", description: "", photoUrl: "" });
+          setComplaintPhotoPreview(null);
         }, 3000);
       } else {
         alert(res.error || "Gagal Mengirim Pengaduan");
@@ -191,7 +178,7 @@ export default function PassportLandingPage() {
 
   return (
     <div className="min-h-screen bg-slate-100 flex justify-center">
-      <div className="w-full max-md bg-white shadow-2xl min-h-screen flex flex-col relative overflow-hidden">
+      <div className="w-full max-w-md bg-white shadow-2xl min-h-screen flex flex-col relative overflow-hidden">
         
         {/* Header Art */}
         <div className="bg-[#003366] text-white p-8 relative overflow-hidden shrink-0">
@@ -207,7 +194,7 @@ export default function PassportLandingPage() {
             
             {/* Status Quick Select */}
             <div className="flex flex-col items-end gap-2">
-               <div className={`p-2 rounded-xl border flex items-center gap-2 ${
+               <div className={`p-2 px-4 rounded-xl border flex items-center gap-2 ${
                  unit.status === 'Problem' ? 'bg-rose-500/20 border-rose-500/40 animate-pulse' : 
                  unit.status === 'On_Progress' ? 'bg-indigo-500/20 border-indigo-500/40' : 
                  'bg-emerald-500/20 border-emerald-500/40'
@@ -217,44 +204,25 @@ export default function PassportLandingPage() {
                     unit.status === 'On_Progress' ? 'bg-indigo-500' : 
                     'bg-emerald-500'
                  }`} />
-                 <select 
-                   value={unit.status} 
-                   onChange={(e) => handleStatusChange(e.target.value)}
-                   className="bg-transparent text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer"
-                 >
-                   <option value="Normal" className="text-slate-800">Normal</option>
-                   <option value="Problem" className="text-slate-800">Problem</option>
-                   <option value="On_Progress" className="text-slate-800">In Progress</option>
-                 </select>
+                 <span className="text-[10px] font-black uppercase tracking-widest">
+                   {unit.status === 'On_Progress' ? 'In Progress' : unit.status}
+                 </span>
                </div>
             </div>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-slate-100 bg-white shrink-0">
-          <button 
-            onClick={() => setActiveTab("info")}
-            className={`flex-1 py-4 text-xs font-bold tracking-wide transition-all ${activeTab === "info" ? 'text-[#00a1e4] border-b-2 border-[#00a1e4]' : 'text-slate-400 bg-slate-50 border-b-2 border-transparent'}`}
-          >
-            Unit Info
-          </button>
-          <button 
-            onClick={() => setActiveTab("report")}
-            className={`flex-1 py-4 text-xs font-bold tracking-wide transition-all ${activeTab === "report" ? 'text-rose-500 border-b-2 border-rose-500' : 'text-slate-400 bg-slate-50 border-b-2 border-transparent'}`}
-          >
-            <span className="flex items-center justify-center gap-1"><AlertTriangle size={14}/> Lapor</span>
-          </button>
-          <button 
-            onClick={() => setActiveTab("history")}
-            className={`flex-1 py-4 text-xs font-bold tracking-wide transition-all ${activeTab === "history" ? 'text-slate-800 border-b-2 border-slate-800' : 'text-slate-400 bg-slate-50 border-b-2 border-transparent'}`}
-          >
-            <span className="flex items-center justify-center gap-1"><HistoryIcon size={14}/> Log</span>
-          </button>
+        <div className="flex overflow-x-auto border-b border-slate-100 bg-white shrink-0 scrollbar-hide no-scrollbar">
+          <TabButton active={activeTab === "info"} onClick={() => setActiveTab("info")} label="Info" />
+          <TabButton active={activeTab === "corrective"} onClick={() => setActiveTab("corrective")} label="Corrective" icon={<Hammer size={12}/>} />
+          <TabButton active={activeTab === "preventive"} onClick={() => setActiveTab("preventive")} label="Preventive" icon={<Wrench size={12}/>} />
+          <TabButton active={activeTab === "audit"} onClick={() => setActiveTab("audit")} label="Audit" icon={<ClipboardCheck size={12}/>} />
+          <TabButton active={activeTab === "history"} onClick={() => setActiveTab("history")} label="Log" icon={<HistoryIcon size={12}/>} />
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-y-auto p-6 bg-slate-50">
+        <div className="flex-1 overflow-y-auto p-6 bg-slate-50 pb-24">
           <AnimatePresence mode="wait">
             {activeTab === "info" ? (
               <motion.div 
@@ -325,28 +293,116 @@ export default function PassportLandingPage() {
                     <p className="text-xs text-slate-500 mt-1">{unit.building_floor} {unit.room_tenant ? `- ${unit.room_tenant}` : ''}</p>
                   </div>
                 </div>
+
+                {/* Quick Action: Complaint */}
+                <button 
+                  onClick={() => setActiveTab("complaint")}
+                  className="w-full py-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-center justify-center gap-3 text-rose-600 font-black uppercase text-xs tracking-widest"
+                >
+                   <AlertTriangle size={16}/> Lapor Masalah
+                </button>
               </motion.div>
-            ) : activeTab === "report" ? (
-              <motion.div 
-                key="report" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}
-              >
-                {unit.status === 'On_Progress' ? (
-                   <div className="bg-indigo-50 border border-indigo-200 rounded-3xl p-8 text-center flex flex-col items-center">
-                      <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg border border-indigo-100 mb-6">
-                        <Activity className="text-indigo-500 animate-pulse" size={32} />
+            ) : activeTab === "corrective" ? (
+              <motion.div key="corrective" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="space-y-6">
+                {!showFormCorrective ? (
+                  <>
+                    <button 
+                      onClick={() => setShowFormCorrective(true)}
+                      className="group w-full py-6 bg-rose-600 hover:bg-rose-700 text-white rounded-3xl flex flex-col items-center justify-center gap-2 shadow-xl shadow-rose-200 transition-all active:scale-95"
+                    >
+                      <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Hammer size={28} />
                       </div>
-                      <h3 className="text-xl font-black text-indigo-900 uppercase tracking-tight">Dalam Perbaikan</h3>
-                      <p className="text-sm text-indigo-600 font-bold mt-4 leading-relaxed">
-                        Teknisi kami sedang menangani unit ini. Mohon login ke portal resmi untuk detail progres.
-                      </p>
-                      <button 
-                        onClick={() => router.push('/dashboard')}
-                        className="w-full mt-10 py-4 bg-[#003366] text-white rounded-2xl text-sm font-black uppercase tracking-[0.2em] shadow-xl shadow-blue-900/20 flex items-center justify-center gap-3"
-                      >
-                         Dashboard Portal <ChevronRight size={18} />
-                      </button>
-                   </div>
-                ) : complaintMsg ? (
+                      <span className="font-black uppercase tracking-widest text-xs">Input Laporan Corrective</span>
+                    </button>
+                    <div className="space-y-4">
+                      <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Riwayat Corrective</h3>
+                      <UnitHistoryTimeline history={unitHistory.filter(h => h.type === 'Corrective')} />
+                    </div>
+                  </>
+                ) : (
+                  <div className="fixed inset-0 z-[110] bg-white overflow-y-auto">
+                    <button onClick={() => setShowFormCorrective(false)} className="fixed top-6 left-6 z-[120] p-3 bg-white/90 backdrop-blur rounded-full shadow-lg text-slate-800"><ChevronLeft size={24}/></button>
+                    <CorrectiveFormClient unit={unit} />
+                  </div>
+                )}
+              </motion.div>
+            ) : activeTab === "preventive" ? (
+              <motion.div key="preventive" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="space-y-6">
+                {!showFormPreventive ? (
+                  <>
+                    <button 
+                      onClick={() => setShowFormPreventive(true)}
+                      className="group w-full py-6 bg-[#00a1e4] hover:bg-blue-600 text-white rounded-3xl flex flex-col items-center justify-center gap-2 shadow-xl shadow-blue-200 transition-all active:scale-95"
+                    >
+                      <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Wrench size={28} />
+                      </div>
+                      <span className="font-black uppercase tracking-widest text-xs">Input Laporan Preventive</span>
+                    </button>
+                    <div className="space-y-4">
+                      <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Riwayat Preventive</h3>
+                      <UnitHistoryTimeline history={unitHistory.filter(h => h.type === 'Preventive')} />
+                    </div>
+                  </>
+                ) : (
+                  <div className="fixed inset-0 z-[110] bg-white overflow-y-auto">
+                    <button onClick={() => setShowFormPreventive(false)} className="fixed top-6 left-6 z-[120] p-3 bg-white/90 backdrop-blur rounded-full shadow-lg text-slate-800"><ChevronLeft size={24}/></button>
+                    <PreventiveFormClient unit={unit} />
+                  </div>
+                )}
+              </motion.div>
+            ) : activeTab === "audit" ? (
+              <motion.div key="audit" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="space-y-6">
+                {!showFormAudit ? (
+                  <>
+                    <button 
+                      onClick={() => setShowFormAudit(true)}
+                      className="group w-full py-6 bg-emerald-600 hover:bg-emerald-700 text-white rounded-3xl flex flex-col items-center justify-center gap-2 shadow-xl shadow-emerald-200 transition-all active:scale-95"
+                    >
+                      <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <ClipboardCheck size={28} />
+                      </div>
+                      <span className="font-black uppercase tracking-widest text-xs">Input Laporan Audit</span>
+                    </button>
+                    <div className="space-y-4">
+                      <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Riwayat Audit</h3>
+                      <UnitHistoryTimeline history={unitHistory.filter(h => h.type === 'Audit')} />
+                    </div>
+                  </>
+                ) : (
+                  <div className="fixed inset-0 z-[110] bg-white overflow-y-auto">
+                    <button onClick={() => setShowFormAudit(false)} className="fixed top-6 left-6 z-[120] p-3 bg-white/90 backdrop-blur rounded-full shadow-lg text-slate-800"><ChevronLeft size={24}/></button>
+                    <AuditFormClient unit={unit} />
+                  </div>
+                )}
+              </motion.div>
+            ) : activeTab === "history" ? (
+              <motion.div 
+                key="history" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                className="space-y-4"
+              >
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-sm font-black text-[#003366] uppercase tracking-widest">Master Service Log</h3>
+                </div>
+                {historyLoading ? (
+                  <div className="py-20 text-center flex flex-col items-center gap-4">
+                    <div className="w-10 h-10 border-4 border-slate-100 border-t-[#00a1e4] rounded-full animate-spin"></div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Loading History...</p>
+                  </div>
+                ) : (
+                  <UnitHistoryTimeline history={unitHistory} />
+                )}
+              </motion.div>
+            ) : activeTab === "complaint" ? (
+              <motion.div 
+                key="complaint" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+                className="space-y-6"
+              >
+                <button onClick={() => setActiveTab("info")} className="flex items-center gap-2 text-xs font-black uppercase text-slate-400 mb-4">
+                  <ChevronLeft size={16}/> Kembali
+                </button>
+                {complaintMsg ? (
                   <div className="bg-rose-50 border border-rose-200 rounded-3xl p-8 flex flex-col items-center text-center">
                     <CheckCircle2 className="w-16 h-16 text-rose-500 mb-4" />
                     <h3 className="text-xl font-black text-rose-800 uppercase tracking-tight">Terkirim!</h3>
@@ -360,7 +416,7 @@ export default function PassportLandingPage() {
                          type="text" required value={complaintForm.customerName} 
                          onChange={e => setComplaintForm({ ...complaintForm, customerName: e.target.value })}
                          placeholder="Nama Anda"
-                         className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-500/10"
+                         className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-500/10"
                        />
                     </div>
 
@@ -374,6 +430,34 @@ export default function PassportLandingPage() {
                        />
                     </div>
 
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Foto Kondisi (Opsional)</label>
+                      <div className="flex items-center gap-4">
+                        {complaintPhotoPreview ? (
+                          <div className="relative w-24 h-24 rounded-2xl overflow-hidden border border-slate-200 group">
+                            <img src={complaintPhotoPreview} className="w-full h-full object-cover" alt="Preview"/>
+                            <button 
+                              type="button" onClick={() => { setComplaintPhotoPreview(null); setComplaintForm({...complaintForm, photoUrl: ""}) }}
+                              className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-80 hover:opacity-100"
+                            >
+                              <X size={12}/>
+                            </button>
+                          </div>
+                        ) : (
+                          <label className="w-24 h-24 rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400 hover:border-rose-300 hover:text-rose-500 cursor-pointer transition-all">
+                            <Camera size={24}/>
+                            <span className="text-[10px] font-bold mt-1 uppercase">Ambil Foto</span>
+                            <input type="file" accept="image/*" onChange={handleComplaintPhoto} className="hidden" />
+                          </label>
+                        )}
+                        <div className="flex-1">
+                           <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
+                             {isCompressing ? "Sedang memproses foto..." : "Upload foto kerusakan untuk mempercepat analisis teknisi kami."}
+                           </p>
+                        </div>
+                      </div>
+                    </div>
+
                     <button 
                       type="submit" disabled={isPending || isCompressing}
                       className="w-full py-4 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl text-sm font-black uppercase tracking-[0.2em] shadow-xl shadow-rose-200 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
@@ -384,29 +468,29 @@ export default function PassportLandingPage() {
                   </form>
                 )}
               </motion.div>
-            ) : activeTab === "history" ? (
-              <motion.div 
-                key="history" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                className="space-y-4"
-              >
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-sm font-black text-[#003366] uppercase tracking-widest">Service Log</h3>
-                </div>
-                
-                {historyLoading ? (
-                  <div className="py-20 text-center flex flex-col items-center gap-4">
-                    <div className="w-10 h-10 border-4 border-slate-100 border-t-[#00a1e4] rounded-full animate-spin"></div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Loading...</p>
-                  </div>
-                ) : (
-                  <UnitHistoryTimeline history={unitHistory} />
-                )}
-              </motion.div>
             ) : null}
           </AnimatePresence>
         </div>
       </div>
     </div>
+  );
+}
+
+function TabButton({ active, onClick, label, icon }: { active: boolean, onClick: () => void, label: string, icon?: React.ReactNode }) {
+  return (
+    <button 
+      onClick={onClick}
+      className={`min-w-fit px-6 py-4 text-[10px] font-black uppercase tracking-widest transition-all relative ${
+        active ? 'text-[#00a1e4]' : 'text-slate-400 bg-slate-50/50'
+      }`}
+    >
+      <span className="flex items-center justify-center gap-2 whitespace-nowrap">
+        {icon} {label}
+      </span>
+      {active && (
+        <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-1 bg-[#00a1e4]" />
+      )}
+    </button>
   );
 }
 

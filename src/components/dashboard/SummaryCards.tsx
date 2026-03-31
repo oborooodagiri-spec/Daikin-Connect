@@ -58,27 +58,27 @@ function RotatingMetricCard({ title, icon: Icon, color, bg, metrics, onDetailCli
     <motion.div 
       whileHover={{ y: -5, scale: 1.02 }}
       onClick={() => onDetailClick({ title, metrics, color, icon: Icon })}
-      className="bg-white rounded-[2.5rem] p-8 shadow-2xl shadow-slate-200/50 border border-slate-50 flex flex-col h-full relative overflow-hidden group cursor-pointer transition-all hover:bg-[#003366]/[0.02]"
+      className="bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 shadow-2xl shadow-slate-200/50 border border-slate-50 flex flex-col h-full relative overflow-hidden group cursor-pointer transition-all hover:bg-[#003366]/[0.02]"
     >
       {/* Decorative Glow */}
       <div className={`absolute -right-4 -top-4 w-32 h-32 rounded-full opacity-10 blur-3xl ${color.replace('text-', 'bg-')}`} />
       
       {/* Header */}
-      <div className="flex justify-between items-start mb-8 isolate">
+      <div className="flex justify-between items-start mb-4 md:mb-8 isolate">
         <div className="space-y-1">
-          <h2 className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">{title}</h2>
+          <h2 className="text-[9px] md:text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">{title}</h2>
           <div className="flex items-center gap-1.5">
             <div className={`w-1.5 h-1.5 rounded-full ${color.replace('text-', 'bg-')} animate-pulse`} />
-            <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">LIVE CONNECT</span>
+            <span className="text-[8px] md:text-[9px] font-black text-slate-300 uppercase tracking-widest">LIVE CONNECT</span>
           </div>
         </div>
-        <div className={`p-3 rounded-2xl ${bg} ${color} shadow-lg shadow-blue-900/5`}>
-          <Icon size={20} />
+        <div className={`p-2.5 md:p-3 rounded-2xl ${bg} ${color} shadow-lg shadow-blue-900/5`}>
+          <Icon size={18} className="md:w-5 md:h-5" />
         </div>
       </div>
 
       {/* Main Display Area */}
-      <div className="flex-1 flex flex-col items-center justify-center relative min-h-[140px] isolate">
+      <div className="flex-1 flex flex-col items-center justify-center relative min-h-[100px] md:min-h-[140px] isolate">
         <AnimatePresence mode="wait">
           <motion.div 
             key={frameIndex}

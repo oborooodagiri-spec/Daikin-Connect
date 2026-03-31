@@ -12,12 +12,13 @@ import {
   Search, ArrowLeft, MapPin, Plus, Edit2, CheckCircle2, 
   X, Save, Settings2, ShieldAlert, QrCode, Printer, 
   Archive, Activity, Download, HardHat, Clock, Hammer, AlertTriangle, Upload, Building2, ExternalLink,
-  History as HistoryIcon
+  History as HistoryIcon, Database
 } from "lucide-react";
 import QRCode from "react-qr-code";
 import { motion, AnimatePresence } from "framer-motion";
 import UnitHistoryTimeline from "@/components/UnitHistoryTimeline";
 import UnitDetailModal from "@/components/UnitDetailModal";
+import QuickInputModal from "@/components/dashboard/QuickInputModal";
 
 export default function UnitsPage() {
   const params = useParams();
@@ -41,6 +42,10 @@ export default function UnitsPage() {
   const [selectedQR, setSelectedQR] = useState<{tag: string, token: string, model: string, project: string, brand: string, area: string, floor: string, room: string} | null>(null);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [editId, setEditId] = useState<number | null>(null);
+
+  // Quick Input State
+  const [isQuickInputOpen, setIsQuickInputOpen] = useState(false);
+  const [selectedQuickUnit, setSelectedQuickUnit] = useState<any>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -552,7 +557,7 @@ export default function UnitsPage() {
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <button
-                            onClick={() => openPrintQR(unit)}
+                            onClick={(e) => { e.stopPropagation(); openPrintQR(unit); }}
                             className="p-2 rounded-xl bg-slate-100 text-slate-500 hover:text-[#00a1e4] hover:bg-blue-50 transition-all group"
                             title="Print Passport Label"
                           >
@@ -579,6 +584,17 @@ export default function UnitsPage() {
                               <Edit2 size={16} className="group-hover:scale-110 transition-transform" />
                             </button>
                           )}
+
+                          {(session?.isInternal || session?.roles?.some((r: any) => r.toLowerCase() === 'vendor')) && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setSelectedQuickUnit(unit); setIsQuickInputOpen(true); }}
+                              className="p-2 rounded-xl bg-[#003366] text-white hover:bg-[#00a1e4] transition-all group shadow-sm flex items-center gap-2 px-3"
+                              title="Input Manual Data (No QR Scan)"
+                            >
+                              <Database size={16} className="group-hover:scale-110 transition-transform" />
+                              <span className="text-[9px] font-black uppercase tracking-widest hidden sm:inline">Input Data</span>
+                            </button>
+                          )}
                         </div>
                       </td>
                     </motion.tr>
@@ -603,6 +619,13 @@ export default function UnitsPage() {
         onEdit={openModal}
         customerId={customerId}
         projectId={projectId}
+      />
+
+      {/* QUICK INPUT MODAL */}
+      <QuickInputModal 
+        isOpen={isQuickInputOpen}
+        onClose={() => setIsQuickInputOpen(false)}
+        unit={selectedQuickUnit}
       />
 
       {/* --- ADD / EDIT MODAL --- */}
@@ -696,30 +719,45 @@ export default function UnitsPage() {
         {isPrintModalOpen && selectedQR && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={closePrintModal}/>
-            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="bg-white border text-center border-slate-200 rounded-[2rem] shadow-2xl relative z-10 w-full max-w-sm overflow-hidden flex flex-col items-center">
+            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="bg-white border text-center border-slate-200 rounded-[2rem] shadow-2xl relative z-10 w-full max-w-[340px] overflow-hidden flex flex-col items-center">
               
-              <div className="w-full bg-white p-8 flex flex-col items-center border-b-2 border-dashed border-slate-200 relative pointer-events-none">
-                <div className="absolute top-0 inset-x-0 h-4 bg-[#00a1e4]"></div>
-                <h2 className="text-[10px] font-black mt-4 uppercase tracking-[0.3em] text-slate-400">PASSPORT LABEL PREVIEW</h2>
-                <h1 className="text-2xl font-black text-[#003366] mt-1 tracking-tight">{selectedQR.tag}</h1>
-                <p className="text-xs font-bold text-slate-500 mb-6 max-w-[200px] truncate">{selectedQR.project}</p>
+              <div className="w-full bg-white flex flex-col items-center relative pointer-events-none">
+                {/* Header Strip in Preview */}
+                <div className="w-full h-10 bg-[#003366] flex items-center justify-between px-4">
+                  <img src="/daikin_logo.png" className="h-3 brightness-0 invert" alt="Daikin" />
+                  <img src="/logo_epl_connect_1.png" className="h-4 brightness-0 invert" alt="EPL" />
+                </div>
                 
-                {/* We render a hidden QR Code just to snatch its SVG easily into the iframe later */}
-                <div id="hidden-qr-src" className="hidden">
-                   <QRCode value={`${window.location.origin}/passport/${selectedQR.token}`} size={220} level="H" />
-                </div>
+                <div className="p-6 w-full">
+                  <h1 className="text-2xl font-black text-[#003366] tracking-tighter leading-none">{selectedQR.tag}</h1>
+                  <p className="text-[9px] font-bold text-slate-400 mt-1 uppercase tracking-widest truncate">{selectedQR.project}</p>
+                  
+                  {/* We render a hidden QR Code just to snatch its SVG easily into the iframe later */}
+                  <div id="hidden-qr-src" className="hidden">
+                    <QRCode value={`${window.location.origin}/passport/${selectedQR.token}`} size={220} level="H" />
+                  </div>
 
-                <div className="p-3 bg-white border-2 border-slate-100 rounded-3xl shadow-sm mb-6">
-                  <QRCode value={`${window.location.origin}/passport/${selectedQR.token}`} size={160} level="H" className="rounded-xl"/>
-                </div>
-                <div className="w-full bg-slate-50 rounded-xl p-3 border border-slate-100 flex flex-col gap-1">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-[#00a1e4]">{selectedQR.brand}</p>
-                  <p className="text-[10px] font-bold text-slate-600 truncate">{selectedQR.area} - {selectedQR.room}</p>
+                  <div className="py-2 flex justify-center">
+                    <div className="p-2 border-2 border-slate-100 rounded-2xl">
+                      <QRCode value={`${window.location.origin}/passport/${selectedQR.token}`} size={120} level="H" />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100 text-left">
+                    <div>
+                      <p className="text-[7px] font-black uppercase text-slate-400">Lantai / Floor</p>
+                      <p className="text-xs font-bold text-[#003366]">{selectedQR.floor || '-'}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[7px] font-black uppercase text-slate-400">Ruangan / Room</p>
+                      <p className="text-xs font-bold text-[#003366]">{selectedQR.room || '-'}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="p-6 bg-slate-50 w-full flex gap-3">
-                <button type="button" onClick={closePrintModal} className="flex-1 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest text-slate-500 hover:bg-slate-200 transition-colors">Close</button>
+              <div className="p-5 bg-slate-50 w-full flex gap-3">
+                <button type="button" onClick={closePrintModal} className="flex-1 py-3 rounded-xl text-xs font-bold uppercase tracking-widest text-slate-400 hover:bg-slate-200 transition-colors">Close</button>
                 <button onClick={() => {
                   const qrNode = document.getElementById('hidden-qr-src');
                   if (!qrNode) return;
@@ -728,71 +766,101 @@ export default function UnitsPage() {
                   const iframe = document.createElement('iframe');
                   iframe.style.display = 'none';
                   document.body.appendChild(iframe);
-                  
-                  const printDoc = iframe.contentWindow?.document;
+                    const printDoc = iframe.contentWindow?.document;
                   if (printDoc) {
                     printDoc.open();
                     printDoc.write(`
                       <!DOCTYPE html>
                       <html>
                         <head>
-                          <title>Print 100x100mm Ticket</title>
+                          <title>Passport Label - ${selectedQR.tag}</title>
                           <style>
                             @page { size: 100mm 100mm; margin: 0; }
+                            * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                             body { 
-                              margin: 0; padding: 4mm; box-sizing: border-box; 
-                              font-family: Arial, sans-serif;
-                              -webkit-print-color-adjust: exact; 
-                              print-color-adjust: exact;
+                              margin: 0; padding: 0; 
+                              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                               width: 100mm; height: 100mm;
-                              background: white; color: black;
+                              background: white; color: #003366;
+                              overflow: hidden;
                             }
-                            .ticket-wrapper {
-                              width: 100%; height: 100%;
-                              border: 4px solid #003366;
-                              border-radius: 12px;
-                              display: flex; flex-direction: column; justify-content: space-between;
-                              padding: 12px; box-sizing: border-box;
+                            .label-container {
+                              width: 100mm; height: 100mm;
+                              padding: 4mm 6mm;
+                              display: flex; flex-direction: column;
+                              justify-content: flex-end;
+                              position: relative;
                             }
-                            .header {
-                              display: flex; justify-content: space-between; align-items: flex-start;
-                              border-bottom: 4px solid #000; padding-bottom: 8px;
+                            .header-strip {
+                              position: absolute; top: 0; left: 0; right: 0; height: 14mm;
+                              background: #003366;
+                              display: flex; align-items: center; justify-content: space-between;
+                              padding: 0 6mm;
                             }
-                            .header-left { flex: 1; min-width: 0; padding-right: 8px; }
-                            .header h1 { margin: 0; font-size: 32px; font-weight: 900; line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-                            .header p { margin: 6px 0 0 0; font-size: 13px; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #444; }
-                            .brand-badge {
-                              background: #000; color: #fff; padding: 6px 12px; border-radius: 8px;
-                              font-size: 14px; font-weight: 900; text-transform: uppercase; flex-shrink: 0;
+                            .logo-daikin { height: 5mm; filter: brightness(0) invert(1); }
+                            .logo-epl { height: 6mm; filter: brightness(0) invert(1); }
+                            
+                            .id-section {
+                              text-align: center; margin-top: 10mm;
                             }
-                            .qr-container {
-                              flex: 1; display: flex; align-items: center; justify-content: center; padding: 10px 0;
+                            .tag-number {
+                              font-size: 32pt; font-weight: 950; margin: 0; 
+                              letter-spacing: -1px; line-height: 1; color: #003366;
                             }
-                            .qr-container svg { height: 100%; max-height: 220px; width: auto; }
-                            .footer {
-                              border-top: 4px solid #000; padding-top: 8px;
+                            .project-name {
+                              font-size: 9pt; font-weight: 700; color: #94a3b8; 
+                              text-transform: uppercase; margin-top: 1mm;
+                              white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
                             }
-                            .footer-loc { margin: 0 0 6px 0; font-size: 16px; font-weight: 900; text-transform: uppercase; }
-                            .footer-sub { margin: 0; font-size: 14px; font-weight: bold; color: #333; }
+
+                            .qr-section {
+                              display: flex; align-items: center; justify-content: center;
+                              padding: 3mm 0;
+                            }
+                            .qr-section svg { height: 35mm; width: 35mm; }
+
+                            .footer-section {
+                              border-top: 2px solid #e2e8f0;
+                              padding-top: 3mm;
+                              display: grid; grid-template-columns: 1fr 1fr; gap: 4mm;
+                            }
+                            .footer-item { display: flex; flex-direction: column; }
+                            .label-small { font-size: 8pt; font-weight: 900; color: #94a3b8; text-transform: uppercase; margin-bottom: 0.5mm; }
+                            .value-large { font-size: 13pt; font-weight: 800; color: #003366; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                            
+                            .border-frame {
+                              position: absolute; inset: 2mm; border: 1px solid #e2e8f0; pointer-events: none; border-radius: 4mm;
+                            }
                           </style>
                         </head>
                         <body>
-                          <div class="ticket-wrapper">
-                            <div class="header">
-                               <div class="header-left">
-                                  <h1>${selectedQR.tag}</h1>
-                                  <p>${selectedQR.project}</p>
-                               </div>
-                               <div class="brand-badge">${selectedQR.brand}</div>
+                          <div class="header-strip">
+                             <img src="${window.location.origin}/daikin_logo.png" class="logo-daikin" />
+                             <img src="${window.location.origin}/logo_epl_connect_1.png" class="logo-epl" />
+                          </div>
+                          
+                          <div class="label-container">
+                            <div class="id-section">
+                               <p class="tag-number">${selectedQR.tag}</p>
+                               <p class="project-name">${selectedQR.project}</p>
                             </div>
-                            <div class="qr-container">
+                            
+                            <div class="qr-section">
                                ${qrSvg}
                             </div>
-                            <div class="footer">
-                               <p class="footer-loc">📍 ${selectedQR.area}</p>
-                               <p class="footer-sub">Flr: ${selectedQR.floor} &nbsp;&bull;&nbsp; Rm: ${selectedQR.room}</p>
+                            
+                            <div class="footer-section">
+                               <div class="footer-item">
+                                  <span class="label-small">Lantai / Floor</span>
+                                  <span class="value-large">${selectedQR.floor || '-'}</span>
+                               </div>
+                               <div class="footer-item" style="text-align: right;">
+                                  <span class="label-small">Ruangan / Room</span>
+                                  <span class="value-large">${selectedQR.room || '-'}</span>
+                               </div>
                             </div>
                           </div>
+                          <div class="border-frame"></div>
                         </body>
                       </html>
                     `);
