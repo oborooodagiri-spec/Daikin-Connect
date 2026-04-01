@@ -114,12 +114,6 @@ export default function SchedulesPage() {
           <CalendarIcon className="w-5 h-5 text-indigo-500" />
           Weekly Timeline
         </h2>
-        <button 
-          onClick={openModal}
-          className="px-5 py-2.5 bg-[#00a1e4] hover:bg-[#008cc6] text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-2"
-        >
-          <Plus size={16} /> Assign Task
-        </button>
       </div>
 
       {/* Mobile Day Selector - Sticky Header for Mobile */}
@@ -269,12 +263,6 @@ export default function SchedulesPage() {
                             </div>
                         </motion.div>
                     ))}
-                    <button 
-                        onClick={openModal}
-                        className="w-full py-4 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2rem] text-slate-400 text-[10px] font-black tracking-[0.2em] uppercase hover:bg-slate-100 transition-all flex items-center justify-center gap-2"
-                    >
-                        <Plus size={16} /> New Activity
-                    </button>
                 </div>
             )}
         </div>
