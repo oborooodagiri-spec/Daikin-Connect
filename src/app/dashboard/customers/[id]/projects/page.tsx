@@ -263,15 +263,46 @@ export default function ProjectsPage() {
                         </div>
                       </td>
 
-                      <td className="px-8 py-5 min-w-[200px]">
+                      <td className="px-8 py-5 min-w-[250px]">
                         {isActive ? (
                           <div className="space-y-3">
                              {projectProgress[project.id] ? (
-                                projectProgress[project.id].map((p: any) => (
-                                  <ProgressIndicator key={p.type} size="sm" label={p.type} percentage={p.percentage} color={p.type === 'Preventive' ? 'indigo' : p.type === 'Corrective' ? 'rose' : 'amber'} />
-                                ))
+                                <>
+                                  {/* Preventive Progress - Monthly */}
+                                  <ProgressIndicator 
+                                    size="sm" label="Preventive" 
+                                    percentage={projectProgress[project.id].targets.Preventive.monthly.target > 0 ? Math.round((projectProgress[project.id].targets.Preventive.monthly.actual / projectProgress[project.id].targets.Preventive.monthly.target) * 100) : 0} 
+                                    color="indigo" 
+                                  />
+                                  
+                                  {/* Corrective Resolution Rate */}
+                                  <div className="space-y-1">
+                                    <div className="flex justify-between items-center px-1">
+                                      <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest">Corrective KPI</span>
+                                      <span className="text-[10px] font-black text-slate-400">
+                                        {projectProgress[project.id].corrective.completed}/{projectProgress[project.id].corrective.total}
+                                      </span>
+                                    </div>
+                                    <ProgressIndicator 
+                                      size="sm" label="" 
+                                      percentage={projectProgress[project.id].corrective.total > 0 ? Math.round((projectProgress[project.id].corrective.completed / projectProgress[project.id].corrective.total) * 100) : 0} 
+                                      color="rose" 
+                                      hideLabel
+                                    />
+                                  </div>
+
+                                  {/* Audit Progress - Monthly */}
+                                  <ProgressIndicator 
+                                    size="sm" label="Audit" 
+                                    percentage={projectProgress[project.id].targets.Audit.monthly.target > 0 ? Math.round((projectProgress[project.id].targets.Audit.monthly.actual / projectProgress[project.id].targets.Audit.monthly.target) * 100) : 0} 
+                                    color="emerald" 
+                                  />
+                                </>
                              ) : (
-                               <div className="h-1.5 w-32 bg-slate-100 rounded-full animate-pulse" />
+                               <div className="space-y-2">
+                                 <div className="h-1.5 w-full bg-slate-100 rounded-full animate-pulse" />
+                                 <div className="h-1.5 w-2/3 bg-slate-50 rounded-full animate-pulse" />
+                               </div>
                              )}
                           </div>
                         ) : (

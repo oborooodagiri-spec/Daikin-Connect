@@ -9,10 +9,12 @@ export async function getProjectProgress(projectId: string) {
   if (!session) return { error: "Unauthorized access" };
 
   try {
-    const currentMonth = new Date().getMonth() + 1;
-    const currentYear = new Date().getFullYear();
+    const now = new Date();
+    const currentDay = now.getDate();
+    const currentMonth = now.getMonth() + 1;
+    const currentYear = now.getFullYear();
 
-    // 1. Get targets for the project this month
+    // 1. Get targets for the project
     const targets = await prisma.schedule_targets.findMany({
       where: {
         project_id: BigInt(projectId),
@@ -21,38 +23,57 @@ export async function getProjectProgress(projectId: string) {
       }
     });
 
-    // 2. Get actual completion stats for the project this month
-    // We count service_activities linked to units that belong to this project
-    const startOfMonth = new Date(currentYear, currentMonth - 1, 1);
-    const endOfMonth = new Date(currentYear, currentMonth, 0, 23, 59, 59);
+    const periods = {
+      day: { start: new Date(currentYear, currentMonth - 1, currentDay, 0,0,0), end: new Date(currentYear, currentMonth - 1, currentDay, 23,59,59) },
+      month: { start: new Date(currentYear, currentMonth - 1, 1, 0,0,0), end: new Date(currentYear, currentMonth, 0, 23,59,59) },
+      year: { start: new Date(currentYear, 0, 1, 0,0,0), end: new Date(currentYear, 11, 31, 23,59,59) }
+    };
 
-    const actuals = await prisma.service_activities.groupBy({
-      by: ['type'],
-      where: {
-        units: {
-          project_ref_id: BigInt(projectId)
-        },
-        service_date: {
-          gte: startOfMonth,
-          lte: endOfMonth
-        },
-        status: 'Final_Approved'
-      },
-      _count: true
-    });
+    // 2. Calculate Stats for Preventive & Audit (Target vs Actual)
+    const types = ["Preventive", "Audit"] as const;
+    const stats: any = {};
 
-    // 3. Map targets and actuals
-    const progress = targets.map(t => {
-      const actual = actuals.find(a => a.type === t.type)?._count || 0;
-      return {
-        type: t.type,
-        target: t.monthly_target,
-        actual: actual,
-        percentage: t.monthly_target > 0 ? Math.min(Math.round((actual / t.monthly_target) * 100), 100) : 0
+    for (const type of types) {
+      const target = targets.find(t => t.type === type);
+      
+      const counts = await Promise.all([
+        prisma.service_activities.count({ where: { type, status: 'Final_Approved', units: { project_ref_id: BigInt(projectId) }, service_date: { gte: periods.day.start, lte: periods.day.end } } }),
+        prisma.service_activities.count({ where: { type, status: 'Final_Approved', units: { project_ref_id: BigInt(projectId) }, service_date: { gte: periods.month.start, lte: periods.month.end } } }),
+        prisma.service_activities.count({ where: { type, status: 'Final_Approved', units: { project_ref_id: BigInt(projectId) }, service_date: { gte: periods.year.start, lte: periods.year.end } } })
+      ]);
+
+      stats[type] = {
+        daily: { target: target?.daily_target || 0, actual: counts[0] },
+        monthly: { target: target?.monthly_target || 0, actual: counts[1] },
+        yearly: { target: target?.yearly_target || 0, actual: counts[2] }
       };
+    }
+
+    // 3. Special Logic for Corrective (Performance Breakdown)
+    const correctiveSchedules = await prisma.schedules.findMany({
+      where: {
+        project_id: BigInt(projectId),
+        type: 'Corrective',
+        start_at: { gte: periods.month.start, lte: periods.month.end }
+      },
+      select: { status: true }
     });
 
-    return { success: true, data: progress };
+    const correctiveStats = {
+      total: correctiveSchedules.length,
+      completed: correctiveSchedules.filter(s => s.status === 'Completed').length,
+      inProgress: correctiveSchedules.filter(s => s.status === 'InProgress').length,
+      missed: correctiveSchedules.filter(s => s.status === 'Missed').length,
+      planned: correctiveSchedules.filter(s => s.status === 'Planned').length
+    };
+
+    return { 
+      success: true, 
+      data: {
+        targets: stats,
+        corrective: correctiveStats
+      }
+    };
   } catch (error) {
     console.error("Fetch project progress error:", error);
     return { error: "Failed to fetch progress" };
@@ -61,8 +82,10 @@ export async function getProjectProgress(projectId: string) {
 
 export async function setProjectTarget(data: {
   projectId: string,
-  type: "Preventive" | "Corrective" | "Audit",
-  target: number
+  type: "Preventive" | "Audit",
+  daily: number,
+  monthly: number,
+  yearly: number
 }) {
   const session = await getSession();
   if (!session || !session.isInternal) return { error: "Permission denied" };
@@ -83,15 +106,20 @@ export async function setProjectTarget(data: {
     if (existing) {
       await prisma.schedule_targets.update({
         where: { id: existing.id },
-        data: { monthly_target: data.target }
+        data: { 
+          daily_target: data.daily,
+          monthly_target: data.monthly,
+          yearly_target: data.yearly
+        }
       });
     } else {
       await prisma.schedule_targets.create({
         data: {
           project_id: BigInt(data.projectId),
           type: data.type,
-          monthly_target: data.target,
-          daily_target: Math.ceil(data.target / 20), // Default assumption 20 days/month
+          daily_target: data.daily,
+          monthly_target: data.monthly,
+          yearly_target: data.yearly,
           month,
           year
         }

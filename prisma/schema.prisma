@@ -592,6 +592,7 @@ model schedule_targets {
   type            ScheduleType
   daily_target    Int            @default(0)
   monthly_target  Int            @default(0)
+  yearly_target   Int            @default(0)
   month           Int            // 1-12
   year            Int
   

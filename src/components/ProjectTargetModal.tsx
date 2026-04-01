@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { 
   X, Target, TrendingUp, Save, 
-  Settings2, Activity, Wrench, ShieldCheck 
+  Settings2, Activity, Wrench, ShieldCheck, Clock, Calendar as CalendarIcon
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { setProjectTarget } from "@/app/actions/project_targets";
@@ -18,20 +18,31 @@ interface ProjectTargetModalProps {
 
 export default function ProjectTargetModal({ projectId, projectName, isOpen, onClose, unitCount }: ProjectTargetModalProps) {
   const [isPending, startTransition] = useTransition();
+  const [activeTab, setActiveTab] = useState<"Preventive" | "Audit">("Preventive");
   const [formData, setFormData] = useState({
-    Preventive: unitCount,
-    Corrective: 5,
-    Audit: unitCount
+    Preventive: { daily: Math.ceil(unitCount / 20), monthly: unitCount, yearly: unitCount * 4 },
+    Audit: { daily: Math.ceil(unitCount / 20), monthly: unitCount, yearly: unitCount * 4 }
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     startTransition(async () => {
-      // Save for each type
+      // Save for Preventive and Audit
       await Promise.all([
-        setProjectTarget({ projectId, type: "Preventive", target: formData.Preventive }),
-        setProjectTarget({ projectId, type: "Corrective", target: formData.Corrective }),
-        setProjectTarget({ projectId, type: "Audit", target: formData.Audit }),
+        setProjectTarget({ 
+          projectId, 
+          type: "Preventive", 
+          daily: formData.Preventive.daily, 
+          monthly: formData.Preventive.monthly, 
+          yearly: formData.Preventive.yearly 
+        }),
+        setProjectTarget({ 
+          projectId, 
+          type: "Audit", 
+          daily: formData.Audit.daily, 
+          monthly: formData.Audit.monthly, 
+          yearly: formData.Audit.yearly 
+        }),
       ]);
       onClose();
     });
@@ -69,32 +80,58 @@ export default function ProjectTargetModal({ projectId, projectName, isOpen, onC
             </div>
 
             <form onSubmit={handleSubmit} className="p-8 space-y-6">
-              <div className="bg-blue-50 border border-blue-100 p-4 rounded-2xl flex items-center gap-4 mb-2">
+            <div className="px-8 pt-4">
+               <div className="flex bg-slate-100 p-1 rounded-2xl gap-1">
+                 {(["Preventive", "Audit"] as const).map(tab => (
+                   <button
+                     key={tab}
+                     type="button"
+                     onClick={() => setActiveTab(tab)}
+                     className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? "bg-white text-[#003366] shadow-sm" : "text-slate-400 hover:text-slate-600"}`}
+                   >
+                     {tab} Task
+                   </button>
+                 ))}
+               </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-8 space-y-6">
+              <div className="bg-blue-50 border border-blue-100 p-4 rounded-2xl flex items-center gap-4">
                  <div className="bg-white p-2.5 rounded-xl text-blue-500 shadow-sm"><Settings2 size={18}/></div>
                  <p className="text-xs font-bold text-blue-700 leading-relaxed">
-                   Setting monthly targets helps calculate the completion percentage across all dashboards.
+                   Set work targets for <span className="uppercase font-black">{activeTab}</span>. Corrective targets are now calculated automatically.
                  </p>
               </div>
 
-              <div className="space-y-4">
-                 <TargetInput 
-                   icon={<Wrench size={16}/>} label="Preventive Target" 
-                   value={formData.Preventive} color="indigo"
-                   onChange={(v: number) => setFormData({...formData, Preventive: v})}
-                   helper={`Auto-set to ${unitCount} Units (All Assets)`}
-                   onAuto={() => setFormData({...formData, Preventive: unitCount})}
-                 />
-                 <TargetInput 
-                   icon={<Activity size={16}/>} label="Corrective Allocation" 
-                   value={formData.Corrective} color="rose"
-                   onChange={(v: number) => setFormData({...formData, Corrective: v})}
-                 />
-                 <TargetInput 
-                   icon={<ShieldCheck size={16}/>} label="Audit Target" 
-                   value={formData.Audit} color="emerald"
-                   onChange={(v: number) => setFormData({...formData, Audit: v})}
-                   onAuto={() => setFormData({...formData, Audit: unitCount})}
-                 />
+              <div className="grid grid-cols-1 gap-4">
+                  <TargetInputField 
+                    icon={<Clock size={16}/>} label="Daily Target" 
+                    value={formData[activeTab].daily} color="indigo"
+                    onChange={(v: number) => setFormData({...formData, [activeTab]: {...formData[activeTab], daily: v}})}
+                    helper="Average units per day"
+                  />
+                  <TargetInputField 
+                    icon={<CalendarIcon size={16}/>} label="Monthly Target" 
+                    value={formData[activeTab].monthly} color="blue"
+                    onChange={(v: number) => setFormData({...formData, [activeTab]: {...formData[activeTab], monthly: v}})}
+                    onAuto={() => setFormData({...formData, [activeTab]: { daily: Math.ceil(unitCount / 20), monthly: unitCount, yearly: unitCount * 4 }})}
+                  />
+                  <TargetInputField 
+                    icon={<TrendingUp size={16}/>} label="Yearly Target" 
+                    value={formData[activeTab].yearly} color="emerald"
+                    onChange={(v: number) => setFormData({...formData, [activeTab]: {...formData[activeTab], yearly: v}})}
+                  />
+              </div>
+
+              {/* Corrective Info Card */}
+              <div className="bg-rose-50 border border-rose-100 p-5 rounded-[2rem] relative overflow-hidden">
+                 <div className="absolute top-0 right-0 p-4 opacity-10"><Activity size={64}/></div>
+                 <h4 className="text-[10px] font-black text-rose-600 uppercase tracking-widest mb-2 flex items-center gap-2">
+                   <Activity size={14}/> Corrective Performance
+                 </h4>
+                 <p className="text-[11px] font-bold text-rose-800/70 leading-relaxed">
+                   Target and performance for Corrective tasks are derived from the ratio of <span className="text-rose-900">Created Cases</span> vs <span className="text-rose-900">Resolved Repairs</span>.
+                 </p>
               </div>
 
               <div className="pt-4 flex gap-3">
@@ -112,34 +149,36 @@ export default function ProjectTargetModal({ projectId, projectName, isOpen, onC
   );
 }
 
-function TargetInput({ label, value, onChange, icon, color, helper, onAuto }: any) {
-  const colors = {
+function TargetInputField({ label, value, onChange, icon, color, helper, onAuto }: any) {
+  const colors: any = {
     indigo: "text-indigo-600 bg-indigo-50",
-    rose: "text-rose-600 bg-rose-50",
+    blue: "text-blue-600 bg-blue-50",
     emerald: "text-emerald-600 bg-emerald-50",
   };
 
   return (
-    <div className="bg-white border border-slate-100 p-5 rounded-3xl shadow-sm hover:border-slate-300 transition-colors group">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-white border border-slate-100 p-4 rounded-3xl shadow-sm hover:border-slate-300 transition-colors group">
+      <div className="flex items-center justify-between mb-2">
          <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-xl icon ${colors[color as keyof typeof colors]}`}>{icon}</div>
-            <span className="text-xs font-black text-slate-500 uppercase tracking-widest">{label}</span>
+            <div className={`p-2 rounded-xl icon ${colors[color] || colors.blue}`}>{icon}</div>
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{label}</span>
          </div>
          {onAuto && (
-           <button type="button" onClick={onAuto} className="text-[9px] font-black text-blue-500 uppercase tracking-widest hover:underline">
+           <button type="button" onClick={onAuto} className="text-[9px] font-black text-[#00a1e4] uppercase tracking-widest hover:underline">
              Smart Fill
            </button>
          )}
       </div>
-      <div className="flex items-end gap-4">
+      <div className="flex items-center gap-4">
          <input 
-           type="number" min="0" value={value} onChange={e => onChange(parseInt(e.target.value))}
-           className="flex-1 text-center py-4 bg-slate-50 border border-slate-100 rounded-2xl text-2xl font-black text-slate-800 focus:bg-white focus:ring-4 focus:ring-blue-500/5 transition-all outline-none"
+           type="number" min="0" value={value} onChange={e => onChange(parseInt(e.target.value) || 0)}
+           className="w-24 text-center py-2 bg-slate-50 border border-slate-100 rounded-xl text-lg font-black text-slate-800 focus:bg-white focus:ring-4 focus:ring-blue-500/5 transition-all outline-none"
          />
-         <div className="pb-3"><span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Units</span></div>
+         <div>
+            <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest block">Units Target</span>
+            {helper && <p className="text-[9px] font-bold text-slate-400 italic leading-none mt-1">{helper}</p>}
+         </div>
       </div>
-      {helper && <p className="text-[9px] font-bold text-slate-400 mt-2 pl-1 italic">{helper}</p>}
     </div>
   );
 }

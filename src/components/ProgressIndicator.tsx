@@ -8,6 +8,7 @@ interface ProgressIndicatorProps {
   subLabel?: string;
   size?: "sm" | "md" | "lg";
   color?: "blue" | "emerald" | "indigo" | "rose" | "amber";
+  hideLabel?: boolean;
 }
 
 export default function ProgressIndicator({ 
@@ -15,7 +16,8 @@ export default function ProgressIndicator({
   label, 
   subLabel, 
   size = "md", 
-  color = "blue" 
+  color = "blue",
+  hideLabel = false
 }: ProgressIndicatorProps) {
   const colorMap = {
     blue: "from-[#00a1e4] to-blue-600 shadow-blue-200 bg-blue-100",
@@ -36,10 +38,12 @@ export default function ProgressIndicator({
   if (size === "sm") {
     return (
       <div className="w-full">
-        <div className="flex justify-between items-center mb-1.5">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</span>
-          <span className="text-[10px] font-black text-slate-600">{percentage}%</span>
-        </div>
+        {!hideLabel && (
+          <div className="flex justify-between items-center mb-1.5">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</span>
+            <span className="text-[10px] font-black text-slate-600">{percentage}%</span>
+          </div>
+        )}
         <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
           <motion.div 
             initial={{ width: 0 }}
@@ -87,7 +91,7 @@ export default function ProgressIndicator({
           {subLabel && <span className="text-[8px] font-black uppercase text-slate-400 tracking-widest mt-1">{subLabel}</span>}
         </div>
       </div>
-      {label && <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</p>}
+      {!hideLabel && label && <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</p>}
     </div>
   );
 }
