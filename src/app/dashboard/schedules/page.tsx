@@ -7,6 +7,7 @@ import { format, startOfWeek, addDays, isSameDay } from "date-fns";
 import { getAllSchedules, getScheduleFormOptions, createSchedule, updateScheduleStatus, getSchedulesByProject } from "@/app/actions/schedules";
 import { Plus, MapPin, CheckCircle2, XCircle, Search, Clock, CalendarIcon, FolderGit2, X, Save, ChevronLeft, ChevronRight, Activity } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import QuickInputModal from "@/components/dashboard/QuickInputModal";
 
 export default function SchedulesPage() {
   const [schedules, setSchedules] = useState<any[]>([]);
@@ -25,6 +26,10 @@ export default function SchedulesPage() {
 
   // Calendar state
   const [currentDate, setCurrentDate] = useState(new Date());
+  
+  // Quick Input logic
+  const [isInputModalOpen, setIsInputModalOpen] = useState(false);
+  const [passedUnit, setPassedUnit] = useState<any | null>(null);
 
   const fetchSchedules = async () => {
     setLoading(true);
@@ -72,6 +77,22 @@ export default function SchedulesPage() {
       const res = await updateScheduleStatus(id, status);
       if (res.success) fetchSchedules();
     });
+  };
+
+  const handleOpenForm = (s: any) => {
+    if (s.unitId || s.unit_id) {
+       // Find the unit in options to get its details
+       const unit = options.units.find(u => u.id === (s.unitId || s.unit_id));
+       setPassedUnit(unit || {
+         id: s.unitId || s.unit_id,
+         tag_number: s.unitTag || "Assigned Unit",
+         area: s.unitArea || "",
+         model: s.unitModel || ""
+       });
+    } else {
+      setPassedUnit(null);
+    }
+    setIsInputModalOpen(true);
   };
 
   // Calendar Logic
@@ -167,7 +188,8 @@ export default function SchedulesPage() {
                         <motion.div 
                             initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
                             key={s.id} 
-                            className={`p-3 rounded-xl border ${getTypeStyle(s.type)} shadow-sm relative group`}
+                            onClick={() => handleOpenForm(s)}
+                            className={`p-3 rounded-xl border ${getTypeStyle(s.type)} shadow-sm relative group cursor-pointer hover:scale-105 hover:shadow-md transition-all active:scale-95`}
                         >
                             <p className="font-black text-xs tracking-tight mb-1">{s.title}</p>
                             <p className="text-[9px] font-bold opacity-70 flex items-center gap-1 mb-1">
@@ -212,7 +234,8 @@ export default function SchedulesPage() {
                             initial={{ opacity: 0, x: -20 }} 
                             animate={{ opacity: 1, x: 0 }}
                             key={s.id}
-                            className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm relative overflow-hidden"
+                            onClick={() => handleOpenForm(s)}
+                            className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm relative overflow-hidden cursor-pointer active:scale-95 transition-transform"
                         >
                             <div className={`absolute top-0 left-0 w-1.5 h-full ${
                                 s.type === 'Preventive' ? 'bg-indigo-500' : 
@@ -356,6 +379,12 @@ export default function SchedulesPage() {
           </div>
         )}
       </AnimatePresence>
+
+      <QuickInputModal 
+        isOpen={isInputModalOpen} 
+        onClose={() => setIsInputModalOpen(false)} 
+        unit={passedUnit} 
+      />
     </div>
   );
 }
