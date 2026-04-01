@@ -37,7 +37,6 @@ export default function ProjectTargetModal({ projectId, projectName, isOpen, onC
 
   const [prevParams, setPrevParams] = useState({
     start: format(new Date(), 'yyyy-MM-dd'),
-    years: 1,
     cycle: 4 // default 4x per year
   });
 
@@ -171,22 +170,14 @@ export default function ProjectTargetModal({ projectId, projectName, isOpen, onC
                            className="w-full bg-transparent outline-none text-sm font-bold text-slate-700" 
                          />
                       </InputGroup>
-                      <div className="grid grid-cols-2 gap-4">
-                        <InputGroup label="Duration (Years)" icon={<TrendingUp size={16}/>}>
+                      <div className="space-y-4">
+                        <InputGroup label="Cycle Per Year" icon={<Activity size={16}/>}>
                            <input 
-                             type="number" min="1" max="10" value={prevParams.years}
-                             onChange={e => setPrevParams({...prevParams, years: parseInt(e.target.value) || 1})}
-                             className="w-full bg-transparent outline-none text-sm font-bold text-slate-700" 
+                             type="number" min="1" max="52" value={prevParams.cycle}
+                             onChange={e => setPrevParams({...prevParams, cycle: parseInt(e.target.value) || 1})}
+                             className="w-full bg-transparent outline-none text-sm font-bold text-slate-700"
+                             placeholder="e.g. 4"
                            />
-                        </InputGroup>
-                        <InputGroup label="Service Cycle" icon={<Activity size={16}/>}>
-                           <select 
-                             value={prevParams.cycle}
-                             onChange={e => setPrevParams({...prevParams, cycle: parseInt(e.target.value)})}
-                             className="w-full bg-transparent outline-none text-sm font-bold text-slate-700 appearance-none"
-                           >
-                             {[1, 2, 3, 4, 6, 12].map(c => <option key={c} value={c}>{c}x Per Year</option>)}
-                           </select>
                         </InputGroup>
                       </div>
                    </div>

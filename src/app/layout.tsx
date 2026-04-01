@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SyncManager } from "@/components/SyncManager";
 import "./globals.css";
@@ -13,6 +13,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#00a1e4",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export const metadata: Metadata = {
   title: "EPL Connect - Daikin",
   description: "Daikin Connect - Value Engineering Services",
@@ -21,8 +29,6 @@ export const metadata: Metadata = {
     icon: "/favicon.png",
     apple: "/favicon.png",
   },
-  themeColor: "#00a1e4",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

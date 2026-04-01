@@ -15,9 +15,11 @@ export default function ProblemNotificationCenter() {
   const [seenIds, setSeenIds] = useState<number[]>([]);
   const prevStateRef = useRef<number[]>([]);
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
 
   // Load seen IDs from localStorage
   useEffect(() => {
+    setIsMounted(true);
     const saved = localStorage.getItem("daikin_seen_problems");
     if (saved) setSeenIds(JSON.parse(saved));
   }, []);
@@ -128,8 +130,9 @@ export default function ProblemNotificationCenter() {
                   <div className="divide-y divide-slate-50">
                     {problems.map((p: any) => {
                       const isUnread = !seenIds.includes(p.id);
-                      const timeStr = new Date(p.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                      const dateStr = new Date(p.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' });
+                      const createdAt = new Date(p.created_at);
+                      const timeStr = createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                      const dateStr = createdAt.toLocaleDateString([], { month: 'short', day: 'numeric' });
 
                       return (
                         <button 

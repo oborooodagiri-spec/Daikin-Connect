@@ -13,6 +13,8 @@ export function SyncManager() {
   const [pendingCount, setPendingCount] = useState(0);
   const [syncStatus, setSyncStatus] = useState<"idle" | "syncing" | "success" | "error">("idle");
   const [isPending, startTransition] = useTransition();
+  const [isOnline, setIsOnline] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   const checkPending = async () => {
     const count = await getPendingSubmissionCount();
@@ -20,17 +22,27 @@ export function SyncManager() {
   };
 
   useEffect(() => {
+    setIsMounted(true);
+    setIsOnline(navigator.onLine);
     checkPending();
+    
     const interval = setInterval(checkPending, 30000); // Check every 30s
     
     const handleOnline = () => {
       console.log("Back online! Triggering sync...");
+      setIsOnline(true);
       performSync();
     };
 
+    const handleOffline = () => {
+      setIsOnline(false);
+    };
+
     window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
     return () => {
       window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
       clearInterval(interval);
     };
   }, []);
@@ -90,7 +102,7 @@ export function SyncManager() {
     }, 3000);
   };
 
-  if (pendingCount === 0 && syncStatus === "idle") return null;
+  if (!isMounted || (pendingCount === 0 && syncStatus === "idle")) return null;
 
   return (
     <AnimatePresence>
@@ -118,7 +130,7 @@ export function SyncManager() {
             </div>
           </div>
           
-          {navigator.onLine && !isSyncing && pendingCount > 0 && (
+          {isOnline && !isSyncing && pendingCount > 0 && (
             <button 
               onClick={performSync}
               className="px-4 py-2 bg-[#00a1e4] text-white text-xs font-black rounded-xl uppercase tracking-wider hover:bg-[#0081b8] transition-colors shadow-lg shadow-blue-200"
