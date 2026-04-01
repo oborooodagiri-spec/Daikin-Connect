@@ -19,21 +19,34 @@ export async function getAllSchedules() {
       orderBy: { start_at: 'asc' }
     });
 
-    return {
-      success: true,
-      data: schedules.map((s: any) => ({
+    const now = new Date();
+    const processedSchedules = await Promise.all(schedules.map(async (s: any) => {
+      let currentStatus = s.status;
+      if (currentStatus === "Planned" && s.end_at < now) {
+        currentStatus = "Missed";
+        await prisma.schedules.update({
+          where: { id: s.id },
+          data: { status: "Missed" }
+        });
+      }
+      return {
         id: s.id.toString(),
         title: s.title,
         description: s.description,
         type: s.type,
-        status: s.status,
+        status: currentStatus,
         start_at: s.start_at.toISOString(),
         end_at: s.end_at.toISOString(),
         google_event_id: s.google_event_id,
         project: s.projects,
         unit: s.units,
         assignee: s.users
-      }))
+      };
+    }));
+
+    return {
+      success: true,
+      data: processedSchedules
     };
   } catch (error: any) {
     console.error("Fetch all schedules error:", error);
@@ -56,20 +69,33 @@ export async function getSchedulesByProject(projectId: string) {
       orderBy: { start_at: 'asc' }
     });
 
+    const now = new Date();
+    const processedSchedules = await Promise.all(schedules.map(async (s: any) => {
+        let currentStatus = s.status;
+        if (currentStatus === "Planned" && s.end_at < now) {
+          currentStatus = "Missed";
+          await prisma.schedules.update({
+            where: { id: s.id },
+            data: { status: "Missed" }
+          });
+        }
+        return {
+          id: s.id.toString(),
+          title: s.title,
+          description: s.description,
+          type: s.type,
+          status: currentStatus,
+          start_at: s.start_at.toISOString(),
+          end_at: s.end_at.toISOString(),
+          google_event_id: s.google_event_id,
+          unit: s.units,
+          assignee: s.users
+        };
+      }));
+
     return {
       success: true,
-      data: schedules.map((s: any) => ({
-        id: s.id.toString(),
-        title: s.title,
-        description: s.description,
-        type: s.type,
-        status: s.status,
-        start_at: s.start_at.toISOString(),
-        end_at: s.end_at.toISOString(),
-        google_event_id: s.google_event_id,
-        unit: s.units,
-        assignee: s.users
-      }))
+      data: processedSchedules
     };
   } catch (error: any) {
     console.error("Fetch schedules error:", error);
@@ -166,7 +192,19 @@ export async function getScheduleFormOptions() {
   try {
     const [projects, units, users] = await Promise.all([
       prisma.projects.findMany({ select: { id: true, name: true, customer_id: true } }),
-      prisma.units.findMany({ select: { id: true, tag_number: true, project_ref_id: true } }),
+      prisma.units.findMany({ 
+        select: { 
+          id: true, 
+          tag_number: true, 
+          code: true,
+          room_tenant: true,
+          model: true,
+          serial_number: true,
+          area: true, 
+          project_ref_id: true, 
+          qr_code_token: true 
+        } 
+      }),
       prisma.users.findMany({ 
         where: {
           OR: [
@@ -194,7 +232,17 @@ export async function getScheduleFormOptions() {
       success: true,
       data: {
         projects: projects.map(p => ({ id: p.id.toString(), name: p.name, customer_id: p.customer_id })),
-        units: units.map(u => ({ id: u.id, tag_number: u.tag_number || "Untagged", project_id: u.project_ref_id?.toString() })),
+        units: units.map(u => ({ 
+          id: u.id, 
+          tag_number: u.tag_number || "Untagged", 
+          code: u.code || "N/A",
+          room_tenant: u.room_tenant || "Private",
+          model: u.model || "Unknown",
+          serial_number: u.serial_number || "N/A",
+          area: u.area || "N/A",
+          project_id: u.project_ref_id?.toString(),
+          qr_code_token: u.qr_code_token
+        })),
         users: users.map(u => ({ id: u.id, name: u.name, role_id: u.role_id }))
       }
     };
@@ -249,7 +297,16 @@ export async function getCalendarSchedules(month: number, year: number, projectI
             customers: { select: { name: true } } 
           } 
         },
-        users: { select: { name: true } }
+        users: { select: { name: true } },
+        units: {
+          select: {
+            id: true,
+            tag_number: true,
+            area: true,
+            model: true,
+            qr_code_token: true
+          }
+        }
       },
       orderBy: { start_at: 'asc' }
     });
@@ -265,7 +322,12 @@ export async function getCalendarSchedules(month: number, year: number, projectI
         end_at: s.end_at.toISOString(),
         projectName: s.projects?.name || "N/A",
         customerName: s.projects?.customers?.name || "N/A",
-        assigneeName: s.users?.name || "Unassigned"
+        assigneeName: s.users?.name || "Unassigned",
+        unitId: s.units?.id?.toString(),
+        unitTag: s.units?.tag_number,
+        unitArea: s.units?.area,
+        unitModel: s.units?.model,
+        unitToken: s.units?.qr_code_token
       }))
     };
   } catch (error) {

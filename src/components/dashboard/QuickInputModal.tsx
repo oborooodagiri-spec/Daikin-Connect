@@ -1,24 +1,79 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, AlertTriangle, Wrench, ClipboardCheck, ArrowLeft, Database } from "lucide-react";
+import { X, AlertTriangle, Wrench, ClipboardCheck, ArrowLeft, Database, Search, MapPin, Building2, ChevronRight as ChevronRightIcon } from "lucide-react";
+import { getScheduleFormOptions } from "@/app/actions/schedules";
 import { motion, AnimatePresence } from "framer-motion";
-import CorrectiveFormClient from "@/app/passport/[token]/corrective/CorrectiveFormClient";
-import PreventiveFormClient from "@/app/passport/[token]/preventive/PreventiveFormClient";
-import AuditFormClient from "@/app/passport/[token]/audit/AuditFormClient";
+import { useRouter } from "next/navigation";
 
 interface QuickInputModalProps {
   isOpen: boolean;
   onClose: () => void;
-  unit: any;
+  unit: any | null;
 }
 
-export default function QuickInputModal({ isOpen, onClose, unit }: QuickInputModalProps) {
+export default function QuickInputModal({ isOpen, onClose, unit: initialUnit }: QuickInputModalProps) {
+  const router = useRouter();
   const [selectedType, setSelectedType] = useState<"corrective" | "preventive" | "audit" | null>(null);
+  const [selectedUnit, setSelectedUnit] = useState<any | null>(null);
+  const [units, setUnits] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  if (!isOpen || !unit) return null;
+  React.useEffect(() => {
+    if (initialUnit) {
+      setSelectedUnit(initialUnit);
+    } else if (isOpen) {
+      loadUnits();
+    }
+  }, [initialUnit, isOpen]);
 
-  const handleBackToSelect = () => setSelectedType(null);
+  const loadUnits = async () => {
+    setLoading(true);
+    try {
+      const res = await getScheduleFormOptions();
+      if (res && 'success' in res && res.success) {
+        setUnits(res.data.units || []);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  const handleBackToSelect = () => {
+    if (selectedType) {
+      setSelectedType(null);
+    } else {
+      setSelectedUnit(null);
+      setSearchQuery("");
+    }
+  };
+
+  const handleTypeSelect = (type: string) => {
+    if (!selectedUnit?.qr_code_token) {
+        alert("Unit Passport Token is missing. Cannot redirect to form.");
+        return;
+    }
+    // Redirect to the landing page form
+    router.push(`/passport/${selectedUnit.qr_code_token}/${type}`);
+    onClose();
+  };
+
+  const filteredUnits = units.filter(u => {
+    const query = searchQuery.toLowerCase();
+    return (
+      u.tag_number?.toLowerCase().includes(query) ||
+      u.code?.toLowerCase().includes(query) ||
+      u.room_tenant?.toLowerCase().includes(query) ||
+      u.model?.toLowerCase().includes(query) ||
+      u.serial_number?.toLowerCase().includes(query) ||
+      u.area?.toLowerCase().includes(query)
+    );
+  });
 
   const formTypes = [
     {
@@ -73,7 +128,7 @@ export default function QuickInputModal({ isOpen, onClose, unit }: QuickInputMod
           {/* Header */}
           <div className="bg-white px-6 py-4 border-b border-slate-200 flex items-center justify-between sticky top-0 z-[110]">
             <div className="flex items-center gap-3">
-              {selectedType ? (
+              {(selectedUnit && !initialUnit) || selectedType ? (
                 <button 
                   onClick={handleBackToSelect}
                   className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-500"
@@ -87,10 +142,10 @@ export default function QuickInputModal({ isOpen, onClose, unit }: QuickInputMod
               )}
               <div>
                 <h2 className="text-sm font-black text-[#003366] uppercase tracking-widest">
-                  {selectedType ? "Manual Report Entry" : "Select Report Type"}
+                  {!selectedUnit ? "Cari & Pilih Unit" : "Select Report Type"}
                 </h2>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
-                  Unit: {unit.tag_number} — {unit.area}
+                  {selectedUnit ? `Unit: ${selectedUnit.tag_number} — ${selectedUnit.area || 'No Area'}` : "Silahkan cari unit berdasarkan Tag Number atau Area"}
                 </p>
               </div>
             </div>
@@ -103,19 +158,73 @@ export default function QuickInputModal({ isOpen, onClose, unit }: QuickInputMod
           </div>
 
           {/* Content Area */}
-          <div className="flex-1 overflow-y-auto no-scrollbar">
-            {!selectedType ? (
+          <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col">
+            {!selectedUnit ? (
+              <div className="flex-1 flex flex-col max-w-2xl mx-auto w-full px-6 py-8">
+                <div className="relative mb-6">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                  <input 
+                    type="text"
+                    placeholder="Cari Tag Number, Ruangan/Tenant, Kode, atau Model Unit... (Contoh: Starbucks atau AC-01)"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-100 rounded-2xl text-xs font-bold focus:border-[#00a1e4] focus:ring-0 transition-all outline-none shadow-sm"
+                    autoFocus
+                  />
+                </div>
+
+                <div className="flex-1 overflow-y-auto pr-2 space-y-2 custom-scrollbar min-h-[300px]">
+                  {loading ? (
+                    <div className="py-20 text-center animate-pulse text-slate-300 font-black uppercase text-xs tracking-widest">Memuat database unit...</div>
+                  ) : filteredUnits.length === 0 ? (
+                    <div className="py-20 text-center text-slate-300 font-bold text-sm">Tidak ada unit ditemukan</div>
+                  ) : (
+                    filteredUnits.map((u) => (
+                      <button
+                        key={u.id}
+                        onClick={() => setSelectedUnit(u)}
+                        className="w-full flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl hover:border-[#00a1e4] hover:shadow-md transition-all group"
+                      >
+                        <div className="flex items-center gap-4 text-left">
+                          <div className="p-3 bg-slate-50 text-[#003366] rounded-xl group-hover:bg-[#00a1e4] group-hover:text-white transition-colors">
+                            <Database size={18} />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-black text-[#003366] uppercase tracking-tight">{u.tag_number}</h4>
+                            <div className="flex flex-col gap-0.5 mt-0.5">
+                                <p className="text-[10px] font-black text-[#00a1e4] uppercase tracking-tight leading-tight">{u.room_tenant || "Public Area"}</p>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">{u.code || "No Code"}</span>
+                                    <span className="w-1 h-1 rounded-full bg-slate-200"></span>
+                                    <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">{u.area || "N/A"}</span>
+                                    {u.model && (
+                                        <>
+                                            <span className="w-1 h-1 rounded-full bg-slate-200"></span>
+                                            <span className="text-[8px] font-black text-amber-400 uppercase tracking-widest italic">{u.model}</span>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                        <ChevronRightIcon size={18} className="text-slate-300 group-hover:text-[#00a1e4] group-hover:translate-x-1 transition-all" />
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+            ) : (
               <div className="max-w-2xl mx-auto px-6 py-12 space-y-6">
                 <div className="text-center mb-10">
-                  <h3 className="text-2xl font-black text-[#003366] tracking-tight">Apa yang ingin Anda laporkan?</h3>
-                  <p className="text-sm font-bold text-slate-400 mt-2">Pilih jenis pekerjaan servis yang telah dilakukan pada unit ini.</p>
+                  <h3 className="text-2xl font-black text-[#003366] tracking-tight italic uppercase">Apa yang ingin Anda laporkan?</h3>
+                  <p className="text-sm font-bold text-slate-400 mt-2">Pilih jenis pekerjaan servis yang telah dilakukan pada unit <span className="text-[#00a1e4]">{selectedUnit.tag_number}</span>.</p>
                 </div>
                 
                 <div className="grid grid-cols-1 gap-4">
                   {formTypes.map((type) => (
                     <button
                       key={type.id}
-                      onClick={() => setSelectedType(type.id as any)}
+                      onClick={() => handleTypeSelect(type.id)}
                       className={`group relative text-left p-6 ${type.bg} border-2 ${type.border} rounded-3xl hover:border-slate-300 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm`}
                     >
                       <div className="flex items-center gap-5">
@@ -126,39 +235,18 @@ export default function QuickInputModal({ isOpen, onClose, unit }: QuickInputMod
                           <h4 className={`text-lg font-black ${type.textColor} uppercase tracking-tight`}>{type.title}</h4>
                           <p className="text-xs font-bold text-slate-500 leading-relaxed mt-1">{type.description}</p>
                         </div>
-                        <button className="p-3 bg-white/50 rounded-full text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <ChevronRight size={20} />
-                        </button>
+                        <div className="p-3 bg-white/50 rounded-full text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <ChevronRightIcon size={20} />
+                        </div>
                       </div>
                     </button>
                   ))}
                 </div>
-
-                <div className="pt-8 text-center">
-                  <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">Manual Input System V1.0</p>
-                </div>
-              </div>
-            ) : (
-              <div className="h-full">
-                {selectedType === "corrective" && <CorrectiveFormClient unit={unit} />}
-                {selectedType === "preventive" && <PreventiveFormClient unit={unit} />}
-                {selectedType === "audit" && <AuditFormClient unit={unit} />}
               </div>
             )}
           </div>
         </motion.div>
       </motion.div>
     </AnimatePresence>
-  );
-}
-
-function ChevronRight({ size, className = "" }: { size: number, className?: string }) {
-  return (
-    <svg 
-      width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" 
-      strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={className}
-    >
-      <path d="m9 18 6-6-6-6"/>
-    </svg>
   );
 }

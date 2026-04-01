@@ -28,19 +28,9 @@ export async function getUnitByToken(token: string) {
     return serializePrisma({
       success: true,
       data: {
-        id: unit.id,
-        tag_number: unit.tag_number,
-        model: unit.model,
-        serial_number: unit.serial_number,
-        area: unit.area,
-        status: unit.status,
-        unit_type: unit.unit_type,
-        brand: unit.brand,
-        capacity: unit.capacity,
-        building_floor: unit.building_floor,
-        room_tenant: unit.room_tenant,
+        ...unit, // Return all fields
         projectName: unit.projects?.name,
-        customerName: unit.projects?.customers?.name
+        customerNameProject: unit.projects?.customers?.name // Rename to avoid conflict with unit.customer_name
       }
     });
   } catch (error) {

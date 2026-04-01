@@ -6,9 +6,10 @@ import imageCompression from "browser-image-compression";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
 import { createAuditActivity } from "@/app/actions/audit";
+import { savePendingSubmission } from "@/lib/offline-db";
 import { 
   ChevronRight, ChevronLeft, Save, Camera, FileText,
-  CheckCircle2, AlertCircle, MapPin, X, UploadCloud, Printer
+  CheckCircle2, AlertCircle, MapPin, X, UploadCloud, Printer, WifiOff
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -17,6 +18,17 @@ export default function AuditFormClient({ unit }: { unit: any }) {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [isQueued, setIsQueued] = useState(false);
+
+  React.useEffect(() => {
+    const handleStatus = () => {}; // Just force re-render if needed
+    window.addEventListener('online', handleStatus);
+    window.addEventListener('offline', handleStatus);
+    return () => {
+      window.removeEventListener('online', handleStatus);
+      window.removeEventListener('offline', handleStatus);
+    };
+  }, []);
 
   // --- FORM STATE ---
   const [formData, setFormData] = useState<any>({
@@ -143,6 +155,18 @@ export default function AuditFormClient({ unit }: { unit: any }) {
     if (!formData.inspector_name) { alert("Nama Inspector (General Data) wajib diisi!"); setStep(1); return; }
     setLoading(true);
     try {
+      // --- OFFLINE CHECK ---
+      if (!navigator.onLine) {
+        await savePendingSubmission({
+          type: 'AUDIT',
+          data: { ...formData, velocity_points: formData.t.supplyVelocity.map((v:any, i:number) => ({ point_number: i+1, velocity_value: parseFloat(v) || 0 })) },
+          photos: photos 
+        });
+        setIsQueued(true);
+        setLoading(false);
+        return;
+      }
+
       let pdfUrl = "";
       
       // 1. GENERATE PDF
@@ -299,14 +323,20 @@ export default function AuditFormClient({ unit }: { unit: any }) {
     setLoading(false);
   };
 
-  if (success) {
+  if (success || isQueued) {
     return (
       <div className="min-h-screen bg-[#003366] flex flex-col justify-center items-center p-6 text-white text-center">
-        <div className="w-24 h-24 bg-emerald-500 rounded-full flex items-center justify-center mb-6 animate-bounce">
-          <CheckCircle2 size={48} />
+        <div className={`w-24 h-24 ${isQueued ? 'bg-orange-500' : 'bg-emerald-500'} rounded-full flex items-center justify-center mb-6 animate-bounce`}>
+          {isQueued ? <WifiOff size={48} /> : <CheckCircle2 size={48} />}
         </div>
-        <h1 className="text-3xl font-black tracking-tight mb-2">Audit Submitted!</h1>
-        <p className="text-blue-200 mb-8 max-w-sm font-medium">Laporan ukur, penghitungan matematis, & PDF dokumen berlogo sudah berhasil digenerate dan dikirim ke server.</p>
+        <h1 className="text-3xl font-black tracking-tight mb-2">
+          {isQueued ? "Queued Offline!" : "Audit Submitted!"}
+        </h1>
+        <p className="text-blue-200 mb-8 max-w-sm font-medium">
+          {isQueued 
+            ? "Koneksi mati. Laporan Anda telah disimpan di HP dan akan otomatis terkirim saat internet kembali aktif." 
+            : "Laporan ukur, penghitungan matematis, & PDF dokumen berlogo sudah berhasil digenerate dan dikirim ke server."}
+        </p>
         <button onClick={() => router.push(`/unit/${unit.qr_code_token}`)} className="px-8 py-4 bg-white text-[#003366] font-black rounded-2xl uppercase tracking-widest text-sm hover:scale-105 transition-transform shadow-xl">
           Kembali ke Passport
         </button>

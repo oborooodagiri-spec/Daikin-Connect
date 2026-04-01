@@ -47,21 +47,10 @@ export async function getUnitsByProject(projectId: string) {
         // Find the last corrective & problem logic
         const latestCorrective = u.activities.find((a: any) => a.type === "Corrective");
         
+        const { activities, ...unitData } = u; // Destructure activities out
+        
         return {
-          id: u.id,
-          tag_number: u.tag_number || "-",
-          model: u.model || "-",
-          brand: u.brand || "Daikin",
-          location: u.location || "-",
-          area: u.area || "-",
-          building_floor: u.building_floor || "-",
-          room_tenant: u.room_tenant || "-",
-          yoi: u.yoi || "-",
-          serial_number: u.serial_number || "-",
-          capacity: u.capacity || "-",
-          qr_code_token: u.qr_code_token || null,
-          status: u.status || "Normal",
-          unit_type: u.unit_type || "Uncategorized",
+          ...unitData,
           last_corrective_date: latestCorrective?.service_date || null,
           last_problem: latestCorrective?.engineer_note || "-",
         };
@@ -96,29 +85,43 @@ export async function createUnit(projectId: string, data: any) {
     const crypto = require('crypto');
     const qrToken = crypto.randomBytes(16).toString('hex');
 
+    // Sanitize input: Trim and convert empty strings to null for unique/optional fields
+    const cleanData = {
+      tag_number: finalTagNumber?.trim() || null,
+      model: data.model?.trim() || "Unknown",
+      brand: data.brand?.trim() || "Daikin",
+      location: data.location?.trim() || null,
+      area: data.area?.trim() || null,
+      building_floor: data.building_floor?.trim() || null,
+      room_tenant: data.room_tenant?.trim() || null,
+      capacity: data.capacity?.trim() || "0",
+      yoi: (data.yoi && !isNaN(parseInt(data.yoi))) ? parseInt(data.yoi) : null,
+      serial_number: (data.serial_number && data.serial_number.trim() !== "") ? data.serial_number.trim() : null,
+      status: data.status || "Normal",
+      unit_type: data.unit_type || "Uncategorized"
+    };
+
     await (prisma.units as any).create({
       data: {
         project_ref_id: BigInt(projectId),
-        tag_number: finalTagNumber,
-        model: data.model,
-        brand: data.brand || "Daikin",
-        location: data.location,
-        area: data.area,
-        building_floor: data.building_floor,
-        room_tenant: data.room_tenant,
-        capacity: data.capacity,
-        yoi: data.yoi ? parseInt(data.yoi) : null,
-        serial_number: data.serial_number,
-        status: data.status || "Normal",
-        unit_type: data.unit_type || "Uncategorized",
-        qr_code_token: qrToken
+        qr_code_token: qrToken,
+        ...cleanData
       }
     });
 
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Create unit error:", error);
-    return { error: "Failed to create unit." };
+    if (error.code === 'P2002') {
+      const target = error.meta?.target || "";
+      if (target.includes('serial_number')) {
+        return { error: "Serial number already exists in database." };
+      }
+      if (target.includes('qr_code_token')) {
+        return { error: "QR Token collision. Please try again." };
+      }
+    }
+    return { error: "Failed to create unit. Please check all fields." };
   }
 }
 

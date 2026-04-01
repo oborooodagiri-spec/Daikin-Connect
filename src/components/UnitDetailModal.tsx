@@ -23,6 +23,16 @@ interface Unit {
   room_tenant?: string;
   status: string;
   qr_code_token?: string;
+  // New fields
+  project_id?: string;
+  project_type?: string;
+  site_id?: number;
+  code?: string;
+  customer_name?: string;
+  customer_group?: string;
+  location?: string;
+  last_service_date?: string | Date;
+  created_at?: string | Date;
 }
 
 interface UnitDetailModalProps {
@@ -135,10 +145,19 @@ export default function UnitDetailModal({
                     <Settings2 size={14}/> Technical Specs
                   </h3>
                   <div className="space-y-4">
-                    <DetailField label="Serial Number" value={unit.serial_number} isMono />
-                    <DetailField label="Capacity" value={unit.capacity} />
-                    <DetailField label="Year of Install" value={unit.yoi?.toString()} />
-                    <DetailField label="Unit Type" value={unit.unit_type} isBadge />
+                    <div className="grid grid-cols-2 gap-4">
+                      <DetailField label="Serial Number" value={unit.serial_number} isMono />
+                      <DetailField label="Unit Code" value={unit.code} isMono />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <DetailField label="Capacity" value={unit.capacity} />
+                      <DetailField label="Year of Install" value={unit.yoi?.toString()} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <DetailField label="Unit Type" value={unit.unit_type} isBadge />
+                      <DetailField label="Project Type" value={unit.project_type} />
+                    </div>
+                    <DetailField label="Last Service" value={unit.last_service_date ? new Date(unit.last_service_date).toLocaleDateString() : "-"} />
                   </div>
                 </section>
 
@@ -148,8 +167,15 @@ export default function UnitDetailModal({
                   </h3>
                   <div className="space-y-4">
                     <DetailField label="Building Area" value={unit.area} />
-                    <DetailField label="Floor Level" value={unit.building_floor} />
-                    <DetailField label="Room / Tenant" value={unit.room_tenant} />
+                    <div className="grid grid-cols-2 gap-4">
+                      <DetailField label="Floor Level" value={unit.building_floor} />
+                      <DetailField label="Room / Tenant" value={unit.room_tenant} />
+                    </div>
+                    <DetailField label="Location / City" value={unit.location} />
+                    <div className="grid grid-cols-2 gap-4">
+                      <DetailField label="Customer Group" value={unit.customer_group} />
+                      <DetailField label="Site ID" value={unit.site_id?.toString()} />
+                    </div>
                   </div>
                 </section>
 

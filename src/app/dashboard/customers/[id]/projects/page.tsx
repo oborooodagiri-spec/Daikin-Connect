@@ -299,9 +299,7 @@ export default function ProjectsPage() {
                             <span className="text-[8px] font-black uppercase tracking-widest opacity-70 mt-1">Units</span>
                           </Link>
                           <Link 
-                            href={session?.isInternal 
-                              ? `/dashboard#schedules` 
-                              : `/dashboard/customers/${customerId}/projects/${project.id}/units`} 
+                            href={`/dashboard/schedules?projectId=${project.id}`}
                             className={`inline-flex flex-col items-center justify-center p-3 w-16 rounded-xl border border-slate-200/60 shadow-sm transition-all hover:ring-2 hover:ring-blue-100
                             ${isActive ? 'bg-white text-blue-700 hover:border-blue-300 cursor-pointer' : 'bg-slate-50 text-slate-400 cursor-not-allowed pointer-events-none'}`}>
                             <CalendarDays size={14} className={isActive ? "text-blue-400 mb-1" : "opacity-50"} />

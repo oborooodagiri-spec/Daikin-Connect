@@ -13,6 +13,7 @@ import { getUnitHistory, updateUnitStatus, getUnitByTag } from "../actions/units
 import { getProjectComplaints } from "../actions/complaints";
 import { getComprehensiveReportData } from "../actions/report";
 import { generateComprehensivePDF } from "@/lib/pdf-report-generator";
+import { APP_VERSION } from "@/lib/version";
 import SummaryCards from "../../components/dashboard/SummaryCards";
 import SummaryDetailModal from "../../components/dashboard/SummaryDetailModal";
 import TrendChart from "../../components/dashboard/TrendChart";
@@ -52,6 +53,20 @@ export default function DashboardWrapper() {
   const [isMetricModalOpen, setIsMetricModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [isOnline, setIsOnline] = useState(typeof window !== "undefined" ? navigator.onLine : true);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   const fetchData = async (f: { customerId?: string; projectId?: string }) => {
     startTransition(async () => {
@@ -164,9 +179,10 @@ export default function DashboardWrapper() {
       <div className="flex flex-col xl:flex-row w-full items-start xl:items-center justify-between gap-6 pb-8 border-b border-slate-100">
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2 mb-2">
-            <span className="px-3 py-1 bg-[#00a1e4]/10 text-[#00a1e4] text-[10px] font-black uppercase tracking-widest rounded-full">REALTIME V3.1</span>
-            <span className="px-3 py-1 bg-emerald-500/10 text-emerald-600 text-[10px] font-black uppercase tracking-widest rounded-full flex items-center gap-1">
-              <Zap size={10} className="fill-orange-400 text-orange-400" /> LIVE CONNECTED
+            <span className="px-3 py-1 bg-[#00a1e4]/10 text-[#00a1e4] text-[10px] font-black uppercase tracking-widest rounded-full">REALTIME {APP_VERSION}</span>
+            <span className={`px-3 py-1 ${isOnline ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"} text-[10px] font-black uppercase tracking-widest rounded-full flex items-center gap-1 transition-colors duration-500`}>
+              <Zap size={10} className={`${isOnline ? "fill-orange-400 text-orange-400" : "fill-rose-400 text-rose-400"} transition-colors shadow-lg`} /> 
+              {isOnline ? "LIVE CONNECTED" : "OFFLINE MODE"}
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-black italic tracking-tighter text-[#003366] leading-none">

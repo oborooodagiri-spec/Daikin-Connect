@@ -12,7 +12,7 @@ import {
   Search, ArrowLeft, MapPin, Plus, Edit2, CheckCircle2, 
   X, Save, Settings2, ShieldAlert, QrCode, Printer, 
   Archive, Activity, Download, HardHat, Clock, Hammer, AlertTriangle, Upload, Building2, ExternalLink,
-  History as HistoryIcon, Database
+  History as HistoryIcon, Database, ChevronLeft, ChevronRight
 } from "lucide-react";
 import QRCode from "react-qr-code";
 import { motion, AnimatePresence } from "framer-motion";
@@ -35,6 +35,10 @@ export default function UnitsPage() {
   // Advanced Filtering & Search
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [brandFilter, setBrandFilter] = useState("All");
+  const [floorFilter, setFloorFilter] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -98,6 +102,17 @@ export default function UnitsPage() {
     return { total, normal, problem, pending };
   }, [units]);
 
+  // Extract unique brands and floors for dynamic filter options
+  const uniqueBrands = useMemo(() => {
+    const set = new Set(units.map(u => u.brand).filter(Boolean));
+    return Array.from(set).sort();
+  }, [units]);
+
+  const uniqueFloors = useMemo(() => {
+    const set = new Set(units.map(u => u.building_floor).filter(Boolean));
+    return Array.from(set).sort();
+  }, [units]);
+
   // Advanced Search Engine + Priority Sorting
   const filteredUnits = useMemo(() => {
     const list = units.filter(unit => {
@@ -114,21 +129,34 @@ export default function UnitsPage() {
                             (statusFilter === "Problem" && ["Problem","Critical","Warning"].includes(unit.status)) ||
                             (statusFilter === "Pending" && ["Pending","On_Progress"].includes(unit.status));
       
-      return matchesSearch && matchesStatus;
+      const matchesBrand = brandFilter === "All" || unit.brand === brandFilter;
+      const matchesFloor = floorFilter === "All" || unit.building_floor === floorFilter;
+      
+      return matchesSearch && matchesStatus && matchesBrand && matchesFloor;
     });
 
     // Priority Sort: Problem (1), On_Progress (2), Normal (3)
-    return [...list].sort((a, b) => {
+    const sorted = [...list].sort((a, b) => {
       const rank: any = { Problem: 1, Critical: 1, Warning: 1, On_Progress: 2, Pending: 2, Normal: 3 };
       const rankA = rank[a.status] || 99;
       const rankB = rank[b.status] || 99;
       if (rankA !== rankB) return rankA - rankB;
       
-      // Secondary sort: Oldest First for Problem/Progress (FIFO)
       if (rankA < 3) return a.id - b.id;
-      return b.id - a.id; // Normal units newest first
+      return b.id - a.id;
     });
-  }, [units, searchTerm, statusFilter]);
+
+    return sorted;
+  }, [units, searchTerm, statusFilter, brandFilter, floorFilter]);
+
+  // Derived Paginated List
+  const totalPages = Math.ceil(filteredUnits.length / itemsPerPage);
+  const paginatedUnits = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredUnits.slice(start, start + itemsPerPage);
+  }, [filteredUnits, currentPage]);
+
+  useEffect(() => { setCurrentPage(1); }, [searchTerm, statusFilter, brandFilter, floorFilter]);
 
   const unitsProblem = useMemo(() => units.filter(u => u.status === "Problem" || u.status === "Critical" || u.status === "Warning"), [units]);
   const unitsInProgress = useMemo(() => units.filter(u => u.status === "On_Progress" || u.status === "Pending"), [units]);
@@ -427,11 +455,33 @@ export default function UnitsPage() {
             />
           </div>
           
-          <div className="relative w-48 shrink-0">
-            <Activity className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+          <div className="relative w-40 shrink-0">
+            <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+            <select 
+              value={floorFilter} onChange={e => setFloorFilter(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 text-slate-600 rounded-2xl text-xs font-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#00a1e4] uppercase tracking-tighter"
+            >
+              <option value="All">All Floors</option>
+              {uniqueFloors.map(f => <option key={f} value={f}>{f}</option>)}
+            </select>
+          </div>
+
+          <div className="relative w-40 shrink-0">
+             <Settings2 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+             <select 
+              value={brandFilter} onChange={e => setBrandFilter(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 text-slate-600 rounded-2xl text-xs font-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#00a1e4] uppercase tracking-tighter"
+            >
+              <option value="All">All Brands</option>
+              {uniqueBrands.map(b => <option key={b} value={b}>{b}</option>)}
+            </select>
+          </div>
+
+          <div className="relative w-40 shrink-0">
+            <Activity className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
             <select 
               value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 text-slate-600 rounded-2xl text-sm font-bold appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#00a1e4]"
+              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 text-slate-600 rounded-2xl text-xs font-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#00a1e4] uppercase tracking-tighter"
             >
               <option value="All">All Statuses</option>
               <option value="Normal">🟢 Normal</option>
@@ -488,7 +538,7 @@ export default function UnitsPage() {
                       </div>
                     </td>
                   </tr>
-                ) : filteredUnits.length === 0 ? (
+                ) : paginatedUnits.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-8 py-32 text-center text-slate-400 bg-slate-50/50">
                       <Archive className="w-12 h-12 mx-auto mb-4 opacity-20" />
@@ -497,7 +547,7 @@ export default function UnitsPage() {
                     </td>
                   </tr>
                 ) : (
-                  filteredUnits.map((unit) => (
+                  paginatedUnits.map((unit) => (
                     <motion.tr 
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                       key={unit.id} 
@@ -605,6 +655,49 @@ export default function UnitsPage() {
             </tbody>
           </table>
         </div>
+
+        {/* PAGINATION CONTROLS */}
+        {!loading && filteredUnits.length > itemsPerPage && (
+          <div className="p-6 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              Showing <span className="text-slate-800">{(currentPage-1)*itemsPerPage + 1}</span> to <span className="text-slate-800">{Math.min(currentPage*itemsPerPage, filteredUnits.length)}</span> of <span className="text-slate-800">{filteredUnits.length}</span> Assets
+            </p>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="p-2 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-[#00a1e4] disabled:opacity-30 disabled:hover:text-slate-400 transition-all shadow-sm"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => {
+                  const isVisible = page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1;
+                  if (!isVisible) {
+                    if (page === 2 || page === totalPages - 1) return <span key={page} className="px-1 opacity-30">...</span>;
+                    return null;
+                  }
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`w-8 h-8 rounded-xl text-xs font-black transition-all ${currentPage === page ? "bg-[#003366] text-white shadow-lg shadow-blue-900/20" : "bg-white border border-slate-100 text-slate-500 hover:bg-slate-50"}`}
+                    >
+                      {page}
+                    </button>
+                  );
+                })}
+              </div>
+              <button 
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className="p-2 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-[#00a1e4] disabled:opacity-30 disabled:hover:text-slate-400 transition-all shadow-sm"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* --- UNIT DETAIL MODAL --- */}

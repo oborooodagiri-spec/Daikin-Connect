@@ -6,10 +6,11 @@ import imageCompression from "browser-image-compression";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
 import { createCorrectiveActivity } from "@/app/actions/corrective";
+import { savePendingSubmission } from "@/lib/offline-db";
 import {
   ChevronRight, ChevronLeft, Camera, CheckCircle2,
   AlertCircle, MapPin, X, Printer, AlertTriangle,
-  User, Phone, Building2, Mail, Calendar
+  User, Phone, Building2, Mail, Calendar, WifiOff
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -19,6 +20,17 @@ export default function CorrectiveFormClient({ unit }: { unit: any }) {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [isQueued, setIsQueued] = useState(false);
+
+  React.useEffect(() => {
+    const handleStatus = () => {}; 
+    window.addEventListener('online', handleStatus);
+    window.addEventListener('offline', handleStatus);
+    return () => {
+      window.removeEventListener('online', handleStatus);
+      window.removeEventListener('offline', handleStatus);
+    };
+  }, []);
 
   // Step 1: Personnel & Schedule
   const [personnel, setPersonnel] = useState({
@@ -84,6 +96,31 @@ export default function CorrectiveFormClient({ unit }: { unit: any }) {
     if (!analysis.complain) { alert("Keluhan/Case wajib diisi!"); setStep(3); return; }
     setLoading(true);
     try {
+      // --- OFFLINE CHECK ---
+      if (!navigator.onLine) {
+        await savePendingSubmission({
+          type: 'CORRECTIVE',
+          data: {
+            unit_id: unit.id,
+            inspector_name: personnel.name,
+            engineer_note: engineerNote,
+            unit_tag: unit.tag_number || "",
+            location: unit.area || "",
+            technician_name: personnel.name,
+            case_complain: analysis.complain,
+            root_cause: analysis.root_cause,
+            temp_action: analysis.temp_action,
+            perm_action: analysis.perm_action,
+            recommendation: analysis.recommendation,
+            technical_json: JSON.stringify(renderData, (_, v) => typeof v === 'bigint' ? v.toString() : v),
+          },
+          photos: photos
+        });
+        setIsQueued(true);
+        setLoading(false);
+        return;
+      }
+
       let pdfUrl = "";
 
       // 1. Generate PDF
@@ -256,14 +293,20 @@ export default function CorrectiveFormClient({ unit }: { unit: any }) {
   };
 
   // Success screen
-  if (success) {
+  if (success || isQueued) {
     return (
       <div className="min-h-screen bg-[#003366] flex flex-col justify-center items-center p-6 text-white text-center">
-        <div className="w-24 h-24 bg-rose-500 rounded-full flex items-center justify-center mb-6 animate-bounce">
-          <CheckCircle2 size={48} />
+        <div className={`w-24 h-24 ${isQueued ? 'bg-orange-500' : 'bg-rose-500'} rounded-full flex items-center justify-center mb-6 animate-bounce`}>
+          {isQueued ? <WifiOff size={48} /> : <CheckCircle2 size={48} />}
         </div>
-        <h1 className="text-3xl font-black tracking-tight mb-2">Corrective Submitted!</h1>
-        <p className="text-blue-200 mb-8 max-w-sm font-medium">Laporan Corrective Maintenance & PDF telah di-generate dan dikirim ke server. Status unit diubah ke Problem.</p>
+        <h1 className="text-3xl font-black tracking-tight mb-2">
+          {isQueued ? "Queued Offline!" : "Corrective Submitted!"}
+        </h1>
+        <p className="text-blue-200 mb-8 max-w-sm font-medium">
+          {isQueued
+            ? "Koneksi mati. Laporan Perbaikan telah disimpan di HP dan akan otomatis terkirim saat internet kembali aktif."
+            : "Laporan Corrective Maintenance & PDF telah di-generate dan dikirim ke server. Status unit diubah ke Problem."}
+        </p>
         <button onClick={() => router.push(`/unit/${unit.qr_code_token}`)} className="px-8 py-4 bg-white text-[#003366] font-black rounded-2xl uppercase tracking-widest text-sm hover:scale-105 transition-transform shadow-xl">
           Kembali ke Passport
         </button>

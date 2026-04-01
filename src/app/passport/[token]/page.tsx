@@ -278,20 +278,55 @@ export default function PassportLandingPage() {
                           </span>
                         </div>
                       </div>
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Serial Number</p>
-                        <p className="text-sm font-medium font-mono text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg inline-block mt-1">{unit.serial_number || "Not Registered"}</p>
+                      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Serial Number</p>
+                          <p className="text-xs font-mono font-bold text-slate-600 mt-1">{unit.serial_number || "-"}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Unit Code</p>
+                          <p className="text-xs font-mono font-bold text-[#00a1e4] mt-1">{unit.code || "-"}</p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
+                         <div>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Project Type</p>
+                          <p className="text-xs font-bold text-slate-700">{unit.project_type || "-"}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Last Service</p>
+                          <p className="text-xs font-bold text-slate-700">{unit.last_service_date ? new Date(unit.last_service_date).toLocaleDateString() : "-"}</p>
+                        </div>
                       </div>
                     </>
                   )}
                 </div>
 
                 <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1 mb-1"><MapPin size={12}/> Location Area</p>
-                    <p className="text-sm font-bold text-slate-800">{unit.area || "Area Not Set"}</p>
-                    <p className="text-xs text-slate-500 mt-1">{unit.building_floor} {unit.room_tenant ? `- ${unit.room_tenant}` : ''}</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1 mb-1"><MapPin size={12}/> Area Building</p>
+                      <p className="text-sm font-bold text-slate-800">{unit.area || "Area Not Set"}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1 mb-1"><MapPin size={12}/> City / Location</p>
+                      <p className="text-sm font-bold text-slate-800">{unit.location || "-"}</p>
+                    </div>
                   </div>
+                  <div className="pt-4 border-t border-slate-50 grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Floor Level</p>
+                      <p className="text-sm font-bold text-slate-800">{unit.building_floor || "-"}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Room / Tenant</p>
+                      <p className="text-sm font-bold text-slate-800">{unit.room_tenant || "-"}</p>
+                    </div>
+                  </div>
+                   <div className="pt-4 border-t border-slate-50">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Customer Group</p>
+                      <p className="text-sm font-bold text-slate-800">{unit.customer_group || "-"}</p>
+                   </div>
                 </div>
 
                 {/* Quick Action: Complaint */}

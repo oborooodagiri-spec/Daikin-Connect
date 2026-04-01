@@ -2,15 +2,19 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import { useSearchParams } from "next/navigation";
 import { format, startOfWeek, addDays, isSameDay } from "date-fns";
-import { getAllSchedules, getScheduleFormOptions, createSchedule, updateScheduleStatus } from "@/app/actions/schedules";
-import { Plus, MapPin, CheckCircle2, XCircle, Search, Clock, CalendarIcon, FolderGit2, X, Save } from "lucide-react";
+import { getAllSchedules, getScheduleFormOptions, createSchedule, updateScheduleStatus, getSchedulesByProject } from "@/app/actions/schedules";
+import { Plus, MapPin, CheckCircle2, XCircle, Search, Clock, CalendarIcon, FolderGit2, X, Save, ChevronLeft, ChevronRight, Activity } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function SchedulesPage() {
   const [schedules, setSchedules] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
+  const searchParams = useSearchParams();
+  const filterProjectId = searchParams.get("projectId");
+  const [selectedDayMobile, setSelectedDayMobile] = useState(new Date());
 
   // Form & Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,7 +28,13 @@ export default function SchedulesPage() {
 
   const fetchSchedules = async () => {
     setLoading(true);
-    const res = await getAllSchedules();
+    let res;
+    if (filterProjectId) {
+      res = await getSchedulesByProject(filterProjectId);
+    } else {
+      res = await getAllSchedules();
+    }
+    
     if (res.success) setSchedules(res.data);
     setLoading(false);
   };
@@ -37,7 +47,7 @@ export default function SchedulesPage() {
   useEffect(() => {
     fetchSchedules();
     fetchOptions();
-  }, []);
+  }, [filterProjectId]);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -91,72 +101,181 @@ export default function SchedulesPage() {
         </button>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden text-sm">
-        {/* Weekly Header */}
-        <div className="grid grid-cols-7 border-b border-slate-100 bg-slate-50">
-          {weekDays.map((date, i) => (
-            <div key={i} className="p-4 text-center border-r border-slate-100 last:border-0 relative">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{format(date, 'EEE')}</p>
-              <p className={`text-lg font-black mt-1 ${isSameDay(date, new Date()) ? 'text-[#00a1e4]' : 'text-slate-800'}`}>
-                {format(date, 'd')}
-              </p>
+      {/* Mobile Day Selector - Sticky Header for Mobile */}
+      <div className="md:hidden sticky top-0 z-40 bg-slate-50/80 backdrop-blur-md pt-2 pb-4 -mx-4 px-4 border-b border-slate-200">
+        <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest">{format(selectedDayMobile, 'MMMM yyyy')}</h2>
+            <div className="flex gap-2">
+                <button onClick={() => setSelectedDayMobile(addDays(selectedDayMobile, -1))} className="p-1 hover:bg-white rounded-lg border border-slate-200 transition-all"><ChevronLeft size={16} /></button>
+                <button onClick={() => setSelectedDayMobile(addDays(selectedDayMobile, 1))} className="p-1 hover:bg-white rounded-lg border border-slate-200 transition-all"><ChevronRight size={16} /></button>
             </div>
-          ))}
+        </div>
+        <div className="flex justify-between gap-1 overflow-x-auto no-scrollbar scroll-smooth">
+          {weekDays.map((date, i) => {
+            const isSelected = isSameDay(date, selectedDayMobile);
+            const isToday = isSameDay(date, new Date());
+            return (
+              <button
+                key={i}
+                onClick={() => setSelectedDayMobile(date)}
+                className={`flex-1 min-w-[45px] flex flex-col items-center py-3 rounded-2xl transition-all ${
+                  isSelected 
+                    ? "bg-[#003366] text-white shadow-lg shadow-blue-900/20 scale-105" 
+                    : "bg-white text-slate-400 hover:bg-slate-100"
+                }`}
+              >
+                <span className="text-[10px] font-black uppercase tracking-tighter mb-1 opacity-60">
+                   {format(date, 'EEE')}
+                </span>
+                <span className={`text-sm font-black ${isToday && !isSelected ? "text-[#00a1e4]" : ""}`}>
+                   {format(date, 'd')}
+                </span>
+                {isToday && isSelected && <div className="absolute -top-1 right-1 w-2 h-2 rounded-full bg-orange-400 border-2 border-[#003366]"></div>}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden text-sm">
+        {/* Desktop View - Grid */}
+        <div className="hidden md:block">
+            {/* Weekly Header */}
+            <div className="grid grid-cols-7 border-b border-slate-100 bg-slate-50">
+            {weekDays.map((date, i) => (
+                <div key={i} className="p-4 text-center border-r border-slate-100 last:border-0 relative">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{format(date, 'EEE')}</p>
+                <p className={`text-lg font-black mt-1 ${isSameDay(date, new Date()) ? 'text-[#00a1e4]' : 'text-slate-800'}`}>
+                    {format(date, 'd')}
+                </p>
+                </div>
+            ))}
+            </div>
+
+            {/* Weekly Content */}
+            {loading ? (
+            <div className="p-12 text-center text-slate-400 font-bold text-xs uppercase tracking-widest">Loading Calendar...</div>
+            ) : (
+            <div className="grid grid-cols-7 min-h-[300px]">
+                {weekDays.map((date, i) => {
+                const daySchedules = schedules.filter(s => isSameDay(new Date(s.start_at), date));
+                
+                return (
+                    <div key={i} className="p-2 border-r border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors">
+                    <div className="space-y-2">
+                        {daySchedules.map((s) => (
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+                            key={s.id} 
+                            className={`p-3 rounded-xl border ${getTypeStyle(s.type)} shadow-sm relative group`}
+                        >
+                            <p className="font-black text-xs tracking-tight mb-1">{s.title}</p>
+                            <p className="text-[9px] font-bold opacity-70 flex items-center gap-1 mb-1">
+                            <FolderGit2 size={10} /> {s.project?.name || "Unknown"}
+                            </p>
+                            <p className="text-[9px] font-bold opacity-70 flex items-center gap-1">
+                            <Clock size={10} /> {format(new Date(s.start_at), 'HH:mm')} - {format(new Date(s.end_at), 'HH:mm')}
+                            </p>
+
+                            <div className="mt-3 pt-2 border-t border-black/5 flex justify-between items-center">
+                            <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${
+                                s.status === 'Completed' ? 'bg-emerald-500 text-white' : 
+                                s.status === 'Missed' ? 'bg-rose-500 text-white' : 'bg-black/10'
+                            }`}>
+                                {s.status}
+                            </span>
+                            </div>
+
+                            {/* Hover Actions */}
+                            {s.status === 'Planned' && (
+                            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 p-1 rounded-lg shadow-sm">
+                                <button onClick={() => handleStatusUpdate(s.id, 'Completed')} className="p-1 text-emerald-500 hover:bg-emerald-50 rounded">
+                                <CheckCircle2 size={12} />
+                                </button>
+                                <button onClick={() => handleStatusUpdate(s.id, 'Missed')} className="p-1 text-rose-500 hover:bg-rose-50 rounded">
+                                <XCircle size={12} />
+                                </button>
+                            </div>
+                            )}
+                        </motion.div>
+                        ))}
+                    </div>
+                    </div>
+                );
+                })}
+            </div>
+            )}
         </div>
 
-        {/* Weekly Content */}
-        {loading ? (
-          <div className="p-12 text-center text-slate-400 font-bold text-xs uppercase tracking-widest">Loading Calendar...</div>
-        ) : (
-          <div className="grid grid-cols-7 min-h-[300px]">
-            {weekDays.map((date, i) => {
-              const daySchedules = schedules.filter(s => isSameDay(new Date(s.start_at), date));
-              
-              return (
-                <div key={i} className="p-2 border-r border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors">
-                  <div className="space-y-2">
-                    {daySchedules.map((s) => (
-                      <motion.div 
-                        initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-                        key={s.id} 
-                        className={`p-3 rounded-xl border ${getTypeStyle(s.type)} shadow-sm relative group`}
-                      >
-                        <p className="font-black text-xs tracking-tight mb-1">{s.title}</p>
-                        <p className="text-[9px] font-bold opacity-70 flex items-center gap-1 mb-1">
-                          <FolderGit2 size={10} /> {s.project?.name || "Unknown"}
-                        </p>
-                        <p className="text-[9px] font-bold opacity-70 flex items-center gap-1">
-                          <Clock size={10} /> {format(new Date(s.start_at), 'HH:mm')} - {format(new Date(s.end_at), 'HH:mm')}
-                        </p>
-
-                        <div className="mt-3 pt-2 border-t border-black/5 flex justify-between items-center">
-                          <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${
-                            s.status === 'Completed' ? 'bg-emerald-500 text-white' : 
-                            s.status === 'Missed' ? 'bg-rose-500 text-white' : 'bg-black/10'
-                          }`}>
-                            {s.status}
-                          </span>
-                        </div>
-
-                        {/* Hover Actions */}
-                        {s.status === 'Planned' && (
-                          <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 p-1 rounded-lg shadow-sm">
-                            <button onClick={() => handleStatusUpdate(s.id, 'Completed')} className="p-1 text-emerald-500 hover:bg-emerald-50 rounded">
-                              <CheckCircle2 size={12} />
-                            </button>
-                            <button onClick={() => handleStatusUpdate(s.id, 'Missed')} className="p-1 text-rose-500 hover:bg-rose-50 rounded">
-                              <XCircle size={12} />
-                            </button>
-                          </div>
-                        )}
-                      </motion.div>
-                    ))}
-                  </div>
+        {/* Mobile View - Single Day List */}
+        <div className="md:hidden flex flex-col min-h-[300px] p-4 bg-slate-50/30">
+            {loading ? (
+                <div className="p-12 text-center text-slate-400 font-bold text-xs uppercase tracking-widest">Loading Tasks...</div>
+            ) : schedules.filter(s => isSameDay(new Date(s.start_at), selectedDayMobile)).length === 0 ? (
+                <div className="py-20 flex flex-col items-center justify-center opacity-30 grayscale text-center">
+                    <Activity size={48} className="text-slate-300 mb-4" />
+                    <p className="text-[10px] font-black uppercase tracking-widest">No activities scheduled for this day</p>
                 </div>
-              );
-            })}
-          </div>
-        )}
+            ) : (
+                <div className="space-y-4">
+                    {schedules.filter(s => isSameDay(new Date(s.start_at), selectedDayMobile)).map((s) => (
+                        <motion.div 
+                            initial={{ opacity: 0, x: -20 }} 
+                            animate={{ opacity: 1, x: 0 }}
+                            key={s.id}
+                            className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm relative overflow-hidden"
+                        >
+                            <div className={`absolute top-0 left-0 w-1.5 h-full ${
+                                s.type === 'Preventive' ? 'bg-indigo-500' : 
+                                s.type === 'Corrective' ? 'bg-rose-500' : 'bg-amber-500'
+                            }`} />
+                            
+                            <div className="flex justify-between items-start mb-4">
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg ${getTypeStyle(s.type)} border-0`}>
+                                            {s.type}
+                                        </span>
+                                        <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg ${
+                                            s.status === 'Completed' ? 'bg-emerald-500/10 text-emerald-600' : 
+                                            s.status === 'Missed' ? 'bg-rose-500/10 text-rose-600' : 'bg-slate-100 text-slate-500'
+                                        }`}>
+                                            {s.status}
+                                        </span>
+                                    </div>
+                                    <h4 className="text-sm font-black text-[#003366] uppercase tracking-tight">{s.title}</h4>
+                                </div>
+                                <p className="text-[10px] font-black text-[#00a1e4]">{format(new Date(s.start_at), 'HH:mm')} - {format(new Date(s.end_at), 'HH:mm')}</p>
+                            </div>
+
+                            <div className="flex items-center justify-between mt-auto">
+                                <div className="flex items-center gap-2 text-slate-400 font-bold text-[10px]">
+                                    <MapPin size={12} className="text-[#00a1e4]" />
+                                    <span>{s.project?.name || "Global Project"}</span>
+                                </div>
+                                
+                                {s.status === 'Planned' && (
+                                    <div className="flex gap-2">
+                                        <button onClick={() => handleStatusUpdate(s.id, 'Completed')} className="flex items-center gap-1 px-3 py-1.5 bg-emerald-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20">
+                                            <CheckCircle2 size={12} /> Done
+                                        </button>
+                                        <button onClick={() => handleStatusUpdate(s.id, 'Missed')} className="p-1.5 bg-rose-50 text-rose-500 rounded-xl border border-rose-100 italic">
+                                            <XCircle size={14} />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    ))}
+                    <button 
+                        onClick={openModal}
+                        className="w-full py-4 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2rem] text-slate-400 text-[10px] font-black tracking-[0.2em] uppercase hover:bg-slate-100 transition-all flex items-center justify-center gap-2"
+                    >
+                        <Plus size={16} /> New Activity
+                    </button>
+                </div>
+            )}
+        </div>
       </div>
 
       {/* --- CRUD Form Modal --- */}

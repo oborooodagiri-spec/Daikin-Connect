@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.daikin.connect.epl",
+      "sha256_cert_fingerprints": [
+        "EE:3F:5F:45:19:3F:84:DD:7F:95:98:15:E7:46:78:42:EB:3F:01:4B:E1:8C:AE:2C:17:0B:38:2D:F1:8E:E4"
+      ]
+    }
+  }
+]
