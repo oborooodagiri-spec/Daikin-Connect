@@ -15,8 +15,8 @@ model customers {
   pic_phone     String?                  @db.VarChar(20)
   customer_type customers_customer_type? @default(Corporate)
   address       String?                  @db.Text
-  is_active     Boolean                  @default(true)
   created_at    DateTime?                @default(now()) @db.Timestamp(0)
+  is_active     Boolean                  @default(true)
   contracts     contracts[]
   projects      projects[]
   sites         sites[]
@@ -37,10 +37,10 @@ model projects {
   status              projects_status       @default(active)
   created_at          DateTime              @default(now()) @db.Timestamp(0)
   customers           customers             @relation(fields: [customer_id], references: [id], onUpdate: Restrict, map: "fk_projects_customer")
-  user_project_access user_project_access[]
-  units               units[]
-  schedules           schedules[]
   schedule_targets    schedule_targets[]
+  schedules           schedules[]
+  units               units[]
+  user_project_access user_project_access[]
 
   @@unique([customer_id, name], map: "uq_project_per_customer")
   @@index([customer_id], map: "idx_projects_customer")
@@ -80,8 +80,6 @@ model roles {
 model units {
   id                 Int                  @id @default(autoincrement())
   project_id         String?              @db.VarChar(50)
-  project_ref_id     BigInt?              @db.UnsignedBigInt
-  projects           projects?            @relation(fields: [project_ref_id], references: [id], onDelete: SetNull, onUpdate: Restrict, map: "fk_units_project_ref")
   project_type       String?              @db.VarChar(100)
   unit_type          String?              @db.VarChar(100)
   site_id            Int?
@@ -102,17 +100,21 @@ model units {
   status             units_status?        @default(Normal)
   last_service_date  DateTime?            @db.Date
   created_at         DateTime?            @default(now()) @db.Timestamp(0)
+  project_ref_id     BigInt?              @db.UnsignedBigInt
   activities         activities[]
   audit_tickets      audit_tickets[]
   audits             audits[]
+  complaints         complaints[]
   corrective         corrective[]
+  schedules          schedules[]
   service_activities service_activities[]
   service_logs       service_logs[]
   tickets            tickets[]
   unit_comments      unit_comments[]
+  projects           projects?            @relation(fields: [project_ref_id], references: [id], onUpdate: Restrict, map: "fk_units_project_ref")
   user_unit_access   user_unit_access[]
-  schedules          schedules[]
-  complaints         complaints[]
+
+  @@index([project_ref_id], map: "fk_units_project_ref")
 }
 
 model user_project_access {
@@ -154,13 +156,13 @@ model users {
   phone               String?               @db.VarChar(20)
   is_active           Boolean               @default(true)
   refresh_tokens      refresh_tokens[]
+  schedule_targets    schedule_targets[]
+  schedules           schedules[]
   service_activities  service_activities[]
   user_project_access user_project_access[]
   user_roles          user_roles[]
   user_unit_access    user_unit_access[]
   roles               roles?                @relation(fields: [role_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "users_ibfk_1")
-  schedules           schedules[]
-  schedule_targets    schedule_targets[]
 
   @@index([role_id], map: "role_id")
 }
@@ -454,6 +456,60 @@ model unit_comments {
   @@index([unit_id], map: "unit_id")
 }
 
+model schedules {
+  id              BigInt         @id @default(autoincrement()) @db.UnsignedBigInt
+  title           String         @db.VarChar(150)
+  description     String?        @db.Text
+  start_at        DateTime       @db.DateTime(0)
+  end_at          DateTime       @db.DateTime(0)
+  type            ScheduleType
+  status          ScheduleStatus @default(Planned)
+  google_event_id String?        @db.VarChar(255)
+  project_id      BigInt         @db.UnsignedBigInt
+  unit_id         Int?
+  assignee_id     Int?
+  created_at      DateTime       @default(now()) @db.Timestamp(0)
+  users           users?         @relation(fields: [assignee_id], references: [id])
+  projects        projects       @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  units           units?         @relation(fields: [unit_id], references: [id])
+
+  @@index([project_id])
+  @@index([unit_id])
+  @@index([assignee_id])
+}
+
+model schedule_targets {
+  id             Int          @id @default(autoincrement())
+  assignee_id    Int?
+  project_id     BigInt?      @db.UnsignedBigInt
+  type           ScheduleType
+  daily_target   Int          @default(0)
+  monthly_target Int          @default(0)
+  month          Int
+  year           Int
+  yearly_target  Int          @default(0)
+  users          users?       @relation(fields: [assignee_id], references: [id], onDelete: Cascade)
+  projects       projects?    @relation(fields: [project_id], references: [id], onDelete: Cascade)
+
+  @@index([assignee_id, type, month, year])
+  @@index([project_id, type, month, year])
+  @@index([assignee_id])
+  @@index([project_id])
+}
+
+model complaints {
+  id            Int      @id @default(autoincrement())
+  unit_id       Int
+  customer_name String   @db.VarChar(150)
+  description   String   @db.Text
+  photo_url     String?  @db.VarChar(255)
+  status        String   @default("Pending")
+  created_at    DateTime @default(now()) @db.Timestamp(0)
+  units         units    @relation(fields: [unit_id], references: [id], onDelete: Cascade)
+
+  @@index([unit_id], map: "idx_complaint_unit")
+}
+
 enum projects_status {
   active
   archived
@@ -560,60 +616,4 @@ enum ScheduleStatus {
   InProgress
   Completed
   Missed
-}
-
-model schedules {
-  id              BigInt         @id @default(autoincrement()) @db.UnsignedBigInt
-  title           String         @db.VarChar(150)
-  description     String?        @db.Text
-  start_at        DateTime       @db.DateTime(0)
-  end_at          DateTime       @db.DateTime(0)
-  type            ScheduleType
-  status          ScheduleStatus @default(Planned)
-  google_event_id String?        @db.VarChar(255)
-  project_id      BigInt         @db.UnsignedBigInt
-  unit_id         Int?
-  assignee_id     Int?
-  created_at      DateTime       @default(now()) @db.Timestamp(0)
-  
-  projects        projects       @relation(fields: [project_id], references: [id], onDelete: Cascade)
-  units           units?         @relation(fields: [unit_id], references: [id], onDelete: SetNull)
-  users           users?         @relation(fields: [assignee_id], references: [id], onDelete: SetNull)
-
-  @@index([project_id])
-  @@index([unit_id])
-  @@index([assignee_id])
-}
-
-model schedule_targets {
-  id              Int            @id @default(autoincrement())
-  assignee_id     Int?
-  project_id      BigInt?        @db.UnsignedBigInt
-  type            ScheduleType
-  daily_target    Int            @default(0)
-  monthly_target  Int            @default(0)
-  yearly_target   Int            @default(0)
-  month           Int            // 1-12
-  year            Int
-  
-  users           users?         @relation(fields: [assignee_id], references: [id], onDelete: Cascade)
-  projects        projects?      @relation(fields: [project_id], references: [id], onDelete: Cascade)
-
-  @@index([assignee_id, type, month, year])
-  @@index([project_id, type, month, year])
-  @@index([assignee_id])
-  @@index([project_id])
-}
-
-model complaints {
-  id            Int      @id @default(autoincrement())
-  unit_id       Int
-  customer_name String   @db.VarChar(150)
-  description   String   @db.Text
-  photo_url     String?  @db.VarChar(255)
-  status        String   @default("Pending") // Pending, On_Progress, Resolved
-  created_at    DateTime @default(now()) @db.Timestamp(0)
-  units         units    @relation(fields: [unit_id], references: [id], onDelete: Cascade)
-
-  @@index([unit_id], map: "idx_complaint_unit")
 }
