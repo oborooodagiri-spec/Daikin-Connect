@@ -21,13 +21,13 @@ export async function getAllUsers() {
           include: { roles: true }
         }
       },
-      orderBy: { created_at: 'desc' }
+      orderBy: { id: 'desc' }
     });
     
     // Sort roles for each user to get primary role (e.g. Admin first)
-    const formattedUsers = users.map(u => ({
+    const formattedUsers = users.map((u: any) => ({
       ...u,
-      roles: u.user_roles.map(ur => ur.roles.role_name),
+      roles: u.user_roles.map((ur: any) => ur.roles.role_name),
       primaryRole: u.user_roles[0]?.roles.role_name || "No Role"
     }));
 
