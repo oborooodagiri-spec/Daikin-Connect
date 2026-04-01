@@ -17,6 +17,10 @@ export const metadata: Metadata = {
   title: "EPL Connect - Daikin",
   description: "Daikin Connect - Value Engineering Services",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
   themeColor: "#00a1e4",
   viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0",
   appleWebApp: {

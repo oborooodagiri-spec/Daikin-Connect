@@ -119,17 +119,36 @@ export async function getDashboardData(filters: { customerId?: string; projectId
       
       const monthly = targets.reduce((sum: number, t: any) => sum + (t.monthly_target || 0), 0);
       const daily = targets.reduce((sum: number, t: any) => sum + (t.daily_target || 0), 0);
+      const yearly = targets.reduce((sum: number, t: any) => sum + (t.yearly_target || 0), 0);
       
       return { 
         daily: daily || Math.ceil(monthly / 20) || 1, 
         monthly: monthly || 0,
-        total: monthly * (now.getMonth() + 1)
+        total: yearly || (monthly * 12) // Fallback to 12x monthly if yearly not set
       };
+    };
+
+    // 4. Specialized Corrective Stats (Resolution Rate)
+    const fetchCorrectiveKPI = async () => {
+      const scheduleWhere: any = { 
+        type: "Corrective",
+        start_at: { gte: startOfMonth }
+      };
+      if (filters.projectId) scheduleWhere.project_id = BigInt(filters.projectId);
+      else if (accessibleIds) scheduleWhere.project_id = { in: accessibleIds.map(id => BigInt(id)) };
+
+      const [appeared, resolved] = await Promise.all([
+        (prisma.schedules as any).count({ where: scheduleWhere }),
+        (prisma.schedules as any).count({ where: { ...scheduleWhere, status: "Completed" } })
+      ]);
+
+      return { appeared, resolved };
     };
 
     const [
       auditActual, auditTarget, 
       pmActual, pmTargetMetrics, 
+      corKPI,
       corActual,
       totalUnits,
       activeProjects,
@@ -139,6 +158,7 @@ export async function getDashboardData(filters: { customerId?: string; projectId
       fetchTypeTargets("Audit"),
       fetchTypeActuals("Preventive"),
       fetchTypeTargets("Preventive"),
+      fetchCorrectiveKPI(),
       fetchTypeActuals("Corrective"),
       (prisma.units as any).count({ where: unitWhere }),
       (prisma.projects as any).count({ 
@@ -154,7 +174,10 @@ export async function getDashboardData(filters: { customerId?: string; projectId
     return {
       audit: { actual: auditActual, target: auditTarget },
       preventive: { actual: pmActual, target: pmTargetMetrics },
-      corrective: { actual: corActual, target: { daily: 0, monthly: 0, total: 0 } }, 
+      corrective: { 
+        actual: corActual, 
+        kpi: corKPI 
+      }, 
       databaseAssets: totalUnits,
       activeSites: activeProjects,
       totalCustomers: totalCustomers,

@@ -88,89 +88,17 @@ export default function TargetsPage() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       
-      {/* Target Setup Form */}
-      <div className="lg:col-span-1 border border-slate-200 bg-white rounded-3xl shadow-sm overflow-hidden p-6 h-max">
-        <h2 className="text-xl font-black text-[#003366] mb-1 flex items-center gap-2">
-          <Target className="w-5 h-5 text-rose-500" />
-          Set Monthly Quota
-        </h2>
-        <p className="text-xs font-bold text-slate-500 mb-6">Define activity targets for the current month.</p>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Assignee (Engineer/Vendor)</label>
-            <select 
-              value={formData.assignee_id} onChange={e => setFormData({...formData, assignee_id: e.target.value, project_id: ""})}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-300"
-            >
-              <option value="">Personal Target (Optional)...</option>
-              {engineers.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
-            </select>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">OR Project Target</label>
-            <select 
-              value={formData.project_id} onChange={e => setFormData({...formData, project_id: e.target.value, assignee_id: ""})}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-300"
-            >
-              <option value="">Choose Site/Project...</option>
-              {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-            </select>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Activity Type</label>
-            <select 
-              value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-300"
-            >
-              <option value="Preventive">Preventive Maintenance</option>
-              <option value="Corrective">Corrective Repair</option>
-              <option value="Audit">Audit</option>
-            </select>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Daily Target</label>
-              <input 
-                type="number" min="0" required
-                value={formData.daily_target} onChange={e => setFormData({...formData, daily_target: parseInt(e.target.value)})}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-center"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Monthly Target</label>
-              <input 
-                type="number" min="0" required
-                value={formData.monthly_target} onChange={e => setFormData({...formData, monthly_target: parseInt(e.target.value)})}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-center"
-              />
-            </div>
-          </div>
-
-          <button 
-            type="submit" disabled={isPending}
-            className="w-full mt-4 px-4 py-3.5 bg-[#00a1e4] hover:bg-[#008cc6] text-white rounded-xl text-sm font-bold shadow-md transition-all flex justify-center items-center gap-2"
-          >
-            {isPending ? "Applying..." : "Apply Target"}
-            {!isPending && <Save size={16} />}
-          </button>
-        </form>
-      </div>
-
-      {/* Target Progress Board */}
-      <div className="lg:col-span-2 space-y-6">
+      {/* Target Progress Board - Now Full Width */}
+      <div className="lg:col-span-3 space-y-6">
         
         {loading ? (
-          <div className="p-12 text-center text-slate-400 font-bold text-xs uppercase tracking-widest">Loading targets...</div>
+          <div className="p-12 text-center text-slate-400 font-bold text-xs uppercase tracking-widest">Loading tracking data...</div>
         ) : targets.length === 0 ? (
           <div className="p-12 text-center border-2 border-dashed border-slate-200 rounded-3xl">
-            <p className="text-sm font-bold text-slate-400">No targets configured for this month.</p>
+            <p className="text-sm font-bold text-slate-400">No active tracking metrics found.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {targets.map((target, i) => {
               const progress = calculateProgress(target);
               const isDanger = progress.percentage < 30;
@@ -208,7 +136,7 @@ export default function TargetsPage() {
                         <span className="mx-1">/</span> {target.monthly_target} Units
                       </div>
                       <div className="text-right">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Daily Quota: {target.daily_target}</p>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Monthly Quota</p>
                       </div>
                     </div>
 

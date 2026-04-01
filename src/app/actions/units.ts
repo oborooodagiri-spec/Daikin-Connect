@@ -348,3 +348,32 @@ export async function getUnitByTag(tagNumber: string) {
   }
 }
 
+// 10. GET GLOBAL PROBLEM UNITS (For Real-time Notification Banner)
+export async function getGlobalProblemUnits() {
+  noStore();
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized access" };
+
+  try {
+    const problemUnits = await (prisma.units as any).findMany({
+      where: {
+        status: { in: ['Problem', 'Critical', 'Warning'] }
+      },
+      include: {
+        projects: {
+          select: { id: true, customer_id: true, name: true }
+        }
+      },
+      take: 10 // Only notify for top 10 recent problems
+    });
+
+    return serializePrisma({
+      success: true,
+      data: problemUnits
+    });
+  } catch (error) {
+    console.error("Fetch global problem units error:", error);
+    return { error: "Failed to fetch problem units" };
+  }
+}
+

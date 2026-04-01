@@ -32,7 +32,10 @@ export default function DashboardWrapper() {
   const [summaryData, setSummaryData] = useState<any>({
     audit: { actual: { daily: 0, monthly: 0, total: 0 }, target: { daily: 0, monthly: 0, total: 0 } },
     preventive: { actual: { daily: 0, monthly: 0, total: 0 }, target: { daily: 0, monthly: 0, total: 0 } },
-    corrective: { actual: { daily: 0, monthly: 0, total: 0 }, target: { daily: 0, monthly: 0, total: 0 } },
+    corrective: { 
+      actual: { daily: 0, monthly: 0, total: 0 }, 
+      kpi: { appeared: 0, resolved: 0 } 
+    },
     databaseAssets: 0, totalCustomers: 0, activeSites: 0
   });
   const [chartData, setChartData] = useState<any[]>([]);

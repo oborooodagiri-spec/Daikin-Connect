@@ -9,7 +9,7 @@ export default function SchedulesLayout({ children }: { children: React.ReactNod
 
   const tabs = [
     { name: "Calendar Board", href: "/dashboard/schedules", icon: CalendarDays },
-    { name: "Target & Tracking", href: "/dashboard/schedules/targets", icon: Target },
+    { name: "Tracking", href: "/dashboard/schedules/targets", icon: Target },
   ];
 
   return (

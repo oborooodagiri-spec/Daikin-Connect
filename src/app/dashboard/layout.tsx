@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { getUserAssignedProjects } from "../actions/complaints";
 import DashboardSidebarClient from "./DashboardSidebarClient";
+import ProblemNotificationCenter from "@/components/ProblemNotificationCenter";
 
 export default async function DashboardLayout({
   children,
@@ -38,11 +39,12 @@ export default async function DashboardLayout({
 
       {/* Main Content Area */}
       <div className="flex-1 transition-all duration-500 ml-0 md:ml-72 min-w-0">
-        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 md:px-8 flex items-center justify-between sticky top-0 z-[40]">
+        
+        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 md:px-8 flex items-center justify-between sticky top-0 z-[90]">
            <div className="w-10 h-10 md:hidden" />
 
            <div className="flex items-center gap-2 md:gap-6">
-             {/* Dynamic Date moved to a safer rendering style or Client-only component if needed */}
+             
              <div className="hidden sm:block text-right">
                <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter leading-none mb-1">SYSTEM CONNECTED</p>
                <p className="text-xs font-bold text-[#00a1e4] tracking-tight">{new Date().getFullYear()} DAIKIN CONNECT ONLINE</p>
@@ -51,6 +53,7 @@ export default async function DashboardLayout({
              <div className="h-8 w-[1px] bg-slate-200 hidden sm:block"></div>
 
              <div className="flex items-center gap-3">
+               <ProblemNotificationCenter />
                <div className="text-right">
                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter leading-none">Logged in as</p>
                  <p className="text-xs font-bold text-slate-800 tracking-tight max-w-[120px] truncate uppercase">{session?.name}</p>

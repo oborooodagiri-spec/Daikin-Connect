@@ -20,31 +20,27 @@ export default function ProjectTargetModal({ projectId, projectName, isOpen, onC
   const [isPending, startTransition] = useTransition();
   const [activeTab, setActiveTab] = useState<"Preventive" | "Audit">("Preventive");
   const [formData, setFormData] = useState({
-    Preventive: { daily: Math.ceil(unitCount / 20), monthly: unitCount, yearly: unitCount * 4 },
-    Audit: { daily: Math.ceil(unitCount / 20), monthly: unitCount, yearly: unitCount * 4 }
+    Preventive: { daily: 0, monthly: 0, yearly: 0 },
+    Audit: { daily: 0, monthly: 0, yearly: 0, duration: 12 }
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     startTransition(async () => {
-      // Save for Preventive and Audit
-      await Promise.all([
-        setProjectTarget({ 
-          projectId, 
-          type: "Preventive", 
-          daily: formData.Preventive.daily, 
-          monthly: formData.Preventive.monthly, 
-          yearly: formData.Preventive.yearly 
-        }),
-        setProjectTarget({ 
-          projectId, 
-          type: "Audit", 
-          daily: formData.Audit.daily, 
-          monthly: formData.Audit.monthly, 
-          yearly: formData.Audit.yearly 
-        }),
-      ]);
-      onClose();
+      // Save ONLY for the active type
+      const res = await setProjectTarget({ 
+        projectId, 
+        type: activeTab, 
+        daily: formData[activeTab].daily, 
+        monthly: formData[activeTab].monthly, 
+        yearly: formData[activeTab].yearly 
+      });
+      
+      if (res.success) {
+        onClose();
+      } else {
+        alert(res.error || "Failed to save targets");
+      }
     });
   };
 
@@ -74,7 +70,7 @@ export default function ProjectTargetModal({ projectId, projectName, isOpen, onC
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mt-1">Operational Targets</p>
                 </div>
               </div>
-              <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-xl transition-colors">
+              <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-xl transition-colors" type="button">
                 <X size={20} />
               </button>
             </div>
@@ -97,10 +93,10 @@ export default function ProjectTargetModal({ projectId, projectName, isOpen, onC
 
               <div className="p-8 space-y-6">
                 <div className="bg-blue-50 border border-blue-100 p-4 rounded-2xl flex items-center gap-4">
-                   <div className="bg-white p-2.5 rounded-xl text-blue-500 shadow-sm"><Settings2 size={18}/></div>
-                 <p className="text-xs font-bold text-blue-700 leading-relaxed">
-                   Set work targets for <span className="uppercase font-black">{activeTab}</span>. Corrective targets are now calculated automatically.
-                 </p>
+                    <div className="bg-white p-2.5 rounded-xl text-blue-500 shadow-sm"><Settings2 size={18}/></div>
+                  <p className="text-xs font-bold text-blue-700 leading-relaxed">
+                    Set work targets for <span className="uppercase font-black">{activeTab}</span>. Corrective targets are now calculated automatically.
+                  </p>
               </div>
 
               <div className="grid grid-cols-1 gap-4">
@@ -114,13 +110,52 @@ export default function ProjectTargetModal({ projectId, projectName, isOpen, onC
                     icon={<CalendarIcon size={16}/>} label="Monthly Target" 
                     value={formData[activeTab].monthly} color="blue"
                     onChange={(v: number) => setFormData({...formData, [activeTab]: {...formData[activeTab], monthly: v}})}
-                    onAuto={() => setFormData({...formData, [activeTab]: { daily: Math.ceil(unitCount / 20), monthly: unitCount, yearly: unitCount * 4 }})}
+                    onAuto={() => {
+                        const monthly = unitCount;
+                        const daily = Math.ceil(unitCount / 20);
+                        const dur = activeTab === 'Audit' ? (formData.Audit.duration || 12) : 12;
+                        setFormData({...formData, [activeTab]: { daily, monthly, yearly: monthly * dur, ...(activeTab === 'Audit' ? { duration: dur } : {}) }});
+                    }}
                   />
-                  <TargetInputField 
-                    icon={<TrendingUp size={16}/>} label="Yearly Target" 
-                    value={formData[activeTab].yearly} color="emerald"
-                    onChange={(v: number) => setFormData({...formData, [activeTab]: {...formData[activeTab], yearly: v}})}
-                  />
+
+                  {activeTab === 'Audit' && (
+                    <div className="bg-slate-50/50 p-4 rounded-[2rem] border border-slate-100 space-y-4">
+                        <TargetInputField 
+                            icon={<CalendarIcon size={16}/>} label="Target Duration" 
+                            value={formData.Audit.duration} color="amber"
+                            onChange={(v: number) => {
+                                const newDuration = v || 1;
+                                setFormData({
+                                    ...formData, 
+                                    Audit: { 
+                                        ...formData.Audit, 
+                                        duration: newDuration,
+                                        yearly: formData.Audit.monthly * newDuration
+                                    }
+                                });
+                            }}
+                            helper="Months involved in the campaign"
+                            placeholder="Months"
+                            unit="Months"
+                        />
+                        <div className="px-2 border-t border-slate-100 pt-4">
+                            <TargetInputField 
+                                icon={<TrendingUp size={16}/>} label="Final Target" 
+                                value={formData.Audit.yearly} color="emerald"
+                                onChange={(v: number) => setFormData({...formData, Audit: {...formData.Audit, yearly: v}})}
+                                helper={`Total target for ${formData.Audit.duration} months`}
+                            />
+                        </div>
+                    </div>
+                  )}
+
+                  {activeTab === 'Preventive' && (
+                    <TargetInputField 
+                        icon={<TrendingUp size={16}/>} label="Yearly Target" 
+                        value={formData.Preventive.yearly} color="emerald"
+                        onChange={(v: number) => setFormData({...formData, Preventive: {...formData.Preventive, yearly: v}})}
+                    />
+                  )}
               </div>
 
               {/* Corrective Info Card */}
@@ -137,7 +172,7 @@ export default function ProjectTargetModal({ projectId, projectName, isOpen, onC
               <div className="pt-4 flex gap-3">
                  <button type="button" onClick={onClose} className="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-100 rounded-2xl transition-all">Cancel</button>
                  <button type="submit" disabled={isPending} className="flex-[2] py-4 bg-[#003366] hover:bg-[#002244] text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-blue-900/10 flex items-center justify-center gap-3">
-                    {isPending ? "Applying..." : "Save Targets"}
+                    {isPending ? "Applying..." : `Set ${activeTab} Targets`}
                     {!isPending && <Save size={16} />}
                  </button>
               </div>
@@ -150,11 +185,12 @@ export default function ProjectTargetModal({ projectId, projectName, isOpen, onC
   );
 }
 
-function TargetInputField({ label, value, onChange, icon, color, helper, onAuto }: any) {
+function TargetInputField({ label, value, onChange, icon, color, helper, onAuto, placeholder, unit = "Units Target" }: any) {
   const colors: any = {
     indigo: "text-indigo-600 bg-indigo-50",
     blue: "text-blue-600 bg-blue-50",
     emerald: "text-emerald-600 bg-emerald-50",
+    amber: "text-orange-600 bg-orange-50",
   };
 
   return (
@@ -172,12 +208,14 @@ function TargetInputField({ label, value, onChange, icon, color, helper, onAuto 
       </div>
       <div className="flex items-center gap-4">
          <input 
-           type="number" min="0" value={value} onChange={e => onChange(parseInt(e.target.value) || 0)}
-           className="w-24 text-center py-2 bg-slate-50 border border-slate-100 rounded-xl text-lg font-black text-slate-800 focus:bg-white focus:ring-4 focus:ring-blue-500/5 transition-all outline-none"
+           type="number" min="0" value={value === 0 ? "" : value} 
+           onChange={e => onChange(parseInt(e.target.value) || 0)}
+           placeholder={placeholder || "0"}
+           className="w-24 text-center py-2 bg-slate-50 border border-slate-100 rounded-xl text-lg font-black text-slate-800 placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:ring-blue-500/5 transition-all outline-none"
          />
          <div>
-            <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest block">Units Target</span>
-            {helper && <p className="text-[9px] font-bold text-slate-400 italic leading-none mt-1">{helper}</p>}
+            <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest block">{unit}</span>
+            {helper && <p className="text-[9px] font-bold text-slate-400 italic leading-snug mt-1">{helper}</p>}
          </div>
       </div>
     </div>
