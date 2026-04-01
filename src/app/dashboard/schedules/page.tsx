@@ -186,17 +186,6 @@ export default function SchedulesPage() {
                             </span>
                             </div>
 
-                            {/* Hover Actions */}
-                            {s.status === 'Planned' && (
-                            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 p-1 rounded-lg shadow-sm">
-                                <button onClick={() => handleStatusUpdate(s.id, 'Completed')} className="p-1 text-emerald-500 hover:bg-emerald-50 rounded">
-                                <CheckCircle2 size={12} />
-                                </button>
-                                <button onClick={() => handleStatusUpdate(s.id, 'Missed')} className="p-1 text-rose-500 hover:bg-rose-50 rounded">
-                                <XCircle size={12} />
-                                </button>
-                            </div>
-                            )}
                         </motion.div>
                         ))}
                     </div>
@@ -254,16 +243,6 @@ export default function SchedulesPage() {
                                     <span>{s.project?.name || "Global Project"}</span>
                                 </div>
                                 
-                                {s.status === 'Planned' && (
-                                    <div className="flex gap-2">
-                                        <button onClick={() => handleStatusUpdate(s.id, 'Completed')} className="flex items-center gap-1 px-3 py-1.5 bg-emerald-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20">
-                                            <CheckCircle2 size={12} /> Done
-                                        </button>
-                                        <button onClick={() => handleStatusUpdate(s.id, 'Missed')} className="p-1.5 bg-rose-50 text-rose-500 rounded-xl border border-rose-100 italic">
-                                            <XCircle size={14} />
-                                        </button>
-                                    </div>
-                                )}
                             </div>
                         </motion.div>
                     ))}
