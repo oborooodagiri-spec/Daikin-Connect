@@ -79,25 +79,25 @@ export default function ProjectTargetModal({ projectId, projectName, isOpen, onC
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-8 space-y-6">
-            <div className="px-8 pt-4">
-               <div className="flex bg-slate-100 p-1 rounded-2xl gap-1">
-                 {(["Preventive", "Audit"] as const).map(tab => (
-                   <button
-                     key={tab}
-                     type="button"
-                     onClick={() => setActiveTab(tab)}
-                     className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? "bg-white text-[#003366] shadow-sm" : "text-slate-400 hover:text-slate-600"}`}
-                   >
-                     {tab} Task
-                   </button>
-                 ))}
-               </div>
-            </div>
+            <form onSubmit={handleSubmit} className="flex flex-col">
+              <div className="px-8 pt-4">
+                 <div className="flex bg-slate-100 p-1 rounded-2xl gap-1">
+                   {(["Preventive", "Audit"] as const).map(tab => (
+                     <button
+                       key={tab}
+                       type="button"
+                       onClick={() => setActiveTab(tab)}
+                       className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? "bg-white text-[#003366] shadow-sm" : "text-slate-400 hover:text-slate-600"}`}
+                     >
+                       {tab} Task
+                     </button>
+                   ))}
+                 </div>
+              </div>
 
-            <form onSubmit={handleSubmit} className="p-8 space-y-6">
-              <div className="bg-blue-50 border border-blue-100 p-4 rounded-2xl flex items-center gap-4">
-                 <div className="bg-white p-2.5 rounded-xl text-blue-500 shadow-sm"><Settings2 size={18}/></div>
+              <div className="p-8 space-y-6">
+                <div className="bg-blue-50 border border-blue-100 p-4 rounded-2xl flex items-center gap-4">
+                   <div className="bg-white p-2.5 rounded-xl text-blue-500 shadow-sm"><Settings2 size={18}/></div>
                  <p className="text-xs font-bold text-blue-700 leading-relaxed">
                    Set work targets for <span className="uppercase font-black">{activeTab}</span>. Corrective targets are now calculated automatically.
                  </p>
@@ -140,6 +140,7 @@ export default function ProjectTargetModal({ projectId, projectName, isOpen, onC
                     {isPending ? "Applying..." : "Save Targets"}
                     {!isPending && <Save size={16} />}
                  </button>
+              </div>
               </div>
             </form>
           </motion.div>
