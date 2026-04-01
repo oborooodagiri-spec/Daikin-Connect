@@ -19,6 +19,9 @@ export async function getAllUsers() {
       include: {
         user_roles: {
           include: { roles: true }
+        },
+        _count: {
+          select: { user_project_access: true }
         }
       },
       orderBy: { id: 'desc' }
@@ -28,7 +31,8 @@ export async function getAllUsers() {
     const formattedUsers = users.map((u: any) => ({
       ...u,
       roles: u.user_roles.map((ur: any) => ur.roles.role_name),
-      primaryRole: u.user_roles[0]?.roles.role_name || "No Role"
+      primaryRole: u.user_roles[0]?.roles.role_name || "No Role",
+      projectCount: u._count?.user_project_access || 0
     }));
 
     return { success: true, data: formattedUsers };
@@ -51,10 +55,76 @@ export async function toggleUserStatus(userId: number, currentStatus: boolean) {
   if (!await checkAdmin()) return { error: "Unauthorized" };
 
   try {
+    const user = await prisma.users.findUnique({
+      where: { id: userId },
+      include: { 
+        user_roles: { include: { roles: true } },
+        _count: { select: { user_project_access: true } }
+      }
+    });
+
+    if (!user) return { error: "User not found" };
+
+    // Activation Guard: If turning ON for external role, check project count
+    const roles = user.user_roles.map(ur => ur.roles.role_name.toLowerCase());
+    const isInternal = roles.some(r => ["super_admin", "admin", "administrator", "internal", "engineer", "sales engineer", "management"].includes(r));
+    
+    if (!currentStatus && !isInternal && user._count.user_project_access === 0) {
+      return { error: "EXTERNAL_USER_NO_PROJECT" };
+    }
+
     await prisma.users.update({
       where: { id: userId },
       data: { is_active: !currentStatus }
     });
+    revalidatePath("/dashboard/users");
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+export async function getAllAvailableProjects() {
+  if (!await checkAdmin()) return { error: "Unauthorized" };
+  try {
+    const projects = await prisma.projects.findMany({
+      where: { status: 'active' },
+      select: { id: true, name: true, code: true }
+    });
+    return { success: true, data: projects };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+export async function getUserProjectAccess(userId: number) {
+  if (!await checkAdmin()) return { error: "Unauthorized" };
+  try {
+    const access = await prisma.user_project_access.findMany({
+      where: { user_id: userId },
+      select: { project_id: true }
+    });
+    return { success: true, data: access.map(a => a.project_id) };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+export async function updateUserProjectAccess(userId: number, projectIds: string[]) {
+  if (!await checkAdmin()) return { error: "Unauthorized" };
+
+  try {
+    // Transactional update: delete old, create new
+    await prisma.$transaction([
+      prisma.user_project_access.deleteMany({ where: { user_id: userId } }),
+      prisma.user_project_access.createMany({
+        data: projectIds.map(pid => ({
+          user_id: userId,
+          project_id: BigInt(pid)
+        }))
+      })
+    ]);
+    
     revalidatePath("/dashboard/users");
     return { success: true };
   } catch (error: any) {

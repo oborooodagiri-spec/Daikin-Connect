@@ -96,7 +96,7 @@ export async function login(formData: FormData) {
     return { error: "An unexpected error occurred. Please try again." };
   }
 
-  // Set cookie and redirect OUTSIDE try/catch (Next.js requirement)
+  // Set cookie
   const cookieStore = await cookies();
   cookieStore.set("session", token!, {
     httpOnly: true,
@@ -106,7 +106,26 @@ export async function login(formData: FormData) {
     path: "/",
   });
 
-  redirect("/dashboard");
+  // Role-based redirect
+  let isInternal = false;
+  try {
+    const userRoleData = await prisma.users.findUnique({
+      where: { email },
+      include: { user_roles: { include: { roles: true } } }
+    });
+    if (userRoleData) {
+      const roles = userRoleData.user_roles.map(ur => ur.roles.role_name.toLowerCase());
+      isInternal = roles.some(r => ["super_admin", "admin", "administrator", "internal", "engineer", "sales engineer", "management"].includes(r));
+    }
+  } catch (e) {
+    console.error("Redirect check error:", e);
+  }
+
+  if (isInternal) {
+    redirect("/dashboard");
+  } else {
+    redirect("/client/dashboard");
+  }
 }
 
 export async function logout() {

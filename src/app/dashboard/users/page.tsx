@@ -4,33 +4,42 @@ import { useEffect, useState, useTransition } from "react";
 import { 
   Users, Search, ShieldCheck, Mail, ShieldAlert, 
   Trash2, ChevronRight, CheckCircle2, XCircle, 
-  UserCog, Filter, MoreVertical, Shield
+  UserCog, Filter, MoreVertical, Shield, Building2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getAllUsers, toggleUserStatus, updateUserRole, deleteUser, getAllRoles } from "@/app/actions/users";
+import { 
+  getAllUsers, toggleUserStatus, updateUserRole, 
+  deleteUser, getAllRoles, getAllAvailableProjects,
+  getUserProjectAccess, updateUserProjectAccess 
+} from "@/app/actions/users";
 import { format } from "date-fns";
 
 export default function UsersPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [roles, setRoles] = useState<any[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
   const [isPending, startTransition] = useTransition();
 
-  // Selection for Role Change
+  // Selection for Modals
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
 
   const fetchData = async () => {
     setLoading(true);
-    const [userRes, roleRes] = await Promise.all([
+    const [userRes, roleRes, projectRes] = await Promise.all([
       getAllUsers(),
-      getAllRoles()
+      getAllRoles(),
+      getAllAvailableProjects()
     ]);
     
     if (userRes.success) setUsers(userRes.data);
     if (roleRes.success) setRoles(roleRes.data);
+    if (projectRes.success) setProjects(projectRes.data);
     setLoading(false);
   };
 
@@ -44,7 +53,38 @@ export default function UsersPage() {
 
     startTransition(async () => {
       const res = await toggleUserStatus(user.id, user.is_active);
-      if (res.success) fetchData();
+      if (res.success) {
+        fetchData();
+      } else if (res.error === "EXTERNAL_USER_NO_PROJECT") {
+        alert("CRITICAL: This external user has no assigned projects. You MUST assign at least one project before activating this account.");
+        setSelectedUser(user);
+        handleOpenProjectModal(user.id);
+      } else {
+        alert(res.error);
+      }
+    });
+  };
+
+  const handleOpenProjectModal = async (userId: number) => {
+    startTransition(async () => {
+      const res = await getUserProjectAccess(userId);
+      if (res.success) {
+        setSelectedProjects(res.data.map((id: any) => id.toString()));
+        setIsProjectModalOpen(true);
+      }
+    });
+  };
+
+  const handleProjectUpdate = async () => {
+    if (!selectedUser) return;
+    startTransition(async () => {
+      const res = await updateUserProjectAccess(selectedUser.id, selectedProjects);
+      if (res.success) {
+        setIsProjectModalOpen(false);
+        fetchData();
+      } else {
+        alert(res.error);
+      }
     });
   };
 
@@ -70,7 +110,7 @@ export default function UsersPage() {
     });
   };
 
-  const filteredUsers = users.filter(u => {
+  const filteredUsers = users.filter((u: any) => {
     const matchesSearch = u.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          u.email.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'all' || 
@@ -124,13 +164,13 @@ export default function UsersPage() {
       {/* Main Content Area */}
       <div className="bg-white border border-slate-200 rounded-[2.5rem] shadow-sm overflow-hidden relative">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse isolate min-w-[900px]">
+          <table className="w-full text-left border-collapse isolate min-w-[1000px]">
             <thead>
               <tr className="bg-slate-50/50 border-b border-slate-100">
                 <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">User Identity</th>
                 <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Security Role</th>
+                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Project Access</th>
                 <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Status</th>
-                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Date Joined</th>
                 <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-right">Administrative Actions</th>
               </tr>
             </thead>
@@ -158,98 +198,116 @@ export default function UsersPage() {
                     </td>
                   </tr>
                 ) : (
-                  filteredUsers.map((user, index) => (
-                    <motion.tr 
-                      key={user.id}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      className="group hover:bg-blue-50/20 transition-colors"
-                    >
-                      <td className="px-8 py-6">
-                        <div className="flex items-center gap-4">
-                          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#003366] to-blue-600 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-blue-900/10 shrink-0">
-                            {user.name?.charAt(0).toUpperCase()}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-sm font-black text-[#003366] tracking-tight truncate">{user.name}</p>
-                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400">
-                              <Mail size={11} className="shrink-0" />
-                              <span className="truncate">{user.email}</span>
+                  filteredUsers.map((user: any, index: number) => {
+                    const isExternal = user.roles.some((r: string) => ["customer", "vendor"].includes(r.toLowerCase()));
+                    const needsProject = isExternal && user.projectCount === 0;
+
+                    return (
+                      <motion.tr 
+                        key={user.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="group hover:bg-blue-50/20 transition-colors"
+                      >
+                        <td className="px-8 py-6">
+                            <div className="flex items-center gap-4">
+                            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#003366] to-blue-600 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-blue-900/10 shrink-0">
+                                {user.name?.charAt(0).toUpperCase()}
                             </div>
-                          </div>
-                        </div>
-                      </td>
+                            <div className="min-w-0">
+                                <p className="text-sm font-black text-[#003366] tracking-tight truncate">{user.name}</p>
+                                <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400">
+                                <Mail size={11} className="shrink-0" />
+                                <span className="truncate">{user.email}</span>
+                                </div>
+                            </div>
+                            </div>
+                        </td>
 
-                      <td className="px-8 py-6">
-                        <div className="flex flex-wrap gap-1.5">
-                          {user.roles.map((role: string, rid: number) => (
-                            <span key={rid} className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border
-                              ${role.toLowerCase().includes('admin') ? 'bg-rose-50 text-rose-600 border-rose-100' : 
-                                role.toLowerCase().includes('engineer') ? 'bg-indigo-50 text-indigo-600 border-indigo-100' : 
-                                'bg-slate-50 text-slate-600 border-slate-100'}`}>
-                              <Shield size={10} />
-                              {role}
+                        <td className="px-8 py-6">
+                            <div className="flex flex-wrap gap-1.5">
+                            {user.roles.map((role: string, rid: number) => (
+                                <span key={rid} className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border
+                                ${role.toLowerCase().includes('admin') ? 'bg-rose-50 text-rose-600 border-rose-100' : 
+                                    role.toLowerCase().includes('engineer') ? 'bg-indigo-50 text-indigo-600 border-indigo-100' : 
+                                    'bg-slate-50 text-slate-600 border-slate-100'}`}>
+                                <Shield size={10} />
+                                {role}
+                                </span>
+                            ))}
+                            </div>
+                        </td>
+
+                        <td className="px-8 py-6">
+                            <div className="flex items-center gap-2">
+                                <div className={`px-3 py-1.5 rounded-xl border text-[9px] font-black uppercase tracking-widest flex items-center gap-2 ${
+                                    user.projectCount > 0 ? "bg-blue-50 text-blue-600 border-blue-100" : "bg-slate-50 text-slate-400 border-slate-100"
+                                }`}>
+                                    <Building2 size={12} />
+                                    {user.projectCount} Projects
+                                </div>
+                                <button 
+                                    onClick={() => { setSelectedUser(user); handleOpenProjectModal(user.id); }}
+                                    className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                                >
+                                    <ChevronRight size={14} />
+                                </button>
+                            </div>
+                        </td>
+
+                        <td className="px-8 py-6">
+                            <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border ${
+                            user.is_active 
+                                ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
+                                : needsProject ? 'bg-amber-50 text-amber-600 border-amber-200 border-dashed animate-pulse' : 'bg-slate-50 text-slate-400 border-slate-100'
+                            }`}>
+                            {user.is_active ? <CheckCircle2 size={12} /> : needsProject ? <ShieldAlert size={12} /> : <XCircle size={12} />}
+                            <span className="text-[9px] font-black uppercase tracking-widest">
+                                {user.is_active ? "Active" : needsProject ? "Setup required" : "Inactive"}
                             </span>
-                          ))}
-                        </div>
-                      </td>
+                            </span>
+                        </td>
 
-                      <td className="px-8 py-6 text-center">
-                        <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border ${
-                          user.is_active 
-                            ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
-                            : 'bg-amber-50 text-amber-600 border-amber-100'
-                        }`}>
-                          {user.is_active ? <CheckCircle2 size={12} /> : <ShieldAlert size={12} />}
-                          <span className="text-[9px] font-black uppercase tracking-widest">
-                            {user.is_active ? "Active" : "Awaiting Approval"}
-                          </span>
-                        </span>
-                      </td>
+                        <td className="px-8 py-6 text-right">
+                            <div className="flex items-center justify-end gap-2 opacity-100 xl:opacity-0 group-hover:opacity-100 transition-opacity">
+                            
+                            <button 
+                                onClick={() => { setSelectedUser(user); setIsRoleModalOpen(true); }}
+                                className="p-2.5 bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50 rounded-xl transition-all shadow-sm"
+                                title="Assign Role"
+                            >
+                                <UserCog size={16} />
+                            </button>
 
-                      <td className="px-8 py-6">
-                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest tabular-nums">
-                          {user.created_at ? format(new Date(user.created_at), 'MMM dd, yyyy') : 'Pre-Launch'}
-                        </p>
-                      </td>
+                            <button 
+                                onClick={() => handleToggleStatus(user)}
+                                className={`p-2.5 bg-white border rounded-xl transition-all shadow-sm ${
+                                user.is_active 
+                                    ? "border-slate-200 text-slate-400 hover:text-rose-600 hover:border-rose-300 hover:bg-rose-50" 
+                                    : needsProject 
+                                        ? "border-amber-300 text-amber-600 hover:bg-amber-50"
+                                        : "border-emerald-200 text-emerald-600 hover:bg-emerald-50"
+                                }`}
+                                title={user.is_active ? "Suspend Account" : "Approve Account"}
+                            >
+                                {user.is_active ? <XCircle size={16} /> : <CheckCircle2 size={16} />}
+                            </button>
 
-                      <td className="px-8 py-6 text-right">
-                        <div className="flex items-center justify-end gap-2 opacity-100 xl:opacity-0 group-hover:opacity-100 transition-opacity">
-                          
-                          <button 
-                            onClick={() => { setSelectedUser(user); setIsRoleModalOpen(true); }}
-                            className="p-2.5 bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50 rounded-xl transition-all shadow-sm"
-                            title="Assign Role"
-                          >
-                            <UserCog size={16} />
-                          </button>
+                            <div className="w-[1px] h-6 bg-slate-100 mx-1" />
 
-                          <button 
-                            onClick={() => handleToggleStatus(user)}
-                            className={`p-2.5 bg-white border rounded-xl transition-all shadow-sm ${
-                              user.is_active 
-                                ? "border-slate-200 text-slate-400 hover:text-rose-600 hover:border-rose-300 hover:bg-rose-50" 
-                                : "border-emerald-200 text-emerald-600 hover:bg-emerald-50"
-                            }`}
-                            title={user.is_active ? "Suspend Account" : "Approve Account"}
-                          >
-                            {user.is_active ? <XCircle size={16} /> : <CheckCircle2 size={16} />}
-                          </button>
-
-                          <div className="w-[1px] h-6 bg-slate-100 mx-1" />
-
-                          <button 
-                            onClick={() => handleDeleteUser(user)}
-                            className="p-2.5 bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:border-rose-400 hover:bg-rose-50 rounded-xl transition-all shadow-sm"
-                            title="Delete Permanently"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </motion.tr>
-                  ))
+                            <button 
+                                onClick={() => handleDeleteUser(user)}
+                                className="p-2.5 bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:border-rose-400 hover:bg-rose-50 rounded-xl transition-all shadow-sm"
+                                title="Delete Permanently"
+                            >
+                                <Trash2 size={16} />
+                            </button>
+                            </div>
+                        </td>
+                      </motion.tr>
+                    );
+                  })
                 )}
               </AnimatePresence>
             </tbody>
@@ -298,7 +356,7 @@ export default function UsersPage() {
                 <div className="space-y-3">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Available Permissions</label>
                   <div className="grid grid-cols-1 gap-2">
-                    {roles.map((role) => (
+                    {roles.map((role: any) => (
                       <button
                         key={role.id}
                         onClick={() => handleRoleUpdate(role.id)}
@@ -322,6 +380,86 @@ export default function UsersPage() {
                   className="px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest text-slate-500 hover:bg-slate-200 transition-colors"
                 >
                   Cancel
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Project Access Modal */}
+      <AnimatePresence>
+        {isProjectModalOpen && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-[#003366]/40 backdrop-blur-md"
+              onClick={() => setIsProjectModalOpen(false)}
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white border border-slate-200 rounded-[2.5rem] shadow-2xl relative z-10 w-full max-w-md overflow-hidden"
+            >
+              <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center border border-blue-200">
+                    <Building2 size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black text-[#003366] tracking-tight">Project Access</h3>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1">Manage Visibility</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-8 max-h-[400px] overflow-y-auto custom-scrollbar-sidebar space-y-3">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-4 italic">Select projects this user can monitor:</p>
+                {projects.map((project: any) => {
+                  const isSelected = selectedProjects.includes(project.id.toString());
+                  return (
+                    <button
+                      key={project.id}
+                      onClick={() => {
+                        if (isSelected) {
+                          setSelectedProjects(selectedProjects.filter(id => id !== project.id.toString()));
+                        } else {
+                          setSelectedProjects([...selectedProjects, project.id.toString()]);
+                        }
+                      }}
+                      className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${
+                        isSelected ? "bg-blue-50 border-blue-400 shadow-sm" : "bg-white border-slate-100 hover:border-slate-200"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isSelected ? "bg-blue-600 text-white" : "bg-slate-50 text-slate-400"}`}>
+                          <Building2 size={16} />
+                        </div>
+                        <div className="text-left">
+                          <p className={`text-sm font-black ${isSelected ? "text-blue-900" : "text-slate-700"}`}>{project.name}</p>
+                          <p className="text-[9px] font-bold text-slate-400 uppercase">{project.code || "No Code"}</p>
+                        </div>
+                      </div>
+                      {isSelected && <CheckCircle2 size={18} className="text-blue-600" />}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                <button 
+                  onClick={() => setIsProjectModalOpen(false)}
+                  className="px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleProjectUpdate}
+                  disabled={isPending}
+                  className="px-10 py-3 bg-[#00a1e4] hover:bg-[#0081b8] text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50"
+                >
+                  {isPending ? "Saving..." : "Save Access"}
                 </button>
               </div>
             </motion.div>
