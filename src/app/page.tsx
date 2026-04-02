@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Mail, Lock, User, AlertCircle, ArrowRight, CheckCircle2, Eye, EyeOff, 
-  Activity, ShieldCheck, Database, Zap, ClipboardCheck, History 
+  Activity, ShieldCheck, Database, Zap, ClipboardCheck, History, Building2
 } from "lucide-react";
 
 import { login, register } from "./actions/auth";
@@ -16,6 +16,7 @@ export default function LoginPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [companyName, setCompanyName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +35,7 @@ export default function LoginPage() {
       
       if (isRequestMode) {
         formData.append("name", name);
+        formData.append("company_name", companyName);
         const result = await register(formData);
         if (result?.error) {
           setError(result.error);
@@ -41,6 +43,7 @@ export default function LoginPage() {
           setMessage(result.success);
           setIsRequestMode(false);
           setName("");
+          setCompanyName("");
           setPassword("");
         }
       } else {
@@ -215,24 +218,45 @@ export default function LoginPage() {
             </AnimatePresence>
 
             {isRequestMode && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="group"
-              >
-                <div className="relative">
-                  <User className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 transition-colors group-focus-within:text-[#00a1e4]" />
-                  <input 
-                    type="text" 
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    className="w-full pl-12 pr-5 py-4 bg-black/20 border border-white/10 rounded-2xl text-sm font-medium text-white focus:bg-white/5 focus:border-[#00a1e4] focus:ring-1 focus:ring-[#00a1e4] outline-none transition-all duration-300 placeholder:text-slate-500"
-                    placeholder="Full Name"
-                  />
-                </div>
-              </motion.div>
+              <div className="space-y-5">
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="group"
+                >
+                  <div className="relative">
+                    <User className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 transition-colors group-focus-within:text-[#00a1e4]" />
+                    <input 
+                      type="text" 
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      className="w-full pl-12 pr-5 py-4 bg-black/20 border border-white/10 rounded-2xl text-sm font-medium text-white focus:bg-white/5 focus:border-[#00a1e4] focus:ring-1 focus:ring-[#00a1e4] outline-none transition-all duration-300 placeholder:text-slate-500"
+                      placeholder="Full Name (Nama Lengkap)"
+                    />
+                  </div>
+                </motion.div>
+
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="group"
+                >
+                  <div className="relative">
+                    <Building2 className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 transition-colors group-focus-within:text-[#00a1e4]" />
+                    <input 
+                      type="text" 
+                      value={companyName}
+                      onChange={(e) => setCompanyName(e.target.value)}
+                      required
+                      className="w-full pl-12 pr-5 py-4 bg-black/20 border border-white/10 rounded-2xl text-sm font-medium text-white focus:bg-white/5 focus:border-[#00a1e4] focus:ring-1 focus:ring-[#00a1e4] outline-none transition-all duration-300 placeholder:text-slate-500"
+                      placeholder="Company Name (Nama Perusahaan)"
+                    />
+                  </div>
+                </motion.div>
+              </div>
             )}
 
             <div className="group">

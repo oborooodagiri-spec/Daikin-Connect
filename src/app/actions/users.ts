@@ -25,7 +25,7 @@ export async function getAllUsers() {
         }
       },
       orderBy: { id: 'desc' }
-    });
+    }) as any[];
     
     // Sort roles for each user to get primary role (e.g. Admin first)
     const formattedUsers = users.map((u: any) => ({

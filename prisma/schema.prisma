@@ -154,6 +154,7 @@ model users {
   email               String                @unique(map: "email") @db.VarChar(150)
   password            String                @db.VarChar(255)
   phone               String?               @db.VarChar(20)
+  company_name        String?               @db.VarChar(150)
   is_active           Boolean               @default(true)
   refresh_tokens      refresh_tokens[]
   schedule_targets    schedule_targets[]

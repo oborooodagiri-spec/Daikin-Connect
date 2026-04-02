@@ -16,8 +16,9 @@ export async function register(formData: FormData) {
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const companyName = formData.get("company_name") as string;
 
-  if (!name || !email || !password) {
+  if (!name || !email || !password || !companyName) {
     return { error: "All fields are required" };
   }
 
@@ -37,8 +38,9 @@ export async function register(formData: FormData) {
           name,
           email,
           password: hashedPassword,
+          company_name: companyName,
           is_active: false
-        },
+        } as any,
       });
 
       // Send initial registration email (Bilingual)

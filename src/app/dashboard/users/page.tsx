@@ -215,11 +215,19 @@ export default function UsersPage() {
                             <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#003366] to-blue-600 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-blue-900/10 shrink-0">
                                 {user.name?.charAt(0).toUpperCase()}
                             </div>
-                            <div className="min-w-0">
+                            <div className="min-w-0 flex-1">
                                 <p className="text-sm font-black text-[#003366] tracking-tight truncate">{user.name}</p>
-                                <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400">
-                                <Mail size={11} className="shrink-0" />
-                                <span className="truncate">{user.email}</span>
+                                <div className="flex flex-col gap-0.5 mt-1">
+                                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
+                                    <Mail size={10} className="shrink-0" />
+                                    <span className="truncate">{user.email}</span>
+                                  </div>
+                                  {user.company_name && (
+                                    <div className="flex items-center gap-1.5 text-[10px] font-black text-[#00a1e4] uppercase tracking-wider">
+                                      <Building2 size={10} className="shrink-0" />
+                                      <span className="truncate">{user.company_name}</span>
+                                    </div>
+                                  )}
                                 </div>
                             </div>
                             </div>
