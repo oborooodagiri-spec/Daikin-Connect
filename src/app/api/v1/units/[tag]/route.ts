@@ -19,12 +19,12 @@ async function verifyAuth(req: NextRequest) {
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { tag: string } }
+  { params }: { params: Promise<{ tag: string }> }
 ) {
   const user = await verifyAuth(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { tag } = params;
+  const { tag } = await params;
 
   try {
     const unit = await prisma.units.findFirst({
@@ -52,18 +52,18 @@ export async function GET(
       data: {
         id: unit.id,
         tag_number: unit.tag_number,
-        model_number: unit.model_number,
+        model: unit.model,
         serial_number: unit.serial_number,
         status: unit.status,
         area: unit.area,
-        location_detail: unit.location_detail,
+        location: unit.location,
         project_name: unit.projects?.name,
         customer_name: unit.projects?.customers?.name,
         history: history.map(h => ({
           id: h.id,
-          activity_type: h.activity_type,
+          type: h.type,
           date: h.created_at,
-          summary: h.summary
+          note: h.engineer_note
         }))
       }
     });

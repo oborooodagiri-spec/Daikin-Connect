@@ -22,10 +22,10 @@ export async function GET(req: NextRequest) {
 
   try {
     const [auditCount, preventiveCount, correctiveCount, totalUnits] = await Promise.all([
-      prisma.service_activities.count({ where: { activity_type: "Audit" } }),
-      prisma.service_activities.count({ where: { activity_type: "Preventive" } }),
-      prisma.service_activities.count({ where: { activity_type: "Corrective" } }),
-      prisma.units.count({ where: { is_active: true } })
+      prisma.service_activities.count({ where: { type: "Audit" } }),
+      prisma.service_activities.count({ where: { type: "Preventive" } }),
+      prisma.service_activities.count({ where: { type: "Corrective" } }),
+      prisma.units.count()
     ]);
 
     return NextResponse.json({

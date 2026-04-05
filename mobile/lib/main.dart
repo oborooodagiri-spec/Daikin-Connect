@@ -1,12 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:local_auth/local_auth.dart';
+import 'providers/auth_provider.dart';
+import 'features/auth/screens/login_screen.dart';
+import 'features/dashboard/screens/dashboard_home.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  runApp(const DaikinConnectApp());
+  
+  // Set status bar to transparent for immersive dark mode
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.light,
+  ));
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()..checkAuthStatus()),
+      ],
+      child: const DaikinConnectApp(),
+    ),
+  );
 }
 
 class DaikinConnectApp extends StatelessWidget {
@@ -18,7 +35,7 @@ class DaikinConnectApp extends StatelessWidget {
       title: 'Daikin Connect',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        scaffoldBackgroundColor: const Color(0xFF001529),
+        scaffoldBackgroundColor: const Color(0xFF040814),
         primaryColor: const Color(0xFF00A1E4),
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF00A1E4),
@@ -26,46 +43,38 @@ class DaikinConnectApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const SecureShellScreen(),
+      home: const AuthWrapper(),
     );
   }
 }
 
-class SecureShellScreen extends StatefulWidget {
-  const SecureShellScreen({super.key});
+class AuthWrapper extends StatefulWidget {
+  const AuthWrapper({super.key});
 
   @override
-  State<SecureShellScreen> createState() => _SecureShellScreenState();
+  State<AuthWrapper> createState() => _AuthWrapperState();
 }
 
-class _SecureShellScreenState extends State<SecureShellScreen> {
+class _AuthWrapperState extends State<AuthWrapper> {
   final LocalAuthentication _localAuth = LocalAuthentication();
-  bool _isAuthenticated = false;
-  late final WebViewController _controller;
+  bool _biometricAuthenticated = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0xFF001529))
-      ..loadRequest(Uri.parse('http://103.196.155.200:23000'));
-      
-    _authenticate();
+    _tryBiometric();
   }
 
-  Future<void> _authenticate() async {
+  Future<void> _tryBiometric() async {
     try {
-      final bool canAuthenticateWithBiometrics = await _localAuth.canCheckBiometrics;
-      final bool canAuthenticate = canAuthenticateWithBiometrics || await _localAuth.isDeviceSupported();
-
+      final bool canAuthenticate = await _localAuth.canCheckBiometrics || await _localAuth.isDeviceSupported();
       if (!canAuthenticate) {
-          setState(() { _isAuthenticated = true; });
-          return;
+        setState(() => _biometricAuthenticated = true);
+        return;
       }
 
       final bool didAuthenticate = await _localAuth.authenticate(
-        localizedReason: 'Please authenticate to access Daikin Connect',
+        localizedReason: 'Secure authentication for Daikin Connect',
         options: const AuthenticationOptions(
           stickyAuth: true,
           biometricOnly: false,
@@ -73,39 +82,29 @@ class _SecureShellScreenState extends State<SecureShellScreen> {
       );
 
       if (didAuthenticate) {
-        setState(() { _isAuthenticated = true; });
-      } else {
-        // Retry
-        _authenticate();
+        setState(() => _biometricAuthenticated = true);
       }
     } on PlatformException catch (_) {
-      setState(() { _isAuthenticated = true; });
+      setState(() => _biometricAuthenticated = true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_isAuthenticated) {
-      return Scaffold(
+    final auth = Provider.of<AuthProvider>(context);
+
+    if (auth.isLoading || !_biometricAuthenticated) {
+      return const Scaffold(
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset('assets/images/daikin_logo.png', width: 200),
-              const SizedBox(height: 50),
-              const CircularProgressIndicator(color: Color(0xFF00A1E4)),
-              const SizedBox(height: 20),
-              const Text("Authenticating secure session...", style: TextStyle(color: Colors.white70))
-            ],
-          ),
+          child: CircularProgressIndicator(color: Color(0xFF00A1E4)),
         ),
       );
     }
 
-    return Scaffold(
-      body: SafeArea(
-        child: WebViewWidget(controller: _controller),
-      ),
-    );
+    if (auth.isLoggedIn) {
+      return const DashboardHome();
+    }
+
+    return const LoginScreen();
   }
 }
