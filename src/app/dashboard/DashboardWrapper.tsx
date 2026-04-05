@@ -17,7 +17,7 @@ import { APP_VERSION } from "@/lib/version";
 import SummaryCards from "../../components/dashboard/SummaryCards";
 import SummaryDetailModal from "../../components/dashboard/SummaryDetailModal";
 import TrendChart from "../../components/dashboard/TrendChart";
-import CustomerProjectSelector from "../../components/dashboard/CustomerProjectSelector";
+import SmartProjectNavigator from "../../components/dashboard/SmartProjectNavigator";
 import UnitStatusChart from "../../components/dashboard/UnitStatusChart";
 import ActivityFeed from "../../components/dashboard/ActivityFeed";
 import UnitDetailModal from "../../components/UnitDetailModal";
@@ -195,7 +195,7 @@ export default function DashboardWrapper() {
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full xl:w-auto">
           <div className="flex-1 min-w-[200px]">
-            <CustomerProjectSelector onFilterChange={setFilters} />
+            <SmartProjectNavigator onFilterChange={setFilters} />
           </div>
           <button 
             onClick={() => setIsExportModalOpen(true)}

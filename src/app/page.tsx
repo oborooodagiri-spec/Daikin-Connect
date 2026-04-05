@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Mail, Lock, User, AlertCircle, ArrowRight, CheckCircle2, Eye, EyeOff, 
-  Activity, ShieldCheck, Database, Zap, ClipboardCheck, History, Building2
+  Mail, Lock, AlertCircle, ArrowRight, CheckCircle2, Eye, EyeOff, 
+  Activity, Apple, Smartphone, User, Building2
 } from "lucide-react";
 
 import { login, register } from "./actions/auth";
@@ -80,95 +80,97 @@ export default function LoginPage() {
       </div>
 
       {/* Left Panel - Hero Branding (Desktop Only) */}
-      <div className="hidden md:flex md:w-5/12 relative z-10 flex-col justify-between p-12 lg:p-16 border-r border-white/5 bg-black/20 backdrop-blur-3xl">
-        <div className="flex items-center gap-6">
-          <img src="/daikin_logo.png" className="h-8 w-auto brightness-0 invert object-contain" alt="Daikin" />
-          <div className="w-[1px] h-6 bg-white/20"></div>
-          <img src="/logo_epl_connect_1.png" className="h-8 w-auto brightness-0 invert object-contain" alt="EPL Connect" />
-        </div>
-
-        <motion.div 
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative z-10"
-        >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-widest text-[#00a1e4] mb-6">
-            <Activity className="w-3.5 h-3.5" />
-            <span className="mt-0.5">Secure Gateway</span>
-          </div>
-          
-          <h1 className="text-5xl lg:text-7xl font-extrabold text-white tracking-tighter leading-[1.1] mb-6">
-            Master <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00a1e4] to-blue-600">
-              Asset Data
-            </span>
-          </h1>
-          
-          <p className="text-slate-400 text-sm font-medium tracking-wide max-w-sm leading-relaxed mb-12">
-            Centralized performance monitoring and digitalized reporting system.
-          </p>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <MarketingCard 
-              icon={<ShieldCheck className="w-5 h-5" />} 
-              title="End-to-End Encryption" 
-              desc="Military-grade data protection"
-              color="blue"
-            />
-            <MarketingCard 
-              icon={<Database className="w-5 h-5" />} 
-              title="Real-time Synchronization" 
-              desc="Live operational metrics"
-              color="emerald"
-            />
-            <MarketingCard 
-              icon={<Zap className="w-5 h-5" />} 
-              title="Predictive Maintenance" 
-              desc="Early failure detection"
-              color="amber"
-              opacity={0.8}
-            />
-            <MarketingCard 
-              icon={<ClipboardCheck className="w-5 h-5" />} 
-              title="Automated Compliance" 
-              desc="Audit-ready digital reports"
-              color="cyan"
-              opacity={0.8}
-            />
-          </div>
-        </motion.div>
-
-         {/* Quality Assurance Section */}
-         <div className="mt-auto pt-12">
-            <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Certified & Compliant By</p>
-            <div className="flex items-center gap-6 opacity-60 hover:opacity-100 transition-all duration-700">
-              <div className="bg-white p-1 rounded-sm shadow-lg overflow-hidden">
-                <img src="/kan1.jpg" className="h-6 w-auto object-contain" alt="KAN" />
-              </div>
-              <div className="bg-white p-1 rounded-sm shadow-lg overflow-hidden">
-                <img src="/green-building-council-1.png" className="h-6 w-auto object-contain" alt="Green Building Council" />
-              </div>
-              <div className="bg-white p-1 rounded-sm shadow-lg overflow-hidden">
-                <img src="/TUVnord-.png" className="h-6 w-auto object-contain" alt="TUV Nord" />
-              </div>
+      <div className="hidden md:flex md:w-5/12 relative z-10 flex-col justify-between p-16 lg:p-20 border-r border-white/5 bg-black/20 backdrop-blur-3xl">
+        <div className="flex flex-col items-start gap-12">
+          <div className="space-y-8">
+            <div className="flex items-center gap-8">
+              <img src="/daikin_logo.png" className="h-12 lg:h-16 w-auto brightness-0 invert object-contain" alt="Daikin" />
+              <div className="w-[1px] h-10 bg-white/20"></div>
+              <img src="/logo_epl_connect_1.png" className="h-12 lg:h-16 w-auto brightness-0 invert object-contain" alt="EPL Connect" />
+            </div>
+            
+            <div className="space-y-4">
+              <h1 className="text-2xl lg:text-3xl font-black text-white tracking-[0.1em] leading-tight max-w-sm">
+                SMART HVAC<br />
+                <span className="text-[#00a1e4]">MANAGEMENT SYSTEMS</span>
+              </h1>
             </div>
           </div>
+
+          <div className="space-y-4">
+            <motion.div 
+              animate={{ 
+                opacity: [0.4, 1, 0.4],
+                borderColor: ["rgba(255,255,255,0.1)", "rgba(0,161,228,0.5)", "rgba(255,255,255,0.1)"]
+              }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.3em] text-[#00a1e4]"
+            >
+              <Activity className="w-3.5 h-3.5" />
+              <span className="mt-0.5">SECURE ENTERPRISE GATEWAY</span>
+            </motion.div>
+            <div className="h-1 w-20 bg-gradient-to-r from-[#00a1e4] to-transparent rounded-full opacity-50"></div>
+          </div>
+        </div>
+
+        <div className="relative z-10 py-12">
+           <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6">DOWNLOAD</p>
+           <div className="flex items-center gap-8">
+              <a href="/downloads/daikin-connect.apk" className="group/dl flex flex-col items-center gap-2 transition-all duration-500">
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 group-hover/dl:bg-[#00a1e4]/10 group-hover/dl:border-[#00a1e4]/30 group-hover/dl:scale-110 active:scale-95 transition-all">
+                  <Smartphone className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-[8px] font-black text-slate-500 group-hover/dl:text-white uppercase tracking-widest">ANDROID</span>
+              </a>
+              <a href="/downloads/daikin-connect.ipa" className="group/dl flex flex-col items-center gap-2 transition-all duration-500">
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 group-hover/dl:bg-[#00a1e4]/10 group-hover/dl:border-[#00a1e4]/30 group-hover/dl:scale-110 active:scale-95 transition-all">
+                  <Apple className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-[8px] font-black text-slate-500 group-hover/dl:text-white uppercase tracking-widest">IOS</span>
+              </a>
+           </div>
+        </div>
+
+        {/* Quality Assurance Section */}
+        <div className="mt-auto pt-12">
+           <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Certified & Compliant By</p>
+           <div className="flex items-center gap-6 opacity-60 hover:opacity-100 transition-all duration-700">
+             <div className="bg-white p-1 rounded-sm shadow-lg overflow-hidden">
+               <img src="/kan1.jpg" className="h-6 w-auto object-contain" alt="KAN" />
+             </div>
+             <div className="bg-white p-1 rounded-sm shadow-lg overflow-hidden">
+               <img src="/green-building-council-1.png" className="h-6 w-auto object-contain" alt="Green Building Council" />
+             </div>
+             <div className="bg-white p-1 rounded-sm shadow-lg overflow-hidden">
+               <img src="/TUVnord-.png" className="h-6 w-auto object-contain" alt="TUV Nord" />
+             </div>
+           </div>
+        </div>
       </div>
 
       {/* Right Panel - Login Form */}
       <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 relative z-10 w-full min-h-screen md:min-h-0">
         
         {/* Mobile Header */}
-        <div className="md:hidden flex flex-col items-center justify-center gap-6 mb-10 mt-8">
-          <div className="flex items-center gap-4">
-            <img src="/daikin_logo.png" className="h-7 object-contain brightness-0 invert" alt="Daikin" />
-            <div className="w-[1px] h-5 bg-white/20"></div>
-            <img src="/logo_epl_connect_1.png" className="h-7 object-contain brightness-0 invert" alt="EPL Connect" />
+        <div className="md:hidden flex flex-col items-center justify-center gap-8 mb-12 mt-8">
+          <div className="flex items-center gap-6">
+            <img src="/daikin_logo.png" className="h-10 object-contain brightness-0 invert" alt="Daikin" />
+            <div className="w-[1px] h-8 bg-white/20"></div>
+            <img src="/logo_epl_connect_1.png" className="h-10 object-contain brightness-0 invert" alt="EPL Connect" />
           </div>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-[#00a1e4]">
-            <Activity className="w-3 h-3" />
-            <span>Secure Gateway</span>
+          
+          <div className="text-center space-y-4">
+            <h1 className="text-lg font-black text-white tracking-[0.1em] uppercase">
+              SMART HVAC <span className="text-[#00a1e4]">MANAGEMENT SYSTEMS</span>
+            </h1>
+            <motion.div 
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[8px] font-black uppercase tracking-[0.3em] text-[#00a1e4]"
+            >
+              <Activity className="w-3 h-3" />
+              <span>SECURE ENTERPRISE</span>
+            </motion.div>
           </div>
         </div>
 
@@ -339,6 +341,25 @@ export default function LoginPage() {
           </div>
         </motion.div>
 
+        {/* Mobile Download Links (Visible on Mobile Only) */}
+        <div className="md:hidden mt-12 w-full max-w-md text-center">
+            <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6">DOWNLOAD</p>
+            <div className="flex justify-center gap-12">
+                <a href="/downloads/daikin-connect.apk" className="flex flex-col items-center gap-2 group/mobile-dl">
+                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 group-active/mobile-dl:bg-[#00a1e4]/20 transition-all">
+                    <Smartphone className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">ANDROID</span>
+                </a>
+                <a href="/downloads/daikin-connect.ipa" className="flex flex-col items-center gap-2 group/mobile-dl">
+                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 group-active/mobile-dl:bg-[#00a1e4]/20 transition-all">
+                    <Apple className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">IOS</span>
+                </a>
+            </div>
+        </div>
+
         {/* Mobile Copyright Footer */}
         <div className="mt-12 md:mt-24 text-center pb-8 md:pb-0 relative z-10 w-full">
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
@@ -348,27 +369,6 @@ export default function LoginPage() {
             {APP_VERSION}
           </p>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function MarketingCard({ icon, title, desc, color, opacity = 1 }: { icon: any, title: string, desc: string, color: string, opacity?: number }) {
-  const colorMap: any = {
-    blue: "bg-blue-500/20 text-blue-400 border-white/10",
-    emerald: "bg-emerald-500/20 text-emerald-400 border-white/10",
-    amber: "bg-amber-500/20 text-amber-400 border-white/10",
-    cyan: "bg-cyan-500/20 text-cyan-400 border-white/10"
-  };
-
-  return (
-    <div className={`flex items-center gap-4 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md transition-all hover:bg-white/10 hover:scale-[1.02]`} style={{ opacity }}>
-      <div className={`${colorMap[color].split(' ')[0]} ${colorMap[color].split(' ')[1]} p-2.5 rounded-xl`}>
-        {icon}
-      </div>
-      <div>
-        <h4 className="text-[10px] font-bold text-white uppercase tracking-wider mb-0.5">{title}</h4>
-        <p className="text-[9px] text-slate-400 font-medium leading-tight">{desc}</p>
       </div>
     </div>
   );
