@@ -349,7 +349,8 @@ function StatusList({ title, sub, items, color, icon, onItemClick }: any) {
                  <div className={`w-2 h-2 rounded-full ${color === 'rose' ? 'bg-rose-500' : 'bg-amber-500'}`}></div>
                  <div>
                   <p className={`text-sm font-black ${color === 'rose' ? 'text-rose-900 font-black' : 'text-amber-900 font-black'} tracking-tight`}>{u.tag_number}</p>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase">{u.projects?.name || "Unknown"}</p>
+                  <p className="text-[10px] font-bold text-slate-500">{u.room_tenant || u.area || "Unknown"}{u.room_tenant && u.area ? ` · ${u.area}` : ''}</p>
+                  <p className="text-[9px] font-bold text-slate-400 uppercase">{u.model || u.projects?.name || ""}</p>
                 </div>
               </div>
               <ArrowRight size={14} className="text-slate-300 group-hover/card:translate-x-1 group-hover/card:text-slate-500 transition-all" />
@@ -385,6 +386,9 @@ function ComplaintWidget({ items }: any) {
                  <p className="text-xs font-black text-indigo-900 tracking-tight">{c.unit_tag}</p>
                  <span className="text-[8px] font-bold text-slate-400">{new Date(c.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
               </div>
+              {(c.unit_room || c.unit_area) && (
+                <p className="text-[9px] font-bold text-indigo-500">{c.unit_room || c.unit_area}{c.unit_room && c.unit_area ? ` · ${c.unit_area}` : ''}</p>
+              )}
               <p className="text-[10px] font-medium text-slate-600 line-clamp-1 italic">"{c.description}"</p>
             </div>
           ))

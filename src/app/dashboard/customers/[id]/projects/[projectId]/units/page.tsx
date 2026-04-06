@@ -366,7 +366,8 @@ export default function UnitsPage() {
                 <div key={u.id} onClick={() => openDetail(u)} className="p-3 bg-slate-50 hover:bg-rose-50 rounded-2xl border border-slate-100 hover:border-rose-200 transition-all cursor-pointer flex justify-between items-center group">
                   <div>
                     <p className="text-sm font-black text-slate-800 tracking-tight group-hover:text-rose-700">{u.tag_number}</p>
-                    <p className="text-[10px] font-bold text-slate-400">{u.area} • {u.model}</p>
+                    <p className="text-[10px] font-bold text-slate-500">{u.room_tenant || u.area || ""}{u.room_tenant && u.area ? ` · ${u.area}` : ''}</p>
+                    <p className="text-[10px] font-bold text-slate-400">{u.model}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[9px] font-black uppercase text-rose-500 px-2 py-1 bg-rose-100 rounded-lg">Action Needed</span>
@@ -394,7 +395,8 @@ export default function UnitsPage() {
                 <div key={u.id} onClick={() => openDetail(u)} className="p-3 bg-slate-50 hover:bg-indigo-50 rounded-2xl border border-slate-100 hover:border-indigo-200 transition-all cursor-pointer flex justify-between items-center group">
                   <div>
                     <p className="text-sm font-black text-slate-800 tracking-tight group-hover:text-indigo-700">{u.tag_number}</p>
-                    <p className="text-[10px] font-bold text-slate-400">{u.area} • {u.model}</p>
+                    <p className="text-[10px] font-bold text-slate-500">{u.room_tenant || u.area || ""}{u.room_tenant && u.area ? ` · ${u.area}` : ''}</p>
+                    <p className="text-[10px] font-bold text-slate-400">{u.model}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[9px] font-black uppercase text-indigo-500 px-2 py-1 bg-indigo-100 rounded-lg">{u.status.replace('_', ' ')}</span>
@@ -426,7 +428,7 @@ export default function UnitsPage() {
                    </div>
                    <p className="text-xs font-bold text-slate-800 line-clamp-2">"{c.description}"</p>
                    <div className="mt-auto flex items-center justify-between pt-2 border-t border-slate-200/50">
-                      <p className="text-[10px] font-bold text-slate-500 flex items-center gap-1"><Building2 size={10}/> {c.unit_area}</p>
+                      <p className="text-[10px] font-bold text-slate-500 flex items-center gap-1"><Building2 size={10}/> {c.unit_room || c.unit_area || "N/A"}{c.unit_room && c.unit_area ? ` · ${c.unit_area}` : ''}</p>
                       <p className="text-[9px] font-black uppercase text-slate-400">By: {c.customer_name}</p>
                    </div>
                    {c.photo_url && (

@@ -261,7 +261,7 @@ export async function getRecentActivities(filters: { customerId?: string; projec
       take: 8,
       orderBy: { created_at: "desc" },
       include: {
-        units: { select: { tag_number: true, location: true, area: true } }
+        units: { select: { tag_number: true, location: true, area: true, room_tenant: true } }
       }
     });
 
@@ -270,6 +270,7 @@ export async function getRecentActivities(filters: { customerId?: string; projec
       type: r.type,
       engineer: r.inspector_name || "Unknown",
       unit_tag: r.units?.tag_number || "Unknown Unit",
+      room_tenant: r.units?.room_tenant || "",
       location: r.units?.area || r.units?.location || "-",
       at: r.created_at?.toISOString() || ""
     })));
@@ -324,13 +325,13 @@ export async function getDetailedUnitStatus(filters: { customerId?: string; proj
         where: { ...unitWhere, status: { in: ["Problem", "Critical", "Warning"] } },
         take: 5,
         orderBy: { created_at: "desc" },
-        include: { projects: { select: { name: true } } }
+        select: { id: true, tag_number: true, area: true, model: true, room_tenant: true, status: true, created_at: true, project_ref_id: true, qr_code_token: true, projects: { select: { name: true } } }
       }),
       (prisma.units as any).findMany({
         where: { ...unitWhere, status: { in: ["On_Progress", "Pending"] } },
         take: 5,
         orderBy: { created_at: "desc" },
-        include: { projects: { select: { name: true } } }
+        select: { id: true, tag_number: true, area: true, model: true, room_tenant: true, status: true, created_at: true, project_ref_id: true, qr_code_token: true, projects: { select: { name: true } } }
       })
     ]);
 

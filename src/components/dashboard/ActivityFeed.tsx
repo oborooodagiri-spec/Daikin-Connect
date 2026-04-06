@@ -8,6 +8,7 @@ interface Activity {
   type: string;
   engineer: string;
   unit_tag: string;
+  room_tenant: string;
   location: string;
   at: string;
 }
@@ -58,7 +59,7 @@ export default function ActivityFeed({
                   {new Date(act.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
-              <p className="text-sm font-black text-[#003366] mb-1 truncate">{act.unit_tag}</p>
+              <p className="text-sm font-black text-[#003366] truncate">{act.unit_tag}{act.room_tenant ? ` — ${act.room_tenant}` : ''}</p>
               <div className="flex items-center gap-1">
                 <MapPin size={10} className="text-[#00a1e4]" />
                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter truncate">{act.location}</span>

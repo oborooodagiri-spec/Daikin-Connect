@@ -127,7 +127,7 @@ export async function getProjectComplaints(projectId?: string) {
       take: 10,
       include: {
         units: {
-          select: { tag_number: true, model: true, area: true }
+          select: { tag_number: true, model: true, area: true, room_tenant: true }
         }
       }
     });
@@ -143,7 +143,8 @@ export async function getProjectComplaints(projectId?: string) {
         status: c.status,
         unit_tag: c.units?.tag_number || "N/A",
         unit_model: c.units?.model || "N/A",
-        unit_area: c.units?.area || "N/A"
+        unit_area: c.units?.area || "N/A",
+        unit_room: c.units?.room_tenant || ""
       }))
     });
   } catch (error) {

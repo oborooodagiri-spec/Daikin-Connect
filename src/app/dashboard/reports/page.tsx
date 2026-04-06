@@ -313,7 +313,10 @@ function ReportsContent() {
                 <tr key={r.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => setSelectedReport(r)}>
                   <td className="p-4 font-bold text-slate-400">#{r.id}</td>
                   <td className="p-4"><span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${TYPE_CONFIG[r.type]?.bg} ${TYPE_CONFIG[r.type]?.color}`}>{r.type}</span></td>
-                  <td className="p-4 font-bold text-slate-800">{r.units?.tag_number || r.unit_tag}</td>
+                  <td className="p-4">
+                    <p className="font-bold text-slate-800">{r.units?.tag_number || r.unit_tag}</p>
+                    {r.units?.room_tenant && <p className="text-[10px] font-bold text-slate-400">{r.units.room_tenant}{r.units?.area ? ` · ${r.units.area}` : ''}</p>}
+                  </td>
                   <td className="p-4 text-xs font-bold text-slate-700">{r.inspector_name}</td>
                   <td className="p-4 text-xs text-slate-500">{formatDate(r.service_date)}</td>
                   <td className="p-4"><button onClick={(e) => { e.stopPropagation(); handlePrint(r.id); }} className="text-emerald-600 hover:text-emerald-800 font-bold text-xs"><Printer size={14} /></button></td>
@@ -336,6 +339,8 @@ function ReportsContent() {
                </div>
                <div className="p-8">
                   <div className="grid grid-cols-2 gap-4 mb-8">
+                     <InfoItem label="Room / Tenant" value={selectedReport.units?.room_tenant} />
+                     <InfoItem label="Area" value={selectedReport.units?.area} />
                      <InfoItem label="Engineer" value={selectedReport.inspector_name} />
                      <InfoItem label="Date" value={formatDate(selectedReport.service_date)} />
                   </div>
