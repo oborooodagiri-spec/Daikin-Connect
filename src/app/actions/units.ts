@@ -4,7 +4,22 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
 import { serializePrisma } from "@/lib/serialize";
 import * as xlsx from "xlsx";
-import { unstable_noStore as noStore } from "next/cache";
+import { unstable_noStore as noStore, revalidatePath } from "next/cache";
+
+/**
+ * 0. HELPER: Generate Tag Number (DKN[CCC][UUU])
+ * CCC = Customer ID, UUU = Unit Sequence Number
+ */
+async function generateNextUnitTag(customerId: number) {
+  const count = await (prisma.units as any).count({
+    where: { projects: { customer_id: customerId } }
+  });
+  
+  const ccc = String(customerId).padStart(3, '0');
+  const uuu = String(count + 1).padStart(3, '0');
+  
+  return `DKN${ccc}${uuu}`;
+}
 
 // 1. GET UNITS BY PROJECT ref ID (Advance with Activities)
 export async function getUnitsByProject(projectId: string) {
@@ -73,12 +88,10 @@ export async function createUnit(projectId: string, data: any) {
     });
     if (!project) return { error: "Project not found" };
 
-    // Auto-generate tag number if missing
+    // Auto-generate tag number if missing (Format: DKN001001)
     let finalTagNumber = data.tag_number;
     if (!finalTagNumber || finalTagNumber.trim() === "") {
-      const crypto = require('crypto');
-      const randomPart = crypto.randomBytes(2).toString('hex').toUpperCase();
-      finalTagNumber = `DKN-${projectId}-${new Date().getFullYear()}-${randomPart}`;
+      finalTagNumber = await generateNextUnitTag(project.customer_id);
     }
 
     // Auto-generate QR Token
@@ -299,8 +312,23 @@ export async function importUnitsExcel(projectId: string, base64Data: string) {
           continue;
         }
 
-        const randomPart = crypto.randomBytes(2).toString('hex').toUpperCase();
         const qrToken = crypto.randomBytes(16).toString('hex');
+
+        // Automatic Tagging Logic for Import
+        let finalTag = tag;
+        if (!finalTag) {
+          // Fetch project to get customer_id
+          const p = await prisma.projects.findUnique({
+            where: { id: projectBigInt },
+            select: { customer_id: true }
+          });
+          if (p) {
+            finalTag = await generateNextUnitTag(p.customer_id);
+          } else {
+            const randomPart = crypto.randomBytes(2).toString('hex').toUpperCase();
+            finalTag = `DKN-${projectId}-${new Date().getFullYear()}-${randomPart}`;
+          }
+        }
 
         // Parse YOI
         let yoi: number | null = null;
@@ -317,7 +345,7 @@ export async function importUnitsExcel(projectId: string, base64Data: string) {
           data: {
             project_ref_id: projectBigInt,
             qr_code_token: qrToken,
-            tag_number: tag || `DKN-${projectId}-${new Date().getFullYear()}-${randomPart}`,
+            tag_number: finalTag,
             brand: brand || "Daikin",
             model: model || null,
             capacity: capacity || null,
@@ -463,6 +491,58 @@ export async function getGlobalProblemUnits() {
   } catch (error) {
     console.error("Fetch global problem units error:", error);
     return { error: "Failed to fetch problem units" };
+  }
+}
+
+/**
+ * 11. BULK MIGRATE ALL TAGS (DKN001001 Format)
+ */
+export async function migrateAllUnitTags() {
+  const session = await getSession();
+  if (!session || !session.isInternal) return { error: "Unauthorized" };
+
+  try {
+    const customers = await (prisma.customers as any).findMany({
+      include: {
+        projects: {
+          include: {
+            units: {
+              orderBy: { id: 'asc' }
+            }
+          }
+        }
+      }
+    });
+
+    let updatedCount = 0;
+
+    for (const customer of customers) {
+      const ccc = String(customer.id).padStart(3, '0');
+      let sequence = 1;
+
+      // Flatten units from all projects for this customer
+      const allUnits = customer.projects.flatMap((p: any) => p.units)
+        .sort((a: any, b: any) => a.id - b.id);
+
+      for (const unit of allUnits) {
+        const uuu = String(sequence).padStart(3, '0');
+        const newTag = `DKN${ccc}${uuu}`;
+        
+        await (prisma.units as any).update({
+          where: { id: unit.id },
+          data: { tag_number: newTag }
+        });
+        
+        sequence++;
+        updatedCount++;
+      }
+    }
+
+    revalidatePath("/dashboard");
+    return { success: true, updatedCount };
+  } catch (error) {
+    console.error("Migration error:", error);
+    return { error: "Failed to perform migration" };
   }
 }
 
