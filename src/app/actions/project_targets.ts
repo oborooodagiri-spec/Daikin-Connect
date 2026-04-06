@@ -140,7 +140,7 @@ export async function getProjectSchedules(projectId: string) {
       where: { project_id: BigInt(projectId) },
       include: {
         users: { select: { name: true } },
-        units: { select: { tag_number: true, location: true } }
+        units: { select: { tag_number: true, location: true, room_tenant: true, area: true, model: true } }
       },
       orderBy: { start_at: 'asc' }
     });

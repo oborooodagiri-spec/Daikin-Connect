@@ -304,6 +304,7 @@ export async function getCalendarSchedules(month: number, year: number, projectI
             tag_number: true,
             area: true,
             model: true,
+            room_tenant: true,
             qr_code_token: true
           }
         }
@@ -327,6 +328,7 @@ export async function getCalendarSchedules(month: number, year: number, projectI
         unitTag: s.units?.tag_number,
         unitArea: s.units?.area,
         unitModel: s.units?.model,
+        unitRoom: s.units?.room_tenant || "",
         unitToken: s.units?.qr_code_token
       }))
     };

@@ -200,7 +200,8 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
                       <MapPin size={16} className="text-[#00a1e4]" />
                       <div>
                         <p className="text-[10px] font-black text-[#003366] uppercase tracking-tight leading-none">{selectedSchedule.unitTag}</p>
-                        <p className="text-[9px] font-bold text-[#00a1e4] uppercase tracking-tighter mt-1">{selectedSchedule.unitArea} • {selectedSchedule.unitModel}</p>
+                        {selectedSchedule.unitRoom && <p className="text-[9px] font-bold text-[#00a1e4] uppercase tracking-tighter mt-1">{selectedSchedule.unitRoom}</p>}
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mt-0.5">{selectedSchedule.unitArea}{selectedSchedule.unitModel ? ` • ${selectedSchedule.unitModel}` : ''}</p>
                       </div>
                     </div>
                   </div>
@@ -378,7 +379,7 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
                                             </div>
                                             <div className="flex items-center gap-1">
                                                 <MapPin size={8} className="text-slate-400" />
-                                                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">{s.unitArea || 'N/A'}</span>
+                                                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest truncate max-w-[100px]">{s.unitRoom || s.unitArea || 'N/A'}</span>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-50 rounded-lg group-hover:bg-blue-50 transition-colors">

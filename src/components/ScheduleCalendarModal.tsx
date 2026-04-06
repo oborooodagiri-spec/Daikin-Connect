@@ -8,7 +8,7 @@ import {
 } from "date-fns";
 import { 
   X, ChevronLeft, ChevronRight, Calendar as CalendarIcon, 
-  Clock, User as UserIcon, Trash2 
+  Clock, User as UserIcon, Trash2, MapPin 
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getProjectSchedules } from "@/app/actions/project_targets";
@@ -183,6 +183,15 @@ export default function ScheduleCalendarModal({ projectId, projectName, isOpen, 
                                    <UserIcon size={12} className="text-slate-400" />
                                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{s.users?.name || "Unassigned"}</span>
                                  </div>
+                                 {s.units?.tag_number && (
+                                    <div className="mt-2 flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-100 rounded-xl w-max">
+                                      <MapPin size={12} className="text-[#00a1e4]" />
+                                      <div>
+                                        <span className="text-[10px] font-black text-[#003366] uppercase tracking-tight">{s.units.tag_number}</span>
+                                        {s.units.room_tenant && <span className="text-[9px] font-bold text-[#00a1e4] ml-1">{s.units.room_tenant}</span>}
+                                      </div>
+                                    </div>
+                                  )}
                               </div>
                             ))
                           ) : (
