@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import '../../../models/unit_model.dart';
 import '../../../services/location_service.dart';
 
@@ -16,7 +15,7 @@ class _CorrectiveReportScreenState extends State<CorrectiveReportScreen> {
   final _formKey = GlobalKey<FormState>();
   final LocationService _locationService = LocationService();
   
-  Position? _currentPosition;
+  dynamic _currentPosition;
   bool _isLocating = false;
 
   final TextEditingController _problemController = TextEditingController();
@@ -150,24 +149,22 @@ class _CorrectiveReportScreenState extends State<CorrectiveReportScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
+          const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("GEOTAG (GPS)", style: TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold)),
+              Text("GEOTAG (GPS)", style: TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
               Text(
-                _currentPosition == null 
-                    ? "Location not tagged"
-                    : "${_currentPosition!.latitude.toStringAsFixed(4)}, ${_currentPosition!.longitude.toStringAsFixed(4)}",
-                style: TextStyle(color: _currentPosition == null ? Colors.white24 : Colors.greenAccent, fontSize: 12),
+                "Location tagging disabled",
+                style: TextStyle(color: Colors.white24, fontSize: 12),
               ),
             ],
           ),
           IconButton(
-            onPressed: _isLocating ? null : _captureLocation,
+            onPressed: null,
             icon: _isLocating 
                 ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Icon(Icons.my_location, color: Colors.blueAccent),
+                : const Icon(Icons.location_off, color: Colors.white24),
           ),
         ],
       ),

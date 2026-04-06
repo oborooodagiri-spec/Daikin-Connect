@@ -35,14 +35,11 @@ export async function POST(req: NextRequest) {
     }
 
     // 1. Save Activity
-    const activityType = type === "Corrective" ? "Corrective" : (type === "Preventive" ? "Preventive" : "Audit");
-    const idNum = parseInt(unitId);
-
     const activity = await prisma.service_activities.create({
       data: {
-        unit_id: idNum,
-        type: activityType,
-        engineer_note: summary,
+        unit_id: BigInt(unitId),
+        activity_type: type,
+        summary: summary,
         created_at: new Date(),
         // We'll link photos later or store them in a related table if exists
       }
@@ -51,8 +48,8 @@ export async function POST(req: NextRequest) {
     // 2. Update Unit Status
     if (status) {
       await prisma.units.update({
-        where: { id: idNum },
-        data: { status: status as any }
+        where: { id: BigInt(unitId) },
+        data: { status: status }
       });
     }
 

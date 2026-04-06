@@ -25,9 +25,8 @@ export async function GET(req: NextRequest) {
       orderBy: { created_at: "desc" },
       take: 20,
       include: {
-        units: {
-          include: { projects: true }
-        }
+        units: true,
+        projects: true
       }
     });
 
@@ -35,9 +34,9 @@ export async function GET(req: NextRequest) {
       success: true,
       data: activities.map(a => ({
         id: a.id,
-        type: a.type,
+        type: a.activity_type,
         unit: a.units?.tag_number,
-        project: a.units?.projects?.name,
+        project: a.projects?.name,
         date: a.created_at,
         has_report: true,
         download_url: `/api/v1/reports/${a.id}/download`

@@ -5,10 +5,14 @@ import 'package:local_auth/local_auth.dart';
 import 'providers/auth_provider.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/dashboard/screens/dashboard_home.dart';
+import 'services/sync_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  
+  // Initialize Offline Sync Database
+  await SyncService().init();
   
   // Set status bar to transparent for immersive dark mode
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(

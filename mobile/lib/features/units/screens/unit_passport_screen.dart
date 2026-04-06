@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../models/unit_model.dart';
 import '../../reports/screens/corrective_report_screen.dart';
+import '../../reports/screens/preventive_report_screen.dart';
+import '../../reports/screens/complaint_screen.dart';
+import '../../reports/screens/audit_report_screen.dart';
 
 class UnitPassportScreen extends StatelessWidget {
   final UnitModel unit;
@@ -11,7 +14,7 @@ class UnitPassportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 5,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: const Color(0xFF003366),
@@ -26,15 +29,17 @@ class UnitPassportScreen extends StatelessWidget {
               Tab(text: "INFO"),
               Tab(text: "CORRECTIVE"),
               Tab(text: "PREVENTIVE"),
+              Tab(text: "AUDIT"),
               Tab(text: "HISTORY"),
             ],
           ),
         ),
         body: TabBarView(
           children: [
-            _buildInfoTab(),
+            _buildInfoTab(context),
             _buildActionTab(context, "Corrective", Icons.hammer_rounded, Colors.roseAccent),
             _buildActionTab(context, "Preventive", Icons.build_rounded, Colors.blueAccent),
+            _buildActionTab(context, "Audit", Icons.cleaning_services_rounded, Colors.teal),
             _buildHistoryTab(),
           ],
         ),
@@ -42,7 +47,7 @@ class UnitPassportScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoTab() {
+  Widget _buildInfoTab(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -58,6 +63,25 @@ class UnitPassportScreen extends StatelessWidget {
             _buildInfoRow("Project", unit.projectName),
             _buildInfoRow("Area", unit.area),
           ]),
+          const SizedBox(height: 30),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ComplaintScreen(unit: unit)),
+                );
+              },
+              icon: const Icon(Icons.warning_amber_rounded, color: Colors.white),
+              label: const Text("REPORT ISSUE", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 2)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent.withOpacity(0.8),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              ),
+            ),
+          )
         ],
       ),
     );
@@ -108,6 +132,16 @@ class UnitPassportScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => CorrectiveReportScreen(unit: unit)),
+                );
+              } else if (title == "Preventive") {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PreventiveReportScreen(unit: unit)),
+                );
+              } else if (title == "Audit") {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AuditReportScreen(unit: unit)),
                 );
               }
             },

@@ -179,8 +179,8 @@ export default function DashboardWrapper() {
   return (
     <div className="w-full flex flex-col space-y-8 pb-32">
       {/* HEADER SECTION - Responsive Flex */}
-      <div className="flex flex-col xl:flex-row w-full items-start xl:items-center justify-between gap-6 pb-8 border-b border-slate-100">
-        <div className="space-y-1">
+        <div className="flex flex-col xl:flex-row w-full items-start xl:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+          <div className="space-y-1 overflow-hidden w-full">
           <div className="flex flex-wrap items-center gap-2 mb-2">
             <span className="px-3 py-1 bg-[#00a1e4]/10 text-[#00a1e4] text-[10px] font-black uppercase tracking-widest rounded-full">REALTIME {APP_VERSION}</span>
             <span className={`px-3 py-1 ${isOnline ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"} text-[10px] font-black uppercase tracking-widest rounded-full flex items-center gap-1 transition-colors duration-500`}>
@@ -188,13 +188,13 @@ export default function DashboardWrapper() {
               {isOnline ? "LIVE CONNECTED" : "OFFLINE MODE"}
             </span>
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black italic tracking-tighter text-[#003366] leading-none">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black italic tracking-tighter text-[#003366] leading-none truncate">
             COMMAND <span className="text-[#00a1e4] not-italic">CENTER</span>
           </h1>
         </div>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full xl:w-auto">
-          <div className="flex-1 min-w-[200px]">
+          <div className="flex-1 w-full min-w-[150px] overflow-hidden">
             <SmartProjectNavigator onFilterChange={setFilters} />
           </div>
           <button 
@@ -232,9 +232,9 @@ export default function DashboardWrapper() {
       </div>
 
       {/* MAIN ANALYTICS GRID */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 mt-6">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 mt-6">
         {/* OPERATIONAL TREND ANALYSIS */}
-        <div ref={trendRef} className="xl:col-span-8 bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 shadow-xl shadow-slate-200/40 border border-slate-50 relative group">
+        <div ref={trendRef} className="xl:col-span-8 bg-white rounded-[2rem] p-5 md:p-10 shadow-xl shadow-slate-200/40 border border-slate-50 relative group overflow-hidden">
           <div className="flex flex-col md:flex-row justify-between w-full mb-10 gap-6 items-start md:items-center">
              <div>
               <h2 className="text-xs font-black italic uppercase tracking-[0.2em] text-[#003366] flex items-center gap-2">
@@ -255,8 +255,8 @@ export default function DashboardWrapper() {
         </div>
 
         {/* ASSET HEALTH STATUS */}
-        <div className="xl:col-span-4 bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col min-h-[400px]">
-          <h2 className="text-xs font-black italic uppercase tracking-[0.2em] text-[#003366] mb-8 flex items-center gap-2">
+        <div className="xl:col-span-4 bg-white rounded-[2rem] p-5 md:p-10 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col min-h-[400px]">
+          <h2 className="text-xs font-black italic uppercase tracking-[0.2em] text-[#003366] mb-8 flex items-center gap-2 truncate">
             <Activity size={16} className="text-red-500" /> ASSET HEALTH STATUS
           </h2>
           <div className="flex-1 relative">
@@ -266,9 +266,9 @@ export default function DashboardWrapper() {
       </div>
 
       {/* FOOTER ANALYTICS GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-4">
         {/* LIVE ACTIVITY FEED */}
-        <div className="lg:col-span-7 bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 shadow-xl shadow-slate-200/40 border border-slate-100 min-h-[500px]">
+        <div className="lg:col-span-7 bg-white rounded-[2rem] p-5 md:p-10 shadow-xl shadow-slate-200/40 border border-slate-100 min-h-[500px]">
            <div className="flex justify-between items-center mb-10">
             <div>
               <h2 className="text-xs font-black italic uppercase tracking-[0.2em] text-[#003366] flex items-center gap-2">
@@ -282,8 +282,8 @@ export default function DashboardWrapper() {
         </div>
 
         {/* INTERACTIVE STATUS WIDGETS */}
-        <div className="lg:col-span-5 flex flex-col gap-8">
-          <StatusList 
+        <div className="lg:col-span-5 flex flex-col gap-6">
+          <StatusList  
             title="Units with Problems" 
             sub="CRITICAL" 
             items={problemUnits} 

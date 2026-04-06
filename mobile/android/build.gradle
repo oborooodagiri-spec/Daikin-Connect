@@ -9,6 +9,29 @@ rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
+
+// Perbaikan khusus untuk plugin yang mencari properti 'flutter' (seperti geolocator)
+subprojects {
+    afterEvaluate { project ->
+        if (project.extensions.findByName("android") != null) {
+            project.android {
+                compileSdkVersion 35
+                buildToolsVersion "35.0.0"
+                
+                // Suntikkan objek flutter ke dalam extension android
+                if (!project.android.hasProperty('flutter')) {
+                    project.android.ext.flutter = [
+                        compileSdkVersion: 35,
+                        minSdkVersion: 24,
+                        targetSdkVersion: 35,
+                        ndkVersion: "25.1.8937393"
+                    ]
+                }
+            }
+        }
+    }
+}
+
 subprojects {
     project.evaluationDependsOn(":app")
 }

@@ -113,6 +113,7 @@ export default function LoginPage() {
           </div>
         </div>
 
+        {/* Temporarily hidden until build is complete
         <div className="relative z-10 py-12">
            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6">DOWNLOAD</p>
            <div className="flex items-center gap-8">
@@ -130,6 +131,7 @@ export default function LoginPage() {
               </a>
            </div>
         </div>
+        */}
 
         {/* Quality Assurance Section */}
         <div className="mt-auto pt-12">
@@ -342,6 +344,7 @@ export default function LoginPage() {
         </motion.div>
 
         {/* Mobile Download Links (Visible on Mobile Only) */}
+        {/* Temporarily hidden until build is complete
         <div className="md:hidden mt-12 w-full max-w-md text-center">
             <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6">DOWNLOAD</p>
             <div className="flex justify-center gap-12">
@@ -359,6 +362,7 @@ export default function LoginPage() {
                 </a>
             </div>
         </div>
+        */}
 
         {/* Mobile Copyright Footer */}
         <div className="mt-12 md:mt-24 text-center pb-8 md:pb-0 relative z-10 w-full">

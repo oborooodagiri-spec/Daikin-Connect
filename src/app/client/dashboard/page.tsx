@@ -46,13 +46,13 @@ export default function ClientDashboardPage() {
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
       
       {/* Welcome Header */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 overflow-hidden">
          <div className="space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-2">
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>Project Transparency Active</span>
             </div>
-            <h1 className="text-5xl font-black text-[#003366] tracking-tighter leading-tight">
+            <h1 className="text-4xl sm:text-5xl font-black text-[#003366] tracking-tighter leading-tight truncate">
               Operational <br/>
               <span className="text-[#00a1e4]">Insight Dashboard</span>
             </h1>
@@ -87,13 +87,13 @@ export default function ClientDashboardPage() {
                {/* Background Glow */}
                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity" />
                
-               <div className="relative z-10 flex flex-col md:flex-row items-start justify-between gap-10">
-                  <div className="flex-1 space-y-8">
+               <div className="relative z-10 flex flex-col md:flex-row items-start justify-between gap-8 w-full overflow-hidden">
+                  <div className="flex-1 space-y-6 w-full">
                      <div>
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00a1e4] mb-1">{project.customerName}</p>
-                        <div className="flex items-center gap-3 mb-2">
-                           <Building2 className="text-slate-400" size={20} />
-                           <h3 className="text-2xl font-black text-[#003366] tracking-tight">{project.name}</h3>
+                        <div className="flex items-center gap-3 mb-2 flex-wrap">
+                           <Building2 className="text-slate-400 shrink-0" size={20} />
+                           <h3 className="text-xl sm:text-2xl font-black text-[#003366] tracking-tight truncate flex-1">{project.name}</h3>
                         </div>
                         <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-300 pl-8">{project.code || 'SITE-N/A'}</p>
                      </div>

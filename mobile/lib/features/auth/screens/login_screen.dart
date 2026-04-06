@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../providers/auth_provider.dart';
+import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -131,7 +132,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   onToggle: () => setState(() => _showPassword = !_showPassword),
                 ),
                 
-                const SizedBox(height: 30),
+                if (!_isRequestMode)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
+                        );
+                      },
+                      child: const Text(
+                        "Forgot Password?",
+                        style: TextStyle(color: Colors.white54, fontSize: 11),
+                      ),
+                    ),
+                  ),
+
+                const SizedBox(height: 20),
 
                 Consumer<AuthProvider>(
                   builder: (context, auth, _) {
