@@ -188,7 +188,7 @@ export default function DashboardWrapper() {
               {isOnline ? "LIVE CONNECTED" : "OFFLINE MODE"}
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black italic tracking-tighter text-[#003366] leading-none truncate">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black italic tracking-tighter text-[#003366] leading-none">
             COMMAND <span className="text-[#00a1e4] not-italic">CENTER</span>
           </h1>
         </div>
