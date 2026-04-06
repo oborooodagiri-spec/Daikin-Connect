@@ -116,8 +116,10 @@ export async function login(formData: FormData) {
       include: { user_roles: { include: { roles: true } } }
     });
     if (userRoleData) {
-      const roles = userRoleData.user_roles.map(ur => ur.roles.role_name.toLowerCase());
-      isInternal = roles.some(r => ["super_admin", "admin", "administrator", "internal", "engineer", "sales engineer", "management"].includes(r));
+      const roles = userRoleData.user_roles.map(ur => ur.roles.role_name.toLowerCase().trim());
+      isInternal = roles.some(r => 
+        ["admin", "super", "internal", "engineer", "sales", "management", "administrator"].some(keyword => r.includes(keyword))
+      );
     }
   } catch (e) {
     console.error("Redirect check error:", e);
@@ -159,9 +161,9 @@ export async function getSession() {
 
     const roles = user.user_roles.map(ur => ur.roles.role_name);
     // Determine internal/external based on roles
-    const normalizedRoles = roles.map(r => r.toLowerCase());
+    const normalizedRoles = roles.map(r => r.toLowerCase().trim());
     const isInternal = normalizedRoles.some(r => 
-      ["super_admin", "admin", "administrator", "internal", "engineer", "sales engineer", "management"].includes(r)
+      ["admin", "super", "internal", "engineer", "sales", "management", "administrator"].some(keyword => r.includes(keyword))
     );
 
     return serializePrisma({

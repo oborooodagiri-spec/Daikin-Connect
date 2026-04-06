@@ -14,6 +14,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { getProjectSchedules } from "@/app/actions/project_targets";
 import { deleteSchedule } from "@/app/actions/schedules";
 import ScheduleInputForm from "./dashboard/ScheduleInputForm";
+import ScheduleManagerModal from "./dashboard/ScheduleManagerModal";
+import { getSession } from "@/app/actions/auth";
 
 interface ScheduleCalendarModalProps {
   projectId: string;
@@ -32,6 +34,10 @@ export default function ScheduleCalendarModal({ projectId, projectName, isOpen, 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [showForm, setShowForm] = useState(false);
 
+  // Manage State (Admin)
+  const [session, setSession] = useState<any>(null);
+  const [managingSchedule, setManagingSchedule] = useState<any>(null);
+
   const fetchSchedules = async () => {
     setLoading(true);
     const res = await getProjectSchedules(projectId);
@@ -42,6 +48,7 @@ export default function ScheduleCalendarModal({ projectId, projectName, isOpen, 
   useEffect(() => {
     if (isOpen) {
       fetchSchedules();
+      getSession().then(setSession);
     }
   }, [isOpen, projectId]);
 
@@ -179,6 +186,26 @@ export default function ScheduleCalendarModal({ projectId, projectName, isOpen, 
                                      <Trash2 size={14} />
                                    </button>
                                  </div>
+
+                                 {(() => {
+                                   const roles = session?.roles || [];
+                                   const isActuallyInternal = session?.isInternal || roles.some((r: string) => 
+                                     ["admin", "super", "internal", "management", "engineer"].some(kw => r.toLowerCase().includes(kw))
+                                   );
+                                   
+                                   if (isActuallyInternal) {
+                                     return (
+                                       <button 
+                                         onClick={() => setManagingSchedule(s)}
+                                         className="mt-3 w-full py-2 bg-slate-100 hover:bg-[#003366] hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-slate-200"
+                                       >
+                                         Manage Meeting & MoM
+                                       </button>
+                                     );
+                                   }
+                                   return null;
+                                 })()}
+
                                  <div className="mt-4 flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-100 rounded-xl w-max">
                                    <UserIcon size={12} className="text-slate-400" />
                                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{s.users?.name || "Unassigned"}</span>

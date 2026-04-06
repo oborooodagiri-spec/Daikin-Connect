@@ -8,6 +8,8 @@ import { getAllSchedules, getScheduleFormOptions, createSchedule, updateSchedule
 import { Plus, MapPin, CheckCircle2, XCircle, Search, Clock, CalendarIcon, FolderGit2, X, Save, ChevronLeft, ChevronRight, Activity } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import QuickInputModal from "@/components/dashboard/QuickInputModal";
+import ScheduleManagerModal from "@/components/dashboard/ScheduleManagerModal";
+import { getSession } from "@/app/actions/auth";
 
 export default function SchedulesPage() {
   const [schedules, setSchedules] = useState<any[]>([]);
@@ -31,6 +33,10 @@ export default function SchedulesPage() {
   const [isInputModalOpen, setIsInputModalOpen] = useState(false);
   const [passedUnit, setPassedUnit] = useState<any | null>(null);
 
+  // Meeting Management (Admin)
+  const [session, setSession] = useState<any>(null);
+  const [managingSchedule, setManagingSchedule] = useState<any>(null);
+
   const fetchSchedules = async () => {
     setLoading(true);
     let res;
@@ -52,6 +58,7 @@ export default function SchedulesPage() {
   useEffect(() => {
     fetchSchedules();
     fetchOptions();
+    getSession().then(setSession);
   }, [filterProjectId]);
 
   const openModal = () => setIsModalOpen(true);
@@ -193,15 +200,37 @@ export default function SchedulesPage() {
                             <Clock size={10} /> {format(new Date(s.start_at), 'HH:mm')} - {format(new Date(s.end_at), 'HH:mm')}
                             </p>
 
-                            <div className="mt-3 pt-2 border-t border-black/5 flex justify-between items-center">
-                            <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${
-                                s.status === 'Completed' ? 'bg-emerald-500 text-white' : 
-                                s.status === 'Missed' ? 'bg-rose-500 text-white' : 'bg-black/10'
-                            }`}>
-                                {s.status}
-                            </span>
+                            <div className="mt-3 pt-2 border-t border-black/5 flex flex-col gap-2">
+                                <div className="flex justify-between items-center">
+                                    <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${
+                                        s.status === 'Completed' ? 'bg-emerald-500 text-white' : 
+                                        s.status === 'Missed' ? 'bg-rose-500 text-white' : 'bg-black/10'
+                                    }`}>
+                                        {s.status}
+                                    </span>
+                                </div>
+                                {(() => {
+                                   const roles = session?.roles || [];
+                                   const isActuallyInternal = session?.isInternal || roles.some((r: string) => 
+                                     ["admin", "super", "internal", "management", "engineer"].some(kw => r.toLowerCase().includes(kw))
+                                   );
+                                   
+                                   if (isActuallyInternal) {
+                                     return (
+                                       <button 
+                                         onClick={(e) => {
+                                           e.stopPropagation();
+                                           setManagingSchedule(s);
+                                         }}
+                                         className="w-full py-1.5 bg-black/5 hover:bg-black hover:text-white rounded-lg text-[9px] font-black uppercase tracking-widest transition-all"
+                                       >
+                                         Manage Meeting
+                                       </button>
+                                     );
+                                   }
+                                   return null;
+                                 })()}
                             </div>
-
                         </motion.div>
                         ))}
                     </div>
@@ -259,7 +288,27 @@ export default function SchedulesPage() {
                                     <MapPin size={12} className="text-[#00a1e4]" />
                                     <span>{s.project?.name || "Global Project"}</span>
                                 </div>
-                                
+                                {(() => {
+                                   const roles = session?.roles || [];
+                                   const isActuallyInternal = session?.isInternal || roles.some((r: string) => 
+                                     ["admin", "super", "internal", "management", "engineer"].some(kw => r.toLowerCase().includes(kw))
+                                   );
+                                   
+                                   if (isActuallyInternal) {
+                                     return (
+                                       <button 
+                                         onClick={(e) => {
+                                           e.stopPropagation();
+                                           setManagingSchedule(s);
+                                         }}
+                                         className="px-4 py-2 bg-[#003366] text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md"
+                                       >
+                                         Manage Meeting
+                                       </button>
+                                     );
+                                   }
+                                   return null;
+                                 })()}
                             </div>
                         </motion.div>
                     ))}
@@ -372,6 +421,12 @@ export default function SchedulesPage() {
         isOpen={isInputModalOpen} 
         onClose={() => setIsInputModalOpen(false)} 
         unit={passedUnit} 
+      />
+
+      <ScheduleManagerModal 
+        isOpen={!!managingSchedule}
+        schedule={managingSchedule}
+        onClose={() => setManagingSchedule(null)}
       />
     </div>
   );

@@ -38,8 +38,28 @@ export async function submitComplaint(token: string, data: {
       data: { status: "Problem" }
     } as any);
 
+    // 3. Automatically create a corrective schedule entry
+    try {
+      await (prisma.schedules as any).create({
+        data: {
+          title: `Corrective: ${unit.tag_number}`,
+          description: `Customer Complaint from ${data.customerName}: ${data.description}`,
+          start_at: new Date(),
+          end_at: new Date(Date.now() + 2 * 60 * 60 * 1000), // Default 2 hours
+          type: "Corrective",
+          status: "Planned",
+          project_id: unit.project_ref_id,
+          unit_id: unit.id
+        }
+      });
+    } catch (scheduleError) {
+      console.error("Automated schedule creation failed:", scheduleError);
+      // We don't fail the entire complaint if schedule creation fails, but we log it
+    }
+
     revalidatePath(`/passport/${token}`);
     revalidatePath("/dashboard", "layout");
+    revalidatePath("/dashboard/schedules", "layout");
     
     return serializePrisma({ success: true });
   } catch (error: any) {
@@ -113,7 +133,6 @@ export async function getProjectComplaints(projectId?: string) {
     if (projectId) {
       where.units = { project_ref_id: BigInt(projectId) };
     } else if (!session.isInternal) {
-      // If not internal and no projectId, only show from assigned projects
       const assigned = await prisma.user_project_access.findMany({
         where: { user_id: parseInt(session.userId) },
         select: { project_id: true }
@@ -121,13 +140,19 @@ export async function getProjectComplaints(projectId?: string) {
       where.units = { project_ref_id: { in: assigned.map(a => a.project_id) } };
     }
 
+    // Only show complaints for units that are NOT currently 'Normal'
+    where.units = {
+      ...where.units,
+      status: { not: "Normal" }
+    };
+
     const complaints = await (prisma.complaints as any).findMany({
       where,
       orderBy: { created_at: 'desc' },
       take: 10,
       include: {
         units: {
-          select: { tag_number: true, model: true, area: true, room_tenant: true }
+          select: { tag_number: true, model: true, area: true, room_tenant: true, status: true }
         }
       }
     });
@@ -141,10 +166,12 @@ export async function getProjectComplaints(projectId?: string) {
         created_at: c.created_at,
         photo_url: c.photo_url,
         status: c.status,
+        unit_id: c.unit_id,
         unit_tag: c.units?.tag_number || "N/A",
         unit_model: c.units?.model || "N/A",
         unit_area: c.units?.area || "N/A",
-        unit_room: c.units?.room_tenant || ""
+        unit_room: c.units?.room_tenant || "",
+        unit_status: c.units?.status || "Normal"
       }))
     });
   } catch (error) {

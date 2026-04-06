@@ -299,7 +299,7 @@ export default function DashboardWrapper() {
             icon={<Hammer size={16} className="text-white fill-white" />}
             onItemClick={openUnitDetail}
           />
-          <ComplaintWidget items={recentComplaints} />
+          <ComplaintWidget items={recentComplaints} onItemClick={handleActivityClick} />
         </div>
       </div>
 
@@ -362,7 +362,7 @@ function StatusList({ title, sub, items, color, icon, onItemClick }: any) {
   );
 }
 
-function ComplaintWidget({ items }: any) {
+function ComplaintWidget({ items, onItemClick }: any) {
   return (
     <div className="bg-white rounded-[2rem] shadow-xl shadow-slate-200/40 border border-slate-100 overflow-hidden flex flex-col min-h-[250px] group transition-all hover:border-indigo-200">
       <div className="p-6 bg-indigo-50 border-b border-indigo-100 flex justify-between items-center shrink-0">
@@ -377,21 +377,39 @@ function ComplaintWidget({ items }: any) {
       <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
         {items.length === 0 ? (
           <div className="h-full flex items-center justify-center opacity-30 p-8 text-center uppercase text-[10px] font-black tracking-widest">
-            <p>No Complaints</p>
+            <p>No Active Complaints</p>
           </div>
         ) : (
-          items.map((c: any) => (
-            <div key={c.id} className="p-4 bg-indigo-50/30 hover:bg-slate-50 rounded-2xl border border-indigo-50 hover:border-indigo-500/30 transition-all flex flex-col gap-1 shadow-sm">
-              <div className="flex justify-between items-center">
-                 <p className="text-xs font-black text-indigo-900 tracking-tight">{c.unit_tag}</p>
-                 <span className="text-[8px] font-bold text-slate-400">{new Date(c.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+          items.map((c: any) => {
+            const isProcessing = ["On_Progress", "Pending"].includes(c.unit_status);
+            
+            return (
+              <div 
+                key={c.id} 
+                onClick={() => onItemClick({ id: c.unit_id || 0, tag_number: c.unit_tag })} 
+                className={`p-4 ${isProcessing ? 'bg-amber-50/50 border-amber-200' : 'bg-indigo-50/30 border-indigo-50'} hover:bg-slate-50 rounded-2xl border transition-all flex flex-col gap-1 shadow-sm cursor-pointer group/card`}
+              >
+                <div className="flex justify-between items-center">
+                   <p className={`text-xs font-black ${isProcessing ? 'text-amber-900 font-black' : 'text-indigo-900 font-black'} tracking-tight`}>{c.unit_tag}</p>
+                   {isProcessing ? (
+                     <span className="flex items-center gap-1 text-[8px] font-black text-amber-600 uppercase bg-amber-100 px-2 py-0.5 rounded-full animate-pulse">
+                       <Clock size={8} /> PROCESSING
+                     </span>
+                   ) : (
+                     <span className="text-[8px] font-bold text-slate-400">{new Date(c.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                   )}
+                </div>
+                {(c.unit_room || c.unit_area) && (
+                  <p className={`text-[9px] font-bold ${isProcessing ? 'text-amber-600' : 'text-indigo-500'}`}>{c.unit_room || c.unit_area}{c.unit_room && c.unit_area ? ` · ${c.unit_area}` : ''}</p>
+                )}
+                <p className="text-[10px] font-medium text-slate-600 line-clamp-1 italic">"{c.description}"</p>
+                
+                <div className="flex justify-end mt-1 opacity-0 group-hover/card:opacity-100 transition-opacity">
+                   <span className="text-[8px] font-black text-[#00a1e4] uppercase tracking-widest flex items-center gap-1">Open unit <ArrowRight size={8} /></span>
+                </div>
               </div>
-              {(c.unit_room || c.unit_area) && (
-                <p className="text-[9px] font-bold text-indigo-500">{c.unit_room || c.unit_area}{c.unit_room && c.unit_area ? ` · ${c.unit_area}` : ''}</p>
-              )}
-              <p className="text-[10px] font-medium text-slate-600 line-clamp-1 italic">"{c.description}"</p>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>

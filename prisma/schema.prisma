@@ -477,6 +477,32 @@ model schedules {
   @@index([project_id])
   @@index([unit_id])
   @@index([assignee_id])
+
+  schedule_attendance schedule_attendance[]
+  schedule_mom        schedule_mom[]
+}
+
+model schedule_attendance {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  schedule_id BigInt    @db.UnsignedBigInt
+  name        String    @db.VarChar(150)
+  role        String?   @db.VarChar(100)
+  is_present  Boolean   @default(false)
+  signature   String?   @db.LongText
+  created_at  DateTime  @default(now()) @db.Timestamp(0)
+  schedules   schedules @relation(fields: [schedule_id], references: [id], onDelete: Cascade)
+
+  @@index([schedule_id])
+}
+
+model schedule_mom {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  schedule_id BigInt    @db.UnsignedBigInt
+  content     String    @db.LongText
+  updated_at  DateTime  @updatedAt
+  schedules   schedules @relation(fields: [schedule_id], references: [id], onDelete: Cascade)
+
+  @@index([schedule_id])
 }
 
 model schedule_targets {
