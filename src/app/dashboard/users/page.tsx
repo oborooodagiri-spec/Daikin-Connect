@@ -12,10 +12,14 @@ import {
   deleteUser, getAllRoles, getAllAvailableProjects,
   getUserProjectAccess, updateUserProjectAccess 
 } from "@/app/actions/users";
-import { format } from "date-fns";
+import { useRouter } from "next/navigation";
+import { getSession } from "@/app/actions/auth";
 
 export default function UsersPage() {
+  const router = useRouter();
+  const [session, setSession] = useState<any>(null);
   const [users, setUsers] = useState<any[]>([]);
+  // ... rest of state
   const [roles, setRoles] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,8 +48,17 @@ export default function UsersPage() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    const checkAccess = async () => {
+      const s = await getSession();
+      if (!s || !s.role?.toLowerCase().includes("admin")) {
+        router.push("/dashboard");
+        return;
+      }
+      setSession(s);
+      fetchData();
+    };
+    checkAccess();
+  }, [router]);
 
   const handleToggleStatus = (user: any) => {
     const verb = user.is_active ? "Deactivate" : "Activate";

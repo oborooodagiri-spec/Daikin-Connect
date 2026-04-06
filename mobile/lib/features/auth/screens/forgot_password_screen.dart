@@ -24,7 +24,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("If an account exists, a reset link has been sent."), backgroundColor: Colors.greenAccent),
+        const SnackBar(
+          content: Text("If an account exists, a reset link has been sent."), 
+          backgroundColor: const Color(0xFF00A1E4)
+        ),
       );
       Navigator.pop(context);
     }
@@ -49,7 +52,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               "RESET PASSWORD",
               style: GoogleFonts.inter(
                 fontSize: 24,
-                fontWeight: FontWeight.black,
+                fontWeight: FontWeight.w900,
                 color: Colors.white,
                 letterSpacing: 2,
               ),
@@ -65,9 +68,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             const SizedBox(height: 40),
             Container(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white.withOpacity(0.1)),
+                border: Border.all(color: Colors.white),
               ),
               child: TextField(
                 controller: _emailController,
@@ -102,3 +105,4 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 }
+

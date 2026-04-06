@@ -80,10 +80,10 @@ export default function NotificationManager() {
       <AnimatePresence>
         {showPrompt && (
           <motion.div 
-            initial={{ y: 100, opacity: 0 }}
+            initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-6 left-6 right-6 md:right-auto md:w-96 z-[99999]"
+            exit={{ y: 50, opacity: 0 }}
+            className="fixed bottom-8 left-4 right-4 md:left-auto md:right-8 md:w-96 z-[999999]"
           >
             <div className="bg-[#003366] text-white p-6 rounded-[2rem] shadow-2xl border border-white/10 flex items-start gap-4">
                <div className="p-3 bg-[#00a1e4] rounded-2xl shrink-0">

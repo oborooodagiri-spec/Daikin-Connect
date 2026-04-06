@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../providers/auth_provider.dart';
 import 'forgot_password_screen.dart';
 
@@ -27,7 +26,6 @@ class _LoginScreenState extends State<LoginScreen> {
     
     bool success;
     if (_isRequestMode) {
-      // Implement register logic if needed, for now just show success/fail placeholder
       success = false; 
     } else {
       success = await authProvider.login(
@@ -40,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(authProvider.error ?? 'Request Failed'),
-          backgroundColor: Colors.redAccent,
+          backgroundColor: const Color(0xFFFF5252),
         ),
       );
     }
@@ -49,181 +47,166 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.all(24.0),
-        decoration: const BoxDecoration(
-          color: Color(0xFF040814),
-        ),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                FadeInDown(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset('assets/images/daikin_logo.png', height: 40),
-                      const SizedBox(width: 20),
-                      Container(width: 1, height: 30, color: Colors.white24),
-                      const SizedBox(width: 20),
-                      Image.asset('assets/images/logo_epl_connect_1.png', height: 40),
-                    ],
-                  ),
+      backgroundColor: const Color(0xFF040814),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FadeInDown(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/images/daikin_logo.png', height: 40),
+                    const SizedBox(width: 20),
+                    Container(width: 1, height: 30, color: const Color(0x3DFFFFFF)),
+                    const SizedBox(width: 20),
+                    Image.asset('assets/images/logo_epl_connect_1.png', height: 40),
+                  ],
                 ),
-                const SizedBox(height: 50),
-                
-                FadeInUp(
-                  duration: const Duration(milliseconds: 800),
-                  child: Column(
-                    children: [
-                      Text(
-                        _isRequestMode ? "REQUEST ACCESS" : "SMART HVAC",
-                        style: GoogleFonts.inter(
-                          fontSize: _isRequestMode ? 22 : 28,
-                          fontWeight: FontWeight.black,
-                          color: Colors.white,
-                          letterSpacing: 2,
-                        ),
-                      ),
-                      if (!_isRequestMode)
-                        Text(
-                          "MANAGEMENT SYSTEMS",
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF00A1E4),
-                            letterSpacing: 4,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 50),
-
-                if (_isRequestMode) ...[
-                  _buildTextField(
-                    controller: _nameController,
-                    hint: "Full Name",
-                    icon: Icons.person_outline,
-                  ),
-                  const SizedBox(height: 15),
-                  _buildTextField(
-                    controller: _companyController,
-                    hint: "Company Name",
-                    icon: Icons.business_outlined,
-                  ),
-                  const SizedBox(height: 15),
-                ],
-
-                _buildTextField(
-                  controller: _emailController,
-                  hint: "Email Address",
-                  icon: Icons.mail_outline,
-                ),
-                const SizedBox(height: 15),
-                
-                _buildTextField(
-                  controller: _passwordController,
-                  hint: "Password",
-                  icon: Icons.lock_outline,
-                  isPassword: true,
-                  showPassword: _showPassword,
-                  onToggle: () => setState(() => _showPassword = !_showPassword),
-                ),
-                
-                if (!_isRequestMode)
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
-                        );
-                      },
-                      child: const Text(
-                        "Forgot Password?",
-                        style: TextStyle(color: Colors.white54, fontSize: 11),
+              ),
+              const SizedBox(height: 50),
+              
+              FadeInUp(
+                duration: const Duration(milliseconds: 800),
+                child: Column(
+                  children: [
+                    Text(
+                      _isRequestMode ? "REQUEST ACCESS" : "SMART HVAC",
+                      style: GoogleFonts.inter(
+                        fontSize: _isRequestMode ? 22 : 28,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        letterSpacing: 2,
                       ),
                     ),
-                  ),
-
-                const SizedBox(height: 20),
-
-                Consumer<AuthProvider>(
-                  builder: (context, auth, _) {
-                    return SizedBox(
-                      width: double.infinity,
-                      height: 55,
-                      child: ElevatedButton(
-                        onPressed: auth.isLoading ? null : _handleLogin,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF00A1E4),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: auth.isLoading 
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : Text(
-                              _isRequestMode ? "SUBMIT REQUEST" : "AUTHENTICATE",
-                              style: const TextStyle(
-                                color: Colors.white, 
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 2,
-                              ),
-                            ),
-                      ),
-                    );
-                  }
-                ),
-                
-                const SizedBox(height: 20),
-                TextButton(
-                  onPressed: () => setState(() => _isRequestMode = !_isRequestMode), 
-                  child: Text(
-                    _isRequestMode ? "ALREADY HAVE ACCESS? SIGN IN" : "NEED AN ACCOUNT? REQUEST ACCESS",
-                    style: GoogleFonts.inter(
-                      color: const Color(0xFF00A1E4),
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1,
-                    ),
-                  )
-                ),
-                const SizedBox(height: 40),
-                
-                // Downloader Section
-                FadeInUp(
-                  delay: const Duration(milliseconds: 1000),
-                  child: Column(
-                    children: [
+                    if (!_isRequestMode)
                       Text(
-                        "DOWNLOAD APP",
+                        "MANAGEMENT SYSTEMS",
                         style: GoogleFonts.inter(
-                          color: Colors.white24,
-                          fontSize: 9,
-                          fontWeight: FontWeight.black,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF00A1E4),
                           letterSpacing: 4,
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _buildDownloadIcon(FontAwesomeIcons.android, "ANDROID"),
-                          const SizedBox(width: 40),
-                          _buildDownloadIcon(FontAwesomeIcons.apple, "IOS"),
-                        ],
-                      ),
-                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: 50),
+
+              if (_isRequestMode) ...[
+                _buildTextField(
+                  controller: _nameController,
+                  hint: "Full Name",
+                  icon: Icons.person_outline,
+                ),
+                const SizedBox(height: 15),
+                _buildTextField(
+                  controller: _companyController,
+                  hint: "Company Name",
+                  icon: Icons.business_outlined,
+                ),
+                const SizedBox(height: 15),
+              ],
+
+              _buildTextField(
+                controller: _emailController,
+                hint: "Email Address",
+                icon: Icons.mail_outline,
+              ),
+              const SizedBox(height: 15),
+              
+              _buildTextField(
+                controller: _passwordController,
+                hint: "Password",
+                icon: Icons.lock_outline,
+                isPassword: true,
+                showPassword: _showPassword,
+                onToggle: () => setState(() => _showPassword = !_showPassword),
+              ),
+              
+              if (!_isRequestMode)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
+                      );
+                    },
+                    child: const Text(
+                      "Forgot Password?",
+                      style: TextStyle(color: Color(0x8AFFFFFF), fontSize: 11),
+                    ),
                   ),
                 ),
-              ],
-            ),
+
+              const SizedBox(height: 20),
+
+              Consumer<AuthProvider>(
+                builder: (context, auth, _) {
+                  return SizedBox(
+                    width: double.infinity,
+                    height: 55,
+                    child: ElevatedButton(
+                      onPressed: auth.isLoading ? null : _handleLogin,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF00A1E4),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: auth.isLoading 
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : Text(
+                            _isRequestMode ? "SUBMIT REQUEST" : "AUTHENTICATE",
+                            style: TextStyle(
+                              color: Colors.white, 
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                    ),
+                  );
+                }
+              ),
+              
+              const SizedBox(height: 40),
+              _buildDownloaderSection(),
+            ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildDownloaderSection() {
+    return FadeInUp(
+      delay: const Duration(milliseconds: 1000),
+      child: Column(
+        children: [
+          Text(
+            "DOWNLOAD APP",
+            style: GoogleFonts.inter(
+              color: const Color(0x3DFFFFFF),
+              fontSize: 9,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 4,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildDownloadIcon(Icons.android, "ANDROID"),
+              const SizedBox(width: 40),
+              _buildDownloadIcon(Icons.apple, "IOS"),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -234,19 +217,19 @@ class _LoginScreenState extends State<LoginScreen> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.03),
+            color: const Color(0x08FFFFFF),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withOpacity(0.05)),
+            border: Border.all(color: const Color(0x0DFFFFFF)),
           ),
-          child: Icon(icon, color: Colors.white38, size: 20),
+          child: Icon(icon, color: const Color(0x61FFFFFF), size: 20),
         ),
         const SizedBox(height: 8),
         Text(
           label,
           style: GoogleFonts.inter(
-            color: Colors.white24,
+            color: const Color(0x3DFFFFFF),
             fontSize: 7,
-            fontWeight: FontWeight.black,
+            fontWeight: FontWeight.w900,
             letterSpacing: 1,
           ),
         ),
@@ -264,9 +247,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: const Color(0x0DFFFFFF),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: const Color(0x1AFFFFFF)),
       ),
       child: TextField(
         controller: controller,
@@ -274,11 +257,11 @@ class _LoginScreenState extends State<LoginScreen> {
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(color: Colors.white38),
-          prefixIcon: Icon(icon, color: Colors.white38, size: 20),
+          hintStyle: const TextStyle(color: Color(0x61FFFFFF)),
+          prefixIcon: Icon(icon, color: const Color(0x61FFFFFF), size: 20),
           suffixIcon: isPassword 
             ? IconButton(
-                icon: Icon(showPassword ? Icons.visibility_off : Icons.visibility, color: Colors.white38, size: 20),
+                icon: Icon(showPassword ? Icons.visibility_off : Icons.visibility, color: const Color(0x61FFFFFF), size: 20),
                 onPressed: onToggle,
               )
             : null,

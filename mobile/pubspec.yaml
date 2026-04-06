@@ -1,6 +1,6 @@
 name: daikin_connect_mobile
 description: "Daikin Connect Enterprise Mobile App - Monitoring and Field Reporting."
-version: 1.0.0+1
+version: 1.7.0+20260407
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -14,7 +14,6 @@ dependencies:
   local_auth: ^2.1.6
   provider: ^6.1.1
   google_fonts: ^6.1.0
-  font_awesome_flutter: ^10.6.0
   animate_do: ^4.2.0
   intl: ^0.20.2
   mobile_scanner: ^6.0.11
@@ -24,6 +23,8 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   path_provider: ^2.1.5
+  flutter_local_notifications: ^18.0.0
+  package_info_plus: ^9.0.1
 
 dev_dependencies:
   flutter_test:
@@ -52,3 +53,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+

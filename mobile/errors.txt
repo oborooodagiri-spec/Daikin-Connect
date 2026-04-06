@@ -1,0 +1,8 @@
+[info] Unnecessary 'const' keyword (C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\mobile\lib\features\auth\screens\forgot_password_screen.dart:29:28)
+[warning] The value of the field '_currentPosition' isn't used (C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\mobile\lib\features\reports\screens\corrective_report_screen.dart:18:11)
+[info] The declaration '_captureLocation' isn't referenced (C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\mobile\lib\features\reports\screens\corrective_report_screen.dart:24:8)
+[info] Unnecessary 'const' keyword (C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\mobile\lib\features\reports\screens\corrective_report_screen.dart:156:15)
+[error] The getter 'hammer_rounded' isn't defined for the type 'Icons' (C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\mobile\lib\features\reports\screens\reports_list_screen.dart:44:36)
+[warning] Unused import: 'package:google_fonts/google_fonts.dart' (C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\mobile\lib\features\reports\screens\reports_list_screen.dart:2:8)
+[error] The getter 'hammer_rounded' isn't defined for the type 'Icons' (C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\mobile\lib\features\units\screens\unit_passport_screen.dart:39:58)
+[info] Don't invoke 'print' in production code (C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\mobile\lib\services\sync_service.dart:72:11)

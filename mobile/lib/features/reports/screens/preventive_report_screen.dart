@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../models/unit_model.dart';
-import '../../../services/sync_service.dart';
-import '../../../services/location_service.dart';
+import 'package:daikin_connect_mobile/models/unit_model.dart';
+import 'package:daikin_connect_mobile/services/sync_service.dart';
+import 'package:daikin_connect_mobile/services/location_service.dart';
 
 class PreventiveReportScreen extends StatefulWidget {
   final UnitModel unit;
@@ -51,12 +51,11 @@ class _PreventiveReportScreenState extends State<PreventiveReportScreen> {
   Future<void> _submitReport() async {
     setState(() => _isSubmitting = true);
     
-    // Auto-capture GPS coordinate for proof of maintenance
     final position = await _locationService.getCurrentLocation();
     
     final payload = {
       'unit_id': widget.unit.id,
-      'unit_tag': widget.unit.tagNumber,
+      'unit_tag': widget.unit.unitTag,
       'type': 'Preventive',
       'latitude': position?.latitude,
       'longitude': position?.longitude,
@@ -74,7 +73,6 @@ class _PreventiveReportScreenState extends State<PreventiveReportScreen> {
       'notes': _notesController.text,
     };
 
-    // Queue to Hive offline sync layer instead of direct submit
     await _syncService.queueReport('/reports/submit', payload);
 
     setState(() => _isSubmitting = false);
@@ -90,9 +88,11 @@ class _PreventiveReportScreenState extends State<PreventiveReportScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF040814),
       appBar: AppBar(
-        title: const Text("Preventive Checklist", style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.blueAccent,
+        title: const Text("Preventive Checklist", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: const Color(0xFF448AFF),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Column(
         children: [
@@ -127,7 +127,7 @@ class _PreventiveReportScreenState extends State<PreventiveReportScreen> {
               margin: EdgeInsets.only(right: index < 2 ? 8 : 0),
               height: 4,
               decoration: BoxDecoration(
-                color: isActive ? Colors.blueAccent : Colors.white24,
+                color: isActive ? const Color(0xFF448AFF) : const Color(0x33FFFFFF),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -156,14 +156,14 @@ class _PreventiveReportScreenState extends State<PreventiveReportScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: const Color(0x0DFFFFFF),
         borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: const TextStyle(color: Colors.white, fontSize: 13)),
-          Switch(value: value, onChanged: onChanged, activeColor: Colors.blueAccent),
+          Text(title, style: const TextStyle(color: Colors.white70, fontSize: 13)),
+          Switch(value: value, onChanged: onChanged, activeColor: const Color(0xFF448AFF)),
         ],
       ),
     );
@@ -193,7 +193,7 @@ class _PreventiveReportScreenState extends State<PreventiveReportScreen> {
         labelText: hint,
         labelStyle: const TextStyle(color: Colors.white38),
         filled: true,
-        fillColor: Colors.white.withOpacity(0.05),
+        fillColor: const Color(0x0DFFFFFF),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
       ),
     );
@@ -213,7 +213,7 @@ class _PreventiveReportScreenState extends State<PreventiveReportScreen> {
             hintText: "Add any final observations...",
             hintStyle: const TextStyle(color: Colors.white38),
             filled: true,
-            fillColor: Colors.white.withOpacity(0.05),
+            fillColor: const Color(0x0DFFFFFF),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
           ),
         ),
@@ -237,7 +237,7 @@ class _PreventiveReportScreenState extends State<PreventiveReportScreen> {
           ElevatedButton(
             onPressed: _isSubmitting ? null : _nextStep,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blueAccent,
+              backgroundColor: const Color(0xFF448AFF),
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
             ),

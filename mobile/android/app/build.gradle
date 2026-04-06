@@ -1,7 +1,6 @@
 plugins {
     id "com.android.application"
     id "kotlin-android"
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
 }
 
@@ -24,13 +23,14 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace = "com.daikin.connect.epl"
-    compileSdk = 35 // Gunakan 35 karena plugin terbaru membutuhkannya
-    ndkVersion = flutter.ndkVersion
+    namespace = "com.daikin.connect.mobile"
+    compileSdk = 35
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
@@ -38,11 +38,13 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.daikin.connect.epl"
+        applicationId = "com.daikin.connect.mobile"
         minSdk = 24
         targetSdk = 35
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
+        multiDexEnabled true
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -54,4 +56,8 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.2'
 }

@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../models/unit_model.dart';
-import '../../../services/sync_service.dart';
-import '../../../services/location_service.dart';
+import 'package:daikin_connect_mobile/models/unit_model.dart';
+import 'package:daikin_connect_mobile/services/sync_service.dart';
+import 'package:daikin_connect_mobile/services/location_service.dart';
 
 class ComplaintScreen extends StatefulWidget {
   final UnitModel unit;
@@ -48,10 +48,10 @@ class _ComplaintScreenState extends State<ComplaintScreen> {
 
     final payload = {
       'unit_id': widget.unit.id,
-      'unit_tag': widget.unit.tagNumber,
+      'unit_tag': widget.unit.unitTag,
       'reporter_name': _nameController.text,
       'description': _descController.text,
-      'photo_path': _imageFile?.path, // Real implementation requires multipart upload sync logic, caching path for now.
+      'photo_path': _imageFile?.path,
       'latitude': position?.latitude,
       'longitude': position?.longitude,
       'timestamp': DateTime.now().toIso8601String(),
@@ -72,9 +72,11 @@ class _ComplaintScreenState extends State<ComplaintScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF040814),
       appBar: AppBar(
-        title: const Text("Report Issue", style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.redAccent,
+        title: const Text("Report Issue", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: const Color(0xFFFF5252),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -86,17 +88,18 @@ class _ComplaintScreenState extends State<ComplaintScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
+                  color: const Color(0x0DFFFFFF),
                   borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0x1AFFFFFF)),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.warning_amber_rounded, color: Colors.orangeAccent, size: 30),
+                    const Icon(Icons.warning_amber_rounded, color: Color(0xFFFFAB40), size: 30),
                     const SizedBox(width: 16),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Unit: ${widget.unit.tagNumber}", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        Text("Unit: ${widget.unit.unitTag}", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                         Text(widget.unit.projectName, style: const TextStyle(color: Colors.white54, fontSize: 10)),
                       ],
                     )
@@ -122,9 +125,9 @@ class _ComplaintScreenState extends State<ComplaintScreen> {
                   height: 150,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
+                    color: const Color(0x0DFFFFFF),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.white.withOpacity(0.2), style: BorderStyle.solid),
+                    border: Border.all(color: const Color(0x1AFFFFFF)),
                     image: _imageFile != null 
                         ? DecorationImage(image: FileImage(_imageFile!), fit: BoxFit.cover)
                         : null,
@@ -150,7 +153,7 @@ class _ComplaintScreenState extends State<ComplaintScreen> {
                 child: ElevatedButton(
                   onPressed: _isSubmitting ? null : _submitComplaint,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
+                    backgroundColor: const Color(0xFFFF5252),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
                   child: _isSubmitting 
@@ -181,7 +184,7 @@ class _ComplaintScreenState extends State<ComplaintScreen> {
         hintText: hint,
         hintStyle: const TextStyle(color: Colors.white24),
         filled: true,
-        fillColor: Colors.white.withOpacity(0.03),
+        fillColor: const Color(0x0DFFFFFF),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
       ),
       validator: (v) => v!.isEmpty ? "This field is required" : null,

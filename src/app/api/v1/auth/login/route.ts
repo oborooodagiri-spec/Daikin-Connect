@@ -36,28 +36,40 @@ export async function POST(req: NextRequest) {
     const roles = user.user_roles.map(ur => ur.roles.role_name);
     const primaryRole = roles.includes("Admin") ? "Admin" : (roles[0] || "User");
 
+    // Fetch project access list
+    const projectAccess = await prisma.user_project_access.findMany({
+      where: { user_id: user.id },
+      select: { project_id: true }
+    });
+    const assignedProjectIds = projectAccess.map(pa => pa.project_id.toString());
+
     // Create JWT Token
+    const isInternal = primaryRole === "Admin" || primaryRole === "Internal" || primaryRole === "Technician";
     const token = jwt.sign(
       { 
         userId: user.id, 
         email: user.email, 
         name: user.name,
         role: primaryRole,
-        isInternal: primaryRole === "Admin" || primaryRole === "Internal"
+        isInternal,
+        assignedProjectIds
       }, 
       JWT_SECRET,
-      { expiresIn: "30d" } // Long lived for mobile app convenience
+      { expiresIn: "30d" }
     );
 
     return NextResponse.json({
       success: true,
       token,
+      required_version: "V1.7.20260407",
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
         role: primaryRole,
-        company: user.company_name
+        company: user.company_name,
+        isInternal,
+        assignedProjectIds
       }
     });
 

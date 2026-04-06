@@ -20,6 +20,9 @@ class SyncService {
     await Hive.openBox<String>(_boxName);
   }
 
+  Box<String> get offlineBox => Hive.box<String>(_boxName);
+  int get pendingCount => offlineBox.length;
+
   Future<bool> hasInternet() async {
     try {
       final result = await InternetAddress.lookup('google.com');

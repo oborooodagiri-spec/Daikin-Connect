@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:local_auth/local_auth.dart';
 import 'providers/auth_provider.dart';
+import 'providers/chat_provider.dart';
+import 'providers/schedule_provider.dart';
+import 'providers/version_provider.dart';
+import 'services/sync_service.dart';
+import 'services/notification_service.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/dashboard/screens/dashboard_home.dart';
-import 'services/sync_service.dart';
+import 'widgets/version_guard_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   
-  // Initialize Offline Sync Database
+  // Initialize Services
   await SyncService().init();
-  
-  // Set status bar to transparent for immersive dark mode
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.light,
-  ));
+  await NotificationService().init();
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()..checkAuthStatus()),
+        ChangeNotifierProvider(create: (context) => VersionProvider()),
+        ChangeNotifierProvider(create: (context) => AuthProvider()..checkAuthStatus()),
+        ChangeNotifierProvider(create: (context) => ChatProvider()),
+        ChangeNotifierProvider(create: (context) => ScheduleProvider()),
       ],
       child: const DaikinConnectApp(),
     ),
@@ -39,76 +39,30 @@ class DaikinConnectApp extends StatelessWidget {
       title: 'Daikin Connect',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        scaffoldBackgroundColor: const Color(0xFF040814),
+        brightness: Brightness.dark,
         primaryColor: const Color(0xFF00A1E4),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF00A1E4),
-          brightness: Brightness.dark,
-        ),
+        scaffoldBackgroundColor: const Color(0xFF040814),
         useMaterial3: true,
       ),
-      home: const AuthWrapper(),
+      home: Consumer2<AuthProvider, VersionProvider>(
+        builder: (context, auth, version, _) {
+          // Perform version check if we have the requirement from server
+          if (auth.requiredVersion != null) {
+            version.checkVersion(auth.requiredVersion!);
+          }
+
+          if (version.isUpdateRequired && !version.isLoading) {
+            return VersionGuardScreen(
+              currentVersion: version.currentVersion,
+              requiredVersion: version.requiredVersion,
+            );
+          }
+
+          return auth.isLoggedIn 
+              ? const DashboardHome() 
+              : const LoginScreen();
+        },
+      ),
     );
-  }
-}
-
-class AuthWrapper extends StatefulWidget {
-  const AuthWrapper({super.key});
-
-  @override
-  State<AuthWrapper> createState() => _AuthWrapperState();
-}
-
-class _AuthWrapperState extends State<AuthWrapper> {
-  final LocalAuthentication _localAuth = LocalAuthentication();
-  bool _biometricAuthenticated = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _tryBiometric();
-  }
-
-  Future<void> _tryBiometric() async {
-    try {
-      final bool canAuthenticate = await _localAuth.canCheckBiometrics || await _localAuth.isDeviceSupported();
-      if (!canAuthenticate) {
-        setState(() => _biometricAuthenticated = true);
-        return;
-      }
-
-      final bool didAuthenticate = await _localAuth.authenticate(
-        localizedReason: 'Secure authentication for Daikin Connect',
-        options: const AuthenticationOptions(
-          stickyAuth: true,
-          biometricOnly: false,
-        ),
-      );
-
-      if (didAuthenticate) {
-        setState(() => _biometricAuthenticated = true);
-      }
-    } on PlatformException catch (_) {
-      setState(() => _biometricAuthenticated = true);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final auth = Provider.of<AuthProvider>(context);
-
-    if (auth.isLoading || !_biometricAuthenticated) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(color: Color(0xFF00A1E4)),
-        ),
-      );
-    }
-
-    if (auth.isLoggedIn) {
-      return const DashboardHome();
-    }
-
-    return const LoginScreen();
   }
 }

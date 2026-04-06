@@ -7,11 +7,21 @@ class AuthProvider extends ChangeNotifier {
   bool _isLoggedIn = false;
   Map<String, dynamic>? _user;
   String? _error;
+  String? _requiredVersion;
+
+  String? get requiredVersion => _requiredVersion;
 
   bool get isLoading => _isLoading;
   bool get isLoggedIn => _isLoggedIn;
   Map<String, dynamic>? get user => _user;
   String? get error => _error;
+
+  String? get role => _user?['role'];
+  bool get isInternal => _user?['isInternal'] ?? false;
+  bool get isAdmin => role?.toUpperCase().contains('ADMIN') ?? false;
+  bool get isTechnician => role?.toUpperCase() == 'TECHNICIAN';
+  bool get isExternal => !isInternal;
+  List<String> get assignedProjectIds => List<String>.from(_user?['assignedProjectIds'] ?? []);
 
   Future<void> checkAuthStatus() async {
     _isLoading = true;
@@ -34,6 +44,7 @@ class AuthProvider extends ChangeNotifier {
     if (result['success']) {
       _isLoggedIn = true;
       _user = result['user'];
+      _requiredVersion = result['required_version'];
       notifyListeners();
       return true;
     } else {

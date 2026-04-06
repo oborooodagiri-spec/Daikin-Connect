@@ -1,4 +1,4 @@
-import 'dart:ui';
+import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 
 class FloatingNavBar extends StatelessWidget {
@@ -19,9 +19,9 @@ class FloatingNavBar extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(24, 0, 24, 30),
       height: 70,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(30),
@@ -56,7 +56,7 @@ class FloatingNavBar extends StatelessWidget {
           ),
           if (isActive)
             Container(
-              margin: const EdgeInsets.top(4),
+              margin: const EdgeInsets.only(top: 4),
               width: 4,
               height: 4,
               decoration: const BoxDecoration(
@@ -84,7 +84,7 @@ class FloatingNavBar extends StatelessWidget {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF00A1E4).withOpacity(0.4),
+              color: const Color(0xFF00A1E4),
               blurRadius: 15,
               spreadRadius: 2,
             )
@@ -95,3 +95,4 @@ class FloatingNavBar extends StatelessWidget {
     );
   }
 }
+

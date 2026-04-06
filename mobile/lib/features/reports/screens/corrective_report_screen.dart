@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../models/unit_model.dart';
-import '../../../services/location_service.dart';
+import 'package:daikin_connect_mobile/models/unit_model.dart';
+import 'package:daikin_connect_mobile/services/location_service.dart';
+import 'package:daikin_connect_mobile/services/sync_service.dart';
 
 class CorrectiveReportScreen extends StatefulWidget {
   final UnitModel unit;
@@ -14,9 +15,11 @@ class CorrectiveReportScreen extends StatefulWidget {
 class _CorrectiveReportScreenState extends State<CorrectiveReportScreen> {
   final _formKey = GlobalKey<FormState>();
   final LocationService _locationService = LocationService();
+  final SyncService _syncService = SyncService();
   
   dynamic _currentPosition;
   bool _isLocating = false;
+  bool _isSubmitting = false;
 
   final TextEditingController _problemController = TextEditingController();
   final TextEditingController _actionController = TextEditingController();
@@ -30,22 +33,42 @@ class _CorrectiveReportScreenState extends State<CorrectiveReportScreen> {
     });
   }
 
-  void _submitReport() {
+  void _submitReport() async {
     if (_formKey.currentState!.validate()) {
-      // Logic for native submission & sync queueing
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Laporan Corrective Berhasil Dikirim!")),
-      );
-      Navigator.pop(context);
+      setState(() => _isSubmitting = true);
+      
+      final payload = {
+        'unit_id': widget.unit.id,
+        'unit_tag': widget.unit.unitTag,
+        'problem': _problemController.text,
+        'action': _actionController.text,
+        'location': _currentPosition?.toString() ?? 'Unknown',
+        'type': 'corrective',
+      };
+
+      await _syncService.queueReport('/reports/submit', payload);
+      
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Corrective Report Saved & Queued for Sync"),
+            backgroundColor: Color(0xFF009688),
+          ),
+        );
+        Navigator.pop(context);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF040814),
       appBar: AppBar(
-        title: const Text("Corrective Report", style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.roseAccent,
+        title: const Text("Corrective Report", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: const Color(0xFFFF5252),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -75,12 +98,14 @@ class _CorrectiveReportScreenState extends State<CorrectiveReportScreen> {
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
-                  onPressed: _submitReport,
+                  onPressed: _isSubmitting ? null : _submitReport,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.roseAccent,
+                    backgroundColor: const Color(0xFFFF5252),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Text("SUBMIT REPORT", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  child: _isSubmitting 
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text("SUBMIT REPORT", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
               )
             ],
@@ -94,18 +119,19 @@ class _CorrectiveReportScreenState extends State<CorrectiveReportScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: const Color(0x08FFFFFF),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0x1AFFFFFF)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.ac_unit, color: Colors.roseAccent),
+          const Icon(Icons.construction, color: Color(0xFFFF5252)),
           const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(widget.unit.tagNumber, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              Text(widget.unit.projectName, style: const TextStyle(color: Colors.white38, fontSize: 10)),
+              Text(widget.unit.unitTag, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              Text(widget.unit.projectName, style: const TextStyle(color: Color(0x61FFFFFF), fontSize: 10)),
             ],
           )
         ],
@@ -118,7 +144,7 @@ class _CorrectiveReportScreenState extends State<CorrectiveReportScreen> {
       padding: const EdgeInsets.only(bottom: 10),
       child: Text(
         title,
-        style: const TextStyle(color: Colors.redAccent, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 2),
+        style: const TextStyle(color: Color(0xFFFF5252), fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 2),
       ),
     );
   }
@@ -130,9 +156,9 @@ class _CorrectiveReportScreenState extends State<CorrectiveReportScreen> {
       style: const TextStyle(color: Colors.white, fontSize: 13),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: Colors.white24),
+        hintStyle: const TextStyle(color: Color(0x3DFFFFFF)),
         filled: true,
-        fillColor: Colors.white.withOpacity(0.03),
+        fillColor: const Color(0x0DFFFFFF),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
       ),
       validator: (v) => v!.isEmpty ? "Required" : null,
@@ -143,28 +169,32 @@ class _CorrectiveReportScreenState extends State<CorrectiveReportScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        color: const Color(0x08FFFFFF),
+        border: Border.all(color: const Color(0x1AFFFFFF)),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Column(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("GEOTAG (GPS)", style: TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold)),
+              const Text("GEOTAG (GPS)", style: TextStyle(color: Color(0x8AFFFFFF), fontSize: 10, fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
               Text(
-                "Location tagging disabled",
-                style: TextStyle(color: Colors.white24, fontSize: 12),
+                _currentPosition != null ? "Coordinates Captured" : "Location tagging required",
+                style: const TextStyle(color: Color(0x3DFFFFFF), fontSize: 12),
               ),
             ],
           ),
           IconButton(
-            onPressed: null,
+            onPressed: _isLocating ? null : _captureLocation,
             icon: _isLocating 
                 ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Icon(Icons.location_off, color: Colors.white24),
+                : Icon(
+                    _currentPosition != null ? Icons.location_on : Icons.location_searching, 
+                    color: _currentPosition != null ? const Color(0xFF009688) : const Color(0x3DFFFFFF)
+                  ),
           ),
         ],
       ),

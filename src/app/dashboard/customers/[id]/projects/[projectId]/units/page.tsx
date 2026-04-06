@@ -328,24 +328,24 @@ export default function UnitsPage() {
       </div>
 
       {/* METRIC CARDS */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8">
         {[
           { title: "Total Units", val: metrics.total, icon: Archive, color: "text-[#00a1e4]", bg: "bg-blue-50" },
           { title: "Normal Status", val: metrics.normal, icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-50" },
           { title: "Reported Problem", val: metrics.problem, icon: ShieldAlert, color: "text-rose-500", bg: "bg-rose-50", animate: metrics.problem > 0 ? "animate-pulse" : "" },
           { title: "In Repair (Pending)", val: metrics.pending, icon: Hammer, color: "text-indigo-500", bg: "bg-indigo-50" },
         ].map((m, i) => (
-          <div key={i} className={`bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-5 ${m.animate}`}>
-            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${m.bg}`}>
-              <m.icon className={`w-6 h-6 ${m.color}`} />
+          <div key={i} className={`bg-white p-4 md:p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-3 md:gap-5 ${m.animate}`}>
+            <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center shrink-0 ${m.bg}`}>
+              <m.icon className={`w-5 h-5 md:w-6 md:h-6 ${m.color}`} />
             </div>
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{m.title}</p>
-              <h2 className={`text-4xl font-black tracking-tighter ${m.color}`}>{m.val}</h2>
+            <div className="min-w-0">
+              <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5 md:mb-1 truncate">{m.title}</p>
+              <h2 className={`text-xl md:text-2xl lg:text-4xl font-black tracking-tighter ${m.color} truncate`}>{m.val}</h2>
             </div>
           </div>
         ))}
-      </div>
+</div>
 
 
       {/* QUICK STATUS WIDGETS */}
@@ -491,11 +491,9 @@ export default function UnitsPage() {
               <option value="Pending">🟡 Pending / Progress</option>
             </select>
           </div>
-        </div>
-
-        {/* Right Side: Tools */}
-        <div className="flex gap-3 w-full lg:w-auto shrink-0 border-t lg:border-t-0 border-slate-100 pt-4 lg:pt-0">
-          <button onClick={handleExport} className="px-5 py-3 rounded-2xl bg-slate-50 text-slate-600 font-bold border border-slate-200 shadow-sm hover:bg-slate-100 transition-all flex items-center gap-2 text-sm uppercase tracking-wider">
+          {/* Right Side: Tools */}
+        <div className="grid grid-cols-2 md:flex gap-3 w-full lg:w-auto shrink-0 border-t lg:border-t-0 border-slate-100 pt-4 lg:pt-0">
+          <button onClick={handleExport} className="px-5 py-3 rounded-2xl bg-slate-50 text-slate-600 font-bold border border-slate-200 shadow-sm hover:bg-slate-100 transition-all flex items-center justify-center gap-2 text-[10px] md:text-sm uppercase tracking-wider">
             <Download size={16} /> Export
           </button>
           
@@ -503,16 +501,18 @@ export default function UnitsPage() {
             <input type="file" accept=".xlsx, .xls" ref={fileInputRef} onChange={handleImport} className="hidden" />
             <button 
               onClick={() => fileInputRef.current?.click()} disabled={isUploading}
-              className="px-5 py-3 rounded-2xl bg-amber-50 text-amber-700 font-bold border border-amber-200 shadow-sm hover:bg-amber-100 transition-all flex items-center gap-2 text-sm uppercase tracking-wider disabled:opacity-50"
+              className="w-full px-5 py-3 rounded-2xl bg-amber-50 text-amber-700 font-bold border border-amber-200 shadow-sm hover:bg-amber-100 transition-all flex items-center justify-center gap-2 text-[10px] md:text-sm uppercase tracking-wider disabled:opacity-50"
             >
               <Upload size={16} /> {isUploading ? "Uploading..." : "Import"}
             </button>
           </div>
-
-          <button onClick={() => openModal()} className="px-6 py-3 rounded-2xl bg-[#00a1e4] text-white font-bold shadow-md hover:bg-[#008cc6] transition-all flex items-center gap-2 text-sm uppercase tracking-wider">
-            <Plus size={18} /> Add Unit
+          
+          <button onClick={() => openModal()} className="col-span-2 md:col-span-1 px-6 py-3 rounded-2xl bg-[#00a1e4] text-white font-bold shadow-md hover:bg-[#008cc6] transition-all flex items-center justify-center gap-2 text-[10px] md:text-sm uppercase tracking-wider">
+            <Plus size={18} /> Add Unit Record
           </button>
         </div>
+      </div>
+
       </div>
 
       {/* SUPER TABLE */}
