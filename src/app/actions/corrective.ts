@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { ensureScheduleForActivity } from "./schedules";
 
 import { serializePrisma } from "@/lib/serialize";
 
@@ -74,6 +75,13 @@ export async function createCorrectiveActivity(data: any) {
       });
     } catch (statusErr) {
       console.warn("Unit status update skipped:", statusErr);
+    }
+
+    // Auto Schedule Synchronization
+    try {
+      await ensureScheduleForActivity(parseInt(unit_id), "Corrective", inspector_name);
+    } catch (err) {
+      console.warn("Auto schedule sync skipped:", err);
     }
 
     revalidatePath("/dashboard", "layout");

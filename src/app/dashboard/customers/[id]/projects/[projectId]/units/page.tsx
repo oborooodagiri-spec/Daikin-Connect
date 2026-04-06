@@ -446,44 +446,44 @@ export default function UnitsPage() {
       {/* ACTION BAR & FILTER */}
       <div className="bg-white p-4 rounded-3xl shadow-sm border border-slate-200 mb-6 flex flex-col lg:flex-row items-center justify-between gap-4">
         
-        {/* Left Side: Searches */}
-        <div className="flex gap-3 w-full lg:w-auto flex-1">
-          <div className="relative flex-1 max-w-md">
+        {/* Left Side: Searches & Filters */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:flex lg:items-center gap-3 w-full flex-1">
+          <div className="relative flex-1 lg:max-w-md">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
             <input 
               type="text" placeholder="Search tagged unit, serial, model, area..."
               value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#00a1e4] focus:bg-white transition-all shadow-inner"
+              className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00a1e4] focus:bg-white transition-all shadow-inner"
             />
           </div>
           
-          <div className="relative w-40 shrink-0">
+          <div className="relative w-full lg:w-40 shrink-0">
             <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
             <select 
               value={floorFilter} onChange={e => setFloorFilter(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 text-slate-600 rounded-2xl text-xs font-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#00a1e4] uppercase tracking-tighter"
+              className="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 text-slate-600 rounded-2xl text-xs font-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#00a1e4] uppercase tracking-tighter"
             >
               <option value="All">All Floors</option>
               {uniqueFloors.map(f => <option key={f} value={f}>{f}</option>)}
             </select>
           </div>
 
-          <div className="relative w-40 shrink-0">
+          <div className="relative w-full lg:w-40 shrink-0">
              <Settings2 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
              <select 
               value={brandFilter} onChange={e => setBrandFilter(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 text-slate-600 rounded-2xl text-xs font-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#00a1e4] uppercase tracking-tighter"
+              className="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 text-slate-600 rounded-2xl text-xs font-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#00a1e4] uppercase tracking-tighter"
             >
               <option value="All">All Brands</option>
               {uniqueBrands.map(b => <option key={b} value={b}>{b}</option>)}
             </select>
           </div>
 
-          <div className="relative w-40 shrink-0">
+          <div className="relative w-full lg:w-40 shrink-0">
             <Activity className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
             <select 
               value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 text-slate-600 rounded-2xl text-xs font-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#00a1e4] uppercase tracking-tighter"
+              className="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 text-slate-600 rounded-2xl text-xs font-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#00a1e4] uppercase tracking-tighter"
             >
               <option value="All">All Statuses</option>
               <option value="Normal">🟢 Normal</option>
@@ -820,7 +820,7 @@ export default function UnitsPage() {
               <div className="w-full bg-white flex flex-col items-center relative pointer-events-none">
                 {/* Header Strip in Preview */}
                 <div className="w-full h-10 bg-[#003366] flex items-center justify-between px-4">
-                  <img src="/daikin_logo.png" className="h-3 brightness-0 invert" alt="Daikin" />
+                  <img src="/app-logo.png" className="h-3 brightness-0 invert" alt="Daikin Logo" />
                   <img src="/logo_epl_connect_1.png" className="h-4 brightness-0 invert" alt="EPL" />
                 </div>
                 
@@ -931,7 +931,7 @@ export default function UnitsPage() {
                         </head>
                         <body>
                           <div class="header-strip">
-                             <img src="${window.location.origin}/daikin_logo.png" class="logo-daikin" />
+                             <img src="${window.location.origin}/app-logo.png" class="logo-daikin" />
                              <img src="${window.location.origin}/logo_epl_connect_1.png" class="logo-epl" />
                           </div>
                           

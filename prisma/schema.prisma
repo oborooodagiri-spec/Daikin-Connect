@@ -163,6 +163,8 @@ model users {
   user_project_access user_project_access[]
   user_roles          user_roles[]
   user_unit_access    user_unit_access[]
+  schedule_messages   schedule_messages[]
+  user_push_tokens    user_push_tokens[]
   roles               roles?                @relation(fields: [role_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "users_ibfk_1")
 
   @@index([role_id], map: "role_id")
@@ -480,6 +482,7 @@ model schedules {
 
   schedule_attendance schedule_attendance[]
   schedule_mom        schedule_mom[]
+  schedule_messages   schedule_messages[]
 }
 
 model schedule_attendance {
@@ -503,6 +506,23 @@ model schedule_mom {
   schedules   schedules @relation(fields: [schedule_id], references: [id], onDelete: Cascade)
 
   @@index([schedule_id])
+}
+
+model schedule_messages {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  schedule_id BigInt    @db.UnsignedBigInt
+  user_id     Int?
+  message     String    @db.LongText
+  attachments String?   @db.LongText // JSON string of photo URLs
+  is_system   Boolean   @default(false)
+  system_type String?   @db.VarChar(50) // "MOM", "ATTENDANCE", "STATUS_CHANGE"
+  created_at  DateTime  @default(now()) @db.Timestamp(0)
+  
+  users       users?    @relation(fields: [user_id], references: [id])
+  schedules   schedules @relation(fields: [schedule_id], references: [id], onDelete: Cascade)
+
+  @@index([schedule_id])
+  @@index([user_id])
 }
 
 model schedule_targets {
@@ -643,4 +663,15 @@ enum ScheduleStatus {
   InProgress
   Completed
   Missed
+}
+
+model user_push_tokens {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  token      String   @unique @db.VarChar(512)
+  platform   String   @default("web") @db.VarChar(50)
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
 }

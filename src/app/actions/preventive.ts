@@ -2,6 +2,8 @@
 
 import { prisma } from "@/lib/prisma";
 import { serializePrisma } from "@/lib/serialize";
+import { ensureScheduleForActivity } from "./schedules";
+import { notifyProjectStakeholders } from "@/lib/push";
 
 export async function createPreventiveActivity(data: any) {
   try {
@@ -44,6 +46,21 @@ export async function createPreventiveActivity(data: any) {
         }))
       });
     }
+
+    // Auto Schedule Synchronization
+    try {
+      await ensureScheduleForActivity(parseInt(unit_id), "Preventive", inspector_name);
+    } catch (err) {
+      console.warn("Auto schedule sync skipped:", err);
+    }
+
+    // TRIGGER PUSH NOTIFICATION (Phase 2)
+    await notifyProjectStakeholders(
+      parseInt(unit_id),
+      `🛠️ Preventive Completed: ${data.unit_tag}`,
+      `Maintenance report for ${data.unit_tag} submitted by ${inspector_name}.`,
+      `/dashboard/units/${unit_id}`
+    );
 
     return serializePrisma({ success: true, id: newActivity.id });
   } catch (error: any) {

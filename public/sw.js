@@ -1,12 +1,10 @@
-const CACHE_NAME = 'daikin-connect-v1';
-const OFFLINE_URL = '/offline'; // Optional if we want a full offline page
-
+const CACHE_NAME = 'daikin-connect-V1.7.20260406';
 const ASSETS_TO_CACHE = [
   '/',
   '/manifest.json',
-  '/daikin_logo.png',
-  '/logo_epl_connect_1.png',
-  '/icons/icon-192x192.png'
+  '/app-logo.png',
+  '/favicon.png',
+  '/version.json'
 ];
 
 self.addEventListener('install', (event) => {
@@ -37,7 +35,7 @@ self.addEventListener('fetch', (event) => {
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request).catch(() => {
-        return caches.match('/'); // Fallback to root for client-side routing
+        return caches.match('/');
       })
     );
     return;
@@ -46,6 +44,38 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
       return response || fetch(event.request);
+    })
+  );
+});
+
+/* --- PUSH NOTIFICATION ENGINE --- */
+self.addEventListener('push', (event) => {
+  if (!event.data) return;
+  try {
+    const data = event.data.json();
+    const options = {
+      body: data.body,
+      icon: '/app-logo.png',
+      badge: '/favicon.png',
+      vibrate: [100, 50, 100],
+      data: { url: data.url || '/' }
+    };
+    event.waitUntil(self.registration.showNotification(data.title || 'Daikin Connect', options));
+  } catch (err) {
+    console.error('Push handling error:', err);
+  }
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const urlToOpen = new URL(event.notification.data.url, self.location.origin).href;
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      for (let i = 0; i < windowClients.length; i++) {
+        const client = windowClients[i];
+        if (client.url === urlToOpen && 'focus' in client) return client.focus();
+      }
+      if (clients.openWindow) return clients.openWindow(urlToOpen);
     })
   );
 });

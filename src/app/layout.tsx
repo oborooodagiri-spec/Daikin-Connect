@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SyncManager } from "@/components/SyncManager";
+import UpdatePrompt from "@/components/dashboard/UpdatePrompt";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -51,6 +52,7 @@ export default function RootLayout({
       >
         {children}
         <SyncManager />
+        <UpdatePrompt />
         <script
           dangerouslySetInnerHTML={{
             __html: `

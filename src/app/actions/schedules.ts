@@ -4,6 +4,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
 import { revalidatePath } from "next/cache";
+import { sendPushNotification, notifyProjectStakeholders } from "@/lib/push";
 
 export async function getAllSchedules() {
   const session = await getSession();
@@ -128,6 +129,16 @@ export async function createSchedule(data: any) {
         data: { status: "Pending" }
       });
     }
+
+    // TRIGGER PUSH NOTIFICATION (Phase 2)
+    if (data.assignee_id) {
+       await sendPushNotification(
+          [data.assignee_id],
+          `📅 New Task: ${data.title}`,
+          `You have been assigned to ${data.type} activity for ${data.start_at}.`,
+          `/dashboard/schedules`
+       );
+    }
     
     revalidatePath(`/dashboard/customers`);
     revalidatePath(`/dashboard/schedules`);
@@ -175,6 +186,16 @@ export async function updateScheduleStatus(scheduleId: string, status: string) {
         where: { id: Number(updated.unit_id) },
         data: { status: nextUnitStatus }
       });
+
+      // TRIGGER PUSH NOTIFICATION (Phase 2)
+      if (status === "Completed") {
+         await notifyProjectStakeholders(
+            Number(updated.unit_id),
+            `✅ Activity Completed: ${updated.title}`,
+            `The scheduled ${updated.type} has been finished by the technical team.`,
+            `/dashboard/schedules`
+         );
+      }
     }
     
     revalidatePath(`/dashboard/schedules`);
@@ -335,5 +356,66 @@ export async function getCalendarSchedules(month: number, year: number, projectI
   } catch (error) {
     console.error("Fetch calendar schedules error:", error);
     return { error: "Failed to fetch calendar schedules" };
+  }
+}
+/**
+ * 11. ENSURE SCHEDULE FOR ACTIVITY (Automation)
+ * Automatically links a report submission to a schedule entry.
+ * If no schedule exists, creates one marked as Completed.
+ */
+export async function ensureScheduleForActivity(unitId: number, type: string, inspector: string) {
+  try {
+    const unit = await prisma.units.findUnique({
+      where: { id: unitId },
+      select: { project_ref_id: true, tag_number: true }
+    });
+    if (!unit || !unit.project_ref_id) return null;
+
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0,0,0,0));
+    const endOfDay = new Date(today.setHours(23,59,59,999));
+
+    // 1. Check for existing planned schedule for this unit and type today
+    const existing = await prisma.schedules.findFirst({
+      where: {
+        unit_id: unitId,
+        type: type as any,
+        start_at: { gte: startOfDay, lte: endOfDay },
+        status: "Planned"
+      }
+    });
+
+    if (existing) {
+      // Update existing to Completed
+      const updated = await prisma.schedules.update({
+        where: { id: existing.id },
+        data: { 
+          status: "Completed",
+          description: existing.description + `\n[Auto: Report Submitted by ${inspector}]`
+        }
+      });
+      revalidatePath("/dashboard/schedules");
+      return updated.id.toString();
+    }
+
+    // 2. Create new Completed schedule if none exists
+    const newSchedule = await prisma.schedules.create({
+      data: {
+        project_id: unit.project_ref_id,
+        unit_id: unitId,
+        type: type as any,
+        status: "Completed",
+        title: `Auto: ${type} Report (${unit.tag_number})`,
+        description: `Automatic historical entry from report submission by ${inspector}.`,
+        start_at: new Date(),
+        end_at: new Date(new Date().getTime() + 3600000), // +1 hour
+      }
+    });
+
+    revalidatePath("/dashboard/schedules");
+    return newSchedule.id.toString();
+  } catch (error) {
+    console.error("Auto Schedule Error:", error);
+    return null;
   }
 }

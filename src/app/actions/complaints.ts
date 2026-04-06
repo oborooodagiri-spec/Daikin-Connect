@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
 import { revalidatePath } from "next/cache";
 import { serializePrisma } from "@/lib/serialize";
+import { notifyProjectStakeholders } from "@/lib/push";
 
 /**
  * Submit a new complaint from the Passport (QR) page.
@@ -54,7 +55,18 @@ export async function submitComplaint(token: string, data: {
       });
     } catch (scheduleError) {
       console.error("Automated schedule creation failed:", scheduleError);
-      // We don't fail the entire complaint if schedule creation fails, but we log it
+    }
+
+    // 4. TRIGGER PUSH NOTIFICATION (Phase 2)
+    try {
+       await notifyProjectStakeholders(
+          unit.id,
+          "🆘 Unit Reported with Problem",
+          `Customer ${data.customerName} has reported a problem for ${unit.tag_number}.`,
+          "/dashboard"
+       );
+    } catch (pushErr) {
+       console.warn("Complaint push failed:", pushErr);
     }
 
     revalidatePath(`/passport/${token}`);

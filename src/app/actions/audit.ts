@@ -3,6 +3,8 @@
 import { prisma } from "@/lib/prisma";
 import { serializePrisma } from "@/lib/serialize";
 import { Decimal } from "@prisma/client/runtime/library";
+import { ensureScheduleForActivity } from "./schedules";
+import { notifyProjectStakeholders } from "@/lib/push";
 
 export async function createAuditActivity(data: any) {
   try {
@@ -114,7 +116,20 @@ export async function createAuditActivity(data: any) {
       });
     }
 
-    // No unit update payload needed for now unless we add an explicitly defined column
+    // Auto Schedule Synchronization
+    try {
+      await ensureScheduleForActivity(parseInt(unit_id), "Audit", inspector_name);
+    } catch (err) {
+      console.warn("Auto schedule sync skipped:", err);
+    }
+
+    // TRIGGER PUSH NOTIFICATION (Phase 2)
+    await notifyProjectStakeholders(
+      parseInt(unit_id),
+      `📋 Audit Completed: ${unit_tag}`,
+      `A new technical audit for ${unit_tag} has been submitted by ${inspector_name}.`,
+      `/dashboard/units/${unit_id}`
+    );
 
     return serializePrisma({ success: true, id: newActivity.id });
   } catch (error: any) {

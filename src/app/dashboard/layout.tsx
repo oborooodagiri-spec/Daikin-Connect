@@ -12,6 +12,7 @@ import {
 import { getUserAssignedProjects } from "../actions/complaints";
 import DashboardSidebarClient from "./DashboardSidebarClient";
 import ProblemNotificationCenter from "@/components/ProblemNotificationCenter";
+import NotificationManager from "@/components/dashboard/NotificationManager";
 
 export default async function DashboardLayout({
   children,
@@ -54,6 +55,7 @@ export default async function DashboardLayout({
 
              <div className="flex items-center gap-3">
                <ProblemNotificationCenter />
+               <NotificationManager />
                <div className="text-right">
                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter leading-none">Logged in as</p>
                  <p className="text-xs font-bold text-slate-800 tracking-tight max-w-[120px] truncate uppercase">{session?.name}</p>

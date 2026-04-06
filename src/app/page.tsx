@@ -84,7 +84,7 @@ export default function LoginPage() {
         <div className="flex flex-col items-start gap-12">
           <div className="space-y-8">
             <div className="flex items-center gap-8">
-              <img src="/daikin_logo.png" className="h-12 lg:h-16 w-auto brightness-0 invert object-contain" alt="Daikin" />
+              <img src="/app-logo.png" className="h-12 lg:h-16 w-auto brightness-0 invert object-contain" alt="Daikin" />
               <div className="w-[1px] h-10 bg-white/20"></div>
               <img src="/logo_epl_connect_1.png" className="h-12 lg:h-16 w-auto brightness-0 invert object-contain" alt="EPL Connect" />
             </div>
@@ -156,7 +156,7 @@ export default function LoginPage() {
         {/* Mobile Header */}
         <div className="md:hidden flex flex-col items-center justify-center gap-8 mb-12 mt-8">
           <div className="flex items-center gap-6">
-            <img src="/daikin_logo.png" className="h-10 object-contain brightness-0 invert" alt="Daikin" />
+            <img src="/app-logo.png" className="h-10 object-contain brightness-0 invert" alt="Daikin" />
             <div className="w-[1px] h-8 bg-white/20"></div>
             <img src="/logo_epl_connect_1.png" className="h-10 object-contain brightness-0 invert" alt="EPL Connect" />
           </div>

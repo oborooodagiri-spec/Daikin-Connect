@@ -8,8 +8,9 @@ import { getAllSchedules, getScheduleFormOptions, createSchedule, updateSchedule
 import { Plus, MapPin, CheckCircle2, XCircle, Search, Clock, CalendarIcon, FolderGit2, X, Save, ChevronLeft, ChevronRight, Activity } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import QuickInputModal from "@/components/dashboard/QuickInputModal";
-import ScheduleManagerModal from "@/components/dashboard/ScheduleManagerModal";
+import ThreadModal from "@/components/dashboard/ThreadModal";
 import { getSession } from "@/app/actions/auth";
+import { MessageSquare } from "lucide-react";
 
 export default function SchedulesPage() {
   const [schedules, setSchedules] = useState<any[]>([]);
@@ -224,7 +225,10 @@ export default function SchedulesPage() {
                                          }}
                                          className="w-full py-1.5 bg-black/5 hover:bg-black hover:text-white rounded-lg text-[9px] font-black uppercase tracking-widest transition-all"
                                        >
-                                         Manage Meeting
+                                         <div className="flex items-center justify-center gap-1.5">
+                                           <MessageSquare size={10} />
+                                           Collaboration Thread
+                                         </div>
                                        </button>
                                      );
                                    }
@@ -301,9 +305,10 @@ export default function SchedulesPage() {
                                            e.stopPropagation();
                                            setManagingSchedule(s);
                                          }}
-                                         className="px-4 py-2 bg-[#003366] text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md"
+                                         className="px-4 py-2 bg-[#003366] text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md flex items-center gap-2"
                                        >
-                                         Manage Meeting
+                                         <MessageSquare size={12} />
+                                         Collaboration Thread
                                        </button>
                                      );
                                    }
@@ -423,10 +428,14 @@ export default function SchedulesPage() {
         unit={passedUnit} 
       />
 
-      <ScheduleManagerModal 
+      <ThreadModal 
         isOpen={!!managingSchedule}
         schedule={managingSchedule}
         onClose={() => setManagingSchedule(null)}
+        currentUser={{
+          id: session?.userId ? parseInt(session.userId) : 0,
+          role: session?.roles?.[0] || "Guest"
+        }}
       />
     </div>
   );

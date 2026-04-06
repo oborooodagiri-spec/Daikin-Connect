@@ -431,14 +431,49 @@ export async function getUnitHistory(unitId: string | number) {
   }
 }
 
-// 8. UPDATE UNIT STATUS
+import { sendPushNotification } from "@/lib/push";
+
+/**
+ * 8. UPDATE UNIT STATUS
+ */
 export async function updateUnitStatus(unitId: string | number, status: string) {
   try {
     const id = typeof unitId === 'string' ? BigInt(unitId) : BigInt(unitId);
-    await (prisma.units as any).update({
+    
+    const unit = await (prisma.units as any).update({
       where: { id },
-      data: { status }
+      data: { status },
+      include: { projects: true }
     });
+
+    // TRIGGER PUSH NOTIFICATION (Real-time Phase 2)
+    if (['Problem', 'Critical', 'Warning'].includes(status)) {
+       // Get all internal users (Admins, Engineers, Management)
+       const internalUsers = await prisma.users.findMany({
+          where: {
+             user_roles: {
+                some: {
+                   roles: {
+                      role_name: { contains: 'Admin' }
+                   }
+                }
+             }
+          },
+          select: { id: true }
+       });
+       
+       const userIds = internalUsers.map(u => u.id);
+       if (userIds.length > 0) {
+          await sendPushNotification(
+            userIds,
+            `⚠️ Unit Alert: ${unit.tag_number}`,
+            `Status changed to ${status.toUpperCase()} at ${unit.projects?.name || 'Site'}`,
+            `/dashboard/units/${unitId}`
+          );
+       }
+    }
+
+    revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
     console.error("Update status error:", error);
