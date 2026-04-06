@@ -225,19 +225,29 @@ export async function importUnitsExcel(projectId: string, base64Data: string) {
   const session = await getSession();
   if (!session || !session.isInternal) return { error: "Unauthorized access" };
   
+  if (!projectId) return { error: "Missing Project ID" };
+
   try {
-    // Sanitize base64 data: Strip "data:*;base64," prefix if it exists
-    let cleanBase64 = base64Data;
-    if (base64Data.includes("base64,")) {
-      cleanBase64 = base64Data.split("base64,")[1];
+    // Sanitize base64 data: Strip prefixes and whitespace
+    let cleanBase64 = base64Data.trim();
+    if (cleanBase64.includes("base64,")) {
+      cleanBase64 = cleanBase64.split("base64,")[1];
     }
 
-    const workbook = xlsx.read(cleanBase64, { type: "base64" });
+    // Use Buffer for more reliable reading in Node environment
+    const buffer = Buffer.from(cleanBase64, 'base64');
+    const workbook = xlsx.read(buffer, { type: 'buffer' });
+    
+    if (!workbook.SheetNames.length) {
+      return { error: "Excel file has no sheets." };
+    }
+
     const sheetName = workbook.SheetNames[0];
-    const rawData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: "" });
+    const sheet = workbook.Sheets[sheetName];
+    const rawData = xlsx.utils.sheet_to_json(sheet, { defval: "" });
 
     if (!rawData || rawData.length === 0) {
-      return { error: "Excel file is empty or has no data rows (possibly incorrect format)." };
+      return { error: "No data found in the first sheet. Please check your Excel format." };
     }
 
     const crypto = require('crypto');
@@ -245,47 +255,46 @@ export async function importUnitsExcel(projectId: string, base64Data: string) {
     let skipped = 0;
     const errors: string[] = [];
 
-    // Helper: get value from row with flexible column name matching
+    // Helper: Normalize strings for matching (lowercase, alphanumeric only)
+    const norm = (s: string) => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    // Helper: get value with robust matching
     const getVal = (row: any, ...keys: string[]): string => {
-      for (const key of keys) {
-        // Exact match
-        if (row[key] !== undefined && row[key] !== null) {
-          const val = String(row[key]).trim();
-          if (val && val !== "-") return val;
-        }
-        
-        // Normalize keys (lowercase, no spaces/symbols)
-        const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
-        const normKey = normalize(key);
-        
-        const found = Object.keys(row).find(k => normalize(k) === normKey);
-        if (found !== undefined) {
-          const val = String(row[found]).trim();
-          if (val && val !== "-") return val;
+      const normalizedKeys = keys.map(norm);
+      const rowKeys = Object.keys(row);
+      
+      for (const k of rowKeys) {
+        const normalizedRowKey = norm(k);
+        if (normalizedKeys.includes(normalizedRowKey)) {
+          const val = String(row[k] || "").trim();
+          // Filter out placeholders
+          if (val && val !== "-" && val !== "—") return val;
         }
       }
       return "";
     };
+
+    const projectBigInt = BigInt(projectId);
 
     for (let i = 0; i < rawData.length; i++) {
       const row = rawData[i] as any;
       const rowNum = i + 2; 
 
       try {
-        const tagNumber = getVal(row, "Tag Number", "TAG NUMBER", "tag_number", "TAG_NUMBER", "TagNumber");
-        const brand = getVal(row, "Brand", "brand");
-        const model = getVal(row, "Model", "model");
-        const capacity = getVal(row, "Capacity", "capacity");
-        const unitType = getVal(row, "Unit Type", "unit_type", "UNIT_TYPE");
-        const yoiStr = getVal(row, "Year of Install", "yoi", "YearOfInstall", "INSTALLED YEAR");
-        const serialNumber = getVal(row, "Serial Number", "serial_number", "SERIAL_NUMBER", "SerialNumber");
-        const area = getVal(row, "Area", "area");
-        const floor = getVal(row, "Floor", "BUILDING FLOOR", "building_floor", "FLOOR");
-        const roomTenant = getVal(row, "Room / Tenant", "ROOM_TENANT", "room_tenant", "ROOM/TENANT", "RoomTenant");
-        const statusStr = getVal(row, "Status", "status");
+        const tag = getVal(row, "Tag Number", "TAG NUMBER", "Unit Tag", "Tag");
+        const brand = getVal(row, "Brand", "Merk");
+        const model = getVal(row, "Model", "Type");
+        const capacity = getVal(row, "Capacity", "Kapasitas", "PK", "BTU");
+        const unitType = getVal(row, "Unit Type", "Kategori");
+        const yoiStr = getVal(row, "Year of Install", "Instalasi", "Tahun", "YOI");
+        const serial = getVal(row, "Serial Number", "Serial", "S/N");
+        const area = getVal(row, "Area", "Lokasi", "Building");
+        const floor = getVal(row, "Floor", "Lantai", "Level");
+        const room = getVal(row, "Room / Tenant", "Ruangan", "Tenant", "Room");
+        const statusRaw = getVal(row, "Status");
 
-        // Skip truly empty rows
-        if (!tagNumber && !brand && !model && !serialNumber && !roomTenant) {
+        // Skip truly empty rows (if header exists but row is blank)
+        if (!tag && !brand && !model && !serial && !room) {
           skipped++;
           continue;
         }
@@ -293,29 +302,30 @@ export async function importUnitsExcel(projectId: string, base64Data: string) {
         const randomPart = crypto.randomBytes(2).toString('hex').toUpperCase();
         const qrToken = crypto.randomBytes(16).toString('hex');
 
+        // Parse YOI
         let yoi: number | null = null;
         if (yoiStr) {
           const parsed = parseInt(yoiStr);
           if (!isNaN(parsed) && parsed > 1950 && parsed < 2100) yoi = parsed;
         }
 
-        const cleanSerial = serialNumber || null;
+        // Clean status
         const validStatuses = ['Normal', 'Warning', 'Critical', 'Problem', 'Pending', 'On_Progress'];
-        const cleanStatus = validStatuses.find(s => s.toLowerCase() === statusStr.toLowerCase()) || 'Normal';
+        const cleanStatus = validStatuses.find(s => s.toLowerCase() === norm(statusRaw)) || 'Normal';
 
         await (prisma.units as any).create({
           data: {
-            project_ref_id: BigInt(projectId),
+            project_ref_id: projectBigInt,
             qr_code_token: qrToken,
-            tag_number: tagNumber || `DKN-${projectId}-${new Date().getFullYear()}-${randomPart}`,
+            tag_number: tag || `DKN-${projectId}-${new Date().getFullYear()}-${randomPart}`,
             brand: brand || "Daikin",
             model: model || null,
             capacity: capacity || null,
             yoi,
-            serial_number: cleanSerial,
+            serial_number: serial || null, // null is important for @unique
             area: area || null,
             building_floor: floor || null,
-            room_tenant: roomTenant || null,
+            room_tenant: room || null,
             unit_type: unitType || "Uncategorized",
             status: cleanStatus
           }
@@ -323,11 +333,10 @@ export async function importUnitsExcel(projectId: string, base64Data: string) {
         imported++;
       } catch (rowError: any) {
         const rowId = getVal(row, "Tag Number") || `Row ${rowNum}`;
-        if (rowError.code === 'P2002') {
-          errors.push(`${rowId}: Duplicate record (Serial Number or Tag)`);
-        } else {
-          errors.push(`${rowId}: ${rowError.message || 'Validation error'}`);
-        }
+        const errorMsg = rowError.code === 'P2002' 
+          ? "Duplicate Serial or Tag Number" 
+          : rowError.message?.substring(0, 50) || "Invalid data format";
+        errors.push(`${rowId}: ${errorMsg}`);
         skipped++;
       }
     }
@@ -336,12 +345,11 @@ export async function importUnitsExcel(projectId: string, base64Data: string) {
       success: true, 
       imported, 
       skipped, 
-      errors: errors.length > 0 ? errors.slice(0, 5) : undefined 
+      errors: errors.length > 0 ? errors.slice(0, 10) : undefined 
     };
   } catch (error: any) {
-    console.error("Critical Import error:", error);
-    // Be very explicit here
-    return { error: `Failed to parse Excel file: [${error?.message || 'Data format error'}]` };
+    console.error("IMPORT CRITICAL ERROR:", error);
+    return { error: `Failed to process Excel: ${error.message || 'Check file format'}` };
   }
 }
 
@@ -351,20 +359,20 @@ export async function getUnitHistory(unitId: string | number) {
     const id = typeof unitId === 'string' ? parseInt(unitId) : unitId;
     
     // Fetch from service_activities
-    const serviceActs = await prisma.service_activities.findMany({
+    const serviceActs = await (prisma.service_activities as any).findMany({
       where: { unit_id: id },
       orderBy: { service_date: 'desc' }
     });
 
     // Fetch from activities (Quick Report)
-    const quickActs = await prisma.activities.findMany({
+    const quickActs = await (prisma.activities as any).findMany({
       where: { unit_id: id },
       orderBy: { service_date: 'desc' }
     });
 
     // Merge and sort
     const allHistory = [
-      ...serviceActs.map(a => ({
+      ...serviceActs.map((a: any) => ({
         id: a.id.toString(),
         type: a.type,
         date: a.service_date,
@@ -373,7 +381,7 @@ export async function getUnitHistory(unitId: string | number) {
         pdf: a.pdf_report_url,
         isFormal: true
       })),
-      ...quickActs.map(a => ({
+      ...quickActs.map((a: any) => ({
         id: a.id.toString(),
         type: a.type,
         date: a.service_date,
