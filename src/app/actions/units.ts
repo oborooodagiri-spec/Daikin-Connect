@@ -226,12 +226,18 @@ export async function importUnitsExcel(projectId: string, base64Data: string) {
   if (!session || !session.isInternal) return { error: "Unauthorized access" };
   
   try {
-    const workbook = xlsx.read(base64Data, { type: "base64" });
+    // Sanitize base64 data: Strip "data:*;base64," prefix if it exists
+    let cleanBase64 = base64Data;
+    if (base64Data.includes("base64,")) {
+      cleanBase64 = base64Data.split("base64,")[1];
+    }
+
+    const workbook = xlsx.read(cleanBase64, { type: "base64" });
     const sheetName = workbook.SheetNames[0];
     const rawData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: "" });
 
     if (!rawData || rawData.length === 0) {
-      return { error: "Excel file is empty or has no data rows." };
+      return { error: "Excel file is empty or has no data rows (possibly incorrect format)." };
     }
 
     const crypto = require('crypto');
@@ -243,13 +249,19 @@ export async function importUnitsExcel(projectId: string, base64Data: string) {
     const getVal = (row: any, ...keys: string[]): string => {
       for (const key of keys) {
         // Exact match
-        if (row[key] !== undefined && row[key] !== null && String(row[key]).trim() !== "") {
-          return String(row[key]).trim();
+        if (row[key] !== undefined && row[key] !== null) {
+          const val = String(row[key]).trim();
+          if (val && val !== "-") return val;
         }
-        // Case-insensitive match
-        const found = Object.keys(row).find(k => k.toLowerCase().replace(/[^a-z0-9]/g, '') === key.toLowerCase().replace(/[^a-z0-9]/g, ''));
-        if (found && row[found] !== undefined && row[found] !== null && String(row[found]).trim() !== "") {
-          return String(row[found]).trim();
+        
+        // Normalize keys (lowercase, no spaces/symbols)
+        const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const normKey = normalize(key);
+        
+        const found = Object.keys(row).find(k => normalize(k) === normKey);
+        if (found !== undefined) {
+          const val = String(row[found]).trim();
+          if (val && val !== "-") return val;
         }
       }
       return "";
@@ -257,23 +269,23 @@ export async function importUnitsExcel(projectId: string, base64Data: string) {
 
     for (let i = 0; i < rawData.length; i++) {
       const row = rawData[i] as any;
-      const rowNum = i + 2; // +2 because row 1 is header, data starts at row 2
+      const rowNum = i + 2; 
 
       try {
-        const tagNumber = getVal(row, "Tag Number", "TagNumber", "tag_number");
+        const tagNumber = getVal(row, "Tag Number", "TAG NUMBER", "tag_number", "TAG_NUMBER", "TagNumber");
         const brand = getVal(row, "Brand", "brand");
         const model = getVal(row, "Model", "model");
         const capacity = getVal(row, "Capacity", "capacity");
-        const unitType = getVal(row, "Unit Type", "UnitType", "unit_type");
-        const yoiStr = getVal(row, "Year of Install", "YearofInstall", "yoi");
-        const serialNumber = getVal(row, "Serial Number", "SerialNumber", "serial_number");
+        const unitType = getVal(row, "Unit Type", "unit_type", "UNIT_TYPE");
+        const yoiStr = getVal(row, "Year of Install", "yoi", "YearOfInstall", "INSTALLED YEAR");
+        const serialNumber = getVal(row, "Serial Number", "serial_number", "SERIAL_NUMBER", "SerialNumber");
         const area = getVal(row, "Area", "area");
-        const floor = getVal(row, "Floor", "building_floor");
-        const roomTenant = getVal(row, "Room / Tenant", "Room/Tenant", "RoomTenant", "room_tenant");
-        const status = getVal(row, "Status", "status");
+        const floor = getVal(row, "Floor", "BUILDING FLOOR", "building_floor", "FLOOR");
+        const roomTenant = getVal(row, "Room / Tenant", "ROOM_TENANT", "room_tenant", "ROOM/TENANT", "RoomTenant");
+        const statusStr = getVal(row, "Status", "status");
 
-        // Skip completely empty rows
-        if (!tagNumber && !brand && !model && !capacity && !area && !roomTenant) {
+        // Skip truly empty rows
+        if (!tagNumber && !brand && !model && !serialNumber && !roomTenant) {
           skipped++;
           continue;
         }
@@ -281,21 +293,15 @@ export async function importUnitsExcel(projectId: string, base64Data: string) {
         const randomPart = crypto.randomBytes(2).toString('hex').toUpperCase();
         const qrToken = crypto.randomBytes(16).toString('hex');
 
-        // Parse year of install safely
         let yoi: number | null = null;
         if (yoiStr) {
           const parsed = parseInt(yoiStr);
-          if (!isNaN(parsed) && parsed > 1900 && parsed < 2100) {
-            yoi = parsed;
-          }
+          if (!isNaN(parsed) && parsed > 1950 && parsed < 2100) yoi = parsed;
         }
 
-        // Handle serial_number: use null if empty to avoid unique constraint violation
         const cleanSerial = serialNumber || null;
-
-        // Validate status against enum
         const validStatuses = ['Normal', 'Warning', 'Critical', 'Problem', 'Pending', 'On_Progress'];
-        const cleanStatus = validStatuses.includes(status) ? status : 'Normal';
+        const cleanStatus = validStatuses.find(s => s.toLowerCase() === statusStr.toLowerCase()) || 'Normal';
 
         await (prisma.units as any).create({
           data: {
@@ -316,59 +322,26 @@ export async function importUnitsExcel(projectId: string, base64Data: string) {
         });
         imported++;
       } catch (rowError: any) {
-        const tagInfo = getVal(row, "Tag Number", "TagNumber", "tag_number") || `Row ${rowNum}`;
+        const rowId = getVal(row, "Tag Number") || `Row ${rowNum}`;
         if (rowError.code === 'P2002') {
-          const target = rowError.meta?.target || "";
-          if (target.includes('serial_number')) {
-            errors.push(`${tagInfo}: Duplicate serial number`);
-          } else if (target.includes('qr_code_token')) {
-            // QR token collision - retry once
-            try {
-              const retryToken = crypto.randomBytes(16).toString('hex');
-              const tagNumber = getVal(row, "Tag Number", "TagNumber", "tag_number");
-              const randomPart = crypto.randomBytes(2).toString('hex').toUpperCase();
-              await (prisma.units as any).create({
-                data: {
-                  project_ref_id: BigInt(projectId),
-                  qr_code_token: retryToken,
-                  tag_number: tagNumber || `DKN-${projectId}-${new Date().getFullYear()}-${randomPart}`,
-                  brand: getVal(row, "Brand", "brand") || "Daikin",
-                  model: getVal(row, "Model", "model") || null,
-                  capacity: getVal(row, "Capacity", "capacity") || null,
-                  serial_number: getVal(row, "Serial Number", "SerialNumber", "serial_number") || null,
-                  area: getVal(row, "Area", "area") || null,
-                  building_floor: getVal(row, "Floor", "building_floor") || null,
-                  room_tenant: getVal(row, "Room / Tenant", "Room/Tenant", "RoomTenant", "room_tenant") || null,
-                  unit_type: getVal(row, "Unit Type", "UnitType", "unit_type") || "Uncategorized",
-                  status: "Normal"
-                }
-              });
-              imported++;
-            } catch {
-              errors.push(`${tagInfo}: QR token collision`);
-              skipped++;
-            }
-          } else {
-            errors.push(`${tagInfo}: Duplicate entry`);
-            skipped++;
-          }
+          errors.push(`${rowId}: Duplicate record (Serial Number or Tag)`);
         } else {
-          errors.push(`${tagInfo}: ${rowError.message?.substring(0, 80) || 'Unknown error'}`);
-          skipped++;
+          errors.push(`${rowId}: ${rowError.message || 'Validation error'}`);
         }
+        skipped++;
       }
     }
 
     return { 
       success: true, 
       imported, 
-      skipped,
-      totalRows: rawData.length,
-      errors: errors.length > 0 ? errors.slice(0, 10) : undefined // Cap at 10 errors
+      skipped, 
+      errors: errors.length > 0 ? errors.slice(0, 5) : undefined 
     };
   } catch (error: any) {
-    console.error("Import error:", error);
-    return { error: `Failed to parse Excel file: ${error.message || 'Unknown error'}` };
+    console.error("Critical Import error:", error);
+    // Be very explicit here
+    return { error: `Failed to parse Excel file: [${error?.message || 'Data format error'}]` };
   }
 }
 
