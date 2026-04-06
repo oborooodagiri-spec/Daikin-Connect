@@ -3,7 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { 
   Users, Search, ShieldCheck, Mail, ShieldAlert, 
-  Trash2, ChevronRight, CheckCircle2, XCircle, 
+  Trash2, ChevronRight, CheckCircle2, XCircle, X,
   UserCog, Filter, MoreVertical, Shield, Building2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -199,7 +199,7 @@ export default function UsersPage() {
                   </tr>
                 ) : (
                   filteredUsers.map((user: any, index: number) => {
-                    const isExternal = user.roles.some((r: string) => ["customer", "vendor"].includes(r.toLowerCase()));
+                    const isExternal = user.roles.some((r: string) => ["customer", "vendor", "ste", "caps"].includes(r.toLowerCase()));
                     const needsProject = isExternal && user.projectCount === 0;
 
                     return (
@@ -235,15 +235,24 @@ export default function UsersPage() {
 
                         <td className="px-8 py-6">
                             <div className="flex flex-wrap gap-1.5">
-                            {user.roles.map((role: string, rid: number) => (
-                                <span key={rid} className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border
-                                ${role.toLowerCase().includes('admin') ? 'bg-rose-50 text-rose-600 border-rose-100' : 
-                                    role.toLowerCase().includes('engineer') ? 'bg-indigo-50 text-indigo-600 border-indigo-100' : 
-                                    'bg-slate-50 text-slate-600 border-slate-100'}`}>
+                            {user.roles.map((role: string, rid: number) => {
+                                const rl = role.toLowerCase();
+                                const badgeClass = rl.includes('admin') ? 'bg-rose-50 text-rose-600 border-rose-100' :
+                                    rl === 'engineer' ? 'bg-indigo-50 text-indigo-600 border-indigo-100' :
+                                    rl === 'sales engineer' ? 'bg-violet-50 text-violet-600 border-violet-100' :
+                                    rl === 'management' ? 'bg-sky-50 text-sky-600 border-sky-100' :
+                                    rl === 'vendor' ? 'bg-amber-50 text-amber-600 border-amber-100' :
+                                    rl === 'ste' ? 'bg-teal-50 text-teal-600 border-teal-100' :
+                                    rl === 'caps' ? 'bg-cyan-50 text-cyan-600 border-cyan-100' :
+                                    rl === 'customer' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                                    'bg-slate-50 text-slate-600 border-slate-100';
+                                return (
+                                <span key={rid} className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${badgeClass}`}>
                                 <Shield size={10} />
                                 {role}
                                 </span>
-                            ))}
+                                );
+                            })}
                             </div>
                         </td>
 
@@ -325,7 +334,24 @@ export default function UsersPage() {
 
       {/* Role Assignment Modal */}
       <AnimatePresence>
-        {isRoleModalOpen && (
+        {isRoleModalOpen && (() => {
+          const ROLE_META: Record<string, { category: "internal" | "external"; desc: string; color: string; bg: string; border: string }> = {
+            admin:           { category: "internal", desc: "Full system access",           color: "text-rose-600",    bg: "bg-rose-50",    border: "border-rose-200" },
+            engineer:        { category: "internal", desc: "Field service operations",     color: "text-indigo-600",  bg: "bg-indigo-50",  border: "border-indigo-200" },
+            "sales engineer":{ category: "internal", desc: "Sales & technical advisory",   color: "text-violet-600",  bg: "bg-violet-50",  border: "border-violet-200" },
+            management:      { category: "internal", desc: "Overview & reporting",         color: "text-sky-600",     bg: "bg-sky-50",     border: "border-sky-200" },
+            customer:        { category: "external", desc: "Unit monitoring & complaints", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200" },
+            vendor:          { category: "external", desc: "External service partner",     color: "text-amber-600",   bg: "bg-amber-50",  border: "border-amber-200" },
+            ste:             { category: "external", desc: "Site Technical Engineer",      color: "text-teal-600",    bg: "bg-teal-50",    border: "border-teal-200" },
+            caps:            { category: "external", desc: "Commissioning & Project Svc",  color: "text-cyan-600",    bg: "bg-cyan-50",    border: "border-cyan-200" },
+          };
+          const getMeta = (name: string) => ROLE_META[name.toLowerCase()] || { category: "external" as const, desc: "Custom role", color: "text-slate-600", bg: "bg-slate-50", border: "border-slate-200" };
+          const internalRoles = roles.filter((r: any) => getMeta(r.role_name).category === "internal");
+          const externalRoles = roles.filter((r: any) => getMeta(r.role_name).category === "external");
+
+          const currentUserRoles = selectedUser?.roles?.map((r: string) => r.toLowerCase()) || [];
+
+          return (
           <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -336,63 +362,121 @@ export default function UsersPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white border border-slate-200 rounded-[2.5rem] shadow-2xl relative z-10 w-full max-w-md overflow-hidden"
+              className="bg-white border border-slate-200 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl relative z-10 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden"
             >
-              <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center border border-indigo-200">
-                    <UserCog size={24} />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-black text-[#003366] tracking-tight">Security Access</h3>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1">Assign User Role</p>
-                  </div>
+              {/* Header */}
+              <div className="p-5 sm:p-6 border-b border-slate-100 flex items-center gap-4 bg-slate-50/50 shrink-0">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-100 text-indigo-600 rounded-xl sm:rounded-2xl flex items-center justify-center border border-indigo-200 shrink-0">
+                  <UserCog size={20} />
                 </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-lg sm:text-xl font-black text-[#003366] tracking-tight">Security Access</h3>
+                  <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] sm:tracking-[0.2em] mt-0.5">Assign User Role</p>
+                </div>
+                <button onClick={() => setIsRoleModalOpen(false)} className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400 hover:text-slate-600 shrink-0">
+                  <X size={18} />
+                </button>
               </div>
 
-              <div className="p-8 space-y-6">
-                <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100 flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white border border-blue-200 flex items-center justify-center font-black text-blue-600">
+              {/* Scrollable Body */}
+              <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5 custom-scrollbar-sidebar">
+                {/* User Info Card */}
+                <div className="p-3 sm:p-4 bg-blue-50 rounded-xl sm:rounded-2xl border border-blue-100 flex items-center gap-3">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-white border border-blue-200 flex items-center justify-center font-black text-blue-600 text-sm shrink-0">
                     {selectedUser?.name?.charAt(0).toUpperCase()}
                   </div>
-                  <div>
-                    <p className="text-sm font-black text-[#003366]">{selectedUser?.name}</p>
-                    <p className="text-xs font-bold text-blue-400">{selectedUser?.email}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-black text-[#003366] truncate">{selectedUser?.name}</p>
+                    <p className="text-[11px] font-bold text-blue-400 truncate">{selectedUser?.email}</p>
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Available Permissions</label>
-                  <div className="grid grid-cols-1 gap-2">
-                    {roles.map((role: any) => (
-                      <button
-                        key={role.id}
-                        onClick={() => handleRoleUpdate(role.id)}
-                        disabled={isPending}
-                        className="flex items-center justify-between p-4 bg-white border border-slate-100 hover:border-indigo-500 hover:bg-slate-50 rounded-2xl transition-all group text-left"
-                      >
-                        <div>
-                          <p className="text-sm font-black text-slate-800">{role.role_name}</p>
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">System Identifier: {role.id}</p>
-                        </div>
-                        <ChevronRight size={18} className="text-slate-300 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
-                      </button>
-                    ))}
+                {/* Internal Roles Group */}
+                {internalRoles.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 ml-1">
+                      <Shield size={12} className="text-indigo-400" />
+                      <label className="text-[9px] sm:text-[10px] font-black text-indigo-400 uppercase tracking-widest">Internal</label>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {internalRoles.map((role: any) => {
+                        const meta = getMeta(role.role_name);
+                        const isActive = currentUserRoles.includes(role.role_name.toLowerCase());
+                        return (
+                          <button
+                            key={role.id}
+                            onClick={() => handleRoleUpdate(role.id)}
+                            disabled={isPending}
+                            className={`relative flex flex-col items-start p-3 sm:p-3.5 rounded-xl sm:rounded-2xl border-2 transition-all text-left group ${
+                              isActive 
+                                ? `${meta.bg} ${meta.border} ring-2 ring-offset-1 ring-indigo-300` 
+                                : `bg-white border-slate-100 hover:${meta.border} hover:${meta.bg}`
+                            } disabled:opacity-50`}
+                          >
+                            {isActive && (
+                              <div className="absolute top-2 right-2">
+                                <CheckCircle2 size={14} className={meta.color} />
+                              </div>
+                            )}
+                            <p className={`text-xs sm:text-sm font-black ${isActive ? meta.color : 'text-slate-800'} tracking-tight`}>{role.role_name}</p>
+                            <p className="text-[9px] font-bold text-slate-400 mt-0.5 leading-tight">{meta.desc}</p>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {/* External Roles Group */}
+                {externalRoles.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 ml-1">
+                      <Building2 size={12} className="text-amber-400" />
+                      <label className="text-[9px] sm:text-[10px] font-black text-amber-400 uppercase tracking-widest">External · Partner</label>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {externalRoles.map((role: any) => {
+                        const meta = getMeta(role.role_name);
+                        const isActive = currentUserRoles.includes(role.role_name.toLowerCase());
+                        return (
+                          <button
+                            key={role.id}
+                            onClick={() => handleRoleUpdate(role.id)}
+                            disabled={isPending}
+                            className={`relative flex flex-col items-start p-3 sm:p-3.5 rounded-xl sm:rounded-2xl border-2 transition-all text-left group ${
+                              isActive 
+                                ? `${meta.bg} ${meta.border} ring-2 ring-offset-1 ring-amber-300` 
+                                : `bg-white border-slate-100 hover:${meta.border} hover:${meta.bg}`
+                            } disabled:opacity-50`}
+                          >
+                            {isActive && (
+                              <div className="absolute top-2 right-2">
+                                <CheckCircle2 size={14} className={meta.color} />
+                              </div>
+                            )}
+                            <p className={`text-xs sm:text-sm font-black ${isActive ? meta.color : 'text-slate-800'} tracking-tight`}>{role.role_name}</p>
+                            <p className="text-[9px] font-bold text-slate-400 mt-0.5 leading-tight">{meta.desc}</p>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
-              <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end">
+              {/* Footer */}
+              <div className="p-4 sm:p-5 bg-slate-50 border-t border-slate-100 flex justify-end shrink-0">
                 <button 
                   onClick={() => setIsRoleModalOpen(false)}
-                  className="px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest text-slate-500 hover:bg-slate-200 transition-colors"
+                  className="px-5 py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-500 hover:bg-slate-200 transition-colors"
                 >
-                  Cancel
+                  Close
                 </button>
               </div>
             </motion.div>
           </div>
-        )}
+          );
+        })()}
       </AnimatePresence>
 
       {/* Project Access Modal */}

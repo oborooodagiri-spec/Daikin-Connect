@@ -210,14 +210,14 @@ export async function getScheduleFormOptions() {
           OR: [
             { 
               roles: { 
-                role_name: { in: ["Engineer", "Vendor"] } 
+                role_name: { in: ["Engineer", "Vendor", "STE", "CAPS"] } 
               } 
             },
             {
               user_roles: {
                 some: {
                   roles: {
-                    role_name: { in: ["Engineer", "Vendor"] }
+                    role_name: { in: ["Engineer", "Vendor", "STE", "CAPS"] }
                   }
                 }
               }

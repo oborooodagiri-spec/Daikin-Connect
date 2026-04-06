@@ -211,7 +211,7 @@ export default function UnitsPage() {
 
   const openDetail = async (unit: any) => {
     // SMART REDIRECTION: If Internal/Vendor & Status is Problem -> Go to Corrective Form
-    if (unit.status === 'Problem' && (session?.isInternal || session?.roles?.some((r: any) => r.toLowerCase() === 'vendor'))) {
+    if (unit.status === 'Problem' && (session?.isInternal || session?.roles?.some((r: any) => ['vendor', 'ste', 'caps'].includes(r.toLowerCase())))) {
        router.push(`/passport/${unit.qr_code_token}/corrective`);
        return;
     }
@@ -636,7 +636,7 @@ export default function UnitsPage() {
                             </button>
                           )}
 
-                          {(session?.isInternal || session?.roles?.some((r: any) => r.toLowerCase() === 'vendor')) && (
+                          {(session?.isInternal || session?.roles?.some((r: any) => ['vendor', 'ste', 'caps'].includes(r.toLowerCase()))) && (
                             <button
                               onClick={(e) => { e.stopPropagation(); setSelectedQuickUnit(unit); setIsQuickInputOpen(true); }}
                               className="p-2 rounded-xl bg-[#003366] text-white hover:bg-[#00a1e4] transition-all group shadow-sm flex items-center gap-2 px-3"
