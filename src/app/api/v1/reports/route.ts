@@ -21,22 +21,23 @@ export async function GET(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
-    const activities = await prisma.service_activities.findMany({
+    const activities = await (prisma.service_activities as any).findMany({
       orderBy: { created_at: "desc" },
       take: 20,
       include: {
-        units: true,
-        projects: true
+        units: {
+          include: { projects: true }
+        }
       }
     });
 
     return NextResponse.json({
       success: true,
-      data: activities.map(a => ({
+      data: activities.map((a: any) => ({
         id: a.id,
-        type: a.activity_type,
+        type: a.type,
         unit: a.units?.tag_number,
-        project: a.projects?.name,
+        project: a.units?.projects?.name,
         date: a.created_at,
         has_report: true,
         download_url: `/api/v1/reports/${a.id}/download`

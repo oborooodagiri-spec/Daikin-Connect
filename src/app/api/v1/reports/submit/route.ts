@@ -35,11 +35,11 @@ export async function POST(req: NextRequest) {
     }
 
     // 1. Save Activity
-    const activity = await prisma.service_activities.create({
+    const activity = await (prisma.service_activities as any).create({
       data: {
-        unit_id: BigInt(unitId),
-        activity_type: type,
-        summary: summary,
+        unit_id: parseInt(unitId, 10),
+        type: type,
+        engineer_note: summary,
         created_at: new Date(),
         // We'll link photos later or store them in a related table if exists
       }
@@ -48,8 +48,8 @@ export async function POST(req: NextRequest) {
     // 2. Update Unit Status
     if (status) {
       await prisma.units.update({
-        where: { id: BigInt(unitId) },
-        data: { status: status }
+        where: { id: parseInt(unitId, 10) },
+        data: { status: status as any }
       });
     }
 
