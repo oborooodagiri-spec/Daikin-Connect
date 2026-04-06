@@ -28,29 +28,58 @@ function getDB() {
   return dbPromise;
 }
 
+/**
+ * Robust wrapper for DB operations.
+ * Auto-invalidates the dbPromise if a 'closing' error is detected and retries.
+ */
+async function withDB<T>(operation: (db: IDBPDatabase<any>) => Promise<T>): Promise<T | null> {
+  let db: IDBPDatabase<any> | null = null;
+  
+  try {
+    db = await getDB();
+    if (!db) return null;
+    return await operation(db);
+  } catch (err: any) {
+    // If the error suggests the connection is closing/closed, reset and retry once
+    const errorMsg = err?.message?.toLowerCase() || "";
+    if (errorMsg.includes("closing") || errorMsg.includes("closed")) {
+      console.warn("DB connection lost. Attempting to reconnect...", err);
+      dbPromise = null; // Invalidate cache
+      
+      try {
+        db = await getDB();
+        if (!db) return null;
+        return await operation(db);
+      } catch (retryErr) {
+        console.error("Critical DB failure after retry:", retryErr);
+        throw retryErr;
+      }
+    }
+    
+    // Otherwise, throw original error
+    throw err;
+  }
+}
+
 export async function savePendingSubmission(submission: Omit<PendingSubmission, 'id' | 'createdAt'>) {
-  const db = await getDB();
-  if (!db) return;
-  return db.add(STORE_NAME, {
-    ...submission,
-    createdAt: Date.now(),
-  });
+  return withDB(db => 
+    db.add(STORE_NAME, {
+      ...submission,
+      createdAt: Date.now(),
+    })
+  );
 }
 
 export async function getAllPendingSubmissions(): Promise<PendingSubmission[]> {
-  const db = await getDB();
-  if (!db) return [];
-  return db.getAll(STORE_NAME);
+  const result = await withDB(db => db.getAll(STORE_NAME));
+  return result || [];
 }
 
 export async function deletePendingSubmission(id: number) {
-  const db = await getDB();
-  if (!db) return;
-  return db.delete(STORE_NAME, id);
+  return withDB(db => db.delete(STORE_NAME, id));
 }
 
-export async function getPendingSubmissionCount() {
-  const db = await getDB();
-  if (!db) return 0;
-  return db.count(STORE_NAME);
+export async function getPendingSubmissionCount(): Promise<number> {
+  const count = await withDB(db => db.count(STORE_NAME));
+  return count || 0;
 }

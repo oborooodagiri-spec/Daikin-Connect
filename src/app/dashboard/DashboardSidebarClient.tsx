@@ -84,7 +84,7 @@ export default function DashboardSidebarClient({
         ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0
       `}>
         <div className="p-8 border-b border-white/10 flex flex-col items-center shrink-0">
-          <img src="/app-logo.png" className="h-8 brightness-0 invert mb-6" alt="Daikin" />
+          <img src="/logo_epl_connect_1.png" className="h-10 lg:h-12 w-auto brightness-0 invert mb-6 object-contain" alt="EPL Connect" />
           <div className="text-center">
             <p className="text-xs font-black uppercase tracking-[0.3em] text-blue-300 opacity-60">EPL Connect</p>
             <p className="text-sm font-bold mt-1 text-white truncate max-w-[200px]">{session?.name}</p>

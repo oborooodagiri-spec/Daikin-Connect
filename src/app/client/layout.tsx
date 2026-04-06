@@ -33,7 +33,7 @@ export default async function ClientLayout({
       {/* Client Sidebar */}
       <aside className="w-72 bg-[#003366] text-white flex flex-col fixed inset-y-0 z-50 shadow-2xl transition-all duration-500">
         <div className="p-8 border-b border-white/10 flex flex-col items-center">
-          <img src="/app-logo.png" className="h-8 brightness-0 invert mb-6" alt="Daikin" />
+          <img src="/daikin_logo.png" className="h-6 brightness-0 invert mb-6" alt="Daikin" />
           <div className="text-center">
             <p className="text-xs font-black uppercase tracking-[0.3em] text-blue-300 opacity-60">CLIENT PORTAL</p>
             <p className="text-sm font-bold mt-1 text-white truncate max-w-[200px]">{session?.name}</p>

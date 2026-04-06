@@ -17,8 +17,12 @@ export function SyncManager() {
   const [isMounted, setIsMounted] = useState(false);
 
   const checkPending = async () => {
-    const count = await getPendingSubmissionCount();
-    setPendingCount(count);
+    try {
+      const count = await getPendingSubmissionCount();
+      setPendingCount(count);
+    } catch (err) {
+      console.warn("SyncManager background check skipped (DB connection issue):", err);
+    }
   };
 
   useEffect(() => {

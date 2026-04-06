@@ -820,7 +820,7 @@ export default function UnitsPage() {
               <div className="w-full bg-white flex flex-col items-center relative pointer-events-none">
                 {/* Header Strip in Preview */}
                 <div className="w-full h-10 bg-[#003366] flex items-center justify-between px-4">
-                  <img src="/app-logo.png" className="h-3 brightness-0 invert" alt="Daikin Logo" />
+                  <img src="/daikin_logo.png" className="h-3 brightness-0 invert" alt="Daikin Logo" />
                   <img src="/logo_epl_connect_1.png" className="h-4 brightness-0 invert" alt="EPL" />
                 </div>
                 
@@ -931,7 +931,7 @@ export default function UnitsPage() {
                         </head>
                         <body>
                           <div class="header-strip">
-                             <img src="${window.location.origin}/app-logo.png" class="logo-daikin" />
+                             <img src="${window.location.origin}/daikin_logo.png" class="logo-daikin" />
                              <img src="${window.location.origin}/logo_epl_connect_1.png" class="logo-epl" />
                           </div>
                           
