@@ -11,11 +11,21 @@ import 'features/dashboard/screens/dashboard_home.dart';
 import 'widgets/version_guard_screen.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Services
-  await SyncService().init();
-  await NotificationService().init();
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+    
+    // Initialize SyncService first (it handles Hive.initFlutter)
+    await SyncService().init();
+    
+    // Initialize other services (don't let them crash the startup)
+    try {
+      await NotificationService().init();
+    } catch (e) {
+      if (kDebugMode) print("Notification Service failed: $e");
+    }
+  } catch (e) {
+    if (kDebugMode) print("Critical initialization failed: $e");
+  }
 
   runApp(
     MultiProvider(
@@ -30,9 +40,14 @@ void main() async {
   );
 }
 
-class DaikinConnectApp extends StatelessWidget {
+class DaikinConnectApp extends StatefulWidget {
   const DaikinConnectApp({super.key});
 
+  @override
+  State<DaikinConnectApp> createState() => _DaikinConnectAppState();
+}
+
+class _DaikinConnectAppState extends State<DaikinConnectApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -46,9 +61,13 @@ class DaikinConnectApp extends StatelessWidget {
       ),
       home: Consumer2<AuthProvider, VersionProvider>(
         builder: (context, auth, version, _) {
-          // Perform version check if we have the requirement from server
+          // Trigger version check safely AFTER the frame is rendered
           if (auth.requiredVersion != null) {
-            version.checkVersion(auth.requiredVersion!);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                version.checkVersion(auth.requiredVersion!);
+              }
+            });
           }
 
           if (version.isUpdateRequired && !version.isLoading) {

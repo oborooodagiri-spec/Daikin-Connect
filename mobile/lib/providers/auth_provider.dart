@@ -25,9 +25,15 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> checkAuthStatus() async {
     _isLoading = true;
+    _requiredVersion = null; // Reset version requirement until checked
     notifyListeners();
 
-    _isLoggedIn = await _authService.isLoggedIn();
+    try {
+      _isLoggedIn = await _authService.isLoggedIn();
+    } catch (e) {
+      if (kDebugMode) print("Auth status check failed (usually offline): $e");
+      // Keep existing login state if we fail to contact server but have local state
+    }
     
     _isLoading = false;
     notifyListeners();

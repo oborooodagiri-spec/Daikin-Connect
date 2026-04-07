@@ -168,7 +168,12 @@ function ReportsContent() {
         const folder = (p.type || report.type || "misc").toLowerCase();
         url = `/uploads/${folder}/${url}`;
       }
-      return { ...p, photo_url: url };
+      return { 
+        ...p, 
+        photo_url: url,
+        media_type: p.media_type || 'IMAGE', // Ensure media type is present
+        gdrive_id: p.onedrive_id // Map to GDrive ID
+      };
     }) || [];
 
     if (report.type === "Preventive") {
@@ -337,15 +342,60 @@ function ReportsContent() {
                   <h3 className="text-xl font-black text-[#003366] tracking-tight">{selectedReport.units?.tag_number || "Report Detail"}</h3>
                   <button onClick={() => setSelectedReport(null)} className="p-2 hover:bg-slate-200 rounded-xl transition-colors"><X size={20} /></button>
                </div>
-               <div className="p-8">
-                  <div className="grid grid-cols-2 gap-4 mb-8">
-                     <InfoItem label="Room / Tenant" value={selectedReport.units?.room_tenant} />
-                     <InfoItem label="Area" value={selectedReport.units?.area} />
-                     <InfoItem label="Engineer" value={selectedReport.inspector_name} />
-                     <InfoItem label="Date" value={formatDate(selectedReport.service_date)} />
-                  </div>
-                  <button onClick={() => handlePrint(selectedReport.id)} className="w-full py-4 bg-[#003366] text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-900/10 hover:scale-[1.02] transition-all">Print Official (A4)</button>
-               </div>
+                   <div className="p-8 max-h-[70vh] overflow-y-auto">
+                      <div className="grid grid-cols-2 gap-4 mb-8">
+                         <InfoItem label="Room / Tenant" value={selectedReport.units?.room_tenant} />
+                         <InfoItem label="Area" value={selectedReport.units?.area} />
+                         <InfoItem label="Engineer" value={selectedReport.inspector_name} />
+                         <InfoItem label="Date" value={formatDate(selectedReport.service_date)} />
+                      </div>
+
+                      {/* Media Documentation Section */}
+                      <div className="mb-8">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Media Documentation</p>
+                        <div className="grid grid-cols-1 gap-4">
+                          {getRenderData(selectedReport).activity_photos?.map((p: any, idx: number) => (
+                            <div key={idx} className="bg-slate-50 border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
+                              {p.media_type === "VIDEO" ? (
+                                <div className="aspect-video bg-black relative flex items-center justify-center group">
+                                  <video 
+                                    className="w-full h-full object-contain" 
+                                    controls 
+                                    preload="metadata"
+                                    poster={p.photo_url + "?t=0"} // Attempt to show first frame
+                                  >
+                                    <source src={p.photo_url} type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                  </video>
+                                  {/* Optional GDrive fallback if local fails */}
+                                  {p.gdrive_id && (
+                                    <a href={`https://drive.google.com/file/d/${p.gdrive_id}/view`} target="_blank" className="absolute bottom-2 right-2 p-1.5 bg-black/60 text-white rounded-lg text-[8px] font-black uppercase opacity-0 group-hover:opacity-100 transition-opacity">
+                                      Open in Drive
+                                    </a>
+                                  )}
+                                </div>
+                              ) : (
+                                <div className="aspect-square relative">
+                                  <img src={p.photo_url} alt={p.description} className="w-full h-full object-cover" />
+                                </div>
+                              )}
+                              {p.description && (
+                                <div className="p-3 bg-white">
+                                  <p className="text-[10px] font-bold text-slate-500 leading-tight">{p.description}</p>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                          {(!selectedReport.activity_photos || selectedReport.activity_photos.length === 0) && (
+                            <div className="p-8 text-center border-2 border-dashed border-slate-100 rounded-2xl">
+                              <p className="text-xs font-bold text-slate-300">NO MEDIA ATTACHED</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <button onClick={() => handlePrint(selectedReport.id)} className="w-full py-4 bg-[#003366] text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-900/10 hover:scale-[1.02] transition-all">Print Official (A4)</button>
+                   </div>
             </motion.div>
           </div>
         )}

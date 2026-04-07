@@ -19,9 +19,14 @@ class AuthService {
       if (response.statusCode == 200) {
         final token = response.data['token'];
         final user = response.data['user'];
+        final requiredVersion = response.data['required_version'];
         
         await _storage.write(key: 'auth_token', value: token);
-        return {'success': true, 'user': user};
+        return {
+          'success': true, 
+          'user': user,
+          'required_version': requiredVersion,
+        };
       }
       return {'success': false, 'message': 'Invalid credentials'};
     } on DioException catch (e) {

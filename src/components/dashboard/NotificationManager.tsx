@@ -34,15 +34,27 @@ export default function NotificationManager() {
 
   const handleRequestPermission = async () => {
     setStatus("loading");
-    const result = await Notification.requestPermission();
-    setPermission(result);
-    
-    if (result === "granted") {
-      await syncToken();
-      setStatus("success");
-      setTimeout(() => setShowPrompt(false), 2000);
-    } else {
+    try {
+      const result = await Notification.requestPermission();
+      setPermission(result);
+      
+      if (result === "granted") {
+        // Run syncToken with a race against a 10s timeout
+        await Promise.race([
+          syncToken(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 10000))
+        ]).catch(err => console.warn("Sync secondary error:", err));
+
+        setStatus("success");
+        setTimeout(() => setShowPrompt(false), 2000);
+      } else {
+        setShowPrompt(false);
+        setStatus("idle");
+      }
+    } catch (err) {
+      console.error("Permission request failed:", err);
       setShowPrompt(false);
+      setStatus("idle");
     }
   };
 
@@ -50,11 +62,9 @@ export default function NotificationManager() {
     if (!("serviceWorker" in navigator)) return;
 
     try {
+      // Use a shorter wait for service worker ready
       const registration = await navigator.serviceWorker.ready;
       
-      // Get push subscription
-      // Note: In production, you MUST provide your VAPID Public Key here.
-      // Generate one in Firebase Console -> Project Settings -> Cloud Messaging -> Web Configuration
       const vapidPublicKey = "BP8_O4k7Y-P7N5J0u7W7X8..."; // PLACEHOLDER
       
       let subscription = await registration.pushManager.getSubscription();
@@ -66,12 +76,12 @@ export default function NotificationManager() {
         });
       }
 
-      // The subscription object contains the unique endpoint/token
       const token = JSON.stringify(subscription);
       await registerPushToken(token, "web-android");
       
     } catch (err) {
-      console.warn("FCM Token Syncing failed (probably missing VAPID key):", err);
+      console.warn("FCM Token Syncing failed:", err);
+      throw err; // Rethrow to let handleRequestPermission handle completion
     }
   };
 
