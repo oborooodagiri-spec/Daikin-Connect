@@ -50,7 +50,10 @@ export default function UsersPage() {
   useEffect(() => {
     const checkAccess = async () => {
       const s = await getSession();
-      if (!s || !s.role?.toLowerCase().includes("admin")) {
+      const userRoles = (s?.roles as string[] || []).map(r => r.toLowerCase());
+      const isAdmin = userRoles.some(r => r.includes("admin") || r.includes("administrator"));
+      
+      if (!s || !isAdmin) {
         router.push("/dashboard");
         return;
       }
