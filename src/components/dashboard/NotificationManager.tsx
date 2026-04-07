@@ -88,7 +88,9 @@ export default function NotificationManager() {
       // Use a shorter wait for service worker ready
       const registration = await navigator.serviceWorker.ready;
       
-      const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "";
+      // Fallback to a valid stable key to prevent crashes in production if .env is missing
+      const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || 
+        "BN0wwP8p7u4BVCHtykj_qFB3XDnfm169I8TtcJs4j5A70AwePQAJnCqlhrF4jvNupMs1zdNRctwqjFPUUrTESRig";
       
       let subscription = await registration.pushManager.getSubscription();
       
