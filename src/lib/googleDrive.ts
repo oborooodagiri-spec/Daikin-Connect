@@ -14,9 +14,7 @@ class GoogleDriveService {
   private static instance: GoogleDriveService;
   private drive: any;
 
-  private constructor() {
-    this.initialize();
-  }
+  private constructor() {}
 
   static getInstance() {
     if (!this.instance) {
@@ -25,20 +23,27 @@ class GoogleDriveService {
     return this.instance;
   }
 
-  private initialize() {
+  private async getDrive() {
+    if (this.drive) return this.drive;
+
     if (!clientEmail || !privateKey) {
       console.warn("Google Service Account credentials missing. GDrive sync disabled.");
-      return;
+      return null;
     }
 
-    const auth = new google.auth.JWT(
-      clientEmail,
-      null,
-      privateKey,
-      ["https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive.metadata"]
-    );
+    try {
+      const auth = new google.auth.JWT({
+        email: clientEmail,
+        key: privateKey,
+        scopes: ["https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive.metadata"]
+      });
 
-    this.drive = google.drive({ version: "v3", auth });
+      this.drive = google.drive({ version: "v3", auth });
+      return this.drive;
+    } catch (e) {
+      console.error("GDrive Initialization Error:", e);
+      return null;
+    }
   }
 
   /**
@@ -46,7 +51,8 @@ class GoogleDriveService {
    * Returns the File ID if successful.
    */
   async uploadFile(fileBuffer: Buffer, fileName: string, mimeType: string) {
-    if (!this.drive) return null;
+    const drive = await this.getDrive();
+    if (!drive) return null;
 
     try {
       const folder = folderId || "root";
@@ -61,7 +67,7 @@ class GoogleDriveService {
         body: Readable.from(fileBuffer),
       };
 
-      const response = await this.drive.files.create({
+      const response = await drive.files.create({
         requestBody: fileMetadata,
         media: media,
         fields: "id, webViewLink, webContentLink",
@@ -69,7 +75,7 @@ class GoogleDriveService {
 
       // Optional: Set permissions so anyone with the link can view (for embedding)
       // Note: For tighter security, you'd proxy these through your API.
-      await this.drive.permissions.create({
+      await drive.permissions.create({
         fileId: response.data.id,
         requestBody: {
           role: "reader",

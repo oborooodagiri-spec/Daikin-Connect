@@ -56,9 +56,13 @@ export default function DashboardWrapper() {
   const [isMetricModalOpen, setIsMetricModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
-  const [isOnline, setIsOnline] = useState(typeof window !== "undefined" ? navigator.onLine : true);
+  const [isOnline, setIsOnline] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
+    setIsOnline(navigator.onLine);
+    
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
 
@@ -175,6 +179,8 @@ export default function DashboardWrapper() {
   };
 
   useEffect(() => { fetchData(filters); }, [filters]);
+
+  if (!isMounted) return <div className="min-h-screen bg-slate-50" />;
 
   return (
     <div className="w-full flex flex-col space-y-8 pb-32">
@@ -396,7 +402,9 @@ function ComplaintWidget({ items, onItemClick }: any) {
                        <Clock size={8} /> PROCESSING
                      </span>
                    ) : (
-                     <span className="text-[8px] font-bold text-slate-400">{new Date(c.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                     <span suppressHydrationWarning className="text-[8px] font-bold text-slate-400">
+                       {new Date(c.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                     </span>
                    )}
                 </div>
                 {(c.unit_room || c.unit_area) && (

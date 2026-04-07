@@ -30,6 +30,7 @@ function ReportsContent() {
   const [stats, setStats] = useState({ totalAudit: 0, totalPreventive: 0, totalCorrective: 0, totalAll: 0 });
   const [pagination, setPagination] = useState({ total: 0, page: 1, limit: 20, totalPages: 1 });
   const [loading, setLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   // Filters
@@ -64,6 +65,7 @@ function ReportsContent() {
   };
 
   useEffect(() => {
+    setIsMounted(true);
     fetchReports();
   }, [typeFilter]);
 
@@ -258,6 +260,8 @@ function ReportsContent() {
     
     return { ...report, ...t, activity_photos: photos };
   };
+  
+  if (!isMounted) return <div className="p-12 text-center text-slate-300 font-bold uppercase tracking-widest no-print">Initializing Analysis...</div>;
 
   return (
     <div className="space-y-6">
@@ -323,7 +327,7 @@ function ReportsContent() {
                     {r.units?.room_tenant && <p className="text-[10px] font-bold text-slate-400">{r.units.room_tenant}{r.units?.area ? ` · ${r.units.area}` : ''}</p>}
                   </td>
                   <td className="p-4 text-xs font-bold text-slate-700">{r.inspector_name}</td>
-                  <td className="p-4 text-xs text-slate-500">{formatDate(r.service_date)}</td>
+                  <td suppressHydrationWarning className="p-4 text-xs text-slate-500">{formatDate(r.service_date)}</td>
                   <td className="p-4"><button onClick={(e) => { e.stopPropagation(); handlePrint(r.id); }} className="text-emerald-600 hover:text-emerald-800 font-bold text-xs"><Printer size={14} /></button></td>
                   <td className="p-4"><Eye size={14} className="text-slate-300" /></td>
                 </tr>
@@ -426,7 +430,7 @@ function InfoItem({ label, value }: { label: string; value?: string | null }) {
   return (
     <div>
       <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{label}</p>
-      <p className="text-sm font-bold text-slate-800">{value || "-"}</p>
+      <p suppressHydrationWarning className="text-sm font-bold text-slate-800">{value || "-"}</p>
     </div>
   );
 }
