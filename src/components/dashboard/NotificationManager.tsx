@@ -12,6 +12,19 @@ import { motion, AnimatePresence } from "framer-motion";
  * 3. Registers it in the database.
  */
 
+function urlBase64ToUint8Array(base64String: string) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
 export default function NotificationManager() {
   const [permission, setPermission] = useState<NotificationPermission>("default");
   const [showPrompt, setShowPrompt] = useState(false);
@@ -70,9 +83,10 @@ export default function NotificationManager() {
       let subscription = await registration.pushManager.getSubscription();
       
       if (!subscription) {
+        const applicationServerKey = urlBase64ToUint8Array(vapidPublicKey);
         subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: vapidPublicKey
+          applicationServerKey: applicationServerKey
         });
       }
 

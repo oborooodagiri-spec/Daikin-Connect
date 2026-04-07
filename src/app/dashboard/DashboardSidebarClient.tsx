@@ -19,6 +19,13 @@ export default function DashboardSidebarClient({
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
+  // Diagnostic log to catch inconsistencies in production/local sessions
+  console.log("DEBUG Sidebar Session:", { 
+    name: session?.name, 
+    roles: session?.roles, 
+    isInternal: session?.isInternal 
+  });
+
   const toggleSidebar = () => setIsOpen(!isOpen);
 
   const menuItems = [
@@ -38,7 +45,11 @@ export default function DashboardSidebarClient({
       href: "/dashboard/users", 
       label: "User Management", 
       icon: Users, 
-      show: session?.roles?.some((r: any) => r.toLowerCase().includes("admin")) 
+      show: Boolean(
+        session?.roles && 
+        Array.isArray(session.roles) && 
+        session.roles.some((r: any) => String(r).toLowerCase().includes("admin"))
+      )
     },
     { 
       href: "/dashboard/reports", 
