@@ -23,7 +23,7 @@ class VersionGuardScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(30),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.1),
+                  color: Colors.blue.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.system_update_rounded, size: 80, color: Color(0xFF00A1E4)),
