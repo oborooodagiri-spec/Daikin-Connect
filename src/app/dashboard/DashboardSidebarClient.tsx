@@ -38,7 +38,7 @@ export default function DashboardSidebarClient({
       href: "/dashboard/users", 
       label: "User Management", 
       icon: Users, 
-      show: session?.role?.toLowerCase().includes("admin") 
+      show: session?.roles?.some((r: string) => r.toLowerCase().includes("admin")) 
     },
     { 
       href: "/dashboard/reports", 
