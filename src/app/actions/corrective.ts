@@ -55,24 +55,16 @@ export async function createCorrectiveActivity(data: any) {
       console.warn("Legacy corrective save skipped:", legacyErr);
     }
 
-    // Save Photos & Videos
+    // Save Photos
     if (photos && Array.isArray(photos)) {
-      const { syncMediaToOneDrive } = await import("@/lib/media-sync");
-      
-      for (const p of photos) {
-        const newPhoto = await prisma.activity_photos.create({
-          data: {
-            activity_id: newActivity.id,
-            type: "CORRECTIVE",
-            photo_url: p.photo_url,
-            media_type: p.media_type || "IMAGE",
-            description: p.description || "Corrective Documentation",
-          }
-        });
-        
-        // Trigger OneDrive sync in background
-        syncMediaToOneDrive(newPhoto.id, "activity_photos");
-      }
+      await prisma.activity_photos.createMany({
+        data: photos.map((p: any) => ({
+          activity_id: newActivity.id,
+          type: "CORRECTIVE",
+          photo_url: p.photo_url,
+          description: p.description || "Corrective Documentation",
+        })),
+      });
     }
 
     // Update unit status to On_Progress

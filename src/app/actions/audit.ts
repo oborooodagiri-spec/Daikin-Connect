@@ -104,24 +104,16 @@ export async function createAuditActivity(data: any) {
       });
     }
 
-    // Save Photos & Videos
+    // Save Photos
     if (photos && Array.isArray(photos)) {
-      const { syncMediaToOneDrive } = await import("@/lib/media-sync");
-
-      for (const p of photos) {
-        const newPhoto = await prisma.activity_photos.create({
-          data: {
-            activity_id: newActivity.id,
-            type: "AUDIT",
-            photo_url: p.photo_url,
-            media_type: p.media_type || "IMAGE", // Default to IMAGE if not specified
-            description: p.description || ""
-          }
-        });
-
-        // Trigger OneDrive sync in the background (no await)
-        syncMediaToOneDrive(newPhoto.id, "activity_photos");
-      }
+      await prisma.activity_photos.createMany({
+        data: photos.map((p: any) => ({
+          activity_id: newActivity.id,
+          type: "AUDIT",
+          photo_url: p.photo_url,
+          description: p.description || ""
+        }))
+      });
     }
 
     // Auto Schedule Synchronization

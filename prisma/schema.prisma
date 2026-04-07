@@ -204,8 +204,6 @@ model activity_photos {
   activity_id        Int?
   type               String?             @default("AUDIT") @db.VarChar(50)
   photo_url          String              @db.VarChar(255)
-  media_type         MediaType           @default(IMAGE)
-  onedrive_id        String?             @db.VarChar(255)
   notes              String?             @db.Text
   description        String?             @db.Text
   caption            String?             @db.Text
@@ -289,8 +287,6 @@ model audits {
   notes       String?        @db.Text
   status      audits_status? @default(Normal)
   photo_url   String?        @db.VarChar(255)
-  media_type  MediaType      @default(IMAGE)
-  onedrive_id String?        @db.VarChar(255)
   created_at  DateTime?      @default(now()) @db.Timestamp(0)
   units       units          @relation(fields: [unit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "audits_ibfk_1")
 
@@ -322,8 +318,6 @@ model corrective {
   perm_action     String?   @db.Text
   recommendation  String?   @db.Text
   photo_url       String?   @db.Text
-  media_type      MediaType @default(IMAGE)
-  onedrive_id     String?   @db.VarChar(255)
   status          String?   @default("Final Approved") @db.VarChar(50)
   created_at      DateTime? @default(now()) @db.Timestamp(0)
   units           units     @relation(fields: [unit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "corrective_ibfk_1")
@@ -554,11 +548,9 @@ model complaints {
   id            Int      @id @default(autoincrement())
   unit_id       Int
   customer_name String   @db.VarChar(150)
-  description   String    @db.Text
-  photo_url     String?   @db.VarChar(255)
-  media_type    MediaType @default(IMAGE)
-  onedrive_id   String?   @db.VarChar(255)
-  status        String    @default("Pending")
+  description   String   @db.Text
+  photo_url     String?  @db.VarChar(255)
+  status        String   @default("Pending")
   created_at    DateTime @default(now()) @db.Timestamp(0)
   units         units    @relation(fields: [unit_id], references: [id], onDelete: Cascade)
 
@@ -671,11 +663,6 @@ enum ScheduleStatus {
   InProgress
   Completed
   Missed
-}
-
-enum MediaType {
-  IMAGE
-  VIDEO
 }
 
 model user_push_tokens {
