@@ -45,10 +45,18 @@ export default function DashboardSidebarClient({
       href: "/dashboard/users", 
       label: "User Management", 
       icon: Users, 
-      show: (session?.roles || []).some((r: string) => 
-        r.toLowerCase().trim().includes("admin") || 
-        r.toLowerCase().trim().includes("super")
-      ) || String(session?.role || "").toLowerCase().includes("admin")
+      show: (() => {
+        const roles = session?.roles || [];
+        const roleStr = String(session?.role || "").toLowerCase();
+        
+        // Check array of strings or objects, and the singular role string
+        const hasAdminRole = roles.some((r: any) => {
+          const val = typeof r === 'string' ? r : (r?.role_name || JSON.stringify(r));
+          return val.toLowerCase().includes("admin") || val.toLowerCase().includes("super");
+        });
+
+        return hasAdminRole || roleStr.includes("admin") || roleStr.includes("super");
+      })()
     },
     { 
       href: "/dashboard/reports", 

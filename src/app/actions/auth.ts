@@ -147,10 +147,11 @@ export async function getSession() {
   try {
     const { payload } = await jwtVerify(sessionToken, JWT_SECRET);
     
-    // Fetch latest user data including roles
+    // Fetch latest user data including roles from both sources (link table and direct column)
     const user = await prisma.users.findUnique({
       where: { id: parseInt(payload.userId as string, 10) },
       include: {
+        roles: true,
         user_roles: {
           include: { roles: true }
         }
@@ -159,7 +160,18 @@ export async function getSession() {
 
     if (!user) return null;
 
-    const roles = user.user_roles.map(ur => ur.roles.role_name);
+    // Get roles from the link table
+    const rolesFromLinkTable = user.user_roles.map(ur => ur.roles.role_name);
+    
+    // Get role from the direct column
+    const roleFromDirectColumn = user.roles?.role_name;
+    
+    // Merge and deduplicate roles
+    const roles = Array.from(new Set([
+      ...(roleFromDirectColumn ? [roleFromDirectColumn] : []),
+      ...rolesFromLinkTable
+    ]));
+
     // Determine internal/external based on roles
     const normalizedRoles = roles.map(r => r.toLowerCase().trim());
     const isInternal = normalizedRoles.some(r => 
