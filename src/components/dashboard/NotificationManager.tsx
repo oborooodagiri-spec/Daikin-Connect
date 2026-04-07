@@ -13,16 +13,26 @@ import { motion, AnimatePresence } from "framer-motion";
  */
 
 function urlBase64ToUint8Array(base64String: string) {
+  if (!base64String || base64String.includes("...")) {
+    console.warn("Invalid VAPID KEY: Placeholder detected. Please set NEXT_PUBLIC_VAPID_PUBLIC_KEY in .env");
+    return new Uint8Array(0);
+  }
+
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
 
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
+  try {
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
 
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  } catch (e) {
+    console.error("Failed to decode VAPID key:", e);
+    return new Uint8Array(0);
   }
-  return outputArray;
 }
 
 export default function NotificationManager() {
@@ -78,7 +88,7 @@ export default function NotificationManager() {
       // Use a shorter wait for service worker ready
       const registration = await navigator.serviceWorker.ready;
       
-      const vapidPublicKey = "BP8_O4k7Y-P7N5J0u7W7X8..."; // PLACEHOLDER
+      const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "";
       
       let subscription = await registration.pushManager.getSubscription();
       
