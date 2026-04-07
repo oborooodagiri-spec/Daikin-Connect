@@ -88,9 +88,9 @@ export default function NotificationManager() {
       // Use a shorter wait for service worker ready
       const registration = await navigator.serviceWorker.ready;
       
-      // Fallback to a valid stable key to prevent crashes in production if .env is missing
+      // Fallback to a valid stable 65-byte uncompressed P-256 public key
       const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || 
-        "BN0wwP8p7u4BVCHtykj_qFB3XDnfm169I8TtcJs4j5A70AwePQAJnCqlhrF4jvNupMs1zdNRctwqjFPUUrTESRig";
+        "BMehBS03_MCHCuIHNLsCko19C4iRnPvFc7CAauF97T-Pf9EC6zKY7TTDUMwmJYYXkrrXi8DXI5qZy_Cpw8MFA6Q";
       
       let subscription = await registration.pushManager.getSubscription();
       
