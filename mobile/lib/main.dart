@@ -12,20 +12,21 @@ import 'features/dashboard/screens/dashboard_home.dart';
 import 'widgets/version_guard_screen.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
   try {
-    WidgetsFlutterBinding.ensureInitialized();
+    // Initialize SyncService (handles Hive)
+    await SyncService().init().timeout(const Duration(seconds: 10));
     
-    // Initialize SyncService first (it handles Hive.initFlutter)
-    await SyncService().init();
-    
-    // Initialize other services (don't let them crash the startup)
+    // Optional services (errors shouldn't crash startup)
     try {
-      await NotificationService().init();
+      await NotificationService().init().timeout(const Duration(seconds: 5));
     } catch (e) {
       if (kDebugMode) print("Notification Service failed: $e");
     }
   } catch (e) {
-    if (kDebugMode) print("Critical initialization failed: $e");
+    if (kDebugMode) print("Initialization failed: $e");
+    // We still try to run the app; errors will be handled in the UI
   }
 
   runApp(

@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace = "com.daikin.connect.mobile"
+    namespace = "com.daikin.connect.epl"
     compileSdk = 35
     ndkVersion = "27.0.12077973"
 
@@ -38,7 +38,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.daikin.connect.mobile"
+        applicationId = "com.daikin.connect.epl"
         minSdk = 24
         targetSdk = 35
         versionCode = flutterVersionCode.toInteger()
