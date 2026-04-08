@@ -11,8 +11,8 @@ export const getCorrectiveSections = (data: any, unit: any) => {
        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "8pt", fontWeight: "bold" }}>
          <tbody>
            <tr>
-             <td style={cellLabel}>Customer / Project</td>
-             <td style={cellVal}>{unit?.project_name || "-"}</td>
+             <td style={cellLabel}>Room / Tenant</td>
+             <td style={cellVal}>{unit?.room_tenant || "-"}</td>
              <td style={cellLabel}>Service Date</td>
              <td style={cellVal}>{personnel?.service_date ? new Date(personnel.service_date).toLocaleDateString('id-ID') : "-"}</td>
            </tr>

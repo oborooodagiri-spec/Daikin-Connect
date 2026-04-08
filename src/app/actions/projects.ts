@@ -6,8 +6,6 @@ import { revalidatePath } from "next/cache";
 
 // 1. READ ALL PROJECTS BY CUSTOMER
 export async function getProjectsByCustomer(customerId: string) {
-  // Session check removed for client-side usage
-
   try {
     const where: any = {};
     if (customerId) {
@@ -32,7 +30,8 @@ export async function getProjectsByCustomer(customerId: string) {
         name: p.name,
         customerName: p.customers?.name || "N/A",
         code: p.code || "N/A",
-        status: p.status, // "active" | "archived"
+        status: p.status,
+        enabled_forms: p.enabled_forms || "Audit,Preventive,Corrective",
         units_count: p._count.units,
         schedules_count: p._count.schedules
       }))
@@ -44,16 +43,15 @@ export async function getProjectsByCustomer(customerId: string) {
 }
 
 // 2. CREATE PROJECT
-export async function createProject(customerId: string, data: { name: string; code?: string }) {
-  // Session check removed for client-side usage
-
+export async function createProject(customerId: string, data: { name: string; code?: string; enabled_forms?: string }) {
   try {
     await prisma.projects.create({
       data: {
         customer_id: parseInt(customerId),
         name: data.name,
         code: data.code,
-        status: "active"
+        status: "active",
+        enabled_forms: data.enabled_forms || "Audit,Preventive,Corrective"
       }
     });
     revalidatePath(`/dashboard/customers/${customerId}/projects`);
@@ -65,15 +63,14 @@ export async function createProject(customerId: string, data: { name: string; co
 }
 
 // 3. UPDATE PROJECT
-export async function updateProject(customerId: string, projectId: string, data: { name: string; code?: string }) {
-  // Session check removed for client-side usage
-
+export async function updateProject(customerId: string, projectId: string, data: { name: string; code?: string; enabled_forms?: string }) {
   try {
     await prisma.projects.update({
       where: { id: BigInt(projectId) },
       data: {
         name: data.name,
-        code: data.code
+        code: data.code,
+        enabled_forms: data.enabled_forms
       }
     });
     revalidatePath(`/dashboard/customers/${customerId}/projects`);

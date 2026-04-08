@@ -28,6 +28,9 @@ export default function LoginPage() {
       const isUA = window.navigator.userAgent.includes("DaikinConnectMobile");
       const isQuery = new URLSearchParams(window.location.search).get("isApp") === "true";
       setIsInsideApp(isUA || isQuery);
+
+      // PERSISTENCE CLEANUP: Clear last project selection when returning to login page
+      localStorage.removeItem("daikin_last_project");
     }
   }, []);
 
@@ -77,19 +80,19 @@ export default function LoginPage() {
       {/* Background Animated Gradients */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <motion.div 
-          animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+          animate={{ opacity: [0.1, 0.15, 0.1] }}
           transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-[#00a1e4] mix-blend-screen blur-[120px]"
+          className="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-[#00a1e4] mix-blend-screen blur-[80px]"
         />
         <motion.div 
-          animate={{ scale: [1, 1.5, 1], opacity: [0.05, 0.1, 0.05] }}
+          animate={{ opacity: [0.05, 0.08, 0.05] }}
           transition={{ duration: 15, repeat: Infinity, ease: "linear", delay: 2 }}
-          className="absolute top-[40%] text-right -right-[10%] w-[60vw] h-[60vw] rounded-full bg-[#003366] mix-blend-screen blur-[150px]"
+          className="absolute top-[40%] text-right -right-[10%] w-[60vw] h-[60vw] rounded-full bg-[#003366] mix-blend-screen blur-[100px]"
         />
       </div>
 
       {/* Left Panel - Hero Branding (Desktop Only) */}
-      <div className="hidden md:flex md:w-5/12 relative z-10 flex-col justify-between p-16 lg:p-20 border-r border-white/5 bg-black/20 backdrop-blur-3xl">
+      <div className="hidden md:flex md:w-5/12 relative z-10 flex-col justify-between p-16 lg:p-20 border-r border-white/5 bg-black/20 backdrop-blur-lg">
         <div className="flex flex-col items-start gap-12">
           <div className="space-y-8">
             <div className="flex items-center gap-8">
@@ -109,8 +112,7 @@ export default function LoginPage() {
           <div className="space-y-4">
             <motion.div 
               animate={{ 
-                opacity: [0.4, 1, 0.4],
-                borderColor: ["rgba(255,255,255,0.1)", "rgba(0,161,228,0.5)", "rgba(255,255,255,0.1)"]
+                opacity: [0.4, 0.8, 0.4]
               }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.3em] text-[#00a1e4]"
@@ -175,7 +177,7 @@ export default function LoginPage() {
               SMART HVAC <span className="text-[#00a1e4]">MANAGEMENT SYSTEMS</span>
             </h1>
             <motion.div 
-              animate={{ opacity: [0.5, 1, 0.5] }}
+              animate={{ opacity: [0.5, 0.8, 0.5] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[8px] font-black uppercase tracking-[0.3em] text-[#00a1e4]"
             >
@@ -186,10 +188,10 @@ export default function LoginPage() {
         </div>
 
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          initial={{ opacity: 0, scale: 0.98, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full max-w-md bg-white/[0.03] backdrop-blur-2xl border border-white/10 p-8 md:p-10 rounded-[2rem] shadow-2xl relative"
+          transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full max-w-md bg-white/[0.03] backdrop-blur-lg border border-white/10 p-8 md:p-10 rounded-[2rem] shadow-2xl relative"
         >
           {/* Subtle top glare */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px] bg-gradient-to-r from-transparent via-blue-400/50 to-transparent"></div>

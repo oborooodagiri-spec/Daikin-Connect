@@ -21,9 +21,9 @@ export default function TrendChart({ data }: { data: any[] }) {
               <stop offset="5%" stopColor="#00B06B" stopOpacity={0.8}/>
               <stop offset="95%" stopColor="#00B06B" stopOpacity={0}/>
             </linearGradient>
-            <linearGradient id="colorCorr" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#F39C12" stopOpacity={0.8}/>
-              <stop offset="95%" stopColor="#F39C12" stopOpacity={0}/>
+            <linearGradient id="colorDaily" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8}/>
+              <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -39,7 +39,6 @@ export default function TrendChart({ data }: { data: any[] }) {
             tickLine={false} 
             tick={{ fill: "#94a3b8", fontSize: 10, fontWeight: 700 }}
             dx={-10}
-            domain={[0, 25]} 
           />
           <Tooltip 
             contentStyle={{ backgroundColor: "#1e293b", borderRadius: "8px", border: "none", color: "#fff" }}
@@ -49,6 +48,7 @@ export default function TrendChart({ data }: { data: any[] }) {
           <Area type="monotone" dataKey="audit" stroke="#00A0E9" strokeWidth={3} fillOpacity={1} fill="url(#colorAudit)" activeDot={{ r: 6 }} />
           <Area type="monotone" dataKey="preventive" stroke="#00B06B" strokeWidth={3} fillOpacity={1} fill="url(#colorPrev)" activeDot={{ r: 6 }} />
           <Area type="monotone" dataKey="corrective" stroke="#F39C12" strokeWidth={3} fillOpacity={1} fill="url(#colorCorr)" activeDot={{ r: 6 }} />
+          <Area type="monotone" dataKey="dailyLog" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorDaily)" activeDot={{ r: 6 }} />
         </AreaChart>
       </ResponsiveContainer>
     </div>

@@ -212,7 +212,7 @@ export async function getScheduleFormOptions() {
 
   try {
     const [projects, units, users] = await Promise.all([
-      prisma.projects.findMany({ select: { id: true, name: true, customer_id: true } }),
+      prisma.projects.findMany({ select: { id: true, name: true, customer_id: true, enabled_forms: true } }),
       prisma.units.findMany({ 
         select: { 
           id: true, 
@@ -252,7 +252,12 @@ export async function getScheduleFormOptions() {
     return {
       success: true,
       data: {
-        projects: projects.map(p => ({ id: p.id.toString(), name: p.name, customer_id: p.customer_id })),
+        projects: projects.map(p => ({ 
+          id: p.id.toString(), 
+          name: p.name, 
+          customer_id: p.customer_id,
+          enabled_forms: p.enabled_forms 
+        })),
         units: units.map(u => ({ 
           id: u.id, 
           tag_number: u.tag_number || "Untagged", 

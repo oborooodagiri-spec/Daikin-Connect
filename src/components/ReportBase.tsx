@@ -56,20 +56,29 @@ export const ReportBase = ({
           </div>
 
           <div style={{ textAlign: "center", position: "relative", marginBottom: "3mm" }}>
-            <h1 style={{ fontSize: "20pt", fontWeight: 900, color: "#003366", margin: 0, textTransform: "uppercase", letterSpacing: "1px" }}>
+            <h1 style={{ 
+              fontSize: "22pt", 
+              fontWeight: 900, 
+              color: "#003366", 
+              margin: 0, 
+              textTransform: "uppercase", 
+              letterSpacing: "2.5px" 
+            }}>
               {reportTitle}
             </h1>
             {reportCode && (
               <div style={{ 
-                fontSize: "10pt", 
+                fontSize: "11pt", 
                 fontWeight: 800, 
-                color: "#666", 
-                backgroundColor: "#f8fafd",
-                border: "1px solid #ddd", 
-                padding: "2px 15px", 
-                marginTop: "4px", 
+                color: "#444", 
+                backgroundColor: "#f1f5f9",
+                border: "1px solid #e2e8f0", 
+                padding: "3px 20px", 
+                marginTop: "6px", 
                 display: "inline-block",
-                borderRadius: "4px"
+                borderRadius: "6px",
+                textTransform: "uppercase",
+                letterSpacing: "1px"
               }}>
                 {reportCode}
               </div>
@@ -77,7 +86,13 @@ export const ReportBase = ({
           </div>
           
           {/* THICK BLUE BAR */}
-          <div style={{ width: "100%", height: "2mm", backgroundColor: "#003366", marginBottom: "4mm" }}></div>
+          <div style={{ 
+            width: "100%", 
+            height: "2.5mm", 
+            backgroundColor: "#003366", 
+            marginBottom: "4mm",
+            borderRadius: "1mm"
+          }}></div>
         </div>
       </div>
 
@@ -97,8 +112,8 @@ export const ReportBase = ({
           left: 0 
         }}
       >
-        <div style={{ borderTop: "1.2pt solid #003366", paddingTop: "2mm", paddingLeft: "15mm", paddingRight: "15mm" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "4mm", padding: "0 2mm", marginBottom: "2mm" }}>
+        <div style={{ borderTop: "1.2pt solid #003366", paddingTop: "2mm" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "4mm", padding: "0 15mm", marginBottom: "2mm" }}>
             
             {/* COLUMN 1: TUV NORD */}
             <div style={{ width: "18mm" }}>
@@ -141,15 +156,15 @@ export const ReportBase = ({
             width: "100%", 
             display: "flex", 
             alignItems: "center", 
-            justifyContent: "space-between", // Changed for page numbering
+            justifyContent: "space-between", 
             padding: "0 15mm",
             boxSizing: "border-box"
           }}>
             <span style={{ color: "rgba(255,255,255,0.7)", fontSize: "7pt", fontWeight: 700 }}>
               Page {pageNumber} of {totalPages}
             </span>
-            <span style={{ color: "white", fontSize: "9pt", fontWeight: 700, fontStyle: "italic" }}>
-              www.daikinapplied.co.id
+            <span style={{ color: "white", fontSize: "10pt", fontWeight: 700, fontStyle: "italic" }}>
+              www.daikin-connect.com
             </span>
           </div>
         </div>

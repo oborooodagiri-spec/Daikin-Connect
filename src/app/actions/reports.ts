@@ -21,7 +21,7 @@ export async function getAllReports(filters?: {
   const skip = (page - 1) * limit;
 
   try {
-    const where: any = {};
+    const where: any = { deleted_at: null };
     
     // Check total count before any filters
     const debugCount = await (prisma.service_activities as any).count();
@@ -38,11 +38,16 @@ export async function getAllReports(filters?: {
     }
 
     if (filters?.search) {
+      const search = filters.search;
       where.OR = [
-        { inspector_name: { contains: filters.search } },
-        { unit_tag: { contains: filters.search } },
-        { location: { contains: filters.search } },
-        { engineer_note: { contains: filters.search } },
+        { inspector_name: { contains: search } },
+        { unit_tag: { contains: search } },
+        { location: { contains: search } },
+        { engineer_note: { contains: search } },
+        { units: { room_tenant: { contains: search } } },
+        { units: { area: { contains: search } } },
+        { units: { model: { contains: search } } },
+        { units: { serial_number: { contains: search } } },
       ];
     }
 

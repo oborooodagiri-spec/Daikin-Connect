@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { 
   LayoutDashboard, Users, LogOut, Settings, Menu, X,
   ChevronRight, Building2, Calendar, FileText, Package
@@ -18,13 +19,6 @@ export default function DashboardSidebarClient({
   logout: () => void 
 }) {
   const [isOpen, setIsOpen] = useState(false);
-
-  // Diagnostic log to catch inconsistencies in production/local sessions
-  console.log("DEBUG Sidebar Session:", { 
-    name: session?.name, 
-    roles: session?.roles, 
-    isInternal: session?.isInternal 
-  });
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
@@ -48,13 +42,10 @@ export default function DashboardSidebarClient({
       show: (() => {
         const roles = session?.roles || [];
         const roleStr = String(session?.role || "").toLowerCase();
-        
-        // Check array of strings or objects, and the singular role string
         const hasAdminRole = roles.some((r: any) => {
           const val = typeof r === 'string' ? r : (r?.role_name || JSON.stringify(r));
           return val.toLowerCase().includes("admin") || val.toLowerCase().includes("super");
         });
-
         return hasAdminRole || roleStr.includes("admin") || roleStr.includes("super");
       })()
     },
@@ -68,8 +59,8 @@ export default function DashboardSidebarClient({
       href: "/dashboard/settings", 
       label: "Settings", 
       icon: Settings, 
-      show: true,
-      disabled: true 
+      show: session?.isInternal,
+      disabled: false 
     }
   ];
 
@@ -78,7 +69,7 @@ export default function DashboardSidebarClient({
       {/* Mobile Toggle Button */}
       <button 
         onClick={toggleSidebar}
-        className="fixed top-4 left-4 z-[60] p-2 bg-[#003366] text-white rounded-xl shadow-lg md:hidden hover:scale-110 active:scale-95 transition-all"
+        className="fixed top-4 left-4 z-[100] p-2 bg-[#003366] text-white rounded-xl shadow-lg md:hidden hover:scale-110 active:scale-95 transition-all"
       >
         {isOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
@@ -91,20 +82,28 @@ export default function DashboardSidebarClient({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={toggleSidebar}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[50] md:hidden"
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[90] md:hidden"
           />
         )}
       </AnimatePresence>
 
       {/* Sidebar Content */}
       <aside className={`
-        fixed inset-y-0 left-0 z-[55] w-72 bg-[#003366] text-white flex flex-col shadow-2xl transition-transform duration-500 ease-out
+        fixed inset-y-0 left-0 z-[95] w-72 bg-[#003366] text-white flex flex-col shadow-2xl transition-transform duration-500 ease-out
         ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0
       `}>
         <div className="p-8 border-b border-white/10 flex flex-col items-center shrink-0">
-          <img src="/logo_epl_connect_1.png" className="h-10 lg:h-12 w-auto brightness-0 invert mb-6 object-contain" alt="EPL Connect" />
+          <div className="relative h-10 lg:h-12 w-48 mb-6">
+            <Image 
+              src="/logo_epl_connect_1.png" 
+              alt="EPL Connect" 
+              fill
+              className="object-contain brightness-0 invert"
+              priority
+            />
+          </div>
           <div className="text-center">
-            <p className="text-xs font-black uppercase tracking-[0.3em] text-blue-300 opacity-60">EPL Connect</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-300 opacity-60">EPL Connect</p>
             <p className="text-sm font-bold mt-1 text-white truncate max-w-[200px]">{session?.name}</p>
             <span className="text-[10px] px-2 py-0.5 bg-blue-500/30 text-blue-200 rounded-full border border-blue-400/20 mt-2 inline-block">
               {session?.roles?.[0] || "User"}
@@ -112,7 +111,7 @@ export default function DashboardSidebarClient({
           </div>
         </div>
 
-        <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto custom-scrollbar-sidebar">
+        <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto custom-scrollbar">
           {menuItems.filter(item => item.show).map((item, idx) => (
             <Link 
               key={idx}
@@ -125,15 +124,15 @@ export default function DashboardSidebarClient({
               <ChevronRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0 duration-300" />
             </Link>
           ))}
-
-          <div className="pt-8 mt-8 border-t border-white/5 opacity-40 px-6">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em]">Maintenance</p>
-          </div>
         </nav>
 
         <div className="p-4 mt-auto border-t border-white/5">
           <button 
-            onClick={() => { logout(); setIsOpen(false); }}
+            onClick={() => { 
+              localStorage.removeItem("daikin_last_project");
+              logout(); 
+              setIsOpen(false); 
+            }}
             className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white transition-all duration-500 group"
           >
             <LogOut className="w-5 h-5" />
@@ -141,7 +140,6 @@ export default function DashboardSidebarClient({
           </button>
         </div>
       </aside>
-
     </>
   );
 }

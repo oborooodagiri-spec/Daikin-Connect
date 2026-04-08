@@ -5,6 +5,8 @@ import { getSession } from "./auth";
 import { revalidatePath } from "next/cache";
 import { serializePrisma } from "@/lib/serialize";
 
+import { calculateUnitHealth } from "@/lib/physics/enthalpy";
+
 /**
  * Public API for fetching unit details by QR token
  */
@@ -19,18 +21,41 @@ export async function getUnitByToken(token: string) {
               select: { name: true }
             }
           }
+        },
+        service_activities: {
+          orderBy: { service_date: 'desc' },
+          take: 5 // Get some recent ones to find valid data
         }
       }
     });
 
     if (!unit) return { error: "Unit not found" };
 
+    // Find latest activity with valid enthalpy data
+    const latestTechnical = unit.service_activities.find(a => 
+      a.entering_db && a.entering_rh && a.leaving_db && a.leaving_rh && (a.design_airflow || unit.capacity)
+    );
+
+    let healthMetrics = null;
+    if (latestTechnical) {
+      healthMetrics = calculateUnitHealth(
+        latestTechnical.entering_db || 0,
+        latestTechnical.entering_rh || 0,
+        latestTechnical.leaving_db || 0,
+        latestTechnical.leaving_rh || 0,
+        latestTechnical.design_airflow || 0,
+        unit.capacity || "0"
+      );
+    }
+
     return serializePrisma({
       success: true,
       data: {
-        ...unit, // Return all fields
+        ...unit, 
         projectName: unit.projects?.name,
-        customerNameProject: unit.projects?.customers?.name // Rename to avoid conflict with unit.customer_name
+        customerNameProject: unit.projects?.customers?.name,
+        enabledForms: unit.projects?.enabled_forms || "Audit,Preventive,Corrective",
+        healthMetrics: healthMetrics
       }
     });
   } catch (error) {

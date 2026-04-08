@@ -36,6 +36,7 @@ model projects {
   code                String?               @db.VarChar(50)
   status              projects_status       @default(active)
   created_at          DateTime              @default(now()) @db.Timestamp(0)
+  enabled_forms       String?               @db.Text
   customers           customers             @relation(fields: [customer_id], references: [id], onUpdate: Restrict, map: "fk_projects_customer")
   schedule_targets    schedule_targets[]
   schedules           schedules[]
@@ -106,6 +107,7 @@ model units {
   audits             audits[]
   complaints         complaints[]
   corrective         corrective[]
+  daily_ops_logs     daily_ops_logs[]
   schedules          schedules[]
   service_activities service_activities[]
   service_logs       service_logs[]
@@ -154,17 +156,17 @@ model users {
   email               String                @unique(map: "email") @db.VarChar(150)
   password            String                @db.VarChar(255)
   phone               String?               @db.VarChar(20)
-  company_name        String?               @db.VarChar(150)
   is_active           Boolean               @default(true)
+  company_name        String?               @db.VarChar(150)
   refresh_tokens      refresh_tokens[]
+  schedule_messages   schedule_messages[]
   schedule_targets    schedule_targets[]
   schedules           schedules[]
   service_activities  service_activities[]
   user_project_access user_project_access[]
+  user_push_tokens    user_push_tokens[]
   user_roles          user_roles[]
   user_unit_access    user_unit_access[]
-  schedule_messages   schedule_messages[]
-  user_push_tokens    user_push_tokens[]
   roles               roles?                @relation(fields: [role_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "users_ibfk_1")
 
   @@index([role_id], map: "role_id")
@@ -194,6 +196,7 @@ model activities {
   created_at       DateTime? @default(now()) @db.Timestamp(0)
   technical_json   String?   @db.LongText
   status           String?   @default("Completed") @db.VarChar(50)
+  deleted_at       DateTime? @db.DateTime(0)
   units            units     @relation(fields: [unit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_unit_activity")
 
   @@index([unit_id], map: "fk_unit_activity")
@@ -203,11 +206,11 @@ model activity_photos {
   id                 Int                 @id @default(autoincrement())
   activity_id        Int?
   type               String?             @default("AUDIT") @db.VarChar(50)
-  media_type         String              @default("image") @db.VarChar(10) // "image" or "video"
   photo_url          String              @db.VarChar(255)
   notes              String?             @db.Text
   description        String?             @db.Text
   caption            String?             @db.Text
+  media_type         String              @default("image") @db.VarChar(10)
   service_activities service_activities? @relation(fields: [activity_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "activity_photos_ibfk_1")
 
   @@index([activity_id], map: "activity_id")
@@ -289,6 +292,7 @@ model audits {
   status      audits_status? @default(Normal)
   photo_url   String?        @db.VarChar(255)
   created_at  DateTime?      @default(now()) @db.Timestamp(0)
+  deleted_at  DateTime?      @db.DateTime(0)
   units       units          @relation(fields: [unit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "audits_ibfk_1")
 
   @@index([unit_id], map: "unit_id")
@@ -321,6 +325,7 @@ model corrective {
   photo_url       String?   @db.Text
   status          String?   @default("Final Approved") @db.VarChar(50)
   created_at      DateTime? @default(now()) @db.Timestamp(0)
+  deleted_at      DateTime? @db.DateTime(0)
   units           units     @relation(fields: [unit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "corrective_ibfk_1")
 
   @@index([unit_id], map: "unit_id")
@@ -366,14 +371,6 @@ model service_activities {
   technical_advice        String?                    @db.Text
   location                String?                    @db.VarChar(255)
   unit_tag                String?                    @db.VarChar(100)
-
-  // Berita Acara & Signature Integration
-  berita_acara_pdf_url    String?                    @db.VarChar(255)
-  is_approved_by_customer Boolean?                   @default(false)
-  customer_approver_name  String?                    @db.VarChar(255)
-  customer_approved_at    DateTime?                  @db.DateTime(0)
-  engineer_signer_name    String?                    @db.VarChar(255)
-
   design_airflow          Float?                     @default(0) @db.Float
   design_cooling_capacity Float?                     @default(0) @db.Float
   entering_db             Float?                     @default(0) @db.Float
@@ -397,6 +394,12 @@ model service_activities {
   volt_st                 Int?                       @default(0)
   volt_rt                 Int?                       @default(0)
   volt_ln                 Int?                       @default(0)
+  berita_acara_pdf_url    String?                    @db.VarChar(255)
+  customer_approved_at    DateTime?                  @db.DateTime(0)
+  customer_approver_name  String?                    @db.VarChar(255)
+  engineer_signer_name    String?                    @db.VarChar(255)
+  is_approved_by_customer Boolean?                   @default(false)
+  deleted_at              DateTime?                  @db.DateTime(0)
   activity_photos         activity_photos[]
   audit_velocity_points   audit_velocity_points[]
   units                   units?                     @relation(fields: [unit_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "service_activities_ibfk_1")
@@ -469,29 +472,28 @@ model unit_comments {
 }
 
 model schedules {
-  id              BigInt         @id @default(autoincrement()) @db.UnsignedBigInt
-  title           String         @db.VarChar(150)
-  description     String?        @db.Text
-  start_at        DateTime       @db.DateTime(0)
-  end_at          DateTime       @db.DateTime(0)
-  type            ScheduleType
-  status          ScheduleStatus @default(Planned)
-  google_event_id String?        @db.VarChar(255)
-  project_id      BigInt         @db.UnsignedBigInt
-  unit_id         Int?
-  assignee_id     Int?
-  created_at      DateTime       @default(now()) @db.Timestamp(0)
-  users           users?         @relation(fields: [assignee_id], references: [id])
-  projects        projects       @relation(fields: [project_id], references: [id], onDelete: Cascade)
-  units           units?         @relation(fields: [unit_id], references: [id])
+  id                  BigInt                @id @default(autoincrement()) @db.UnsignedBigInt
+  title               String                @db.VarChar(150)
+  description         String?               @db.Text
+  start_at            DateTime              @db.DateTime(0)
+  end_at              DateTime              @db.DateTime(0)
+  type                ScheduleType
+  status              ScheduleStatus        @default(Planned)
+  google_event_id     String?               @db.VarChar(255)
+  project_id          BigInt                @db.UnsignedBigInt
+  unit_id             Int?
+  assignee_id         Int?
+  created_at          DateTime              @default(now()) @db.Timestamp(0)
+  schedule_attendance schedule_attendance[]
+  schedule_messages   schedule_messages[]
+  schedule_mom        schedule_mom[]
+  users               users?                @relation(fields: [assignee_id], references: [id])
+  projects            projects              @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  units               units?                @relation(fields: [unit_id], references: [id])
 
   @@index([project_id])
   @@index([unit_id])
   @@index([assignee_id])
-
-  schedule_attendance schedule_attendance[]
-  schedule_mom        schedule_mom[]
-  schedule_messages   schedule_messages[]
 }
 
 model schedule_attendance {
@@ -522,13 +524,12 @@ model schedule_messages {
   schedule_id BigInt    @db.UnsignedBigInt
   user_id     Int?
   message     String    @db.LongText
-  attachments String?   @db.LongText // JSON string of photo URLs
+  attachments String?   @db.LongText
   is_system   Boolean   @default(false)
-  system_type String?   @db.VarChar(50) // "MOM", "ATTENDANCE", "STATUS_CHANGE"
+  system_type String?   @db.VarChar(50)
   created_at  DateTime  @default(now()) @db.Timestamp(0)
-  
-  users       users?    @relation(fields: [user_id], references: [id])
   schedules   schedules @relation(fields: [schedule_id], references: [id], onDelete: Cascade)
+  users       users?    @relation(fields: [user_id], references: [id])
 
   @@index([schedule_id])
   @@index([user_id])
@@ -564,6 +565,65 @@ model complaints {
   units         units    @relation(fields: [unit_id], references: [id], onDelete: Cascade)
 
   @@index([unit_id], map: "idx_complaint_unit")
+}
+
+model user_push_tokens {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  token      String   @unique @db.VarChar(512)
+  platform   String   @default("web") @db.VarChar(50)
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model daily_ops_logs {
+  id               Int      @id @default(autoincrement())
+  unit_id          Int
+  inspector_name   String   @db.VarChar(150)
+  service_date     DateTime @db.Date
+  created_at       DateTime @default(now()) @db.Timestamp(0)
+  fan_on           Boolean  @default(true)
+  fan_speed        Decimal? @db.Decimal(5, 2)
+  fan_curr_r       Decimal? @db.Decimal(5, 2)
+  fan_curr_s       Decimal? @db.Decimal(5, 2)
+  fan_curr_t       Decimal? @db.Decimal(5, 2)
+  fan_volt_r       Int?
+  fan_volt_s       Int?
+  fan_volt_t       Int?
+  heater_on        Boolean  @default(false)
+  heater_curr_r    Decimal? @db.Decimal(5, 2)
+  heater_curr_s    Decimal? @db.Decimal(5, 2)
+  heater_curr_t    Decimal? @db.Decimal(5, 2)
+  heater_volt_r    Int?
+  heater_volt_s    Int?
+  heater_volt_t    Int?
+  valve_opening    Decimal? @db.Decimal(5, 2)
+  supply_temp      Decimal? @db.Decimal(5, 2)
+  supply_rh        Decimal? @db.Decimal(5, 2)
+  return_temp      Decimal? @db.Decimal(5, 2)
+  return_rh        Decimal? @db.Decimal(5, 2)
+  fresh_temp       Decimal? @db.Decimal(5, 2)
+  fresh_rh         Decimal? @db.Decimal(5, 2)
+  filter_pre       String?  @db.VarChar(20)
+  filter_med       String?  @db.VarChar(20)
+  filter_hepa      String?  @db.VarChar(20)
+  room_temp        Decimal? @db.Decimal(5, 2)
+  room_diff_press  Decimal? @db.Decimal(5, 2)
+  temp_s1          Decimal? @db.Decimal(5, 2)
+  temp_s2          Decimal? @db.Decimal(5, 2)
+  temp_s3          Decimal? @db.Decimal(5, 2)
+  temp_s4          Decimal? @db.Decimal(5, 2)
+  temp_s5          Decimal? @db.Decimal(5, 2)
+  static_pressure  Decimal? @db.Decimal(10, 2)
+  vibration_status String?  @db.VarChar(50)
+  drainage_status  String?  @db.VarChar(50)
+  notes            String?  @db.Text
+  units            units    @relation(fields: [unit_id], references: [id], onDelete: Cascade)
+
+  @@index([unit_id], map: "idx_daily_ops_unit")
+  @@index([service_date], map: "idx_daily_ops_date")
 }
 
 enum projects_status {
@@ -665,6 +725,7 @@ enum ScheduleType {
   Preventive
   Corrective
   Audit
+  DailyLog
 }
 
 enum ScheduleStatus {
@@ -672,15 +733,4 @@ enum ScheduleStatus {
   InProgress
   Completed
   Missed
-}
-
-model user_push_tokens {
-  id         Int      @id @default(autoincrement())
-  user_id    Int
-  token      String   @unique @db.VarChar(512)
-  platform   String   @default("web") @db.VarChar(50)
-  created_at DateTime @default(now()) @db.Timestamp(0)
-  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id])
 }

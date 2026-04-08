@@ -27,7 +27,7 @@ interface ProjectTargetModalProps {
 
 export default function ProjectTargetModal({ projectId, projectName, isOpen, onClose, unitCount }: ProjectTargetModalProps) {
   const [isPending, startTransition] = useTransition();
-  const [activeTab, setActiveTab] = useState<"Preventive" | "Audit">("Preventive");
+  const [activeTab, setActiveTab] = useState<"Preventive" | "Audit" | "DailyLog">("Preventive");
   
   // Logical Inputs
   const [auditDates, setAuditDates] = useState({
@@ -38,6 +38,10 @@ export default function ProjectTargetModal({ projectId, projectName, isOpen, onC
   const [prevParams, setPrevParams] = useState({
     start: format(new Date(), 'yyyy-MM-dd'),
     cycle: 4 // default 4x per year
+  });
+
+  const [dailyParams, setDailyParams] = useState({
+    workingDays: 22
   });
 
   // Calculated Outputs
@@ -73,6 +77,17 @@ export default function ProjectTargetModal({ projectId, projectName, isOpen, onC
       setCalculated({ daily, monthly, yearly });
     }
   }, [prevParams, unitCount, activeTab]);
+
+  // Effect for DailyLog logic
+  useEffect(() => {
+    if (activeTab === "DailyLog") {
+      const daily = unitCount;
+      const monthly = unitCount * dailyParams.workingDays;
+      const yearly = monthly * 12;
+
+      setCalculated({ daily, monthly, yearly });
+    }
+  }, [dailyParams, unitCount, activeTab]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,14 +137,14 @@ export default function ProjectTargetModal({ projectId, projectName, isOpen, onC
               </div>
 
               <div className="flex bg-slate-200/50 p-1 rounded-2xl gap-1 mb-8">
-                 {(["Preventive", "Audit"] as const).map(tab => (
+                 {(["Preventive", "Audit", "DailyLog"] as const).map(tab => (
                    <button
                      key={tab}
                      type="button"
                      onClick={() => setActiveTab(tab)}
                      className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? "bg-white text-[#003366] shadow-md" : "text-slate-400 hover:text-slate-600"}`}
                    >
-                     {tab} Task
+                     {tab === "DailyLog" ? "Daily Log" : `${tab} Task`}
                    </button>
                  ))}
               </div>
@@ -150,7 +165,7 @@ export default function ProjectTargetModal({ projectId, projectName, isOpen, onC
                          <input 
                            type="date" value={auditDates.start}
                            onChange={e => setAuditDates({...auditDates, start: e.target.value})}
-                           className="w-full bg-transparent outline-none text-sm font-bold text-slate-700" 
+                           className="w-full bg-transparent outline-none text-sm font-bold text-slate-700 font-sans" 
                          />
                       </InputGroup>
                       <InputGroup label="Campaign Deadline" icon={<Clock size={16}/>}>
@@ -161,13 +176,13 @@ export default function ProjectTargetModal({ projectId, projectName, isOpen, onC
                          />
                       </InputGroup>
                    </div>
-                 ) : (
+                 ) : activeTab === "Preventive" ? (
                    <div className="space-y-4">
                       <InputGroup label="Contract Start" icon={<CalendarIcon size={16}/>}>
                          <input 
                            type="date" value={prevParams.start}
                            onChange={e => setPrevParams({...prevParams, start: e.target.value})}
-                           className="w-full bg-transparent outline-none text-sm font-bold text-slate-700" 
+                           className="w-full bg-transparent outline-none text-sm font-bold text-slate-700 font-sans" 
                          />
                       </InputGroup>
                       <div className="space-y-4">
@@ -179,6 +194,22 @@ export default function ProjectTargetModal({ projectId, projectName, isOpen, onC
                              placeholder="e.g. 4"
                            />
                         </InputGroup>
+                      </div>
+                   </div>
+                 ) : (
+                   <div className="space-y-4">
+                      <InputGroup label="Working Days Per Month" icon={<CalendarIcon size={16}/>}>
+                         <input 
+                           type="number" min="1" max="31" value={dailyParams.workingDays}
+                           onChange={e => setDailyParams({workingDays: parseInt(e.target.value) || 1})}
+                           className="w-full bg-transparent outline-none text-sm font-bold text-slate-700"
+                           placeholder="e.g. 22 (Mon-Fri)"
+                         />
+                      </InputGroup>
+                      <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100/50">
+                        <p className="text-[10px] font-bold text-blue-600 leading-relaxed">
+                          Target harian ditetapkan otomatis 1 Log per Unit per hari. Target bulanan dihitung berdasarkan jumlah hari kerja (Senin-Jumat = 22 hari).
+                        </p>
                       </div>
                    </div>
                  )}

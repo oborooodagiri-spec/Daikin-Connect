@@ -30,8 +30,8 @@ export const getPreventiveSections = (data: any, unit: any, engineerName?: strin
        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "8pt", fontWeight: "bold" }}>
           <tbody>
             <tr>
-              <td style={cellLabel}>Customer / Project</td>
-              <td style={cellVal}>{header?.project || unit?.project_name || "-"}</td>
+              <td style={cellLabel}>Room / Tenant</td>
+              <td style={cellVal}>{header?.room_tenant || unit?.room_tenant || "-"}</td>
               <td style={cellLabel}>Service Date</td>
               <td style={cellVal}>{header?.date ? new Date(header.date).toLocaleDateString('id-ID') : "-"}</td>
             </tr>
@@ -54,7 +54,7 @@ export const getPreventiveSections = (data: any, unit: any, engineerName?: strin
               <td style={cellVal}>{header?.nominal_capacity || unit?.capacity || "-"}</td>
             </tr>
             <tr>
-              <td style={cellLabel}>Location Area</td>
+              <td style={cellLabel}>Room / Tenant</td>
               <td style={cellVal}>{header?.location || unit?.area || "-"}</td>
               <td style={cellLabel}>Service Team</td>
               <td style={cellVal}>{header?.team_opt || engineerName || "-"}</td>

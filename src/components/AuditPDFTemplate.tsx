@@ -35,9 +35,9 @@ export const getAuditSections = (data: any, unit: any) => {
       <div style={sectionHeader}>A. GENERAL DATA</div>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "8pt", fontWeight: "bold" }}>
         <tbody>
-          <tr>
-            <td style={cellLabel}>Location Area</td>
-            <td style={cellVal}>{data.location || unit?.area || '-'}</td>
+            <tr>
+              <td style={cellLabel}>Room / Tenant</td>
+              <td style={cellVal}>{unit?.room_tenant || "-"}</td>
             <td style={cellLabel}>Design Air Temp</td>
             <td style={cellVal}>{data.design_temp || 'N/A'} (°C)</td>
           </tr>

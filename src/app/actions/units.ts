@@ -382,25 +382,29 @@ export async function importUnitsExcel(projectId: string, base64Data: string) {
 }
 
 // 7. GET UNIT HISTORY (Unified)
-export async function getUnitHistory(unitId: string | number) {
+export async function getUnitHistory(unitId: number | string) {
+  noStore();
   try {
-    const id = typeof unitId === 'string' ? parseInt(unitId) : unitId;
-    
-    // Fetch from service_activities
+    const id = typeof unitId === 'string' ? Number(unitId) : unitId;
+
     const serviceActs = await (prisma.service_activities as any).findMany({
-      where: { unit_id: id },
+      where: { unit_id: id, deleted_at: null },
+      include: {
+        audit_velocity_points: true,
+        activity_photos: true
+      },
       orderBy: { service_date: 'desc' }
     });
 
-    // Fetch from activities (Quick Report)
     const quickActs = await (prisma.activities as any).findMany({
-      where: { unit_id: id },
+      where: { unit_id: id, deleted_at: null },
       orderBy: { service_date: 'desc' }
     });
 
     // Merge and sort
     const allHistory = [
       ...serviceActs.map((a: any) => ({
+        ...a,
         id: a.id.toString(),
         type: a.type,
         date: a.service_date,
@@ -416,6 +420,7 @@ export async function getUnitHistory(unitId: string | number) {
         isFormal: true
       })),
       ...quickActs.map((a: any) => ({
+        ...a,
         id: a.id.toString(),
         type: a.type,
         date: a.service_date,
@@ -587,20 +592,21 @@ export async function migrateAllUnitTags() {
   }
 }
 
+import { calculateUnitHealth } from "@/lib/physics/enthalpy";
+
 /**
- * 12. CALCULATE UNIT HEALTH VITALITY (Algorithm based on Audit Data)
+ * 12. CALCULATE UNIT HEALTH VITALITY (Algorithm based on Enthalpy & Capacity comparison)
  */
 export async function getUnitHealthScore(unitId: number) {
   try {
     const unit = await (prisma.units as any).findUnique({
       where: { id: unitId },
       include: {
-        audit_tickets: {
-          orderBy: { created_at: 'desc' },
-          take: 1
-        },
         service_activities: {
-          where: { type: 'Audit' },
+          where: { 
+            type: { in: ['Audit', 'Preventive'] },
+            deleted_at: null
+          },
           orderBy: { service_date: 'desc' },
           take: 1
         }
@@ -609,66 +615,69 @@ export async function getUnitHealthScore(unitId: number) {
 
     if (!unit) return { error: "Unit not found" };
 
-    let totalScore = 100;
-    let auditDate = unit.last_service_date || unit.created_at;
-    let findings = "Healthy";
+    const lastAudit = unit.service_activities?.[0];
+    const auditDate = lastAudit?.service_date || unit.created_at;
 
-    // 1. DATA SOURCES
-    const lastTicket = unit.audit_tickets?.[0];
-    const lastTech = unit.service_activities?.[0];
-    if (lastTicket) auditDate = lastTicket.created_at;
-    if (lastTech && lastTech.service_date > (auditDate || 0)) auditDate = lastTech.service_date;
+    // Default return if no audit data exists
+    if (!lastAudit || !lastAudit.entering_db) {
+       return serializePrisma({
+          success: true,
+          data: {
+             score: 100,
+             label: "Excellent (Initial)",
+             color: "emerald",
+             auditDate: unit.created_at,
+             isInitial: true
+          }
+       });
+    }
 
-    // 2. CALCULATION: TECHNICAL FINDINGS (50% WEIGHT)
-    let techScore = 100;
-    const condition = lastTicket?.physical_condition || "Good";
-    const status = lastTicket?.finding_status || "Normal";
+    // ENTHALPY CALCULATION - SMART DATA RETRIEVAL
+    let measuredFlow = lastAudit.measured_airflow || lastAudit.design_airflow || 0;
+    let designCapStr = unit.capacity || "0 kW";
 
-    if (status === "Critical" || condition === "Damaged") techScore = 0;
-    else if (status === "Warning" || condition === "Dirty") techScore = 50;
-    
-    // 3. CALCULATION: PERFORMANCE / TEMP DELTA (30% WEIGHT)
-    let perfScore = 100;
-    if (lastTech) {
-      const entering = lastTech.entering_db || 0;
-      const leaving = lastTech.leaving_db || 0;
-      const delta = entering - leaving;
-      
-      if (delta > 0) {
-        if (delta < 7 || delta > 14) perfScore = 40; // Poor efficiency
-        else if (delta < 8 || delta > 12) perfScore = 70; // Sub-optimal
-      } else {
-        perfScore = 50; // No delta recorded or heat gain
+    // 1. Check Technical JSON for Matrix Results
+    try {
+      if (lastAudit.technical_json) {
+         const tj = typeof lastAudit.technical_json === 'string' 
+            ? JSON.parse(lastAudit.technical_json) 
+            : lastAudit.technical_json;
+         
+         // Use Matrix Result (CFM) if flat field is 0
+         if (measuredFlow === 0 && tj.totalCfmSupply) {
+            measuredFlow = parseFloat(tj.totalCfmSupply) * 1.699; // Convert CFM to m3/h
+         }
       }
+    } catch (e) { console.error("TJ Parse Error in Health Score:", e); }
+
+    // 2. Use Design Data from Audit if available
+    if (lastAudit.design_cooling_capacity > 0) {
+       designCapStr = `${lastAudit.design_cooling_capacity} BTU`; 
     }
 
-    // 4. CALCULATION: AGE FACTOR (20% WEIGHT)
-    let ageScore = 100;
-    if (unit.yoi) {
-      const age = new Date().getFullYear() - unit.yoi;
-      if (age > 15) ageScore = 20;
-      else if (age > 10) ageScore = 50;
-      else if (age > 7) ageScore = 80;
-    }
+    const calculation = calculateUnitHealth(
+       lastAudit.entering_db || 0,
+       lastAudit.entering_rh || 0,
+       lastAudit.leaving_db || 0,
+       lastAudit.leaving_rh || 0,
+       measuredFlow,
+       designCapStr
+    );
 
-    // FINAL WEIGHTING
-    const finalScore = Math.round((techScore * 0.5) + (perfScore * 0.3) + (ageScore * 0.2));
-
-    // STATUS MAPPING
     let label = "Excellent";
     let color = "emerald";
-    if (finalScore < 40) { label = "Replace Recommended"; color = "rose"; }
-    else if (finalScore < 60) { label = "Maintenance Required"; color = "amber"; }
-    else if (finalScore < 85) { label = "Good / Monitor"; color = "indigo"; }
+    if (calculation.healthScore < 40) { label = "Replace Recommended"; color = "rose"; }
+    else if (calculation.healthScore < 60) { label = "Maintenance Required"; color = "amber"; }
+    else if (calculation.healthScore < 85) { label = "Good / Monitor"; color = "indigo"; }
 
     return serializePrisma({
       success: true,
       data: {
-        score: finalScore,
+        score: calculation.healthScore,
         label,
         color,
         auditDate,
-        factors: { techScore, perfScore, ageScore }
+        metrics: calculation
       }
     });
 
@@ -739,5 +748,71 @@ export async function updateActivityReportUrls(activityId: number, reportUrl: st
   } catch (error) {
     console.error("Multi-report update error:", error);
     return { error: "Failed to synchronise signed reports" };
+  }
+}
+
+/**
+ * 16. SOFT DELETE ACTIVITY (7-Day Retention)
+ */
+export async function softDeleteActivity(id: number, type: 'formal' | 'quick') {
+  const session = await getSession();
+  const isAdmin = session?.roles?.some(r => /admin|super/i.test(r)) || false;
+  
+  if (!session || !isAdmin) {
+     return { error: "Unauthorized: Admin privileges required." };
+  }
+
+  try {
+    const table = type === 'formal' ? 'service_activities' : 'activities';
+    
+    await (prisma as any)[table].update({
+      where: { id },
+      data: { deleted_at: new Date() }
+    });
+
+    revalidatePath("/dashboard");
+    revalidatePath("/passport");
+    return { success: true };
+  } catch (error) {
+    console.error("Soft delete error:", error);
+    return { error: "Failed to remove report." };
+  }
+}
+
+/**
+ * 17. PERMANENT PURGE (Auto-cleanup for records > 7 days)
+ */
+export async function permanentPurgeOldRecords() {
+  const session = await getSession();
+  const isAdmin = session?.roles?.some(r => /admin|super/i.test(r)) || false;
+  if (!session || !isAdmin) return { error: "Unauthorized" };
+
+  try {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const tables = ['service_activities', 'activities', 'corrective', 'audits'];
+    let totalPurged = 0;
+
+    for (const table of tables) {
+      const { count } = await (prisma as any)[table].deleteMany({
+        where: {
+          deleted_at: {
+            lt: sevenDaysAgo,
+            not: null
+          }
+        }
+      });
+      totalPurged += count;
+    }
+
+    if (totalPurged > 0) {
+      console.log(`[PURGE] Permanently removed ${totalPurged} old reports.`);
+    }
+
+    return { success: true, purged: totalPurged };
+  } catch (error) {
+    console.error("Purge error:", error);
+    return { error: "Failed to purge old records." };
   }
 }

@@ -29,18 +29,30 @@ export async function getProjectProgress(projectId: string) {
       year: { start: new Date(currentYear, 0, 1, 0,0,0), end: new Date(currentYear, 11, 31, 23,59,59) }
     };
 
-    // 2. Calculate Stats for Preventive & Audit (Target vs Actual)
-    const types = ["Preventive", "Audit"] as const;
+    // 2. Calculate Stats for Preventive, Audit, & DailyLog
+    const types = ["Preventive", "Audit", "DailyLog"] as const;
     const stats: any = {};
 
     for (const type of types) {
       const target = targets.find(t => t.type === type);
       
-      const counts = await Promise.all([
-        prisma.service_activities.count({ where: { type, status: 'Final_Approved', units: { project_ref_id: BigInt(projectId) }, service_date: { gte: periods.day.start, lte: periods.day.end } } }),
-        prisma.service_activities.count({ where: { type, status: 'Final_Approved', units: { project_ref_id: BigInt(projectId) }, service_date: { gte: periods.month.start, lte: periods.month.end } } }),
-        prisma.service_activities.count({ where: { type, status: 'Final_Approved', units: { project_ref_id: BigInt(projectId) }, service_date: { gte: periods.year.start, lte: periods.year.end } } })
-      ]);
+      let counts: number[];
+      
+      if (type === "DailyLog") {
+        // Daily Log logic: Count entries in daily_ops_logs
+        counts = await Promise.all([
+          prisma.daily_ops_logs.count({ where: { units: { project_ref_id: BigInt(projectId) }, service_date: { gte: periods.day.start, lte: periods.day.end } } }),
+          prisma.daily_ops_logs.count({ where: { units: { project_ref_id: BigInt(projectId) }, service_date: { gte: periods.month.start, lte: periods.month.end } } }),
+          prisma.daily_ops_logs.count({ where: { units: { project_ref_id: BigInt(projectId) }, service_date: { gte: periods.year.start, lte: periods.year.end } } })
+        ]);
+      } else {
+        // Preventive & Audit logic: Count entries in service_activities
+        counts = await Promise.all([
+          prisma.service_activities.count({ where: { type, status: 'Final_Approved', units: { project_ref_id: BigInt(projectId) }, service_date: { gte: periods.day.start, lte: periods.day.end } } }),
+          prisma.service_activities.count({ where: { type, status: 'Final_Approved', units: { project_ref_id: BigInt(projectId) }, service_date: { gte: periods.month.start, lte: periods.month.end } } }),
+          prisma.service_activities.count({ where: { type, status: 'Final_Approved', units: { project_ref_id: BigInt(projectId) }, service_date: { gte: periods.year.start, lte: periods.year.end } } })
+        ]);
+      }
 
       stats[type] = {
         daily: { target: target?.daily_target || 0, actual: counts[0] },
@@ -82,7 +94,7 @@ export async function getProjectProgress(projectId: string) {
 
 export async function setProjectTarget(data: {
   projectId: string,
-  type: "Preventive" | "Audit",
+  type: "Preventive" | "Audit" | "DailyLog",
   daily: number,
   monthly: number,
   yearly: number

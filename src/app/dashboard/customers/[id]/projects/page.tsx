@@ -36,7 +36,11 @@ export default function ProjectsPage() {
   const [editId, setEditId] = useState<string | null>(null);
 
   // Form State
-  const [formData, setFormData] = useState({ name: "", code: "" });
+  const [formData, setFormData] = useState({ 
+    name: "", 
+    code: "",
+    enabled_forms: "Audit,Preventive,Corrective"
+  });
 
   // Progress & Modal State for Targets/Schedules
   const [projectProgress, setProjectProgress] = useState<Record<string, any>>({});
@@ -94,15 +98,30 @@ export default function ProjectsPage() {
   const openCreateModal = () => {
     setModalMode("create");
     setEditId(null);
-    setFormData({ name: "", code: "" });
+    setFormData({ name: "", code: "", enabled_forms: "Audit,Preventive,Corrective" });
     setIsModalOpen(true);
   };
 
   const openEditModal = (project: any) => {
     setModalMode("edit");
     setEditId(project.id);
-    setFormData({ name: project.name, code: project.code || "" });
+    setFormData({ 
+      name: project.name, 
+      code: project.code || "",
+      enabled_forms: project.enabled_forms || "Audit,Preventive,Corrective"
+    });
     setIsModalOpen(true);
+  };
+
+  const toggleForm = (formName: string) => {
+    const current = formData.enabled_forms.split(",").filter(Boolean);
+    let updated;
+    if (current.includes(formName)) {
+      updated = current.filter(f => f !== formName);
+    } else {
+      updated = [...current, formName];
+    }
+    setFormData({ ...formData, enabled_forms: updated.join(",") });
   };
 
   const closeModal = () => setIsModalOpen(false);
@@ -268,41 +287,57 @@ export default function ProjectsPage() {
                           <div className="space-y-3">
                              {projectProgress[project.id] ? (
                                 <>
-                                  {/* Preventive Progress - Monthly */}
-                                  <ProgressIndicator 
-                                    size="sm" label="Preventive" 
-                                    percentage={projectProgress[project.id].targets.Preventive.monthly.target > 0 ? Math.round((projectProgress[project.id].targets.Preventive.monthly.actual / projectProgress[project.id].targets.Preventive.monthly.target) * 100) : 0} 
-                                    color="indigo" 
-                                  />
-                                  
-                                  {/* Corrective Resolution Rate */}
-                                  <div className="space-y-1">
-                                    <div className="flex justify-between items-center px-1">
-                                      <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest">Corrective KPI</span>
-                                      <span className="text-[10px] font-black text-slate-400">
-                                        {projectProgress[project.id].corrective.completed}/{projectProgress[project.id].corrective.total}
-                                      </span>
-                                    </div>
-                                    <ProgressIndicator 
-                                      size="sm" label="" 
-                                      percentage={projectProgress[project.id].corrective.total > 0 ? Math.round((projectProgress[project.id].corrective.completed / projectProgress[project.id].corrective.total) * 100) : 0} 
-                                      color="rose" 
-                                      hideLabel
-                                    />
-                                  </div>
+                                   {/* Preventive Progress - Monthly */}
+                                   {(project.enabled_forms?.includes("Preventive") || !project.enabled_forms) && (
+                                     <ProgressIndicator 
+                                       size="sm" label="Preventive" 
+                                       percentage={projectProgress[project.id].targets.Preventive.monthly.target > 0 ? Math.round((projectProgress[project.id].targets.Preventive.monthly.actual / projectProgress[project.id].targets.Preventive.monthly.target) * 100) : 0} 
+                                       color="blue" 
+                                     />
+                                   )}
 
-                                  {/* Audit Progress - Monthly */}
-                                  <ProgressIndicator 
-                                    size="sm" label="Audit" 
-                                    percentage={projectProgress[project.id].targets.Audit.monthly.target > 0 ? Math.round((projectProgress[project.id].targets.Audit.monthly.actual / projectProgress[project.id].targets.Audit.monthly.target) * 100) : 0} 
-                                    color="emerald" 
-                                  />
-                                </>
-                             ) : (
-                               <div className="space-y-2">
-                                 <div className="h-1.5 w-full bg-slate-100 rounded-full animate-pulse" />
-                                 <div className="h-1.5 w-2/3 bg-slate-50 rounded-full animate-pulse" />
-                               </div>
+                                   {/* Corrective KPI - Monthly */}
+                                   {(project.enabled_forms?.includes("Corrective") || !project.enabled_forms) && (
+                                     <div className="space-y-1">
+                                       <div className="flex justify-between items-center px-1">
+                                         <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest">Corrective KPI</span>
+                                         <span className="text-[10px] font-black text-slate-400">
+                                           {projectProgress[project.id].corrective.completed}/{projectProgress[project.id].corrective.total}
+                                         </span>
+                                       </div>
+                                       <ProgressIndicator 
+                                         size="sm" label="" 
+                                         percentage={projectProgress[project.id].corrective.total > 0 ? Math.round((projectProgress[project.id].corrective.completed / projectProgress[project.id].corrective.total) * 100) : 0} 
+                                         color="rose" 
+                                         hideLabel
+                                       />
+                                     </div>
+                                   )}
+
+                                   {/* Audit Progress - Monthly */}
+                                   {(project.enabled_forms?.includes("Audit") || !project.enabled_forms) && (
+                                     <ProgressIndicator 
+                                       size="sm" label="Audit" 
+                                       percentage={projectProgress[project.id].targets.Audit.monthly.target > 0 ? Math.round((projectProgress[project.id].targets.Audit.monthly.actual / projectProgress[project.id].targets.Audit.monthly.target) * 100) : 0} 
+                                       color="emerald" 
+                                     />
+                                   )}
+
+                                   {/* Daily Log Progress - Daily Coverage */}
+                                   {project.enabled_forms?.includes("DailyLog") && (
+                                     <ProgressIndicator 
+                                       size="sm" label="Daily Log (Today)" 
+                                       percentage={projectProgress[project.id].targets.DailyLog?.daily.target > 0 ? Math.round((projectProgress[project.id].targets.DailyLog.daily.actual / projectProgress[project.id].targets.DailyLog.daily.target) * 100) : 0} 
+                                       color="indigo" 
+                                     />
+                                   )}
+                                 </>
+                              ) : (
+                                <div className="space-y-2">
+                                  <div className="h-1.5 w-full bg-slate-100 rounded-full animate-pulse" />
+                                  <div className="h-1.5 w-2/3 bg-slate-50 rounded-full animate-pulse" />
+                                  <div className="h-1.5 w-1/2 bg-slate-50/50 rounded-full animate-pulse" />
+                                </div>
                              )}
                           </div>
                         ) : (
@@ -355,6 +390,14 @@ export default function ProjectsPage() {
                             <CalendarIcon size={14} className={isActive ? "text-emerald-400 mb-1" : "opacity-50"} />
                             <span className="text-[8px] font-black uppercase tracking-widest opacity-70 mt-1">Schedule</span>
                           </button>
+
+                          <Link 
+                            href={`/dashboard/customers/${customerId}/projects/${project.id}/reports`}
+                            className={`inline-flex flex-col items-center justify-center p-3 w-16 rounded-xl border border-slate-200/60 shadow-sm transition-all hover:ring-2 hover:ring-blue-100
+                            ${isActive ? 'bg-white text-blue-700 hover:border-blue-300 cursor-pointer' : 'bg-slate-50 text-slate-400 cursor-not-allowed pointer-events-none'}`}>
+                            <TrendingUp size={14} className={isActive ? "text-blue-400 mb-1" : "opacity-50"} />
+                            <span className="text-[8px] font-black uppercase tracking-widest opacity-70 mt-1">Report</span>
+                          </Link>
                         </div>
                       </td>
 
@@ -451,6 +494,9 @@ export default function ProjectsPage() {
                         className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-300 transition-all shadow-sm"
                         placeholder="e.g. PRJ-001"
                       />
+                    </div>
+                    <div className="pt-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">
+                       Advanced capabilities are managed in the Settings Hub
                     </div>
                   </div>
                   <div className="p-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">

@@ -20,6 +20,7 @@ import imageCompression from "browser-image-compression";
 import PreventiveFormClient from "./preventive/PreventiveFormClient";
 import CorrectiveFormClient from "./corrective/CorrectiveFormClient";
 import AuditFormClient from "./audit/AuditFormClient";
+import DailyLogFormClient from "../daily/DailyLogFormClient";
 
 export default function PassportLandingPage() {
   const params = useParams();
@@ -30,7 +31,7 @@ export default function PassportLandingPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [activeTab, setActiveTab] = useState<"info" | "corrective" | "preventive" | "audit" | "history" | "complaint" | "media">("info");
+  const [activeTab, setActiveTab] = useState<"info" | "corrective" | "preventive" | "audit" | "daily" | "history" | "complaint" | "media">("info");
   
   // States for showing forms
   const [showFormCorrective, setShowFormCorrective] = useState(false);
@@ -52,6 +53,7 @@ export default function PassportLandingPage() {
   
   const [isPending, startTransition] = useTransition();
   const [complaintMsg, setComplaintMsg] = useState(false);
+  const [showHealthModal, setShowHealthModal] = useState(false);
 
   // Complaint Form State
   const [complaintForm, setComplaintForm] = useState({
@@ -229,21 +231,62 @@ export default function PassportLandingPage() {
         {/* Tab Navigation */}
         <div className="flex overflow-x-auto border-b border-slate-100 bg-white shrink-0 scrollbar-hide no-scrollbar">
           <TabButton active={activeTab === "info"} onClick={() => setActiveTab("info")} label="Info" />
-          <TabButton active={activeTab === "corrective"} onClick={() => setActiveTab("corrective")} label="Corrective" icon={<Hammer size={12}/>} />
-          <TabButton active={activeTab === "preventive"} onClick={() => setActiveTab("preventive")} label="Preventive" icon={<Wrench size={12}/>} />
-          <TabButton active={activeTab === "audit"} onClick={() => setActiveTab("audit")} label="Audit" icon={<ClipboardCheck size={12}/>} />
+          {unit.enabledForms?.includes("Corrective") && (
+            <TabButton active={activeTab === "corrective"} onClick={() => setActiveTab("corrective")} label="Corrective" icon={<Hammer size={12}/>} />
+          )}
+          {unit.enabledForms?.includes("Preventive") && (
+            <TabButton active={activeTab === "preventive"} onClick={() => setActiveTab("preventive")} label="Preventive" icon={<Wrench size={12}/>} />
+          )}
+          {unit.enabledForms?.includes("Audit") && (
+            <TabButton active={activeTab === "audit"} onClick={() => setActiveTab("audit")} label="Audit" icon={<ClipboardCheck size={12}/>} />
+          )}
+          {unit.enabledForms?.includes("DailyLog") && (
+            <TabButton active={activeTab === "daily"} onClick={() => setActiveTab("daily")} label="Daily Log" icon={<Activity size={12}/>} />
+          )}
           <TabButton active={activeTab === "history"} onClick={() => setActiveTab("history")} label="Log" icon={<HistoryIcon size={12}/>} />
           <TabButton active={activeTab === "media"} onClick={() => setActiveTab("media")} label="Gallery" icon={<ImageIcon size={12}/>} />
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-y-auto p-6 bg-slate-50 pb-24">
+        <div className="flex-1 overflow-y-auto p-6 bg-slate-50 pb-24 relative">
           <AnimatePresence mode="wait">
             {activeTab === "info" ? (
               <motion.div 
                 key="info" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
                 className="space-y-4"
               >
+                {/* Health Score Card */}
+                {unit.healthMetrics && (
+                  <motion.div 
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setShowHealthModal(true)}
+                    className="bg-white rounded-[24px] p-6 border border-slate-200 shadow-sm flex items-center justify-between cursor-pointer group hover:border-[#00a1e4] transition-all"
+                  >
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-[#00a1e4]">Unit Health Score</p>
+                      <h4 className="text-xl font-black text-slate-800 uppercase italic">
+                        {unit.healthMetrics.status === 'optimal' ? 'Optimal Performance' : 
+                         unit.healthMetrics.status === 'degrading' ? 'Degrading' : 'Critical Maintenance'}
+                      </h4>
+                      <p className="text-[10px] font-bold text-slate-400">Click to see calculation formula</p>
+                    </div>
+                    <div className="relative w-16 h-16 flex items-center justify-center">
+                      <svg className="w-full h-full -rotate-90">
+                        <circle cx="32" cy="32" r="28" fill="none" stroke="#f1f5f9" strokeWidth="6" />
+                        <circle 
+                          cx="32" cy="32" r="28" fill="none" 
+                          stroke={unit.healthMetrics.status === 'optimal' ? '#10b981' : unit.healthMetrics.status === 'degrading' ? '#f59e0b' : '#ef4444'} 
+                          strokeWidth="6" strokeDasharray={175.9} 
+                          strokeDashoffset={175.9 - (175.9 * unit.healthMetrics.healthScore) / 100}
+                          strokeLinecap="round"
+                          className="transition-all duration-1000 ease-out"
+                        />
+                      </svg>
+                      <span className="absolute text-sm font-black text-slate-800">{unit.healthMetrics.healthScore}%</span>
+                    </div>
+                  </motion.div>
+                )}
+
                 <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
                   <div className="flex justify-between items-center">
                     <h3 className="text-[10px] font-black uppercase tracking-widest text-[#00a1e4]">Specifications</h3>
@@ -427,6 +470,10 @@ export default function PassportLandingPage() {
                   </div>
                 )}
               </motion.div>
+            ) : activeTab === "daily" ? (
+              <motion.div key="daily" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                <DailyLogFormClient unitId={unit.id} token={token} />
+              </motion.div>
             ) : activeTab === "history" ? (
               <motion.div 
                 key="history" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
@@ -542,45 +589,151 @@ export default function PassportLandingPage() {
           </AnimatePresence>
         </div>
       </div>
+      
+      {/* Health Transparency Modal */}
+      <HealthExplanationModal 
+        isOpen={showHealthModal} 
+        onClose={() => setShowHealthModal(false)} 
+        metrics={unit.healthMetrics} 
+      />
     </div>
   );
 }
 
-function TabButton({ active, onClick, label, icon }: { active: boolean, onClick: () => void, label: string, icon?: React.ReactNode }) {
+function TabButton({ active, onClick, label, icon }: { active: boolean; onClick: () => void; label: string; icon?: React.ReactNode }) {
   return (
-    <button 
+    <button
       onClick={onClick}
       className={`min-w-fit px-6 py-4 text-[10px] font-black uppercase tracking-widest transition-all relative ${
-        active ? 'text-[#00a1e4]' : 'text-slate-400 bg-slate-50/50'
+        active ? "text-[#00a1e4]" : "text-slate-400 bg-slate-50/50"
       }`}
     >
       <span className="flex items-center justify-center gap-2 whitespace-nowrap">
         {icon} {label}
       </span>
-      {active && (
-        <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-1 bg-[#00a1e4]" />
-      )}
+      {active && <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-1 bg-[#00a1e4]" />}
     </button>
   );
 }
 
-function EditInput({ label, value, onChange, isSelect = false, options = [] }: { label: string, value: string, onChange: (v: string) => void, isSelect?: boolean, options?: string[] }) {
+function EditInput({ label, value, onChange, isSelect = false, options = [] }: { label: string; value: string; onChange: (v: string) => void; isSelect?: boolean; options?: string[] }) {
   return (
     <div className="space-y-1">
       <label className="text-[9px] font-black uppercase tracking-widest text-slate-400">{label}</label>
       {isSelect ? (
-        <select 
-          value={value} onChange={e => onChange(e.target.value)}
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
           className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-[#00a1e4]"
         >
-          {options.map((o: string) => <option key={o} value={o}>{o}</option>)}
+          {options.map((o: string) => (
+            <option key={o} value={o}>
+              {o}
+            </option>
+          ))}
         </select>
       ) : (
-        <input 
-          type="text" value={value || ""} onChange={e => onChange(e.target.value)}
+        <input
+          type="text"
+          value={value || ""}
+          onChange={(e) => onChange(e.target.value)}
           className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-[#00a1e4]"
         />
       )}
     </div>
+  );
+}
+
+function HealthExplanationModal({ isOpen, onClose, metrics }: { isOpen: boolean; onClose: () => void; metrics: any }) {
+  if (!metrics) return null;
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="bg-white w-full max-w-sm rounded-[32px] overflow-hidden shadow-2xl relative z-10"
+          >
+            <div className="p-6 bg-[#003366] text-white">
+              <h1 className="text-xl font-black italic tracking-tight uppercase">
+                Health <span className="text-[#00a1e4] not-italic">Analytics</span>
+              </h1>
+              <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mt-1">Transparency Engine V1.0</p>
+            </div>
+
+            <div className="p-6 space-y-6 max-h-[60vh] overflow-y-auto no-scrollbar">
+              <section className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] font-black">1</span>
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Psychrometric Mapping</h4>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3 bg-slate-50 rounded-2xl">
+                    <p className="text-[8px] font-bold text-slate-400 uppercase">Enthalpy In (h_in)</p>
+                    <p className="text-sm font-bold text-slate-700">
+                      {metrics.entering.enthalpy.toFixed(1)} <span className="text-[8px] opacity-40">kJ/kg</span>
+                    </p>
+                  </div>
+                  <div className="p-3 bg-slate-50 rounded-2xl">
+                    <p className="text-[8px] font-bold text-slate-400 uppercase">Enthalpy Out (h_out)</p>
+                    <p className="text-sm font-bold text-slate-700">
+                      {metrics.leaving.enthalpy.toFixed(1)} <span className="text-[8px] opacity-40">kJ/kg</span>
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              <section className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] font-black">2</span>
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Capacity Integration</h4>
+                </div>
+                <div className="p-4 border border-slate-100 rounded-2xl bg-slate-50/50">
+                  <code className="text-[10px] font-bold text-blue-600 block mb-2">Q = m * (h_in - h_out)</code>
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-slate-500 leading-relaxed font-medium">Dimana m (Mass Flow) = ({metrics.airflow} m³/h / 3600) * 1.2 kg/m³</p>
+                    <p className="text-[10px] text-slate-500 leading-relaxed font-medium">
+                      Actual Capacity = m * ({metrics.entering.enthalpy.toFixed(1)} - {metrics.leaving.enthalpy.toFixed(1)})
+                    </p>
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-slate-100 flex justify-between items-end">
+                    <span className="text-[8px] font-black text-slate-400 uppercase">Hasil Terukur:</span>
+                    <span className="text-lg font-black text-slate-800">
+                      {metrics.actualCapacitykW} <span className="text-xs">kW</span>
+                    </span>
+                  </div>
+                </div>
+              </section>
+
+              <section className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] font-black">3</span>
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Health Final Score</h4>
+                </div>
+                <div className="p-4 bg-blue-50/30 rounded-2xl border border-blue-100">
+                  <p className="text-[10px] text-blue-700 font-bold mb-1">Reality vs Design Comparison</p>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-medium text-slate-500">
+                      {metrics.actualCapacitykW} kW / {metrics.designCapacitykW} kW
+                    </span>
+                    <span className="text-2xl font-black text-[#00a1e4]">{metrics.healthScore}%</span>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <div className="p-6 pt-0">
+              <button onClick={onClose} className="w-full py-4 bg-slate-800 text-white rounded-2xl text-xs font-black uppercase tracking-widest">
+                MENGERTI
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 }

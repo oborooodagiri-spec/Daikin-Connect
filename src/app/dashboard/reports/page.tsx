@@ -3,10 +3,12 @@
 import { useEffect, useState, useTransition, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { getAllReports, getReportDetail, getSummaryData } from "@/app/actions/reports";
+import { getSession } from "@/app/actions/auth";
+import { softDeleteActivity, permanentPurgeOldRecords } from "@/app/actions/units";
 import {
   FileText, Search, Download, Filter, ChevronLeft, ChevronRight,
   ClipboardCheck, Wrench, AlertTriangle, BarChart3, Calendar,
-  Eye, ExternalLink, Image as ImageIcon, X, Printer, Play, FileVideo, Loader2
+  Eye, ExternalLink, Image as ImageIcon, X, Printer, Play, FileVideo, Loader2, Trash2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -32,6 +34,8 @@ function ReportsContent() {
   const [pagination, setPagination] = useState({ total: 0, page: 1, limit: 20, totalPages: 1 });
   const [loading, setLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
+  const [session, setSession] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   // Filters
   const [typeFilter, setTypeFilter] = useState(initialType);
@@ -66,11 +70,29 @@ function ReportsContent() {
     setLoading(false);
   };
 
+  // Real-time debounced search
   useEffect(() => {
-    fetchReports();
+    const timer = setTimeout(() => {
+      fetchReports(1);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery, dateFrom, dateTo]);
+
+  useEffect(() => {
+    // Initial fetch handled by debounced effect if searchQuery is empty initially, 
+    // but typeFilter needs its own immediate trigger or included in the same effect.
+    fetchReports(1);
+    
+    const init = async () => {
+      const s = await getSession();
+      setSession(s);
+      if (s?.roles?.some((r: any) => /admin|super/i.test(r))) {
+         permanentPurgeOldRecords();
+      }
+    };
+    init();
   }, [typeFilter]);
 
-  const handleSearch = () => fetchReports(1);
   const handlePageChange = (p: number) => fetchReports(p);
 
   const handleSelectReport = async (reportId: string) => {
@@ -86,6 +108,26 @@ function ReportsContent() {
       alert("Gagal memuat detail laporan.");
     } finally {
       setIsSelecting(null);
+    }
+  };
+
+  const handleDelete = async (reportId: string) => {
+    if (!confirm("PERHATIAN: Laporan ini akan dipindahkan ke Trash selama 7 hari sebelum dihapus permanen.\n\nApakah Anda yakin ingin menghapus laporan ini?")) return;
+    
+    setIsDeleting(reportId);
+    try {
+      const res = await softDeleteActivity(Number(reportId), 'formal');
+      if (res.success) {
+        alert("Laporan berhasil dipindahkan ke Trash.");
+        setSelectedReport(null);
+        fetchReports(pagination.page);
+      } else {
+        alert("Gagal menghapus: " + res.error);
+      }
+    } catch (e) {
+      alert("Terjadi kesalahan sistem.");
+    } finally {
+      setIsDeleting(null);
     }
   };
 
@@ -245,115 +287,8 @@ function ReportsContent() {
   };
 
   const getRenderData = (report: any) => {
-    let t: any = {};
-    try {
-      if (typeof report.technical_json === 'string') {
-        t = JSON.parse(report.technical_json);
-        if (typeof t === 'string') t = JSON.parse(t);
-      } else if (report.technical_json) {
-        t = report.technical_json;
-      }
-    } catch (e) {
-      console.error("JSON Parse Error", e);
-    }
-
-    const rawPhotos = report.activity_photos || [];
-    const photos = rawPhotos.map((p: any) => {
-      let url = p.photo_url || "";
-      if (url && !url.startsWith('http') && !url.startsWith('/')) {
-        // Fallback folder detection
-        let folder = (report.type || "misc").toLowerCase();
-        if (p.media_type === "video") folder = "videos";
-        else if (folder === "audit") folder = "photos";
-        else if (folder === "preventive") folder = "preventive";
-        else if (folder === "corrective") folder = "corrective";
-        
-        url = `/uploads/${folder}/${url}`;
-      }
-      return { ...p, photo_url: url };
-    });
-
-    if (report.type === "Preventive") {
-      const labels = [
-        { label: "Power Supply", key: "power_supply" },
-        { label: "Ampere", key: "ampere_motor" },
-        { label: "Pressure Inlet", key: "pressure_inlet" },
-        { label: "Pressure Outlet", key: "pressure_outlet" },
-        { label: "Temperature Inlet", key: "temp_inlet" },
-        { label: "Temperature Outlet", key: "temp_outlet" },
-        { label: "Return Air", key: "return_air_temp" },
-        { label: "Supply Air", key: "supply_air_temp" },
-        { label: "Air filter", key: "clean_air_filter" },
-        { label: "Cleaning coil", key: "clean_coil" },
-        { label: "Cleaning drainage", key: "clean_drainage" },
-        { label: "V-Belt", key: "check_vbelt" },
-        { label: "Bearing", key: "check_bearing" },
-      ];
-
-      const scope: any = {};
-      Object.keys(t).forEach(dbLabel => {
-        const found = labels.find(l => dbLabel.toLowerCase().includes(l.label.toLowerCase()));
-        if (found) {
-          const val = t[dbLabel];
-          if (typeof val === 'object') {
-             scope[found.key] = { before: val.before, after: val.after, remarks: val.remarks };
-          } else {
-             scope[found.key] = { done: val, remarks: "" };
-          }
-        }
-      });
-
-      return {
-        ...report,
-        header: t.header || {
-          project: report.units?.project_name,
-          date: report.service_date,
-          model: report.units?.model,
-          serial_number: report.units?.serial_number,
-          unit_number: report.units?.tag_number,
-          location: report.units?.area,
-          so_number: report.reference_id || "PM-" + report.id
-        },
-        scope: Object.keys(scope).length > 0 ? scope : t.scope,
-        parts: t.parts || [],
-        technicalAdvice: report.technical_advice || t.technicalAdvice || "-",
-        engineerName: report.inspector_name || t.engineerName || "-",
-        customerName: t.customerName || "-",
-        activity_photos: photos
-      };
-    }
-
-    if (report.type === "Corrective") {
-      return {
-        ...report,
-        personnel: t.personnel || { technician_name: report.inspector_name, service_date: report.service_date },
-        pic: t.pic || {},
-        analysis: t.analysis || {
-          case_complain: t.case_complain || "-",
-          root_cause: t.root_cause || "-",
-          temp_action: t.temp_action || "-",
-          perm_action: t.perm_action || "-",
-          recommendation: t.recommendation || report.technical_advice
-        },
-        engineerNote: report.engineer_note || t.engineerNote || "-",
-        activity_photos: photos
-      };
-    }
-
-    if (report.type === "Audit") {
-      const vps = report.audit_velocity_points || [];
-      const supply = new Array(15).fill("");
-      const return_ = new Array(15).fill("");
-      const fresh = new Array(15).fill("");
-      vps.forEach((vp: any) => {
-        if (vp.point_number >= 1 && vp.point_number <= 15) supply[vp.point_number - 1] = vp.velocity_value;
-        if (vp.point_number >= 16 && vp.point_number <= 30) return_[vp.point_number - 16] = vp.velocity_value;
-        if (vp.point_number >= 31 && vp.point_number <= 45) fresh[vp.point_number - 31] = vp.velocity_value;
-      });
-      return { ...report, ...t, t: { ...t, supplyVelocity: supply, returnVelocity: return_, freshVelocity: fresh }, activity_photos: photos };
-    }
-    
-    return { ...report, ...t, activity_photos: photos };
+    const { processReportData } = require("@/lib/reportDataHelper");
+    return processReportData(report);
   };
 
   return (
@@ -388,9 +323,20 @@ function ReportsContent() {
               <button key={t} onClick={() => setTypeFilter(t)} className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${typeFilter === t ? "bg-white text-[#003366] shadow-sm" : "text-slate-400 hover:text-slate-600"}`}>{t === "all" ? "Semua" : t}</button>
             ))}
           </div>
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSearch()} placeholder="Cari berdasarkan unit tag..." className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" />
+          <div className="flex-1 relative group">
+            <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${loading ? 'text-blue-500 animate-pulse' : 'text-slate-400'}`} />
+            <input 
+              type="text" 
+              value={searchQuery} 
+              onChange={(e) => setSearchQuery(e.target.value)} 
+              placeholder="Cari tim, unit, ruangan, atau tenant..." 
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:bg-white focus:border-blue-400 transition-all outline-none" 
+            />
+            {loading && searchQuery && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <Loader2 className="w-4 h-4 text-slate-300 animate-spin" />
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-2">
              <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-1 gap-2">
@@ -399,7 +345,6 @@ function ReportsContent() {
                 <span className="text-slate-300">to</span>
                 <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="bg-transparent text-xs font-bold focus:outline-none" />
              </div>
-             <button onClick={handleSearch} className="px-5 py-2.5 bg-[#003366] text-white rounded-xl text-xs font-bold shadow-md hover:bg-[#002244]"><Filter size={14} className="inline mr-1" /> Filter</button>
              <button 
                onClick={handleExportSummary} 
                disabled={isExporting}
@@ -448,7 +393,18 @@ function ReportsContent() {
                   <td className="p-4 text-xs font-bold text-slate-700">{r.inspector_name}</td>
                   <td className="p-4 text-xs text-slate-500">{formatDate(r.service_date)}</td>
                   <td className="p-4"><button onClick={(e) => { e.stopPropagation(); handlePrint(r.id); }} className="text-emerald-600 hover:text-emerald-800 font-bold text-xs"><Printer size={14} /></button></td>
-                  <td className="p-4"><Eye size={14} className="text-slate-300" /></td>
+                  <td className="p-4 flex items-center gap-3">
+                    <Eye size={14} className="text-slate-300" />
+                    {session?.roles?.some((role: any) => /admin|super/i.test(role)) && (
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); handleDelete(r.id); }}
+                        disabled={isDeleting === r.id}
+                        className="p-1 hover:bg-rose-50 text-rose-300 hover:text-rose-600 rounded transition-colors"
+                      >
+                        {isDeleting === r.id ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={14} />}
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -496,8 +452,19 @@ function ReportsContent() {
                     </div>
                   )}
 
-                  <button onClick={() => handlePrint(selectedReport.id)} className="w-full py-4 bg-[#003366] text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-900/10 hover:scale-[1.02] transition-all">Print Official (A4)</button>
-               </div>
+                   <div className="flex gap-3">
+                      <button onClick={() => handlePrint(selectedReport.id)} className="flex-1 py-4 bg-[#003366] text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-900/10 hover:scale-[1.02] transition-all">Print Official (A4)</button>
+                      {session?.roles?.some((role: any) => /admin|super/i.test(role)) && (
+                        <button 
+                          onClick={() => handleDelete(selectedReport.id)}
+                          disabled={isDeleting === selectedReport.id}
+                          className="px-6 py-4 bg-rose-50 text-rose-600 text-xs font-black uppercase tracking-widest rounded-2xl hover:bg-rose-100 transition-all flex items-center justify-center border border-rose-100"
+                        >
+                          {isDeleting === selectedReport.id ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                        </button>
+                      )}
+                   </div>
+                </div>
             </motion.div>
           </div>
         )}

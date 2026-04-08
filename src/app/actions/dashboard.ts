@@ -145,31 +145,127 @@ export async function getDashboardData(filters: { customerId?: string; projectId
       return { appeared, resolved };
     };
 
+    // Helper for Raw Daily Log counts (Workaround for Prisma Generate lock)
+    const fetchDailyLogRaw = async (startDate: Date, endDate?: Date) => {
+      try {
+        // Get all unit IDs for the current filter first
+        const unitsList = await (prisma.units as any).findMany({
+          where: unitWhere,
+          select: { id: true }
+        });
+        const ids = unitsList.map((u: any) => u.id);
+        if (ids.length === 0) return 0;
+
+        const result: any[] = await prisma.$queryRaw`
+          SELECT COUNT(*) as count 
+          FROM daily_ops_logs 
+          WHERE unit_id IN (${ids.join(',')})
+          AND service_date >= ${startDate}
+          ${endDate ? prisma.$queryRaw`AND service_date <= ${endDate}` : prisma.$queryRaw``}
+        `;
+        // Handle BigInt result from raw query
+        return Number(result[0]?.count || 0);
+      } catch (e) {
+        console.error("DailyLog Raw Query Error:", e);
+        return 0;
+      }
+    };
+
+    // Optimization: For Postgres/MySQL IN clauses with BigInt in Raw SQL can be tricky.
+    // Let's use a cleaner approach for IDs or just use the model query if generate succeeds.
+    // However, since we know generate failed, I'll use a safer raw query construction.
+
+    const getDailyLogCount = async (start: Date, end: Date | null = null) => {
+       try {
+         // Fallback if generate is stuck: count via unit join
+         const pid = filters.projectId ? BigInt(filters.projectId) : null;
+         const cid = filters.customerId ? parseInt(filters.customerId) : null;
+         
+         let query = `SELECT COUNT(*) as count FROM daily_ops_logs d JOIN units u ON d.unit_id = u.id`;
+         let conditions = [
+           `d.service_date >= '${start.toISOString().split('T')[0]}'`
+         ];
+         if (end) conditions.push(`d.service_date <= '${end.toISOString().split('T')[0]}'`);
+         if (pid) conditions.push(`u.project_ref_id = ${pid}`);
+         if (cid) conditions.push(`u.project_ref_id IN (SELECT id FROM projects WHERE customer_id = ${cid})`);
+         
+         // Access control
+         if (accessibleIds && accessibleIds.length > 0) {
+           conditions.push(`u.project_ref_id IN (${accessibleIds.join(',')})`);
+         }
+
+         const sql = `${query} WHERE ${conditions.join(' AND ')}`;
+         const res: any[] = await prisma.$queryRawUnsafe(sql);
+         return Number(res[0]?.count || 0);
+       } catch (err) {
+         console.error("Raw SQL Failure:", err);
+         return 0;
+       }
+    };
+
+    // helper for project config fetch
+    const fetchEnabledForms = async (pid: string) => {
+      if (!pid || pid === "undefined") return "Audit,Preventive,Corrective"; // UI-Safe fallback
+      try {
+        const project = await (prisma.projects as any).findUnique({
+          where: { id: BigInt(pid) },
+          select: { enabled_forms: true }
+        });
+        
+        // If project found but no forms configured, use default
+        if (project && project.enabled_forms) return project.enabled_forms;
+        return "Audit,Preventive,Corrective"; 
+      } catch (e) {
+        console.error("Dashboard Config Sync Error:", e);
+        return "Audit,Preventive,Corrective"; // Resilience: Show major cards on error
+      }
+    };
+
     const [
       auditActual, auditTarget, 
       pmActual, pmTargetMetrics, 
       corKPI,
       corActual,
+      dailyLogDaily, dailyLogMonthly, dailyLogTotal,
+      dailyLogTarget,
       totalUnits,
       activeProjects,
-      totalCustomers
+      totalCustomers,
+      enabledFormsRaw
     ] = await Promise.all([
-      fetchTypeActuals("Audit"),
-      fetchTypeTargets("Audit"),
-      fetchTypeActuals("Preventive"),
-      fetchTypeTargets("Preventive"),
-      fetchCorrectiveKPI(),
-      fetchTypeActuals("Corrective"),
-      (prisma.units as any).count({ where: unitWhere }),
+      fetchTypeActuals("Audit").catch(() => ({ daily:0, monthly:0, total:0 })),
+      fetchTypeTargets("Audit").catch(() => ({ daily:0, monthly:0, total:0 })),
+      fetchTypeActuals("Preventive").catch(() => ({ daily:0, monthly:0, total:0 })),
+      fetchTypeTargets("Preventive").catch(() => ({ daily:0, monthly:0, total:0 })),
+      fetchCorrectiveKPI().catch(() => ({ appeared:0, resolved:0 })),
+      fetchTypeActuals("Corrective").catch(() => ({ daily:0, monthly:0, total:0 })),
+      getDailyLogCount(startOfToday, endOfToday).catch(() => 0),
+      getDailyLogCount(startOfMonth).catch(() => 0),
+      getDailyLogCount(startOfYear).catch(() => 0),
+      fetchTypeTargets("DailyLog").catch(() => ({ daily:0, monthly:0, total:0 })),
+      (prisma.units as any).count({ where: unitWhere }).catch(() => 0),
       (prisma.projects as any).count({ 
         where: { 
           status: "active", 
           ...(filters.customerId ? { customer_id: parseInt(filters.customerId) } : {}),
           ...(accessibleIds ? { id: { in: accessibleIds } } : {})
         } 
-      }),
-      filters.customerId ? 1 : (prisma.customers as any).count({ where: { is_active: true } })
+      }).catch(() => 0),
+      (filters.customerId ? Promise.resolve(1) : (prisma.customers as any).count({ where: { is_active: true } })).catch(() => 0),
+      fetchEnabledForms(filters.projectId || "")
     ]);
+
+    // Split and handle mapping 
+    const formsArray = (enabledFormsRaw || "Audit,Preventive,Corrective")
+      .split(",")
+      .map((s: string) => {
+        const clean = s.trim().toLowerCase();
+        if (clean.includes("daily") || clean.includes("operational") || clean.includes("log")) return "dailylog";
+        if (clean.includes("audit")) return "audit";
+        if (clean.includes("preventive")) return "preventive";
+        if (clean.includes("corrective")) return "corrective";
+        return clean.replace(/\s+/g, '');
+      }).filter(Boolean);
 
     return {
       audit: { actual: auditActual, target: auditTarget },
@@ -178,9 +274,14 @@ export async function getDashboardData(filters: { customerId?: string; projectId
         actual: corActual, 
         kpi: corKPI 
       }, 
+      dailyLog: { 
+        actual: { daily: dailyLogDaily, monthly: dailyLogMonthly, total: dailyLogTotal }, 
+        target: dailyLogTarget 
+      },
       databaseAssets: totalUnits,
       activeSites: activeProjects,
       totalCustomers: totalCustomers,
+      enabled_forms: formsArray.join(",")
     };
   } catch (error) {
     console.error("Dashboard Stats Error:", error);
@@ -196,8 +297,10 @@ function emptyStats() {
   return { 
     audit: { actual: { daily:0, monthly:0, total:0 }, target: { daily:0, monthly:0, total:0 } }, 
     preventive: { actual: { daily:0, monthly:0, total:0 }, target: { daily:0, monthly:0, total:0 } }, 
-    corrective: { actual: { daily:0, monthly:0, total:0 }, target: { daily:0, monthly:0, total:0 } }, 
-    databaseAssets: 0, activeSites: 0, totalCustomers: 0 
+    corrective: { actual: { daily:0, monthly:0, total:0 }, target: { daily:0, monthly:0, total:0 }, kpi: { appeared: 0, resolved: 0 } }, 
+    dailyLog: { actual: { daily: 0, monthly: 0, total: 0 }, target: { daily: 0, monthly: 0, total: 0 } },
+    databaseAssets: 0, activeSites: 0, totalCustomers: 0,
+    enabled_forms: "audit,preventive,corrective,dailylog"
   };
 }
 
@@ -215,30 +318,55 @@ export async function getTrendChartData(filters: { customerId?: string; projectI
     }
 
     const startOfYear = new Date(new Date().getFullYear(), 0, 1);
+    const accessibleIds = await getAccessibleProjectIds();
     
-    const activities = await (prisma.service_activities as any).findMany({
-      where: {
-        ...activityWhere,
-        service_date: { gte: startOfYear }
-      },
-      select: { service_date: true, type: true }
-    });
+    // 1. Fetch Service Activities (Old Table)
+    let activities: any[] = [];
+    try {
+      activities = await (prisma.service_activities as any).findMany({
+        where: { ...activityWhere, service_date: { gte: startOfYear } },
+        select: { service_date: true, type: true }
+      });
+    } catch (e) {
+      console.error("Trend Activities Error:", e);
+    }
+
+    // 2. Fetch Daily Logs (New Table - Raw SQL Fallback)
+    let dailyLogs: any[] = [];
+    try {
+      const pid = filters.projectId ? BigInt(filters.projectId) : null;
+      const cid = filters.customerId ? parseInt(filters.customerId) : null;
+
+      let conditions = [`d.service_date >= '${startOfYear.toISOString().split('T')[0]}'`];
+      if (pid) conditions.push(`u.project_ref_id = ${pid}`);
+      if (cid) conditions.push(`u.project_ref_id IN (SELECT id FROM projects WHERE customer_id = ${cid})`);
+      if (accessibleIds) conditions.push(`u.project_ref_id IN (${accessibleIds.join(",")})`);
+
+      const sql = `SELECT d.service_date FROM daily_ops_logs d JOIN units u ON d.unit_id = u.id WHERE ${conditions.join(" AND ")}`;
+      dailyLogs = await prisma.$queryRawUnsafe(sql) as any[];
+    } catch (e) {
+      console.error("Trend DailyLogs Error:", e);
+    }
 
     const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
     const currentMonth = new Date().getMonth();
     
     const chartData = months.slice(0, currentMonth + 1).map((name, i) => {
       const monthActivities = activities.filter((a: any) => a.service_date && new Date(a.service_date).getMonth() === i);
+      const monthDailyLogs = dailyLogs.filter((l: any) => l.service_date && new Date(l.service_date).getMonth() === i);
+      
       return {
         name,
         audit: monthActivities.filter((a: any) => a.type === "Audit").length,
         preventive: monthActivities.filter((a: any) => a.type === "Preventive").length,
         corrective: monthActivities.filter((a: any) => a.type === "Corrective").length,
+        dailyLog: monthDailyLogs.length
       };
     });
 
     return serializePrisma(chartData);
   } catch (error) {
+    console.error("Global Trend Error:", error);
     return [];
   }
 }

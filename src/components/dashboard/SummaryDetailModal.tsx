@@ -2,7 +2,8 @@
 
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Target, TrendingUp, Calendar, Clock, ArrowRight, CheckCircle2, AlertTriangle } from "lucide-react";
+import { X, TrendingUp, Calendar, Clock, ArrowRight, CheckCircle2, AlertTriangle } from "lucide-react";
+import Portal from "../Portal";
 
 interface SummaryDetailModalProps {
   isOpen: boolean;
@@ -54,175 +55,167 @@ export default function SummaryDetailModal({ isOpen, onClose, data, onAnalyzeTre
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-md"
-          />
-          
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="bg-white border border-slate-200 rounded-[3rem] shadow-2xl relative z-10 w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]"
-          >
-            {/* Header */}
-            <div className={`p-10 border-b border-slate-100 relative overflow-hidden flex justify-between items-center`}>
-               <div className={`absolute -left-10 -top-10 w-40 h-40 rounded-full opacity-5 blur-3xl ${(data.color || 'text-slate-500').replace('text-', 'bg-')}`} />
-               
-               <div className="flex items-center gap-6 relative z-10">
-                  <div className={`w-16 h-16 rounded-[2rem] ${data.bg || 'bg-slate-50'} ${data.color || 'text-slate-500'} flex items-center justify-center shadow-xl shadow-blue-900/5`}>
-                     {data.icon ? <data.icon size={28} /> : <AlertTriangle size={28} />}
-                  </div>
-                  <div>
-                     <div className="flex items-center gap-2 mb-1">
-                        <span className="px-3 py-1 bg-slate-100 text-slate-400 text-[10px] font-black uppercase tracking-widest rounded-full">ANALYTICS LAYER</span>
-                     </div>
-                     <h2 className="text-3xl font-black text-[#003366] tracking-tighter italic uppercase">{data.title}</h2>
-                  </div>
-               </div>
-
-               <button 
-                 onClick={onClose}
-                 className="p-3 bg-slate-50 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-2xl transition-colors relative z-10"
-               >
-                  <X size={20} />
-               </button>
-            </div>
-
-            {/* Body */}
-            <div className="p-10 overflow-y-auto space-y-6 flex-1 custom-scrollbar">
-               {isCorrective ? (
-                 /* CORRECTIVE-SPECIFIC LAYOUT */
-                 <>
-                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                     <div className="bg-rose-50 border border-rose-100 rounded-3xl p-6 text-center">
-                       <p className="text-[10px] font-black tracking-widest text-rose-400 uppercase mb-2">Appeared</p>
-                       <p className="text-4xl font-black text-rose-600">{kpi.appeared}</p>
-                     </div>
-                     <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-6 text-center">
-                       <p className="text-[10px] font-black tracking-widest text-emerald-400 uppercase mb-2">Resolved</p>
-                       <p className="text-4xl font-black text-emerald-600">{kpi.resolved}</p>
-                     </div>
-                     <div className="bg-amber-50 border border-amber-100 rounded-3xl p-6 text-center">
-                       <p className="text-[10px] font-black tracking-widest text-amber-400 uppercase mb-2">Pending</p>
-                       <p className="text-4xl font-black text-amber-600">{Math.max(0, kpi.appeared - kpi.resolved)}</p>
-                     </div>
-                   </div>
-
-                   <div className="bg-[#003366] rounded-[2.5rem] p-8 text-white relative overflow-hidden group">
-                     <div className="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl" />
-                     <div className="flex justify-between items-center relative z-10">
-                       <div className="space-y-4">
-                         <p className="text-[10px] font-black tracking-widest text-rose-400">RESOLUTION RATE</p>
-                         <div className="flex items-end gap-2">
-                           <span className="text-6xl font-black italic tracking-tighter">{resolutionRate}%</span>
-                           <span className="text-sm font-bold text-white/40 pb-2 uppercase tracking-widest">Resolved</span>
-                         </div>
+        <Portal>
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={onClose}
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-md"
+            />
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-white border border-slate-200 rounded-[3rem] shadow-2xl relative z-10 w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]"
+            >
+              {/* Header */}
+              <div className={`p-10 border-b border-slate-100 relative overflow-hidden flex justify-between items-center`}>
+                 <div className={`absolute -left-10 -top-10 w-40 h-40 rounded-full opacity-5 blur-3xl ${(data.color || 'text-slate-500').replace('text-', 'bg-')}`} />
+                 
+                 <div className="flex items-center gap-6 relative z-10">
+                    <div className={`w-16 h-16 rounded-[2rem] ${data.bg || 'bg-slate-50'} ${data.color || 'text-slate-500'} flex items-center justify-center shadow-xl shadow-blue-900/5`}>
+                       {data.icon ? <data.icon size={28} /> : <AlertTriangle size={28} />}
+                    </div>
+                    <div>
+                       <div className="flex items-center gap-2 mb-1">
+                          <span className="px-3 py-1 bg-slate-100 text-slate-400 text-[10px] font-black uppercase tracking-widest rounded-full">ANALYTICS LAYER</span>
                        </div>
-                       <div className="p-4 bg-white/10 rounded-3xl border border-white/10">
-                         <TrendingUp size={32} className="text-rose-400" />
+                       <h2 className="text-3xl font-black text-[#003366] tracking-tighter italic uppercase">{data.title}</h2>
+                    </div>
+                 </div>
+
+                 <button 
+                   onClick={onClose}
+                   className="p-3 bg-slate-50 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-2xl transition-colors relative z-10"
+                 >
+                    <X size={20} />
+                 </button>
+              </div>
+
+              {/* Body */}
+              <div className="p-10 overflow-y-auto space-y-6 flex-1 custom-scrollbar">
+                 {isCorrective ? (
+                   /* CORRECTIVE-SPECIFIC LAYOUT */
+                   <>
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                       <div className="bg-rose-50 border border-rose-100 rounded-3xl p-6 text-center">
+                         <p className="text-[10px] font-black tracking-widest text-rose-400 uppercase mb-2">Appeared</p>
+                         <p className="text-4xl font-black text-rose-600">{kpi.appeared}</p>
+                       </div>
+                       <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-6 text-center">
+                         <p className="text-[10px] font-black tracking-widest text-emerald-400 uppercase mb-2">Resolved</p>
+                         <p className="text-4xl font-black text-emerald-600">{kpi.resolved}</p>
+                       </div>
+                       <div className="bg-amber-50 border border-amber-100 rounded-3xl p-6 text-center">
+                         <p className="text-[10px] font-black tracking-widest text-amber-400 uppercase mb-2">Pending</p>
+                         <p className="text-4xl font-black text-amber-600">{Math.max(0, kpi.appeared - kpi.resolved)}</p>
                        </div>
                      </div>
-                     
-                     <div className="mt-6 h-3 w-full bg-white/10 rounded-full overflow-hidden relative z-10">
-                       <motion.div 
-                         initial={{ width: 0 }}
-                         animate={{ width: `${resolutionRate}%` }}
-                         transition={{ duration: 1.5, ease: "easeOut" }}
-                         className="h-full bg-gradient-to-r from-rose-500 to-emerald-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]"
-                       />
-                     </div>
 
-                     <div className="mt-6 flex items-center justify-between relative z-10">
-                       <div className="flex items-center gap-3">
-                         <div className={`w-10 h-10 rounded-xl ${resolutionRate >= 80 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'} flex items-center justify-center border ${resolutionRate >= 80 ? 'border-emerald-500/20' : 'border-rose-500/20'}`}>
-                           <CheckCircle2 size={20} />
-                         </div>
-                         <p className="text-xs font-bold text-white/70">Health Status <span className={resolutionRate >= 80 ? 'text-emerald-400' : 'text-rose-400'}>{resolutionRate >= 80 ? 'Good' : resolutionRate >= 50 ? 'Moderate' : 'Critical'}</span></p>
-                       </div>
-                       <button 
-                         onClick={() => { onClose(); onAnalyzeTrends?.(); }}
-                         className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-rose-400 hover:text-white transition-colors"
-                       >
-                          ANALYZE TRENDS <ArrowRight size={14} />
-                       </button>
-                     </div>
-                   </div>
-                 </>
-               ) : (
-                 /* AUDIT / PM LAYOUT */
-                 <>
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <MetricRow label="Daily Activity" actual={data.metrics?.[0]?.actual || 0} target={data.metrics?.[0]?.target || 0} color={data.color} icon={Clock} />
-                      <MetricRow label="Monthly Progress" actual={data.metrics?.[1]?.actual || 0} target={data.metrics?.[1]?.target || 0} color={data.color} icon={Calendar} />
-                   </div>
-
-                   <div className="bg-[#003366] rounded-[2.5rem] p-8 text-white relative overflow-hidden group">
-                      <div className="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl" />
-                      <div className="flex justify-between items-center relative z-10">
+                     <div className="bg-[#003366] rounded-[2.5rem] p-8 text-white relative overflow-hidden group">
+                       <div className="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl" />
+                       <div className="flex justify-between items-center relative z-10">
                          <div className="space-y-4">
-                            <p className="text-[10px] font-black tracking-widest text-[#00a1e4]">YEAR-TO-DATE PERFORMANCE</p>
-                            <div className="flex items-end gap-2">
-                               <span className="text-6xl font-black italic tracking-tighter">{data.metrics?.[2]?.actual || 0}</span>
-                               <span className="text-sm font-bold text-white/40 pb-2 uppercase tracking-widest">/ {data.metrics?.[2]?.target || "Unlimited"} Reports</span>
-                            </div>
+                           <p className="text-[10px] font-black tracking-widest text-rose-400">RESOLUTION RATE</p>
+                           <div className="flex items-end gap-2">
+                             <span className="text-6xl font-black italic tracking-tighter">{resolutionRate}%</span>
+                             <span className="text-sm font-bold text-white/40 pb-2 uppercase tracking-widest">Resolved</span>
+                           </div>
                          </div>
                          <div className="p-4 bg-white/10 rounded-3xl border border-white/10">
-                            <TrendingUp size={32} className="text-[#00a1e4]" />
+                           <TrendingUp size={32} className="text-rose-400" />
                          </div>
-                      </div>
-                      
-                      <div className="mt-8 flex items-center justify-between relative z-10">
+                       </div>
+                       
+                       <div className="mt-6 h-3 w-full bg-white/10 rounded-full overflow-hidden relative z-10">
+                         <motion.div 
+                           initial={{ width: 0 }}
+                           animate={{ width: `${resolutionRate}%` }}
+                           transition={{ duration: 1.5, ease: "easeOut" }}
+                           className="h-full bg-gradient-to-r from-rose-500 to-emerald-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]"
+                         />
+                       </div>
+
+                       <div className="mt-6 flex items-center justify-between relative z-10">
                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
-                               <CheckCircle2 size={20} />
-                            </div>
-                            <p className="text-xs font-bold text-white/70">Efficiency Rating <span className="text-emerald-400">Stable</span></p>
+                           <div className={`w-10 h-10 rounded-xl ${resolutionRate >= 80 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'} flex items-center justify-center border ${resolutionRate >= 80 ? 'border-emerald-500/20' : 'border-rose-500/20'}`}>
+                             <CheckCircle2 size={20} />
+                           </div>
+                           <p className="text-xs font-bold text-white/70">Health Status <span className={resolutionRate >= 80 ? 'text-emerald-400' : 'text-rose-400'}>{resolutionRate >= 80 ? 'Good' : resolutionRate >= 50 ? 'Moderate' : 'Critical'}</span></p>
                          </div>
                          <button 
                            onClick={() => { onClose(); onAnalyzeTrends?.(); }}
-                           className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#00a1e4] hover:text-white transition-colors"
+                           className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-rose-400 hover:text-white transition-colors"
                          >
                             ANALYZE TRENDS <ArrowRight size={14} />
                          </button>
-                      </div>
-                   </div>
+                       </div>
+                     </div>
+                   </>
+                 ) : (
+                   /* AUDIT / PM LAYOUT */
+                   <>
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <MetricRow label="Daily Activity" actual={data.metrics?.[0]?.actual || 0} target={data.metrics?.[0]?.target || 0} color={data.color} icon={Clock} />
+                        <MetricRow label="Monthly Progress" actual={data.metrics?.[1]?.actual || 0} target={data.metrics?.[1]?.target || 0} color={data.color} icon={Calendar} />
+                     </div>
 
-                   <div className="grid grid-cols-3 gap-4">
-                      {[...Array(3)].map((_, i) => (
-                        <div key={i} className="p-5 bg-slate-50 border border-slate-100 rounded-3xl flex flex-col items-center text-center">
-                           <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Sector {i+1}</p>
-                           <p className="text-lg font-black text-[#003366]">{Math.floor((data.metrics?.[1]?.actual || 0) / (i+1))}</p>
+                     <div className="bg-[#003366] rounded-[2.5rem] p-8 text-white relative overflow-hidden group">
+                        <div className="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl" />
+                        <div className="flex justify-between items-center relative z-10">
+                           <div className="space-y-4">
+                              <p className="text-[10px] font-black tracking-widest text-[#00a1e4]">YEAR-TO-DATE PERFORMANCE</p>
+                              <div className="flex items-end gap-2">
+                                 <span className="text-6xl font-black italic tracking-tighter">{data.metrics?.[2]?.actual || 0}</span>
+                                 <span className="text-sm font-bold text-white/40 pb-2 uppercase tracking-widest">/ {data.metrics?.[2]?.target || "Unlimited"} Reports</span>
+                              </div>
+                           </div>
+                           <div className="p-4 bg-white/10 rounded-3xl border border-white/10">
+                              <TrendingUp size={32} className="text-[#00a1e4]" />
+                           </div>
                         </div>
-                      ))}
-                   </div>
-                 </>
-               )}
-            </div>
+                        
+                        <div className="mt-8 flex items-center justify-between relative z-10">
+                           <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
+                                 <CheckCircle2 size={20} />
+                              </div>
+                              <p className="text-xs font-bold text-white/70">Efficiency Rating <span className="text-emerald-400">Stable</span></p>
+                           </div>
+                           <button 
+                             onClick={() => { onClose(); onAnalyzeTrends?.(); }}
+                             className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#00a1e4] hover:text-white transition-colors"
+                           >
+                              ANALYZE TRENDS <ArrowRight size={14} />
+                           </button>
+                        </div>
+                     </div>
+                   </>
+                 )}
+              </div>
 
-            {/* Footer */}
-            <div className="p-8 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-4">
-               <button 
-                 onClick={onClose}
-                 className="px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-100 transition-all"
-               >
-                  Dismiss Focus
-               </button>
-               <button 
-                 onClick={() => onOpenReports?.(metricType)}
-                 className={`px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white shadow-xl shadow-blue-900/10 hover:scale-105 transition-all ${(data.color || 'text-slate-500').replace('text-', 'bg-')}`}
-               >
-                  Open {metricType} Reports
-               </button>
-            </div>
-          </motion.div>
-        </div>
+              {/* Footer */}
+              <div className="p-8 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-4">
+                 <button 
+                   onClick={onClose}
+                   className="px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-100 transition-all"
+                 >
+                    Dismiss Focus
+                 </button>
+                 <button 
+                   onClick={() => onOpenReports?.(metricType)}
+                   className={`px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white shadow-xl shadow-blue-900/10 hover:scale-105 transition-all ${(data.color || 'text-slate-500').replace('text-', 'bg-')}`}
+                 >
+                    Open {metricType} Reports
+                 </button>
+              </div>
+            </motion.div>
+          </div>
+        </Portal>
       )}
     </AnimatePresence>
   );
 }
-

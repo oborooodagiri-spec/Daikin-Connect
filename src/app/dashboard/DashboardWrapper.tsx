@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { 
@@ -17,18 +18,23 @@ import { APP_VERSION } from "@/lib/version";
 import SummaryCards from "../../components/dashboard/SummaryCards";
 import SummaryDetailModal from "../../components/dashboard/SummaryDetailModal";
 import TrendChart from "../../components/dashboard/TrendChart";
-import SmartProjectNavigator from "../../components/dashboard/SmartProjectNavigator";
+import ProjectSpotlight from "../../components/dashboard/ProjectSpotlight";
 import UnitStatusChart from "../../components/dashboard/UnitStatusChart";
 import ActivityFeed from "../../components/dashboard/ActivityFeed";
 import UnitDetailModal from "../../components/UnitDetailModal";
 import ExportOptionsModal from "../../components/dashboard/ExportOptionsModal";
 import ScheduleCalendarWidget from "../../components/dashboard/ScheduleCalendarWidget";
-import { Clock, BarChart3, Activity, Zap, AlertTriangle, Hammer, ArrowRight } from "lucide-react";
+import { Clock, BarChart3, Activity, Zap, AlertTriangle, Hammer, ArrowRight, LayoutGrid, Search } from "lucide-react";
 
 export default function DashboardWrapper() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isApp = searchParams.get("isApp") === "true";
   const trendRef = useRef<HTMLDivElement>(null);
   const [filters, setFilters] = useState<{ customerId?: string; projectId?: string }>({});
+  const [projectName, setProjectName] = useState("");
+  const [isSpotlightOpen, setIsSpotlightOpen] = useState(false);
+  
   const [summaryData, setSummaryData] = useState<any>({
     audit: { actual: { daily: 0, monthly: 0, total: 0 }, target: { daily: 0, monthly: 0, total: 0 } },
     preventive: { actual: { daily: 0, monthly: 0, total: 0 }, target: { daily: 0, monthly: 0, total: 0 } },
@@ -36,8 +42,11 @@ export default function DashboardWrapper() {
       actual: { daily: 0, monthly: 0, total: 0 }, 
       kpi: { appeared: 0, resolved: 0 } 
     },
-    databaseAssets: 0, totalCustomers: 0, activeSites: 0
+    dailyLog: { actual: { daily: 0, monthly: 0, total: 0 }, target: { daily: 0, monthly: 0, total: 0 } },
+    databaseAssets: 0, totalCustomers: 0, activeSites: 0,
+    enabled_forms: "audit,preventive,corrective,dailylog"
   });
+
   const [chartData, setChartData] = useState<any[]>([]);
   const [recentActivities, setRecentActivities] = useState<any[]>([]);
   const [healthStats, setHealthStats] = useState<any[]>([]);
@@ -59,6 +68,23 @@ export default function DashboardWrapper() {
   const [isOnline, setIsOnline] = useState(typeof window !== "undefined" ? navigator.onLine : true);
 
   useEffect(() => {
+    // PERSISTENCE: Check if there's a saved project
+    const saved = localStorage.getItem("daikin_last_project");
+    if (saved) {
+      try {
+        const { cid, pid, name } = JSON.parse(saved);
+        setFilters({ customerId: cid, projectId: pid });
+        setProjectName(name);
+        setIsSpotlightOpen(false);
+      } catch (e) {
+        setIsSpotlightOpen(true);
+      }
+    } else {
+      setIsSpotlightOpen(true);
+    }
+  }, []);
+
+  useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
 
@@ -71,29 +97,59 @@ export default function DashboardWrapper() {
     };
   }, []);
 
+  const handleProjectSelect = (cid: string, pid: string, name: string) => {
+    setFilters({ customerId: cid, projectId: pid });
+    setProjectName(name);
+    setIsSpotlightOpen(false);
+    
+    // PERSISTENCE: Save to localStorage
+    localStorage.setItem("daikin_last_project", JSON.stringify({ cid, pid, name }));
+  };
+
   const fetchData = async (f: { customerId?: string; projectId?: string }) => {
+    if (!f.projectId) return;
+    
+    // Priority 1: Critical Metrics (Instant Feel)
     startTransition(async () => {
-      const [stats, trend, activity, health, details] = await Promise.all([
-        getDashboardData(f),
+      try {
+        const stats = await getDashboardData(f);
+        setSummaryData(stats);
+      } catch (err) {
+        console.error("Critical Stats Error:", err);
+      }
+    });
+
+    // Priority 2: Visual Analytics (Graceful Background)
+    try {
+      const [trend, health] = await Promise.all([
         getTrendChartData(f),
+        getUnitHealthStats(f)
+      ]);
+      setChartData(trend);
+      setHealthStats(health);
+    } catch (err) {
+      console.error("Analytics Error:", err);
+    }
+
+    // Priority 3: Secondary Lists
+    try {
+      const [activity, details] = await Promise.all([
         getRecentActivities(f),
-        getUnitHealthStats(f),
         getDetailedUnitStatus(f)
       ]);
-      setSummaryData(stats);
-      setChartData(trend);
       setRecentActivities(activity);
-      setHealthStats(health);
-      if (details.success) {
-        setProblemUnits(details.problems);
-        setOnProgressUnits(details.progress);
+      if (details && details.success) {
+        setProblemUnits(details.problems || []);
+        setOnProgressUnits(details.progress || []);
       }
-
+      
       const complaintsRes = await getProjectComplaints(f.projectId);
       if (complaintsRes && 'success' in complaintsRes) {
         setRecentComplaints(complaintsRes.data || []);
       }
-    });
+    } catch (err) {
+      console.error("Secondary Data Error:", err);
+    }
   };
 
   const openUnitDetail = async (unit: any) => {
@@ -177,46 +233,166 @@ export default function DashboardWrapper() {
   useEffect(() => { fetchData(filters); }, [filters]);
 
   return (
-    <div className="w-full flex flex-col space-y-8 pb-32">
-      {/* HEADER SECTION - Responsive Flex */}
-        <div className="flex flex-col xl:flex-row w-full items-start xl:items-center justify-between gap-4 pb-6 border-b border-slate-100">
-          <div className="space-y-1 overflow-hidden w-full">
-          <div className="flex flex-wrap items-center gap-2 mb-2">
-            <span className="px-3 py-1 bg-[#00a1e4]/10 text-[#00a1e4] text-[10px] font-black uppercase tracking-widest rounded-full">REALTIME {APP_VERSION}</span>
-            <span className={`px-3 py-1 ${isOnline ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"} text-[10px] font-black uppercase tracking-widest rounded-full flex items-center gap-1 transition-colors duration-500`}>
-              <Zap size={10} className={`${isOnline ? "fill-orange-400 text-orange-400" : "fill-rose-400 text-rose-400"} transition-colors shadow-lg`} /> 
-              {isOnline ? "LIVE CONNECTED" : "OFFLINE MODE"}
-            </span>
+    <div className="w-full flex flex-col space-y-8 pb-32 relative">
+      <ProjectSpotlight 
+        isOpen={isSpotlightOpen} 
+        onSelect={handleProjectSelect} 
+        onClose={filters.projectId ? () => setIsSpotlightOpen(false) : undefined} 
+      />
+
+      <div className={`transition-all duration-500 space-y-8 ${!filters.projectId ? "blur-lg opacity-20 scale-98 pointer-events-none select-none" : "blur-0 opacity-100 scale-100"}`}>
+        {/* HEADER SECTION - Responsive Flex */}
+        {!isApp && (
+          <div className="flex flex-col xl:flex-row w-full items-start xl:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+            <div className="space-y-1 overflow-hidden w-full">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="px-3 py-1 bg-[#00a1e4]/10 text-[#00a1e4] text-[10px] font-black uppercase tracking-widest rounded-full">REALTIME {APP_VERSION}</span>
+                <span className={`px-3 py-1 ${isOnline ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"} text-[10px] font-black uppercase tracking-widest rounded-full flex items-center gap-1 transition-colors duration-500`}>
+                  <Zap size={10} className={`${isOnline ? "fill-orange-400 text-orange-400" : "fill-rose-400 text-rose-400"} transition-colors shadow-lg`} /> 
+                  {isOnline ? "LIVE CONNECTED" : "OFFLINE MODE"}
+                </span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black italic tracking-tighter text-[#003366] leading-none uppercase">
+                {projectName || "COMMAND CENTER"}
+              </h1>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full xl:w-auto">
+              <button 
+                onClick={() => setIsSpotlightOpen(true)}
+                className="group flex items-center gap-3 rounded-2xl px-6 py-4 bg-white border border-slate-100 text-[#003366] shadow-xl shadow-slate-200/50 hover:border-[#00a1e4]/30 transition-all font-black text-[10px] tracking-widest"
+              >
+                <Search size={14} className="text-[#00a1e4] group-hover:scale-125 transition-transform" />
+                CHANGE PROJECT
+              </button>
+              <button 
+                onClick={() => setIsExportModalOpen(true)}
+                className="rounded-2xl px-8 py-4 bg-[#003366] text-white text-[10px] font-black shadow-xl shadow-blue-900/20 uppercase tracking-widest hover:scale-105 transition-all whitespace-nowrap"
+              >
+                EXPORT DATA
+              </button>
+            </div>
           </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black italic tracking-tighter text-[#003366] leading-none">
-            COMMAND <span className="text-[#00a1e4] not-italic">CENTER</span>
-          </h1>
+        )}
+
+        {/* SUMMARY CARDS - Responsive Grid within component */}
+        <div className={`transition-all duration-500 ${isPending ? "opacity-40 scale-[0.99] blur-[2px]" : "opacity-100 scale-100 blur-0"}`}>
+          {isPending && !summaryData.databaseAssets ? (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {[1,2,3,4].map(i => (
+                <div key={i} className="h-32 bg-white rounded-3xl border border-slate-100 animate-pulse" />
+              ))}
+            </div>
+          ) : (
+            <SummaryCards data={summaryData} onCardClick={handleMetricCardClick} />
+          )}
+        </div>
+        
+        {/* OPERATION SCHEDULES WIDGET */}
+        <div className="mt-4">
+          <ScheduleCalendarWidget projectId={filters.projectId} />
         </div>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full xl:w-auto">
-          <div className="flex-1 w-full min-w-[150px] overflow-hidden">
-            <SmartProjectNavigator onFilterChange={setFilters} />
+        {/* MAIN ANALYTICS GRID */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 mt-6">
+          {/* OPERATIONAL TREND ANALYSIS */}
+          <div ref={trendRef} className="xl:col-span-8 bg-white rounded-[2rem] p-5 md:p-10 shadow-xl shadow-slate-200/40 border border-slate-50 relative group overflow-hidden">
+            <div className="flex flex-col md:flex-row justify-between w-full mb-10 gap-6 items-start md:items-center">
+               <div>
+                <h2 className="text-xs font-black italic uppercase tracking-[0.2em] text-[#003366] flex items-center gap-2">
+                  <BarChart3 size={16} className="text-[#00a1e4]" /> OPERATIONAL TREND 2026
+                </h2>
+                <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Monthly service activity</p>
+               </div>
+               <div className="flex flex-wrap gap-4 text-[9px] font-black tracking-widest text-slate-400 uppercase bg-slate-50 px-4 py-2.5 rounded-2xl border border-slate-100">
+                  <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#00A0E9]"></div> AUDIT</span>
+                  <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#00B06B]"></div> PREVENTIVE</span>
+                  <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#EF4444]"></div> CORRECTIVE</span>
+                  <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#6366f1]"></div> DAILY LOG</span>
+               </div>
+            </div>
+
+            <div className={`transition-all duration-700 min-h-[300px] ${isPending ? "scale-[0.98] blur-sm grayscale opacity-30" : "scale-100 blur-0 grayscale-0 opacity-100"}`}>
+              <TrendChart data={chartData} />
+            </div>
           </div>
-          <button 
-            onClick={() => setIsExportModalOpen(true)}
-            className="rounded-2xl px-8 py-4 bg-[#003366] text-white text-xs font-black shadow-xl shadow-blue-900/10 uppercase tracking-widest hover:scale-105 transition-all whitespace-nowrap"
-          >
-            EXPORT DATA
-          </button>
+
+          {/* ASSET HEALTH STATUS */}
+          <div className="xl:col-span-4 bg-white rounded-[2rem] p-5 md:p-10 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col min-h-[400px]">
+            <h2 className="text-xs font-black italic uppercase tracking-[0.2em] text-[#003366] mb-8 flex items-center gap-2 truncate">
+              <Activity size={16} className="text-red-500" /> ASSET HEALTH STATUS
+            </h2>
+            <div className="flex-1 relative">
+              <UnitStatusChart data={healthStats} />
+            </div>
+          </div>
+        </div>
+
+        {/* FOOTER ANALYTICS GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-4">
+          {/* LIVE ACTIVITY FEED */}
+          <div className="lg:col-span-7 bg-white rounded-[2rem] p-5 md:p-10 shadow-xl shadow-slate-200/40 border border-slate-100 min-h-[500px]">
+             <div className="flex justify-between items-center mb-10">
+              <div>
+                <h2 className="text-xs font-black italic uppercase tracking-[0.2em] text-[#003366] flex items-center gap-2">
+                  <Clock size={16} className="text-indigo-500 animate-pulse" /> FIELD ACTIVITY
+                </h2>
+                <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Real-time report submissions</p>
+              </div>
+              <button className="text-[10px] font-black text-[#00a1e4] uppercase underline underline-offset-4 decoration-2">View All</button>
+             </div>
+             <ActivityFeed activities={recentActivities} onItemClick={handleActivityClick} />
+          </div>
+
+          {/* INTERACTIVE STATUS WIDGETS */}
+          <div className="lg:col-span-5 flex flex-col gap-6">
+            <StatusList  
+              title="Units with Problems" 
+              sub="CRITICAL" 
+              items={problemUnits} 
+              color="rose" 
+              icon={<AlertTriangle size={20} className="text-white fill-white" />}
+              onItemClick={openUnitDetail}
+            />
+            <StatusList 
+              title="Work In Progress" 
+              sub="ONGOING" 
+              items={onProgressUnits} 
+              color="amber" 
+              icon={<Hammer size={16} className="text-white fill-white" />}
+              onItemClick={openUnitDetail}
+            />
+            <ComplaintWidget items={recentComplaints} onItemClick={handleActivityClick} />
+          </div>
         </div>
       </div>
 
+      {!filters.projectId && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center py-20 px-6 sm:py-32 bg-white/50 backdrop-blur-sm rounded-[3rem] border-2 border-dashed border-slate-100 shadow-inner">
+           <div className="w-24 h-24 bg-slate-50 rounded-[2.5rem] flex items-center justify-center mb-8 text-slate-300 relative">
+             <LayoutGrid size={40} strokeWidth={1.5} />
+             <div className="absolute -top-2 -right-2 w-8 h-8 bg-[#00a1e4] text-white rounded-full flex items-center justify-center shadow-lg animate-bounce">
+                <Search size={14} />
+             </div>
+           </div>
+           <h2 className="text-2xl font-black text-[#003366] uppercase tracking-tighter mb-3">Project Selection Required</h2>
+           <p className="text-slate-400 font-bold text-sm max-w-sm mx-auto uppercase tracking-widest text-[10px]">Please select a customer and project from the navigator above to activate the Command Center.</p>
+           
+           <div className="mt-10 flex gap-4 opacity-30 grayscale pointer-events-none scale-90 blur-[1px]">
+              <div className="w-32 h-1 bg-slate-200 rounded-full" />
+              <div className="w-16 h-1 bg-slate-200 rounded-full" />
+              <div className="w-24 h-1 bg-slate-200 rounded-full" />
+           </div>
+        </div>
+      )}
+
+      {/* MODALS RENDERED AT ROOT TO PREVENT CONTAINING BLOCK TRAPPING */}
       <ExportOptionsModal 
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
         onExport={handleExport}
         isProcessing={isExporting}
       />
-
-      {/* SUMMARY CARDS - Responsive Grid within component */}
-      <div className={`transition-opacity duration-500 ${isPending ? "opacity-40" : "opacity-100"}`}>
-        <SummaryCards data={summaryData} onCardClick={handleMetricCardClick} />
-      </div>
 
       <SummaryDetailModal 
         isOpen={isMetricModalOpen}
@@ -225,83 +401,6 @@ export default function DashboardWrapper() {
         onAnalyzeTrends={handleAnalyzeTrends}
         onOpenReports={handleOpenReports}
       />
-      
-      {/* OPERATION SCHEDULES WIDGET */}
-      <div className="mt-4">
-        <ScheduleCalendarWidget projectId={filters.projectId} />
-      </div>
-
-      {/* MAIN ANALYTICS GRID */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 mt-6">
-        {/* OPERATIONAL TREND ANALYSIS */}
-        <div ref={trendRef} className="xl:col-span-8 bg-white rounded-[2rem] p-5 md:p-10 shadow-xl shadow-slate-200/40 border border-slate-50 relative group overflow-hidden">
-          <div className="flex flex-col md:flex-row justify-between w-full mb-10 gap-6 items-start md:items-center">
-             <div>
-              <h2 className="text-xs font-black italic uppercase tracking-[0.2em] text-[#003366] flex items-center gap-2">
-                <BarChart3 size={16} className="text-[#00a1e4]" /> OPERATIONAL TREND 2026
-              </h2>
-              <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Monthly service activity</p>
-             </div>
-             <div className="flex flex-wrap gap-4 text-[9px] font-black tracking-widest text-slate-400 uppercase bg-slate-50 px-4 py-2.5 rounded-2xl border border-slate-100">
-                <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#00A0E9]"></div> AUDIT</span>
-                <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#00B06B]"></div> PREVENTIVE</span>
-                <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#EF4444]"></div> CORRECTIVE</span>
-             </div>
-          </div>
-
-          <div className={`transition-all duration-700 min-h-[300px] ${isPending ? "scale-[0.98] blur-sm grayscale opacity-30" : "scale-100 blur-0 grayscale-0 opacity-100"}`}>
-            <TrendChart data={chartData} />
-          </div>
-        </div>
-
-        {/* ASSET HEALTH STATUS */}
-        <div className="xl:col-span-4 bg-white rounded-[2rem] p-5 md:p-10 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col min-h-[400px]">
-          <h2 className="text-xs font-black italic uppercase tracking-[0.2em] text-[#003366] mb-8 flex items-center gap-2 truncate">
-            <Activity size={16} className="text-red-500" /> ASSET HEALTH STATUS
-          </h2>
-          <div className="flex-1 relative">
-            <UnitStatusChart data={healthStats} />
-          </div>
-        </div>
-      </div>
-
-      {/* FOOTER ANALYTICS GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-4">
-        {/* LIVE ACTIVITY FEED */}
-        <div className="lg:col-span-7 bg-white rounded-[2rem] p-5 md:p-10 shadow-xl shadow-slate-200/40 border border-slate-100 min-h-[500px]">
-           <div className="flex justify-between items-center mb-10">
-            <div>
-              <h2 className="text-xs font-black italic uppercase tracking-[0.2em] text-[#003366] flex items-center gap-2">
-                <Clock size={16} className="text-indigo-500 animate-pulse" /> FIELD ACTIVITY
-              </h2>
-              <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Real-time report submissions</p>
-            </div>
-            <button className="text-[10px] font-black text-[#00a1e4] uppercase underline underline-offset-4 decoration-2">View All</button>
-           </div>
-           <ActivityFeed activities={recentActivities} onItemClick={handleActivityClick} />
-        </div>
-
-        {/* INTERACTIVE STATUS WIDGETS */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
-          <StatusList  
-            title="Units with Problems" 
-            sub="CRITICAL" 
-            items={problemUnits} 
-            color="rose" 
-            icon={<AlertTriangle size={20} className="text-white fill-white" />}
-            onItemClick={openUnitDetail}
-          />
-          <StatusList 
-            title="Work In Progress" 
-            sub="ONGOING" 
-            items={onProgressUnits} 
-            color="amber" 
-            icon={<Hammer size={16} className="text-white fill-white" />}
-            onItemClick={openUnitDetail}
-          />
-          <ComplaintWidget items={recentComplaints} onItemClick={handleActivityClick} />
-        </div>
-      </div>
 
       <UnitDetailModal 
         isOpen={isDetailOpen}
@@ -344,7 +443,7 @@ function StatusList({ title, sub, items, color, icon, onItemClick }: any) {
           </div>
         ) : (
           items.map((u: any) => (
-            <div key={u.id} onClick={() => onItemClick(u)} className={`p-4 ${color === 'rose' ? 'bg-rose-50/30' : 'bg-amber-50/30'} hover:bg-slate-50 rounded-2xl border-2 border-slate-50 hover:border-${color}-500/30 transition-all cursor-pointer flex justify-between items-center group/card animate-pulse shadow-sm`}>
+            <div key={u.id} onClick={() => onItemClick(u)} className={`p-4 ${color === 'rose' ? 'bg-rose-50/30' : 'bg-amber-50/30'} hover:bg-slate-50 rounded-2xl border-2 border-slate-50 hover:border-${color}-500/30 transition-all cursor-pointer flex justify-between items-center group/card shadow-sm`}>
               <div className="flex items-center gap-3">
                  <div className={`w-2 h-2 rounded-full ${color === 'rose' ? 'bg-rose-500' : 'bg-amber-500'}`}></div>
                  <div>
