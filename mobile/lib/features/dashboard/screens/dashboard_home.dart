@@ -283,8 +283,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                 fullWidth: true
               ),
               const SizedBox(height: 15),
-              _buildActionCard(context, Icons.history, "SERVICE LOGS", const Color(0xFF009688), const ReportsListScreen(), fullWidth: true),
- bitumen            ],
+            ],
           ),
         ),
       ),
