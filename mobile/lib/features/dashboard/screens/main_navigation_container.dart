@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dashboard_home.dart';
 import '../../units/screens/unit_registry_screen.dart';
+import '../../units/screens/unit_scanner_screen.dart';
 import '../../reports/screens/reports_list_screen.dart';
 import 'web_dashboard_screen.dart';
 
