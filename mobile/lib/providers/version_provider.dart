@@ -24,7 +24,7 @@ class VersionProvider with ChangeNotifier {
     try {
       // Ensure Hive is initialized (SyncService handles Hive.initFlutter)
       final box = await Hive.openBox(_boxName);
-      _requiredVersion = box.get(_keyRequiredVersion, defaultValue: "") as String;
+      _requiredVersion = box.get(_keyRequiredVersion, defaultValue: "V1.8.0") as String;
       
       final packageInfo = await PackageInfo.fromPlatform();
       _currentVersion = "V${packageInfo.version}.${packageInfo.buildNumber}";
@@ -56,9 +56,8 @@ class VersionProvider with ChangeNotifier {
       if (kDebugMode) print("Error saving version info: $e");
     }
     
-    // Simple string comparison for strict compliance as requested
-    // If not equal, update is required.
-    _isUpdateRequired = _currentVersion != _requiredVersion;
+    // Check if update is required (Only if current < required)
+    _isUpdateRequired = _shouldUpdate(_currentVersion, _requiredVersion);
     _isLoading = false;
     
     if (kDebugMode) {
@@ -68,5 +67,32 @@ class VersionProvider with ChangeNotifier {
     }
     
     notifyListeners();
+  }
+
+  bool _shouldUpdate(String current, String required) {
+    if (current == required || required.isEmpty) return false;
+    
+    try {
+      // Clean versions (remove 'V' and non-numeric suffixes if any)
+      final cleanCurrent = current.replaceAll(RegExp(r'[^0-9.]'), '');
+      final cleanRequired = required.replaceAll(RegExp(r'[^0-9.]'), '');
+      
+      final currentParts = cleanCurrent.split('.').map((e) => int.tryParse(e) ?? 0).toList();
+      final requiredParts = cleanRequired.split('.').map((e) => int.tryParse(e) ?? 0).toList();
+      
+      // Pad lists to match length
+      final length = currentParts.length > requiredParts.length ? currentParts.length : requiredParts.length;
+      while (currentParts.length < length) currentParts.add(0);
+      while (requiredParts.length < length) requiredParts.add(0);
+      
+      for (int i = 0; i < length; i++) {
+        if (currentParts[i] < requiredParts[i]) return true; // Needs update
+        if (currentParts[i] > requiredParts[i]) return false; // Newer or safe
+      }
+    } catch (e) {
+      if (kDebugMode) print("Version comparison failed: $e");
+    }
+    
+    return false; // Default: no update
   }
 }
