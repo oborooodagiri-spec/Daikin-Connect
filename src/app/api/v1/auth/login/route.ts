@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       token,
-      required_version: "V1.7.20260407",
+      required_version: "V1.8.0",
       user: {
         id: user.id,
         name: user.name,

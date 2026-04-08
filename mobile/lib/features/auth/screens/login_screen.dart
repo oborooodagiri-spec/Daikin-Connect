@@ -175,65 +175,19 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               
               const SizedBox(height: 40),
-              _buildDownloaderSection(),
+              Text(
+                "VERSION 1.8.0",
+                style: GoogleFonts.inter(
+                  color: const Color(0x3DFFFFFF),
+                  fontSize: 8,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 4,
+                ),
+              ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildDownloaderSection() {
-    return FadeInUp(
-      delay: const Duration(milliseconds: 1000),
-      child: Column(
-        children: [
-          Text(
-            "DOWNLOAD APP",
-            style: GoogleFonts.inter(
-              color: const Color(0x3DFFFFFF),
-              fontSize: 9,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 4,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildDownloadIcon(Icons.android, "ANDROID"),
-              const SizedBox(width: 40),
-              _buildDownloadIcon(Icons.apple, "IOS"),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDownloadIcon(IconData icon, String label) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: const Color(0x08FFFFFF),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0x0DFFFFFF)),
-          ),
-          child: Icon(icon, color: const Color(0x61FFFFFF), size: 20),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: GoogleFonts.inter(
-            color: const Color(0x3DFFFFFF),
-            fontSize: 7,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 1,
-          ),
-        ),
-      ],
     );
   }
 
@@ -257,11 +211,11 @@ class _LoginScreenState extends State<LoginScreen> {
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(color: Color(0x61FFFFFF)),
-          prefixIcon: Icon(icon, color: const Color(0x61FFFFFF), size: 20),
+          hintStyle: const TextStyle(color: Color(0x2AFFFFFF)),
+          prefixIcon: Icon(icon, color: const Color(0x2AFFFFFF), size: 20),
           suffixIcon: isPassword 
             ? IconButton(
-                icon: Icon(showPassword ? Icons.visibility_off : Icons.visibility, color: const Color(0x61FFFFFF), size: 20),
+                icon: Icon(showPassword ? Icons.visibility_off : Icons.visibility, color: const Color(0x2AFFFFFF), size: 20),
                 onPressed: onToggle,
               )
             : null,

@@ -40,7 +40,7 @@ class _WebDashboardScreenState extends State<WebDashboardScreen> {
           },
         ),
       )
-      ..loadRequest(Uri.parse("https://daikin-connect.com/dashboard"));
+      ..loadRequest(Uri.parse("https://daikin-connect.com/dashboard?isApp=true"));
   }
 
   @override

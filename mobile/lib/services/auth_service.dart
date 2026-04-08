@@ -32,7 +32,7 @@ class AuthService {
     } on DioException catch (e) {
       return {
         'success': false, 
-        'message': e.response?.data['message'] ?? 'Connection error'
+        'message': e.response?.data['error'] ?? 'Connection error'
       };
     }
   }

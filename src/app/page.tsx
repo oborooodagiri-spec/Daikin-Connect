@@ -25,11 +25,10 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const isApp = window.navigator.userAgent.includes("DaikinConnectMobile");
-      setIsInsideApp(isApp);
+      const isUA = window.navigator.userAgent.includes("DaikinConnectMobile");
+      const isQuery = new URLSearchParams(window.location.search).get("isApp") === "true";
+      setIsInsideApp(isUA || isQuery);
     }
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
