@@ -10,6 +10,7 @@ import '../../../services/sync_service.dart';
 import '../../../providers/auth_provider.dart';
 import '../../schedule/screens/schedule_list_screen.dart';
 import '../../units/screens/unit_passport_screen.dart';
+import 'web_dashboard_screen.dart';
 
 class DashboardHome extends StatefulWidget {
   const DashboardHome({super.key});
@@ -273,8 +274,17 @@ class _DashboardHomeState extends State<DashboardHome> {
                 ],
               ),
               const SizedBox(height: 15),
+              _buildActionCard(
+                context, 
+                Icons.analytics, 
+                "MASTER DASHBOARD", 
+                const Color(0xFF00A1E4), 
+                const WebDashboardScreen(),
+                fullWidth: true
+              ),
+              const SizedBox(height: 15),
               _buildActionCard(context, Icons.history, "SERVICE LOGS", const Color(0xFF009688), const ReportsListScreen(), fullWidth: true),
-            ],
+ bitumen            ],
           ),
         ),
       ),

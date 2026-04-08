@@ -5,14 +5,14 @@ class ApiService {
   late final Dio _dio;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   
-  // Update this to your production/local IP in development
-  static const String baseUrl = 'http://103.196.155.200:23000/api/v1';
+  // Official Production API URL
+  static const String baseUrl = 'https://daikin-connect.com/api/v1';
 
   ApiService() {
     _dio = Dio(BaseOptions(
       baseUrl: baseUrl,
-      connectTimeout: const Duration(seconds: 15),
-      receiveTimeout: const Duration(seconds: 15),
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

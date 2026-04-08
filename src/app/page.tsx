@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -21,6 +21,14 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [isInsideApp, setIsInsideApp] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const isApp = window.navigator.userAgent.includes("DaikinConnectMobile");
+      setIsInsideApp(isApp);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,24 +122,25 @@ export default function LoginPage() {
         </div>
 
         {/* Android & iOS Download Section */}
-        <div className="relative z-10 py-12">
-           <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6">DOWNLOAD MOBILE APP</p>
-           <div className="flex items-center gap-8">
-              <a href="/downloads/daikin-connect.apk" download className="group/dl flex flex-col items-center gap-2 transition-all duration-500">
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 group-hover/dl:bg-[#00a1e4]/10 group-hover/dl:border-[#00a1e4]/30 group-hover/dl:scale-110 active:scale-95 transition-all">
-                  <Smartphone className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-[8px] font-black text-slate-500 group-hover/dl:text-white uppercase tracking-widest text-center">ANDROID<br/>.APK</span>
-              </a>
-              <a href="#" className="group/dl flex flex-col items-center gap-2 transition-all duration-500 cursor-not-allowed opacity-50">
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 group-hover/dl:bg-[#00a1e4]/10 group-hover/dl:border-[#00a1e4]/30 transition-all">
-                  <Apple className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-[8px] font-black text-slate-500 group-hover/dl:text-white uppercase tracking-widest text-center">APPLE<br/>READY SOON</span>
-              </a>
-           </div>
-        </div>
-
+        {!isInsideApp && (
+          <div className="relative z-10 py-12">
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6">DOWNLOAD MOBILE APP</p>
+            <div className="flex items-center gap-8">
+                <a href="/downloads/daikin-connect.apk" download className="group/dl flex flex-col items-center gap-2 transition-all duration-500">
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 group-hover/dl:bg-[#00a1e4]/10 group-hover/dl:border-[#00a1e4]/30 group-hover/dl:scale-110 active:scale-95 transition-all">
+                    <Smartphone className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="text-[8px] font-black text-slate-500 group-hover/dl:text-white uppercase tracking-widest text-center">ANDROID<br/>.APK</span>
+                </a>
+                <a href="#" className="group/dl flex flex-col items-center gap-2 transition-all duration-500 cursor-not-allowed opacity-50">
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 group-hover/dl:bg-[#00a1e4]/10 group-hover/dl:border-[#00a1e4]/30 transition-all">
+                    <Apple className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="text-[8px] font-black text-slate-500 group-hover/dl:text-white uppercase tracking-widest text-center">APPLE<br/>READY SOON</span>
+                </a>
+            </div>
+          </div>
+        )}
         {/* Quality Assurance Section */}
         <div className="mt-auto pt-12">
            <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Certified & Compliant By</p>
@@ -343,24 +352,25 @@ export default function LoginPage() {
         </motion.div>
 
         {/* Mobile Download Links (Visible on Mobile Only) */}
-        <div className="md:hidden mt-12 w-full max-w-md text-center">
-            <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6">DOWNLOAD MOBILE APP</p>
-            <div className="flex justify-center gap-12">
-                <a href="/downloads/daikin-connect.apk" download className="flex flex-col items-center gap-2 group/mobile-dl">
-                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 group-active/mobile-dl:bg-[#00a1e4]/20 transition-all">
-                    <Smartphone className="w-6 h-6 text-white" />
-                  </div>
-                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest text-center">ANDROID<br/>.APK</span>
-                </a>
-                <a href="#" className="flex flex-col items-center gap-2 group/mobile-dl opacity-50 cursor-not-allowed">
-                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 group-active/mobile-dl:bg-[#00a1e4]/20 transition-all">
-                    <Apple className="w-6 h-6 text-white" />
-                  </div>
-                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest text-center">IOS<br/>READY SOON</span>
-                </a>
-            </div>
-        </div>
-
+        {!isInsideApp && (
+          <div className="md:hidden mt-12 w-full max-w-md text-center">
+              <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6">DOWNLOAD MOBILE APP</p>
+              <div className="flex justify-center gap-12">
+                  <a href="/downloads/daikin-connect.apk" download className="flex flex-col items-center gap-2 group/mobile-dl">
+                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 group-active/mobile-dl:bg-[#00a1e4]/20 transition-all">
+                      <Smartphone className="w-6 h-6 text-white" />
+                    </div>
+                    <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest text-center">ANDROID<br/>.APK</span>
+                  </a>
+                  <a href="#" className="flex flex-col items-center gap-2 group/mobile-dl opacity-50 cursor-not-allowed">
+                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 group-active/mobile-dl:bg-[#00a1e4]/20 transition-all">
+                      <Apple className="w-6 h-6 text-white" />
+                    </div>
+                    <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest text-center">IOS<br/>READY SOON</span>
+                  </a>
+              </div>
+          </div>
+        )}
         {/* Mobile Copyright Footer */}
         <div className="mt-12 md:mt-24 text-center pb-8 md:pb-0 relative z-10 w-full">
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
