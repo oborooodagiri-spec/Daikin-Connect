@@ -13,6 +13,7 @@ const SCOPE_ROWS = [
   { key: "clean_air_filter", label: "Cleaning or Replace Air Filter", type: "action" },
   { key: "clean_coil", label: "Cleaning Coil AHU/FCU", type: "action" },
   { key: "clean_drainage", label: "Cleaning Drainage", type: "action" },
+  { key: "clean_body", label: "Cleaning Body Unit", type: "action" },
   { key: "check_vbelt", label: "Check V-Belt / Tension", type: "action" },
   { key: "check_bearing", label: "Check Bearing Motor/Blower", type: "action" },
 ];
@@ -68,10 +69,9 @@ export const getPreventiveSections = (data: any, unit: any, engineerName?: strin
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "7pt", fontWeight: "bold" }}>
         <thead>
           <tr style={{ backgroundColor: "#f1f5f9" }}>
-            <th style={{ ...thStyle, width: "40%", textAlign: "left", paddingLeft: "3mm" }}>General Actions to be Taken</th>
             <th style={{ ...thStyle, width: "15%" }}>Before</th>
             <th style={{ ...thStyle, width: "15%" }}>After</th>
-            <th style={{ ...thStyle, width: "30%" }}>Engineer Remarks</th>
+            <th style={{ ...thStyle, width: "30%" }}>Margin / Result</th>
           </tr>
         </thead>
         <tbody>
@@ -137,7 +137,6 @@ export const getPreventiveSections = (data: any, unit: any, engineerName?: strin
       </div>
     </div>,
 
-    // SIGNATURES - NO BREAK
     <div key="sign" style={{ display: "flex", gap: "5mm", marginTop: "2mm", marginBottom: "6mm" }}>
       <div style={signBox}>
         <p style={signTitle}>Service Engineer Signature</p>
@@ -148,14 +147,22 @@ export const getPreventiveSections = (data: any, unit: any, engineerName?: strin
         </div>
       </div>
       <div style={{ ...signBox, position: "relative" }}>
-         <div style={{ position: "absolute", top: "-5mm", right: "5mm", zIndex: 10 }}>
-            <DigitalStamp />
-         </div>
+         {data.isApproved && (
+           <div style={{ position: "absolute", top: "-5mm", right: "5mm", zIndex: 10 }}>
+              <DigitalStamp />
+           </div>
+         )}
         <p style={signTitle}>Customer Acknowledgment</p>
-        <div style={{ flex: 1, minHeight: "10mm" }}></div>
+        <div style={{ flex: 1, minHeight: "10mm", display: "flex", alignItems: "center", justifyContent: "center" }}>
+           {data.isApproved ? (
+              <p style={{ fontSize: "8pt", color: "#059669", fontWeight: 800, textTransform: "uppercase" }}>[ Digitally Approved ]</p>
+           ) : (
+              <p style={{ fontSize: "7pt", color: "#cbd5e1", fontStyle: "italic" }}>Waiting for Signature</p>
+           )}
+        </div>
         <div style={signDetail}>
-          <p style={{ margin: "0.5mm 0" }}>Name: {customerName || "-"}</p>
-          <p style={{ margin: "0.5mm 0" }}>Date: ________________</p>
+          <p style={{ margin: "0.5mm 0" }}>Name: {data.customerApproverName || customerName || "-"}</p>
+          <p style={{ margin: "0.5mm 0" }}>Date: {data.approvedAt ? new Date(data.approvedAt).toLocaleDateString("id-ID") : "________________"}</p>
         </div>
       </div>
     </div>,

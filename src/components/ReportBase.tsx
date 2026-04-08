@@ -44,7 +44,7 @@ export const ReportBase = ({
         <div style={{ padding: "10mm 15mm 0 15mm" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "5mm" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "5mm" }}>
-              <img src="/app-logo.png" alt="Daikin" style={{ height: "12mm", objectFit: "contain" }} />
+              <img src="/daikin_logo.png" alt="Daikin" style={{ height: "12mm", objectFit: "contain" }} />
               <div style={{ height: "10mm", width: "1px", backgroundColor: "#003366" }}></div>
               <div style={{ fontSize: "8pt", fontWeight: 900, color: "#003366", textTransform: "uppercase", lineHeight: "1.2", maxWidth: "60mm" }}>
                 PT DAIKIN APPLIED SOLUTIONS INDONESIA

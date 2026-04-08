@@ -203,6 +203,7 @@ model activity_photos {
   id                 Int                 @id @default(autoincrement())
   activity_id        Int?
   type               String?             @default("AUDIT") @db.VarChar(50)
+  media_type         String              @default("image") @db.VarChar(10) // "image" or "video"
   photo_url          String              @db.VarChar(255)
   notes              String?             @db.Text
   description        String?             @db.Text
@@ -365,6 +366,14 @@ model service_activities {
   technical_advice        String?                    @db.Text
   location                String?                    @db.VarChar(255)
   unit_tag                String?                    @db.VarChar(100)
+
+  // Berita Acara & Signature Integration
+  berita_acara_pdf_url    String?                    @db.VarChar(255)
+  is_approved_by_customer Boolean?                   @default(false)
+  customer_approver_name  String?                    @db.VarChar(255)
+  customer_approved_at    DateTime?                  @db.DateTime(0)
+  engineer_signer_name    String?                    @db.VarChar(255)
+
   design_airflow          Float?                     @default(0) @db.Float
   design_cooling_capacity Float?                     @default(0) @db.Float
   entering_db             Float?                     @default(0) @db.Float

@@ -55,12 +55,13 @@ export async function createCorrectiveActivity(data: any) {
       console.warn("Legacy corrective save skipped:", legacyErr);
     }
 
-    // Save Photos
+    // Save Photos & Videos
     if (photos && Array.isArray(photos)) {
       await prisma.activity_photos.createMany({
         data: photos.map((p: any) => ({
           activity_id: newActivity.id,
           type: "CORRECTIVE",
+          media_type: p.media_type || "image",
           photo_url: p.photo_url,
           description: p.description || "Corrective Documentation",
         })),

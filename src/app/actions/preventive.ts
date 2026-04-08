@@ -35,12 +35,13 @@ export async function createPreventiveActivity(data: any) {
       }
     });
 
-    // Save Photos
+    // Save Photos & Videos
     if (photos && Array.isArray(photos)) {
       await prisma.activity_photos.createMany({
         data: photos.map((p: any) => ({
           activity_id: newActivity.id,
           type: "PREVENTIVE",
+          media_type: p.media_type || "image",
           photo_url: p.photo_url,
           description: p.description || "Preventive Maintenance Documentation"
         }))

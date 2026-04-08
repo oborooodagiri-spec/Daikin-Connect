@@ -191,3 +191,46 @@ export async function getProjectComplaints(projectId?: string) {
     return { error: "Failed to fetch complaints" };
   }
 }
+
+/**
+ * Delete a specific complaint record.
+ * RESTRICTED: Only Admins/Internal users can delete records.
+ */
+export async function deleteComplaint(id: number) {
+  try {
+    const session = await getSession();
+    if (!session || !session.isInternal) {
+      return { error: "Unauthorized: Only Admins can delete complaints." };
+    }
+
+    await (prisma.complaints as any).delete({
+      where: { id: id }
+    });
+
+    revalidatePath("/dashboard");
+    return serializePrisma({ success: true });
+  } catch (error) {
+    console.error("Delete complaint error:", error);
+    return { error: "Failed to delete complaint record" };
+  }
+}
+
+/**
+ * Get all complaints history for a specific unit
+ */
+export async function getUnitComplaints(unitId: number) {
+  try {
+    const complaints = await (prisma.complaints as any).findMany({
+      where: { unit_id: unitId },
+      orderBy: { created_at: 'desc' }
+    });
+
+    return serializePrisma({
+      success: true,
+      data: complaints
+    });
+  } catch (error) {
+    console.error("Get unit complaints error:", error);
+    return { error: "Failed to fetch unit complaints history" };
+  }
+}

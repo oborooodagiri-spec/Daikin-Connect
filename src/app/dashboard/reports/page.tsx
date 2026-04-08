@@ -2,11 +2,11 @@
 
 import { useEffect, useState, useTransition, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { getAllReports, getReportDetail } from "@/app/actions/reports";
+import { getAllReports, getReportDetail, getSummaryData } from "@/app/actions/reports";
 import {
   FileText, Search, Download, Filter, ChevronLeft, ChevronRight,
   ClipboardCheck, Wrench, AlertTriangle, BarChart3, Calendar,
-  Eye, ExternalLink, Image as ImageIcon, X, Printer
+  Eye, ExternalLink, Image as ImageIcon, X, Printer, Play, FileVideo, Loader2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -14,6 +14,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { getAuditSections } from "@/components/AuditPDFTemplate";
 import { getPreventiveSections } from "@/components/PreventivePDFTemplate";
 import { getCorrectiveSections } from "@/components/CorrectivePDFTemplate";
+import { getSummarySections } from "@/components/SummaryReportTemplate";
 import { ReportBase } from "@/components/ReportBase";
 
 const TYPE_CONFIG: Record<string, { color: string; bg: string; border: string; icon: any; label: string }> = {
@@ -40,6 +41,8 @@ function ReportsContent() {
 
   // Detail modal & Print execution
   const [selectedReport, setSelectedReport] = useState<any>(null);
+  const [isSelecting, setIsSelecting] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
   const [printData, setPrintData] = useState<any>(null);
   const [printPages, setPrintPages] = useState<any[][]>([]);
@@ -70,13 +73,104 @@ function ReportsContent() {
   const handleSearch = () => fetchReports(1);
   const handlePageChange = (p: number) => fetchReports(p);
 
-  const handlePrint = async (reportId: string) => {
-    setIsPrinting(true);
+  const handleSelectReport = async (reportId: string) => {
+    setIsSelecting(reportId);
     try {
       const res = await getReportDetail(reportId);
       if ("success" in res && res.success) {
-        const report = res.data;
-        const renderData = getRenderData(report);
+        const processed = getRenderData(res.data);
+        setSelectedReport(processed);
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Gagal memuat detail laporan.");
+    } finally {
+      setIsSelecting(null);
+    }
+  };
+
+  const handleExportSummary = async () => {
+    if (!dateFrom || !dateTo) {
+      alert("Mohon pilih rentang tanggal (Dari & Sampai) terlebih dahulu.");
+      return;
+    }
+    setIsExporting(true);
+    setIsPrinting(true);
+    try {
+      const res = await getSummaryData(dateFrom, dateTo) as any;
+      if (res.success) {
+        const summaryData = res.data;
+        setPrintData({ type: "SUMMARY", reference_id: `SR-${Date.now()}` }); // Mock for ReportBase
+
+        const PX_PER_MM = 3.78;
+        const SAFE_CONTENT_MM = 220;
+        const SAFE_PX = SAFE_CONTENT_MM * PX_PER_MM;
+
+        const sections = getSummarySections(summaryData);
+        const pages: any[][] = [[]];
+        let currentHeight = 0;
+
+        const { createRoot } = await import("react-dom/client");
+        const measureDiv = document.createElement("div");
+        measureDiv.style.width = "794px";
+        measureDiv.style.position = "absolute";
+        measureDiv.style.left = "-9999px";
+        document.body.appendChild(measureDiv);
+
+        for (const section of sections) {
+          const tempWrap = document.createElement("div");
+          tempWrap.style.width = "100%";
+          measureDiv.appendChild(tempWrap);
+          const root = createRoot(tempWrap);
+          
+          await new Promise<void>((resolve) => {
+            root.render(section);
+            setTimeout(resolve, 150); 
+          });
+
+          const sectionHeight = tempWrap.offsetHeight;
+          if (currentHeight + sectionHeight > SAFE_PX && currentHeight > 0) {
+            pages.push([section]);
+            currentHeight = sectionHeight;
+          } else {
+            pages[pages.length - 1].push(section);
+            currentHeight += sectionHeight;
+          }
+          root.unmount();
+        }
+        document.body.removeChild(measureDiv);
+        setPrintPages(pages);
+
+        document.title = `Summary_Report_${dateFrom}_to_${dateTo}`;
+        setTimeout(() => {
+          window.print();
+          setIsPrinting(false);
+          setIsExporting(false);
+          setPrintPages([]);
+          document.title = "Daikin Connect Reports";
+        }, 1500);
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Gagal mengexport summary.");
+      setIsPrinting(false);
+      setIsExporting(false);
+    }
+  };
+
+  const handlePrint = async (reportId: string) => {
+    setIsPrinting(true);
+    try {
+      // If already selected, use it, otherwise fetch
+      let report = selectedReport;
+      if (!report || report.id !== reportId.toString()) {
+        const res = await getReportDetail(reportId);
+        if ("success" in res && res.success) {
+          report = getRenderData(res.data);
+        }
+      }
+
+      if (report) {
         setPrintData(report);
         
         const PX_PER_MM = 3.78;
@@ -84,9 +178,9 @@ function ReportsContent() {
         const SAFE_PX = SAFE_CONTENT_MM * PX_PER_MM;
 
         let sections: any[] = [];
-        if (report.type === "Audit") sections = getAuditSections(renderData, report.units);
-        if (report.type === "Preventive") sections = getPreventiveSections(renderData, report.units, renderData.engineerName, renderData.customerName);
-        if (report.type === "Corrective") sections = getCorrectiveSections(renderData, report.units);
+        if (report.type === "Audit") sections = getAuditSections(report, report.units);
+        if (report.type === "Preventive") sections = getPreventiveSections(report, report.units, report.engineerName, report.customerName);
+        if (report.type === "Corrective") sections = getCorrectiveSections(report, report.units);
 
         const measureDiv = document.createElement("div");
         measureDiv.style.width = "794px";
@@ -108,7 +202,7 @@ function ReportsContent() {
           
           await new Promise<void>((resolve) => {
             root.render(section);
-            setTimeout(resolve, 50);
+            setTimeout(resolve, 100); // Increased wait for accurate measurement
           });
 
           const sectionHeight = tempWrap.offsetHeight;
@@ -130,13 +224,14 @@ function ReportsContent() {
         const oldTitle = document.title;
         document.title = `${type}_${tag}`;
 
+        // Wait for state to catch up and images to load in the print view
         setTimeout(() => {
           window.print();
           setIsPrinting(false);
           setPrintData(null);
           setPrintPages([]);
           document.title = oldTitle;
-        }, 800);
+        }, 1200);
       }
     } catch (err) {
       console.error(err);
@@ -162,14 +257,21 @@ function ReportsContent() {
       console.error("JSON Parse Error", e);
     }
 
-    const photos = report.activity_photos?.map((p: any) => {
+    const rawPhotos = report.activity_photos || [];
+    const photos = rawPhotos.map((p: any) => {
       let url = p.photo_url || "";
       if (url && !url.startsWith('http') && !url.startsWith('/')) {
-        const folder = (p.type || report.type || "misc").toLowerCase();
+        // Fallback folder detection
+        let folder = (report.type || "misc").toLowerCase();
+        if (p.media_type === "video") folder = "videos";
+        else if (folder === "audit") folder = "photos";
+        else if (folder === "preventive") folder = "preventive";
+        else if (folder === "corrective") folder = "corrective";
+        
         url = `/uploads/${folder}/${url}`;
       }
       return { ...p, photo_url: url };
-    }) || [];
+    });
 
     if (report.type === "Preventive") {
       const labels = [
@@ -275,6 +377,10 @@ function ReportsContent() {
         ))}
       </div>
 
+      <div className="p-3 bg-blue-900/10 border border-blue-900/20 rounded-xl text-[10px] font-mono text-blue-900/60 no-print">
+        DEBUG: Reports Array Length: {reports.length} | Stats Total: {stats.totalAll} | Type Filter: {typeFilter}
+      </div>
+
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 no-print">
         <div className="flex items-center gap-3 flex-wrap">
           <div className="flex gap-1 bg-slate-100 rounded-xl p-1">
@@ -286,7 +392,23 @@ function ReportsContent() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSearch()} placeholder="Cari berdasarkan unit tag..." className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" />
           </div>
-          <button onClick={handleSearch} className="px-5 py-2.5 bg-[#00a1e4] text-white rounded-xl text-xs font-bold shadow-md hover:bg-[#008cc6]"><Filter size={14} className="inline mr-1" /> Filter</button>
+          <div className="flex items-center gap-2">
+             <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-1 gap-2">
+                <Calendar size={14} className="text-slate-400" />
+                <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="bg-transparent text-xs font-bold focus:outline-none" />
+                <span className="text-slate-300">to</span>
+                <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="bg-transparent text-xs font-bold focus:outline-none" />
+             </div>
+             <button onClick={handleSearch} className="px-5 py-2.5 bg-[#003366] text-white rounded-xl text-xs font-bold shadow-md hover:bg-[#002244]"><Filter size={14} className="inline mr-1" /> Filter</button>
+             <button 
+               onClick={handleExportSummary} 
+               disabled={isExporting}
+               className="px-5 py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-bold shadow-md hover:bg-emerald-700 flex items-center gap-2 transform active:scale-95 transition-all disabled:opacity-50"
+             >
+                {isExporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+                Export Summary Report
+             </button>
+          </div>
         </div>
       </div>
 
@@ -310,9 +432,15 @@ function ReportsContent() {
             </thead>
             <tbody>
               {reports.map((r: any) => (
-                <tr key={r.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => setSelectedReport(r)}>
-                  <td className="p-4 font-bold text-slate-400">#{r.id}</td>
-                  <td className="p-4"><span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${TYPE_CONFIG[r.type]?.bg} ${TYPE_CONFIG[r.type]?.color}`}>{r.type}</span></td>
+                <tr key={r.id} className={`border-b border-slate-50 transition-colors cursor-pointer ${isSelecting === r.id ? 'bg-blue-50' : 'hover:bg-slate-50'}`} onClick={() => handleSelectReport(r.id)}>
+                  <td className="p-4 font-bold text-slate-400">
+                    {isSelecting === r.id ? <Loader2 size={14} className="animate-spin text-[#00a1e4]" /> : `#${r.id}`}
+                  </td>
+                  <td className="p-4">
+                    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${TYPE_CONFIG[r.type]?.bg} ${TYPE_CONFIG[r.type]?.color}`}>
+                      {r.type}
+                    </span>
+                  </td>
                   <td className="p-4">
                     <p className="font-bold text-slate-800">{r.units?.tag_number || r.unit_tag}</p>
                     {r.units?.room_tenant && <p className="text-[10px] font-bold text-slate-400">{r.units.room_tenant}{r.units?.area ? ` · ${r.units.area}` : ''}</p>}
@@ -344,6 +472,30 @@ function ReportsContent() {
                      <InfoItem label="Engineer" value={selectedReport.inspector_name} />
                      <InfoItem label="Date" value={formatDate(selectedReport.service_date)} />
                   </div>
+
+                  {/* Media Documentation Preview */}
+                  {selectedReport.activity_photos && selectedReport.activity_photos.length > 0 && (
+                    <div className="mb-8 p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                       <p className="text-[10px] font-black uppercase tracking-widest text-[#003366] mb-4 flex items-center gap-2">
+                          <ImageIcon size={14} className="text-[#00a1e4]" /> Media Documentation
+                       </p>
+                       <div className="grid grid-cols-3 gap-3">
+                          {selectedReport.activity_photos.map((m: any, i: number) => (
+                            <div key={i} className="aspect-square rounded-xl overflow-hidden bg-white border border-slate-200 relative group cursor-pointer shadow-sm">
+                              {m.media_type === 'video' ? (
+                                 <div className="w-full h-full flex items-center justify-center bg-slate-900">
+                                    <Play size={20} className="text-white fill-white opacity-60 group-hover:opacity-100 transition-all group-hover:scale-110" />
+                                    <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-amber-500 text-white text-[7px] font-black uppercase rounded shadow-lg">Video</div>
+                                 </div>
+                              ) : (
+                                 <img src={m.photo_url} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="Doc" />
+                              )}
+                            </div>
+                          ))}
+                       </div>
+                    </div>
+                  )}
+
                   <button onClick={() => handlePrint(selectedReport.id)} className="w-full py-4 bg-[#003366] text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-900/10 hover:scale-[1.02] transition-all">Print Official (A4)</button>
                </div>
             </motion.div>
@@ -354,7 +506,14 @@ function ReportsContent() {
       <div className="print-safe print:block hidden" style={{ display: isPrinting ? "block" : "none" }}>
         {printPages.map((pageContent, i) => (
           <div key={i} style={{ marginBottom: i < printPages.length - 1 ? "10mm" : 0, breakAfter: "page" }}>
-            <ReportBase reportTitle={printData.type + " REPORT"} reportCode={printData.reference_id} unit={printData.units} pageNumber={i + 1} totalPages={printPages.length} isFixedHeight={true}>
+            <ReportBase 
+              reportTitle={printData?.type === "SUMMARY" ? "SUMMARY REPORT" : (printData?.type || "Report") + " REPORT"} 
+              reportCode={printData?.reference_id} 
+              unit={printData?.units} 
+              pageNumber={i + 1} 
+              totalPages={printPages.length} 
+              isFixedHeight={true}
+            >
               <div style={{ padding: "0 5mm" }}>{pageContent}</div>
             </ReportBase>
           </div>

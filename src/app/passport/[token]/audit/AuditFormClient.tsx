@@ -9,7 +9,8 @@ import { createAuditActivity } from "@/app/actions/audit";
 import { savePendingSubmission } from "@/lib/offline-db";
 import { 
   ChevronRight, ChevronLeft, Save, Camera, FileText,
-  CheckCircle2, AlertCircle, MapPin, X, UploadCloud, Printer, WifiOff
+  CheckCircle2, AlertCircle, MapPin, X, UploadCloud, Printer, WifiOff,
+  FileVideo, Play
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -60,8 +61,7 @@ export default function AuditFormClient({ unit }: { unit: any }) {
     volt_rs: "", volt_rt: "", volt_st: "", volt_ln: ""
   });
 
-  const [photos, setPhotos] = useState<File[]>([]);
-  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  const [mediaItems, setMediaItems] = useState<{file: File, type: "image" | "video", preview: string}[]>([]);
 
   // Handlers for deeply nested state (t)
   const setT = (key: string, val: any) => setFormData({ ...formData, t: { ...formData.t, [key]: val }});
@@ -104,9 +104,52 @@ export default function AuditFormClient({ unit }: { unit: any }) {
     return 0;
   };
 
+  // Health Vitality Calculation (Matching units.ts logic)
+  const healthScore = useMemo(() => {
+    let techScore = 100;
+    let perfScore = 100;
+    let ageScore = 100;
+
+    // 1. Technical Findings / Temuan from Accessories (E. Accessories)
+    const allAccessories = [...formData.t.inlet, ...formData.t.outlet];
+    const defects = allAccessories.filter(a => a === "DEFECT").length;
+    if (defects > 3) techScore = 0;
+    else if (defects > 0) techScore = 50;
+
+    // 2. Performance / Temp Delta (B. Air Side)
+    const entering = parseFloat(formData.entering_db) || 0;
+    const leaving = parseFloat(formData.leaving_db) || 0;
+    const delta = entering - leaving;
+    if (delta > 0) {
+      if (delta < 7 || delta > 14) perfScore = 40;
+      else if (delta < 8 || delta > 12) perfScore = 70;
+    } else if (entering > 0) {
+      perfScore = 50;
+    }
+
+    // 3. Age Factor
+    if (unit.yoi) {
+      const age = new Date().getFullYear() - unit.yoi;
+      if (age > 15) ageScore = 20;
+      else if (age > 10) ageScore = 50;
+      else if (age > 7) ageScore = 80;
+    }
+
+    return Math.round((techScore * 0.5) + (perfScore * 0.3) + (ageScore * 0.2));
+  }, [formData, unit.yoi]);
+
+  const healthLabel = useMemo(() => {
+    if (healthScore < 40) return { text: "REPLACE", color: "rose" };
+    if (healthScore < 60) return { text: "MAINTENANCE", color: "amber" };
+    if (healthScore < 85) return { text: "MONITOR", color: "indigo" };
+    return { text: "EXCELLENT", color: "emerald" };
+  }, [healthScore]);
+
   // Sync calculated CFMs into t object for the PDF
   const renderData = {
     ...formData,
+    healthScore, // Add to payload
+    healthStatus: healthLabel.text,
     t: {
       ...formData.t,
       totalCfmSupply: calculateCfm(formData.t.supplyArea, avgSupply) || "-",
@@ -115,39 +158,44 @@ export default function AuditFormClient({ unit }: { unit: any }) {
     }
   };
 
-  // --- PHOTO COMPRESSION ---
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // --- MEDIA HANDLING (Photos & Videos) ---
+  const handleMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const files = Array.from(e.target.files);
     
-    if (photos.length + files.length > 10) {
-      alert("Maksimal 10 foto diperbolehkan!");
+    if (mediaItems.length + files.length > 10) {
+      alert("Maksimal 10 file!");
       return;
     }
 
     setLoading(true);
-    const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1280, useWebWorker: true };
-    const compressedFiles: File[] = [];
-    const previews: string[] = [];
-
     for (const f of files) {
       try {
-        const compressed = await imageCompression(f, options);
-        compressedFiles.push(compressed);
-        previews.push(URL.createObjectURL(compressed));
-      } catch (err) {
-         console.error(err);
-      }
+        const isVideo = f.type.startsWith("video/");
+        let finalFile = f;
+
+        if (!isVideo) {
+          const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1280, useWebWorker: true };
+          finalFile = await imageCompression(f, options);
+        } else {
+          if (f.size > 20 * 1024 * 1024) {
+             alert(`Video ${f.name} terlalu besar (>20MB). Mohon gunakan video berdurasi pendek.`);
+             continue;
+          }
+        }
+
+        setMediaItems(prev => [...prev, {
+          file: finalFile,
+          type: isVideo ? "video" : "image",
+          preview: URL.createObjectURL(finalFile)
+        }]);
+      } catch (err) { console.error(err); }
     }
-    
-    setPhotos(prev => [...prev, ...compressedFiles]);
-    setPhotoPreviews(prev => [...prev, ...previews]);
     setLoading(false);
   };
 
-  const removePhoto = (idx: number) => {
-    setPhotos(photos.filter((_, i) => i !== idx));
-    setPhotoPreviews(photoPreviews.filter((_, i) => i !== idx));
+  const removeMedia = (idx: number) => {
+    setMediaItems(prev => prev.filter((_, i) => i !== idx));
   };
 
   // --- SUBMIT PIPELINE ---
@@ -160,7 +208,7 @@ export default function AuditFormClient({ unit }: { unit: any }) {
         await savePendingSubmission({
           type: 'AUDIT',
           data: { ...formData, velocity_points: formData.t.supplyVelocity.map((v:any, i:number) => ({ point_number: i+1, velocity_value: parseFloat(v) || 0 })) },
-          photos: photos 
+          photos: mediaItems.map(m => m.file) 
         });
         setIsQueued(true);
         setLoading(false);
@@ -168,8 +216,9 @@ export default function AuditFormClient({ unit }: { unit: any }) {
       }
 
       let pdfUrl = "";
+      let baUrl = "";
       
-      // 1. GENERATE PDF
+      // 1. GENERATE PDF (TECH CHECKSHEET)
       // --- NEW TRUE PAGINATION LOGIC ---
       const A4_HEIGHT_MM = 297;
       const SAFE_CONTENT_MM = 220; 
@@ -279,21 +328,70 @@ export default function AuditFormClient({ unit }: { unit: any }) {
         const pdfData = await pdfRes.json();
         if (pdfData.success) pdfUrl = pdfData.url;
 
-      // 2. UPLOAD PHOTOS (Max 10)
-      const uploadedPhotos: {photo_url: string, description: string}[] = [];
-      for (const p of photos) {
-        const pForm = new FormData();
-        pForm.append("file", p);
-        pForm.append("folder", "photos");
-        const pRes = await fetch('/api/upload', { method: 'POST', body: pForm });
-        if (!pRes.ok) {
-          const errorText = await pRes.text();
-          console.error("Photo Upload Failed:", errorText);
-          throw new Error(`Photo Upload failed: ${pRes.status} ${pRes.statusText}`);
+        // --- NEW: GENERATE BERITA ACARA PDF ---
+        const baPdf = new jsPDF("p", "mm", "a4");
+        const { BeritaAcaraPDFTemplate } = await import("@/components/BeritaAcaraPDFTemplate");
+        const { ReportBase } = await import("@/components/ReportBase");
+
+        const baDiv = document.createElement("div");
+        baDiv.style.width = "210mm";
+        baDiv.style.height = "297mm";
+        baDiv.style.position = "absolute";
+        baDiv.style.top = "-9999px";
+        document.body.appendChild(baDiv);
+
+        const { createRoot: baRootInit } = await import("react-dom/client");
+        const baRoot = baRootInit(baDiv);
+        
+        await new Promise<void>((resolve) => {
+          baRoot.render(
+            <ReportBase reportTitle="BERITA ACARA PEKERJAAN" reportCode={`BA-AUDIT-${unit.id}-${Date.now()}`} unit={unit}>
+              <BeritaAcaraPDFTemplate 
+                data={renderData} 
+                unit={unit} 
+                engineerName={formData.inspector_name} 
+              />
+            </ReportBase>
+          );
+          setTimeout(resolve, 300);
+        });
+
+        const baCanvas = await html2canvas(baDiv, { scale: 2, useCORS: true, windowWidth: 794, height: 1123 });
+        const baImg = baCanvas.toDataURL("image/jpeg", 0.9);
+        baPdf.addImage(baImg, 'JPEG', 0, 0, 210, 297);
+        
+        const baBlob = baPdf.output("blob");
+        const baFormData = new FormData();
+        baFormData.append("file", new File([baBlob], `${unit.tag_number}_BA_${Date.now()}.pdf`, { type: 'application/pdf' }));
+        baFormData.append("folder", "berita-acara");
+
+        const baRes = await fetch('/api/upload', { method: 'POST', body: baFormData });
+        if (baRes.ok) {
+          const baData = await baRes.json();
+          if (baData.success) baUrl = baData.url;
         }
-        const pData = await pRes.json();
-        if (pData.success) {
-          uploadedPhotos.push({ photo_url: pData.url, description: "Audit Documentation" });
+
+        baRoot.unmount();
+        document.body.removeChild(baDiv);
+
+      // 2. Upload Media (Photos & Videos)
+      const uploadedMedia: { photo_url: string; description: string; media_type: string }[] = [];
+      for (const item of mediaItems) {
+        const mForm = new FormData();
+        mForm.append("file", item.file);
+        mForm.append("folder", item.type === "video" ? "videos" : "photos");
+        
+        const mRes = await fetch("/api/upload", { method: "POST", body: mForm });
+        if (!mRes.ok) {
+          throw new Error(`Media Upload failed: ${mRes.status}`);
+        }
+        const mData = await mRes.json();
+        if (mData.success) {
+          uploadedMedia.push({ 
+            photo_url: mData.url, 
+            media_type: item.type,
+            description: "Audit Documentation" 
+          });
         }
       }
 
@@ -306,8 +404,10 @@ export default function AuditFormClient({ unit }: { unit: any }) {
         ...renderData,
         technical_json: JSON.stringify(renderData.t, (_, v) => typeof v === 'bigint' ? v.toString() : v), // Accessories and Matrix preserved
         pdf_report_url: pdfUrl,
+        berita_acara_pdf_url: baUrl,
+        engineer_signer_name: formData.inspector_name,
         velocity_points,
-        photos: uploadedPhotos
+        photos: uploadedMedia
       };
 
       const dbRes = await createAuditActivity(dbPayload) as any;
@@ -349,9 +449,15 @@ export default function AuditFormClient({ unit }: { unit: any }) {
       
       {/* HEADER */}
       <div className="bg-[#003366] text-white p-6 rounded-b-[2rem] shadow-lg mb-6 pt-12 sticky top-0 z-40">
-        <h1 className="text-2xl font-black tracking-tight flex items-center gap-2">
-          <FileText size={24}/> Form Pengukuran
-        </h1>
+        <div className="flex justify-between items-start mb-2">
+          <h1 className="text-2xl font-black tracking-tight flex items-center gap-2">
+            <FileText size={20}/> Pengukuran
+          </h1>
+          <div className={`px-4 py-2 rounded-2xl border bg-white/10 backdrop-blur-md flex flex-col items-center border-white/20 shadow-lg min-w-[100px]`}>
+            <span className="text-[8px] font-black uppercase tracking-[0.2em] opacity-60">Health Score</span>
+            <span className={`text-xl font-black text-${healthLabel.color}-400`}>{healthScore}%</span>
+          </div>
+        </div>
         <div className="flex justify-between items-center mt-3">
           <p className="text-sm font-medium opacity-80 flex items-center gap-1"><MapPin size={14}/> {unit.area}</p>
           <span className="px-3 py-1 bg-[#00a1e4] rounded-lg text-xs font-black uppercase tracking-widest">Step {step} / 5</span>
@@ -413,7 +519,8 @@ export default function AuditFormClient({ unit }: { unit: any }) {
             <motion.div key="step2" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} className="space-y-6">
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
                 <div className="flex justify-between items-center mb-4 border-b pb-2">
-                   <h2 className="text-lg font-black text-[#003366]">Air Velocity Matrix (m/s)</h2>
+                   <h4 className="text-xs font-black text-slate-700 uppercase tracking-widest">Findings / Temuan</h4>
+                   <p className="text-[10px] font-medium text-slate-400 mt-1 uppercase">Document highlights, findings / temuan, and follow-up activities.</p>
                    <div className="text-[10px] bg-amber-100 text-amber-800 px-2 py-1 rounded font-bold uppercase">15 Titik Pengukuran</div>
                 </div>
 
@@ -548,29 +655,39 @@ export default function AuditFormClient({ unit }: { unit: any }) {
                 <div className="mt-6">
                   <h3 className="text-xs font-black uppercase text-slate-500 mb-2 flex justify-between">
                     <span>Dokumentasi Lapangan</span>
-                    <span className="text-[#00a1e4]">{photos.length}/10</span>
+                    <span className="text-[#00a1e4]">{mediaItems.length}/10</span>
                   </h3>
                   
                   <div className="grid grid-cols-3 gap-2 mb-4">
-                    {photoPreviews.map((src, i) => (
-                      <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 shadow-sm group">
-                        <img src={src} alt={`Upload ${i}`} className="w-full h-full object-cover" />
-                        <button onClick={() => removePhoto(i)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-80 hover:opacity-100">
+                    {mediaItems.map((item, i) => (
+                      <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-900 flex items-center justify-center">
+                        {item.type === "video" ? (
+                          <>
+                            <video src={item.preview} className="w-full h-full object-cover opacity-50" muted />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                               <Play size={24} className="text-white fill-white" />
+                            </div>
+                            <div className="absolute top-1 left-1 px-1 py-0.5 bg-amber-500 text-white text-[7px] font-black uppercase rounded shadow-lg">Video</div>
+                          </>
+                        ) : (
+                          <img src={item.preview} alt={`Media ${i}`} className="w-full h-full object-cover" />
+                        )}
+                        <button onClick={() => removeMedia(i)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-80 hover:opacity-100">
                           <X size={12} />
                         </button>
                       </div>
                     ))}
-                    {photos.length < 10 && (
+                    {mediaItems.length < 10 && (
                       <label className="aspect-square rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400 hover:text-[#00a1e4] hover:bg-blue-50 hover:border-[#00a1e4] cursor-pointer transition-colors">
                         <Camera size={24} className="mb-1" />
                         <span className="text-[10px] font-bold uppercase">Tambah</span>
-                        <input type="file" multiple accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+                        <input type="file" multiple accept="image/*,video/*" onChange={handleMediaUpload} className="hidden" />
                       </label>
                     )}
                   </div>
                   <p className="text-[10px] text-amber-600 font-bold flex items-start gap-1">
                     <AlertCircle size={14} className="shrink-0"/> 
-                    Sistem akan otomatis mengecilkan (compress) ukuran foto tanpa mengurangi ketajaman resolusi.
+                    Media otomatis di-optimasi. Video akan terkompresi secara otomatis di server.
                   </p>
                 </div>
               </div>

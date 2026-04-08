@@ -15,5 +15,22 @@ export default async function CorrectivePage({ params }: { params: Promise<{ tok
     return notFound();
   }
 
-  return <CorrectiveFormClient unit={unit} />;
+  // Fetch last preventive maintenance date
+  const lastPM = await prisma.service_activities.findFirst({
+    where: {
+      unit_id: unit.id,
+      type: "Preventive",
+      status: "Final_Approved"
+    },
+    orderBy: {
+      service_date: "desc"
+    },
+    select: {
+      service_date: true
+    }
+  });
+
+  const lastPreventiveDate = lastPM?.service_date ? lastPM.service_date.toISOString().split("T")[0] : null;
+
+  return <CorrectiveFormClient unit={unit} lastPreventiveDate={lastPreventiveDate} />;
 }

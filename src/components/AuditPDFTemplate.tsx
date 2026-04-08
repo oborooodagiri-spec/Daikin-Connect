@@ -17,9 +17,18 @@ export const getAuditSections = (data: any, unit: any) => {
 
   return [
     // TITLE
-    <p key="title" style={{ fontSize: "12pt", fontWeight: 900, color: "#003366", textAlign: "center", marginBottom: "4mm", textDecoration: "underline" }}>
-      FORM PENGUKURAN (AUDIT)
-    </p>,
+    <div key="title_section" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4mm" }}>
+      <p style={{ fontSize: "12pt", fontWeight: 900, color: "#003366", textDecoration: "underline", margin: 0 }}>
+        FORM PENGUKURAN (AUDIT)
+      </p>
+      {data.healthScore !== undefined && (
+        <div style={{ padding: "1.5mm 4mm", border: "1.5pt solid #003366", borderRadius: "1.5mm", textAlign: "center" }}>
+          <p style={{ fontSize: "6pt", fontWeight: 900, color: "#003366", margin: 0, textTransform: "uppercase" }}>Health Vitality Score</p>
+          <p style={{ fontSize: "14pt", fontWeight: 900, color: data.healthScore < 50 ? "#e11d48" : "#059669", margin: 0 }}>{data.healthScore}%</p>
+          <p style={{ fontSize: "6pt", fontWeight: 900, color: "#64748b", margin: 0 }}>Status: {data.healthStatus || 'N/A'}</p>
+        </div>
+      )}
+    </div>,
 
     // SECTION A: GENERAL DATA
     <div key="general" style={{ marginBottom: "5mm" }}>
@@ -194,14 +203,22 @@ export const getAuditSections = (data: any, unit: any) => {
        </div>
        
        <div style={{ flex: 1, position: "relative", border: "0.5pt solid #ddd", padding: "3mm", display: "flex", flexDirection: "column" }}>
-          <div style={{ position: "absolute", top: "-5mm", right: "5mm", zIndex: 10 }}>
-             <DigitalStamp />
-          </div>
+          {data.isApproved && (
+            <div style={{ position: "absolute", top: "-5mm", right: "5mm", zIndex: 10 }}>
+               <DigitalStamp />
+            </div>
+          )}
           <p style={{ fontSize: "7pt", fontWeight: 900, textTransform: "uppercase", marginBottom: "2mm" }}>Witnessed by Customer,</p>
-          <div style={{ flex: 1, minHeight: "10mm" }}></div>
+          <div style={{ flex: 1, minHeight: "10mm", display: "flex", alignItems: "center", justifyContent: "center" }}>
+             {data.isApproved ? (
+                <p style={{ fontSize: "8pt", color: "#059669", fontWeight: 800, textTransform: "uppercase" }}>[ Digitally Approved ]</p>
+             ) : (
+                <p style={{ fontSize: "7pt", color: "#cbd5e1", fontStyle: "italic" }}>Waiting for Signature</p>
+             )}
+          </div>
           <div style={{ borderTop: "1pt solid #003366", paddingTop: "1mm", fontSize: "7pt", fontWeight: 700 }}>
              <p style={{ margin: 0 }}>Name: {data.witnessed_by || '-'}</p>
-             <p style={{ margin: 0 }}>Date: ________________</p>
+             <p style={{ margin: 0 }}>Date: {data.approved_at ? new Date(data.approved_at).toLocaleDateString('id-ID') : '________________'}</p>
           </div>
        </div>
     </div>,

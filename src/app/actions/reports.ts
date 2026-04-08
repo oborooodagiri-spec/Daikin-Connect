@@ -13,6 +13,7 @@ export async function getAllReports(filters?: {
   limit?: number;
 }) {
   const session = await getSession();
+  console.log("DIAGNOSTIC: getAllReports - Session:", session ? "Found" : "Missing");
   if (!session) return { error: "Unauthorized" };
 
   const page = filters?.page || 1;
@@ -21,6 +22,10 @@ export async function getAllReports(filters?: {
 
   try {
     const where: any = {};
+    
+    // Check total count before any filters
+    const debugCount = await (prisma.service_activities as any).count();
+    console.log("DIAGNOSTIC: Total service_activities in DB:", debugCount);
 
     if (filters?.type && filters.type !== "all") {
       where.type = filters.type;
@@ -58,7 +63,7 @@ export async function getAllReports(filters?: {
             },
           },
           activity_photos: {
-            select: { id: true, photo_url: true, description: true },
+            select: { id: true, photo_url: true, description: true, media_type: true },
           },
         },
         orderBy: { created_at: "desc" },
@@ -147,6 +152,138 @@ export async function getReportDetail(id: string) {
     });
   } catch (error: any) {
     console.error("Fetch Report Detail Error:", error);
+    return { error: error.message };
+  }
+}
+
+export async function getSummaryData(dateFrom: string, dateTo: string) {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
+  try {
+    const from = new Date(dateFrom);
+    const to = new Date(dateTo);
+    to.setHours(23, 59, 59, 999);
+
+    // 1. Fetch all activities in range
+    const activities = await (prisma.service_activities as any).findMany({
+      where: {
+        service_date: { gte: from, lte: to }
+      },
+      include: {
+        units: true
+      },
+      orderBy: { service_date: "asc" }
+    });
+
+    // 2. Fetch all schedules in range
+    const schedules = await (prisma.schedules as any).findMany({
+      where: {
+        start_at: { gte: from, lte: to }
+      },
+      include: {
+        units: true
+      }
+    });
+
+    // 3. Process Daily Services (Preventive & Audit)
+    const dailyServices = activities.filter((a: any) => a.type !== "Corrective").map((a: any) => {
+      let t: any = {};
+      try { t = JSON.parse(a.technical_json || "{}"); if(typeof t === 'string') t = JSON.parse(t); } catch(e) {}
+      
+      return {
+        date: a.service_date,
+        floor: a.units?.building_floor || "-",
+        room: a.units?.room_tenant || "-",
+        brand: a.units?.brand || "-",
+        model: a.units?.model || "-",
+        type: a.units?.unit_type || "-",
+        finding: a.engineer_note || "-",
+        status: t.serviceStatus || "SERVICED",
+        reason: t.noServiceReason || ""
+      };
+    });
+
+    // 4. Process Complaints (Corrective)
+    const complaints = activities.filter((a: any) => a.type === "Corrective").map((a: any) => {
+      let t: any = {};
+      try { t = JSON.parse(a.technical_json || "{}"); if(typeof t === 'string') t = JSON.parse(t); } catch(e) {}
+      
+      const analysis = t.analysis || {};
+      return {
+        date: a.service_date,
+        time: t.personnel?.service_time || "-",
+        floor: a.units?.building_floor || "-",
+        room: a.units?.room_tenant || "-",
+        unitType: a.units?.unit_type || "-",
+        tag: a.units?.tag_number || "-",
+        brand: a.units?.brand || "-",
+        model: a.units?.model || "-",
+        technician: a.inspector_name || "-",
+        category: t.category || "General",
+        rootCause: analysis.root_cause || "-",
+        tempAction: analysis.temp_action || "-",
+        permAction: analysis.perm_action || "-",
+        recommendation: analysis.recommendation || "-",
+        lastPm: t.lastPreventiveDate || "-",
+        currentStatus: a.units?.status || "Normal"
+      };
+    });
+
+    // 5. Calculate Performance Charts
+    const totalPmScheduled = schedules.filter((s: any) => s.type === "Preventive").length;
+    const pmActivities = activities.filter((a: any) => a.type === "Preventive");
+    
+    // On Schedule vs Delay
+    let onSchedule = 0;
+    let delay = 0;
+    let outOfSchedule = 0;
+
+    pmActivities.forEach((a: any) => {
+      const match = schedules.find((s: any) => s.unit_id === a.unit_id && s.type === "Preventive");
+      if (match) {
+        if (new Date(a.service_date) <= new Date(match.end_at)) onSchedule++;
+        else delay++;
+      } else {
+        outOfSchedule++;
+      }
+    });
+
+    // Non-Service Reasons Breakdown
+    const reasonCounts: Record<string, number> = {};
+    dailyServices.forEach((s: any) => {
+      if (s.status === "NOT_SERVICED" && s.reason) {
+        reasonCounts[s.reason] = (reasonCounts[s.reason] || 0) + 1;
+      }
+    });
+
+    // Complaint Categories Breakdown
+    const complaintCats: Record<string, number> = {};
+    complaints.forEach((c: any) => {
+      complaintCats[c.category] = (complaintCats[c.category] || 0) + 1;
+    });
+
+    return serializePrisma({
+      success: true,
+      data: {
+        period: { from: dateFrom, to: dateTo },
+        dailyServices,
+        complaints,
+        performance: {
+          pm: {
+            totalScheduled: totalPmScheduled,
+            onSchedule,
+            delay,
+            outOfSchedule,
+            totalServiced: pmActivities.length
+          },
+          reasons: Object.entries(reasonCounts).map(([label, value]) => ({ label, value })),
+          complaintCategories: Object.entries(complaintCats).map(([label, value]) => ({ label, value }))
+        }
+      }
+    });
+  } catch (error: any) {
+    console.error("Generate Summary Data Error:", error);
     return { error: error.message };
   }
 }

@@ -9,7 +9,8 @@ import { createPreventiveActivity } from "@/app/actions/preventive";
 import { savePendingSubmission } from "@/lib/offline-db";
 import {
   ChevronRight, ChevronLeft, FileText, Camera,
-  CheckCircle2, AlertCircle, MapPin, X, Printer, Wrench, WifiOff
+  CheckCircle2, AlertCircle, MapPin, X, Printer, Wrench, WifiOff,
+  FileVideo, Play
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -28,7 +29,7 @@ const SCOPE_ROWS = [
   { key: "clean_air_filter", label: "Cleaning or Replace Air Filter", type: "action" },
   { key: "clean_coil", label: "Cleaning Coil AHU", type: "action" },
   { key: "clean_drainage", label: "Cleaning Drainage", type: "action" },
-  { key: "clean_body", label: "Cleaning Body AHU", type: "action" },
+  { key: "clean_body", label: "Cleaning Body Unit", type: "action" },
   { key: "check_vbelt", label: "Check V-Belt and Adjust Belt Tension", type: "action" },
   { key: "check_bearing", label: "Check Bearing Motor and Blower", type: "action" },
 ];
@@ -94,40 +95,92 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
   const [engineerName, setEngineerName] = useState("");
   const [customerName, setCustomerName] = useState("");
 
-  // Photos
-  const [photos, setPhotos] = useState<File[]>([]);
-  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  // Service Status tracking
+  const [serviceStatus, setServiceStatus] = useState<"SERVICED" | "NOT_SERVICED">("SERVICED");
+  const [noServiceReason, setNoServiceReason] = useState("");
+
+  const NO_SERVICE_REASONS = [
+    "Tenant Vacant (Partisi) / Tutup",
+    "Unit Tidak Ada / Take Out (Unit AC-nya tidak ada)",
+    "Unit Tidak Difungsikan",
+    "Unit Rusak",
+    "Tidak Ada Akses ke Unit",
+    "Tenant Tidak Tersedia",
+    "Reschedule"
+  ];
+
+  // Media (Photos & Videos)
+  const [mediaItems, setMediaItems] = useState<{file: File, type: "image" | "video", preview: string}[]>([]);
 
   // Helpers
   const updateScope = (key: string, field: string, val: string) => {
-    setScope(prev => ({ ...prev, [key]: { ...prev[key], [field]: val } }));
+    setScope(prev => {
+      const updatedRow = { ...prev[key], [field]: val };
+      
+      // AUTO-CALCULATION FOR MARGIN (MEASURE TYPE)
+      const rowDef = SCOPE_ROWS.find(r => r.key === key);
+      if (rowDef?.type === 'measure' && (field === 'before' || field === 'after')) {
+        const b = parseFloat(updatedRow.before);
+        const a = parseFloat(updatedRow.after);
+        if (!isNaN(b) && !isNaN(a)) {
+          const margin = (a - b).toFixed(2);
+          updatedRow.remarks = margin;
+        }
+      }
+
+      return { ...prev, [key]: updatedRow };
+    });
   };
 
-  // Photo Compression
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Media Capture Handler (Photos & Videos)
+  const handleMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const files = Array.from(e.target.files);
-    if (photos.length + files.length > 10) { alert("Maksimal 10 foto!"); return; }
+    if (mediaItems.length + files.length > 10) { alert("Maksimal 10 file!"); return; }
 
     setLoading(true);
-    const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1280, useWebWorker: true };
     for (const f of files) {
       try {
-        const compressed = await imageCompression(f, options);
-        setPhotos(prev => [...prev, compressed]);
-        setPhotoPreviews(prev => [...prev, URL.createObjectURL(compressed)]);
+        const isVideo = f.type.startsWith("video/");
+        let finalFile = f;
+        
+        if (!isVideo) {
+          // Compress only if image
+          const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1280, useWebWorker: true };
+          finalFile = await imageCompression(f, options);
+        } else {
+          // For video, check size (alert if > 20MB for mobile sanity)
+          if (f.size > 20 * 1024 * 1024) {
+            alert(`Video ${f.name} terlalu besar (>20MB). Mohon gunakan video berdurasi pendek.`);
+            continue;
+          }
+        }
+
+        setMediaItems(prev => [...prev, {
+          file: finalFile,
+          type: isVideo ? "video" : "image",
+          preview: URL.createObjectURL(finalFile)
+        }]);
       } catch (err) { console.error(err); }
     }
     setLoading(false);
   };
 
-  const removePhoto = (idx: number) => {
-    setPhotos(prev => prev.filter((_, i) => i !== idx));
-    setPhotoPreviews(prev => prev.filter((_, i) => i !== idx));
+  const removeMedia = (idx: number) => {
+    setMediaItems(prev => prev.filter((_, i) => i !== idx));
   };
 
   // Build render data
-  const renderData = { header, scope, parts, technicalAdvice, engineerName, customerName };
+  const renderData = { 
+    header, 
+    scope, 
+    parts, 
+    technicalAdvice, 
+    engineerName, 
+    customerName,
+    serviceStatus,
+    noServiceReason
+  };
 
   // --- SUBMIT ---
   const handleSubmit = async () => {
@@ -146,14 +199,16 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
             location: header.location,
             technical_json: JSON.stringify(renderData, (_, v) => typeof v === 'bigint' ? v.toString() : v),
           },
-          photos: photos
+          photos: mediaItems.map(m => m.file)
         });
         setIsQueued(true);
         setLoading(false);
         return;
       }
 
-      let pdfUrl = "";      // 1. Generate PDF
+      let pdfUrl = "";      
+      let baUrl = "";
+      // 1. Generate PDF (TECH CHECKSHEET)
       // --- NEW TRUE PAGINATION LOGIC ---
         const A4_HEIGHT_MM = 297;
         const SAFE_CONTENT_MM = 220; // Slightly more for PM since mostly text/table
@@ -261,34 +316,81 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
         const pdfData = await pdfRes.json();
         if (pdfData.success) pdfUrl = pdfData.url;
 
-      // 2. Upload Photos
-      const uploadedPhotos: { photo_url: string; description: string }[] = [];
-      for (const p of photos) {
-        const pForm = new FormData();
-        pForm.append("file", p);
-        pForm.append("folder", "photos");
-        const pRes = await fetch("/api/upload", { method: "POST", body: pForm });
-        if (!pRes.ok) {
-          const errorText = await pRes.text();
-          console.error("Photo Upload Failed:", errorText);
-          throw new Error(`Photo Upload failed: ${pRes.status} ${pRes.statusText}`);
+        // --- NEW: GENERATE BERITA ACARA PDF ---
+        const baPdf = new jsPDF("p", "mm", "a4");
+        const { BeritaAcaraPDFTemplate } = await import("@/components/BeritaAcaraPDFTemplate");
+        const { ReportBase } = await import("@/components/ReportBase");
+
+        const baDiv = document.createElement("div");
+        baDiv.style.width = "210mm";
+        baDiv.style.height = "297mm";
+        baDiv.style.position = "absolute";
+        baDiv.style.top = "-9999px";
+        document.body.appendChild(baDiv);
+
+        const { createRoot: baRootInit } = await import("react-dom/client");
+        const baRoot = baRootInit(baDiv);
+        
+        await new Promise<void>((resolve) => {
+          baRoot.render(
+            <ReportBase reportTitle="BERITA ACARA PEKERJAAN" reportCode={`BA-PM-${unit.id}-${Date.now()}`} unit={unit}>
+              <BeritaAcaraPDFTemplate 
+                data={renderData} 
+                unit={unit} 
+                engineerName={engineerName} 
+              />
+            </ReportBase>
+          );
+          setTimeout(resolve, 300);
+        });
+
+        const baCanvas = await html2canvas(baDiv, { scale: 2, useCORS: true, windowWidth: 794, height: 1123 });
+        const baImg = baCanvas.toDataURL("image/jpeg", 0.9);
+        baPdf.addImage(baImg, 'JPEG', 0, 0, 210, 297);
+        
+        const baBlob = baPdf.output("blob");
+        const baFormData = new FormData();
+        baFormData.append("file", new File([baBlob], `${unit.tag_number}_BA_${Date.now()}.pdf`, { type: 'application/pdf' }));
+        baFormData.append("folder", "berita-acara");
+
+        const baRes = await fetch('/api/upload', { method: 'POST', body: baFormData });
+        if (baRes.ok) {
+          const baData = await baRes.json();
+          if (baData.success) baUrl = baData.url;
         }
-        const pData = await pRes.json();
-        if (pData.success) {
-          uploadedPhotos.push({ photo_url: pData.url, description: "Preventive Documentation" });
+
+        baRoot.unmount();
+        document.body.removeChild(baDiv);
+
+      // 2. Upload Media (Photos & Videos)
+      const uploadedMedia: { photo_url: string; description: string; media_type: string }[] = [];
+      for (const item of mediaItems) {
+        const mForm = new FormData();
+        mForm.append("file", item.file);
+        mForm.append("folder", item.type === "video" ? "videos" : "photos");
+        
+        const mRes = await fetch("/api/upload", { method: "POST", body: mForm });
+        if (!mRes.ok) {
+          throw new Error(`Media Upload failed: ${mRes.status}`);
+        }
+        const mData = await mRes.json();
+        if (mData.success) {
+          uploadedMedia.push({ 
+            photo_url: mData.url, 
+            media_type: item.type,
+            description: "Preventive Documentation" 
+          });
         }
       }
 
       // 3. Save to DB
       const dbPayload = {
-        unit_id: unit.id,
-        inspector_name: engineerName,
-        engineer_note: technicalAdvice,
-        unit_tag: header.unit_number,
-        location: header.location,
-        technical_json: JSON.stringify(renderData, (_, v) => typeof v === 'bigint' ? v.toString() : v),
+        ...renderData,
+        technical_json: JSON.stringify(renderData, (_, v) => typeof v === 'bigint' ? v.toString() : v), 
         pdf_report_url: pdfUrl,
-        photos: uploadedPhotos
+        berita_acara_pdf_url: baUrl,
+        engineer_signer_name: engineerName,
+        photos: uploadedMedia
       };
 
       const dbRes = await createPreventiveActivity(dbPayload) as any;
@@ -380,6 +482,38 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
                     <label className="text-[10px] font-bold text-slate-500 uppercase">Team OPT</label>
                     <input type="text" value={header.team_opt} onChange={e => setHeader({ ...header, team_opt: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder="Nama Tim / Personel" />
                   </div>
+
+                  <div className="pt-4 border-t border-slate-100">
+                    <label className="text-[10px] font-black text-blue-600 uppercase tracking-widest block mb-3">Status Servis Unit</label>
+                    <div className="grid grid-cols-2 gap-2">
+                       <button 
+                         onClick={() => { setServiceStatus("SERVICED"); setNoServiceReason(""); }}
+                         className={`p-3 rounded-xl text-xs font-black uppercase tracking-widest border transition-all ${serviceStatus === 'SERVICED' ? 'bg-emerald-500 text-white border-emerald-600 shadow-lg shadow-emerald-200' : 'bg-slate-50 text-slate-400 border-slate-200'}`}
+                       >
+                         Serviced
+                       </button>
+                       <button 
+                         onClick={() => setServiceStatus("NOT_SERVICED")}
+                         className={`p-3 rounded-xl text-xs font-black uppercase tracking-widest border transition-all ${serviceStatus === 'NOT_SERVICED' ? 'bg-rose-500 text-white border-rose-600 shadow-lg shadow-rose-200' : 'bg-slate-50 text-slate-400 border-slate-200'}`}
+                       >
+                         Not Serviced
+                       </button>
+                    </div>
+
+                    {serviceStatus === "NOT_SERVICED" && (
+                       <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                          <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Alasan Unit Tidak Dapat Dicek*</label>
+                          <select 
+                            value={noServiceReason} 
+                            onChange={(e) => setNoServiceReason(e.target.value)}
+                            className="w-full p-3 bg-rose-50 border border-rose-200 rounded-xl text-sm font-bold text-rose-700 focus:ring-2 focus:ring-rose-400"
+                          >
+                             <option value="">-- Pilih Alasan --</option>
+                             {NO_SERVICE_REASONS.map(r => <option key={r} value={r}>{r}</option>)}
+                          </select>
+                       </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -420,8 +554,8 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
                         <input type="text" value={scope[row.key].after} onChange={e => updateScope(row.key, "after", e.target.value)} className="w-full p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs font-bold text-center focus:ring-emerald-400" placeholder="-" />
                       </div>
                       <div>
-                        <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Remarks</p>
-                        <input type="text" value={scope[row.key].remarks} onChange={e => updateScope(row.key, "remarks", e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-center" placeholder="-" />
+                        <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Margin / Result</p>
+                        <input type="text" value={scope[row.key].remarks} onChange={e => updateScope(row.key, "remarks", e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-center" placeholder="Δ Margin" />
                       </div>
                     </div>
                   </div>
@@ -450,7 +584,7 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
                         <option value="Not Done">❌ Not Done</option>
                         <option value="Replaced">🔄 Replaced</option>
                       </select>
-                      <input type="text" placeholder="Remarks" value={scope[row.key].remarks} onChange={e => updateScope(row.key, "remarks", e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold" />
+                      <input type="text" placeholder="Finding / Temuan" value={scope[row.key].remarks} onChange={e => updateScope(row.key, "remarks", e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold" />
                     </div>
                   </div>
                 ))}
@@ -492,29 +626,39 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
 
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
                 <h3 className="text-xs font-black uppercase text-slate-500 mb-2 flex justify-between">
-                  <span>Dokumentasi Foto</span>
-                  <span className="text-[#00a1e4]">{photos.length}/10</span>
+                  <span>Dokumentasi Media</span>
+                  <span className="text-[#00a1e4]">{mediaItems.length}/10</span>
                 </h3>
                 <div className="grid grid-cols-3 gap-2 mb-4">
-                  {photoPreviews.map((src, i) => (
-                    <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 shadow-sm">
-                      <img src={src} alt={`Photo ${i}`} className="w-full h-full object-cover" />
-                      <button onClick={() => removePhoto(i)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-80 hover:opacity-100">
+                  {mediaItems.map((item, i) => (
+                    <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-900 flex items-center justify-center">
+                      {item.type === "video" ? (
+                        <>
+                          <video src={item.preview} className="w-full h-full object-cover opacity-50" muted />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                             <Play size={20} className="text-white fill-white" />
+                          </div>
+                          <div className="absolute top-1 left-1 px-1 py-0.5 bg-amber-500 text-white text-[7px] font-black uppercase rounded shadow-lg">Video</div>
+                        </>
+                      ) : (
+                        <img src={item.preview} alt={`Media ${i}`} className="w-full h-full object-cover" />
+                      )}
+                      <button onClick={() => removeMedia(i)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-80 hover:opacity-100">
                         <X size={12} />
                       </button>
                     </div>
                   ))}
-                  {photos.length < 10 && (
+                  {mediaItems.length < 10 && (
                     <label className="aspect-square rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400 hover:text-[#00a1e4] hover:bg-blue-50 hover:border-[#00a1e4] cursor-pointer transition-colors">
                       <Camera size={24} className="mb-1" />
                       <span className="text-[10px] font-bold uppercase">Tambah</span>
-                      <input type="file" multiple accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+                      <input type="file" multiple accept="image/*,video/*" onChange={handleMediaUpload} className="hidden" />
                     </label>
                   )}
                 </div>
                 <p className="text-[10px] text-amber-600 font-bold flex items-start gap-1">
                   <AlertCircle size={14} className="shrink-0" />
-                  Foto otomatis di-compress menjadi &lt;500KB tanpa mengurangi ketajaman.
+                  Media otomatis di-optimasi. Video akan terkompresi secara otomatis di server.
                 </p>
               </div>
 
@@ -539,13 +683,36 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
       <div className="fixed bottom-0 inset-x-0 p-5 bg-white border-t border-slate-100 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)] z-40">
         <div className="max-w-lg mx-auto flex justify-between gap-4">
           {step > 1 ? (
-            <button onClick={() => setStep(step - 1)} className="flex-1 py-4 bg-slate-100 text-slate-600 font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-slate-200 transition-colors uppercase text-xs tracking-widest">
+            <button 
+              onClick={() => {
+                if (step === 4 && serviceStatus === "NOT_SERVICED") {
+                   setStep(1);
+                } else {
+                   setStep(step - 1);
+                }
+              }} 
+              className="flex-1 py-4 bg-slate-100 text-slate-600 font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-slate-200 transition-colors uppercase text-xs tracking-widest"
+            >
               <ChevronLeft size={16} /> Mundur
             </button>
           ) : <div className="flex-1"></div>}
 
           {step < 4 ? (
-            <button onClick={() => setStep(step + 1)} className="flex-1 py-4 bg-[#00a1e4] text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-[#008cc6] transition-colors shadow-lg shadow-blue-200 uppercase text-xs tracking-widest">
+            <button 
+              onClick={() => {
+                if (step === 1 && serviceStatus === "NOT_SERVICED" && !noServiceReason) {
+                   alert("Mohon pilih alasan unit tidak dapat dicek!");
+                   return;
+                }
+                // If not serviced, skip steps 2 and 3 and go straight to step 4 (Advice & Photos)
+                if (step === 1 && serviceStatus === "NOT_SERVICED") {
+                   setStep(4);
+                } else {
+                   setStep(step + 1);
+                }
+              }} 
+              className="flex-1 py-4 bg-[#00a1e4] text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-[#008cc6] transition-colors shadow-lg shadow-blue-200 uppercase text-xs tracking-widest"
+            >
               Lanjut <ChevronRight size={16} />
             </button>
           ) : (

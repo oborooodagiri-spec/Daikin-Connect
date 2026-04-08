@@ -37,6 +37,7 @@ export default function UnitsPage() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [brandFilter, setBrandFilter] = useState("All");
   const [floorFilter, setFloorFilter] = useState("All");
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
@@ -325,6 +326,12 @@ export default function UnitsPage() {
             <Building2 size={16} /> {projectData ? projectData.name : "Loading..."}
           </p>
         </div>
+
+        <div className="flex items-center gap-4">
+          <button onClick={() => openModal()} className="px-8 py-4 rounded-2xl bg-[#00a1e4] text-white font-black shadow-xl shadow-blue-200 hover:bg-[#008cc6] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 uppercase text-sm tracking-widest">
+            <Plus size={20} strokeWidth={3} /> Add Unit Record
+          </button>
+        </div>
       </div>
 
       {/* METRIC CARDS */}
@@ -421,18 +428,25 @@ export default function UnitsPage() {
               <p className="w-full text-center py-8 text-xs font-bold text-slate-400">Belum ada pengaduan tercatat.</p>
             ) : (
               complaints.map(c => (
-                <div key={c.id} className="min-w-[300px] p-4 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col gap-2 relative group overflow-hidden">
+                <div 
+                  key={c.id} 
+                  onClick={() => {
+                    const linkedUnit = units.find(u => u.id === c.unit_id);
+                    if (linkedUnit) openDetail(linkedUnit);
+                  }}
+                  className="min-w-[300px] p-4 bg-white rounded-2xl border border-slate-200 flex flex-col gap-2 relative group overflow-hidden cursor-pointer hover:border-[#00a1e4] hover:shadow-lg hover:shadow-blue-500/5 transition-all"
+                >
                    <div className="flex justify-between items-start">
-                      <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest">{c.unit_tag}</p>
+                      <p className="text-[10px] font-black text-[#00a1e4] uppercase tracking-widest">{c.unit_tag}</p>
                       <span className="text-[9px] font-bold text-slate-400">{new Date(c.created_at).toLocaleString()}</span>
                    </div>
                    <p className="text-xs font-bold text-slate-800 line-clamp-2">"{c.description}"</p>
-                   <div className="mt-auto flex items-center justify-between pt-2 border-t border-slate-200/50">
+                   <div className="mt-auto flex items-center justify-between pt-2 border-t border-slate-100">
                       <p className="text-[10px] font-bold text-slate-500 flex items-center gap-1"><Building2 size={10}/> {c.unit_room || c.unit_area || "N/A"}{c.unit_room && c.unit_area ? ` · ${c.unit_area}` : ''}</p>
                       <p className="text-[9px] font-black uppercase text-slate-400">By: {c.customer_name}</p>
                    </div>
                    {c.photo_url && (
-                     <div className="absolute right-0 top-0 bottom-0 w-12 opacity-10 group-hover:opacity-30 transition-opacity">
+                     <div className="absolute right-0 top-0 bottom-0 w-12 opacity-5 group-hover:opacity-20 transition-opacity">
                         <img src={c.photo_url} className="h-full w-full object-cover" alt="Log" />
                      </div>
                    )}
@@ -444,46 +458,63 @@ export default function UnitsPage() {
       </div>
 
       {/* ACTION BAR & FILTER */}
-      <div className="bg-white p-4 rounded-3xl shadow-sm border border-slate-200 mb-6 flex flex-col lg:flex-row items-center justify-between gap-4">
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 mb-8">
         
-        {/* Left Side: Searches & Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:flex lg:items-center gap-3 w-full flex-1">
-          <div className="relative flex-1 lg:max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
-            <input 
-              type="text" placeholder="Search tagged unit, serial, model, area..."
-              value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00a1e4] focus:bg-white transition-all shadow-inner"
+        {/* Left Side: Dedicated Search */}
+        <div className="flex-1 lg:max-w-xl">
+          <div className="relative group">
+            <Search 
+              className={`absolute left-5 top-1/2 -translate-y-1/2 transition-all duration-300 w-5 h-5 z-20 ${
+                searchTerm ? "text-[#00a1e4]" : "text-slate-400 group-hover:text-[#00a1e4]"
+              }`}
             />
+            <input 
+              type="text" 
+              placeholder="Search tagged unit, serial, model, area..."
+              value={searchTerm} 
+              onChange={e => setSearchTerm(e.target.value)}
+              className="w-full h-14 pl-14 pr-6 bg-white border-2 border-slate-100 rounded-2xl text-base font-bold text-[#003366] placeholder:text-slate-300 focus:outline-none focus:border-[#00a1e4] focus:ring-4 focus:ring-[#00a1e4]/10 transition-all shadow-sm group-hover:shadow-md"
+            />
+            {searchTerm && (
+              <button 
+                onClick={() => setSearchTerm("")}
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-slate-300 hover:text-rose-500 transition-colors"
+              >
+                <X size={18} />
+              </button>
+            )}
           </div>
-          
-          <div className="relative w-full lg:w-40 shrink-0">
-            <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+        </div>
+        
+        {/* Right Side: Professional Filters & Utility */}
+        <div className="flex flex-wrap lg:flex-nowrap items-center gap-3">
+          <div className="flex items-center gap-2 px-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-200 transition-colors">
+            <Building2 className="text-slate-400 w-4 h-4" />
             <select 
               value={floorFilter} onChange={e => setFloorFilter(e.target.value)}
-              className="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 text-slate-600 rounded-2xl text-xs font-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#00a1e4] uppercase tracking-tighter"
+              className="bg-transparent text-[#003366] text-xs font-black uppercase tracking-wider focus:outline-none cursor-pointer"
             >
               <option value="All">All Floors</option>
               {uniqueFloors.map(f => <option key={f} value={f}>{f}</option>)}
             </select>
           </div>
 
-          <div className="relative w-full lg:w-40 shrink-0">
-             <Settings2 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+          <div className="flex items-center gap-2 px-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-200 transition-colors">
+             <Settings2 className="text-slate-400 w-4 h-4" />
              <select 
               value={brandFilter} onChange={e => setBrandFilter(e.target.value)}
-              className="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 text-slate-600 rounded-2xl text-xs font-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#00a1e4] uppercase tracking-tighter"
+              className="bg-transparent text-[#003366] text-xs font-black uppercase tracking-wider focus:outline-none cursor-pointer"
             >
               <option value="All">All Brands</option>
               {uniqueBrands.map(b => <option key={b} value={b}>{b}</option>)}
             </select>
           </div>
 
-          <div className="relative w-full lg:w-40 shrink-0">
-            <Activity className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+          <div className="flex items-center gap-2 px-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-200 transition-colors">
+            <Activity className="text-slate-400 w-4 h-4" />
             <select 
               value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-              className="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 text-slate-600 rounded-2xl text-xs font-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#00a1e4] uppercase tracking-tighter"
+              className="bg-transparent text-[#003366] text-xs font-black uppercase tracking-wider focus:outline-none cursor-pointer"
             >
               <option value="All">All Statuses</option>
               <option value="Normal">🟢 Normal</option>
@@ -491,28 +522,26 @@ export default function UnitsPage() {
               <option value="Pending">🟡 Pending / Progress</option>
             </select>
           </div>
-          {/* Right Side: Tools */}
-        <div className="grid grid-cols-2 md:flex gap-3 w-full lg:w-auto shrink-0 border-t lg:border-t-0 border-slate-100 pt-4 lg:pt-0">
-          <button onClick={handleExport} className="px-5 py-3 rounded-2xl bg-slate-50 text-slate-600 font-bold border border-slate-200 shadow-sm hover:bg-slate-100 transition-all flex items-center justify-center gap-2 text-[10px] md:text-sm uppercase tracking-wider">
-            <Download size={16} /> Export
-          </button>
-          
-          <div className="relative">
-            <input type="file" accept=".xlsx, .xls" ref={fileInputRef} onChange={handleImport} className="hidden" />
-            <button 
-              onClick={() => fileInputRef.current?.click()} disabled={isUploading}
-              className="w-full px-5 py-3 rounded-2xl bg-amber-50 text-amber-700 font-bold border border-amber-200 shadow-sm hover:bg-amber-100 transition-all flex items-center justify-center gap-2 text-[10px] md:text-sm uppercase tracking-wider disabled:opacity-50"
-            >
-              <Upload size={16} /> {isUploading ? "Uploading..." : "Import"}
-            </button>
-          </div>
-          
-          <button onClick={() => openModal()} className="col-span-2 md:col-span-1 px-6 py-3 rounded-2xl bg-[#00a1e4] text-white font-bold shadow-md hover:bg-[#008cc6] transition-all flex items-center justify-center gap-2 text-[10px] md:text-sm uppercase tracking-wider">
-            <Plus size={18} /> Add Unit Record
-          </button>
-        </div>
-      </div>
 
+          <div className="h-10 w-px bg-slate-200 mx-1 hidden lg:block" />
+
+          {/* Batch Utilities */}
+          <div className="flex items-center gap-2">
+            <button onClick={handleExport} className="p-3 bg-white border border-slate-200 text-slate-500 rounded-2xl hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-all shadow-sm" title="Export Excel">
+              <Download size={20} />
+            </button>
+            <div className="relative">
+              <input type="file" accept=".xlsx, .xls" ref={fileInputRef} onChange={handleImport} className="hidden" />
+              <button 
+                onClick={() => fileInputRef.current?.click()} disabled={isUploading}
+                className="p-3 bg-white border border-slate-200 text-slate-500 rounded-2xl hover:text-amber-600 hover:border-amber-200 hover:bg-amber-50 transition-all shadow-sm disabled:opacity-50"
+                title="Import Excel"
+              >
+                <Upload size={20} />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* SUPER TABLE */}
@@ -715,6 +744,7 @@ export default function UnitsPage() {
         onEdit={openModal}
         customerId={customerId}
         projectId={projectId}
+        session={session}
       />
 
       {/* QUICK INPUT MODAL */}
@@ -727,7 +757,7 @@ export default function UnitsPage() {
       {/* --- ADD / EDIT MODAL --- */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={closeModal} />
             <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} 
               className="bg-white border border-slate-200 rounded-[2rem] shadow-2xl relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col hidden-scrollbar"
@@ -813,7 +843,7 @@ export default function UnitsPage() {
       {/* --- QR Print Modal (Normal DOM View) --- */}
       <AnimatePresence>
         {isPrintModalOpen && selectedQR && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={closePrintModal}/>
             <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="bg-white border text-center border-slate-200 rounded-[2rem] shadow-2xl relative z-10 w-full max-w-[340px] overflow-hidden flex flex-col items-center">
               

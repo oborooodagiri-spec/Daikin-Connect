@@ -5,12 +5,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   X, MapPin, Settings2, QrCode, Edit2, Clock, 
   History as HistoryIcon, Save, RotateCcw, CheckCircle2,
-  ChevronRight, Building2, User
+  ChevronRight, Building2, User, ImageIcon
 } from "lucide-react";
 import UnitHistoryTimeline from "./UnitHistoryTimeline";
 import { useRouter } from "next/navigation";
 import QRCode from "react-qr-code";
-import { updateUnit } from "@/app/actions/units";
+import { updateUnit, getUnitHealthScore } from "@/app/actions/units";
+import { getUnitMediaHistory } from "@/app/actions/media";
+import { getUnitComplaints, deleteComplaint } from "@/app/actions/complaints";
+import MediaGallery from "./dashboard/MediaGallery";
+import { AlertCircle, Trash2, ShieldCheck, Zap, Activity } from "lucide-react";
 
 interface Unit {
   id: string | number;
@@ -49,23 +53,59 @@ interface UnitDetailModalProps {
   onEdit?: (unit?: any) => void;
   customerId?: string;
   projectId?: string;
+  session?: any;
 }
 
 export default function UnitDetailModal({
   isOpen, onClose, unit, history, historyLoading, 
   isStatusUpdating, onStatusUpdate, onPrintQR, onEdit,
-  customerId, projectId
+  customerId, projectId, session
 }: UnitDetailModalProps) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<any>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState<"timeline" | "media" | "complaints">("timeline");
+  const [mediaHistory, setMediaHistory] = useState<any[]>([]);
+  const [mediaLoading, setMediaLoading] = useState(false);
+  const [complaintHistory, setComplaintHistory] = useState<any[]>([]);
+  const [complaintLoading, setComplaintLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState<number | null>(null);
+  const [healthData, setHealthData] = useState<any>(null);
+  const [healthLoading, setHealthLoading] = useState(false);
 
   useEffect(() => {
     if (unit) {
       setFormData({ ...unit });
+      fetchHealth();
+      if (activeTab === "media") fetchMedia();
+      if (activeTab === "complaints") fetchComplaints();
     }
-  }, [unit]);
+  }, [unit, activeTab]);
+
+  const fetchHealth = async () => {
+    if (!unit) return;
+    setHealthLoading(true);
+    const res = await getUnitHealthScore(Number(unit.id));
+    if (res && 'success' in res) setHealthData(res.data);
+    setHealthLoading(false);
+  };
+
+  const fetchComplaints = async () => {
+    if (!unit) return;
+    setComplaintLoading(true);
+    const res: any = await getUnitComplaints(Number(unit.id));
+    if (res.success) setComplaintHistory(res.data);
+    setComplaintLoading(false);
+  };
+
+  const fetchMedia = async () => {
+    if (!unit) return;
+    setMediaLoading(true);
+    const res: any = await getUnitMediaHistory(Number(unit.id));
+    if (res.success) setMediaHistory(res.data);
+    setMediaLoading(false);
+  };
 
   if (!unit) return null;
 
@@ -93,6 +133,18 @@ export default function UnitDetailModal({
   const handleCancel = () => {
     setFormData({ ...unit });
     setIsEditing(false);
+  };
+
+  const handleDeleteComplaint = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this complaint record? This action cannot be undone.")) return;
+    setIsDeleting(id);
+    const res: any = await deleteComplaint(id);
+    if (res.success) {
+      setComplaintHistory(prev => prev.filter(c => c.id !== id));
+    } else {
+      alert(res.error || "Failed to delete complaint");
+    }
+    setIsDeleting(null);
   };
 
   return (
@@ -202,26 +254,77 @@ export default function UnitDetailModal({
             <div className="flex-1 overflow-y-auto custom-scrollbar">
               <div className="p-8 pb-4">
                 <div className="grid grid-cols-12 gap-8 bg-slate-50/50 border border-slate-100 p-8 rounded-[2.5rem]">
-                  {/* Passport Section */}
-                  <div className="col-span-12 lg:col-span-2 flex flex-col items-center justify-center gap-4 bg-white p-6 rounded-3xl shadow-sm border border-slate-100 group relative overflow-hidden">
-                    <div className="absolute inset-0 bg-[#00a1e4]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div className="relative z-10 p-2 bg-white rounded-2xl shadow-inner border border-slate-50">
-                      {unit.qr_code_token ? (
-                        <QRCode value={unit.qr_code_token} size={100} level="H" className="w-full h-full" />
-                      ) : (
-                        <QrCode size={64} className="text-slate-100" />
-                      )}
+                  {/* Column 1: Identity & Vitality (Stacked) */}
+                  <div className="col-span-12 lg:col-span-3 space-y-6">
+                    {/* Passport Card */}
+                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 group relative overflow-hidden flex flex-col items-center justify-center gap-4">
+                      <div className="absolute inset-0 bg-[#00a1e4]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <div className="relative z-10 p-2 bg-white rounded-2xl shadow-inner border border-slate-50">
+                        {unit.qr_code_token ? (
+                          <QRCode 
+                            value={`${typeof window !== 'undefined' ? window.location.origin : ''}/passport/${unit.qr_code_token}`} 
+                            size={100} level="H" className="w-full h-full" 
+                          />
+                        ) : (
+                          <QrCode size={64} className="text-slate-100" />
+                        )}
+                      </div>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Scan unit passport</p>
                     </div>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Scan Passport</p>
+
+                    {/* Health Vitality Hub (Stacked) */}
+                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+                      <div className={`absolute top-0 right-0 w-24 h-24 ${
+                        healthData?.color === 'rose' ? 'bg-rose-500/5' : 
+                        healthData?.color === 'amber' ? 'bg-amber-500/5' : 
+                        healthData?.color === 'indigo' ? 'bg-indigo-500/5' : 'bg-emerald-500/5'
+                      } rounded-full -translate-y-1/2 translate-x-1/2`}></div>
+                      
+                      <div className="relative mb-3">
+                        {healthLoading ? (
+                          <div className="w-16 h-16 border-4 border-slate-50 border-t-[#00a1e4] rounded-full animate-spin" />
+                        ) : (
+                          <div className="relative flex items-center justify-center">
+                            <svg className="w-20 h-20 transform -rotate-90">
+                              <circle cx="40" cy="40" r="34" stroke="currentColor" strokeWidth="6" fill="transparent" className="text-slate-100" />
+                              <circle 
+                                cx="40" cy="40" r="34" stroke="currentColor" strokeWidth="6" fill="transparent" 
+                                strokeDasharray={213.5}
+                                strokeDashoffset={213.5 - (213.5 * (healthData?.score || 100)) / 100}
+                                className={`${
+                                  healthData?.color === 'rose' ? 'text-rose-500' : 
+                                  healthData?.color === 'amber' ? 'text-amber-500' : 
+                                  healthData?.color === 'indigo' ? 'text-indigo-500' : 'text-emerald-500'
+                                } transition-all duration-1000 ease-out`}
+                              />
+                            </svg>
+                            <span className="absolute text-lg font-black text-slate-800">{healthData?.score ?? '--'}%</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-1 relative z-10">
+                        <h4 className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border ${
+                          healthData?.color === 'rose' ? 'text-rose-600 bg-rose-50 border-rose-100' : 
+                          healthData?.color === 'amber' ? 'text-amber-600 bg-amber-50 border-amber-100' : 
+                          healthData?.color === 'indigo' ? 'text-indigo-600 bg-indigo-50 border-indigo-100' : 'text-emerald-600 bg-emerald-50 border-emerald-100'
+                        }`}>
+                          {healthData?.label || "Status"}
+                        </h4>
+                        {healthData?.auditDate && (
+                          <p className="text-[9px] font-semibold text-slate-300 mt-2">Audit: {new Date(healthData.auditDate).toLocaleDateString()}</p>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Technical Specs Hub */}
-                  <div className="col-span-12 lg:col-span-5 space-y-6">
+                  {/* Column 2: Technical Specs Hub */}
+                  <div className="col-span-12 lg:col-span-4 bg-white p-8 rounded-3xl shadow-sm border border-slate-100 space-y-8">
                     <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-indigo-700 w-fit rounded-lg">
-                      <Settings2 size={14}/>
-                      <span className="text-[10px] font-black uppercase tracking-[0.1em]">Technical Specification</span>
+                      <Zap size={14}/>
+                      <span className="text-[10px] font-black uppercase tracking-[0.1em]">Technical Metrics</span>
                     </div>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-6">
+                    <div className="grid grid-cols-2 gap-x-8 gap-y-8">
                       <EditableField 
                         label="Serial Number" 
                         value={formData?.serial_number} 
@@ -264,13 +367,13 @@ export default function UnitDetailModal({
                     </div>
                   </div>
 
-                  {/* Location Details Hub */}
-                  <div className="col-span-12 lg:col-span-5 space-y-6">
+                  {/* Column 3: Location Details Hub */}
+                  <div className="col-span-12 lg:col-span-5 bg-white p-8 rounded-3xl shadow-sm border border-slate-100 space-y-8">
                     <div className="flex items-center gap-2 px-3 py-1.5 bg-[#00a1e4]/10 text-[#00a1e4] w-fit rounded-lg">
                       <MapPin size={14}/>
                       <span className="text-[10px] font-black uppercase tracking-[0.1em]">Deployment Location</span>
                     </div>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-6">
+                    <div className="grid grid-cols-2 gap-x-8 gap-y-8">
                       <EditableField 
                         label="Building Area" 
                         value={formData?.area} 
@@ -320,28 +423,113 @@ export default function UnitDetailModal({
                       <HistoryIcon size={24}/>
                     </div>
                     <div>
-                      <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-800">Field Service Timeline</h3>
-                      <p className="text-xs font-bold text-slate-400 mt-0.5">Chronological record of maintenance & interventions</p>
+                      <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-800">Unit Activity Hub</h3>
+                      <p className="text-xs font-bold text-slate-400 mt-0.5">Comprehensive history of service & media documentation</p>
                     </div>
                   </div>
+                  
+                  <div className="flex items-center gap-2 bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
+                    <button 
+                      onClick={() => setActiveTab("timeline")}
+                      className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 ${activeTab === 'timeline' ? 'bg-[#003366] text-white shadow-lg' : 'text-slate-400 hover:text-slate-600'}`}
+                    >
+                      <HistoryIcon size={14}/> Timeline
+                    </button>
+                    <button 
+                      onClick={() => setActiveTab("media")}
+                      className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 ${activeTab === 'media' ? 'bg-[#003366] text-white shadow-lg' : 'text-slate-400 hover:text-slate-600'}`}
+                    >
+                      <ImageIcon size={14}/> Media Gallery
+                    </button>
+                    <button 
+                      onClick={() => setActiveTab("complaints")}
+                      className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 ${activeTab === 'complaints' ? 'bg-[#003366] text-white shadow-lg' : 'text-slate-400 hover:text-slate-600'}`}
+                    >
+                      <AlertCircle size={14}/> Complaints
+                    </button>
+                  </div>
+
                   <button 
                     onClick={() => router.push(`/dashboard/schedules`)} 
-                    className="flex items-center gap-3 px-6 py-3 bg-[#003366] text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-[#00a1e4] transition-all shadow-lg shadow-[#003366]/20 group"
+                    className="flex items-center gap-3 px-6 py-3 bg-white border border-[#003366]/20 text-[#003366] text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-[#00a1e4] hover:text-white transition-all shadow-sm group"
                   >
                     <Clock size={16} className="group-hover:translate-x-1 transition-transform"/> View Site Calendar
                   </button>
                 </div>
 
-                {historyLoading ? (
-                  <div className="py-24 text-center flex flex-col items-center gap-6">
-                    <div className="w-16 h-16 border-4 border-slate-50 border-t-[#00a1e4] rounded-full animate-spin"></div>
-                    <div className="space-y-1">
-                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Syncing Data...</p>
-                      <p className="text-[10px] font-bold text-slate-300">Retrieving cloud maintenance logs</p>
+                {activeTab === "timeline" ? (
+                  historyLoading ? (
+                    <div className="py-24 text-center flex flex-col items-center gap-6">
+                      <div className="w-16 h-16 border-4 border-slate-50 border-t-[#00a1e4] rounded-full animate-spin"></div>
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Syncing Data...</p>
+                        <p className="text-[10px] font-bold text-slate-300">Retrieving cloud maintenance logs</p>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <UnitHistoryTimeline history={history} session={session} />
+                  )
+                ) : activeTab === "media" ? (
+                  mediaLoading ? (
+                    <div className="py-24 text-center flex flex-col items-center gap-6">
+                      <div className="w-16 h-16 border-4 border-slate-50 border-t-[#00a1e4] rounded-full animate-spin"></div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Loading Media Optimized Assets...</p>
+                    </div>
+                  ) : (
+                    <MediaGallery groups={mediaHistory} />
+                  )
                 ) : (
-                  <UnitHistoryTimeline history={history} />
+                  complaintLoading ? (
+                    <div className="py-24 text-center flex flex-col items-center gap-6">
+                      <div className="w-16 h-16 border-4 border-slate-50 border-t-[#00a1e4] rounded-full animate-spin"></div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Loading Complaint History...</p>
+                    </div>
+                  ) : complaintHistory.length === 0 ? (
+                    <div className="py-24 text-center text-slate-400">
+                      <AlertCircle className="w-12 h-12 mx-auto mb-4 opacity-10" />
+                      <p className="text-sm font-bold">No complaints recorded for this unit.</p>
+                      <p className="text-xs">History is clean and healthy ✨</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4 max-w-4xl mx-auto">
+                      {complaintHistory.map((c) => (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                          key={c.id} className="p-6 bg-slate-50 rounded-[2rem] border border-slate-100 flex justify-between items-start group"
+                        >
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                               <p className="text-[10px] font-black text-[#00a1e4] uppercase tracking-widest">{c.customer_name}</p>
+                               <span className="text-[10px] font-bold text-slate-400">• {new Date(c.created_at).toLocaleString()}</span>
+                               <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-[0.1em] border ${
+                                 c.status === 'Resolved' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'
+                               }`}>
+                                 {c.status}
+                               </span>
+                            </div>
+                            <p className="text-sm font-bold text-slate-700 leading-relaxed italic">"{c.description}"</p>
+                          </div>
+                          
+                          {c.photo_url && (
+                             <div className="w-16 h-16 rounded-xl overflow-hidden border border-white ml-4 shadow-sm shrink-0">
+                                <img src={c.photo_url} alt="Problem" className="w-full h-full object-cover" />
+                             </div>
+                          )}
+
+                          {session?.isInternal && (
+                            <button 
+                              onClick={() => handleDeleteComplaint(c.id)}
+                              disabled={isDeleting === c.id}
+                              className="ml-6 p-3 bg-white text-slate-300 hover:text-rose-500 hover:bg-rose-50 border border-slate-100 rounded-2xl transition-all shadow-sm opacity-0 group-hover:opacity-100"
+                              title="Delete Record (Admin Only)"
+                            >
+                              {isDeleting === c.id ? <div className="w-4 h-4 border-2 border-rose-500/30 border-t-rose-500 rounded-full animate-spin" /> : <Trash2 size={16} />}
+                            </button>
+                          )}
+                        </motion.div>
+                      ))}
+                    </div>
+                  )
                 )}
               </div>
             </div>

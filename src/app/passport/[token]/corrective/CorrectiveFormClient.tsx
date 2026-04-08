@@ -10,11 +10,12 @@ import { savePendingSubmission } from "@/lib/offline-db";
 import {
   ChevronRight, ChevronLeft, Camera, CheckCircle2,
   AlertCircle, MapPin, X, Printer, AlertTriangle,
-  User, Phone, Building2, Mail, Calendar, WifiOff
+  User, Phone, Building2, Mail, Calendar, WifiOff,
+  FileVideo, Play
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function CorrectiveFormClient({ unit }: { unit: any }) {
+export default function CorrectiveFormClient({ unit, lastPreventiveDate }: { unit: any, lastPreventiveDate?: string | null }) {
   const router = useRouter();
   const pdfRef = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState(1);
@@ -39,6 +40,7 @@ export default function CorrectiveFormClient({ unit }: { unit: any }) {
     email: "",
     wo_number: "",
     service_date: new Date().toISOString().split("T")[0],
+    service_time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).replace('.', ':'),
     visit: "1",
   });
 
@@ -59,40 +61,74 @@ export default function CorrectiveFormClient({ unit }: { unit: any }) {
     recommendation: "",
   });
 
-  // Step 4: Photos
-  const [photos, setPhotos] = useState<File[]>([]);
-  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  // Media (Photos & Videos)
+  const [mediaItems, setMediaItems] = useState<{file: File, type: "image" | "video", preview: string}[]>([]);
   const [engineerNote, setEngineerNote] = useState("");
 
-  // Photo handling
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // New fields for Summary Report
+  const [category, setCategory] = useState("");
+  const [currentStatus, setCurrentStatus] = useState("Problem");
+
+  const COMPLAINT_CATEGORIES = [
+    "Kebocoran (Leakage)",
+    "Non AC (Keluhan non-teknis)",
+    "AC Noise (Berisik)",
+    "AC Mati (Power Issue)",
+    "Lainnya"
+  ];
+
+  // Media Handling (Photos & Videos)
+  const handleMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const files = Array.from(e.target.files);
-    if (photos.length + files.length > 10) { alert("Maksimal 10 foto!"); return; }
+    if (mediaItems.length + files.length > 10) { alert("Maksimal 10 file!"); return; }
 
     setLoading(true);
-    const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1280, useWebWorker: true };
     for (const f of files) {
       try {
-        const compressed = await imageCompression(f, options);
-        setPhotos(prev => [...prev, compressed]);
-        setPhotoPreviews(prev => [...prev, URL.createObjectURL(compressed)]);
+        const isVideo = f.type.startsWith("video/");
+        let finalFile = f;
+
+        if (!isVideo) {
+          const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1280, useWebWorker: true };
+          finalFile = await imageCompression(f, options);
+        } else {
+          if (f.size > 20 * 1024 * 1024) {
+             alert(`Video ${f.name} terlalu besar (>20MB). Mohon gunakan video berdurasi pendek.`);
+             continue;
+          }
+        }
+
+        setMediaItems(prev => [...prev, {
+          file: finalFile,
+          type: isVideo ? "video" : "image",
+          preview: URL.createObjectURL(finalFile)
+        }]);
       } catch (err) { console.error(err); }
     }
     setLoading(false);
   };
 
-  const removePhoto = (idx: number) => {
-    setPhotos(prev => prev.filter((_, i) => i !== idx));
-    setPhotoPreviews(prev => prev.filter((_, i) => i !== idx));
+  const removeMedia = (idx: number) => {
+    setMediaItems(prev => prev.filter((_, i) => i !== idx));
   };
 
   // Build render data for PDF
-  const renderData = { personnel, pic, analysis, engineerNote, unit };
+  const renderData = { 
+    personnel, 
+    pic, 
+    analysis, 
+    engineerNote, 
+    unit, 
+    category, 
+    currentStatus, 
+    lastPreventiveDate 
+  };
 
   // Submit
   const handleSubmit = async () => {
     if (!personnel.name) { alert("Nama Teknisi wajib diisi!"); setStep(1); return; }
+    if (!category) { alert("Kategori Komplain wajib dipilih!"); setStep(3); return; }
     if (!analysis.complain) { alert("Keluhan/Case wajib diisi!"); setStep(3); return; }
     setLoading(true);
     try {
@@ -114,7 +150,7 @@ export default function CorrectiveFormClient({ unit }: { unit: any }) {
             recommendation: analysis.recommendation,
             technical_json: JSON.stringify(renderData, (_, v) => typeof v === 'bigint' ? v.toString() : v),
           },
-          photos: photos
+          photos: mediaItems.map(m => m.file)
         });
         setIsQueued(true);
         setLoading(false);
@@ -122,8 +158,9 @@ export default function CorrectiveFormClient({ unit }: { unit: any }) {
       }
 
       let pdfUrl = "";
-
-      // 1. Generate PDF
+      let baUrl = "";
+      
+      // 1. Generate PDF (TECH REPORT)
       if (pdfRef.current) {
         pdfRef.current.style.display = "block";
         
@@ -243,22 +280,73 @@ export default function CorrectiveFormClient({ unit }: { unit: any }) {
         }
         const pdfData = await pdfRes.json();
         if (pdfData.success) pdfUrl = pdfData.url;
+
+        // --- NEW: GENERATE BERITA ACARA PDF ---
+        const baPdf = new jsPDF("p", "mm", "a4");
+        const { BeritaAcaraPDFTemplate } = await import("@/components/BeritaAcaraPDFTemplate");
+        const { ReportBase } = await import("@/components/ReportBase");
+
+        const baDiv = document.createElement("div");
+        baDiv.style.width = "210mm";
+        baDiv.style.height = "297mm";
+        baDiv.style.position = "absolute";
+        baDiv.style.top = "-9999px";
+        document.body.appendChild(baDiv);
+
+        const { createRoot: baRootInit } = await import("react-dom/client");
+        const baRoot = baRootInit(baDiv);
+        
+        await new Promise<void>((resolve) => {
+          baRoot.render(
+            <ReportBase reportTitle="BERITA ACARA PEKERJAAN" reportCode={`BA-CR-${unit.id}-${Date.now()}`} unit={unit}>
+              <BeritaAcaraPDFTemplate 
+                data={{ ...renderData, engineer_note: engineerNote, type: "Corrective Maintenance" }} 
+                unit={unit} 
+                engineerName={personnel.name} 
+              />
+            </ReportBase>
+          );
+          setTimeout(resolve, 300);
+        });
+
+        const baCanvas = await html2canvas(baDiv, { scale: 2, useCORS: true, windowWidth: 794, height: 1123 });
+        const baImg = baCanvas.toDataURL("image/jpeg", 0.9);
+        baPdf.addImage(baImg, 'JPEG', 0, 0, 210, 297);
+        
+        const baBlob = baPdf.output("blob");
+        const baFormData = new FormData();
+        baFormData.append("file", new File([baBlob], `${unit.tag_number}_BA_${Date.now()}.pdf`, { type: 'application/pdf' }));
+        baFormData.append("folder", "berita-acara");
+
+        const baRes = await fetch('/api/upload', { method: 'POST', body: baFormData });
+        if (baRes.ok) {
+          const baData = await baRes.json();
+          if (baData.success) baUrl = baData.url;
+        }
+
+        baRoot.unmount();
+        document.body.removeChild(baDiv);
       }
 
-      // 2. Upload Photos
-      const uploadedPhotos: { photo_url: string; description: string }[] = [];
-      for (const p of photos) {
-        const pForm = new FormData();
-        pForm.append("file", p);
-        pForm.append("folder", "photos");
-        const pRes = await fetch("/api/upload", { method: "POST", body: pForm });
-        if (!pRes.ok) {
-          const errorText = await pRes.text();
-          console.error("Photo Upload Failed:", errorText);
-          throw new Error(`Photo Upload failed: ${pRes.status} ${pRes.statusText}`);
+      // 2. Upload Media (Photos & Videos)
+      const uploadedMedia: { photo_url: string; description: string; media_type: string }[] = [];
+      for (const item of mediaItems) {
+        const mForm = new FormData();
+        mForm.append("file", item.file);
+        mForm.append("folder", item.type === "video" ? "videos" : "photos");
+        
+        const mRes = await fetch("/api/upload", { method: "POST", body: mForm });
+        if (!mRes.ok) {
+          throw new Error(`Media Upload failed: ${mRes.status}`);
         }
-        const pData = await pRes.json();
-        if (pData.success) uploadedPhotos.push({ photo_url: pData.url, description: "Corrective Documentation" });
+        const mData = await mRes.json();
+        if (mData.success) {
+          uploadedMedia.push({ 
+            photo_url: mData.url, 
+            media_type: item.type,
+            description: "Corrective Documentation" 
+          });
+        }
       }
 
       // 3. Save to DB
@@ -276,7 +364,9 @@ export default function CorrectiveFormClient({ unit }: { unit: any }) {
         recommendation: analysis.recommendation,
         technical_json: JSON.stringify(renderData, (_, v) => typeof v === 'bigint' ? v.toString() : v),
         pdf_report_url: pdfUrl,
-        photos: uploadedPhotos,
+        berita_acara_pdf_url: baUrl,
+        engineer_signer_name: personnel.name,
+        photos: uploadedMedia,
       };
 
       const dbRes = await createCorrectiveActivity(dbPayload) as any;
@@ -348,13 +438,17 @@ export default function CorrectiveFormClient({ unit }: { unit: any }) {
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase">Jabatan / Posisi</label>
-                      <input type="text" value={personnel.position} onChange={e => setPersonnel({ ...personnel, position: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder="Contoh: Supervisor" />
+                      <label className="text-[10px] font-bold text-slate-500 uppercase">Tanggal Servis</label>
+                      <input type="date" value={personnel.service_date} onChange={e => setPersonnel({ ...personnel, service_date: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" />
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase">Email</label>
-                      <input type="email" value={personnel.email} onChange={e => setPersonnel({ ...personnel, email: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder="alamat@email.com" />
+                      <label className="text-[10px] font-bold text-slate-500 uppercase">Jam (WIB)</label>
+                      <input type="time" value={personnel.service_time} onChange={e => setPersonnel({ ...personnel, service_time: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" />
                     </div>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase italic">Terakhir Preventive Maintenance</label>
+                    <input type="text" value={lastPreventiveDate ? new Date(lastPreventiveDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : "Belum Pernah"} readOnly className="w-full mt-1 p-3 bg-blue-50 border border-blue-100 rounded-xl text-sm font-bold text-blue-700" />
                   </div>
                   <div>
                     <label className="text-[10px] font-bold text-slate-500 uppercase">Nomor Work Order (WO)</label>
@@ -428,6 +522,31 @@ export default function CorrectiveFormClient({ unit }: { unit: any }) {
                 </h2>
                 <div className="space-y-4">
                   <div>
+                    <label className="text-xs font-bold text-rose-500 uppercase tracking-widest block mb-1">Kategori Komplain*</label>
+                    <select 
+                      value={category} 
+                      onChange={(e) => setCategory(e.target.value)}
+                      className="w-full p-3 bg-rose-50 border border-rose-200 rounded-xl text-sm font-bold text-rose-700"
+                    >
+                       <option value="">-- Pilih Kategori --</option>
+                       {COMPLAINT_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1">Status Unit Saat Ini*</label>
+                    <div className="grid grid-cols-2 gap-2">
+                       {["Normal", "Warning", "Critical", "Problem"].map(s => (
+                         <button 
+                           key={s} 
+                           onClick={() => setCurrentStatus(s)}
+                           className={`p-2 rounded-lg text-[10px] font-black uppercase border transition-all ${currentStatus === s ? 'bg-rose-600 text-white border-rose-700' : 'bg-slate-50 text-slate-400 border-slate-200'}`}
+                         >
+                           {s}
+                         </button>
+                       ))}
+                    </div>
+                  </div>
+                  <div className="pt-2 border-t border-slate-100">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Deskripsi Keluhan / Case*</label>
                     <textarea rows={3} value={analysis.complain} onChange={e => setAnalysis({ ...analysis, complain: e.target.value })} className="w-full mt-1 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" placeholder="Jelaskan keluhan unit atau kronologi masalah..." />
                   </div>
@@ -466,28 +585,38 @@ export default function CorrectiveFormClient({ unit }: { unit: any }) {
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
                 <h3 className="text-xs font-black uppercase text-slate-500 mb-2 flex justify-between">
                   <span>Dokumentasi Foto</span>
-                  <span className="text-rose-500">{photos.length}/10</span>
+                  <span className="text-rose-500">{mediaItems.length}/10</span>
                 </h3>
                 <div className="grid grid-cols-3 gap-2 mb-4">
-                  {photoPreviews.map((src, i) => (
-                    <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 shadow-sm">
-                      <img src={src} alt={`Photo ${i}`} className="w-full h-full object-cover" />
-                      <button onClick={() => removePhoto(i)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-80 hover:opacity-100">
+                  {mediaItems.map((item, i) => (
+                    <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-900 flex items-center justify-center">
+                      {item.type === "video" ? (
+                        <>
+                          <video src={item.preview} className="w-full h-full object-cover opacity-50" muted />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                             <Play size={20} className="text-white fill-white" />
+                          </div>
+                          <div className="absolute top-1 left-1 px-1 py-0.5 bg-amber-500 text-white text-[7px] font-black uppercase rounded shadow-lg">Video</div>
+                        </>
+                      ) : (
+                        <img src={item.preview} alt={`Media ${i}`} className="w-full h-full object-cover" />
+                      )}
+                      <button onClick={() => removeMedia(i)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-80 hover:opacity-100">
                         <X size={12} />
                       </button>
                     </div>
                   ))}
-                  {photos.length < 10 && (
+                  {mediaItems.length < 10 && (
                     <label className="aspect-square rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-400 cursor-pointer transition-colors">
                       <Camera size={24} className="mb-1" />
                       <span className="text-[10px] font-bold uppercase">Tambah</span>
-                      <input type="file" multiple accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+                      <input type="file" multiple accept="image/*,video/*" onChange={handleMediaUpload} className="hidden" />
                     </label>
                   )}
                 </div>
                 <p className="text-[10px] text-amber-600 font-bold flex items-start gap-1">
                   <AlertCircle size={14} className="shrink-0" />
-                  Foto otomatis di-compress menjadi &lt;500KB. Maksimal 10 foto.
+                  Media otomatis di-optimasi. Video akan terkompresi secara otomatis di server.
                 </p>
               </div>
 

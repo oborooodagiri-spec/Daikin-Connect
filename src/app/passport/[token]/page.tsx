@@ -6,12 +6,14 @@ import { getUnitByToken, submitActivityFromPassport, updateUnitInfoFromPassport 
 import { 
   Building2, MapPin, Search, Hammer, Activity, Wrench, ChevronRight, ChevronLeft,
   ClipboardCheck, HardHat, FileText, CheckCircle2, AlertTriangle, Edit3, Save, X,
-  History as HistoryIcon, Camera, Printer, Trash2
+  History as HistoryIcon, Camera, Printer, Trash2, ImageIcon
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { updateUnitStatus, getUnitHistory } from "@/app/actions/units";
 import { submitComplaint } from "@/app/actions/complaints";
 import UnitHistoryTimeline from "@/components/UnitHistoryTimeline";
+import MediaGallery from "@/components/dashboard/MediaGallery";
+import { getUnitMediaHistory } from "@/app/actions/media";
 import imageCompression from "browser-image-compression";
 
 // Import Form Components
@@ -28,7 +30,7 @@ export default function PassportLandingPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [activeTab, setActiveTab] = useState<"info" | "corrective" | "preventive" | "audit" | "history" | "complaint">("info");
+  const [activeTab, setActiveTab] = useState<"info" | "corrective" | "preventive" | "audit" | "history" | "complaint" | "media">("info");
   
   // States for showing forms
   const [showFormCorrective, setShowFormCorrective] = useState(false);
@@ -37,6 +39,8 @@ export default function PassportLandingPage() {
 
   const [unitHistory, setUnitHistory] = useState<any[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [mediaHistory, setMediaHistory] = useState<any[]>([]);
+  const [mediaLoading, setMediaLoading] = useState(false);
   
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -71,6 +75,7 @@ export default function PassportLandingPage() {
         });
         
         loadHistory(res.data.id);
+        loadMedia(res.data.id);
       } else {
         setError(res.error || "Malfuctioned QR Code.");
       }
@@ -91,6 +96,15 @@ export default function PassportLandingPage() {
       setUnitHistory(sortedHistory);
     }
     setHistoryLoading(false);
+  };
+
+  const loadMedia = async (unitId: string | number) => {
+    setMediaLoading(true);
+    const mRes: any = await getUnitMediaHistory(Number(unitId));
+    if (mRes && mRes.success) {
+      setMediaHistory(mRes.data);
+    }
+    setMediaLoading(false);
   };
 
   const handleUpdateUnit = () => {
@@ -219,6 +233,7 @@ export default function PassportLandingPage() {
           <TabButton active={activeTab === "preventive"} onClick={() => setActiveTab("preventive")} label="Preventive" icon={<Wrench size={12}/>} />
           <TabButton active={activeTab === "audit"} onClick={() => setActiveTab("audit")} label="Audit" icon={<ClipboardCheck size={12}/>} />
           <TabButton active={activeTab === "history"} onClick={() => setActiveTab("history")} label="Log" icon={<HistoryIcon size={12}/>} />
+          <TabButton active={activeTab === "media"} onClick={() => setActiveTab("media")} label="Gallery" icon={<ImageIcon size={12}/>} />
         </div>
 
         {/* Content Area */}
@@ -427,6 +442,26 @@ export default function PassportLandingPage() {
                   </div>
                 ) : (
                   <UnitHistoryTimeline history={unitHistory} />
+                )}
+              </motion.div>
+            ) : activeTab === "media" ? (
+              <motion.div 
+                key="media" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                className="space-y-4"
+              >
+                <div className="flex justify-between items-center mb-6 px-1">
+                  <div>
+                    <h3 className="text-sm font-black text-[#003366] uppercase tracking-widest">Media Documentation</h3>
+                    <p className="text-[10px] font-bold text-slate-400 mt-0.5">Proof of work photos and videos</p>
+                  </div>
+                </div>
+                {mediaLoading ? (
+                  <div className="py-20 text-center flex flex-col items-center gap-4">
+                    <div className="w-10 h-10 border-4 border-slate-100 border-t-[#00a1e4] rounded-full animate-spin"></div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Optimizing Media...</p>
+                  </div>
+                ) : (
+                  <MediaGallery groups={mediaHistory} />
                 )}
               </motion.div>
             ) : activeTab === "complaint" ? (

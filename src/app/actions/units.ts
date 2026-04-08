@@ -407,6 +407,12 @@ export async function getUnitHistory(unitId: string | number) {
         engineer: a.inspector_name,
         note: a.engineer_note,
         pdf: a.pdf_report_url,
+        baPdf: a.berita_acara_pdf_url,
+        isApproved: a.is_approved_by_customer,
+        approverName: a.customer_approver_name,
+        approvedAt: a.customer_approved_at,
+        technical_json: a.technical_json,
+        technical_advice: a.technical_advice,
         isFormal: true
       })),
       ...quickActs.map((a: any) => ({
@@ -581,3 +587,157 @@ export async function migrateAllUnitTags() {
   }
 }
 
+/**
+ * 12. CALCULATE UNIT HEALTH VITALITY (Algorithm based on Audit Data)
+ */
+export async function getUnitHealthScore(unitId: number) {
+  try {
+    const unit = await (prisma.units as any).findUnique({
+      where: { id: unitId },
+      include: {
+        audit_tickets: {
+          orderBy: { created_at: 'desc' },
+          take: 1
+        },
+        service_activities: {
+          where: { type: 'Audit' },
+          orderBy: { service_date: 'desc' },
+          take: 1
+        }
+      }
+    });
+
+    if (!unit) return { error: "Unit not found" };
+
+    let totalScore = 100;
+    let auditDate = unit.last_service_date || unit.created_at;
+    let findings = "Healthy";
+
+    // 1. DATA SOURCES
+    const lastTicket = unit.audit_tickets?.[0];
+    const lastTech = unit.service_activities?.[0];
+    if (lastTicket) auditDate = lastTicket.created_at;
+    if (lastTech && lastTech.service_date > (auditDate || 0)) auditDate = lastTech.service_date;
+
+    // 2. CALCULATION: TECHNICAL FINDINGS (50% WEIGHT)
+    let techScore = 100;
+    const condition = lastTicket?.physical_condition || "Good";
+    const status = lastTicket?.finding_status || "Normal";
+
+    if (status === "Critical" || condition === "Damaged") techScore = 0;
+    else if (status === "Warning" || condition === "Dirty") techScore = 50;
+    
+    // 3. CALCULATION: PERFORMANCE / TEMP DELTA (30% WEIGHT)
+    let perfScore = 100;
+    if (lastTech) {
+      const entering = lastTech.entering_db || 0;
+      const leaving = lastTech.leaving_db || 0;
+      const delta = entering - leaving;
+      
+      if (delta > 0) {
+        if (delta < 7 || delta > 14) perfScore = 40; // Poor efficiency
+        else if (delta < 8 || delta > 12) perfScore = 70; // Sub-optimal
+      } else {
+        perfScore = 50; // No delta recorded or heat gain
+      }
+    }
+
+    // 4. CALCULATION: AGE FACTOR (20% WEIGHT)
+    let ageScore = 100;
+    if (unit.yoi) {
+      const age = new Date().getFullYear() - unit.yoi;
+      if (age > 15) ageScore = 20;
+      else if (age > 10) ageScore = 50;
+      else if (age > 7) ageScore = 80;
+    }
+
+    // FINAL WEIGHTING
+    const finalScore = Math.round((techScore * 0.5) + (perfScore * 0.3) + (ageScore * 0.2));
+
+    // STATUS MAPPING
+    let label = "Excellent";
+    let color = "emerald";
+    if (finalScore < 40) { label = "Replace Recommended"; color = "rose"; }
+    else if (finalScore < 60) { label = "Maintenance Required"; color = "amber"; }
+    else if (finalScore < 85) { label = "Good / Monitor"; color = "indigo"; }
+
+    return serializePrisma({
+      success: true,
+      data: {
+        score: finalScore,
+        label,
+        color,
+        auditDate,
+        factors: { techScore, perfScore, ageScore }
+      }
+    });
+
+  } catch (error) {
+    console.error("Health calc error:", error);
+    return { error: "Failed to calculate unit health" };
+  }
+}
+
+/**
+ * 13. DIGITAL APPROVAL FOR BERITA ACARA
+ */
+export async function approveServiceActivity(activityId: number, approverName: string) {
+  try {
+    const updated = await (prisma.service_activities as any).update({
+      where: { id: activityId },
+      data: {
+        is_approved_by_customer: true,
+        customer_approver_name: approverName,
+        customer_approved_at: new Date(),
+        status: "Final Approved"
+      }
+    });
+
+    revalidatePath("/dashboard");
+    return { success: true, activity: updated };
+  } catch (error) {
+    console.error("Approval error:", error);
+    return { error: "Failed to approve service activity" };
+  }
+}
+
+/**
+ * 14. UPDATE BERITA ACARA URL (For Backfilling)
+ */
+export async function updateActivityBAUrl(activityId: number, baUrl: string) {
+  try {
+    const updated = await (prisma.service_activities as any).update({
+      where: { id: activityId },
+      data: {
+        berita_acara_pdf_url: baUrl
+      }
+    });
+
+    revalidatePath("/dashboard");
+    return { success: true, activity: updated };
+  } catch (error) {
+    console.error("Backfill update error:", error);
+    return { error: "Failed to update official record URL" };
+  }
+}
+
+/**
+ * 15. UPDATE MULTIPLE REPORT URLS (After Digital Approval Re-generation)
+ */
+export async function updateActivityReportUrls(activityId: number, reportUrl: string, baUrl: string) {
+  try {
+    const updated = await (prisma.service_activities as any).update({
+      where: { id: activityId },
+      data: {
+        pdf_report_url: reportUrl,
+        berita_acara_pdf_url: baUrl
+      }
+    });
+
+    revalidatePath("/dashboard");
+    return { success: true, activity: updated };
+  } catch (error) {
+    console.error("Multi-report update error:", error);
+    return { error: "Failed to synchronise signed reports" };
+  }
+}

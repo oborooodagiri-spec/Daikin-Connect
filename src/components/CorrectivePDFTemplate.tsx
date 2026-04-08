@@ -34,6 +34,12 @@ export const getCorrectiveSections = (data: any, unit: any) => {
              <td style={cellLabel}>Visit Count</td>
              <td style={cellVal}>{personnel?.visit || "1"}</td>
            </tr>
+           <tr>
+             <td style={cellLabel}>Service Time</td>
+             <td style={cellVal}>{personnel?.service_time || "-"} WIB</td>
+             <td style={cellLabel}>Last PM Date</td>
+             <td style={cellVal}>{data.lastPreventiveDate ? new Date(data.lastPreventiveDate).toLocaleDateString("id-ID") : "N/A"}</td>
+           </tr>
          </tbody>
        </table>
     </div>,
@@ -92,14 +98,22 @@ export const getCorrectiveSections = (data: any, unit: any) => {
         </div>
       </div>
       <div style={{ ...signBox, position: "relative" }}>
-         <div style={{ position: "absolute", top: "-4mm", right: "2mm", zIndex: 10 }}>
-            <DigitalStamp />
-         </div>
+         {data.isApproved && (
+           <div style={{ position: "absolute", top: "-4mm", right: "2mm", zIndex: 10 }}>
+              <DigitalStamp />
+           </div>
+         )}
         <p style={signTitle}>Acknowledged by (PIC)</p>
-        <div style={{ flex: 1, minHeight: "10mm" }}></div>
+        <div style={{ flex: 1, minHeight: "10mm", display: "flex", alignItems: "center", justifyContent: "center" }}>
+           {data.isApproved ? (
+              <p style={{ fontSize: "8pt", color: "#059669", fontWeight: 800, textTransform: "uppercase" }}>[ Digitally Approved ]</p>
+           ) : (
+              <p style={{ fontSize: "7pt", color: "#cbd5e1", fontStyle: "italic" }}>Waiting for Signature</p>
+           )}
+        </div>
         <div style={signDetail}>
-          <p style={{ margin: "0.5mm 0" }}>Name: {pic?.name || "-"}</p>
-          <p style={{ margin: "0.5mm 0" }}>Date: ________________</p>
+          <p style={{ margin: "0.5mm 0" }}>Name: {data.customerApproverName || pic?.name || "-"}</p>
+          <p style={{ margin: "0.5mm 0" }}>Date: {data.approvedAt ? new Date(data.approvedAt).toLocaleDateString("id-ID") : "________________"}</p>
         </div>
       </div>
       <div style={signBox}>
