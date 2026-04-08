@@ -1,6 +1,6 @@
 name: daikin_connect_mobile
 description: "Daikin Connect Enterprise Mobile App - Monitoring and Field Reporting."
-version: 2.0.0+20260408
+version: 3.0.0+3
 
 environment:
   sdk: '>=3.0.0 <4.0.0'

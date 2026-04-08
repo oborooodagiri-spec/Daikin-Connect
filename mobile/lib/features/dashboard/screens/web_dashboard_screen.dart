@@ -4,7 +4,14 @@ import 'package:provider/provider.dart';
 import '../../../providers/auth_provider.dart';
 
 class WebDashboardScreen extends StatefulWidget {
-  const WebDashboardScreen({super.key});
+  final String path;
+  final String title;
+
+  const WebDashboardScreen({
+    super.key, 
+    this.path = "/dashboard", 
+    this.title = "MASTER DASHBOARD"
+  });
 
   @override
   State<WebDashboardScreen> createState() => _WebDashboardScreenState();
@@ -40,7 +47,7 @@ class _WebDashboardScreenState extends State<WebDashboardScreen> {
           },
         ),
       )
-      ..loadRequest(Uri.parse("https://daikin-connect.com/dashboard?isApp=true"));
+      ..loadRequest(Uri.parse("https://daikin-connect.com${widget.path}${widget.path.contains('?') ? '&' : '?'}isApp=true"));
   }
 
   @override
@@ -49,7 +56,7 @@ class _WebDashboardScreenState extends State<WebDashboardScreen> {
       backgroundColor: const Color(0xFF040814),
       appBar: AppBar(
         backgroundColor: const Color(0xFF040814),
-        title: const Text("MASTER DASHBOARD", style: TextStyle(color: Color(0xFF00A1E4), fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: 2)),
+        title: Text(widget.title, style: const TextStyle(color: Color(0xFF00A1E4), fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: 2)),
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dashboard_home.dart';
-import '../../units/screens/unit_scanner_screen.dart';
+import '../../units/screens/unit_registry_screen.dart';
 import '../../reports/screens/reports_list_screen.dart';
 import 'web_dashboard_screen.dart';
 
@@ -17,7 +17,7 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
 
   final List<Widget> _pages = [
     const DashboardHome(),
-    const Scaffold(body: Center(child: Text("Registry Coming Soon"))), // Asset Registry placeholder
+    const UnitRegistryScreen(), 
     const ReportsListScreen(),
     const WebDashboardScreen(), // Master Dashboard
   ];

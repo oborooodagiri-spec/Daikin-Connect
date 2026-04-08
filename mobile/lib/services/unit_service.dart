@@ -47,4 +47,22 @@ class UnitService {
       };
     }
   }
+
+  Future<List<UnitModel>> getAllCachedUnits() async {
+    try {
+      final box = Hive.box(_cacheBox);
+      final List<UnitModel> units = [];
+      
+      for (var key in box.keys) {
+        final cachedData = box.get(key);
+        if (cachedData != null) {
+          units.add(UnitModel.fromJson(jsonDecode(cachedData)));
+        }
+      }
+      return units;
+    } catch (e) {
+      print("Error getting cached units: $e");
+      return [];
+    }
+  }
 }
