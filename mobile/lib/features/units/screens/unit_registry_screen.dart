@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../models/unit_model.dart';
 import '../../../services/unit_service.dart';
 import '../../../widgets/glass_widgets.dart';
-import '../screens/dashboard_home.dart';
-import '../../units/screens/unit_passport_screen.dart';
+import 'unit_passport_screen.dart';
 
 class UnitRegistryScreen extends StatefulWidget {
   const UnitRegistryScreen({super.key});
