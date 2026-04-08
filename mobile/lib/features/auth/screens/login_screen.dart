@@ -176,7 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
               
               const SizedBox(height: 40),
               Text(
-                "VERSION 1.8.0",
+                "V1.9.0",
                 style: GoogleFonts.inter(
                   color: const Color(0x3DFFFFFF),
                   fontSize: 8,

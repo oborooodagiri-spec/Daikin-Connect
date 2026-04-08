@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../providers/version_provider.dart';
 
 class VersionGuardScreen extends StatelessWidget {
   final String currentVersion;
@@ -92,6 +94,22 @@ class VersionGuardScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
                   child: const Text("UPDATE NOW", style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(height: 15),
+              TextButton(
+                onPressed: () {
+                  final versionProvider = Provider.of<VersionProvider>(context, listen: false);
+                  versionProvider.skipUpdate();
+                },
+                child: const Text(
+                  "REMIND ME LATER",
+                  style: TextStyle(
+                    color: Colors.white54,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 2,
+                  ),
                 ),
               ),
             ],

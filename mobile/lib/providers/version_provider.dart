@@ -6,6 +6,7 @@ class VersionProvider with ChangeNotifier {
   String _currentVersion = "";
   String _requiredVersion = "";
   bool _isUpdateRequired = false;
+  bool _isSkipped = false;
   bool _isLoading = true;
   
   static const String _boxName = 'version_settings';
@@ -13,18 +14,24 @@ class VersionProvider with ChangeNotifier {
 
   String get currentVersion => _currentVersion;
   String get requiredVersion => _requiredVersion;
-  bool get isUpdateRequired => _isUpdateRequired;
+  bool get isUpdateRequired => _isUpdateRequired && !_isSkipped;
+  bool get isSkipped => _isSkipped;
   bool get isLoading => _isLoading;
 
   VersionProvider() {
     init();
   }
 
+  void skipUpdate() {
+    _isSkipped = true;
+    notifyListeners();
+  }
+
   Future<void> init() async {
     try {
       // Ensure Hive is initialized (SyncService handles Hive.initFlutter)
       final box = await Hive.openBox(_boxName);
-      _requiredVersion = box.get(_keyRequiredVersion, defaultValue: "V1.8.0") as String;
+      _requiredVersion = box.get(_keyRequiredVersion, defaultValue: "V1.9.0") as String;
       
       final packageInfo = await PackageInfo.fromPlatform();
       _currentVersion = "V${packageInfo.version}.${packageInfo.buildNumber}";

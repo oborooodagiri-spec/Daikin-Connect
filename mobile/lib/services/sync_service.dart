@@ -18,6 +18,7 @@ class SyncService {
   Future<void> init() async {
     await Hive.initFlutter();
     await Hive.openBox<String>(_boxName);
+    await Hive.openBox('unit_cache');
   }
 
   Box<String> get offlineBox => Hive.box<String>(_boxName);
