@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-import '../../../widgets/floating_nav_bar.dart';
+import '../../../widgets/glass_widgets.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../services/sync_service.dart';
 import '../../units/screens/unit_scanner_screen.dart';
 import '../../reports/screens/reports_list_screen.dart';
-import '../../../services/sync_service.dart';
-import '../../../providers/auth_provider.dart';
-import '../../schedule/screens/schedule_list_screen.dart';
-import '../../units/screens/unit_passport_screen.dart';
 import 'web_dashboard_screen.dart';
 
 class DashboardHome extends StatefulWidget {
@@ -23,84 +20,98 @@ class _DashboardHomeState extends State<DashboardHome> {
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
-    final isTech = auth.isTechnician;
-    final isAdmin = auth.isAdmin;
     final isInternal = auth.isInternal;
 
     return Scaffold(
       backgroundColor: const Color(0xFF040814),
-      body: CustomScrollView(
-        slivers: [
-          _buildSliverAppBar(context, auth),
-          if (isTech) _buildNextTaskSection(context),
-          if (isInternal) _buildSummarySection(),
-          if (isInternal) _buildSyncStatusSliver(),
-          _buildQuickActions(context, auth),
-          if (!isInternal) _buildExternalWelcome(auth),
-          const SliverPadding(padding: EdgeInsets.only(bottom: 100)),
+      body: Stack(
+        children: [
+          // Background Gradient Orbs
+          Positioned(
+            top: -100,
+            right: -100,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFF00A1E4).withOpacity(0.1),
+              ),
+            ),
+          ),
+          
+          CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              _buildHeader(auth),
+              _buildStatsGrid(isInternal),
+              _buildControlPanel(context, auth),
+              _buildActivityFeed(),
+              const SliverPadding(padding: EdgeInsets.only(bottom: 120)),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSliverAppBar(BuildContext context, AuthProvider auth) {
-    return SliverAppBar(
-      expandedHeight: 120.0,
-      floating: false,
-      pinned: true,
-      backgroundColor: const Color(0xFF040814),
-      elevation: 0,
-      flexibleSpace: FlexibleSpaceBar(
-        title: Text(
-          auth.isInternal ? "DAIKIN CONNECT" : "DAIKIN PROJECT HUB",
-          style: GoogleFonts.inter(
-            fontSize: 14,
-            fontWeight: FontWeight.w900,
-            color: const Color(0xFF00A1E4),
-            letterSpacing: 4,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      actions: [
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.notifications_none, color: Colors.white54),
-        ),
-        const SizedBox(width: 10),
-      ],
-    );
-  }
-
-  Widget _buildExternalWelcome(AuthProvider auth) {
+  Widget _buildHeader(AuthProvider auth) {
     return SliverToBoxAdapter(
-      child: FadeIn(
+      child: FadeInDown(
+        duration: const Duration(seconds: 1),
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.fromLTRB(24, 60, 24, 30),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("WELCOME BACK,", style: GoogleFonts.inter(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 2)),
-              const SizedBox(height: 5),
-              Text(auth.user?['name'] ?? "User", style: GoogleFonts.inter(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900)),
-              const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: const Color(0x08FFFFFF),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0x1AFFFFFF)),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "COMMAND CENTER",
+                        style: GoogleFonts.inter(
+                          color: const Color(0xFF00A1E4),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 4,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Hello, ${auth.user?['name']?.split(' ')[0] ?? 'Operator'}",
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const CircleAvatar(
+                    radius: 24,
+                    backgroundColor: Color(0x0DFFFFFF),
+                    child: Icon(Icons.person_outline, color: Colors.white70),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              GlassCard(
+                padding: const EdgeInsets.all(16),
+                opacity: 0.05,
                 child: Row(
                   children: [
-                    const Icon(Icons.info_outline, color: Color(0xFF00A1E4), size: 20),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: Text(
-                        "You have access to ${auth.assignedProjectIds.length} assigned projects. Scan a unit to begin monitoring.",
-                        style: const TextStyle(color: Colors.white70, fontSize: 11),
-                      ),
+                    Icon(Icons.wifi_tethering, color: Colors.greenAccent, size: 16),
+                    SizedBox(width: 10),
+                    Text(
+                      "SYSTEM STATUS: OPTIMAL",
+                      style: TextStyle(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
                     ),
+                    Spacer(),
+                    Text("14ms", style: TextStyle(color: Colors.white24, fontSize: 10)),
                   ],
                 ),
               ),
@@ -111,72 +122,7 @@ class _DashboardHomeState extends State<DashboardHome> {
     );
   }
 
-  Widget _buildNextTaskSection(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: FadeInDown(
-        child: Container(
-          margin: const EdgeInsets.all(24),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF00A1E4), Color(0xFF005691)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF00A1E4).withOpacity(0.3),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text("NEXT ASSIGNMENT", style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 2)),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(6)),
-                    child: const Text("URGENT", style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 15),
-              const Text("DAIKIN VRV IV - TAG-204", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
-              const Text("Project: Wisma Atria - Level 4", style: TextStyle(color: Colors.white70, fontSize: 12)),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  const Icon(Icons.access_time, color: Colors.white, size: 14),
-                  const SizedBox(width: 8),
-                  const Text("10:30 AM", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                  const Spacer(),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const ScheduleListScreen()));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: const Color(0xFF00A1E4),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    child: const Text("VIEW SCHEDULE"),
-                  )
-                ],
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSummarySection() {
+  Widget _buildStatsGrid(bool isInternal) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       sliver: SliverGrid(
@@ -184,74 +130,42 @@ class _DashboardHomeState extends State<DashboardHome> {
           crossAxisCount: 2,
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
-          childAspectRatio: 1.6,
+          childAspectRatio: 1.4,
         ),
         delegate: SliverChildListDelegate([
-          _buildStatCard("ACTIVE UNITS", "142", const Color(0xFF009688)),
-          _buildStatCard("TOTAL ASSETS", "318", const Color(0xFF00A1E4)),
+          _buildGlassStat("ACTIVE", "142", "UNITS", const Color(0xFF00A1E4)),
+          _buildGlassStat("PENDING", "08", "REPORTS", const Color(0xFFFF9800)),
         ]),
       ),
     );
   }
 
-  Widget _buildStatCard(String label, String value, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0x08FFFFFF),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0x1AFFFFFF)),
-      ),
+  Widget _buildGlassStat(String label, String value, String unit, Color color) {
+    return GlassCard(
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(label, style: const TextStyle(color: Color(0x61FFFFFF), fontSize: 8, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
-          const SizedBox(height: 4),
-          Text(value, style: TextStyle(color: color, fontSize: 24, fontWeight: FontWeight.w900)),
+          Text(label, style: const TextStyle(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 1)),
+          const SizedBox(height: 8),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(value, style: TextStyle(color: color, fontSize: 28, fontWeight: FontWeight.w900)),
+              const SizedBox(width: 4),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(unit, style: const TextStyle(color: Colors.white24, fontSize: 9, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSyncStatusSliver() {
-    final syncService = SyncService();
-    return SliverToBoxAdapter(
-      child: ValueListenableBuilder(
-        valueListenable: syncService.offlineBox.listenable(),
-        builder: (context, box, _) {
-          final count = box.length;
-          if (count == 0) return const SizedBox.shrink();
-          return GestureDetector(
-            onTap: () => syncService.syncPendingReports(),
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0x1AFF5252),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0x33FF5252)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.sync, color: Color(0xFFFF5252), size: 16),
-                  const SizedBox(width: 10),
-                  Text("$count REPORTS PENDING SYNC", style: const TextStyle(color: Color(0xFFFF5252), fontSize: 9, fontWeight: FontWeight.bold)),
-                  const Spacer(),
-                  const Text("SYNC NOW", style: TextStyle(color: Color(0xFFFF5252), fontSize: 8, decoration: TextDecoration.underline)),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildQuickActions(BuildContext context, AuthProvider auth) {
-    final isAdmin = auth.isAdmin;
-    final isTech = auth.isTechnician;
-
+  Widget _buildControlPanel(BuildContext context, AuthProvider auth) {
     return SliverToBoxAdapter(
       child: FadeInUp(
         child: Padding(
@@ -259,30 +173,40 @@ class _DashboardHomeState extends State<DashboardHome> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("QUICK ACCESS", style: TextStyle(color: Color(0xFF00A1E4), fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 2)),
+              const Text(
+                "INFRASTRUCTURE ACCESS",
+                style: TextStyle(color: Colors.white24, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 2),
+              ),
               const SizedBox(height: 20),
               Row(
                 children: [
-                  Expanded(child: _buildActionCard(context, Icons.qr_code_scanner, "SCAN UNIT", const Color(0xFF00A1E4), const UnitScannerScreen())),
-                  const SizedBox(width: 15),
-                  if (isAdmin) 
-                    Expanded(child: _buildActionCard(context, Icons.people_alt, "USERS", const Color(0xFFFF9800), const Scaffold(body: Center(child: Text("Web Access Only"))))),
-                  if (!isAdmin && isTech) 
-                    Expanded(child: _buildActionCard(context, Icons.assignment, "MY TASKS", const Color(0xFF448AFF), const ScheduleListScreen())),
-                  if (!isAdmin && !isTech)
-                    Expanded(child: _buildActionCard(context, Icons.forum, "SUPPORT", const Color(0xFF009688), const Scaffold(body: Center(child: Text("Chat with Administrator"))))),
+                  Expanded(
+                    child: _buildPanelItem(
+                      icon: Icons.qr_code_scanner_rounded, 
+                      label: "SCANNER", 
+                      color: const Color(0xFF00A1E4),
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const UnitScannerScreen())),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildPanelItem(
+                      icon: Icons.history_rounded, 
+                      label: "ACTIVITY", 
+                      color: const Color(0xFF009688),
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ReportsListScreen())),
+                    ),
+                  ),
                 ],
               ),
-              const SizedBox(height: 15),
-              _buildActionCard(
-                context, 
-                Icons.analytics, 
-                "MASTER DASHBOARD", 
-                const Color(0xFF00A1E4), 
-                const WebDashboardScreen(),
-                fullWidth: true
+              const SizedBox(height: 16),
+              _buildPanelItem(
+                icon: Icons.analytics_outlined, 
+                label: "IMMERSIVE ANALYTICS", 
+                color: const Color(0xFF448AFF),
+                isFullWidth: true,
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const WebDashboardScreen())),
               ),
-              const SizedBox(height: 15),
             ],
           ),
         ),
@@ -290,25 +214,76 @@ class _DashboardHomeState extends State<DashboardHome> {
     );
   }
 
-  Widget _buildActionCard(BuildContext context, IconData icon, String label, Color color, Widget destination, {bool fullWidth = false}) {
-    return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => destination)),
+  Widget _buildPanelItem({
+    required IconData icon, 
+    required String label, 
+    required Color color, 
+    required VoidCallback onTap,
+    bool isFullWidth = false,
+  }) {
+    return GlassButton(
+      onPressed: onTap,
       child: Container(
-        width: fullWidth ? double.infinity : null,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: const Color(0x08FFFFFF),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0x1AFFFFFF)),
-        ),
+        width: isFullWidth ? double.infinity : null,
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: color, size: 20),
+            Icon(icon, color: color, size: 22),
             const SizedBox(width: 12),
-            Text(label, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1)),
+            Text(
+              label, 
+              style: GoogleFonts.inter(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1.5),
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildActivityFeed() {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "RECENT OPERATIONS",
+              style: TextStyle(color: Colors.white24, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 2),
+            ),
+            const SizedBox(height: 20),
+            _buildActivityItem("Corrective Report Submitted", "VRV IV - Wisma Atria", "2 mins ago", Icons.check_circle_outline, Colors.blue),
+            _buildActivityItem("Unit Scanned", "TAG-109 - Lobby", "15 mins ago", Icons.qr_code_2, Colors.orange),
+            _buildActivityItem("System Maintenance Sync", "Cloud DB", "1 hour ago", Icons.sync, Colors.teal),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActivityItem(String title, String subtitle, String time, IconData icon, Color color) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
+            child: Icon(icon, color: color, size: 18),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 2),
+                Text(subtitle, style: const TextStyle(color: Colors.white38, fontSize: 11)),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -8,7 +8,7 @@ import 'providers/version_provider.dart';
 import 'services/sync_service.dart';
 import 'services/notification_service.dart';
 import 'features/auth/screens/login_screen.dart';
-import 'features/dashboard/screens/dashboard_home.dart';
+import 'features/dashboard/screens/main_navigation_container.dart';
 import 'widgets/version_guard_screen.dart';
 
 void main() async {
@@ -80,7 +80,7 @@ class _DaikinConnectAppState extends State<DaikinConnectApp> {
           }
 
           return auth.isLoggedIn 
-              ? const DashboardHome() 
+              ? const MainNavigationContainer() 
               : const LoginScreen();
         },
       ),
