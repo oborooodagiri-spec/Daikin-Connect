@@ -166,8 +166,9 @@ export default function ClientReportsPage() {
             ))}
           </tbody>
         </table>
+      </div>
 
-        {filtered.length === 0 && (
+      {filtered.length === 0 && (
           <div className="py-20 flex flex-col items-center justify-center text-slate-300 grayscale opacity-40">
              <FileText size={48} />
              <p className="mt-4 font-black uppercase tracking-widest text-[10px]">No reports found matching your criteria</p>
