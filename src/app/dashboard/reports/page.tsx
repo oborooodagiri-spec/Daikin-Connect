@@ -326,9 +326,6 @@ function ReportsContent() {
         ))}
       </div>
 
-      <div className="p-3 bg-blue-900/10 border border-blue-900/20 rounded-xl text-[10px] font-mono text-blue-900/60 no-print">
-        DEBUG: Reports Array Length: {reports.length} | Stats Total: {stats.totalAll} | Type Filter: {typeFilter}
-      </div>
 
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 no-print">
         <div className="flex items-center gap-3 flex-wrap">
