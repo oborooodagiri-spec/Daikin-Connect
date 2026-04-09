@@ -120,7 +120,7 @@ export default function ClientInventoryPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
            <div className="relative group w-full md:w-96">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#00a1e4] transition-colors" size={18} />
               <input 
@@ -128,16 +128,16 @@ export default function ClientInventoryPage() {
                 placeholder="Smart Search (Tag, Code, Serial, Room...)" 
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="w-full pl-12 pr-6 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-[#00a1e4] transition-all shadow-sm"
+                className="w-full pl-12 pr-6 py-4 bg-white border border-slate-200 rounded-[1.2rem] sm:rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-[#00a1e4] transition-all shadow-sm"
               />
            </div>
         </div>
       </div>
 
       {/* List Table */}
-      <div className="bg-white border border-slate-100 rounded-[2.5rem] shadow-sm overflow-hidden">
-        <div className="overflow-x-auto min-w-[1000px]">
-          <table className="w-full text-left border-collapse">
+      <div className="bg-white border border-slate-100 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[800px] sm:min-w-[1000px]">
             <thead>
               <tr className="bg-slate-50/80 border-b border-slate-100">
                 <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Identity / Tag</th>

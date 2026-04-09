@@ -66,7 +66,7 @@ export default function ClientDashboardPage() {
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>Project Transparency Active</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-black text-[#003366] tracking-tighter leading-tight truncate">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#003366] tracking-tighter leading-tight">
               Operational <br/>
               <span className="text-[#00a1e4]">Insight Dashboard</span>
             </h1>
@@ -76,13 +76,13 @@ export default function ClientDashboardPage() {
          </div>
          
          <div className="flex gap-4">
-            <div className="bg-white border border-slate-200 p-6 rounded-[2rem] shadow-sm flex items-center gap-6 group hover:border-blue-300 transition-all">
-               <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center border border-blue-100 group-hover:scale-110 transition-transform">
-                  <Package size={24} />
+            <div className="bg-white border border-slate-200 p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] shadow-sm flex items-center gap-4 sm:gap-6 group hover:border-blue-300 transition-all">
+               <div className="w-12 h-12 sm:w-14 sm:h-14 bg-blue-50 text-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center border border-blue-100 group-hover:scale-110 transition-transform">
+                  <Package size={20} className="sm:w-6 sm:h-6" />
                </div>
                <div>
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Total Assets</p>
-                  <p className="text-2xl font-black text-slate-800 tracking-tighter">{data?.total_assets}</p>
+                  <p className="text-xl sm:text-2xl font-black text-slate-800 tracking-tighter">{data?.total_assets}</p>
                </div>
             </div>
          </div>
@@ -96,7 +96,7 @@ export default function ClientDashboardPage() {
                initial={{ opacity: 0, y: 20 }}
                animate={{ opacity: 1, y: 0 }}
                transition={{ delay: i * 0.1 }}
-               className="bg-white border border-slate-200 rounded-[3rem] p-10 shadow-sm relative overflow-hidden group hover:border-[#00a1e4] transition-all"
+               className="bg-white border border-slate-200 rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 shadow-sm relative overflow-hidden group hover:border-[#00a1e4] transition-all"
             >
                {/* Background Glow */}
                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity" />

@@ -59,32 +59,33 @@ export default function ClientSchedulesPage() {
             <Calendar className="w-3.5 h-3.5" />
             <span>Service Schedule Tracking</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-black text-[#003366] tracking-tighter leading-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#003366] tracking-tighter leading-tight">
             Work Plan <br/>
             <span className="text-[#00a1e4]">& Service Log</span>
           </h1>
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex gap-4 w-full sm:w-auto">
            <button 
              onClick={handleRequestVisit}
              disabled={requestStatus !== 'idle'}
-             className={`px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 shadow-xl ${
+             className={`w-full sm:w-auto px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 shadow-xl ${
                requestStatus === 'success' ? 'bg-emerald-500 text-white shadow-emerald-200' : 
                'bg-[#003366] text-white shadow-blue-900/20 hover:bg-blue-900 group'
              }`}
            >
-             {requestStatus === 'idle' && <><Plus size={16} className="group-hover:rotate-90 transition-transform" /> Request Service Visit</>}
-             {requestStatus === 'sending' && <><div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Submitting Request...</>}
-             {requestStatus === 'success' && <><CheckCircle2 size={16} /> Request Sent Successfully</>}
+              {/* ... button content stayed the same inner logic ... */}
+              {requestStatus === 'idle' && <><Plus size={16} className="group-hover:rotate-90 transition-transform" /> Request Service Visit</>}
+              {requestStatus === 'sending' && <><div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Submitting...</>}
+              {requestStatus === 'success' && <><CheckCircle2 size={16} /> Sent Successfully</>}
            </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-12">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 sm:gap-12">
         {/* Calendar Side */}
         <div className="xl:col-span-2 space-y-8">
-           <div className="bg-white border border-slate-100 p-8 rounded-[3rem] shadow-sm">
+           <div className="bg-white border border-slate-100 p-4 sm:p-8 rounded-[1.5rem] sm:rounded-[3rem] shadow-sm">
               <h3 className="text-sm font-black text-[#003366] mb-8 flex items-center gap-2 uppercase tracking-tight">
                  <CalendarCheck size={18} className="text-[#00a1e4]"/>
                  Maintenance Calendar
@@ -115,7 +116,7 @@ export default function ClientSchedulesPage() {
 
         {/* History Side */}
         <div className="space-y-8">
-           <div className="bg-slate-50 border border-slate-100 p-8 rounded-[3rem] space-y-8">
+           <div className="bg-slate-50 border border-slate-100 p-6 sm:p-8 rounded-[2rem] sm:rounded-[3rem] space-y-8">
               <h3 className="text-sm font-black text-slate-400 flex items-center gap-2 uppercase tracking-tight">
                  <CheckCircle2 size={18} className="text-emerald-500"/>
                  Service History
@@ -153,7 +154,7 @@ function ScheduleItem({ schedule }: { schedule: any }) {
       <motion.div 
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
-        className="bg-white border border-slate-100 p-6 rounded-[2rem] shadow-sm hover:border-[#00a1e4] transition-all group flex flex-col md:flex-row md:items-center gap-6"
+        className="bg-white border border-slate-100 p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] shadow-sm hover:border-[#00a1e4] transition-all group flex flex-col md:flex-row md:items-center gap-4 sm:gap-6"
       >
          <div className="flex items-center gap-4 flex-1">
             <div className="w-14 h-14 bg-blue-50 text-blue-600 border border-blue-100 rounded-2xl flex flex-col items-center justify-center font-black">
