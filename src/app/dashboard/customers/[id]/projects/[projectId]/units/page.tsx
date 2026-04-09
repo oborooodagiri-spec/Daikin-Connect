@@ -19,6 +19,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import UnitHistoryTimeline from "@/components/UnitHistoryTimeline";
 import UnitDetailModal from "@/components/UnitDetailModal";
 import QuickInputModal from "@/components/dashboard/QuickInputModal";
+import Portal from "@/components/Portal";
 
 export default function UnitsPage() {
   const params = useParams();
@@ -67,6 +68,7 @@ export default function UnitsPage() {
   const [unitHistory, setUnitHistory] = useState<any[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [isStatusUpdating, setIsStatusUpdating] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -116,14 +118,18 @@ export default function UnitsPage() {
   // Filtering Logic
   const filteredUnits = useMemo(() => {
     const list = units.filter(unit => {
+      const s = searchTerm.toLowerCase();
       const matchesSearch = 
-        unit.tag_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        unit.serial_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        unit.model?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        unit.brand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        unit.area?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        unit.building_floor?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        unit.room_tenant?.toLowerCase().includes(searchTerm.toLowerCase());
+        unit.tag_number?.toLowerCase().includes(s) ||
+        unit.serial_number?.toLowerCase().includes(s) ||
+        unit.model?.toLowerCase().includes(s) ||
+        unit.brand?.toLowerCase().includes(s) ||
+        unit.code?.toLowerCase().includes(s) ||
+        unit.area?.toLowerCase().includes(s) ||
+        unit.building_floor?.toLowerCase().includes(s) ||
+        unit.room_tenant?.toLowerCase().includes(s) ||
+        unit.unit_type?.toLowerCase().includes(s) ||
+        unit.capacity?.toLowerCase().includes(s);
       
       const matchesStatus = statusFilter === "All" || unit.status === statusFilter || 
                             (statusFilter === "Problem" && ["Problem","Critical","Warning"].includes(unit.status)) ||
@@ -136,11 +142,20 @@ export default function UnitsPage() {
     });
 
     const sorted = [...list].sort((a, b) => {
-      const rank: any = { Problem: 1, Critical: 1, Warning: 1, On_Progress: 2, Pending: 2, Normal: 3 };
+      const rank: any = { Problem: 0, Critical: 0, Warning: 1, On_Progress: 2, Pending: 2, Normal: 3 };
       const rankA = rank[a.status] || 99;
       const rankB = rank[b.status] || 99;
+      
       if (rankA !== rankB) return rankA - rankB;
-      return b.id - a.id;
+
+      // For Errors (rank 0), sort by date (oldest first)
+      if (rankA === 0) {
+        const dateA = new Date(a.last_service_date || a.created_at || 0).getTime();
+        const dateB = new Date(b.last_service_date || b.created_at || 0).getTime();
+        if (dateA !== dateB) return dateA - dateB;
+      }
+
+      return (a.tag_number || "").localeCompare(b.tag_number || "");
     });
 
     return sorted;
@@ -202,6 +217,107 @@ export default function UnitsPage() {
       room: unit.room_tenant || "-"
     });
     setIsPrintModalOpen(true);
+  };
+
+  const handleDownloadQR = async () => {
+    if (!selectedQR) return;
+    setIsDownloading(true);
+    
+    try {
+      const svg = document.getElementById("qr-code-svg") as unknown as SVGSVGElement;
+      if (!svg) throw new Error("QR SVG not found");
+
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("Canvas context failed");
+
+      canvas.width = 1000;
+      canvas.height = 1000;
+
+      const loadImage = (src: string) => new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+
+      const [logoDaikin, logoEpl] = await Promise.all([
+        loadImage("/daikin_logo.png"),
+        loadImage("/logo_epl_connect_1.png")
+      ]);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, 1000, 1000);
+      
+      ctx.fillStyle = "#f1f5f9";
+      for (let x = 40; x < 1000; x += 40) {
+        for (let y = 40; y < 1000; y += 40) {
+          ctx.beginPath();
+          ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      
+      ctx.strokeStyle = "#003366";
+      ctx.lineWidth = 24;
+      ctx.strokeRect(12, 12, 976, 976);
+
+      const eplW = 280;
+      const eplH = (logoEpl.height / logoEpl.width) * eplW;
+      const daikinW = 260;
+      const daikinH = (logoDaikin.height / logoDaikin.width) * daikinW;
+      
+      const margin = 100;
+      ctx.drawImage(logoEpl, margin, 60 + (daikinH - eplH)/2, eplW, eplH);
+      ctx.drawImage(logoDaikin, 1000 - margin - daikinW, 60, daikinW, daikinH);
+      
+      ctx.fillStyle = "#003366";
+      ctx.font = "black 20px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("DIGITAL ASSET IDENTIFICATION", 500, 195);
+
+      const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+      const qrUrl = URL.createObjectURL(svgBlob);
+      const qrImg = await loadImage(qrUrl);
+      
+      const qrSize = 600;
+      const qrX = (1000 - qrSize) / 2;
+      const qrY = 225;
+
+      ctx.shadowColor = "rgba(0, 51, 102, 0.1)";
+      ctx.shadowBlur = 40;
+      ctx.shadowOffsetY = 20;
+      ctx.fillStyle = "white";
+      ctx.fillRect(qrX - 20, qrY - 20, qrSize + 40, qrSize + 40);
+      
+      ctx.shadowColor = "transparent";
+      ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
+      URL.revokeObjectURL(qrUrl);
+
+      ctx.fillStyle = "#003366";
+      ctx.font = "900 64px Arial";
+      const roomName = (selectedQR.room || selectedQR.area || "DAIKIN ASSET").toUpperCase();
+      ctx.fillText(roomName, 500, 885);
+      
+      ctx.font = "bold 32px Arial";
+      ctx.fillStyle = "#64748b";
+      ctx.fillText(`ID: ${selectedQR.tag}`, 500, 935);
+
+      const pngUrl = canvas.toDataURL("image/png");
+      const downloadLink = document.createElement("a");
+      downloadLink.href = pngUrl;
+      downloadLink.download = `QR_Daikin-Connect_${selectedQR.tag}.png`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    } catch (e) {
+      console.error(e);
+      alert("Failed to generate professional QR label");
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const openDetail = async (unit: any) => {
@@ -294,11 +410,20 @@ export default function UnitsPage() {
 
   const statusColors: any = {
     Normal: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    "Normal Condition": "bg-emerald-100 text-emerald-700 border-emerald-200",
+    "Need Repair": "bg-amber-100 text-amber-700 border-amber-200",
+    "Need Replace": "bg-rose-100 text-rose-700 border-rose-200",
     Problem: "bg-rose-100 text-rose-700 border-rose-200",
     Critical: "bg-rose-100 text-rose-700 border-rose-200",
     Warning: "bg-amber-100 text-amber-700 border-amber-200",
     Pending: "bg-indigo-100 text-indigo-700 border-indigo-200",
     On_Progress: "bg-blue-100 text-blue-700 border-blue-200"
+  };
+
+  const healthGradient: any = {
+    emerald: "hover:bg-emerald-50/50 border-l-emerald-500",
+    amber: "bg-amber-50/30 hover:bg-amber-50/60 border-l-amber-500",
+    rose: "bg-rose-50/30 hover:bg-rose-50/60 border-l-rose-500",
   };
 
   return (
@@ -321,9 +446,14 @@ export default function UnitsPage() {
             </p>
           </div>
 
-          <button onClick={() => openModal()} className="w-full md:w-auto px-6 md:px-8 py-3 md:py-4 rounded-2xl bg-[#00a1e4] text-white font-black shadow-xl shadow-blue-200 hover:bg-[#008cc6] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 uppercase text-xs md:text-sm tracking-widest">
-            <Plus size={20} className="shrink-0" /> Add Unit Record
-          </button>
+          <div className="flex items-center gap-3">
+            <button onClick={() => setIsQuickInputOpen(true)} className="w-full md:w-auto px-6 py-3 md:py-4 rounded-2xl bg-white border-2 border-slate-100 text-[#003366] font-black shadow-sm hover:border-[#00a1e4] hover:text-[#00a1e4] transition-all flex items-center justify-center gap-3 uppercase text-xs md:text-sm tracking-widest">
+              <Database size={20}/> Quick Service Input
+            </button>
+            <button onClick={() => openModal()} className="w-full md:w-auto px-6 md:px-8 py-3 md:py-4 rounded-2xl bg-[#00a1e4] text-white font-black shadow-xl shadow-blue-200 hover:bg-[#008cc6] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 uppercase text-xs md:text-sm tracking-widest">
+              <Plus size={20} className="shrink-0" /> Add Unit Record
+            </button>
+          </div>
         </div>
 
         {/* METRIC CARDS */}
@@ -431,10 +561,10 @@ export default function UnitsPage() {
               {uniqueBrands.map(b => <option key={b} value={b}>{b}</option>)}
             </select>
             <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="flex-1 lg:flex-none px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-wider text-[#003366] focus:outline-none">
-              <option value="All">All Status</option>
-              <option value="Normal">🟢 Normal</option>
-              <option value="Problem">🔴 Problem</option>
-              <option value="Pending">🟡 Pending</option>
+              <option value="All">All Health Index</option>
+              <option value="Normal Condition">🟢 Good (≥ 80%)</option>
+              <option value="Need Repair">🟡 Repair (50-79%)</option>
+              <option value="Need Replace">🔴 Replace (&lt; 50%)</option>
             </select>
             <div className="flex items-center gap-2 ml-auto">
               <button onClick={handleExport} className="p-2.5 bg-white border border-slate-200 text-slate-500 rounded-xl hover:text-blue-600 transition-all"><Download size={18} /></button>
@@ -483,39 +613,52 @@ export default function UnitsPage() {
                       <motion.tr 
                         key={u.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                         onClick={() => openDetail(u)}
-                        className="group hover:bg-slate-50 transition-colors cursor-pointer"
+                        className={`group transition-colors cursor-pointer border-l-4 ${healthGradient[u.health_color] || 'hover:bg-slate-50 border-l-transparent'}`}
                       >
                         <td className="px-4 md:px-8 py-4">
                           <div className="flex items-center gap-3">
-                            <div className={`w-2 h-8 md:w-2.5 md:h-10 rounded-full shrink-0 ${u.status === 'Problem' ? 'bg-rose-500' : 'bg-emerald-500'}`}></div>
+                            <div className={`w-2 h-8 md:w-2.5 md:h-12 rounded-full shrink-0 ${u.status === 'Problem' || u.status === 'Critical' ? 'bg-rose-500' : 'bg-emerald-500'}`}></div>
                             <div className="min-w-0">
-                               <p className="text-xs md:text-base font-black text-slate-800 tracking-tight truncate">{u.tag_number}</p>
-                               <p className="text-[10px] md:text-xs font-mono font-medium text-slate-500 truncate">{u.serial_number || "NO SERIAL"}</p>
+                               <p className="text-sm md:text-lg font-black text-[#003366] tracking-tighter truncate leading-tight">{u.room_tenant || "Unnamed Room"}</p>
+                               <p className="text-[10px] md:text-sm font-black text-[#00a1e4] uppercase tracking-widest">{u.tag_number || "NO-TAG"}</p>
+                               <p className="text-[9px] font-mono font-medium text-slate-400 truncate">S/N: {u.serial_number || "---"}</p>
                             </div>
                           </div>
                         </td>
                         <td className="hidden sm:table-cell px-8 py-4">
                            <p className="text-sm font-bold text-slate-800">{u.brand} - {u.model}</p>
-                           <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">{u.capacity}</p>
+                           <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">{u.unit_type} · {u.capacity}</p>
                         </td>
                         <td className="px-4 md:px-8 py-4">
-                           <p className="text-[10px] md:text-xs font-bold text-slate-700">{u.area}</p>
-                           <p className="text-[9px] md:text-[10px] font-bold text-slate-400">{u.building_floor} · {u.room_tenant}</p>
+                           <p className="text-xs font-black text-[#003366] uppercase tracking-tight">{u.area}</p>
+                           <p className="text-[10px] font-bold text-slate-400">{u.building_floor}</p>
                         </td>
                         <td className="hidden lg:table-cell px-8 py-4">
                            <p className="text-xs font-bold text-slate-800">{u.last_corrective_date ? new Date(u.last_corrective_date).toLocaleDateString() : 'No Data'}</p>
                            <p className="text-[10px] text-slate-400 truncate max-w-[150px]">{u.last_problem || 'Clean'}</p>
                         </td>
-                        <td className="px-4 md:px-8 py-4">
-                           <span className={`inline-flex px-2 md:px-3 py-1 rounded-lg text-[8px] md:text-[10px] font-black uppercase tracking-widest border ${statusColors[u.status] || statusColors.Normal}`}>
-                             {u.status.replace("_", " ")}
-                           </span>
-                        </td>
+                         <td className="px-4 md:px-8 py-4">
+                            <div className="flex flex-col gap-1.5">
+                               <div className="flex flex-col">
+                                 <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest pl-0.5">Health Score</span>
+                                 <span className={`inline-flex w-fit px-3 py-1 rounded-lg text-[10px] md:text-[12px] font-black tracking-tighter border ${statusColors[u.health_label] || statusColors.Normal}`}>
+                                   {Math.round(u.health_score)}%
+                                 </span>
+                               </div>
+                               <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded border w-fit uppercase tracking-tighter ${
+                                 u.status === 'Problem' || u.status === 'Critical' ? 'bg-rose-50 text-rose-600 border-rose-100' : 
+                                 u.status === 'Normal' ? 'bg-slate-50 text-slate-400 border-slate-100' : 'bg-blue-50 text-blue-600 border-blue-100'
+                               }`}>
+                                 {u.status.replace("_", " ")}
+                               </span>
+                            </div>
+                         </td>
                         <td className="px-4 md:px-8 py-4 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                             <button onClick={(e) => { e.stopPropagation(); openPrintQR(u); }} className="p-2 rounded-xl bg-slate-100 text-slate-500 hover:text-[#00a1e4] transition-all"><QrCode size={16}/></button>
+                          <div className="flex items-center justify-end gap-2 text-slate-400">
+                             <button onClick={(e) => { e.stopPropagation(); window.open(`/passport/${u.qr_code_token}`, '_blank'); }} className="p-2 rounded-xl bg-white border border-[#00a1e4]/20 text-[#00a1e4] hover:bg-[#00a1e4] hover:text-white transition-all shadow-sm" title="View Passport Landing"><ExternalLink size={16}/></button>
+                             <button onClick={(e) => { e.stopPropagation(); openPrintQR(u); }} className="p-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-600 hover:text-white transition-all shadow-sm" title="Print Label"><QrCode size={16}/></button>
                              {session?.isInternal && (
-                               <button onClick={(e) => { e.stopPropagation(); openModal(u); }} className="p-2 rounded-xl bg-slate-100 text-slate-500 hover:text-emerald-500 transition-all"><Edit2 size={16}/></button>
+                               <button onClick={(e) => { e.stopPropagation(); openModal(u); }} className="p-2 rounded-xl bg-white border border-[#003366]/20 text-[#003366] hover:bg-[#003366] hover:text-white transition-all shadow-sm" title="Edit Data"><Edit2 size={16}/></button>
                              )}
                           </div>
                         </td>
@@ -615,44 +758,87 @@ export default function UnitsPage() {
 
       <AnimatePresence>
         {isPrintModalOpen && selectedQR && (
-          <div className="fixed inset-0 z-[160] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={closePrintModal}/>
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }} className="bg-white rounded-[2rem] shadow-2xl relative z-10 w-full max-w-sm overflow-hidden p-6 flex flex-col items-center">
-               <div className="w-full flex justify-between items-center mb-6">
-                  <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Passport Label Preview</p>
-                  <button onClick={closePrintModal} className="p-2 bg-slate-100 rounded-full"><X size={16}/></button>
-               </div>
-               
-               <div id="qr-label-printable" className="w-full bg-white border border-slate-100 rounded-3xl p-6 flex flex-col items-center shadow-inner">
-                  <div className="w-full flex justify-between items-center mb-4">
-                     <img src="/daikin_logo.png" className="h-4" alt="daikin"/>
-                     <img src="/logo_epl_connect_1.png" className="h-5" alt="epl"/>
-                  </div>
-                  <h2 className="text-2xl font-black text-[#003366] tracking-tighter mb-1">{selectedQR.tag}</h2>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 truncate w-full text-center">{selectedQR.project}</p>
-                  <div className="p-3 bg-white border-2 border-slate-50 rounded-2xl mb-4">
-                    <QRCode value={`${window.location.origin}/passport/${selectedQR.token}`} size={140} />
-                  </div>
-                  <div className="w-full grid grid-cols-2 gap-4 py-3 border-t border-slate-100">
-                    <div className="min-w-0">
-                      <p className="text-[8px] font-black text-slate-400 uppercase">Floor</p>
-                      <p className="text-xs font-bold text-[#003366] truncate">{selectedQR.floor}</p>
-                    </div>
-                    <div className="text-right min-w-0">
-                      <p className="text-[8px] font-black text-slate-400 uppercase">Room</p>
-                      <p className="text-xs font-bold text-[#003366] truncate">{selectedQR.room}</p>
-                    </div>
-                  </div>
-               </div>
+          <Portal>
+            <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+              <motion.div 
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-[#003366]/90 backdrop-blur-xl"
+                onClick={closePrintModal}
+              />
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="bg-white rounded-[3rem] shadow-2xl relative z-10 w-full max-w-lg p-10 flex flex-col items-center gap-8"
+              >
+                <div className="w-full flex justify-between items-center bg-slate-50 p-4 rounded-3xl border border-slate-100 mb-2">
+                   <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-[#00a1e4] text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200">
+                         <QrCode size={20} />
+                      </div>
+                      <div>
+                         <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest leading-none mb-1">Unit Asset Hub</p>
+                         <p className="text-sm font-black text-[#003366] leading-none">{selectedQR.tag}</p>
+                      </div>
+                   </div>
+                   <button onClick={closePrintModal} className="p-2 bg-white text-slate-400 hover:text-[#003366] rounded-xl transition-all shadow-sm border border-slate-100">
+                      <X size={20} />
+                   </button>
+                </div>
 
-               <button 
-                onClick={() => window.print()} 
-                className="w-full mt-6 py-4 bg-[#003366] text-white font-black rounded-2xl flex items-center justify-center gap-3 hover:bg-[#002244] transition-all"
-               >
-                 <Printer size={20}/> Print Label
-               </button>
-            </motion.div>
-          </div>
+                <div className="bg-white p-8 rounded-3xl shadow-inner border border-slate-100 relative group flex flex-col items-center">
+                  <div className="absolute inset-0 bg-slate-50/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl pointer-events-none"></div>
+                  
+                  <div className="w-[340px] h-[340px] border-4 border-[#003366] p-5 flex flex-col items-center justify-between bg-white relative shadow-2xl shadow-blue-900/10">
+                     <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#003366 1px, transparent 0)', backgroundSize: '15px 15px' }}></div>
+                     
+                     <div className="flex items-center justify-between relative z-10 w-full pb-2 border-b border-slate-50 px-2">
+                        <img src="/logo_epl_connect_1.png" alt="EPL" className="h-4 object-contain" />
+                        <img src="/daikin_logo.png" alt="Daikin" className="h-4 object-contain" />
+                     </div>
+                     
+                     <div className="relative shadow-xl shadow-[#003366]/5 p-2 bg-white rounded-xl mt-1">
+                        <QRCode 
+                          id="qr-code-svg"
+                          value={`${typeof window !== 'undefined' ? window.location.origin : ''}/passport/${selectedQR.token}`} 
+                          size={200} level="H" className="relative z-10" 
+                        />
+                     </div>
+
+                     <div className="text-center mt-3 relative z-10">
+                        <p className="text-[14px] font-black text-[#003366] leading-none mb-1 tracking-tight">{(selectedQR.room || selectedQR.area || "DAIKIN ASSET").toUpperCase()}</p>
+                        <p className="text-[7px] font-black text-slate-400 tracking-[0.3em] uppercase opacity-70">Asset ID: {selectedQR.tag}</p>
+                     </div>
+                  </div>
+                </div>
+
+                <div className="w-full space-y-4">
+                  <p className="text-center text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] px-8">Scan to access the full digital maintenance history and unit specifications instantly.</p>
+                  
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button 
+                      onClick={closePrintModal}
+                      className="flex-1 py-4 bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-slate-200 transition-all"
+                    >
+                      Close Preview
+                    </button>
+                    <button 
+                      onClick={handleDownloadQR}
+                      disabled={isDownloading}
+                      className="flex-[2] py-4 bg-[#00a1e4] text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-[#003366] transition-all shadow-xl shadow-blue-200 flex items-center justify-center gap-2 group disabled:opacity-50"
+                    >
+                      {isDownloading ? (
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      ) : (
+                        <Download size={16} className="group-hover:translate-y-0.5 transition-transform" />
+                      )}
+                      {isDownloading ? "Generating HQ PNG..." : "Download HQ PNG"}
+                    </button>
+                  </div>
+                  
+                  <p className="text-center text-[8px] font-black text-[#00a1e4]/40 uppercase tracking-[0.3em]">DAIKIN CONNECT DIGITAL ASSET HUB</p>
+                </div>
+              </motion.div>
+            </div>
+          </Portal>
         )}
       </AnimatePresence>
     </>

@@ -93,3 +93,51 @@ export async function createCorrectiveActivity(data: any) {
     return { success: false, error: error.message };
   }
 }
+
+export async function updateCorrectiveActivity(id: number, data: any) {
+  try {
+    const {
+      inspector_name,
+      engineer_note,
+      technical_json,
+      pdf_report_url,
+      photos,
+      location,
+      unit_tag,
+    } = data;
+
+    const updatedActivity = await prisma.service_activities.update({
+      where: { id },
+      data: {
+        engineer_note,
+        inspector_name,
+        technical_json,
+        technical_advice: data.recommendation || "",
+        location: location || "",
+        unit_tag: unit_tag || "",
+        pdf_report_url
+      }
+    });
+
+    // Refresh Media Photos
+    if (photos && Array.isArray(photos)) {
+      await (prisma as any).activity_photos.deleteMany({ where: { activity_id: id } });
+      await prisma.activity_photos.createMany({
+        data: photos.map((p: any) => ({
+          activity_id: id,
+          type: "CORRECTIVE",
+          media_type: p.media_type || "image",
+          photo_url: p.photo_url,
+          description: p.description || "Corrective Documentation",
+        })),
+      });
+    }
+
+    revalidatePath("/dashboard", "layout");
+
+    return serializePrisma({ success: true, id: updatedActivity.id });
+  } catch (error: any) {
+    console.error("Corrective Update Error:", error);
+    return { success: false, error: error.message };
+  }
+}

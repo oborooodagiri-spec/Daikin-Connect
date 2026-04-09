@@ -1,25 +1,35 @@
-import React from "react";
-import { DigitalStamp } from "./DigitalStamp";
-
-const SCOPE_ROWS = [
-  { key: "power_supply", label: "Power Supply", type: "measure" },
-  { key: "ampere_motor", label: "Ampere Motor", type: "measure" },
-  { key: "pressure_inlet", label: "Pressure Inlet Water", type: "measure" },
-  { key: "pressure_outlet", label: "Pressure Outlet Water", type: "measure" },
-  { key: "temp_inlet", label: "Temperature Inlet Water", type: "measure" },
-  { key: "temp_outlet", label: "Temperature Outlet Water", type: "measure" },
-  { key: "return_air_temp", label: "Return Air Temperature", type: "measure" },
-  { key: "supply_air_temp", label: "Supply Air Temperature", type: "measure" },
-  { key: "clean_air_filter", label: "Cleaning or Replace Air Filter", type: "action" },
-  { key: "clean_coil", label: "Cleaning Coil AHU/FCU", type: "action" },
-  { key: "clean_drainage", label: "Cleaning Drainage", type: "action" },
-  { key: "clean_body", label: "Cleaning Body Unit", type: "action" },
-  { key: "check_vbelt", label: "Check V-Belt / Tension", type: "action" },
-  { key: "check_bearing", label: "Check Bearing Motor/Blower", type: "action" },
-];
+import { ReportSignatureFooter } from "./ReportSignatureFooter";
+import { t, Language } from "@/lib/i18n";
 
 export const getPreventiveSections = (data: any, unit: any, engineerName?: string, customerName?: string) => {
   const { header, scope, parts, technicalAdvice, activity_photos } = data || {};
+  const lang = data.lang as Language || 'id';
+  
+  const SCOPE_ROWS = [
+    { key: "power_supply", label: t("Power Supply", lang), type: "measure" },
+    { key: "ampere_motor", label: t("Ampere Motor", lang), type: "measure" },
+    { key: "pressure_inlet", label: t("Pressure Inlet Water", lang), type: "measure" },
+    { key: "pressure_outlet", label: t("Pressure Outlet Water", lang), type: "measure" },
+    { key: "temp_inlet", label: t("Temperature Inlet Water", lang), type: "measure" },
+    { key: "temp_outlet", label: t("Temperature Outlet Water", lang), type: "measure" },
+    { key: "return_air_temp", label: t("Return Air Temperature", lang), type: "measure" },
+    { key: "supply_air_temp", label: t("Supply Air Temperature", lang), type: "measure" },
+    { key: "clean_air_filter", label: t("Cleaning or Replace Air Filter", lang), type: "action" },
+    { key: "clean_coil", label: t("Cleaning Coil AHU/FCU", lang), type: "action" },
+    { key: "clean_drainage", label: t("Cleaning Drainage", lang), type: "action" },
+    { key: "clean_body", label: t("Cleaning Body Unit", lang), type: "action" },
+    { key: "check_vbelt", label: t("Check V-Belt / Tension", lang), type: "action" },
+    { key: "check_bearing", label: t("Check Bearing Motor/Blower", lang), type: "action" },
+  ];
+  
+  const chunkArray = (arr: any[], size: number) => {
+    if (!arr) return [];
+    return Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+      arr.slice(i * size, i * size + size)
+    );
+  };
+
+  const photoChunks = chunkArray(activity_photos, 6);
 
   return [
     // PAGE 1 HEADER TITLE
@@ -30,33 +40,33 @@ export const getPreventiveSections = (data: any, unit: any, engineerName?: strin
        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "8pt", fontWeight: "bold" }}>
           <tbody>
             <tr>
-              <td style={cellLabel}>Room / Tenant</td>
+              <td style={cellLabel}>{t("Room / Tenant", lang)}</td>
               <td style={cellVal}>{header?.room_tenant || unit?.room_tenant || "-"}</td>
-              <td style={cellLabel}>Service Date</td>
-              <td style={cellVal}>{header?.date ? new Date(header.date).toLocaleDateString('id-ID') : "-"}</td>
+              <td style={cellLabel}>{t("Service Date", lang)}</td>
+              <td style={cellVal}>{header?.date ? new Date(header.date).toLocaleDateString(lang === 'ja' ? 'ja-JP' : lang === 'en' ? 'en-US' : 'id-ID') : "-"}</td>
             </tr>
             <tr>
-              <td style={cellLabel}>Model Number</td>
+              <td style={cellLabel}>{t("Model Number", lang)}</td>
               <td style={cellVal}>{header?.model || unit?.model || "-"}</td>
-              <td style={cellLabel}>SO / WO Number</td>
+              <td style={cellLabel}>{t("SO / WO Number", lang)}</td>
               <td style={cellVal}>{header?.so_number || "-"}</td>
             </tr>
             <tr>
-              <td style={cellLabel}>Serial Number</td>
+              <td style={cellLabel}>{t("Serial Number", lang)}</td>
               <td style={cellVal}>{header?.serial_number || unit?.serial_number || "-"}</td>
-              <td style={cellLabel}>Visit Number</td>
+              <td style={cellLabel}>{t("Visit Number", lang)}</td>
               <td style={cellVal}>{header?.visit || "1"}</td>
             </tr>
             <tr>
-              <td style={cellLabel}>Unit Tag Number</td>
+              <td style={cellLabel}>{t("Unit Tag Number", lang)}</td>
               <td style={cellVal}>{header?.unit_number || unit?.tag_number || "-"}</td>
-              <td style={cellLabel}>Capacity</td>
+              <td style={cellLabel}>{t("Capacity", lang)}</td>
               <td style={cellVal}>{header?.nominal_capacity || unit?.capacity || "-"}</td>
             </tr>
             <tr>
-              <td style={cellLabel}>Room / Tenant</td>
+              <td style={cellLabel}>{t("Location", lang)}</td>
               <td style={cellVal}>{header?.location || unit?.area || "-"}</td>
-              <td style={cellLabel}>Service Team</td>
+              <td style={cellLabel}>{t("Service Team", lang)}</td>
               <td style={cellVal}>{header?.team_opt || engineerName || "-"}</td>
             </tr>
           </tbody>
@@ -65,13 +75,13 @@ export const getPreventiveSections = (data: any, unit: any, engineerName?: strin
 
     // SECTION: SCOPE OF WORK
     <div key="scope" style={{ marginBottom: "4mm" }}>
-      <div style={sectionHeader}>Maintenance Scope of Work</div>
+      <div style={sectionHeader}>{t("Maintenance Scope of Work", lang)}</div>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "7pt", fontWeight: "bold" }}>
         <thead>
           <tr style={{ backgroundColor: "#f1f5f9" }}>
-            <th style={{ ...thStyle, width: "15%" }}>Before</th>
-            <th style={{ ...thStyle, width: "15%" }}>After</th>
-            <th style={{ ...thStyle, width: "30%" }}>Margin / Result</th>
+            <th style={{ ...thStyle, width: "15%" }}>{t("Before", lang)}</th>
+            <th style={{ ...thStyle, width: "15%" }}>{t("After", lang)}</th>
+            <th style={{ ...thStyle, width: "30%" }}>{t("Margin / Result", lang)}</th>
           </tr>
         </thead>
         <tbody>
@@ -104,23 +114,23 @@ export const getPreventiveSections = (data: any, unit: any, engineerName?: strin
 
     // SECTION: PARTS & COMPONENTS
     <div key="parts" style={{ marginBottom: "4mm" }}>
-       <div style={sectionHeader}>Parts & Components Information</div>
+       <div style={sectionHeader}>{t("Parts & Components Information", lang)}</div>
        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "7pt", fontWeight: "bold" }}>
           <tbody>
             <tr>
-              <td style={cellLabelSmall}>V-Belt Type / Qty</td>
+              <td style={cellLabelSmall}>{t("V-Belt Type / Qty", lang)}</td>
               <td style={cellValSmall}>{parts?.vbelt_type || "-"}</td>
-              <td style={cellLabelSmall}>Motor Pulley Type</td>
+              <td style={cellLabelSmall}>{t("Motor Pulley Type", lang)}</td>
               <td style={cellValSmall}>{parts?.motor_pulley || "-"}</td>
             </tr>
             <tr>
-              <td style={cellLabelSmall}>Motor Bearing Type / Qty</td>
+              <td style={cellLabelSmall}>{t("Motor Bearing Type / Qty", lang)}</td>
               <td style={cellValSmall}>{parts?.motor_bearing || "-"}</td>
-              <td style={cellLabelSmall}>Blower Pulley Type</td>
+              <td style={cellLabelSmall}>{t("Blower Pulley Type", lang)}</td>
               <td style={cellValSmall}>{parts?.blower_pulley || "-"}</td>
             </tr>
             <tr>
-              <td style={cellLabelSmall}>Blower Bearing Type / Qty</td>
+              <td style={cellLabelSmall}>{t("Blower Bearing Type / Qty", lang)}</td>
               <td style={cellValSmall}>{parts?.blower_bearing || "-"}</td>
               <td style={cellLabelSmall}>-</td>
               <td style={cellValSmall}>-</td>
@@ -131,62 +141,45 @@ export const getPreventiveSections = (data: any, unit: any, engineerName?: strin
 
     // SECTION: TECHNICAL ADVICE
     <div key="advice" style={{ marginBottom: "4mm" }}>
-      <div style={sectionHeader}>Technical Advice & Summary</div>
+      <div style={sectionHeader}>{t("Technical Advice & Summary", lang)}</div>
       <div style={{ border: "1px solid #ddd", padding: "2mm", fontSize: "8pt", fontWeight: 500, whiteSpace: "pre-wrap", color: "#444" }}>
         {technicalAdvice || "-"}
       </div>
     </div>,
 
-    <div key="sign" style={{ display: "flex", gap: "5mm", marginTop: "2mm", marginBottom: "6mm" }}>
-      <div style={signBox}>
-        <p style={signTitle}>Service Engineer Signature</p>
-        <div style={{ flex: 1, minHeight: "10mm" }}></div>
-        <div style={signDetail}>
-          <p style={{ margin: "0.5mm 0" }}>Name: {engineerName || "-"}</p>
-          <p style={{ margin: "0.5mm 0" }}>Date: {header?.date ? new Date(header.date).toLocaleDateString("id-ID") : "-"}</p>
-        </div>
-      </div>
-      <div style={{ ...signBox, position: "relative" }}>
-         {data.isApproved && (
-           <div style={{ position: "absolute", top: "-5mm", right: "5mm", zIndex: 10 }}>
-              <DigitalStamp />
-           </div>
-         )}
-        <p style={signTitle}>Customer Acknowledgment</p>
-        <div style={{ flex: 1, minHeight: "10mm", display: "flex", alignItems: "center", justifyContent: "center" }}>
-           {data.isApproved ? (
-              <p style={{ fontSize: "8pt", color: "#059669", fontWeight: 800, textTransform: "uppercase" }}>[ Digitally Approved ]</p>
-           ) : (
-              <p style={{ fontSize: "7pt", color: "#cbd5e1", fontStyle: "italic" }}>Waiting for Signature</p>
-           )}
-        </div>
-        <div style={signDetail}>
-          <p style={{ margin: "0.5mm 0" }}>Name: {data.customerApproverName || customerName || "-"}</p>
-          <p style={{ margin: "0.5mm 0" }}>Date: {data.approvedAt ? new Date(data.approvedAt).toLocaleDateString("id-ID") : "________________"}</p>
-        </div>
-      </div>
+    <div key="sign" style={{ marginTop: "10mm" }}>
+       <ReportSignatureFooter 
+         preparedBy={engineerName}
+         reviewedBy={data.engineerSignerName}
+         witnessedBy={data.customerApproverName || customerName}
+         reviewedDate={data.reviewedAt}
+         witnessedDate={data.approvedAt}
+         lang={lang}
+       />
     </div>,
 
     // PHOTOS
-    ...(activity_photos && activity_photos.length > 0 ? [
-      <div key="photos" style={{ marginTop: "4mm" }}>
-        <div style={sectionHeader}>Maintenance Documentation Photos</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3mm" }}>
-          {activity_photos.map((p: any, i: number) => (
-            <div key={i} style={{ border: "1px solid #ddd", padding: "1.5mm", borderRadius: "1.5mm" }}>
+    ...photoChunks.map((chunk, chunkIdx) => (
+      <div key={`photos-${chunkIdx}`} style={{ width: "100%" }}>
+        <div style={sectionHeader}>
+          {t("Maintenance Documentation Photos", lang)} {photoChunks.length > 1 ? `(Page ${chunkIdx + 1})` : ''}
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5mm" }}>
+          {chunk.map((p: any, i: number) => (
+            <div key={i} style={{ border: "1px solid #ddd", padding: "0.8mm", borderRadius: "1mm" }}>
               <img 
                 src={p.photo_url} 
                 alt={`Photo ${i}`} 
-                style={{ width: "100%", height: "55mm", objectFit: "cover", borderRadius: "1mm" }} 
+                style={{ width: "100%", height: "48mm", objectFit: "cover", borderRadius: "0.5mm" }} 
               />
-              <p style={{ fontSize: "7pt", margin: "1.5mm 0 0 0", textAlign: "center", color: "#666", fontWeight: 700 }}>
-                Photo {i+1}: {p.description || 'Maintenance Documentation'}
+              <p style={{ fontSize: "7pt", margin: "0.5mm 0 0 0", textAlign: "center", color: "#666", fontWeight: 700 }}>
+                Photo {chunkIdx * 6 + i + 1}: {p.description || 'Maintenance Documentation'}
               </p>
             </div>
           ))}
         </div>
       </div>
-    ] : [])
+    ))
   ];
 };
 

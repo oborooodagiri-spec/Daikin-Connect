@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
 import { serializePrisma } from "@/lib/serialize";
-import { startOfDay, endOfDay, differenceInDays } from "date-fns";
+import { startOfDay, endOfDay } from "date-fns";
 import { unstable_noStore as noStore } from "next/cache";
 
 export async function getComprehensiveReportData(projectId: string, startDate?: string, endDate?: string) {

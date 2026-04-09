@@ -1,13 +1,13 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:animate_do/animate_do.dart';
+import 'package:provider/provider.dart';
+import 'package:daikin_connect_mobile/widgets/glass_widgets.dart';
+import 'package:daikin_connect_mobile/providers/sync_provider.dart';
 import 'package:daikin_connect_mobile/models/unit_model.dart';
-import 'package:daikin_connect_mobile/services/sync_service.dart';
-import 'package:daikin_connect_mobile/services/location_service.dart';
 
 class AuditReportScreen extends StatefulWidget {
   final UnitModel unit;
-
   const AuditReportScreen({super.key, required this.unit});
 
   @override
@@ -19,78 +19,60 @@ class _AuditReportScreenState extends State<AuditReportScreen> {
   int _currentStep = 0;
   bool _isSubmitting = false;
 
-  final SyncService _syncService = SyncService();
-  final LocationService _locationService = LocationService();
-  final ImagePicker _picker = ImagePicker();
-
-  final TextEditingController _roomTempController = TextEditingController();
-  bool isAreaClean = true;
-
-  bool blowerOk = true;
-  bool compOk = true;
-  bool condenserOk = true;
-
-  File? _auditImage;
-  final TextEditingController _notesController = TextEditingController();
-
-  Future<void> _takePicture() async {
-    final XFile? photo = await _picker.pickImage(
-      source: ImageSource.camera,
-      imageQuality: 60,
-    );
-
-    if (photo != null) {
-      setState(() => _auditImage = File(photo.path));
-    }
-  }
+  final Map<String, dynamic> _formData = {
+    'general_condition': 'Good',
+    'cleanliness': 'Good',
+    'electrical_safety': 'Safe',
+    'mounting_stability': 'Stable',
+    'refrigerant_leaks': 'None',
+    'abnormal_noise': 'None',
+    'remarks': '',
+  };
 
   void _nextStep() {
     if (_currentStep < 2) {
-      _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+      setState(() => _currentStep++);
+      _pageController.animateToPage(_currentStep, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
     } else {
       _submitReport();
     }
   }
 
-  void _prevStep() {
+  void _previousStep() {
     if (_currentStep > 0) {
-      _pageController.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+      setState(() => _currentStep--);
+      _pageController.animateToPage(_currentStep, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
     }
   }
 
   Future<void> _submitReport() async {
     setState(() => _isSubmitting = true);
     
-    final position = await _locationService.getCurrentLocation();
-    
-    final payload = {
-      'unit_id': widget.unit.id,
-      'unit_tag': widget.unit.unitTag,
+    final report = {
       'type': 'Audit',
-      'latitude': position?.latitude,
-      'longitude': position?.longitude,
-      'environment': {
-        'room_temp': _roomTempController.text,
-        'area_clean': isAreaClean,
-      },
-      'functionality': {
-        'blower_ok': blowerOk,
-        'compressor_ok': compOk,
-        'condenser_ok': condenserOk,
-      },
-      'photo_path': _auditImage?.path,
-      'notes': _notesController.text,
+      'unitId': widget.unit.id,
+      'unitTag': widget.unit.unitTag,
+      'roomTenant': widget.unit.roomTenant,
+      'timestamp': DateTime.now().toIso8601String(),
+      'data': _formData,
     };
 
-    await _syncService.queueReport('/reports/submit', payload);
-
-    setState(() => _isSubmitting = false);
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Audit Report Saved & Queued for Sync")),
-      );
-      Navigator.pop(context);
+    try {
+      await context.read<SyncProvider>().queueReport(report);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("AUDIT QUEUED FOR SYNC")),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("ERROR: $e")),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
@@ -99,8 +81,26 @@ class _AuditReportScreenState extends State<AuditReportScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF040814),
       appBar: AppBar(
-        title: const Text("Unit Audit Checklist", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-        backgroundColor: const Color(0xFF009688),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "AUDIT CHECKLIST",
+              style: GoogleFonts.outfit(
+                color: const Color(0xFF00A1E4),
+                fontWeight: FontWeight.w900,
+                letterSpacing: 4,
+                fontSize: 12,
+              ),
+            ),
+            Text(
+              widget.unit.unitTag, 
+              style: const TextStyle(color: Colors.white24, fontSize: 10, fontWeight: FontWeight.bold)
+            ),
+          ],
+        ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Column(
@@ -110,33 +110,30 @@ class _AuditReportScreenState extends State<AuditReportScreen> {
             child: PageView(
               controller: _pageController,
               physics: const NeverScrollableScrollPhysics(),
-              onPageChanged: (index) => setState(() => _currentStep = index),
               children: [
-                _buildStep1(),
-                _buildStep2(),
-                _buildStep3(),
+                _buildPhysicalStep(),
+                _buildSafetyStep(),
+                _buildFinalStep(),
               ],
             ),
           ),
-          _buildBottomControls(),
+          _buildNavigation(),
         ],
       ),
     );
   }
 
   Widget _buildProgressIndicator() {
-    return Container(
-      padding: const EdgeInsets.all(20),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(3, (index) {
-          bool isActive = index <= _currentStep;
           return Expanded(
             child: Container(
-              margin: EdgeInsets.only(right: index < 2 ? 8 : 0),
               height: 4,
+              margin: const EdgeInsets.symmetric(horizontal: 4),
               decoration: BoxDecoration(
-                color: isActive ? const Color(0xFF009688) : const Color(0x33FFFFFF),
+                color: index <= _currentStep ? const Color(0xFF00A1E4) : Colors.white10,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -146,130 +143,122 @@ class _AuditReportScreenState extends State<AuditReportScreen> {
     );
   }
 
-  Widget _buildStep1() {
-    return ListView(
+  Widget _buildStepContainer(String title, List<Widget> children) {
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
-      children: [
-        const Text("Environmental Audit", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 20),
-        _buildTextField("Room Temp (°C)", _roomTempController, TextInputType.number),
-        const SizedBox(height: 20),
-        _buildSwitch("Area is Clean and Clear", isAreaClean, (v) => setState(() => isAreaClean = v)),
-      ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: 1),
+          ),
+          const SizedBox(height: 24),
+          ...children,
+        ],
+      ),
     );
   }
 
-  Widget _buildStep2() {
-    return ListView(
-      padding: const EdgeInsets.all(24),
-      children: [
-        const Text("System Functionality Check", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 20),
-        _buildSwitch("Blower Operation Normal", blowerOk, (v) => setState(() => blowerOk = v)),
-        _buildSwitch("Compressor Sound Normal", compOk, (v) => setState(() => compOk = v)),
-        _buildSwitch("Condenser Fan Normal", condenserOk, (v) => setState(() => condenserOk = v)),
-      ],
-    );
+  Widget _buildPhysicalStep() {
+    return _buildStepContainer("PHYSICAL INTEGRITY", [
+      _buildDropdown("General Condition", 'general_condition', ['Excellent', 'Good', 'Fair', 'Poor']),
+      const SizedBox(height: 20),
+      _buildDropdown("Cleanliness", 'cleanliness', ['Clean', 'Dirty', 'Dusty']),
+      const SizedBox(height: 20),
+      _buildDropdown("Mounting Stability", 'mounting_stability', ['Stable', 'Loose', 'Vibrating']),
+    ]);
   }
 
-  Widget _buildStep3() {
-    return ListView(
-      padding: const EdgeInsets.all(24),
+  Widget _buildSafetyStep() {
+    return _buildStepContainer("SAFETY & DIAGNOSTICS", [
+      _buildDropdown("Electrical Safety", 'electrical_safety', ['Safe', 'Exposed Wires', 'Burn Marks']),
+      const SizedBox(height: 20),
+      _buildDropdown("Refrigerant Leaks", 'refrigerant_leaks', ['None', 'Minor', 'Critical']),
+      const SizedBox(height: 20),
+      _buildDropdown("Abnormal Noise", 'abnormal_noise', ['None', 'Fan Grinding', 'Compressor Buzz']),
+    ]);
+  }
+
+  Widget _buildFinalStep() {
+    return _buildStepContainer("AUDIT SUMMARY", [
+      const Text(
+        "Observation Remarks",
+        style: TextStyle(color: Colors.white30, fontSize: 12, fontWeight: FontWeight.bold),
+      ),
+      const SizedBox(height: 12),
+      GlassCard(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: TextField(
+          maxLines: 5,
+          style: const TextStyle(color: Colors.white, fontSize: 14),
+          decoration: const InputDecoration(
+            border: InputBorder.none,
+            hintText: "Enter any additional notes...",
+            hintStyle: TextStyle(color: Colors.white10),
+          ),
+          onChanged: (v) => _formData['remarks'] = v,
+        ),
+      ),
+    ]);
+  }
+
+  Widget _buildDropdown(String label, String key, List<String> options) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Evidence & Documentation", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 20),
-        GestureDetector(
-          onTap: _takePicture,
-          child: Container(
-            height: 150,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: const Color(0x0DFFFFFF),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: const Color(0x1AFFFFFF)),
-              image: _auditImage != null 
-                  ? DecorationImage(image: FileImage(_auditImage!), fit: BoxFit.cover)
-                  : null,
+        Text(label, style: const TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
+        const SizedBox(height: 10),
+        GlassCard(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: _formData[key],
+              dropdownColor: const Color(0xFF041026),
+              isExpanded: true,
+              icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF00A1E4)),
+              style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+              items: options.map((String value) {
+                return DropdownMenuItem<String>(value: value, child: Text(value.toUpperCase()));
+              }).toList(),
+              onChanged: (val) => setState(() => _formData[key] = val),
             ),
-            child: _auditImage == null 
-                ? const Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.camera_alt, color: Colors.white38, size: 40),
-                      SizedBox(height: 10),
-                      Text("ATTACH PHOTO", style: TextStyle(color: Colors.white24, fontWeight: FontWeight.bold, fontSize: 12))
-                    ],
-                  )
-                : null,
           ),
         ),
-        const SizedBox(height: 20),
-        _buildTextField("Remarks", _notesController, TextInputType.multiline, maxLines: 4),
       ],
     );
   }
 
-  Widget _buildTextField(String hint, TextEditingController controller, TextInputType type, {int maxLines = 1}) {
-    return TextField(
-      controller: controller,
-      keyboardType: type,
-      maxLines: maxLines,
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        labelText: maxLines == 1 ? hint : null,
-        hintText: maxLines > 1 ? hint : null,
-        labelStyle: const TextStyle(color: Colors.white38),
-        hintStyle: const TextStyle(color: Colors.white38),
-        filled: true,
-        fillColor: const Color(0x0DFFFFFF),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
-      ),
-    );
-  }
-
-  Widget _buildSwitch(String title, bool value, Function(bool) onChanged) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
-      decoration: BoxDecoration(
-        color: const Color(0x0DFFFFFF),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title, style: const TextStyle(color: Colors.white70, fontSize: 13)),
-          Switch(value: value, onChanged: onChanged, activeColor: const Color(0xFF009688)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomControls() {
+  Widget _buildNavigation() {
     return Container(
       padding: const EdgeInsets.all(24),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          if (_currentStep > 0)
-            TextButton(
-              onPressed: _isSubmitting ? null : _prevStep,
-              child: const Text("BACK", style: TextStyle(color: Colors.white54, fontWeight: FontWeight.bold)),
-            )
-          else
-            const SizedBox(),
-          ElevatedButton(
-            onPressed: _isSubmitting ? null : _nextStep,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF009688),
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+      decoration: BoxDecoration(
+        color: const Color(0xFF040814),
+        border: Border(top: BorderSide(color: Colors.white.withOpacity(0.05))),
+      ),
+      child: SafeArea(
+        child: Row(
+          children: [
+            if (_currentStep > 0)
+              Expanded(
+                child: GlassButton(
+                  onPressed: _isSubmitting ? null : _previousStep,
+                  child: const Text("BACK", style: TextStyle(color: Colors.white38, fontWeight: FontWeight.bold)),
+                ),
+              ),
+            if (_currentStep > 0) const SizedBox(width: 16),
+            Expanded(
+              flex: 2,
+              child: GlassButton(
+                onPressed: _isSubmitting ? null : _nextStep,
+                color: const Color(0xFF00A1E4),
+                child: _isSubmitting 
+                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                  : Text(_currentStep < 2 ? "CONTINUE" : "SUBMIT REPORT", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
             ),
-            child: _isSubmitting
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : Text(_currentStep < 2 ? "NEXT STEP" : "SUBMIT AUDIT", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -69,3 +69,45 @@ export async function createPreventiveActivity(data: any) {
     return { success: false, error: error.message };
   }
 }
+
+export async function updatePreventiveActivity(id: number, data: any) {
+  try {
+    const {
+      inspector_name,
+      engineer_note,
+      technical_json,
+      pdf_report_url,
+      photos
+    } = data;
+
+    const updatedActivity = await prisma.service_activities.update({
+      where: { id },
+      data: {
+        engineer_note,
+        inspector_name,
+        technical_json,
+        technical_advice: engineer_note,
+        pdf_report_url
+      }
+    });
+
+    // Refresh Media Photos
+    if (photos && Array.isArray(photos)) {
+      await (prisma as any).activity_photos.deleteMany({ where: { activity_id: id } });
+      await prisma.activity_photos.createMany({
+        data: photos.map((p: any) => ({
+          activity_id: id,
+          type: "PREVENTIVE",
+          media_type: p.media_type || "image",
+          photo_url: p.photo_url,
+          description: p.description || "Preventive Documentation"
+        }))
+      });
+    }
+
+    return serializePrisma({ success: true, id: updatedActivity.id });
+  } catch (error: any) {
+    console.error("Preventive Update Error:", error);
+    return { success: false, error: error.message };
+  }
+}

@@ -51,12 +51,12 @@ export function SyncManager() {
     };
   }, []);
 
-  const uploadPhotos = async (photos: Blob[]) => {
+  const uploadPhotos = async (photos: Blob[], folder: string) => {
     const uploadedUrls: { photo_url: string, description: string }[] = [];
     for (const blob of photos) {
       const formData = new FormData();
       formData.append("file", blob, `offline_photo_${Date.now()}.jpg`);
-      formData.append("folder", "photos");
+      formData.append("folder", folder);
       
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       const data = await res.json();
@@ -76,8 +76,8 @@ export function SyncManager() {
 
     for (const item of pending) {
       try {
-        // 1. Upload photos first
-        const photoUrls = await uploadPhotos(item.photos);
+        // 1. Upload photos first (using correct folder)
+        const photoUrls = await uploadPhotos(item.photos, item.type.toLowerCase());
         
         let res: any;
         const payload = { ...item.data, photos: photoUrls };
@@ -91,10 +91,14 @@ export function SyncManager() {
           await deletePendingSubmission(item.id!);
           console.log(`Successfully synced ${item.type} #${item.id}`);
         } else {
-          console.error(`Failed to sync ${item.type}:`, res?.error);
+          const detail = res?.error || "Unknown server error (Check payload limit)";
+          console.error(`Failed to sync ${item.type}:`, detail);
+          // Set error state so user can see something went wrong
+          setSyncStatus("error");
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error("Sync error:", err);
+        setSyncStatus("error");
       }
     }
 

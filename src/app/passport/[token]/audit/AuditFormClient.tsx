@@ -1,11 +1,9 @@
-"use client";
-
-import React, { useState, useRef, useMemo } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import imageCompression from "browser-image-compression";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
-import { createAuditActivity } from "@/app/actions/audit";
+import { createAuditActivity, updateAuditActivity } from "@/app/actions/audit";
 import { savePendingSubmission } from "@/lib/offline-db";
 import { 
   ChevronRight, ChevronLeft, Save, Camera, FileText,
@@ -13,13 +11,15 @@ import {
   FileVideo, Play
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { calculateBalancedAHI, AHIResult } from "@/lib/physics/ahi-calculation";
 
-export default function AuditFormClient({ unit }: { unit: any }) {
+export default function AuditFormClient({ unit, initialData, onSuccess }: { unit: any, initialData?: any, onSuccess?: () => void }) {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [isQueued, setIsQueued] = useState(false);
+  const [showFormula, setShowFormula] = useState(false);
 
   React.useEffect(() => {
     const handleStatus = () => {}; // Just force re-render if needed
@@ -32,7 +32,33 @@ export default function AuditFormClient({ unit }: { unit: any }) {
   }, []);
 
   // --- FORM STATE ---
-  const [formData, setFormData] = useState<any>({
+  const [formData, setFormData] = useState<any>(initialData ? {
+    ...initialData,
+    unit_id: unit.id,
+    unit_tag: unit.tag_number || initialData.unit_tag || "",
+    location: unit.area || initialData.location || "",
+    // Map temperature fields explicitly to ensure strings/empty handling
+    leaving_db: initialData.leaving_db?.toString() || "",
+    leaving_wb: initialData.leaving_wb?.toString() || "",
+    leaving_rh: initialData.leaving_rh?.toString() || "",
+    entering_db: initialData.entering_db?.toString() || "",
+    entering_wb: initialData.entering_wb?.toString() || "",
+    entering_rh: initialData.entering_rh?.toString() || "",
+    room_db: initialData.room_db?.toString() || "",
+    room_wb: initialData.room_wb?.toString() || "",
+    room_rh: initialData.room_rh?.toString() || "",
+    design_airflow: initialData.design_airflow?.toString() || "",
+    design_cooling_capacity: initialData.design_cooling_capacity?.toString() || "",
+    
+    t: (typeof initialData.technical_json === 'string' ? JSON.parse(initialData.technical_json) : initialData.technical_json) || {
+      supplyArea: "", returnArea: "", freshArea: "",
+      supplyVelocity: Array(15).fill(""),
+      returnVelocity: Array(15).fill(""),
+      freshVelocity: Array(15).fill(""),
+      inlet: Array(6).fill("N/A"),
+      outlet: Array(6).fill("N/A")
+    }
+  } : {
     unit_id: unit.id,
     unit_tag: unit.tag_number || "",
     location: unit.area || "",
@@ -40,11 +66,9 @@ export default function AuditFormClient({ unit }: { unit: any }) {
     engineer_note: "",
     design_airflow: "",
     design_cooling_capacity: "",
-    // Air Side
     leaving_db: "", leaving_wb: "", leaving_rh: "",
     entering_db: "", entering_wb: "", entering_rh: "",
-    room_db: "", room_wb: "", room_rh: "", // Fresh Air
-    // Matrix
+    room_db: "", room_wb: "", room_rh: "", 
     t: {
       supplyArea: "", returnArea: "", freshArea: "",
       supplyVelocity: Array(15).fill(""),
@@ -53,15 +77,38 @@ export default function AuditFormClient({ unit }: { unit: any }) {
       inlet: Array(6).fill("N/A"),
       outlet: Array(6).fill("N/A")
     },
-    // Water & Electrical
     chws_temp: "", chwr_temp: "", chws_press: "", chwr_press: "",
     water_flow_gpm: "", pipe_size: "",
     power_kw: "",
     amp_r: "", amp_s: "", amp_t: "",
-    volt_rs: "", volt_rt: "", volt_st: "", volt_ln: ""
+    volt_rs: "", volt_rt: "", volt_st: "", volt_ln: "",
+    fincoil_cond: "GOOD",
+    drain_pan_cond: "GOOD",
+    blower_fan_cond: "GOOD"
   });
 
-  const [mediaItems, setMediaItems] = useState<{file: File, type: "image" | "video", preview: string}[]>([]);
+  // If we have supplyVelocity etc from processReportData fallback, use them
+  useEffect(() => {
+    if (initialData?.t?.supplyVelocity) {
+      setFormData((prev: any) => ({
+        ...prev,
+        t: {
+          ...prev.t,
+          supplyVelocity: initialData.t.supplyVelocity,
+          returnVelocity: initialData.t.returnVelocity,
+          freshVelocity: initialData.t.freshVelocity
+        }
+      }));
+    }
+  }, [initialData]);
+
+  const [mediaItems, setMediaItems] = useState<{file: File | null, type: "image" | "video", preview: string}[]>(
+    initialData?.activity_photos?.map((p: any) => ({
+      file: null, // Existing files don't have a File object
+      type: p.media_type || "image",
+      preview: p.photo_url
+    })) || []
+  );
 
   // Handlers for deeply nested state (t)
   const setT = (key: string, val: any) => setFormData({ ...formData, t: { ...formData.t, [key]: val }});
@@ -104,39 +151,24 @@ export default function AuditFormClient({ unit }: { unit: any }) {
     return 0;
   };
 
-  // Health Vitality Calculation (Matching units.ts logic)
-  const healthScore = useMemo(() => {
-    let techScore = 100;
-    let perfScore = 100;
-    let ageScore = 100;
+  // Health Vitality Calculation (Balanced AHI Utility)
+  const healthResult = useMemo<AHIResult>(() => {
+    return calculateBalancedAHI({
+      fincoil: formData.fincoil_cond,
+      drainPan: formData.drain_pan_cond,
+      blowerFan: formData.blower_fan_cond,
+      accessories: [...formData.t.inlet, ...formData.t.outlet],
+      enteringDB: parseFloat(formData.entering_db) || 0,
+      leavingDB: parseFloat(formData.leaving_db) || 0,
+      enteringRH: parseFloat(formData.entering_rh),
+      leavingRH: parseFloat(formData.leaving_rh),
+      measuredAirflow: calculateCfm(formData.t.supplyArea, avgSupply) * 1.699, // Convert to m3/h for utility
+      designCapacityStr: formData.design_cooling_capacity > 0 ? `${formData.design_cooling_capacity} BTU` : unit.capacity,
+      yearOfInstall: unit.yoi
+    });
+  }, [formData, unit.yoi, unit.capacity, avgSupply]);
 
-    // 1. Technical Findings / Temuan from Accessories (E. Accessories)
-    const allAccessories = [...formData.t.inlet, ...formData.t.outlet];
-    const defects = allAccessories.filter(a => a === "DEFECT").length;
-    if (defects > 3) techScore = 0;
-    else if (defects > 0) techScore = 50;
-
-    // 2. Performance / Temp Delta (B. Air Side)
-    const entering = parseFloat(formData.entering_db) || 0;
-    const leaving = parseFloat(formData.leaving_db) || 0;
-    const delta = entering - leaving;
-    if (delta > 0) {
-      if (delta < 7 || delta > 14) perfScore = 40;
-      else if (delta < 8 || delta > 12) perfScore = 70;
-    } else if (entering > 0) {
-      perfScore = 50;
-    }
-
-    // 3. Age Factor
-    if (unit.yoi) {
-      const age = new Date().getFullYear() - unit.yoi;
-      if (age > 15) ageScore = 20;
-      else if (age > 10) ageScore = 50;
-      else if (age > 7) ageScore = 80;
-    }
-
-    return Math.round((techScore * 0.5) + (perfScore * 0.3) + (ageScore * 0.2));
-  }, [formData, unit.yoi]);
+  const healthScore = healthResult.totalScore;
 
   const healthLabel = useMemo(() => {
     if (healthScore < 40) return { text: "REPLACE", color: "rose" };
@@ -207,8 +239,15 @@ export default function AuditFormClient({ unit }: { unit: any }) {
       if (!navigator.onLine) {
         await savePendingSubmission({
           type: 'AUDIT',
-          data: { ...formData, velocity_points: formData.t.supplyVelocity.map((v:any, i:number) => ({ point_number: i+1, velocity_value: parseFloat(v) || 0 })) },
-          photos: mediaItems.map(m => m.file) 
+          data: { 
+            ...formData, 
+            velocity_points: [
+              ...formData.t.supplyVelocity.map((v:any, i:number) => ({ point_number: i+1, velocity_value: parseFloat(v) || 0 })),
+              ...formData.t.returnVelocity.map((v:any, i:number) => ({ point_number: i+16, velocity_value: parseFloat(v) || 0 })),
+              ...formData.t.freshVelocity.map((v:any, i:number) => ({ point_number: i+31, velocity_value: parseFloat(v) || 0 }))
+            ]
+          },
+          photos: mediaItems.map(m => m.file).filter((f): f is File => f !== null)
         });
         setIsQueued(true);
         setLoading(false);
@@ -232,9 +271,12 @@ export default function AuditFormClient({ unit }: { unit: any }) {
       // Measurement Layer (Invisible)
       const measureDiv = document.createElement("div");
       measureDiv.style.width = "794px"; // A4 Width
-      measureDiv.style.position = "absolute";
-      measureDiv.style.left = "-9999px";
-      measureDiv.style.visibility = "hidden";
+      measureDiv.style.position = "fixed";
+      measureDiv.style.top = "0";
+      measureDiv.style.left = "0";
+      measureDiv.style.zIndex = "-1000";
+      measureDiv.style.opacity = "0";
+      measureDiv.style.pointerEvents = "none";
       document.body.appendChild(measureDiv);
 
       const pages: any[][] = [[]];
@@ -277,9 +319,12 @@ export default function AuditFormClient({ unit }: { unit: any }) {
         const pageDiv = document.createElement("div");
         pageDiv.style.width = "210mm";
         pageDiv.style.height = "297mm";
-        pageDiv.style.position = "absolute";
-        pageDiv.style.top = "-9999px";
-        pageDiv.style.left = "-9999px";
+        pageDiv.style.position = "fixed";
+        pageDiv.style.top = "0";
+        pageDiv.style.left = "0";
+        pageDiv.style.zIndex = "-1000";
+        pageDiv.style.opacity = "0";
+        pageDiv.style.pointerEvents = "none";
         document.body.appendChild(pageDiv);
 
         const { createRoot } = await import("react-dom/client");
@@ -304,7 +349,14 @@ export default function AuditFormClient({ unit }: { unit: any }) {
           setTimeout(resolve, 200); 
         });
 
-        const canvas = await html2canvas(pageDiv, { scale: 2, useCORS: true, windowWidth: 794, height: 1123 });
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const canvas = await html2canvas(pageDiv, { 
+          scale: isMobile ? 1.5 : 2, 
+          useCORS: true, 
+          windowWidth: 794, 
+          height: 1123,
+          logging: false 
+        });
         const imgData = canvas.toDataURL("image/jpeg", 1.0);
         pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, A4_HEIGHT_MM);
 
@@ -336,8 +388,12 @@ export default function AuditFormClient({ unit }: { unit: any }) {
         const baDiv = document.createElement("div");
         baDiv.style.width = "210mm";
         baDiv.style.height = "297mm";
-        baDiv.style.position = "absolute";
-        baDiv.style.top = "-9999px";
+        baDiv.style.position = "fixed";
+        baDiv.style.top = "0";
+        baDiv.style.left = "0";
+        baDiv.style.zIndex = "-1000";
+        baDiv.style.opacity = "0";
+        baDiv.style.pointerEvents = "none";
         document.body.appendChild(baDiv);
 
         const { createRoot: baRootInit } = await import("react-dom/client");
@@ -356,7 +412,14 @@ export default function AuditFormClient({ unit }: { unit: any }) {
           setTimeout(resolve, 300);
         });
 
-        const baCanvas = await html2canvas(baDiv, { scale: 2, useCORS: true, windowWidth: 794, height: 1123 });
+        const isMobileBA = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const baCanvas = await html2canvas(baDiv, { 
+          scale: isMobileBA ? 1.5 : 2, 
+          useCORS: true, 
+          windowWidth: 794, 
+          height: 1123,
+          logging: false 
+        });
         const baImg = baCanvas.toDataURL("image/jpeg", 0.9);
         baPdf.addImage(baImg, 'JPEG', 0, 0, 210, 297);
         
@@ -377,14 +440,22 @@ export default function AuditFormClient({ unit }: { unit: any }) {
       // 2. Upload Media (Photos & Videos)
       const uploadedMedia: { photo_url: string; description: string; media_type: string }[] = [];
       for (const item of mediaItems) {
+        if (!item.file) {
+          // Carry over existing photos
+          uploadedMedia.push({
+            photo_url: item.preview,
+            media_type: item.type,
+            description: "Audit Documentation"
+          });
+          continue;
+        }
+
         const mForm = new FormData();
         mForm.append("file", item.file);
-        mForm.append("folder", item.type === "video" ? "videos" : "photos");
+        mForm.append("folder", "audit"); // Standardize to audit folder for better tracking
         
         const mRes = await fetch("/api/upload", { method: "POST", body: mForm });
-        if (!mRes.ok) {
-          throw new Error(`Media Upload failed: ${mRes.status}`);
-        }
+        if (!mRes.ok) throw new Error(`Media Upload failed: ${mRes.status}`);
         const mData = await mRes.json();
         if (mData.success) {
           uploadedMedia.push({ 
@@ -395,14 +466,16 @@ export default function AuditFormClient({ unit }: { unit: any }) {
         }
       }
 
-      // 3. COMPILE VELOCITY POINTS DB ARRAY
+      // 3. COMPILE VELOCITY POINTS DB ARRAY (COMPLETE 45 POINTS)
       const velocity_points: any[] = [];
       formData.t.supplyVelocity.forEach((v:any,i:number) => { if(v) velocity_points.push({ point_number: i+1, velocity_value: parseFloat(v) }) });
+      formData.t.returnVelocity.forEach((v:any,i:number) => { if(v) velocity_points.push({ point_number: i+16, velocity_value: parseFloat(v) }) });
+      formData.t.freshVelocity.forEach((v:any,i:number) => { if(v) velocity_points.push({ point_number: i+31, velocity_value: parseFloat(v) }) });
 
       // 4. SAVE TO MYSQL DB
       const dbPayload = {
         ...renderData,
-        technical_json: JSON.stringify(renderData.t, (_, v) => typeof v === 'bigint' ? v.toString() : v), // Accessories and Matrix preserved
+        technical_json: JSON.stringify(renderData.t, (_, v) => typeof v === 'bigint' ? v.toString() : v), 
         pdf_report_url: pdfUrl,
         berita_acara_pdf_url: baUrl,
         engineer_signer_name: formData.inspector_name,
@@ -410,9 +483,16 @@ export default function AuditFormClient({ unit }: { unit: any }) {
         photos: uploadedMedia
       };
 
-      const dbRes = await createAuditActivity(dbPayload) as any;
+      const dbRes = initialData 
+        ? await updateAuditActivity(initialData.id, dbPayload) as any
+        : await createAuditActivity(dbPayload) as any;
+
       if (dbRes.success) {
-        setSuccess(true);
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          setSuccess(true);
+        }
       } else {
         alert("Database Error: " + dbRes.error);
       }
@@ -453,10 +533,13 @@ export default function AuditFormClient({ unit }: { unit: any }) {
           <h1 className="text-2xl font-black tracking-tight flex items-center gap-2">
             <FileText size={20}/> Pengukuran
           </h1>
-          <div className={`px-4 py-2 rounded-2xl border bg-white/10 backdrop-blur-md flex flex-col items-center border-white/20 shadow-lg min-w-[100px]`}>
+          <button 
+            onClick={() => setShowFormula(true)}
+            className={`px-4 py-2 rounded-2xl border bg-white/10 backdrop-blur-md flex flex-col items-center border-white/20 shadow-lg min-w-[100px] hover:bg-white/20 transition-all`}
+          >
             <span className="text-[8px] font-black uppercase tracking-[0.2em] opacity-60">Health Score</span>
             <span className={`text-xl font-black text-${healthLabel.color}-400`}>{healthScore}%</span>
-          </div>
+          </button>
         </div>
         <div className="flex justify-between items-center mt-3">
           <p className="text-sm font-medium opacity-80 flex items-center gap-1"><MapPin size={14}/> {unit.area}</p>
@@ -611,7 +694,36 @@ export default function AuditFormClient({ unit }: { unit: any }) {
           {step === 4 && (
             <motion.div key="step4" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} className="space-y-6">
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">E. Accessories Condition</h2>
+                <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">E. Component & Accessories Condition</h2>
+                
+                {/* NEW: Major Component Conditions */}
+                <div className="bg-slate-50 p-4 rounded-2xl mb-6 border border-slate-100">
+                  <p className="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-[0.2em]">Major Components</p>
+                  <div className="space-y-4">
+                    {[
+                      { label: "Kondisi Fincoil", key: "fincoil_cond" },
+                      { label: "Kondisi Drain Pan", key: "drain_pan_cond" },
+                      { label: "Kondisi Blower Fan", key: "blower_fan_cond" }
+                    ].map((comp) => (
+                      <div key={comp.key} className="flex justify-between items-center">
+                        <span className="text-sm font-bold text-slate-700">{comp.label}</span>
+                        <div className="flex bg-white p-1 rounded-xl border border-slate-200">
+                           {['GOOD', 'BAD'].map(v => (
+                             <button
+                               key={v}
+                               onClick={() => setFormData({...formData, [comp.key]: v})}
+                               className={`px-4 py-1.5 rounded-lg text-[10px] font-black transition-all ${formData[comp.key] === v ? (v === 'GOOD' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white') : 'text-slate-400'}`}
+                             >
+                               {v}
+                             </button>
+                           ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <p className="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-[0.2em]">Accessories Details</p>
                 {["Gate/Butterfly Valve", "Flexible Joint", "Motorized Valve", "Balancing Valve", "Thermometer", "Pressure Gauge"].map((acc, i) => (
                   <div key={i} className="mb-4 pb-4 border-b border-slate-100 last:border-0 last:pb-0">
                     <label className="text-sm font-bold text-slate-800 flex items-center gap-2 mb-2">
@@ -733,6 +845,79 @@ export default function AuditFormClient({ unit }: { unit: any }) {
           )}
         </div>
       </div>
+
+      {/* FORMULA MODAL */}
+      <AnimatePresence>
+        {showFormula && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowFormula(false)} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" />
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white rounded-[2.5rem] p-8 w-full max-w-md relative z-10 shadow-2xl overflow-hidden">
+               <div className="absolute top-0 right-0 p-6">
+                  <button onClick={() => setShowFormula(false)} className="p-2 bg-slate-100 rounded-full text-slate-400 hover:text-slate-600"><X size={20}/></button>
+               </div>
+               
+               <h3 className="text-2xl font-black text-[#003366] leading-tight mb-2">Daikin Balanced<br/>Asset Health Index</h3>
+               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 border-b pb-4">Ref: CIBSE Guide M & ASHRAE 1.1</p>
+               
+               <div className="space-y-6">
+                  <div className="flex gap-4">
+                     <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center shrink-0">
+                        <Activity size={24} className="text-[#00a1e4]" />
+                     </div>
+                     <div>
+                        <p className="text-xs font-black text-[#003366] uppercase">Physical Condition (40%)</p>
+                        <p className="text-xs text-slate-500 font-medium">Fincoil, Drain Pan, Fan, & Accessories. <span className="text-[#00a1e4] font-bold">Score: {healthResult.conditionScore}%</span></p>
+                     </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                     <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center shrink-0">
+                        <Zap size={24} className="text-emerald-500" />
+                     </div>
+                     <div>
+                        <p className="text-xs font-black text-[#003366] uppercase">Performance Index (40%)</p>
+                        <p className="text-xs text-slate-500 font-medium">Thermodynamic capacity efficiency. <span className="text-emerald-500 font-bold">Score: {healthResult.performanceScore}%</span></p>
+                     </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                     <div className="w-12 h-12 bg-rose-50 rounded-2xl flex items-center justify-center shrink-0">
+                        <History size={24} className="text-rose-500" />
+                     </div>
+                     <div>
+                        <p className="text-xs font-black text-[#003366] uppercase">Reliability Factor (20%)</p>
+                        <p className="text-xs text-slate-500 font-medium">Unit degradation based on age ({healthResult.breakdown.reliability.age} yrs). <span className="text-rose-500 font-bold">Score: {healthResult.reliabilityScore}%</span></p>
+                     </div>
+                  </div>
+               </div>
+
+               <div className="mt-8 p-6 bg-slate-50 rounded-3xl border border-slate-100 italic font-medium text-slate-400 text-[10px] text-center">
+                  "$Score = (CI \cdot 0.4) + (PI \cdot 0.4) + (RI \cdot 0.2)$"
+               </div>
+
+               <button onClick={() => setShowFormula(false)} className="w-full mt-6 py-4 bg-[#003366] text-white font-black rounded-2xl uppercase tracking-widest text-xs shadow-xl shadow-blue-900/10">Understood</button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
+  );
+}
+
+function Zap(props: any) { 
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+  );
+}
+
+function Activity(props: any) {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+  );
+}
+
+function History(props: any) {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
   );
 }

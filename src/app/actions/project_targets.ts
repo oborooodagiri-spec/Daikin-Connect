@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
+import { serializePrisma } from "@/lib/serialize";
 import { revalidatePath } from "next/cache";
 
 export async function getProjectProgress(projectId: string) {
@@ -79,13 +80,13 @@ export async function getProjectProgress(projectId: string) {
       planned: correctiveSchedules.filter(s => s.status === 'Planned').length
     };
 
-    return { 
+    return serializePrisma({ 
       success: true, 
       data: {
         targets: stats,
         corrective: correctiveStats
       }
-    };
+    });
   } catch (error) {
     console.error("Fetch project progress error:", error);
     return { error: "Failed to fetch progress" };
@@ -157,14 +158,14 @@ export async function getProjectSchedules(projectId: string) {
       orderBy: { start_at: 'asc' }
     });
 
-    return {
+    return serializePrisma({
       success: true,
       data: schedules.map(s => ({
         ...s,
         id: s.id.toString(),
         project_id: s.project_id.toString()
       }))
-    };
+    });
   } catch (error) {
     return { error: "Failed to fetch schedules" };
   }

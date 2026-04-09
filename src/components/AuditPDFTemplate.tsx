@@ -1,8 +1,8 @@
-import React from 'react';
-import { DigitalStamp } from './DigitalStamp';
+import { ReportSignatureFooter } from './ReportSignatureFooter';
+import { t, Language } from '@/lib/i18n';
 
 export const getAuditSections = (data: any, unit: any) => {
-  const t = data.t || data.technical_json || {};
+  const techData = data.t || data.technical_json || {};
   const { activity_photos } = data || {};
 
   // Matrix Averages calculation
@@ -11,15 +11,25 @@ export const getAuditSections = (data: any, unit: any) => {
     return valid.length > 0 ? (valid.reduce((a: any, b: any) => parseFloat(a) + parseFloat(b), 0) / valid.length).toFixed(2) : "0.00";
   };
 
-  const avgSupply = getAvg(t.supplyVelocity);
-  const avgReturn = getAvg(t.returnVelocity);
-  const avgFresh = getAvg(t.freshVelocity);
+  const avgSupply = getAvg(techData.supplyVelocity);
+  const avgReturn = getAvg(techData.returnVelocity);
+  const avgFresh = getAvg(techData.freshVelocity);
+  
+  const chunkArray = (arr: any[], size: number) => {
+    if (!arr) return [];
+    return Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+      arr.slice(i * size, i * size + size)
+    );
+  };
+
+  const photoChunks = chunkArray(activity_photos, 6);
+  const lang = data.lang as Language || 'id';
 
   return [
     // TITLE
     <div key="title_section" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4mm" }}>
       <p style={{ fontSize: "12pt", fontWeight: 900, color: "#003366", textDecoration: "underline", margin: 0 }}>
-        FORM PENGUKURAN (AUDIT)
+        {t("FORM PENGUKURAN (AUDIT)", lang)}
       </p>
       {data.healthScore !== undefined && (
         <div style={{ padding: "1.5mm 4mm", border: "1.5pt solid #003366", borderRadius: "1.5mm", textAlign: "center" }}>
@@ -32,11 +42,11 @@ export const getAuditSections = (data: any, unit: any) => {
 
     // SECTION A: GENERAL DATA
     <div key="general" style={{ marginBottom: "5mm" }}>
-      <div style={sectionHeader}>A. GENERAL DATA</div>
+      <div style={sectionHeader}>{t("A. GENERAL DATA", lang)}</div>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "8pt", fontWeight: "bold" }}>
         <tbody>
             <tr>
-              <td style={cellLabel}>Room / Tenant</td>
+              <td style={cellLabel}>{t("Room / Tenant", lang)}</td>
               <td style={cellVal}>{unit?.room_tenant || "-"}</td>
             <td style={cellLabel}>Design Air Temp</td>
             <td style={cellVal}>{data.design_temp || 'N/A'} (°C)</td>
@@ -65,17 +75,17 @@ export const getAuditSections = (data: any, unit: any) => {
 
     // SECTION B: AIR SIDE
     <div key="airside" style={{ marginBottom: "5mm" }}>
-      <div style={sectionHeader}>B. AIR SIDE MEASUREMENTS</div>
+      <div style={sectionHeader}>{t("B. AIR SIDE MEASUREMENTS", lang)}</div>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "8pt", fontWeight: "bold", textAlign: "center", marginBottom: "2mm" }}>
         <tbody style={{ backgroundColor: "#f8fafc" }}>
           <tr>
-            <td style={{ ...tdStyle, textAlign: "left", width: "25%", backgroundColor: "#f1f5f9" }}>Leaving Coil Temp.</td>
+            <td style={{ ...tdStyle, textAlign: "left", width: "25%", backgroundColor: "#f1f5f9" }}>{t("Leaving Coil Temp", lang)}</td>
             <td style={tdStyle}>{data.leaving_db || '0'} (°C) DB</td>
             <td style={tdStyle}>{data.leaving_wb || '0'} (°C) WB</td>
             <td style={tdStyle}>{data.leaving_rh || '0'} % RH</td>
           </tr>
           <tr>
-            <td style={{ ...tdStyle, textAlign: "left", backgroundColor: "#f1f5f9" }}>Entering Coil Temp.</td>
+            <td style={{ ...tdStyle, textAlign: "left", backgroundColor: "#f1f5f9" }}>{t("Entering Coil Temp", lang)}</td>
             <td style={tdStyle}>{data.entering_db || '0'} (°C) DB</td>
             <td style={tdStyle}>{data.entering_wb || '0'} (°C) WB</td>
             <td style={tdStyle}>{data.entering_rh || '0'} % RH</td>
@@ -86,24 +96,24 @@ export const getAuditSections = (data: any, unit: any) => {
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "7pt", fontWeight: "bold", textAlign: "center" }}>
         <thead>
           <tr style={{ backgroundColor: "#003366", color: "white" }}>
-             <th colSpan={3} style={thStyleWhite}>Cross-Section Area (m2)</th>
-             <th colSpan={3} style={thStyleWhite}>Air Velocity (m/s) - 15 Points Matrix</th>
+             <th colSpan={3} style={thStyleWhite}>{t("Unit ID", lang)} Area (m2)</th>
+             <th colSpan={3} style={thStyleWhite}>{t("Air Velocity", lang)} (m/s) - 15 Points Matrix</th>
           </tr>
           <tr style={{ backgroundColor: "#f1f5f9", color: "#003366" }}>
-             <th style={thStyle}>Supply</th><th style={thStyle}>Return</th><th style={thStyle}>Fresh Air</th>
-             <th style={thStyle}>Supply</th><th style={thStyle}>Return</th><th style={thStyle}>Fresh Air</th>
+             <th style={thStyle}>{t("Supply", lang)}</th><th style={thStyle}>{t("Return", lang)}</th><th style={thStyle}>{t("Fresh Air", lang)}</th>
+             <th style={thStyle}>{t("Supply", lang)}</th><th style={thStyle}>{t("Return", lang)}</th><th style={thStyle}>{t("Fresh Air", lang)}</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td style={tdStyle}>{t.supplyArea || 'N/A'}</td>
-            <td style={tdStyle}>{t.returnArea || 'N/A'}</td>
-            <td style={tdStyle}>{t.freshArea || 'N/A'}</td>
+            <td style={tdStyle}>{techData.supplyArea || 'N/A'}</td>
+            <td style={tdStyle}>{techData.returnArea || 'N/A'}</td>
+            <td style={tdStyle}>{techData.freshArea || 'N/A'}</td>
             
             <td style={{ ...tdStyle, textAlign: "left", verticalAlign: "top", padding: "1mm" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1px" }}>
                 {Array.from({length: 15}).map((_, i) => (
-                  <div key={i} style={{ borderBottom: "0.1pt solid #eee" }}>{i+1}. {t.supplyVelocity?.[i] || '0'}</div>
+                  <div key={i} style={{ borderBottom: "0.1pt solid #eee" }}>{i+1}. {techData.supplyVelocity?.[i] || '0'}</div>
                 ))}
               </div>
               <div style={{ marginTop: "1mm", color: "#00a1e4", borderTop: "1px solid #ddd", paddingTop: "0.5mm" }}>Avg: {avgSupply} m/s</div>
@@ -112,7 +122,7 @@ export const getAuditSections = (data: any, unit: any) => {
             <td style={{ ...tdStyle, textAlign: "left", verticalAlign: "top", padding: "1mm" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1px" }}>
                 {Array.from({length: 15}).map((_, i) => (
-                  <div key={i} style={{ borderBottom: "0.1pt solid #eee" }}>{i+1}. {t.returnVelocity?.[i] || '0'}</div>
+                  <div key={i} style={{ borderBottom: "0.1pt solid #eee" }}>{i+1}. {techData.returnVelocity?.[i] || '0'}</div>
                 ))}
               </div>
               <div style={{ marginTop: "1mm", color: "#00a1e4", borderTop: "1px solid #ddd", paddingTop: "0.5mm" }}>Avg: {avgReturn} m/s</div>
@@ -121,7 +131,7 @@ export const getAuditSections = (data: any, unit: any) => {
             <td style={{ ...tdStyle, textAlign: "left", verticalAlign: "top", padding: "1mm" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1px" }}>
                 {Array.from({length: 15}).map((_, i) => (
-                  <div key={i} style={{ borderBottom: "0.1pt solid #eee" }}>{i+1}. {t.freshVelocity?.[i] || '0'}</div>
+                  <div key={i} style={{ borderBottom: "0.1pt solid #eee" }}>{i+1}. {techData.freshVelocity?.[i] || '0'}</div>
                 ))}
               </div>
               <div style={{ marginTop: "1mm", color: "#00a1e4", borderTop: "1px solid #ddd", paddingTop: "0.5mm" }}>Avg: {avgFresh} m/s</div>
@@ -129,9 +139,9 @@ export const getAuditSections = (data: any, unit: any) => {
           </tr>
           <tr style={{ backgroundColor: "#f8fafc", fontWeight: "900" }}>
             <td colSpan={3} style={{ ...tdStyle, textAlign: "right", color: "#003366" }}>TOTAL CALCULATED AIR FLOW (Cfm)</td>
-            <td style={{ ...tdStyle, color: "#d946ef" }}>{t.totalCfmSupply || '0'}</td>
-            <td style={{ ...tdStyle, color: "#d946ef" }}>{t.totalCfmReturn || '0'}</td>
-            <td style={{ ...tdStyle, color: "#d946ef" }}>{t.totalCfmFresh || '0'}</td>
+            <td style={{ ...tdStyle, color: "#d946ef" }}>{techData.totalCfmSupply || '0'}</td>
+            <td style={{ ...tdStyle, color: "#d946ef" }}>{techData.totalCfmReturn || '0'}</td>
+            <td style={{ ...tdStyle, color: "#d946ef" }}>{techData.totalCfmFresh || '0'}</td>
           </tr>
         </tbody>
       </table>
@@ -140,7 +150,7 @@ export const getAuditSections = (data: any, unit: any) => {
     // SECTION C & D: WATER & ELECTRICAL
     <div key="waterside" style={{ display: "flex", gap: "4mm", marginBottom: "5mm" }}>
       <div style={{ flex: 1 }}>
-        <div style={sectionHeader}>C. WATER SIDE</div>
+        <div style={sectionHeader}>{t("C. WATER SIDE", lang)}</div>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "7pt", fontWeight: "bold" }}>
           <tbody>
             <tr>
@@ -165,7 +175,7 @@ export const getAuditSections = (data: any, unit: any) => {
         </table>
       </div>
       <div style={{ flex: 1 }}>
-        <div style={sectionHeader}>D. ELECTRICAL</div>
+        <div style={sectionHeader}>{t("D. ELECTRICAL", lang)}</div>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "7pt", fontWeight: "bold" }}>
           <tbody>
             <tr>
@@ -191,52 +201,89 @@ export const getAuditSections = (data: any, unit: any) => {
       </div>
     </div>,
 
+    // SECTION E: COMPONENT & ACCESSORIES
+    <div key="components" style={{ marginBottom: "5mm" }}>
+      <div style={sectionHeader}>{t("E. COMPONENT & ACCESSORIES CONDITION", lang)}</div>
+      
+      {/* Major Components Table */}
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "7.5pt", fontWeight: "bold", marginBottom: "3mm" }}>
+        <thead>
+          <tr style={{ backgroundColor: "#f1f5f9" }}>
+            <th style={{ ...tdStyle, width: "33.3%", textAlign: "center" }}>{t("Unit Fincoil", lang)}</th>
+            <th style={{ ...tdStyle, width: "33.3%", textAlign: "center" }}>{t("Unit Drain Pan", lang)}</th>
+            <th style={{ ...tdStyle, width: "33.3%", textAlign: "center" }}>{t("Unit Blower Fan", lang)}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style={{ ...tdStyle, textAlign: "center", color: techData.fincoil_cond === 'BAD' ? '#e11d48' : '#059669', fontSize: '9pt' }}>
+              {techData.fincoil_cond === 'BAD' ? '✖ BAD' : '✔ GOOD'}
+            </td>
+            <td style={{ ...tdStyle, textAlign: "center", color: techData.drain_pan_cond === 'BAD' ? '#e11d48' : '#059669', fontSize: '9pt' }}>
+              {techData.drain_pan_cond === 'BAD' ? '✖ BAD' : '✔ GOOD'}
+            </td>
+            <td style={{ ...tdStyle, textAlign: "center", color: techData.blower_fan_cond === 'BAD' ? '#e11d48' : '#059669', fontSize: '9pt' }}>
+              {techData.blower_fan_cond === 'BAD' ? '✖ BAD' : '✔ GOOD'}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      {/* Accessories Matrix */}
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "7pt", fontWeight: "bold" }}>
+        <thead>
+          <tr style={{ backgroundColor: "#f8fafc" }}>
+            <th style={{ ...tdStyle, width: "40%", textAlign: "left" }}>Accessories Description</th>
+            <th style={{ ...tdStyle, textAlign: "center" }}>Inlet Condition</th>
+            <th style={{ ...tdStyle, textAlign: "center" }}>Outlet Condition</th>
+          </tr>
+        </thead>
+        <tbody>
+          {["Gate/Butterfly Valve", "Flexible Joint", "Motorized Valve", "Balancing Valve", "Thermometer", "Pressure Gauge"].map((acc, i) => (
+            <tr key={i}>
+              <td style={tdStyle}>{i+1}. {acc}</td>
+              <td style={{ ...tdStyle, textAlign: "center", color: techData.inlet?.[i] === 'DEFECT' ? '#e11d48' : '#333' }}>{techData.inlet?.[i] || 'N/A'}</td>
+              <td style={{ ...tdStyle, textAlign: "center", color: techData.outlet?.[i] === 'DEFECT' ? '#e11d48' : '#333' }}>{techData.outlet?.[i] || 'N/A'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      
+      <p style={{ fontSize: "6pt", color: "#64748b", fontStyle: "italic", marginTop: "2mm" }}>
+        * Unit Health Score refers to balanced scoring based on CIBSE Guide M & ASHRAE 1.1 Standard.
+      </p>
+    </div>,
+
     // SIGNATURES
-    <div key="sign" style={{ display: "flex", gap: "4mm", marginTop: "4mm", marginBottom: "6mm" }}>
-       <div style={{ flex: 1, border: "0.5pt solid #ddd", padding: "3mm", display: "flex", flexDirection: "column" }}>
-          <p style={{ fontSize: "7pt", fontWeight: 900, textTransform: "uppercase", marginBottom: "2mm" }}>Prepared by Auditor,</p>
-          <div style={{ flex: 1, minHeight: "10mm" }}></div>
-          <div style={{ borderTop: "1pt solid #003366", paddingTop: "1mm", fontSize: "7pt", fontWeight: 700 }}>
-             <p style={{ margin: 0 }}>Name: {data.prepared_by || data.inspector_name || '-'}</p>
-             <p style={{ margin: 0 }}>Date: {new Date().toLocaleDateString('id-ID')}</p>
-          </div>
-       </div>
-       
-       <div style={{ flex: 1, position: "relative", border: "0.5pt solid #ddd", padding: "3mm", display: "flex", flexDirection: "column" }}>
-          {data.isApproved && (
-            <div style={{ position: "absolute", top: "-5mm", right: "5mm", zIndex: 10 }}>
-               <DigitalStamp />
-            </div>
-          )}
-          <p style={{ fontSize: "7pt", fontWeight: 900, textTransform: "uppercase", marginBottom: "2mm" }}>Witnessed by Customer,</p>
-          <div style={{ flex: 1, minHeight: "10mm", display: "flex", alignItems: "center", justifyContent: "center" }}>
-             {data.isApproved ? (
-                <p style={{ fontSize: "8pt", color: "#059669", fontWeight: 800, textTransform: "uppercase" }}>[ Digitally Approved ]</p>
-             ) : (
-                <p style={{ fontSize: "7pt", color: "#cbd5e1", fontStyle: "italic" }}>Waiting for Signature</p>
-             )}
-          </div>
-          <div style={{ borderTop: "1pt solid #003366", paddingTop: "1mm", fontSize: "7pt", fontWeight: 700 }}>
-             <p style={{ margin: 0 }}>Name: {data.witnessed_by || '-'}</p>
-             <p style={{ margin: 0 }}>Date: {data.approved_at ? new Date(data.approved_at).toLocaleDateString('id-ID') : '________________'}</p>
-          </div>
-       </div>
+    <div key="sign" style={{ marginTop: "10mm" }}>
+       <ReportSignatureFooter 
+         preparedBy={data.prepared_by || data.inspector_name}
+         reviewedBy={data.engineerSignerName}
+         witnessedBy={data.customerApproverName}
+         reviewedDate={data.reviewedAt}
+         witnessedDate={data.approvedAt}
+         lang={lang}
+       />
     </div>,
 
     // PHOTOS
-    ...(activity_photos && activity_photos.length > 0 ? [
-      <div key="photos" style={{ marginTop: "4mm" }}>
-        <div style={sectionHeader}>Audit Documentation Photos</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3mm" }}>
-          {activity_photos.map((p: any, i: number) => (
+    ...photoChunks.map((chunk, chunkIdx) => (
+      <div key={`photos-${chunkIdx}`} style={{ marginTop: "4mm" }}>
+        <div style={sectionHeader}>
+          {t("Audit Documentation Photos", lang)} {photoChunks.length > 1 ? `(Page ${chunkIdx + 1})` : ''}
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "repeat(3, 1fr)", gap: "3mm" }}>
+          {chunk.map((p: any, i: number) => (
             <div key={i} style={{ border: "1px solid #ddd", padding: "1.5mm", borderRadius: "1.5mm" }}>
-              <img src={p.photo_url} alt={`Audit ${i}`} style={{ width: "100%", height: "50mm", objectFit: "cover", borderRadius: "1mm" }} />
-              <p style={{ fontSize: "7pt", margin: "1mm 0 0 0", textAlign: "center", color: "#666", fontWeight: 700 }}>Photo {i+1}</p>
+              <img src={p.photo_url} alt={`Audit ${i}`} style={{ width: "100%", height: "55mm", objectFit: "cover", borderRadius: "1mm" }} />
+              <p style={{ fontSize: "7pt", margin: "1mm 0 0 0", textAlign: "center", color: "#666", fontWeight: 700 }}>
+                Photo {chunkIdx * 6 + i + 1}
+              </p>
             </div>
           ))}
         </div>
       </div>
-    ] : [])
+    ))
   ];
 };
 

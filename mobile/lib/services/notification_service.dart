@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '../main.dart';
+import '../features/schedule/screens/schedule_list_screen.dart';
+import '../features/reports/screens/complaint_list_screen.dart';
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
@@ -23,12 +26,25 @@ class NotificationService {
     await _localNotifications.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
-        // Handle notification tap logic
+        _handleDeepLink(response.payload);
       },
     );
   }
 
-  Future<void> showLocalNotification(int id, String title, String body) async {
+  void _handleDeepLink(String? payload) {
+    if (payload == null) return;
+    
+    final context = DaikinConnectApp.navigatorKey.currentContext;
+    if (context == null) return;
+
+    if (payload == 'native_schedules') {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const ScheduleListScreen()));
+    } else if (payload == 'native_tickets') {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const ComplaintListScreen()));
+    }
+  }
+
+  Future<void> showLocalNotification(int id, String title, String body, {String? payload}) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'daikin_connect_channel',
@@ -46,6 +62,7 @@ class NotificationService {
       title,
       body,
       platformChannelSpecifics,
+      payload: payload,
     );
   }
 }

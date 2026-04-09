@@ -3,8 +3,9 @@
 import { useMemo } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
-export default function TrendChart({ data }: { data: any[] }) {
-  // Sample styling and formatting inside the chart
+export default function TrendChart({ data, enabledForms = [] }: { data: any[], enabledForms?: string[] }) {
+  const isEnabled = (type: string) => enabledForms.map(f => f.toLowerCase()).includes(type.toLowerCase());
+
   return (
     <div className="w-full h-[400px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -20,6 +21,10 @@ export default function TrendChart({ data }: { data: any[] }) {
             <linearGradient id="colorPrev" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#00B06B" stopOpacity={0.8}/>
               <stop offset="95%" stopColor="#00B06B" stopOpacity={0}/>
+            </linearGradient>
+            <linearGradient id="colorCorr" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#EF4444" stopOpacity={0.8}/>
+              <stop offset="95%" stopColor="#EF4444" stopOpacity={0}/>
             </linearGradient>
             <linearGradient id="colorDaily" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8}/>
@@ -45,10 +50,18 @@ export default function TrendChart({ data }: { data: any[] }) {
             itemStyle={{ color: "#fff", fontSize: 12, fontWeight: 600 }}
             labelStyle={{ color: "#94a3b8", fontSize: 12, fontWeight: 800, marginBottom: "4px" }}
           />
-          <Area type="monotone" dataKey="audit" stroke="#00A0E9" strokeWidth={3} fillOpacity={1} fill="url(#colorAudit)" activeDot={{ r: 6 }} />
-          <Area type="monotone" dataKey="preventive" stroke="#00B06B" strokeWidth={3} fillOpacity={1} fill="url(#colorPrev)" activeDot={{ r: 6 }} />
-          <Area type="monotone" dataKey="corrective" stroke="#F39C12" strokeWidth={3} fillOpacity={1} fill="url(#colorCorr)" activeDot={{ r: 6 }} />
-          <Area type="monotone" dataKey="dailyLog" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorDaily)" activeDot={{ r: 6 }} />
+          {isEnabled("Audit") && (
+            <Area type="monotone" dataKey="audit" stroke="#00A0E9" strokeWidth={3} fillOpacity={1} fill="url(#colorAudit)" activeDot={{ r: 6 }} />
+          )}
+          {isEnabled("Preventive") && (
+            <Area type="monotone" dataKey="preventive" stroke="#00B06B" strokeWidth={3} fillOpacity={1} fill="url(#colorPrev)" activeDot={{ r: 6 }} />
+          )}
+          {isEnabled("Corrective") && (
+            <Area type="monotone" dataKey="corrective" stroke="#EF4444" strokeWidth={3} fillOpacity={1} fill="url(#colorCorr)" activeDot={{ r: 6 }} />
+          )}
+          {isEnabled("DailyLog") && (
+            <Area type="monotone" dataKey="dailyLog" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorDaily)" activeDot={{ r: 6 }} />
+          )}
         </AreaChart>
       </ResponsiveContainer>
     </div>

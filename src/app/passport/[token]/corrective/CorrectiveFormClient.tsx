@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import imageCompression from "browser-image-compression";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
-import { createCorrectiveActivity } from "@/app/actions/corrective";
+import { createCorrectiveActivity, updateCorrectiveActivity } from "@/app/actions/corrective";
 import { savePendingSubmission } from "@/lib/offline-db";
 import {
   ChevronRight, ChevronLeft, Camera, CheckCircle2,
@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function CorrectiveFormClient({ unit, lastPreventiveDate }: { unit: any, lastPreventiveDate?: string | null }) {
+export default function CorrectiveFormClient({ unit, lastPreventiveDate, initialData, onSuccess }: { unit: any, lastPreventiveDate?: string | null, initialData?: any, onSuccess?: () => void }) {
   const router = useRouter();
   const pdfRef = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState(1);
@@ -33,9 +33,12 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate }: { uni
     };
   }, []);
 
+  // Extract initial data if editing
+  const parsed = initialData?.technical_json ? (typeof initialData.technical_json === 'string' ? JSON.parse(initialData.technical_json) : initialData.technical_json) : null;
+
   // Step 1: Personnel & Schedule
-  const [personnel, setPersonnel] = useState({
-    name: "",
+  const [personnel, setPersonnel] = useState(parsed?.personnel || {
+    name: initialData?.inspector_name || "",
     position: "",
     email: "",
     wo_number: "",
@@ -45,7 +48,7 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate }: { uni
   });
 
   // Step 2: PIC Contact
-  const [pic, setPic] = useState({
+  const [pic, setPic] = useState(parsed?.pic || {
     name: "",
     phone: "",
     email: "",
@@ -53,21 +56,27 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate }: { uni
   });
 
   // Step 3: Analysis & Corrective Action
-  const [analysis, setAnalysis] = useState({
-    complain: "",
-    root_cause: "",
-    temp_action: "",
-    perm_action: "",
-    recommendation: "",
+  const [analysis, setAnalysis] = useState(parsed?.analysis || {
+    complain: initialData?.case_complain || "",
+    root_cause: initialData?.root_cause || "",
+    temp_action: initialData?.temp_action || "",
+    perm_action: initialData?.perm_action || "",
+    recommendation: initialData?.recommendation || "",
   });
 
   // Media (Photos & Videos)
-  const [mediaItems, setMediaItems] = useState<{file: File, type: "image" | "video", preview: string}[]>([]);
-  const [engineerNote, setEngineerNote] = useState("");
+  const [mediaItems, setMediaItems] = useState<{file: File | null, type: "image" | "video", preview: string}[]>(
+    initialData?.activity_photos?.map((p: any) => ({
+      file: null,
+      type: p.media_type || "image",
+      preview: p.photo_url
+    })) || []
+  );
+  const [engineerNote, setEngineerNote] = useState(parsed?.engineerNote || initialData?.engineer_note || "");
 
   // New fields for Summary Report
-  const [category, setCategory] = useState("");
-  const [currentStatus, setCurrentStatus] = useState("Problem");
+  const [category, setCategory] = useState(parsed?.category || "");
+  const [currentStatus, setCurrentStatus] = useState(parsed?.currentStatus || "Problem");
 
   const COMPLAINT_CATEGORIES = [
     "Kebocoran (Leakage)",
@@ -150,7 +159,7 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate }: { uni
             recommendation: analysis.recommendation,
             technical_json: JSON.stringify(renderData, (_, v) => typeof v === 'bigint' ? v.toString() : v),
           },
-          photos: mediaItems.map(m => m.file)
+          photos: mediaItems.map(m => m.file).filter((f): f is File => f !== null)
         });
         setIsQueued(true);
         setLoading(false);
@@ -177,9 +186,12 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate }: { uni
         // Measurement Layer (Invisible)
         const measureDiv = document.createElement("div");
         measureDiv.style.width = "794px"; // A4 Width
-        measureDiv.style.position = "absolute";
-        measureDiv.style.left = "-9999px";
-        measureDiv.style.visibility = "hidden";
+        measureDiv.style.position = "fixed";
+        measureDiv.style.top = "0";
+        measureDiv.style.left = "0";
+        measureDiv.style.zIndex = "-1000";
+        measureDiv.style.opacity = "0";
+        measureDiv.style.pointerEvents = "none";
         document.body.appendChild(measureDiv);
 
         const pages: any[][] = [[]];
@@ -225,9 +237,12 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate }: { uni
           const pageDiv = document.createElement("div");
           pageDiv.style.width = "210mm";
           pageDiv.style.height = "297mm";
-          pageDiv.style.position = "absolute";
-          pageDiv.style.top = "-9999px";
-          pageDiv.style.left = "-9999px";
+          pageDiv.style.position = "fixed";
+          pageDiv.style.top = "0";
+          pageDiv.style.left = "0";
+          pageDiv.style.zIndex = "-1000";
+          pageDiv.style.opacity = "0";
+          pageDiv.style.pointerEvents = "none";
           document.body.appendChild(pageDiv);
 
           const { createRoot } = await import("react-dom/client");
@@ -253,11 +268,13 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate }: { uni
             setTimeout(resolve, 200); // Wait for images
           });
 
+          const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
           const canvas = await html2canvas(pageDiv, { 
-            scale: 2, 
+            scale: isMobile ? 1.5 : 2, 
             useCORS: true, 
             windowWidth: 794,
-            height: 1123 // Force A4 height in pixels
+            height: 1123, // Force A4 height in pixels
+            logging: false
           });
 
           const imgData = canvas.toDataURL("image/jpeg", 1.0);
@@ -289,8 +306,12 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate }: { uni
         const baDiv = document.createElement("div");
         baDiv.style.width = "210mm";
         baDiv.style.height = "297mm";
-        baDiv.style.position = "absolute";
-        baDiv.style.top = "-9999px";
+        baDiv.style.position = "fixed";
+        baDiv.style.top = "0";
+        baDiv.style.left = "0";
+        baDiv.style.zIndex = "-1000";
+        baDiv.style.opacity = "0";
+        baDiv.style.pointerEvents = "none";
         document.body.appendChild(baDiv);
 
         const { createRoot: baRootInit } = await import("react-dom/client");
@@ -309,7 +330,14 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate }: { uni
           setTimeout(resolve, 300);
         });
 
-        const baCanvas = await html2canvas(baDiv, { scale: 2, useCORS: true, windowWidth: 794, height: 1123 });
+        const isMobileBA = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const baCanvas = await html2canvas(baDiv, { 
+          scale: isMobileBA ? 1.5 : 2, 
+          useCORS: true, 
+          windowWidth: 794, 
+          height: 1123,
+          logging: false
+        });
         const baImg = baCanvas.toDataURL("image/jpeg", 0.9);
         baPdf.addImage(baImg, 'JPEG', 0, 0, 210, 297);
         
@@ -331,14 +359,21 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate }: { uni
       // 2. Upload Media (Photos & Videos)
       const uploadedMedia: { photo_url: string; description: string; media_type: string }[] = [];
       for (const item of mediaItems) {
+        if (!item.file) {
+          uploadedMedia.push({
+            photo_url: item.preview,
+            media_type: item.type,
+            description: "Corrective Documentation"
+          });
+          continue;
+        }
+
         const mForm = new FormData();
         mForm.append("file", item.file);
-        mForm.append("folder", item.type === "video" ? "videos" : "photos");
+        mForm.append("folder", "corrective");
         
         const mRes = await fetch("/api/upload", { method: "POST", body: mForm });
-        if (!mRes.ok) {
-          throw new Error(`Media Upload failed: ${mRes.status}`);
-        }
+        if (!mRes.ok) throw new Error(`Media Upload failed: ${mRes.status}`);
         const mData = await mRes.json();
         if (mData.success) {
           uploadedMedia.push({ 
@@ -369,9 +404,16 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate }: { uni
         photos: uploadedMedia,
       };
 
-      const dbRes = await createCorrectiveActivity(dbPayload) as any;
+      const dbRes = initialData 
+        ? await updateCorrectiveActivity(initialData.id, dbPayload) as any
+        : await createCorrectiveActivity(dbPayload) as any;
+
       if (dbRes.success) {
-        setSuccess(true);
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          setSuccess(true);
+        }
       } else {
         alert("Database Error: " + dbRes.error);
       }

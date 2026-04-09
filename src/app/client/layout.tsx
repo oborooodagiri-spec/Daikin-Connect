@@ -55,26 +55,29 @@ export default async function ClientLayout({
 
           <Link 
             href="/client/inventory" 
-            className="flex items-center gap-4 px-6 py-4 rounded-2xl hover:bg-white/10 group transition-all duration-300 opacity-50 cursor-not-allowed"
+            className="flex items-center gap-4 px-6 py-4 rounded-2xl hover:bg-white/10 group transition-all duration-300"
           >
             <Package className="w-5 h-5 text-blue-300 group-hover:text-white" />
             <span className="text-sm font-bold tracking-wide">My Assets</span>
+            <ChevronRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-all" />
           </Link>
 
           <Link 
             href="/client/schedules" 
-            className="flex items-center gap-4 px-6 py-4 rounded-2xl hover:bg-white/10 group transition-all duration-300 opacity-50 cursor-not-allowed"
+            className="flex items-center gap-4 px-6 py-4 rounded-2xl hover:bg-white/10 group transition-all duration-300"
           >
             <Calendar className="w-5 h-5 text-blue-300 group-hover:text-white" />
             <span className="text-sm font-bold tracking-wide">Work Plan</span>
+            <ChevronRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-all" />
           </Link>
 
           <Link 
             href="/client/reports" 
-            className="flex items-center gap-4 px-6 py-4 rounded-2xl hover:bg-white/10 group transition-all duration-300 opacity-50 cursor-not-allowed"
+            className="flex items-center gap-4 px-6 py-4 rounded-2xl hover:bg-white/10 group transition-all duration-300"
           >
             <FileText className="w-5 h-5 text-blue-300 group-hover:text-white" />
             <span className="text-sm font-bold tracking-wide">Reports</span>
+            <ChevronRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-all" />
           </Link>
         </nav>
 

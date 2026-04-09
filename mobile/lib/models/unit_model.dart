@@ -7,7 +7,7 @@ class UnitModel {
   final String model;
   final String capacity;
   final String status;
-  final String area;
+  final String roomTenant; // Standardized terminology used in legacy code
   final String projectId;
 
   UnitModel({
@@ -19,7 +19,7 @@ class UnitModel {
     required this.model,
     required this.capacity,
     required this.status,
-    required this.area,
+    required this.roomTenant,
     required this.projectId,
   });
 
@@ -33,7 +33,7 @@ class UnitModel {
       model: json['model']?.toString() ?? '',
       capacity: json['capacity']?.toString() ?? '',
       status: json['status']?.toString() ?? 'Normal',
-      area: json['area']?.toString() ?? 'General',
+      roomTenant: json['room_tenant']?.toString() ?? (json['area']?.toString() ?? 'General Area'),
       projectId: json['project_ref_id']?.toString() ?? '',
     );
   }

@@ -1,10 +1,10 @@
 import { calculateUnitHealth, parseCapacityToKW } from "./physics/enthalpy";
+import { calculateBalancedAHI } from "./physics/ahi-calculation";
 
 export const getEfficiencyLabel = (score: number) => {
-  if (score >= 90) return { label: "Excellent", color: "text-emerald-500", bg: "bg-emerald-50" };
-  if (score >= 80) return { label: "Stable", color: "text-[#00a1e4]", bg: "bg-blue-50" };
-  if (score >= 60) return { label: "Moderate", color: "text-amber-500", bg: "bg-amber-50" };
-  return { label: "Critical", color: "text-rose-500", bg: "bg-rose-50" };
+  if (score >= 80) return { label: "Normal Condition", color: "text-emerald-500", bg: "bg-emerald-50" };
+  if (score >= 50) return { label: "Need Repair", color: "text-amber-500", bg: "bg-amber-50" };
+  return { label: "Need Replace", color: "text-rose-500", bg: "bg-rose-50" };
 };
 
 export const processReportData = (report: any) => {
@@ -23,16 +23,25 @@ export const processReportData = (report: any) => {
     console.error("JSON Parse Error in processReportData", e);
   }
 
+  // 1.5. Flatten Native Nested Payloads (Mechanical, Performance, Environment, Functionality)
+  // This ensures the web UI and PDF generator see flattened data
+  if (t.mechanical) t = { ...t, ...t.mechanical };
+  if (t.performance) t = { ...t, ...t.performance };
+  if (t.environment) t = { ...t, ...t.environment };
+  if (t.functionality) t = { ...t, ...t.functionality };
+
   // 2. Resolve Photos with Folder Fallbacks
   const rawPhotos = report.activity_photos || [];
   const photos = rawPhotos.map((p: any) => {
     let url = p.photo_url || "";
     if (url && !url.startsWith('http') && !url.startsWith('/')) {
       let folder = (report.type || "misc").toLowerCase();
-      if (p.media_type === "video") folder = "videos";
-      else if (folder === "audit") folder = "photos";
+      // Enforce standardized folders matching SyncManager & FormClients
+      if (folder === "audit") folder = "audit";
       else if (folder === "preventive") folder = "preventive";
       else if (folder === "corrective") folder = "corrective";
+      else if (p.media_type === "video") folder = "videos";
+      else folder = "photos";
       
       url = `/uploads/${folder}/${url}`;
     }
@@ -62,6 +71,25 @@ export const processReportData = (report: any) => {
     );
 
     performance.score = calculation.healthScore;
+    
+    // NEW: For Audit, if we have component states, use the balanced AHI
+    if (report.type === "Audit") {
+      const ahi = calculateBalancedAHI({
+        fincoil: t.fincoil_cond || (report.fincoil_cond as any) || 'GOOD',
+        drainPan: t.drain_pan_cond || (report.drain_pan_cond as any) || 'GOOD',
+        blowerFan: t.blower_fan_cond || (report.blower_fan_cond as any) || 'GOOD',
+        accessories: [...(t.inlet || []), ...(t.outlet || [])],
+        enteringDB: report.entering_db || t.entering_db || t.temp_inlet || 25,
+        leavingDB: report.leaving_db || t.leaving_db || t.temp_outlet || 15,
+        enteringRH: report.entering_rh || t.entering_rh || 50,
+        leavingRH: report.leaving_rh || t.leaving_rh || 50,
+        measuredAirflow: measuredFlow,
+        designCapacityStr: designCapStr,
+        yearOfInstall: report.units?.yoi || report.unit_age
+      });
+      performance.score = ahi.totalScore;
+    }
+
     const rating = getEfficiencyLabel(performance.score);
     performance.rating = rating.label;
     performance.color = rating.color;
@@ -157,16 +185,26 @@ export const processReportData = (report: any) => {
     const return_ = new Array(15).fill("");
     const fresh = new Array(15).fill("");
     vps.forEach((vp: any) => {
-      if (vp.point_number >= 1 && vp.point_number <= 15) supply[vp.point_number - 1] = vp.velocity_value;
-      if (vp.point_number >= 16 && vp.point_number <= 30) return_[vp.point_number - 16] = vp.velocity_value;
-      if (vp.point_number >= 31 && vp.point_number <= 45) fresh[vp.point_number - 31] = vp.velocity_value;
+      const val = vp.velocity_value ? parseFloat(vp.velocity_value.toString()) : "";
+      if (vp.point_number >= 1 && vp.point_number <= 15) supply[vp.point_number - 1] = val;
+      if (vp.point_number >= 16 && vp.point_number <= 30) return_[vp.point_number - 16] = val;
+      if (vp.point_number >= 31 && vp.point_number <= 45) fresh[vp.point_number - 31] = val;
     });
 
     return { 
       ...report, 
       ...t, 
       performance,
-      t: { ...t, supplyVelocity: supply, returnVelocity: return_, freshVelocity: fresh }, 
+      t: { 
+        ...t, 
+        supplyVelocity: supply, 
+        returnVelocity: return_, 
+        freshVelocity: fresh,
+        // Ensure CFMs are recalculatable or carried over
+        totalCfmSupply: t.totalCfmSupply || "-",
+        totalCfmReturn: t.totalCfmReturn || "-",
+        totalCfmFresh: t.totalCfmFresh || "-"
+      }, 
       activity_photos: photos,
       reportCode: report.reference_id || `REPORT-${report.id}`,
       reportTitle: "AUDIT TECHNICAL REPORT"

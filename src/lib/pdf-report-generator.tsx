@@ -172,9 +172,12 @@ export async function generateComprehensivePDF(data: any, startDate: string, end
     const pageDiv = document.createElement("div");
     pageDiv.style.width = "210mm";
     pageDiv.style.height = "297mm";
-    pageDiv.style.position = "absolute";
-    pageDiv.style.top = "-9999px";
-    pageDiv.style.left = "-9999px";
+    pageDiv.style.position = "fixed";
+    pageDiv.style.top = "0";
+    pageDiv.style.left = "0";
+    pageDiv.style.zIndex = "-1000";
+    pageDiv.style.opacity = "0";
+    pageDiv.style.pointerEvents = "none";
     document.body.appendChild(pageDiv);
 
     const root = createRoot(pageDiv);
@@ -194,11 +197,14 @@ export async function generateComprehensivePDF(data: any, startDate: string, end
       setTimeout(resolve, 500); // Give time for charts/images
     });
 
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
     const canvas = await html2canvas(pageDiv, { 
-      scale: 2, 
+      scale: isMobile ? 1.5 : 2, 
       useCORS: true, 
       windowWidth: 794,
-      height: 1123 
+      height: 1123,
+      logging: false
     });
 
     const imgData = canvas.toDataURL("image/jpeg", 1.0);

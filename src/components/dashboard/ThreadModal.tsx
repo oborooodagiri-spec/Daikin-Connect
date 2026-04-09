@@ -222,7 +222,7 @@ function MessageBubble({ msg, isOwn }: { msg: Message; isOwn: boolean }) {
           <div className="flex-1">
              <p className="text-[10px] font-black uppercase tracking-widest text-[#00a1e4] mb-1">{msg.systemType || "SYSTEM LOG"}</p>
              <div className="text-xs font-bold text-slate-500 whitespace-pre-wrap leading-relaxed">{msg.message}</div>
-             <p className="text-[8px] font-bold text-slate-300 mt-2 uppercase tracking-tight">{new Date(msg.createdAt).toLocaleString('en-GB')}</p>
+             <p className="text-[8px] font-bold text-slate-300 mt-2 uppercase tracking-tight">{new Date(msg.createdAt).toLocaleString('en-GB', { hour12: false })}</p>
           </div>
         </div>
       </div>
@@ -257,7 +257,7 @@ function MessageBubble({ msg, isOwn }: { msg: Message; isOwn: boolean }) {
           )}
 
           <p className={`text-[8px] font-bold mt-2 uppercase tracking-tight ${isOwn ? 'text-white/40' : 'text-slate-300'}`}>
-            {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
           </p>
         </div>
       </div>

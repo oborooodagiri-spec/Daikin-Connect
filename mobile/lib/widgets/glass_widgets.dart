@@ -38,12 +38,27 @@ class GlassCard extends StatelessWidget {
           child: Container(
             padding: padding,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(opacity),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white.withOpacity(opacity + 0.05),
+                  Colors.white.withOpacity(opacity),
+                  Colors.white.withOpacity(opacity - 0.02),
+                ],
+              ),
               borderRadius: BorderRadius.circular(borderRadius),
               border: Border.all(
-                color: borderColor ?? Colors.white.withOpacity(0.1),
-                width: 1.5,
+                color: borderColor ?? Colors.white.withOpacity(0.12),
+                width: 1.2,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
             ),
             child: child,
           ),
@@ -54,14 +69,14 @@ class GlassCard extends StatelessWidget {
 }
 
 class GlassButton extends StatelessWidget {
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final Widget child;
   final Color? color;
   final double borderRadius;
 
   const GlassButton({
     super.key,
-    required this.onPressed,
+    this.onPressed,
     required this.child,
     this.color,
     this.borderRadius = 16.0,
@@ -77,7 +92,8 @@ class GlassButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         opacity: 0.12,
         blur: 10,
-        child: child,
+        borderColor: color?.withOpacity(0.3),
+        child: Center(child: child),
       ),
     );
   }

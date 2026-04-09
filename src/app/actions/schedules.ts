@@ -145,8 +145,12 @@ export async function createSchedule(data: any) {
     
     return { success: true, id: newSchedule.id.toString() };
   } catch (error: any) {
-    console.error("Create schedule error:", error);
-    return { error: "Failed to create schedule" };
+    console.error("[SCHEDULE_ACTION] Create error:", {
+        message: error.message,
+        stack: error.stack,
+        projectId: data.project_id
+    });
+    return { error: `Failed to create schedule: ${error.message}` };
   }
 }
 
@@ -272,8 +276,9 @@ export async function getScheduleFormOptions() {
         users: users.map(u => ({ id: u.id, name: u.name, role_id: u.role_id }))
       }
     };
-  } catch (error) {
-    return { error: "Failed to fetch form options" };
+  } catch (error: any) {
+    console.error("[SCHEDULE_ACTION] Form Options error:", error.message);
+    return { error: "Failed to fetch form options: Check console for memory/limit errors." };
   }
 }
 

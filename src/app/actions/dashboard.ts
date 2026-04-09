@@ -267,7 +267,7 @@ export async function getDashboardData(filters: { customerId?: string; projectId
         return clean.replace(/\s+/g, '');
       }).filter(Boolean);
 
-    return {
+    return serializePrisma({
       audit: { actual: auditActual, target: auditTarget },
       preventive: { actual: pmActual, target: pmTargetMetrics },
       corrective: { 
@@ -282,7 +282,7 @@ export async function getDashboardData(filters: { customerId?: string; projectId
       activeSites: activeProjects,
       totalCustomers: totalCustomers,
       enabled_forms: formsArray.join(",")
-    };
+    });
   } catch (error) {
     console.error("Dashboard Stats Error:", error);
     return emptyStats();
@@ -452,13 +452,13 @@ export async function getDetailedUnitStatus(filters: { customerId?: string; proj
       (prisma.units as any).findMany({
         where: { ...unitWhere, status: { in: ["Problem", "Critical", "Warning"] } },
         take: 5,
-        orderBy: { created_at: "desc" },
+        orderBy: { created_at: "asc" }, // Oldest first (Request aging)
         select: { id: true, tag_number: true, area: true, model: true, room_tenant: true, status: true, created_at: true, project_ref_id: true, qr_code_token: true, projects: { select: { name: true } } }
       }),
       (prisma.units as any).findMany({
         where: { ...unitWhere, status: { in: ["On_Progress", "Pending"] } },
         take: 5,
-        orderBy: { created_at: "desc" },
+        orderBy: { created_at: "desc" }, // Newest first for on-progress
         select: { id: true, tag_number: true, area: true, model: true, room_tenant: true, status: true, created_at: true, project_ref_id: true, qr_code_token: true, projects: { select: { name: true } } }
       })
     ]);

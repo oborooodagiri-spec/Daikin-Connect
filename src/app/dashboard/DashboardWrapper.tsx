@@ -247,8 +247,11 @@ export default function DashboardWrapper() {
             <div className="space-y-1 overflow-hidden w-full">
               <div className="flex flex-wrap items-center gap-2 mb-2">
                 <span className="px-3 py-1 bg-[#00a1e4]/10 text-[#00a1e4] text-[10px] font-black uppercase tracking-widest rounded-full">REALTIME {APP_VERSION}</span>
-                <span className={`px-3 py-1 ${isOnline ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"} text-[10px] font-black uppercase tracking-widest rounded-full flex items-center gap-1 transition-colors duration-500`}>
-                  <Zap size={10} className={`${isOnline ? "fill-orange-400 text-orange-400" : "fill-rose-400 text-rose-400"} transition-colors shadow-lg`} /> 
+                <span className={`px-3 py-1 ${isOnline ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-rose-50 text-rose-600 border border-rose-100"} text-[10px] font-black uppercase tracking-widest rounded-full flex items-center gap-2 transition-colors duration-500`}>
+                  <div className="relative flex items-center justify-center">
+                    <div className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-emerald-500" : "bg-rose-500"}`} />
+                    {isOnline && <div className="absolute w-full h-full rounded-full bg-emerald-400 animate-ping opacity-75" />}
+                  </div>
                   {isOnline ? "LIVE CONNECTED" : "OFFLINE MODE"}
                 </span>
               </div>
@@ -305,15 +308,27 @@ export default function DashboardWrapper() {
                 <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Monthly service activity</p>
                </div>
                <div className="flex flex-wrap gap-4 text-[9px] font-black tracking-widest text-slate-400 uppercase bg-slate-50 px-4 py-2.5 rounded-2xl border border-slate-100">
-                  <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#00A0E9]"></div> AUDIT</span>
-                  <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#00B06B]"></div> PREVENTIVE</span>
-                  <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#EF4444]"></div> CORRECTIVE</span>
-                  <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#6366f1]"></div> DAILY LOG</span>
+                  {summaryData.enabled_forms.split(",").map((form: string) => {
+                    const type = form.trim().toLowerCase();
+                    const config: any = {
+                      audit: { label: "AUDIT", color: "bg-[#00A0E9]" },
+                      preventive: { label: "PREVENTIVE", color: "bg-[#00B06B]" },
+                      corrective: { label: "CORRECTIVE", color: "bg-[#EF4444]" },
+                      dailylog: { label: "DAILY LOG", color: "bg-[#6366f1]" }
+                    };
+                    const item = config[type];
+                    if (!item) return null;
+                    return (
+                      <span key={type} className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${item.color}`}></div> {item.label}
+                      </span>
+                    );
+                  })}
                </div>
             </div>
 
             <div className={`transition-all duration-700 min-h-[300px] ${isPending ? "scale-[0.98] blur-sm grayscale opacity-30" : "scale-100 blur-0 grayscale-0 opacity-100"}`}>
-              <TrendChart data={chartData} />
+              <TrendChart data={chartData} enabledForms={summaryData.enabled_forms.split(",")} />
             </div>
           </div>
 
@@ -447,9 +462,13 @@ function StatusList({ title, sub, items, color, icon, onItemClick }: any) {
               <div className="flex items-center gap-3">
                  <div className={`w-2 h-2 rounded-full ${color === 'rose' ? 'bg-rose-500' : 'bg-amber-500'}`}></div>
                  <div>
-                  <p className={`text-sm font-black ${color === 'rose' ? 'text-rose-900 font-black' : 'text-amber-900 font-black'} tracking-tight`}>{u.tag_number}</p>
-                  <p className="text-[10px] font-bold text-slate-500">{u.room_tenant || u.area || "Unknown"}{u.room_tenant && u.area ? ` · ${u.area}` : ''}</p>
-                  <p className="text-[9px] font-bold text-slate-400 uppercase">{u.model || u.projects?.name || ""}</p>
+                  <p className={`text-sm font-black ${color === 'rose' ? 'text-rose-900' : 'text-amber-900'} tracking-tight leading-none mb-1 group-hover/card:text-[#00a1e4] transition-colors`}>
+                    {u.room_tenant || u.area || "Unknown Room"}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${color === 'rose' ? 'text-rose-500/70' : 'text-amber-500/70'}`}>{u.tag_number || "NO-TAG"}</span>
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">{u.model || u.projects?.name || ""}</span>
+                  </div>
                 </div>
               </div>
               <ArrowRight size={14} className="text-slate-300 group-hover/card:translate-x-1 group-hover/card:text-slate-500 transition-all" />
@@ -495,7 +514,7 @@ function ComplaintWidget({ items, onItemClick }: any) {
                        <Clock size={8} /> PROCESSING
                      </span>
                    ) : (
-                     <span className="text-[8px] font-bold text-slate-400">{new Date(c.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                     <span className="text-[8px] font-bold text-slate-400">{new Date(c.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false})}</span>
                    )}
                 </div>
                 {(c.unit_room || c.unit_area) && (

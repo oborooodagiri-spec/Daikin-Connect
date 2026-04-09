@@ -1,58 +1,68 @@
-import React from "react";
-import { DigitalStamp } from "./DigitalStamp";
+import { ReportSignatureFooter } from "./ReportSignatureFooter";
+import { t, Language } from "@/lib/i18n";
 
 export const getCorrectiveSections = (data: any, unit: any) => {
+  const lang = data.lang as Language || 'id';
   const { personnel, pic, analysis, engineerNote, activity_photos } = data || {};
+  
+  const chunkArray = (arr: any[], size: number) => {
+    if (!arr) return [];
+    return Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+      arr.slice(i * size, i * size + size)
+    );
+  };
+
+  const photoChunks = chunkArray(activity_photos, 6);
 
   return [
     // SECTION 01: GENERAL INFO
     <div key="s1" style={{ marginBottom: "4mm" }}>
-       <div style={sectionHeader}>01 - UNIT & PERSONNEL INFORMATION</div>
+       <div style={sectionHeader}>01 - {t("A. GENERAL DATA", lang).replace("A. ", "")}</div>
        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "8pt", fontWeight: "bold" }}>
-         <tbody>
-           <tr>
-             <td style={cellLabel}>Room / Tenant</td>
-             <td style={cellVal}>{unit?.room_tenant || "-"}</td>
-             <td style={cellLabel}>Service Date</td>
-             <td style={cellVal}>{personnel?.service_date ? new Date(personnel.service_date).toLocaleDateString('id-ID') : "-"}</td>
-           </tr>
-           <tr>
-             <td style={cellLabel}>Unit Model</td>
-             <td style={cellVal}>{unit?.model || "-"}</td>
-             <td style={cellLabel}>SO / WO Number</td>
-             <td style={cellVal}>{personnel?.wo_number || "-"}</td>
-           </tr>
-           <tr>
-             <td style={cellLabel}>Unit Tag Number</td>
-             <td style={cellVal}>{unit?.tag_number || "-"}</td>
-             <td style={cellLabel}>Location Area</td>
-             <td style={cellVal}>{unit?.area || "-"}</td>
-           </tr>
-           <tr>
-             <td style={cellLabel}>Technician / Engineer</td>
-             <td style={cellVal}>{personnel?.name || "-"}</td>
-             <td style={cellLabel}>Visit Count</td>
-             <td style={cellVal}>{personnel?.visit || "1"}</td>
-           </tr>
-           <tr>
-             <td style={cellLabel}>Service Time</td>
-             <td style={cellVal}>{personnel?.service_time || "-"} WIB</td>
-             <td style={cellLabel}>Last PM Date</td>
-             <td style={cellVal}>{data.lastPreventiveDate ? new Date(data.lastPreventiveDate).toLocaleDateString("id-ID") : "N/A"}</td>
-           </tr>
-         </tbody>
-       </table>
+          <tbody>
+            <tr>
+              <td style={cellLabel}>{t("Room / Tenant", lang)}</td>
+              <td style={cellVal}>{unit?.room_tenant || "-"}</td>
+              <td style={cellLabel}>{t("Service Date", lang)}</td>
+              <td style={cellVal}>{personnel?.service_date ? new Date(personnel.service_date).toLocaleDateString(lang === 'ja' ? 'ja-JP' : lang === 'en' ? 'en-US' : 'id-ID') : "-"}</td>
+            </tr>
+            <tr>
+              <td style={cellLabel}>{t("Model Number", lang)}</td>
+              <td style={cellVal}>{unit?.model || "-"}</td>
+              <td style={cellLabel}>{t("SO / WO Number", lang)}</td>
+              <td style={cellVal}>{personnel?.wo_number || "-"}</td>
+            </tr>
+            <tr>
+              <td style={cellLabel}>{t("Unit Tag Number", lang)}</td>
+              <td style={cellVal}>{unit?.tag_number || "-"}</td>
+              <td style={cellLabel}>{t("Location", lang)}</td>
+              <td style={cellVal}>{unit?.area || "-"}</td>
+            </tr>
+            <tr>
+              <td style={cellLabel}>{t("Service Team", lang)}</td>
+              <td style={cellVal}>{personnel?.name || "-"}</td>
+              <td style={cellLabel}>{t("Visit Number", lang)}</td>
+              <td style={cellVal}>{personnel?.visit || "1"}</td>
+            </tr>
+            <tr>
+              <td style={cellLabel}>{t("Service Time", lang)}</td>
+              <td style={cellVal}>{personnel?.service_time || "-"} {lang === 'id' ? 'WIB' : ''}</td>
+              <td style={cellLabel}>Last PM Date</td>
+              <td style={cellVal}>{data.lastPreventiveDate ? new Date(data.lastPreventiveDate).toLocaleDateString(lang === 'ja' ? 'ja-JP' : lang === 'en' ? 'en-US' : 'id-ID') : "N/A"}</td>
+            </tr>
+          </tbody>
+        </table>
     </div>,
 
     // SECTION 02: PIC CONTACT
     <div key="s2" style={{ marginBottom: "4mm" }}>
-      <div style={sectionHeader}>02 - CUSTOMER REPRESENTATIVE (PIC)</div>
+      <div style={sectionHeader}>02 - {lang === 'id' ? 'KONTAK PIC CUSTOMER' : lang === 'ja' ? '顧客担当者 (PIC)' : 'CUSTOMER PIC CONTACT'}</div>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "8pt", fontWeight: "bold" }}>
         <tbody>
           <tr>
-            <td style={cellLabel}>PIC Name</td>
+            <td style={cellLabel}>{t("WITNESSED BY", lang)} (PIC)</td>
             <td style={cellVal}>{pic?.name || "-"}</td>
-            <td style={cellLabel}>Department</td>
+            <td style={cellLabel}>{t("Department", lang)}</td>
             <td style={cellVal}>{pic?.department || "-"}</td>
           </tr>
           <tr>
@@ -67,85 +77,60 @@ export const getCorrectiveSections = (data: any, unit: any) => {
 
     // SECTION 03: ANALYSIS & ACTIONS
     <div key="s3" style={{ marginBottom: "4mm" }}>
-      <div style={sectionHeader}>03 - ANALYSIS & CORRECTIVE ACTION</div>
+      <div style={sectionHeader}>03 - {t("Technical Advice & Summary", lang)}</div>
       <div style={{ display: "flex", flexDirection: "column", gap: "1.5mm" }}>
-        <AnalysisBlock label="CASE / COMPLAINT" value={analysis?.complain} color="#dc2626" />
-        <AnalysisBlock label="ROOT CAUSE ANALYSIS" value={analysis?.root_cause} color="#d97706" />
+        <AnalysisBlock label={lang === 'ja' ? '申告 / 依頼事項' : 'CASE / COMPLAINT'} value={analysis?.complain} color="#dc2626" />
+        <AnalysisBlock label={lang === 'ja' ? '原因分析' : 'ROOT CAUSE ANALYSIS'} value={analysis?.root_cause} color="#d97706" />
         <div style={{ display: "flex", gap: "2mm" }}>
-          <AnalysisBlock label="TEMPORARY ACTION" value={analysis?.temp_action} color="#2563eb" flex={1} />
-          <AnalysisBlock label="PERMANENT ACTION" value={analysis?.perm_action} color="#059669" flex={1} />
+          <AnalysisBlock label={lang === 'ja' ? '応急処置' : 'TEMPORARY ACTION'} value={analysis?.temp_action} color="#2563eb" flex={1} />
+          <AnalysisBlock label={lang === 'ja' ? '恒久処置' : 'PERMANENT ACTION'} value={analysis?.perm_action} color="#059669" flex={1} />
         </div>
-        <AnalysisBlock label="RECOMMENDATION" value={analysis?.recommendation} color="#7c3aed" />
+        <AnalysisBlock label={lang === 'ja' ? '提言 / 推奨事項' : 'RECOMMENDATION'} value={analysis?.recommendation} color="#7c3aed" />
       </div>
     </div>,
 
     // SECTION 04: ENGINEER NOTES
     <div key="s4" style={{ marginBottom: "4mm" }}>
-      <div style={sectionHeader}>04 - ADDITIONAL ENGINEER NOTES</div>
+      <div style={sectionHeader}>04 - {t("Technical Advice & Summary", lang)}</div>
       <div style={{ border: "1px solid #ddd", padding: "2mm", fontSize: "8pt", fontWeight: 500, whiteSpace: "pre-wrap", color: "#444" }}>
         {engineerNote || "-"}
       </div>
     </div>,
 
-    // SIGNATURE SECTION - NO BREAK
-    <div key="sign" style={{ display: "flex", gap: "4mm", marginTop: "2mm", marginBottom: "6mm" }}>
-      <div style={signBox}>
-        <p style={signTitle}>Service Engineer</p>
-        <div style={{ flex: 1, minHeight: "10mm" }}></div>
-        <div style={signDetail}>
-          <p style={{ margin: "0.5mm 0" }}>Name: {personnel?.name || "-"}</p>
-          <p style={{ margin: "0.5mm 0" }}>Date: {personnel?.service_date ? new Date(personnel.service_date).toLocaleDateString("id-ID") : "-"}</p>
-        </div>
-      </div>
-      <div style={{ ...signBox, position: "relative" }}>
-         {data.isApproved && (
-           <div style={{ position: "absolute", top: "-4mm", right: "2mm", zIndex: 10 }}>
-              <DigitalStamp />
-           </div>
-         )}
-        <p style={signTitle}>Acknowledged by (PIC)</p>
-        <div style={{ flex: 1, minHeight: "10mm", display: "flex", alignItems: "center", justifyContent: "center" }}>
-           {data.isApproved ? (
-              <p style={{ fontSize: "8pt", color: "#059669", fontWeight: 800, textTransform: "uppercase" }}>[ Digitally Approved ]</p>
-           ) : (
-              <p style={{ fontSize: "7pt", color: "#cbd5e1", fontStyle: "italic" }}>Waiting for Signature</p>
-           )}
-        </div>
-        <div style={signDetail}>
-          <p style={{ margin: "0.5mm 0" }}>Name: {data.customerApproverName || pic?.name || "-"}</p>
-          <p style={{ margin: "0.5mm 0" }}>Date: {data.approvedAt ? new Date(data.approvedAt).toLocaleDateString("id-ID") : "________________"}</p>
-        </div>
-      </div>
-      <div style={signBox}>
-        <p style={signTitle}>Approved by (Manager)</p>
-        <div style={{ flex: 1, minHeight: "10mm" }}></div>
-        <div style={signDetail}>
-          <p style={{ margin: "0.5mm 0" }}>Name: ________________</p>
-          <p style={{ margin: "0.5mm 0" }}>Date: ________________</p>
-        </div>
-      </div>
+    // SIGNATURE SECTION
+    <div key="sign" style={{ marginTop: "10mm" }}>
+       <ReportSignatureFooter 
+         preparedBy={personnel?.name}
+         reviewedBy={data.engineerSignerName}
+         witnessedBy={data.customerApproverName || pic?.name}
+         reviewedDate={data.reviewedAt}
+         witnessedDate={data.approvedAt}
+         lang={lang}
+       />
     </div>,
 
     // PHOTOS SECTION
-    ...(activity_photos && activity_photos.length > 0 ? [
-      <div key="photos" style={{ marginTop: "4mm" }}>
-        <div style={sectionHeader}>05 - DOCUMENTATION PHOTOS</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3mm" }}>
-          {activity_photos.map((p: any, i: number) => (
-            <div key={i} style={{ border: "1px solid #ddd", padding: "1.5mm", borderRadius: "1.5mm" }}>
+    ...photoChunks.map((chunk, chunkIdx) => (
+      <div key={`photos-${chunkIdx}`} style={{ width: "100%" }}>
+        <div style={sectionHeader}>
+          {t("Maintenance Documentation Photos", lang)} {photoChunks.length > 1 ? `(Page ${chunkIdx + 1})` : ''}
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5mm" }}>
+          {chunk.map((p: any, i: number) => (
+            <div key={i} style={{ border: "1px solid #ddd", padding: "0.8mm", borderRadius: "1mm" }}>
               <img 
                 src={p.photo_url} 
                 alt={`Photo ${i}`} 
-                style={{ width: "100%", height: "55mm", objectFit: "cover", borderRadius: "1mm" }} 
+                style={{ width: "100%", height: "48mm", objectFit: "cover", borderRadius: "0.5mm" }} 
               />
-              <p style={{ fontSize: "7pt", margin: "1.5mm 0 0 0", textAlign: "center", color: "#666", fontWeight: 700 }}>
-                Photo {i+1}: {p.description || 'Corrective Documentation'}
+              <p style={{ fontSize: "7pt", margin: "0.5mm 0 0 0", textAlign: "center", color: "#666", fontWeight: 700 }}>
+                Photo {chunkIdx * 6 + i + 1}
               </p>
             </div>
           ))}
         </div>
       </div>
-    ] : [])
+    ))
   ];
 };
 

@@ -4,6 +4,12 @@ import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/chat_provider.dart';
 import 'providers/schedule_provider.dart';
+import 'providers/dashboard_provider.dart';
+import 'providers/customer_provider.dart';
+import 'providers/project_provider.dart';
+import 'providers/unit_provider.dart';
+import 'providers/user_provider.dart';
+import 'providers/complaint_provider.dart';
 import 'providers/version_provider.dart';
 import 'services/sync_service.dart';
 import 'services/notification_service.dart';
@@ -14,10 +20,11 @@ import 'widgets/version_guard_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  // Initialize Sync Service (Hive, etc.)
+  final syncService = SyncService();
+  await syncService.init();
+
   try {
-    // Initialize SyncService (handles Hive)
-    await SyncService().init().timeout(const Duration(seconds: 10));
-    
     // Optional services (errors shouldn't crash startup)
     try {
       await NotificationService().init().timeout(const Duration(seconds: 5));
@@ -36,6 +43,12 @@ void main() async {
         ChangeNotifierProvider(create: (context) => AuthProvider()..checkAuthStatus()),
         ChangeNotifierProvider(create: (context) => ChatProvider()),
         ChangeNotifierProvider(create: (context) => ScheduleProvider()),
+        ChangeNotifierProvider(create: (context) => DashboardProvider()),
+        ChangeNotifierProvider(create: (context) => CustomerProvider()),
+        ChangeNotifierProvider(create: (context) => ProjectProvider()),
+        ChangeNotifierProvider(create: (context) => UnitProvider()),
+        ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => ComplaintProvider()),
       ],
       child: const DaikinConnectApp(),
     ),
@@ -43,6 +56,7 @@ void main() async {
 }
 
 class DaikinConnectApp extends StatefulWidget {
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   const DaikinConnectApp({super.key});
 
   @override
@@ -54,6 +68,7 @@ class _DaikinConnectAppState extends State<DaikinConnectApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Daikin Connect',
+      navigatorKey: DaikinConnectApp.navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,

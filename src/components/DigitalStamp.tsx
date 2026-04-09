@@ -1,6 +1,18 @@
 import React from "react";
 
-export const DigitalStamp = () => {
+interface DigitalStampProps {
+  label?: string;
+  subLabel?: string;
+  name?: string;
+  date?: string | Date;
+}
+
+export const DigitalStamp = ({ 
+  label = "VERIFIED", 
+  subLabel = "EPL CONNECT",
+  name,
+  date 
+}: DigitalStampProps) => {
   return (
     <div style={{
       width: "35mm",
@@ -33,13 +45,13 @@ export const DigitalStamp = () => {
         textAlign: "center"
       }}>
         <p style={{ 
-          fontSize: "6pt", 
+          fontSize: "5pt", 
           fontWeight: 900, 
           color: "#003366", 
           textTransform: "uppercase", 
           margin: 0,
           lineHeight: 1
-        }}>EPL CONNECT</p>
+        }}>{subLabel}</p>
         
         <div style={{ 
           width: "90%", 
@@ -59,7 +71,7 @@ export const DigitalStamp = () => {
           border: "1px solid #003366",
           borderRadius: "1mm",
           boxShadow: "1px 1px 0 rgba(0,0,0,0.1)"
-        }}>VERIFIED</p>
+        }}>{label}</p>
 
         <div style={{ 
           width: "90%", 
@@ -73,14 +85,19 @@ export const DigitalStamp = () => {
           fontWeight: 700, 
           color: "#003366", 
           textTransform: "uppercase", 
-          margin: 0 
-        }}>DIGITAL RECORD</p>
+          margin: "0.5mm 0 0 0",
+          maxWidth: "25mm",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap"
+        }}>{name || "DIGITAL RECORD"}</p>
+        
         <p style={{ 
           fontSize: "4pt", 
           fontWeight: 500, 
           color: "#003366", 
           margin: 0 
-        }}>{new Date().getFullYear()}</p>
+        }}>{date ? (typeof date === 'string' ? date : date.toLocaleDateString()) : new Date().getFullYear()}</p>
       </div>
       
       {/* Texture Overlays for "Stamp" effect */}

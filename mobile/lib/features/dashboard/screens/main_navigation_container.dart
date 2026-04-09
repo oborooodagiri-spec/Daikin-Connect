@@ -3,7 +3,7 @@ import 'dashboard_home.dart';
 import '../../units/screens/unit_registry_screen.dart';
 import '../../units/screens/unit_scanner_screen.dart';
 import '../../reports/screens/reports_list_screen.dart';
-import 'web_dashboard_screen.dart';
+import 'analytics_screen.dart';
 
 class MainNavigationContainer extends StatefulWidget {
   const MainNavigationContainer({super.key});
@@ -20,7 +20,7 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
     const DashboardHome(),
     const UnitRegistryScreen(), 
     const ReportsListScreen(),
-    const WebDashboardScreen(), // Master Dashboard
+    const AnalyticsScreen(), // Master Dashboard / Analytics
   ];
 
   void _onItemTapped(int index) {
@@ -84,7 +84,7 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
             BottomNavigationBarItem(
               icon: Icon(Icons.analytics_outlined),
               activeIcon: Icon(Icons.analytics, shadows: [Shadow(color: Color(0xFF00A1E4), blurRadius: 10)]),
-              label: 'MASTER',
+              label: 'ANALYTICS',
             ),
           ],
         ),

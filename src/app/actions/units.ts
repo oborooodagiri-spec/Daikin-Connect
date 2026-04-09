@@ -51,7 +51,15 @@ export async function getUnitsByProject(projectId: string) {
       include: {
         activities: {
           orderBy: { created_at: 'desc' },
-          take: 5 
+          take: 3
+        },
+        service_activities: {
+          where: { 
+            type: { in: ['Audit', 'Preventive'] },
+            deleted_at: null
+          },
+          orderBy: { service_date: 'desc' },
+          take: 5
         }
       }
     });
@@ -59,15 +67,23 @@ export async function getUnitsByProject(projectId: string) {
     return serializePrisma({
       success: true,
       data: units.map((u: any) => {
-        // Find the last corrective & problem logic
+        // PRIORITY: Find Latest Audit from modern service_activities, fallback to activities
+        const latestAudit = u.service_activities?.[0] || u.activities.find((a: any) => a.type === "Audit");
         const latestCorrective = u.activities.find((a: any) => a.type === "Corrective");
         
-        const { activities, ...unitData } = u; // Destructure activities out
+        // Calculate unified health
+        const healthData = internalCalculateHealth(u, latestAudit);
+
+        const { activities, service_activities, ...unitData } = u; 
         
         return {
           ...unitData,
           last_corrective_date: latestCorrective?.service_date || null,
           last_problem: latestCorrective?.engineer_note || "-",
+          health_score: healthData.score,
+          health_label: healthData.label,
+          health_color: healthData.color,
+          ahi: healthData.ahi
         };
       })
     });
@@ -485,7 +501,7 @@ export async function updateUnitStatus(unitId: string | number, status: string) 
     }
 
     revalidatePath("/dashboard");
-    return { success: true };
+    return serializePrisma({ success: true, data: unit });
   } catch (error) {
     console.error("Update status error:", error);
     return { error: "Failed to update status" };
@@ -585,7 +601,7 @@ export async function migrateAllUnitTags() {
     }
 
     revalidatePath("/dashboard");
-    return { success: true, updatedCount };
+    return serializePrisma({ success: true, updatedCount });
   } catch (error) {
     console.error("Migration error:", error);
     return { error: "Failed to perform migration" };
@@ -593,9 +609,53 @@ export async function migrateAllUnitTags() {
 }
 
 import { calculateUnitHealth } from "@/lib/physics/enthalpy";
+import { calculateBalancedAHI } from "@/lib/physics/ahi-calculation";
 
 /**
- * 12. CALCULATE UNIT HEALTH VITALITY (Algorithm based on Enthalpy & Capacity comparison)
+ * PRIVATE HELPER: Shared Health Logic for Absolute Consistency
+ */
+function internalCalculateHealth(unit: any, lastAudit: any) {
+    if (!lastAudit || (!lastAudit.entering_db && !lastAudit.technical_json)) {
+       return { score: 0, label: "No Audit Data", color: "slate", ahi: null };
+    }
+
+    let measuredFlow = lastAudit.measured_airflow || lastAudit.design_airflow || 0;
+    let designCapStr = (unit.capacity || (lastAudit.design_cooling_capacity > 0 ? `${lastAudit.design_cooling_capacity} BTU` : "10 kW"));
+
+    let tj: any = {};
+    try {
+      if (lastAudit.technical_json) {
+        tj = typeof lastAudit.technical_json === 'string' ? JSON.parse(lastAudit.technical_json) : lastAudit.technical_json;
+        if (measuredFlow === 0 && tj.totalCfmSupply) {
+           measuredFlow = parseFloat(tj.totalCfmSupply) * 1.699;
+        }
+      }
+    } catch (e) {}
+
+    const ahi = calculateBalancedAHI({
+      fincoil: tj.fincoil_cond || 'GOOD',
+      drainPan: tj.drain_pan_cond || 'GOOD',
+      blowerFan: tj.blower_fan_cond || 'GOOD',
+      accessories: [...(tj.inlet || []), ...(tj.outlet || [])],
+      enteringDB: lastAudit.entering_db || 25,
+      leavingDB: lastAudit.leaving_db || 15,
+      enteringRH: lastAudit.entering_rh || 50,
+      leavingRH: lastAudit.leaving_rh || 50,
+      measuredAirflow: measuredFlow > 0 ? measuredFlow : (parseFloat(unit.capacity) * 0.4719 || 1000),
+      designCapacityStr: designCapStr,
+      yearOfInstall: unit.yoi
+    });
+
+    let label = "Normal Condition";
+    let color = "emerald";
+    if (ahi.totalScore < 50) { label = "Need Replace"; color = "rose"; }
+    else if (ahi.totalScore < 80) { label = "Need Repair"; color = "amber"; }
+
+    return { score: ahi.totalScore, label, color, ahi, metrics: ahi.physics };
+}
+
+/**
+ * 12. CALCULATE UNIT HEALTH SCORE (Modal View)
  */
 export async function getUnitHealthScore(unitId: number) {
   try {
@@ -618,95 +678,54 @@ export async function getUnitHealthScore(unitId: number) {
     const lastAudit = unit.service_activities?.[0];
     const auditDate = lastAudit?.service_date || unit.created_at;
 
-    // Default return if no audit data exists
-    if (!lastAudit || !lastAudit.entering_db) {
-       return serializePrisma({
-          success: true,
-          data: {
-             score: 100,
-             label: "Excellent (Initial)",
-             color: "emerald",
-             auditDate: unit.created_at,
-             isInitial: true
-          }
-       });
-    }
-
-    // ENTHALPY CALCULATION - SMART DATA RETRIEVAL
-    let measuredFlow = lastAudit.measured_airflow || lastAudit.design_airflow || 0;
-    let designCapStr = unit.capacity || "0 kW";
-
-    // 1. Check Technical JSON for Matrix Results
-    try {
-      if (lastAudit.technical_json) {
-         const tj = typeof lastAudit.technical_json === 'string' 
-            ? JSON.parse(lastAudit.technical_json) 
-            : lastAudit.technical_json;
-         
-         // Use Matrix Result (CFM) if flat field is 0
-         if (measuredFlow === 0 && tj.totalCfmSupply) {
-            measuredFlow = parseFloat(tj.totalCfmSupply) * 1.699; // Convert CFM to m3/h
-         }
-      }
-    } catch (e) { console.error("TJ Parse Error in Health Score:", e); }
-
-    // 2. Use Design Data from Audit if available
-    if (lastAudit.design_cooling_capacity > 0) {
-       designCapStr = `${lastAudit.design_cooling_capacity} BTU`; 
-    }
-
-    const calculation = calculateUnitHealth(
-       lastAudit.entering_db || 0,
-       lastAudit.entering_rh || 0,
-       lastAudit.leaving_db || 0,
-       lastAudit.leaving_rh || 0,
-       measuredFlow,
-       designCapStr
-    );
-
-    let label = "Excellent";
-    let color = "emerald";
-    if (calculation.healthScore < 40) { label = "Replace Recommended"; color = "rose"; }
-    else if (calculation.healthScore < 60) { label = "Maintenance Required"; color = "amber"; }
-    else if (calculation.healthScore < 85) { label = "Good / Monitor"; color = "indigo"; }
+    const health = internalCalculateHealth(unit, lastAudit);
 
     return serializePrisma({
       success: true,
       data: {
-        score: calculation.healthScore,
-        label,
-        color,
-        auditDate,
-        metrics: calculation
+        score: health.score,
+        label: health.label,
+        color: health.color,
+        ahi: health.ahi,
+        metrics: health.metrics
       }
     });
-
   } catch (error) {
-    console.error("Health calc error:", error);
-    return { error: "Failed to calculate unit health" };
+    console.error("Health score error:", error);
+    return { error: "Health calculation failed." };
   }
 }
 
 /**
- * 13. DIGITAL APPROVAL FOR BERITA ACARA
+ * 13. DIGITAL APPROVAL HUB (Sequential Multi-Tier)
+ * TIER 1: Engineer (Internal Review)
+ * TIER 2: Customer (Final Approval)
  */
-export async function approveServiceActivity(activityId: number, approverName: string) {
+export async function approveServiceActivity(activityId: number, approverName: string, tier: 'engineer' | 'customer' = 'customer') {
   try {
+    const data: any = {};
+    
+    if (tier === 'engineer') {
+      data.engineer_signer_name = approverName;
+      data.status = "Reviewed"; // Progress step
+    } else {
+      data.is_approved_by_customer = true;
+      data.customer_approver_name = approverName;
+      data.customer_approved_at = new Date();
+      data.status = "Final Approved"; // Final step
+    }
+
     const updated = await (prisma.service_activities as any).update({
       where: { id: activityId },
-      data: {
-        is_approved_by_customer: true,
-        customer_approver_name: approverName,
-        customer_approved_at: new Date(),
-        status: "Final Approved"
-      }
+      data: data
     });
 
     revalidatePath("/dashboard");
-    return { success: true, activity: updated };
+    revalidatePath("/passport");
+    return serializePrisma({ success: true, activity: updated });
   } catch (error) {
     console.error("Approval error:", error);
-    return { error: "Failed to approve service activity" };
+    return { error: `Failed to approve as ${tier}` };
   }
 }
 
@@ -723,7 +742,7 @@ export async function updateActivityBAUrl(activityId: number, baUrl: string) {
     });
 
     revalidatePath("/dashboard");
-    return { success: true, activity: updated };
+    return serializePrisma({ success: true, activity: updated });
   } catch (error) {
     console.error("Backfill update error:", error);
     return { error: "Failed to update official record URL" };
@@ -744,7 +763,7 @@ export async function updateActivityReportUrls(activityId: number, reportUrl: st
     });
 
     revalidatePath("/dashboard");
-    return { success: true, activity: updated };
+    return serializePrisma({ success: true, activity: updated });
   } catch (error) {
     console.error("Multi-report update error:", error);
     return { error: "Failed to synchronise signed reports" };
@@ -772,7 +791,7 @@ export async function softDeleteActivity(id: number, type: 'formal' | 'quick') {
 
     revalidatePath("/dashboard");
     revalidatePath("/passport");
-    return { success: true };
+    return serializePrisma({ success: true });
   } catch (error) {
     console.error("Soft delete error:", error);
     return { error: "Failed to remove report." };
@@ -780,7 +799,11 @@ export async function softDeleteActivity(id: number, type: 'formal' | 'quick') {
 }
 
 /**
- * 17. PERMANENT PURGE (Auto-cleanup for records > 7 days)
+ * 17. PERMANENT PURGE (Soft-Delete Retention Cleanup)
+ * This function permanently removes records that were soft-deleted more than 7 days ago.
+ * IMPORTANT: This is for database maintenance/hygiene ONLY. 
+ * Do NOT use this function to automatically approve or change the status of active reports.
+ * Maintenance of strict manual sequential signatures is required for all report lifecycles.
  */
 export async function permanentPurgeOldRecords() {
   const session = await getSession();
@@ -810,9 +833,81 @@ export async function permanentPurgeOldRecords() {
       console.log(`[PURGE] Permanently removed ${totalPurged} old reports.`);
     }
 
-    return { success: true, purged: totalPurged };
+    return serializePrisma({ success: true, purged: totalPurged });
   } catch (error) {
     console.error("Purge error:", error);
     return { error: "Failed to purge old records." };
+  }
+}
+
+/**
+ * 18. GET ACTIVITY DETAIL FOR REPORT HUB
+ * Aggregates all data needed for high-fidelity PDF rendering
+ */
+export async function getActivityDetailForReport(id: string | number, isFormal: boolean = true) {
+  noStore();
+  try {
+    const activityId = typeof id === 'string' ? Number(id) : id;
+
+    if (isFormal) {
+      const activity = await (prisma.service_activities as any).findUnique({
+        where: { id: activityId },
+        include: {
+          units: {
+            include: {
+              projects: {
+                include: { customers: true }
+              }
+            }
+          },
+          audit_velocity_points: true,
+          activity_photos: true
+        }
+      });
+
+      if (!activity) return { error: "Formal report not found" };
+
+      return serializePrisma({
+        success: true,
+        data: {
+          activity,
+          unit: activity.units,
+          project: activity.units.projects,
+          customer: activity.units.projects.customers,
+          photos: activity.activity_photos || [],
+          velocityPoints: activity.audit_velocity_points || []
+        }
+      });
+    } else {
+      const activity = await (prisma.activities as any).findUnique({
+        where: { id: activityId },
+        include: {
+          units: {
+            include: {
+              projects: {
+                include: { customers: true }
+              }
+            }
+          }
+        }
+      });
+
+      if (!activity) return { error: "Quick activity not found" };
+
+      return serializePrisma({
+        success: true,
+        data: {
+          activity,
+          unit: activity.units,
+          project: activity.units.projects,
+          customer: activity.units.projects.customers,
+          photos: [], // Quick reports don't have separate photo table in this schema yet
+          velocityPoints: []
+        }
+      });
+    }
+  } catch (error) {
+    console.error("Fetch report detail error:", error);
+    return { error: "Failed to fetch report data" };
   }
 }

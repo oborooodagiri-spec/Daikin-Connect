@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import imageCompression from "browser-image-compression";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
-import { createPreventiveActivity } from "@/app/actions/preventive";
+import { createPreventiveActivity, updatePreventiveActivity } from "@/app/actions/preventive";
 import { savePendingSubmission } from "@/lib/offline-db";
 import {
   ChevronRight, ChevronLeft, FileText, Camera,
@@ -42,7 +42,7 @@ const PARTS_ROWS = [
   { key: "blower_pulley", label: "Blower Pulley Type" },
 ];
 
-export default function PreventiveFormClient({ unit }: { unit: any }) {
+export default function PreventiveFormClient({ unit, initialData, onSuccess }: { unit: any, initialData?: any, onSuccess?: () => void }) {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -59,8 +59,11 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
     };
   }, []);
 
+  // Extract initial data if editing
+  const parsed = initialData?.technical_json ? (typeof initialData.technical_json === 'string' ? JSON.parse(initialData.technical_json) : initialData.technical_json) : null;
+
   // Header state
-  const [header, setHeader] = useState({
+  const [header, setHeader] = useState(parsed?.header || {
     project: unit.area || "",
     date: new Date().toISOString().split("T")[0],
     model: unit.model || "",
@@ -73,9 +76,9 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
     team_opt: ""
   });
 
-  // Scope of Work rows — each has before, after, remarks (for measure type)
-  // For action type: just done_status + remarks
+  // Scope of Work rows
   const [scope, setScope] = useState<Record<string, { before: string; after: string; remarks: string; done: string }>>(() => {
+    if (parsed?.scope) return parsed.scope;
     const init: any = {};
     SCOPE_ROWS.forEach(r => {
       init[r.key] = { before: "", after: "", remarks: "", done: "" };
@@ -85,19 +88,20 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
 
   // Parts info
   const [parts, setParts] = useState<Record<string, string>>(() => {
+    if (parsed?.parts) return parsed.parts;
     const init: any = {};
     PARTS_ROWS.forEach(r => { init[r.key] = ""; });
     return init;
   });
 
   // Technical Advice & Signatures
-  const [technicalAdvice, setTechnicalAdvice] = useState("");
-  const [engineerName, setEngineerName] = useState("");
-  const [customerName, setCustomerName] = useState("");
+  const [technicalAdvice, setTechnicalAdvice] = useState(parsed?.technicalAdvice || initialData?.engineer_note || "");
+  const [engineerName, setEngineerName] = useState(parsed?.engineerName || initialData?.inspector_name || "");
+  const [customerName, setCustomerName] = useState(parsed?.customerName || "");
 
   // Service Status tracking
-  const [serviceStatus, setServiceStatus] = useState<"SERVICED" | "NOT_SERVICED">("SERVICED");
-  const [noServiceReason, setNoServiceReason] = useState("");
+  const [serviceStatus, setServiceStatus] = useState<"SERVICED" | "NOT_SERVICED">(parsed?.serviceStatus || "SERVICED");
+  const [noServiceReason, setNoServiceReason] = useState(parsed?.noServiceReason || "");
 
   const NO_SERVICE_REASONS = [
     "Tenant Vacant (Partisi) / Tutup",
@@ -110,7 +114,13 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
   ];
 
   // Media (Photos & Videos)
-  const [mediaItems, setMediaItems] = useState<{file: File, type: "image" | "video", preview: string}[]>([]);
+  const [mediaItems, setMediaItems] = useState<{file: File | null, type: "image" | "video", preview: string}[]>(
+    initialData?.activity_photos?.map((p: any) => ({
+      file: null,
+      type: p.media_type || "image",
+      preview: p.photo_url
+    })) || []
+  );
 
   // Helpers
   const updateScope = (key: string, field: string, val: string) => {
@@ -199,7 +209,7 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
             location: header.location,
             technical_json: JSON.stringify(renderData, (_, v) => typeof v === 'bigint' ? v.toString() : v),
           },
-          photos: mediaItems.map(m => m.file)
+          photos: mediaItems.map(m => m.file).filter((f): f is File => f !== null)
         });
         setIsQueued(true);
         setLoading(false);
@@ -222,9 +232,12 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
         // Measurement Layer (Invisible)
         const measureDiv = document.createElement("div");
         measureDiv.style.width = "794px"; // A4 Width
-        measureDiv.style.position = "absolute";
-        measureDiv.style.left = "-9999px";
-        measureDiv.style.visibility = "hidden";
+        measureDiv.style.position = "fixed";
+        measureDiv.style.top = "0";
+        measureDiv.style.left = "0";
+        measureDiv.style.zIndex = "-1000";
+        measureDiv.style.opacity = "0";
+        measureDiv.style.pointerEvents = "none";
         document.body.appendChild(measureDiv);
 
         const pages: any[][] = [[]];
@@ -267,9 +280,12 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
           const pageDiv = document.createElement("div");
           pageDiv.style.width = "210mm";
           pageDiv.style.height = "297mm";
-          pageDiv.style.position = "absolute";
-          pageDiv.style.top = "-9999px";
-          pageDiv.style.left = "-9999px";
+          pageDiv.style.position = "fixed";
+          pageDiv.style.top = "0";
+          pageDiv.style.left = "0";
+          pageDiv.style.zIndex = "-1000";
+          pageDiv.style.opacity = "0";
+          pageDiv.style.pointerEvents = "none";
           document.body.appendChild(pageDiv);
 
           const { createRoot } = await import("react-dom/client");
@@ -294,7 +310,14 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
             setTimeout(resolve, 200); 
           });
 
-          const canvas = await html2canvas(pageDiv, { scale: 2, useCORS: true, windowWidth: 794, height: 1123 });
+          const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+          const canvas = await html2canvas(pageDiv, { 
+            scale: isMobile ? 1.5 : 2, 
+            useCORS: true, 
+            windowWidth: 794, 
+            height: 1123,
+            logging: false
+          });
           const imgData = canvas.toDataURL("image/jpeg", 1.0);
           pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, A4_HEIGHT_MM);
 
@@ -324,8 +347,12 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
         const baDiv = document.createElement("div");
         baDiv.style.width = "210mm";
         baDiv.style.height = "297mm";
-        baDiv.style.position = "absolute";
-        baDiv.style.top = "-9999px";
+        baDiv.style.position = "fixed";
+        baDiv.style.top = "0";
+        baDiv.style.left = "0";
+        baDiv.style.zIndex = "-1000";
+        baDiv.style.opacity = "0";
+        baDiv.style.pointerEvents = "none";
         document.body.appendChild(baDiv);
 
         const { createRoot: baRootInit } = await import("react-dom/client");
@@ -344,7 +371,14 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
           setTimeout(resolve, 300);
         });
 
-        const baCanvas = await html2canvas(baDiv, { scale: 2, useCORS: true, windowWidth: 794, height: 1123 });
+        const isMobileBA = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const baCanvas = await html2canvas(baDiv, { 
+          scale: isMobileBA ? 1.5 : 2, 
+          useCORS: true, 
+          windowWidth: 794, 
+          height: 1123,
+          logging: false
+        });
         const baImg = baCanvas.toDataURL("image/jpeg", 0.9);
         baPdf.addImage(baImg, 'JPEG', 0, 0, 210, 297);
         
@@ -365,14 +399,21 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
       // 2. Upload Media (Photos & Videos)
       const uploadedMedia: { photo_url: string; description: string; media_type: string }[] = [];
       for (const item of mediaItems) {
+        if (!item.file) {
+          uploadedMedia.push({
+            photo_url: item.preview,
+            media_type: item.type,
+            description: "Preventive Documentation"
+          });
+          continue;
+        }
+
         const mForm = new FormData();
         mForm.append("file", item.file);
-        mForm.append("folder", item.type === "video" ? "videos" : "photos");
+        mForm.append("folder", "preventive");
         
         const mRes = await fetch("/api/upload", { method: "POST", body: mForm });
-        if (!mRes.ok) {
-          throw new Error(`Media Upload failed: ${mRes.status}`);
-        }
+        if (!mRes.ok) throw new Error(`Media Upload failed: ${mRes.status}`);
         const mData = await mRes.json();
         if (mData.success) {
           uploadedMedia.push({ 
@@ -393,9 +434,16 @@ export default function PreventiveFormClient({ unit }: { unit: any }) {
         photos: uploadedMedia
       };
 
-      const dbRes = await createPreventiveActivity(dbPayload) as any;
+      const dbRes = initialData 
+        ? await updatePreventiveActivity(initialData.id, dbPayload) as any
+        : await createPreventiveActivity(dbPayload) as any;
+
       if (dbRes.success) {
-        setSuccess(true);
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          setSuccess(true);
+        }
       } else {
         alert("Database Error: " + dbRes.error);
       }

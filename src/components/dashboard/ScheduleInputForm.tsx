@@ -9,7 +9,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import { getScheduleFormOptions, createSchedule } from "@/app/actions/schedules";
-import TimePickerAnalog from "./TimePickerAnalog";
+import TimePickerDrum from "./TimePickerDrum";
 
 interface Props {
   selectedDate: Date;
@@ -90,12 +90,20 @@ export default function ScheduleInputForm({ selectedDate, projectId: initialProj
     }
     setLoading(true);
     
-    // Combine date and time
-    const dateStr = format(selectedDate, "yyyy-MM-dd");
+    // Combine date and time (Timezone Safe)
+    const [startH, startM] = formData.start_at.split(":").map(Number);
+    const [endH, endM] = formData.end_at.split(":").map(Number);
+    
+    const startAt = new Date(selectedDate);
+    startAt.setHours(startH, startM, 0, 0);
+    
+    const endAt = new Date(selectedDate);
+    endAt.setHours(endH, endM, 0, 0);
+
     const fullData = {
         ...formData,
-        start_at: `${dateStr}T${formData.start_at}`,
-        end_at: `${dateStr}T${formData.end_at}`
+        start_at: startAt.toISOString(),
+        end_at: endAt.toISOString()
     };
 
     try {
@@ -127,7 +135,7 @@ export default function ScheduleInputForm({ selectedDate, projectId: initialProj
 
       <AnimatePresence>
         {activePicker && (
-            <TimePickerAnalog 
+            <TimePickerDrum 
                 initialTime={activePicker === "start" ? formData.start_at : formData.end_at}
                 onSave={(time) => {
                     setFormData({ ...formData, [activePicker === "start" ? "start_at" : "end_at"]: time });

@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import { t, Language } from "@/lib/i18n";
 
 interface ReportBaseProps {
   children: ReactNode;
@@ -6,9 +7,11 @@ interface ReportBaseProps {
   reportCode?: string;
   unit?: any;
   date?: string;
+  inputDate?: string | Date; // Added for the precise input timestamp
   pageNumber?: number;
   totalPages?: number;
   isFixedHeight?: boolean;
+  lang?: Language;
 }
 
 export const ReportBase = ({ 
@@ -17,9 +20,11 @@ export const ReportBase = ({
   reportCode, 
   unit, 
   date,
+  inputDate,
   pageNumber = 1,
   totalPages = 1,
-  isFixedHeight = true
+  isFixedHeight = true,
+  lang = 'id'
 }: ReportBaseProps) => {
   return (
     <div
@@ -81,6 +86,19 @@ export const ReportBase = ({
                 letterSpacing: "1px"
               }}>
                 {reportCode}
+              </div>
+            )}
+
+            {/* NEW: Input Report Timestamp (Hari, Tanggal & Jam) */}
+            {inputDate && (
+              <div style={{ marginTop: "3mm" }}>
+                <p style={{ fontSize: "7pt", fontWeight: 800, color: "#64748b", textTransform: "uppercase", margin: 0 }}>
+                  {t("REPORTED AT", lang)}:
+                </p>
+                <p style={{ fontSize: "9pt", fontWeight: 900, color: "#003366", margin: 0 }}>
+                  {new Date(inputDate).toLocaleDateString(lang === 'ja' ? 'ja-JP' : lang === 'en' ? 'en-US' : 'id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} | {" "}
+                  {new Date(inputDate).toLocaleTimeString(lang === 'ja' ? 'ja-JP' : lang === 'en' ? 'en-US' : 'id-ID', { hour: '2-digit', minute: '2-digit', hour12: false })} {lang === 'id' ? 'WIB' : ''}
+                </p>
               </div>
             )}
           </div>
@@ -161,7 +179,7 @@ export const ReportBase = ({
             boxSizing: "border-box"
           }}>
             <span style={{ color: "rgba(255,255,255,0.7)", fontSize: "7pt", fontWeight: 700 }}>
-              Page {pageNumber} of {totalPages}
+               {lang === 'id' ? `Halaman ${pageNumber} dari ${totalPages}` : lang === 'ja' ? `${totalPages} ページ中 ${pageNumber} ページ` : `Page ${pageNumber} of ${totalPages}`}
             </span>
             <span style={{ color: "white", fontSize: "10pt", fontWeight: 700, fontStyle: "italic" }}>
               www.daikin-connect.com

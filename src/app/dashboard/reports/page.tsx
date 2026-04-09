@@ -3,6 +3,7 @@
 import { useEffect, useState, useTransition, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { getAllReports, getReportDetail, getSummaryData } from "@/app/actions/reports";
+import { processReportData } from "@/lib/reportDataHelper";
 import { getSession } from "@/app/actions/auth";
 import { softDeleteActivity, permanentPurgeOldRecords } from "@/app/actions/units";
 import {
@@ -18,6 +19,11 @@ import { getPreventiveSections } from "@/components/PreventivePDFTemplate";
 import { getCorrectiveSections } from "@/components/CorrectivePDFTemplate";
 import { getSummarySections } from "@/components/SummaryReportTemplate";
 import { ReportBase } from "@/components/ReportBase";
+
+// Form Components for Editing
+import AuditFormClient from "@/app/passport/[token]/audit/AuditFormClient";
+import PreventiveFormClient from "@/app/passport/[token]/preventive/PreventiveFormClient";
+import CorrectiveFormClient from "@/app/passport/[token]/corrective/CorrectiveFormClient";
 
 const TYPE_CONFIG: Record<string, { color: string; bg: string; border: string; icon: any; label: string }> = {
   Audit: { color: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-200", icon: ClipboardCheck, label: "Audit" },
@@ -45,11 +51,13 @@ function ReportsContent() {
 
   // Detail modal & Print execution
   const [selectedReport, setSelectedReport] = useState<any>(null);
+  const [selectedMedia, setSelectedMedia] = useState<any>(null);
   const [isSelecting, setIsSelecting] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
   const [printData, setPrintData] = useState<any>(null);
   const [printPages, setPrintPages] = useState<any[][]>([]);
+  const [isEditing, setIsEditing] = useState<any>(null);
   const printRef = useRef<HTMLDivElement>(null);
 
   const fetchReports = async (page = 1) => {
@@ -100,7 +108,7 @@ function ReportsContent() {
     try {
       const res = await getReportDetail(reportId);
       if ("success" in res && res.success) {
-        const processed = getRenderData(res.data);
+        const processed = processReportData(res.data);
         setSelectedReport(processed);
       }
     } catch (e) {
@@ -155,8 +163,12 @@ function ReportsContent() {
         const { createRoot } = await import("react-dom/client");
         const measureDiv = document.createElement("div");
         measureDiv.style.width = "794px";
-        measureDiv.style.position = "absolute";
-        measureDiv.style.left = "-9999px";
+        measureDiv.style.position = "fixed";
+        measureDiv.style.top = "0";
+        measureDiv.style.left = "0";
+        measureDiv.style.zIndex = "-1000";
+        measureDiv.style.opacity = "0";
+        measureDiv.style.pointerEvents = "none";
         document.body.appendChild(measureDiv);
 
         for (const section of sections) {
@@ -200,6 +212,10 @@ function ReportsContent() {
     }
   };
 
+  const handleViewReport = (id: string, type: string) => {
+    window.open(`/reports/${type}/${id}`, "_blank");
+  };
+
   const handlePrint = async (reportId: string) => {
     setIsPrinting(true);
     try {
@@ -208,7 +224,7 @@ function ReportsContent() {
       if (!report || report.id !== reportId.toString()) {
         const res = await getReportDetail(reportId);
         if ("success" in res && res.success) {
-          report = getRenderData(res.data);
+          report = processReportData(res.data);
         }
       }
 
@@ -226,9 +242,12 @@ function ReportsContent() {
 
         const measureDiv = document.createElement("div");
         measureDiv.style.width = "794px";
-        measureDiv.style.position = "absolute";
-        measureDiv.style.left = "-9999px";
-        measureDiv.style.visibility = "hidden";
+        measureDiv.style.position = "fixed";
+        measureDiv.style.top = "0";
+        measureDiv.style.left = "0";
+        measureDiv.style.zIndex = "-1000";
+        measureDiv.style.opacity = "0";
+        measureDiv.style.pointerEvents = "none";
         document.body.appendChild(measureDiv);
 
         const pages: any[][] = [[]];
@@ -284,11 +303,6 @@ function ReportsContent() {
   const formatDate = (d: string) => {
     if (!d) return "-";
     return new Date(d).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" });
-  };
-
-  const getRenderData = (report: any) => {
-    const { processReportData } = require("@/lib/reportDataHelper");
-    return processReportData(report);
   };
 
   return (
@@ -392,7 +406,7 @@ function ReportsContent() {
                   </td>
                   <td className="p-4 text-xs font-bold text-slate-700">{r.inspector_name}</td>
                   <td className="p-4 text-xs text-slate-500">{formatDate(r.service_date)}</td>
-                  <td className="p-4"><button onClick={(e) => { e.stopPropagation(); handlePrint(r.id); }} className="text-emerald-600 hover:text-emerald-800 font-bold text-xs"><Printer size={14} /></button></td>
+                  <td className="p-4"><button onClick={(e) => { e.stopPropagation(); handleViewReport(r.id, r.type); }} className="text-emerald-600 hover:text-emerald-800 font-bold text-xs"><Printer size={14} /></button></td>
                   <td className="p-4 flex items-center gap-3">
                     <Eye size={14} className="text-slate-300" />
                     {session?.roles?.some((role: any) => /admin|super/i.test(role)) && (
@@ -426,7 +440,33 @@ function ReportsContent() {
                      <InfoItem label="Room / Tenant" value={selectedReport.units?.room_tenant} />
                      <InfoItem label="Area" value={selectedReport.units?.area} />
                      <InfoItem label="Engineer" value={selectedReport.inspector_name} />
-                     <InfoItem label="Date" value={formatDate(selectedReport.service_date)} />
+                     <div className="flex flex-col">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Date</p>
+                        <p className="text-sm font-bold text-slate-800">{formatDate(selectedReport.service_date)}</p>
+                     </div>
+                     <div className="col-span-2">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Report Status</p>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                            selectedReport.is_approved_by_customer 
+                            ? "bg-blue-50 text-[#003366] border-blue-200"
+                            : selectedReport.engineer_signer_name 
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : "bg-slate-50 text-slate-500 border-slate-200"
+                          }`}>
+                            {selectedReport.is_approved_by_customer 
+                              ? "Final Approved" 
+                              : selectedReport.engineer_signer_name 
+                              ? "Reviewed (Awaiting Customer)" 
+                              : "Draft Report"}
+                          </span>
+                          {selectedReport.engineer_signer_name && (
+                            <span className="text-[10px] font-bold text-slate-400 italic">
+                              Reviewed by {selectedReport.engineer_signer_name}
+                            </span>
+                          )}
+                        </div>
+                      </div>
                   </div>
 
                   {/* Media Documentation Preview */}
@@ -435,25 +475,57 @@ function ReportsContent() {
                        <p className="text-[10px] font-black uppercase tracking-widest text-[#003366] mb-4 flex items-center gap-2">
                           <ImageIcon size={14} className="text-[#00a1e4]" /> Media Documentation
                        </p>
-                       <div className="grid grid-cols-3 gap-3">
-                          {selectedReport.activity_photos.map((m: any, i: number) => (
-                            <div key={i} className="aspect-square rounded-xl overflow-hidden bg-white border border-slate-200 relative group cursor-pointer shadow-sm">
-                              {m.media_type === 'video' ? (
-                                 <div className="w-full h-full flex items-center justify-center bg-slate-900">
-                                    <Play size={20} className="text-white fill-white opacity-60 group-hover:opacity-100 transition-all group-hover:scale-110" />
-                                    <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-amber-500 text-white text-[7px] font-black uppercase rounded shadow-lg">Video</div>
-                                 </div>
-                              ) : (
-                                 <img src={m.photo_url} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="Doc" />
-                              )}
-                            </div>
-                          ))}
-                       </div>
+                       <div className="max-h-72 overflow-y-auto pr-2 custom-scrollbar">
+                           <div className="grid grid-cols-3 gap-4">
+                              {selectedReport.activity_photos.map((m: any, i: number) => (
+                                <div 
+                                  key={i} 
+                                  onClick={() => setSelectedMedia(m)}
+                                  className="aspect-square rounded-2xl overflow-hidden bg-white border border-slate-200 relative group cursor-pointer shadow-sm hover:shadow-md transition-all"
+                                >
+                                  {m.media_type === 'video' ? (
+                                     <div className="w-full h-full flex items-center justify-center bg-slate-900">
+                                        <Play size={20} className="text-white fill-white opacity-60 group-hover:opacity-100 transition-all group-hover:scale-110" />
+                                        <div className="absolute top-2 left-2 px-1.5 py-0.5 bg-amber-500 text-white text-[7px] font-black uppercase rounded shadow-lg">Video</div>
+                                     </div>
+                                  ) : (
+                                     <img 
+                                       src={m.photo_url} 
+                                       className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700" 
+                                       alt={m.description || `Documentation ${i+1}`} 
+                                       onError={(e) => {
+                                         const currentUrl = (e.target as any).src;
+                                         if (currentUrl.includes('/audit/')) {
+                                           (e.target as any).src = currentUrl.replace('/audit/', '/photos/');
+                                         } else if (currentUrl.includes('/photos/')) {
+                                           (e.target as any).src = currentUrl.replace('/photos/', '/videos/');
+                                         } else if (currentUrl.includes('/videos/')) {
+                                           (e.target as any).src = "https://placehold.co/600x600/f8fafc/64748b?text=Not+Synced";
+                                         }
+                                       }}
+                                     />
+                                  )}
+                                  <div className="absolute inset-0 bg-blue-900/0 group-hover:bg-blue-900/10 transition-all pointer-events-none" />
+                                </div>
+                              ))}
+                           </div>
+                        </div>
                     </div>
                   )}
 
-                   <div className="flex gap-3">
-                      <button onClick={() => handlePrint(selectedReport.id)} className="flex-1 py-4 bg-[#003366] text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-900/10 hover:scale-[1.02] transition-all">Print Official (A4)</button>
+                    <div className="flex gap-3">
+                      <button onClick={() => handleViewReport(selectedReport.id, selectedReport.type)} className="flex-1 py-4 bg-[#003366] text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-900/10 hover:scale-[1.02] transition-all">Print Official (A4)</button>
+                      
+                      {/* EDIT BUTTON: Role-gated for Admin/Engineer */}
+                      {session?.roles?.some((role: any) => /admin|engineer|super/i.test(role)) && (
+                        <button 
+                          onClick={() => setIsEditing(selectedReport)}
+                          className="flex-1 py-4 bg-[#00a1e4] text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-400/20 hover:scale-[1.02] transition-all"
+                        >
+                          Edit Report
+                        </button>
+                      )}
+
                       {session?.roles?.some((role: any) => /admin|super/i.test(role)) && (
                         <button 
                           onClick={() => handleDelete(selectedReport.id)}
@@ -463,9 +535,105 @@ function ReportsContent() {
                           {isDeleting === selectedReport.id ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
                         </button>
                       )}
-                   </div>
+                    </div>
                 </div>
             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Media Lightbox */}
+      <AnimatePresence>
+        {selectedMedia && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-12">
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
+              className="absolute inset-0 bg-slate-900/95 backdrop-blur-xl" 
+              onClick={() => setSelectedMedia(null)} 
+            />
+            <motion.button 
+               whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+               onClick={() => setSelectedMedia(null)}
+               className="absolute top-8 right-8 z-[120] p-4 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all"
+            >
+               <X size={32} />
+            </motion.button>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} 
+              className="relative z-[115] w-full max-w-5xl max-h-full flex items-center justify-center"
+            >
+               {selectedMedia.media_type === 'video' ? (
+                 <video 
+                   src={selectedMedia.photo_url} 
+                   className="w-full h-auto max-h-[80vh] rounded-3xl shadow-2xl border border-white/10" 
+                   controls 
+                   autoPlay
+                   playsInline
+                   onError={(e) => {
+                     const currentSrc = (e.target as any).src;
+                     if (currentSrc.includes('/audit/')) {
+                       (e.target as any).src = currentSrc.replace('/audit/', '/photos/');
+                     } else if (currentSrc.includes('/photos/')) {
+                       (e.target as any).src = currentSrc.replace('/photos/', '/videos/');
+                     }
+                   }}
+                 />
+               ) : (
+                 <img 
+                   src={selectedMedia.photo_url} 
+                   className="w-full h-auto max-h-[80vh] object-contain rounded-3xl shadow-2xl border border-white/10" 
+                   alt="Documentation" 
+                   onError={(e) => {
+                     const currentUrl = (e.target as any).src;
+                     if (currentUrl.includes('/audit/')) {
+                       (e.target as any).src = currentUrl.replace('/audit/', '/photos/');
+                     } else if (currentUrl.includes('/photos/')) {
+                       (e.target as any).src = currentUrl.replace('/photos/', '/videos/');
+                     } else if (currentUrl.includes('/videos/')) {
+                       (e.target as any).src = "https://placehold.co/600x600/f8fafc/64748b?text=File+Not+Synced";
+                     }
+                   }}
+                 />
+               )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Edit Modal Overlay */}
+      <AnimatePresence>
+        {isEditing && (
+          <div className="fixed inset-0 z-[150] flex flex-col bg-white">
+            <div className="p-4 border-b flex justify-between items-center bg-slate-50 sticky top-0 z-[160]">
+               <div className="flex items-center gap-4">
+                  <button onClick={() => setIsEditing(null)} className="p-2 hover:bg-slate-200 rounded-xl transition-colors"><ChevronLeft size={24} /></button>
+                  <h2 className="text-xl font-black text-[#003366]">Editing Report #{isEditing.id} — {isEditing.type}</h2>
+               </div>
+               <span className="px-4 py-1.5 bg-amber-100 text-amber-700 rounded-full text-[10px] font-black uppercase tracking-widest">Edit Mode</span>
+            </div>
+            <div className="flex-1 overflow-y-auto pb-12">
+               {isEditing.type === "Audit" && (
+                 <AuditFormClient 
+                   unit={isEditing.units} 
+                   initialData={isEditing} 
+                   onSuccess={() => { setIsEditing(null); setSelectedReport(null); fetchReports(pagination.page); }} 
+                 />
+               )}
+               {isEditing.type === "Preventive" && (
+                 <PreventiveFormClient 
+                   unit={isEditing.units} 
+                   initialData={isEditing} 
+                   onSuccess={() => { setIsEditing(null); setSelectedReport(null); fetchReports(pagination.page); }} 
+                 />
+               )}
+               {isEditing.type === "Corrective" && (
+                 <CorrectiveFormClient 
+                   unit={isEditing.units} 
+                   initialData={isEditing} 
+                   onSuccess={() => { setIsEditing(null); setSelectedReport(null); fetchReports(pagination.page); }} 
+                 />
+               )}
+            </div>
           </div>
         )}
       </AnimatePresence>

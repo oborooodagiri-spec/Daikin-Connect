@@ -172,8 +172,12 @@ export async function generateConsolidatedPDF(data: any) {
     const pageDiv = document.createElement("div");
     pageDiv.style.width = "210mm";
     pageDiv.style.height = "297mm";
-    pageDiv.style.position = "absolute";
-    pageDiv.style.top = "-9999px";
+    pageDiv.style.position = "fixed";
+    pageDiv.style.top = "0";
+    pageDiv.style.left = "0";
+    pageDiv.style.zIndex = "-1000";
+    pageDiv.style.opacity = "0";
+    pageDiv.style.pointerEvents = "none";
     document.body.appendChild(pageDiv);
     const root = createRoot(pageDiv);
     await new Promise<void>((resolve) => {
@@ -187,7 +191,14 @@ export async function generateConsolidatedPDF(data: any) {
       );
       setTimeout(resolve, 600);
     });
-    const canvas = await html2canvas(pageDiv, { scale: 2, useCORS: true, windowWidth: 794, height: 1123 });
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const canvas = await html2canvas(pageDiv, { 
+      scale: isMobile ? 1.5 : 2, 
+      useCORS: true, 
+      windowWidth: 794, 
+      height: 1123,
+      logging: false 
+    });
     pdf.addImage(canvas.toDataURL("image/jpeg", 1.0), 'JPEG', 0, 0, 210, 297);
     root.unmount();
     document.body.removeChild(pageDiv);
@@ -199,8 +210,12 @@ export async function generateConsolidatedPDF(data: any) {
     const pageDiv = document.createElement("div");
     pageDiv.style.width = "297mm";
     pageDiv.style.height = "210mm";
-    pageDiv.style.position = "absolute";
-    pageDiv.style.top = "-9999px";
+    pageDiv.style.position = "fixed";
+    pageDiv.style.top = "0";
+    pageDiv.style.left = "0";
+    pageDiv.style.zIndex = "-1000";
+    pageDiv.style.opacity = "0";
+    pageDiv.style.pointerEvents = "none";
     document.body.appendChild(pageDiv);
     const root = createRoot(pageDiv);
     await new Promise<void>((resolve) => {
@@ -214,7 +229,14 @@ export async function generateConsolidatedPDF(data: any) {
       );
       setTimeout(resolve, 600);
     });
-    const canvas = await html2canvas(pageDiv, { scale: 2, useCORS: true, windowWidth: 1123, height: 794 });
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const canvas = await html2canvas(pageDiv, { 
+      scale: isMobile ? 1.5 : 2, 
+      useCORS: true, 
+      windowWidth: 1123, 
+      height: 794,
+      logging: false 
+    });
     pdf.addImage(canvas.toDataURL("image/jpeg", 1.0), 'JPEG', 0, 0, 297, 210);
     root.unmount();
     document.body.removeChild(pageDiv);

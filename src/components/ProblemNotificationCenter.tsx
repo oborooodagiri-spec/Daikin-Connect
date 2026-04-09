@@ -131,7 +131,7 @@ export default function ProblemNotificationCenter() {
                     {problems.map((p: any) => {
                       const isUnread = !seenIds.includes(p.id);
                       const createdAt = new Date(p.created_at);
-                      const timeStr = createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                      const timeStr = createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
                       const dateStr = createdAt.toLocaleDateString([], { month: 'short', day: 'numeric' });
 
                       return (

@@ -12,6 +12,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import { format } from "date-fns";
 import ScheduleCalendarWidget from "@/components/dashboard/ScheduleCalendarWidget";
+import Link from "next/link";
+import { requestClientVisit } from "@/app/actions/client_dashboard";
+import { toast } from "sonner"; // Assuming sonner or similar for notifications
 
 export default function ClientDashboardPage() {
   const [data, setData] = useState<any>(null);
@@ -27,6 +30,17 @@ export default function ClientDashboardPage() {
       setError(res.error || "Failed to load dashboard data");
     }
     setLoading(false);
+  };
+
+  const handleRequestVisit = async () => {
+    if (!data?.projects?.[0]) return;
+    const res = await requestClientVisit(data.projects[0].id);
+    if (res.success) {
+      alert("Successfully requested a visit! Our team will contact you soon.");
+      fetchData();
+    } else {
+      alert("Failed to request visit. Please try again later.");
+    }
   };
 
   useEffect(() => {
@@ -117,38 +131,46 @@ export default function ClientDashboardPage() {
                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Next Service</span>
                         </div>
                         
-                        {project.next_visit ? (
-                           <>
-                              <div className="space-y-0.5">
-                                 <p className="text-lg font-black text-slate-800 tracking-tighter">
-                                    {format(new Date(project.next_visit.date), "dd MMM yyyy")}
-                                 </p>
-                                 <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
-                                    <Clock size={12} /> {format(new Date(project.next_visit.date), "HH:mm")}
-                                 </div>
-                              </div>
-                              <div className="pt-4 border-t border-slate-200/60 flex items-center gap-3">
-                                 <div className="w-8 h-8 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center">
-                                    <UserIcon size={14} className="text-blue-600" />
-                                 </div>
-                                 <div>
-                                    <p className="text-[9px] font-black uppercase tracking-tighter text-slate-400 leading-none">Technician</p>
-                                    <p className="text-xs font-black text-slate-700">{project.next_visit.engineer}</p>
-                                 </div>
-                              </div>
-                           </>
-                        ) : (
-                           <div className="py-2">
-                              <p className="text-xs font-bold text-slate-400 italic">No visits currently planned</p>
-                              <button className="text-[10px] font-black text-blue-600 mt-2 uppercase tracking-widest hover:underline flex items-center gap-1">Request Visit <ArrowUpRight size={12}/></button>
-                           </div>
-                        )}
-                     </div>
-                     
-                     <button className="w-full py-4 bg-[#003366] text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-blue-900/10 hover:bg-[#002244] transition-all flex items-center justify-center gap-2 group/btn">
-                        Asset Directory
-                        <ChevronRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
-                     </button>
+                         {project.next_visit ? (
+                            <>
+                               <div className="space-y-0.5">
+                                  <p className="text-lg font-black text-slate-800 tracking-tighter">
+                                     {format(new Date(project.next_visit.date), "dd MMM yyyy")}
+                                  </p>
+                                  <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
+                                     <Clock size={12} /> {format(new Date(project.next_visit.date), "HH:mm")}
+                                  </div>
+                               </div>
+                               <div className="pt-4 border-t border-slate-200/60 flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center">
+                                     <UserIcon size={14} className="text-blue-600" />
+                                  </div>
+                                  <div>
+                                     <p className="text-[9px] font-black uppercase tracking-tighter text-slate-400 leading-none">Technician</p>
+                                     <p className="text-xs font-black text-slate-700">{project.next_visit.engineer}</p>
+                                  </div>
+                               </div>
+                            </>
+                         ) : (
+                            <div className="py-2">
+                               <p className="text-xs font-bold text-slate-400 italic">No visits currently planned</p>
+                               <button 
+                                 onClick={handleRequestVisit}
+                                 className="text-[10px] font-black text-blue-600 mt-2 uppercase tracking-widest hover:underline flex items-center gap-1"
+                               >
+                                 Request Visit <ArrowUpRight size={12}/>
+                               </button>
+                            </div>
+                         )}
+                      </div>
+                      
+                      <Link 
+                        href="/client/inventory"
+                        className="w-full py-4 bg-[#003366] text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-blue-900/10 hover:bg-[#002244] transition-all flex items-center justify-center gap-2 group/btn"
+                      >
+                         Asset Directory
+                         <ChevronRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
+                      </Link>
                   </div>
                </div>
             </motion.div>

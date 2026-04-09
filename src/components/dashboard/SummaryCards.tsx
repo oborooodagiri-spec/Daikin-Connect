@@ -64,10 +64,11 @@ function CompactMetricCard({ title, icon: Icon, color, bg, metrics, onDetailClic
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -2 }}
+      whileHover={{ y: -4, scale: 1.02 }}
       onClick={() => onDetailClick({ title, metrics, color, icon: Icon })}
-      className="bg-white rounded-3xl p-5 shadow-xl shadow-slate-200/40 border border-slate-50 flex flex-col h-full relative overflow-hidden group cursor-pointer transition-all hover:border-slate-200"
+      className="bg-white rounded-[2rem] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-slate-100 flex flex-col h-full relative overflow-hidden group cursor-pointer transition-all hover:border-[#00a1e4]/20 hover:shadow-[0_30px_60px_rgba(0,161,228,0.08)]"
     >
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-slate-50/50 to-transparent rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
       <div className="flex justify-between items-center mb-4">
         <div className={`p-2.5 rounded-xl ${bg} ${color} transition-transform group-hover:scale-110`}>
           <Icon size={18} />
@@ -119,10 +120,11 @@ function CompactCorrectiveCard({ title, icon: Icon, kpi, onDetailClick }: any) {
   
   return (
     <motion.div 
-      whileHover={{ y: -4, scale: 1.01 }}
+      whileHover={{ y: -6, scale: 1.02 }}
       onClick={() => onDetailClick({ title, kpi, color: "text-rose-500", icon: Icon })}
-      className="bg-white rounded-3xl p-5 shadow-xl shadow-slate-200/40 border border-slate-50 flex flex-col h-full relative overflow-hidden group cursor-pointer transition-all hover:border-slate-200"
+      className="bg-white rounded-[2rem] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-slate-100 flex flex-col h-full relative overflow-hidden group cursor-pointer transition-all hover:border-rose-200 hover:shadow-[0_30px_60px_rgba(244,63,94,0.08)]"
     >
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-rose-50/50 to-transparent rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
       <div className="flex justify-between items-center mb-4">
         <div className="p-2.5 rounded-xl bg-rose-50 text-rose-500">
           <Icon size={18} />
