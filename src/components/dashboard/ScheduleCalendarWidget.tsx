@@ -230,9 +230,11 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 px-2">
         <div>
           <h2 className="text-xs font-black italic tracking-[0.2em] text-[#003366] flex items-center gap-2">
-            <CalendarIcon size={16} className="text-[#00a1e4]" /> OPERATION CALENDAR
+            <CalendarIcon size={16} className="text-[#00a1e4]" /> {isInternal ? 'OPERATION CALENDAR' : 'MAINTENANCE CALENDAR'}
           </h2>
-          <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Real-time Field Deployment Synchronization</p>
+          <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">
+            {isInternal ? 'Real-time Field Deployment Synchronization' : 'Official Service Schedule & Work Plan'}
+          </p>
         </div>
         
         <div className="flex items-center gap-4 bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
@@ -319,12 +321,14 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
                             <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter mt-1">{selectedDaySchedules.length} TASKS PLANNED</p>
                         </div>
                     </div>
-                    <button 
-                        onClick={() => setIsCreating(true)}
-                        className="p-2 hover:bg-[#003366] hover:text-white rounded-xl text-[#003366] transition-all bg-white border border-slate-100 shadow-sm"
-                    >
-                        <PlusCircle size={18} />
-                    </button>
+                    {isInternal && (
+                      <button 
+                          onClick={() => setIsCreating(true)}
+                          className="p-2 hover:bg-[#003366] hover:text-white rounded-xl text-[#003366] transition-all bg-white border border-slate-100 shadow-sm"
+                      >
+                          <PlusCircle size={18} />
+                      </button>
+                    )}
                 </div>
 
                 <div className="flex-1 overflow-y-auto pr-1 space-y-4 custom-scrollbar text-left">
@@ -338,7 +342,7 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
                         <div className="h-full flex flex-col items-center justify-center opacity-30 grayscale p-10 text-center uppercase text-[10px] font-black tracking-widest border-2 border-dashed border-slate-200 rounded-[2rem]">
                             <Layout size={32} className="mb-4" />
                             <p>No Schedules for this day</p>
-                            <button onClick={() => setIsCreating(true)} className="mt-4 text-[#00a1e4] underline">Quick Add</button>
+                            {isInternal && <button onClick={() => setIsCreating(true)} className="mt-4 text-[#00a1e4] underline">Quick Add</button>}
                         </div>
                     ) : (
                     selectedDaySchedules.map((s, i) => {

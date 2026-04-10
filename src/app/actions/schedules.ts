@@ -299,7 +299,7 @@ export async function getCalendarSchedules(month: number, year: number, projectI
     
     // Security: If not internal, only show schedules for assigned projects
     if (!session.isInternal) {
-      const userProjects = await prisma.project_users.findMany({
+      const userProjects = await prisma.user_project_access.findMany({
         where: { user_id: parseInt(session.userId) },
         select: { project_id: true }
       });

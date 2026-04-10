@@ -9,9 +9,11 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format, isAfter, parseISO } from "date-fns";
+import { useRouter } from "next/navigation";
 import ScheduleCalendarWidget from "@/components/dashboard/ScheduleCalendarWidget";
 
 export default function ClientSchedulesPage() {
+  const router = useRouter();
   const [schedules, setSchedules] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [requestStatus, setRequestStatus] = useState<"idle" | "sending" | "success">("idle");
@@ -90,7 +92,7 @@ export default function ClientSchedulesPage() {
                  <CalendarCheck size={18} className="text-[#00a1e4]"/>
                  Maintenance Calendar
               </h3>
-              <ScheduleCalendarWidget />
+              <ScheduleCalendarWidget isInternal={false} />
            </div>
 
            <div className="space-y-6">
@@ -133,7 +135,10 @@ export default function ClientSchedulesPage() {
                  ))}
 
                  {past.length > 5 && (
-                    <button className="w-full py-3 bg-white border border-slate-200 rounded-xl text-[9px] font-black uppercase tracking-widest text-[#003366] hover:bg-slate-100 transition-all flex items-center justify-center gap-2">
+                    <button 
+                      onClick={() => router.push("/client/reports")}
+                      className="w-full py-3 bg-white border border-slate-200 rounded-xl text-[9px] font-black uppercase tracking-widest text-[#003366] hover:bg-slate-100 transition-all flex items-center justify-center gap-2"
+                    >
                        Load Full History <ChevronRight size={12}/>
                     </button>
                  )}
