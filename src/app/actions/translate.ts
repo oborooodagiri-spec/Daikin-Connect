@@ -2,7 +2,7 @@
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const genAI = null; // Initialized inside action
 
 /**
  * AI Professional Technical Translation Action (Optimized)
@@ -18,22 +18,28 @@ export async function translateReportStringsAction(
   }
 
   try {
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash", // Corrected to a stable available model
-      systemInstruction: `You are a Senior Daikin HVAC Technical Specialist and Professional Japanese Translator. 
-      Your task is to translate technical maintenance notes into ${targetLang === 'en' ? 'Technical English' : targetLang === 'ja' ? 'Technical Japanese' : 'Bahasa Indonesia'}.
-      
-      CRITICAL RULES:
-      1. Use precise engineering terminology (e.g., HVAC, BMS, Chilled Water System, Coil, Fins, Bearing).
-      2. For Japanese translation, use formal business language (Keigo) suitable for professional reports.
-      3. Maintain the exact same JSON structure as the input.
-      4. Only translate strings that contain descriptive text.
-      5. Do NOT translate numerical values, units (m/s, Bar, °C), or codes (DKN001, etc.).
-      6. If a field is empty or "-", keep it as is.
-      7. Be concise and accurate.
-      
-      Target Language: ${targetLang}`
-    });
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    
+    // Explicitly using stable v1 API
+    const model = genAI.getGenerativeModel(
+      { 
+        model: "gemini-1.5-flash",
+        systemInstruction: `You are a Senior Daikin HVAC Technical Specialist and Professional Japanese Translator. 
+        Your task is to translate technical maintenance notes into ${targetLang === 'en' ? 'Technical English' : targetLang === 'ja' ? 'Technical Japanese' : 'Bahasa Indonesia'}.
+        
+        CRITICAL RULES:
+        1. Use precise engineering terminology (e.g., HVAC, BMS, Chilled Water System, Coil, Fins, Bearing).
+        2. For Japanese translation, use formal business language (Keigo) suitable for professional reports.
+        3. Maintain the exact same JSON structure as the input.
+        4. Only translate strings that contain descriptive text.
+        5. Do NOT translate numerical values, units (m/s, Bar, °C), or codes (DKN001, etc.).
+        6. If a field is empty or "-", keep it as is.
+        7. Be concise and accurate.
+        
+        Target Language: ${targetLang}`
+      }, 
+      { apiVersion: 'v1' }
+    );
 
     const prompt = `Translate the following report fields into ${targetLang}. Return ONLY the translated JSON object:
     ${JSON.stringify(translatableMap, null, 2)}`;
