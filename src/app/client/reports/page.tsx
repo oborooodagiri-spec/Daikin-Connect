@@ -6,10 +6,11 @@ import {
   FileText, Search, Download, 
   ChevronRight, Calendar, Tag,
   FileCheck, ShieldCheck, Activity,
-  Filter, ExternalLink
+  Filter, ExternalLink, Eye
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
+import Link from "next/link";
 
 export default function ClientReportsPage() {
   const [reports, setReports] = useState<any[]>([]);
@@ -104,7 +105,7 @@ export default function ClientReportsPage() {
               <th className="px-8 py-6 text-left">Asset Tag</th>
               <th className="px-8 py-6 text-left">Service Date</th>
               <th className="px-8 py-6 text-left">Inspector</th>
-              <th className="px-8 py-6 text-right">Download</th>
+              <th className="px-8 py-6 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
@@ -149,18 +150,28 @@ export default function ClientReportsPage() {
                    </div>
                 </td>
                 <td className="px-8 py-6 text-right">
-                   {report.pdf_report_url ? (
-                     <a 
-                       href={report.pdf_report_url} 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       className="inline-flex items-center justify-center w-10 h-10 bg-blue-50 text-blue-600 rounded-xl border border-blue-100 hover:bg-blue-600 hover:text-white transition-all shadow-sm"
-                     >
-                        <Download size={16} />
-                     </a>
-                   ) : (
-                     <span className="text-[9px] font-black text-slate-300 uppercase italic">Not Generated</span>
-                   )}
+                    <div className="flex items-center justify-end gap-2">
+                      <Link 
+                        href={`/reports/${report.type}/${report.id}`}
+                        target="_blank"
+                        className="inline-flex items-center justify-center w-10 h-10 bg-slate-50 text-slate-600 rounded-xl border border-slate-200 hover:bg-[#003366] hover:text-white transition-all shadow-sm"
+                        title="View Online"
+                      >
+                         <Eye size={16} />
+                      </Link>
+
+                      {report.pdf_report_url && (
+                        <a 
+                          href={report.pdf_report_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center w-10 h-10 bg-blue-50 text-blue-600 rounded-xl border border-blue-100 hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                          title="Download PDF"
+                        >
+                           <Download size={16} />
+                        </a>
+                      )}
+                    </div>
                 </td>
               </motion.tr>
             ))}

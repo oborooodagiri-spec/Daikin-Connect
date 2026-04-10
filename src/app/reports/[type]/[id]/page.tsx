@@ -524,7 +524,7 @@ export default function ReportHubPage() {
           </button>
         ) : (
           <div className="h-12 px-4 flex items-center gap-2 text-amber-600 font-black bg-amber-50 rounded-xl border border-amber-200 shrink-0">
-            <Loader2 size={16} className="animate-spin" />
+            <AlertCircle size={16} />
             <span className="text-[10px] uppercase hidden sm:inline">Awaiting Review</span>
           </div>
         )}
@@ -549,7 +549,7 @@ export default function ReportHubPage() {
           </button>
         ) : isReviewedLocal && (
           <div className="h-12 px-6 flex items-center gap-2 text-amber-600 font-black bg-amber-50 rounded-xl border border-amber-200">
-            <Loader2 size={16} className="animate-spin" />
+            <AlertCircle size={16} />
             <span className="text-[10px] uppercase">Awaiting Customer Approval</span>
           </div>
         )}
