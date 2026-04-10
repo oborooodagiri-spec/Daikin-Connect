@@ -20,29 +20,27 @@ export async function translateReportStringsAction(
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // Explicitly using stable v1 API
+    // Using stable v1 API
     const model = genAI.getGenerativeModel(
-      { 
-        model: "gemini-1.5-flash",
-        systemInstruction: `You are a Senior Daikin HVAC Technical Specialist and Professional Japanese Translator. 
-        Your task is to translate technical maintenance notes into ${targetLang === 'en' ? 'Technical English' : targetLang === 'ja' ? 'Technical Japanese' : 'Bahasa Indonesia'}.
-        
-        CRITICAL RULES:
-        1. Use precise engineering terminology (e.g., HVAC, BMS, Chilled Water System, Coil, Fins, Bearing).
-        2. For Japanese translation, use formal business language (Keigo) suitable for professional reports.
-        3. Maintain the exact same JSON structure as the input.
-        4. Only translate strings that contain descriptive text.
-        5. Do NOT translate numerical values, units (m/s, Bar, °C), or codes (DKN001, etc.).
-        6. If a field is empty or "-", keep it as is.
-        7. Be concise and accurate.
-        
-        Target Language: ${targetLang}`
-      }, 
+      { model: "gemini-1.5-flash" }, 
       { apiVersion: 'v1' }
     );
 
-    const prompt = `Translate the following report fields into ${targetLang}. Return ONLY the translated JSON object:
-    ${JSON.stringify(translatableMap, null, 2)}`;
+    const systemPrompt = `You are a Senior Daikin HVAC Technical Specialist and Professional Japanese Translator. 
+    Your task is to translate technical maintenance notes into ${targetLang === 'en' ? 'Technical English' : targetLang === 'ja' ? 'Technical Japanese' : 'Bahasa Indonesia'}.
+    
+    CRITICAL RULES:
+    1. Use precise engineering terminology (e.g., HVAC, BMS, Chilled Water System, Coil, Fins, Bearing).
+    2. For Japanese translation, use formal business language (Keigo) suitable for professional reports.
+    3. Maintain the exact same JSON structure as the input.
+    4. Only translate strings that contain descriptive text.
+    5. Do NOT translate numerical values, units (m/s, Bar, °C), or codes (DKN001, etc.).
+    6. If a field is empty or "-", keep it as is.
+    7. Be concise and accurate.
+    
+    Target Language: ${targetLang}`;
+
+    const prompt = `${systemPrompt}\n\nTranslate the following report fields into ${targetLang}. Return ONLY the translated JSON object:\n${JSON.stringify(translatableMap, null, 2)}`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
