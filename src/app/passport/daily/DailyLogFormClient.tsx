@@ -42,7 +42,7 @@ export default function DailyLogFormClient({ unitId, token }: { unitId: number; 
   useEffect(() => {
     async function checkStatus() {
       const res = await checkDailyLogStatus(unitId) as any;
-      if (res.success && res.exists) {
+      if (res && "success" in res && res.success && res.exists) {
         setExistingLog(res.data);
       }
       setLoading(false);
@@ -56,12 +56,12 @@ export default function DailyLogFormClient({ unitId, token }: { unitId: number; 
 
     startTransition(async () => {
       const res = await submitDailyLog(unitId, formData) as any;
-      if (res.success) {
+      if (res && "success" in res && res.success) {
         setSubmitSuccess(true);
         const status = await checkDailyLogStatus(unitId) as any;
-        if (status.exists) setExistingLog(status.data);
+        if (status && "success" in status && status.exists) setExistingLog(status.data);
       } else {
-        alert(res.error || "Gagal menyimpan data.");
+        alert(res?.error || "Gagal menyimpan data.");
       }
     });
   };

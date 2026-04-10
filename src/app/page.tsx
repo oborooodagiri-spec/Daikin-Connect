@@ -51,8 +51,8 @@ export default function LoginPage() {
         const result = await register(formData);
         if (result?.error) {
           setError(result.error);
-        } else if (result?.success) {
-          setMessage(result.success);
+        } else if (result && "success" in result && result.success) {
+          setMessage(result.success as string);
           setIsRequestMode(false);
           setName("");
           setCompanyName("");
@@ -60,8 +60,8 @@ export default function LoginPage() {
         }
       } else {
         const result = await login(formData);
-        if (result?.error) {
-          setError(result.error);
+        if (result && "error" in result) {
+          setError(result.error || "An unknown error occurred");
         }
       }
     } catch (err: any) {

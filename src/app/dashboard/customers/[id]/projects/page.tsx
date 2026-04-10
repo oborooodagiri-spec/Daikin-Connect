@@ -72,7 +72,7 @@ export default function ProjectsPage() {
       // Fetch progress for each project
       projs.forEach(async (p: any) => {
         const progRes = await getProjectProgress(p.id);
-        if (progRes.success) {
+        if ("success" in progRes && progRes.success) {
           setProjectProgress(prev => ({ ...prev, [p.id]: progRes.data }));
         }
       });
@@ -91,7 +91,7 @@ export default function ProjectsPage() {
     
     startTransition(async () => {
       const res = await toggleProjectStatus(customerId, id, currentStatus);
-      if (res.success) fetchData();
+      if ("success" in res && res.success) fetchData();
     });
   };
 
@@ -138,11 +138,11 @@ export default function ProjectsPage() {
         res = await updateProject(customerId, editId, formData);
       }
       
-      if (res?.success) {
+      if (res && "success" in res && res.success) {
         closeModal();
         fetchData();
       } else {
-        alert(res?.error || "An error occurred");
+        alert((res as any)?.error || "An error occurred");
       }
     });
   };

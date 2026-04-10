@@ -23,8 +23,11 @@ export async function GET(req: NextRequest) {
   try {
     const complaints = await prisma.complaints.findMany({
       include: {
-        projects: { select: { name: true } },
-        units: { select: { tag_number: true } }
+        units: { 
+          include: {
+            projects: { select: { name: true } }
+          }
+        }
       },
       orderBy: { created_at: "desc" }
     });
@@ -33,11 +36,11 @@ export async function GET(req: NextRequest) {
       success: true,
       data: complaints.map(c => ({
         id: c.id.toString(),
-        title: c.title,
+        title: c.customer_name || "Untitled Complaint",
         description: c.description,
         status: c.status,
-        priority: c.priority,
-        projectName: c.projects?.name,
+        priority: "Medium",
+        projectName: c.units?.projects?.name || "General",
         unitTag: c.units?.tag_number,
         createdAt: c.created_at.toISOString()
       }))

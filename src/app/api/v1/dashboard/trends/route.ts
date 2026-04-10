@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     const now = new Date();
     const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
 
-    const reports = await prisma.reports.findMany({
+    const reports = await prisma.service_activities.findMany({
       where: {
         created_at: { gte: sixMonthsAgo }
       },
@@ -45,6 +45,7 @@ export async function GET(req: NextRequest) {
       const label = `${mLabel} '${yearStr}`;
       
       const inMonth = reports.filter(r => 
+        r.created_at &&
         r.created_at.getMonth() === d.getMonth() && 
         r.created_at.getFullYear() === d.getFullYear()
       );

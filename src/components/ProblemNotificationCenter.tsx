@@ -26,7 +26,7 @@ export default function ProblemNotificationCenter() {
 
   const fetchProblems = async () => {
     const res = await getGlobalProblemUnits() as any;
-    if (res.success && res.data) {
+    if (res && "success" in res && res.success && res.data) {
       setProblems(res.data);
       
       // Detection: Any ID that wasn't in the previous fetch

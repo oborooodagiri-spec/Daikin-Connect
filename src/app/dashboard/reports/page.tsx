@@ -125,12 +125,12 @@ function ReportsContent() {
     setIsDeleting(reportId);
     try {
       const res = await softDeleteActivity(Number(reportId), 'formal');
-      if (res.success) {
+      if ("success" in res && res.success) {
         alert("Laporan berhasil dipindahkan ke Trash.");
         setSelectedReport(null);
         fetchReports(pagination.page);
       } else {
-        alert("Gagal menghapus: " + res.error);
+        alert("Gagal menghapus: " + ((res as any).error || "Unknown error"));
       }
     } catch (e) {
       alert("Terjadi kesalahan sistem.");
@@ -148,7 +148,7 @@ function ReportsContent() {
     setIsPrinting(true);
     try {
       const res = await getSummaryData(dateFrom, dateTo) as any;
-      if (res.success) {
+      if (res && "success" in res && res.success) {
         const summaryData = res.data;
         setPrintData({ type: "SUMMARY", reference_id: `SR-${Date.now()}` }); // Mock for ReportBase
 

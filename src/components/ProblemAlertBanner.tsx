@@ -14,7 +14,7 @@ export default function ProblemAlertBanner() {
 
   const fetchProblems = async () => {
     const res = await getGlobalProblemUnits() as any;
-    if (res.success && res.data) {
+    if (res && "success" in res && res.success && res.data) {
       setProblems(res.data);
       
       // Trigger feedback if new problems appear

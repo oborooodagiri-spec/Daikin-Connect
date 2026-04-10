@@ -100,7 +100,7 @@ export const getCorrectiveSections = (data: any, unit: any) => {
     // SIGNATURE SECTION
     <div key="sign" style={{ marginTop: "10mm" }}>
        <ReportSignatureFooter 
-         preparedBy={personnel?.name}
+         preparedBy={personnel?.name || ""}
          reviewedBy={data.engineerSignerName}
          witnessedBy={data.customerApproverName || pic?.name}
          reviewedDate={data.reviewedAt}

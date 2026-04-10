@@ -32,10 +32,10 @@ export default function ResetPasswordPage() {
 
     try {
       const result = await resetPassword(token, password);
-      if (result.error) {
-        setError(result.error);
+      if (result && "error" in result) {
+        setError(result.error || "An unknown error occurred");
       } else {
-        setMessage(result.success || "Password has been reset successfully.");
+        setMessage(result && "success" in result ? (result.success as string || "Password has been reset successfully.") : "Password has been reset successfully.");
         // Redirect to login after 3 seconds
         setTimeout(() => {
           router.push("/");

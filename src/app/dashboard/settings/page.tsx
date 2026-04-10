@@ -41,8 +41,8 @@ export default function SettingsPage() {
       getAllCustomersForFilter()
     ]);
 
-    if (projRes.success) setProjects(projRes.data || []);
-    if (custRes.success) setCustomers(custRes.data || []);
+    if (projRes && "success" in projRes && projRes.success) setProjects(projRes.data || []);
+    if (custRes && "success" in custRes && custRes.success) setCustomers(custRes.data || []);
     setLoading(false);
   };
 
@@ -59,7 +59,7 @@ export default function SettingsPage() {
     setUpdatingId(`${projectId}-${formId}`);
     startTransition(async () => {
       const res = await updateProjectCapabilities(projectId, updatedStr);
-      if (res.success) {
+      if ("success" in res && res.success) {
         setProjects(prev => prev.map(p => 
           p.id === projectId ? { ...p, enabled_forms: updatedStr } : p
         ));

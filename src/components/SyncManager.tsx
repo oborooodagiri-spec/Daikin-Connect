@@ -59,8 +59,8 @@ export function SyncManager() {
       formData.append("folder", folder);
       
       const res = await fetch("/api/upload", { method: "POST", body: formData });
-      const data = await res.json();
-      if (data.success) {
+      const data = await res.json() as any;
+      if (data && "success" in data && data.success) {
         uploadedUrls.push({ photo_url: data.url, description: "Offline Sync Backup" });
       }
     }
@@ -87,7 +87,7 @@ export function SyncManager() {
         if (item.type === 'PREVENTIVE') res = await createPreventiveActivity(payload);
         if (item.type === 'CORRECTIVE') res = await createCorrectiveActivity(payload);
 
-        if (res?.success) {
+        if (res && "success" in res && res.success) {
           await deletePendingSubmission(item.id!);
           console.log(`Successfully synced ${item.type} #${item.id}`);
         } else {

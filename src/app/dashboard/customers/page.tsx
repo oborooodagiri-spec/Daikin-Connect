@@ -52,7 +52,7 @@ export default function CustomersPage() {
     if (!confirm(currentState ? "Suspend this customer contract?" : "Reactivate this customer contract?")) return;
     startTransition(async () => {
       const res = await toggleCustomerStatus(id, currentState);
-      if (res.success) fetchData();
+      if ("success" in res && res.success) fetchData();
     });
   };
 
@@ -90,11 +90,11 @@ export default function CustomersPage() {
         res = await updateCustomer(editId, formData);
       }
       
-      if (res?.success) {
+      if (res && "success" in res && res.success) {
         closeModal();
         fetchData();
       } else {
-        alert(res?.error || "An error occurred");
+        alert((res as any)?.error || "An error occurred");
       }
     });
   };

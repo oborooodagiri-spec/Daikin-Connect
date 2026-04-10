@@ -349,10 +349,10 @@ export default function UnitsPage() {
     if (!confirm("Are you sure this unit is now working normally?")) return;
     setLoading(true);
     const res = await resolveComplaint(unitId) as any;
-    if (res.success) {
+    if (res && "success" in res && res.success) {
       fetchData();
     } else {
-      alert(res.error || "Failed to resolve unit.");
+      alert(res?.error || "Failed to resolve unit.");
     }
     setLoading(false);
   };
@@ -367,18 +367,18 @@ export default function UnitsPage() {
       res = await createUnit(projectId, formData);
     }
     const response = res as any;
-    if (response.success) {
+    if (response && "success" in response && response.success) {
       closeModal();
       await fetchData();
     } else {
-      alert(response.error || "Gagal menyimpan unit.");
+      alert(response?.error || "Gagal menyimpan unit.");
       setLoading(false);
     }
   };
 
   const handleExport = async () => {
     const res = await exportUnitsExcel(projectId) as any;
-    if (res.success && res.base64) {
+    if (res && "success" in res && res.success && res.base64) {
       const link = document.createElement("a");
       link.href = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," + res.base64;
       link.download = `Units_Export_${projectData?.name || 'Project'}.xlsx`;
@@ -396,11 +396,11 @@ export default function UnitsPage() {
     reader.onload = async (evt) => {
       const b64 = (evt.target?.result as string).split(",")[1];
       const res = await importUnitsExcel(projectId, b64) as any;
-      if (res.success) {
+      if (res && "success" in res && res.success) {
         alert(`Successfully imported ${res.imported} units!`);
         fetchData();
       } else {
-        alert(`Import Error: ${res.error}`);
+        alert(`Import Error: ${res?.error}`);
       }
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -729,7 +729,7 @@ export default function UnitsPage() {
                       <input type="text" value={formData.model} onChange={e => setFormData({...formData, model: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Capacity</label>
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Capacity (BTU, kW, PK)</label>
                       <input type="text" value={formData.capacity} onChange={e => setFormData({...formData, capacity: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]" />
                     </div>
                   </div>

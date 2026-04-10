@@ -5,8 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { getUnitByToken, submitActivityFromPassport, updateUnitInfoFromPassport } from "@/app/actions/passport";
 import { 
   Building2, MapPin, Search, Hammer, Activity, Wrench, ChevronRight, ChevronLeft,
-  ClipboardCheck, HardHat, FileText, CheckCircle2, AlertTriangle, Edit3, Save, X,
-  History as HistoryIcon, Camera, Printer, Trash2, ImageIcon
+  ClipboardCheck, HardHat, FileText, CheckCircle2, AlertTriangle, 
+  History as HistoryIcon, Camera, Printer, Trash2, ImageIcon, X
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { updateUnitStatus, getUnitHistory } from "@/app/actions/units";
@@ -43,14 +43,6 @@ export default function PassportLandingPage() {
   const [mediaHistory, setMediaHistory] = useState<any[]>([]);
   const [mediaLoading, setMediaLoading] = useState(false);
   
-  const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({
-    unit_type: "",
-    brand: "",
-    model: "",
-    capacity: ""
-  });
-  
   const [isPending, startTransition] = useTransition();
   const [complaintMsg, setComplaintMsg] = useState(false);
   const [showHealthModal, setShowHealthModal] = useState(false);
@@ -67,19 +59,12 @@ export default function PassportLandingPage() {
   useEffect(() => {
     async function loadData() {
       const res = await getUnitByToken(token) as any;
-      if (res.success) {
+      if (res && "success" in res && res.success) {
         setUnit(res.data);
-        setEditForm({
-          unit_type: res.data.unit_type || "Uncategorized",
-          brand: res.data.brand || "Daikin",
-          model: res.data.model || "",
-          capacity: res.data.capacity || ""
-        });
-        
         loadHistory(res.data.id);
         loadMedia(res.data.id);
       } else {
-        setError(res.error || "Malfuctioned QR Code.");
+        setError((res as any).error || "Malfuctioned QR Code.");
       }
       setLoading(false);
     }
@@ -103,23 +88,12 @@ export default function PassportLandingPage() {
   const loadMedia = async (unitId: string | number) => {
     setMediaLoading(true);
     const mRes: any = await getUnitMediaHistory(Number(unitId));
-    if (mRes && mRes.success) {
+    if (mRes && "success" in mRes && mRes.success) {
       setMediaHistory(mRes.data);
     }
     setMediaLoading(false);
   };
 
-  const handleUpdateUnit = () => {
-    startTransition(async () => {
-      const res = await updateUnitInfoFromPassport(token, editForm) as any;
-      if (res.success) {
-        setUnit({ ...unit, ...editForm });
-        setIsEditing(false);
-      } else {
-        alert(res.error || "Gagal Update Info Unit");
-      }
-    });
-  };
 
   const handleComplaintPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -136,9 +110,8 @@ export default function PassportLandingPage() {
       formData.append("folder", "complaints");
 
       const res = await fetch("/api/upload", { method: "POST", body: formData });
-      const data = await res.json();
-
-      if (data.success) {
+      const data = await res.json() as any;
+      if (data && "success" in data && data.success) {
         setComplaintForm({ ...complaintForm, photoUrl: data.url });
         setComplaintPhotoPreview(URL.createObjectURL(compressed));
       } else {
@@ -155,7 +128,7 @@ export default function PassportLandingPage() {
     e.preventDefault();
     startTransition(async () => {
       const res = await submitComplaint(token, complaintForm) as any;
-      if (res.success) {
+      if (res && "success" in res && res.success) {
         setComplaintMsg(true);
         setTimeout(() => {
           setComplaintMsg(false);
@@ -164,7 +137,7 @@ export default function PassportLandingPage() {
           setComplaintPhotoPreview(null);
         }, 3000);
       } else {
-        alert(res.error || "Gagal Mengirim Pengaduan");
+        alert((res as any).error || "Gagal Mengirim Pengaduan");
       }
     });
   };
@@ -290,74 +263,49 @@ export default function PassportLandingPage() {
                 <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
                   <div className="flex justify-between items-center">
                     <h3 className="text-[10px] font-black uppercase tracking-widest text-[#00a1e4]">Specifications</h3>
-                    {!isEditing ? (
-                      <button onClick={() => setIsEditing(true)} className="flex items-center gap-1 text-[10px] font-black uppercase text-slate-400 hover:text-[#00a1e4]">
-                        <Edit3 size={12}/> Edit Info
-                      </button>
-                    ) : (
-                      <div className="flex gap-3">
-                        <button onClick={() => setIsEditing(false)} className="text-[10px] font-black uppercase text-rose-500">Batal</button>
-                        <button onClick={handleUpdateUnit} disabled={isPending} className="flex items-center gap-1 text-[10px] font-black uppercase text-[#00a1e4]">
-                          <Save size={12}/> {isPending ? "..." : "Simpan"}
-                        </button>
-                      </div>
-                    )}
                   </div>
 
-                  {isEditing ? (
-                    <div className="space-y-4 pt-2">
-                       <EditInput label="Unit Category" value={editForm.unit_type} 
-                          onChange={(v: string) => setEditForm({...editForm, unit_type: v})} isSelect 
-                          options={["AHU", "FCU", "Split", "Chiller", "Other", "Uncategorized"]} />
-                       <EditInput label="Brand" value={editForm.brand} onChange={(v: string) => setEditForm({...editForm, brand: v})} />
-                       <EditInput label="Model" value={editForm.model} onChange={(v: string) => setEditForm({...editForm, model: v})} />
-                       <EditInput label="Capacity" value={editForm.capacity} onChange={(v: string) => setEditForm({...editForm, capacity: v})} />
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Brand / Model</p>
+                    <p className="text-base font-bold text-slate-800">{unit.brand} - {unit.model}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Capacity</p>
+                      <p className="text-sm font-bold text-slate-800">{unit.capacity || "N/A"}</p>
                     </div>
-                  ) : (
-                    <>
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Brand / Model</p>
-                        <p className="text-base font-bold text-slate-800">{unit.brand} - {unit.model}</p>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Capacity</p>
-                          <p className="text-sm font-bold text-slate-800">{unit.capacity || "N/A"}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Unit Type</p>
-                          <span className={`inline-block mt-1 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border 
-                            ${unit.unit_type === "AHU" ? "bg-cyan-50 text-cyan-700 border-cyan-100" : 
-                              unit.unit_type === "FCU" ? "bg-indigo-50 text-indigo-700 border-indigo-100" :
-                              unit.unit_type === "Chiller" ? "bg-rose-50 text-rose-700 border-rose-100" :
-                              unit.unit_type === "Split" ? "bg-amber-50 text-amber-700 border-amber-100" :
-                              "bg-slate-50 text-slate-400 border-slate-100"}`}>
-                            {unit.unit_type || "Uncategorized"}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
-                        <div>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Serial Number</p>
-                          <p className="text-xs font-mono font-bold text-slate-600 mt-1">{unit.serial_number || "-"}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Unit Code</p>
-                          <p className="text-xs font-mono font-bold text-[#00a1e4] mt-1">{unit.code || "-"}</p>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
-                         <div>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Project Type</p>
-                          <p className="text-xs font-bold text-slate-700">{unit.project_type || "-"}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Last Service</p>
-                          <p className="text-xs font-bold text-slate-700">{unit.last_service_date ? new Date(unit.last_service_date).toLocaleDateString() : "-"}</p>
-                        </div>
-                      </div>
-                    </>
-                  )}
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Unit Type</p>
+                      <span className={`inline-block mt-1 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border 
+                        ${unit.unit_type === "AHU" ? "bg-cyan-50 text-cyan-700 border-cyan-100" : 
+                          unit.unit_type === "FCU" ? "bg-indigo-50 text-indigo-700 border-indigo-100" :
+                          unit.unit_type === "Chiller" ? "bg-rose-50 text-rose-700 border-rose-100" :
+                          unit.unit_type === "Split" ? "bg-amber-50 text-amber-700 border-amber-100" :
+                          "bg-slate-50 text-slate-400 border-slate-100"}`}>
+                        {unit.unit_type || "Uncategorized"}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Serial Number</p>
+                      <p className="text-xs font-mono font-bold text-slate-600 mt-1">{unit.serial_number || "-"}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Unit Code</p>
+                      <p className="text-xs font-mono font-bold text-[#00a1e4] mt-1">{unit.code || "-"}</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
+                     <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Project Type</p>
+                      <p className="text-xs font-bold text-slate-700">{unit.project_type || "-"}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Last Service</p>
+                      <p className="text-xs font-bold text-slate-700">{unit.last_service_date ? new Date(unit.last_service_date).toLocaleDateString() : "-"}</p>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
@@ -616,33 +564,6 @@ function TabButton({ active, onClick, label, icon }: { active: boolean; onClick:
   );
 }
 
-function EditInput({ label, value, onChange, isSelect = false, options = [] }: { label: string; value: string; onChange: (v: string) => void; isSelect?: boolean; options?: string[] }) {
-  return (
-    <div className="space-y-1">
-      <label className="text-[9px] font-black uppercase tracking-widest text-slate-400">{label}</label>
-      {isSelect ? (
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-[#00a1e4]"
-        >
-          {options.map((o: string) => (
-            <option key={o} value={o}>
-              {o}
-            </option>
-          ))}
-        </select>
-      ) : (
-        <input
-          type="text"
-          value={value || ""}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-[#00a1e4]"
-        />
-      )}
-    </div>
-  );
-}
 
 function HealthExplanationModal({ isOpen, onClose, metrics }: { isOpen: boolean; onClose: () => void; metrics: any }) {
   if (!metrics) return null;

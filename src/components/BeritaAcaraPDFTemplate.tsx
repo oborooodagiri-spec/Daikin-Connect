@@ -120,7 +120,7 @@ export const getBeritaAcaraSections = (data: any, unit: any, engineerName: strin
     // 4. SIGNATURES
     <div key="sign" style={{ marginTop: "10mm" }}>
       <ReportSignatureFooter 
-        preparedBy={engineerName}
+        preparedBy={engineerName || ""}
         reviewedBy={engineerSignerName}
         witnessedBy={customerApproverName}
         reviewedDate={reviewedAt}

@@ -149,7 +149,7 @@ export const getPreventiveSections = (data: any, unit: any, engineerName?: strin
 
     <div key="sign" style={{ marginTop: "10mm" }}>
        <ReportSignatureFooter 
-         preparedBy={engineerName}
+         preparedBy={engineerName || ""}
          reviewedBy={data.engineerSignerName}
          witnessedBy={data.customerApproverName || customerName}
          reviewedDate={data.reviewedAt}

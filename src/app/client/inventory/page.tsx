@@ -29,7 +29,11 @@ export default function ClientInventoryPage() {
   const loadData = async () => {
     setLoading(true);
     const res = await getClientInventory();
-    if (res.success) setUnits(res.data);
+    if ("error" in res) {
+      // Handle error (optionally set an error state)
+    } else {
+      setUnits(res.data);
+    }
     setLoading(false);
   };
 

@@ -25,7 +25,11 @@ export default function ClientSchedulesPage() {
   const loadData = async () => {
     setLoading(true);
     const res = await getClientSchedules();
-    if (res.success) setSchedules(res.data);
+    if ("error" in res) {
+      // Handle error
+    } else {
+      setSchedules(res.data);
+    }
     setLoading(false);
   };
 
@@ -33,7 +37,7 @@ export default function ClientSchedulesPage() {
     if (schedules.length === 0) return;
     setRequestStatus("sending");
     const res = await requestClientVisit(schedules[0].project_id);
-    if (res.success) {
+    if ("success" in res && res.success) {
       setRequestStatus("success");
       loadData();
       setTimeout(() => setRequestStatus("idle"), 3000);
@@ -109,7 +113,7 @@ export default function ClientSchedulesPage() {
                    </div>
                  ) : (
                     upcoming.map((s, i) => (
-                       <ScheduleItem key={s.id} schedule={s} isLast={i === upcoming.length - 1} />
+                       <ScheduleItem key={s.id} schedule={s} />
                     ))
                  )}
               </div>

@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
 
     // Role-based filtering for external users
     if (!user.isInternal) {
-        const userProjects = await prisma.project_users.findMany({
+        const userProjects = await prisma.user_project_access.findMany({
             where: { user_id: parseInt(user.userId) },
             select: { project_id: true }
         });

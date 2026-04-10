@@ -14,7 +14,6 @@ import { format } from "date-fns";
 import ScheduleCalendarWidget from "@/components/dashboard/ScheduleCalendarWidget";
 import Link from "next/link";
 import { requestClientVisit } from "@/app/actions/client_dashboard";
-import { toast } from "sonner"; // Assuming sonner or similar for notifications
 
 export default function ClientDashboardPage() {
   const [data, setData] = useState<any>(null);
@@ -24,18 +23,18 @@ export default function ClientDashboardPage() {
   const fetchData = async () => {
     setLoading(true);
     const res = await getClientDashboardData();
-    if (res.success) {
-      setData(res.data);
+    if ("error" in res) {
+      setError((res as any).error || "Failed to load dashboard data");
     } else {
-      setError(res.error || "Failed to load dashboard data");
+      setData(res.data);
     }
     setLoading(false);
   };
 
   const handleRequestVisit = async () => {
     if (!data?.projects?.[0]) return;
-    const res = await requestClientVisit(data.projects[0].id);
-    if (res.success) {
+    const res = await requestClientVisit(data.projects[0].id) as any;
+    if (res && "success" in res && res.success) {
       alert("Successfully requested a visit! Our team will contact you soon.");
       fetchData();
     } else {

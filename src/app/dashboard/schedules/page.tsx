@@ -47,13 +47,13 @@ export default function SchedulesPage() {
       res = await getAllSchedules();
     }
     
-    if (res.success) setSchedules(res.data);
+    if (res && "success" in res && res.success) setSchedules(res.data);
     setLoading(false);
   };
 
   const fetchOptions = async () => {
     const res = await getScheduleFormOptions();
-    if (res.success) setOptions(res.data);
+    if (res && "success" in res && res.success) setOptions(res.data);
   };
 
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function SchedulesPage() {
 
     startTransition(async () => {
       const res = await createSchedule(formData.project_id, formData);
-      if (res.success) {
+      if ("success" in res && res.success) {
         closeModal();
         fetchSchedules();
       } else {
@@ -83,7 +83,7 @@ export default function SchedulesPage() {
   const handleStatusUpdate = (id: string, status: string) => {
     startTransition(async () => {
       const res = await updateScheduleStatus(id, status);
-      if (res.success) fetchSchedules();
+      if ("success" in res && res.success) fetchSchedules();
     });
   };
 

@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
         id: u.id,
         name: u.name,
         email: u.email,
-        phone: u.phone_number,
+        phone: u.phone,
         role: u.roles?.role_name || "Guest",
         status: u.is_active ? "Active" : "Inactive"
       }))

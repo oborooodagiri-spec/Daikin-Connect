@@ -41,7 +41,7 @@ export default function ScheduleCalendarModal({ projectId, projectName, isOpen, 
   const fetchSchedules = async () => {
     setLoading(true);
     const res = await getProjectSchedules(projectId);
-    if (res.success) setSchedules(res.data);
+    if (res && "success" in res && res.success) setSchedules(res.data);
     setLoading(false);
   };
 
@@ -66,7 +66,7 @@ export default function ScheduleCalendarModal({ projectId, projectName, isOpen, 
     if (!confirm("Remove this schedule?")) return;
     startTransition(async () => {
       const res = await deleteSchedule(id);
-      if (res.success) fetchSchedules();
+      if ("success" in res && res.success) fetchSchedules();
     });
   };
 

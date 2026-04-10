@@ -78,13 +78,13 @@ export default function ReportHubPage() {
         
         setSession(sessionRes);
 
-        if (res.success) {
+        if (res && "success" in res && res.success) {
           setData(res.data);
           setTranslatedCache(prev => ({ ...prev, id: res.data }));
           setIsApprovedLocal(res.data.activity.is_approved_by_customer);
           setIsReviewedLocal(!!res.data.activity.engineer_signer_name);
         } else {
-          setError(res.error || "Failed to load report data");
+          setError((res as any).error || "Failed to load report data");
         }
       } catch (err) {
         setError("An error occurred while fetching report details.");
@@ -178,7 +178,7 @@ export default function ReportHubPage() {
       // 2. CALL LIGHTWEIGHT ACTION
       const res = await translateReportStringsAction(translatableMap, targetLang);
       
-      if (res.success && res.translatedMap) {
+      if (res && "success" in res && res.success && res.translatedMap) {
         const translatedMap = res.translatedMap;
         
         // 3. MERGE BACK ON CLIENT (Deep Copy)
@@ -222,7 +222,7 @@ export default function ReportHubPage() {
         setData(translatedData);
         setActiveLang(targetLang);
       } else {
-        alert("AI Translation failed: " + res.error);
+        alert("AI Translation failed: " + (res as any).error);
       }
     } catch (err) {
       console.error("Translation error:", err);
@@ -265,7 +265,7 @@ export default function ReportHubPage() {
     try {
       // 1. Update DB Status
       const approveRes = await approveServiceActivity(Number(data.activity.id), approverName, tier);
-      if (!approveRes.success) throw new Error(approveRes.error);
+      if (approveRes && "error" in approveRes) throw new Error(approveRes.error);
 
       // 2. Generate SIGNED PDF (Pixel Perfect)
       if (tier === 'customer') setIsApprovedLocal(true);

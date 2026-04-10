@@ -37,13 +37,13 @@ export default function TargetsPage() {
       getCompletionStats(currentMonth, currentYear)
     ]);
     
-    if (tRes.success) setTargets(tRes.data);
-    if (sRes.success) setSchedules(sRes.data);
-    if (optRes.success) {
+    if (tRes && "success" in tRes && tRes.success) setTargets(tRes.data);
+    if (sRes && "success" in sRes && sRes.success) setSchedules(sRes.data);
+    if (optRes && "success" in optRes && optRes.success) {
       setEngineers(optRes.data.users);
       setProjects(optRes.data.projects);
     }
-    if (cRes.success) setCompletionStats(cRes.data);
+    if (cRes && "success" in cRes && cRes.success) setCompletionStats(cRes.data);
     
     setLoading(false);
   };
@@ -56,7 +56,7 @@ export default function TargetsPage() {
     e.preventDefault();
     startTransition(async () => {
       const res = await setTarget(formData as any);
-      if (res.success) {
+      if (res && "success" in res && res.success) {
         fetchData();
         alert("Target saved successfully!");
       }

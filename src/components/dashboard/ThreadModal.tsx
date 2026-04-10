@@ -58,7 +58,7 @@ export default function ThreadModal({ schedule, isOpen, onClose, currentUser }: 
 
   const loadMessages = async () => {
     const res = await getThreadMessages(schedule.id.toString()) as any;
-    if (res.success) {
+    if (res && "success" in res && res.success) {
       setMessages(res.data);
     }
     setLoading(false);
@@ -96,7 +96,7 @@ export default function ThreadModal({ schedule, isOpen, onClose, currentUser }: 
 
     startTransition(async () => {
       const res = await postChatMessage(schedule.id.toString(), tempInput, tempPhotos);
-      if (res.success) {
+      if (res && "success" in res && res.success) {
         loadMessages();
       }
     });

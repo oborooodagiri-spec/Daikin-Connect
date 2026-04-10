@@ -46,10 +46,10 @@ interface UnitDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   unit: Unit | null;
-  history: any[];
-  historyLoading: boolean;
-  isStatusUpdating: boolean;
-  onStatusUpdate: (status: string) => void;
+  history?: any[];
+  historyLoading?: boolean;
+  isStatusUpdating?: boolean;
+  onStatusUpdate?: (status: string) => void;
   onPrintQR?: (unit: any) => void;
   onEdit?: (unit?: any) => void;
   customerId?: string;
@@ -78,6 +78,9 @@ export default function UnitDetailModal({
   const [showEngineering, setShowEngineering] = useState(false);
   const [showQRZoom, setShowQRZoom] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  
+  const isVendor = session?.roles?.some((r: string) => r.toLowerCase().includes("vendor"));
+  const canEdit = session?.isInternal || isVendor;
 
   useEffect(() => {
     if (unit) {
@@ -100,7 +103,7 @@ export default function UnitDetailModal({
     if (!unit) return;
     setComplaintLoading(true);
     const res: any = await getUnitComplaints(Number(unit.id));
-    if (res.success) setComplaintHistory(res.data);
+    if (res && "success" in res && res.success) setComplaintHistory(res.data);
     setComplaintLoading(false);
   };
 
@@ -108,7 +111,7 @@ export default function UnitDetailModal({
     if (!unit) return;
     setMediaLoading(true);
     const res: any = await getUnitMediaHistory(Number(unit.id));
-    if (res.success) setMediaHistory(res.data);
+    if (res && "success" in res && res.success) setMediaHistory(res.data);
     setMediaLoading(false);
   };
 
@@ -122,7 +125,7 @@ export default function UnitDetailModal({
     setIsSaving(true);
     try {
       const result = await updateUnit(Number(unit.id), formData);
-      if (result.success) {
+      if ("success" in result && result.success) {
         setIsEditing(false);
         router.refresh();
       } else {
@@ -144,7 +147,7 @@ export default function UnitDetailModal({
     if (!confirm("Are you sure you want to delete this complaint record? This action cannot be undone.")) return;
     setIsDeleting(id);
     const res: any = await deleteComplaint(id);
-    if (res.success) {
+    if (res && "success" in res && res.success) {
       setComplaintHistory(prev => prev.filter(c => c.id !== id));
     } else {
       alert(res.error || "Failed to delete complaint");
@@ -315,7 +318,7 @@ export default function UnitDetailModal({
                 </div>
 
                 {/* Hub Action Bar */}
-                <div className="bg-slate-50 border-b border-slate-200 px-4 sm:px-8 py-4 sm:py-5 flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0 overflow-x-auto sm:overflow-visible custom-scrollbar">
+                <div className="bg-slate-50 border-b border-slate-200 px-4 sm:px-8 py-4 sm:py-5 flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0 overflow-x-auto sm:overflow-visible transition-all">
                   <div className="flex items-center w-full sm:w-auto">
                     <div className="flex bg-white p-1 rounded-2xl border border-slate-200 shadow-sm w-full sm:w-auto justify-center">
                       {[
@@ -326,7 +329,7 @@ export default function UnitDetailModal({
                         <button 
                           key={s.id}
                           disabled={isStatusUpdating}
-                          onClick={() => onStatusUpdate(s.id)}
+                          onClick={() => onStatusUpdate?.(s.id)}
                           className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2
                             ${unit.status === s.id ? 'bg-[#003366] text-white shadow-md scale-105' : 'bg-transparent text-slate-400 hover:text-slate-600'}`}
                         >
@@ -348,12 +351,14 @@ export default function UnitDetailModal({
                             <ExternalLink size={14}/> Unit Passport
                           </button>
                         )}
-                        <button 
-                          onClick={() => setIsEditing(true)} 
-                          className="flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-white border border-[#003366]/20 text-[#003366] text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-[#003366] hover:text-white transition-all shadow-sm group"
-                        >
-                          <Edit2 size={14} className="group-hover:rotate-12 transition-transform"/> Specs
-                        </button>
+                        {canEdit && (
+                          <button 
+                            onClick={() => setIsEditing(true)} 
+                            className="flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-white border border-[#003366]/20 text-[#003366] text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-[#003366] hover:text-white transition-all shadow-sm group"
+                          >
+                            <Edit2 size={14} className="group-hover:rotate-12 transition-transform"/> Specs
+                          </button>
+                        )}
                         {onPrintQR && (
                           <button 
                             onClick={() => onPrintQR(unit)} 
@@ -485,7 +490,7 @@ export default function UnitDetailModal({
                             isMono
                           />
                           <EditableField 
-                            label="Normal Capacity" 
+                            label="Normal Capacity (BTU, kW, PK)" 
                             value={formData?.capacity} 
                             isEditing={isEditing} 
                             onChange={(v) => handleInputChange("capacity", v)}
@@ -616,7 +621,7 @@ export default function UnitDetailModal({
                           ))}
                         </div>
                       ) : (
-                        <UnitHistoryTimeline history={history} session={session} unit={unit} />
+                        <UnitHistoryTimeline history={history || []} session={session} unit={unit} />
                       )
                     ) : activeTab === "media" ? (
                       mediaLoading ? (

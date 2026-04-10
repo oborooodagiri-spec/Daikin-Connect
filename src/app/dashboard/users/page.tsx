@@ -41,9 +41,9 @@ export default function UsersPage() {
       getAllAvailableProjects()
     ]);
     
-    if (userRes.success) setUsers(userRes.data);
-    if (roleRes.success) setRoles(roleRes.data);
-    if (projectRes.success) setProjects(projectRes.data);
+    if (userRes && "success" in userRes && userRes.success) setUsers(userRes.data);
+    if (roleRes && "success" in roleRes && roleRes.success) setRoles(roleRes.data);
+    if (projectRes && "success" in projectRes && projectRes.success) setProjects(projectRes.data);
     setLoading(false);
   };
 
@@ -69,14 +69,14 @@ export default function UsersPage() {
 
     startTransition(async () => {
       const res = await toggleUserStatus(user.id, user.is_active);
-      if (res.success) {
+      if ("success" in res && res.success) {
         fetchData();
-      } else if (res.error === "EXTERNAL_USER_NO_PROJECT") {
+      } else if (res && "error" in res && res.error === "EXTERNAL_USER_NO_PROJECT") {
         alert("CRITICAL: This external user has no assigned projects. You MUST assign at least one project before activating this account.");
         setSelectedUser(user);
         handleOpenProjectModal(user.id);
       } else {
-        alert(res.error);
+        alert((res as any).error);
       }
     });
   };
@@ -84,7 +84,7 @@ export default function UsersPage() {
   const handleOpenProjectModal = async (userId: number) => {
     startTransition(async () => {
       const res = await getUserProjectAccess(userId);
-      if (res.success) {
+      if ("success" in res && res.success) {
         setSelectedProjects(res.data.map((id: any) => id.toString()));
         setIsProjectModalOpen(true);
       }
@@ -95,11 +95,11 @@ export default function UsersPage() {
     if (!selectedUser) return;
     startTransition(async () => {
       const res = await updateUserProjectAccess(selectedUser.id, selectedProjects);
-      if (res.success) {
+      if ("success" in res && res.success) {
         setIsProjectModalOpen(false);
         fetchData();
       } else {
-        alert(res.error);
+        alert((res as any).error);
       }
     });
   };
@@ -109,7 +109,7 @@ export default function UsersPage() {
 
     startTransition(async () => {
       const res = await deleteUser(user.id);
-      if (res.success) fetchData();
+      if ("success" in res && res.success) fetchData();
     });
   };
 
@@ -118,7 +118,7 @@ export default function UsersPage() {
     
     startTransition(async () => {
       const res = await updateUserRole(selectedUser.id, roleId);
-      if (res.success) {
+      if ("success" in res && res.success) {
         setIsRoleModalOpen(false);
         setSelectedUser(null);
         fetchData();

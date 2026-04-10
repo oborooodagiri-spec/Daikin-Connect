@@ -20,10 +20,10 @@ export default function ForgotPasswordPage() {
 
     try {
       const result = await requestPasswordReset(email);
-      if (result.error) {
-        setError(result.error);
+      if (result && "error" in result) {
+        setError(result.error || "An unknown error occurred");
       } else {
-        setMessage(result.success || "If an account exists, a reset link has been sent.");
+        setMessage(result && "success" in result ? (result.success as string || "If an account exists, a reset link has been sent.") : "If an account exists, a reset link has been sent.");
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");

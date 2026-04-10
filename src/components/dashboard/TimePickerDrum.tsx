@@ -63,7 +63,7 @@ export default function TimePickerDrum({ initialTime, onSave, onCancel }: Props)
 
   // Sync scroll on mount/change
   useEffect(() => {
-    const scrollTo = (ref: React.RefObject<HTMLDivElement>, val: number) => {
+    const scrollTo = (ref: React.RefObject<HTMLDivElement | null>, val: number) => {
       if (ref.current) {
         const itemHeight = 48; // h-12
         ref.current.scrollTop = val * itemHeight;
@@ -73,7 +73,7 @@ export default function TimePickerDrum({ initialTime, onSave, onCancel }: Props)
     scrollTo(minuteRef, minute);
   }, []);
 
-  const handleScroll = (ref: React.RefObject<HTMLDivElement>, setter: (val: number) => void) => {
+  const handleScroll = (ref: React.RefObject<HTMLDivElement | null>, setter: (val: number) => void) => {
     if (ref.current) {
       const itemHeight = 48;
       const index = Math.round(ref.current.scrollTop / itemHeight);

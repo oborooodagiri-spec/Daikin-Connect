@@ -87,10 +87,10 @@ export default function UnitHistoryTimeline({ history, session, unit }: { histor
     setIsDeleting(item.id);
     try {
       const res = await softDeleteActivity(Number(item.id), item.isFormal ? 'formal' : 'quick');
-      if (res.success) {
+      if ("success" in res && res.success) {
         alert("Laporan berhasil dipindahkan ke Trash.");
         window.location.reload();
-      } else {
+      } else if (res && "error" in res) {
         alert("Gagal menghapus: " + res.error);
       }
     } catch (e) {

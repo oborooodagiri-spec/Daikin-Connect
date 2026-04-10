@@ -138,7 +138,7 @@ export default function DashboardWrapper() {
         getDetailedUnitStatus(f)
       ]);
       setRecentActivities(activity);
-      if (details && details.success) {
+      if (details && "success" in details && details.success) {
         setProblemUnits(details.problems || []);
         setOnProgressUnits(details.progress || []);
       }
@@ -189,7 +189,7 @@ export default function DashboardWrapper() {
         openUnitDetail(foundInProgress);
       } else {
         const res = await getUnitByTag(unitTag);
-        if (res.success && 'data' in res) {
+        if (res && "success" in res && res.success && "data" in res) {
           openUnitDetail(res.data);
         }
       }
@@ -200,7 +200,7 @@ export default function DashboardWrapper() {
     if (!selectedUnit) return;
     setIsStatusUpdating(true);
     const res = await updateUnitStatus(selectedUnit.id, newStatus);
-    if (res.success) {
+    if ("success" in res && res.success) {
       setSelectedUnit({ ...selectedUnit, status: newStatus });
       fetchData(filters);
     }
@@ -220,7 +220,7 @@ export default function DashboardWrapper() {
         await generateComprehensivePDF(res.data, startDate, endDate);
         setIsExportModalOpen(false);
       } else if (res && 'error' in res) {
-        alert("Export Error: " + res.error);
+        alert("Export Error: " + ((res as any).error || "Unknown error"));
       }
     } catch (e) {
       console.error(e);

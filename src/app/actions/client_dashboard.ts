@@ -44,7 +44,7 @@ export async function getClientDashboardData() {
 
       // 2. Transform raw progress object into array for frontend
       const progressItems = [];
-      if (progress.success && progress.data) {
+      if ('success' in progress && progress.success && progress.data) {
         const { targets, corrective } = progress.data;
         
         // Add Preventive

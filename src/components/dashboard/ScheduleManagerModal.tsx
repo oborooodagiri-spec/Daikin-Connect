@@ -31,7 +31,7 @@ export default function ScheduleManagerModal({ schedule, isOpen, onClose }: Sche
   const loadData = async () => {
     setLoading(true);
     const res = await getScheduleManagementData(schedule.id.toString()) as any;
-    if (res.success) {
+    if (res && "success" in res && res.success) {
       setParticipants(res.data.attendance || []);
       setMomContent(res.data.mom?.content || "");
     }
@@ -56,7 +56,7 @@ export default function ScheduleManagerModal({ schedule, isOpen, onClose }: Sche
     startTransition(async () => {
       setSaveStatus("saving");
       const res = await updateAttendance(schedule.id.toString(), participants);
-      if (res.success) setSaveStatus("saved");
+      if (res && "success" in res && res.success) setSaveStatus("saved");
       setTimeout(() => setSaveStatus("idle"), 2000);
     });
   };
@@ -64,7 +64,7 @@ export default function ScheduleManagerModal({ schedule, isOpen, onClose }: Sche
   const handleSaveMoM = async () => {
     setSaveStatus("saving");
     const res = await updateMoM(schedule.id.toString(), momContent);
-    if (res.success) setSaveStatus("saved");
+    if (res && "success" in res && res.success) setSaveStatus("saved");
     setTimeout(() => setSaveStatus("idle"), 2000);
   };
 

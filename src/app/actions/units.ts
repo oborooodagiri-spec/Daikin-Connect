@@ -157,7 +157,9 @@ export async function createUnit(projectId: string, data: any) {
 // 3. EDIT UNIT
 export async function updateUnit(unitId: number, data: any) {
   const session = await getSession();
-  if (!session || !session.isInternal) return { error: "Unauthorized access" };
+  const isVendor = session?.roles?.some(r => r.toLowerCase().includes("vendor"));
+  
+  if (!session || (!session.isInternal && !isVendor)) return { error: "Unauthorized access" };
 
   try {
     await (prisma.units as any).update({

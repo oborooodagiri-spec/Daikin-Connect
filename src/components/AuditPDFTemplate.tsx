@@ -257,7 +257,7 @@ export const getAuditSections = (data: any, unit: any) => {
     // SIGNATURES
     <div key="sign" style={{ marginTop: "10mm" }}>
        <ReportSignatureFooter 
-         preparedBy={data.prepared_by || data.inspector_name}
+         preparedBy={data.prepared_by || data.inspector_name || ""}
          reviewedBy={data.engineerSignerName}
          witnessedBy={data.customerApproverName}
          reviewedDate={data.reviewedAt}

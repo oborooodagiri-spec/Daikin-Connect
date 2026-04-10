@@ -25,7 +25,11 @@ export default function ClientReportsPage() {
   const loadData = async () => {
     setLoading(true);
     const res = await getClientReports();
-    if (res.success) setReports(res.data);
+    if ("error" in res) {
+      // Handle error
+    } else {
+      setReports(res.data);
+    }
     setLoading(false);
   };
 

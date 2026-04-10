@@ -100,7 +100,7 @@ export default function ProjectTargetModal({ projectId, projectName, isOpen, onC
         yearly: calculated.yearly 
       });
       
-      if (res.success) {
+      if ("success" in res && res.success) {
         onClose();
       } else {
         alert(res.error || "Failed to save targets");

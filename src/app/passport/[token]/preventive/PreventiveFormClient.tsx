@@ -336,8 +336,8 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
           console.error("PDF Upload Failed:", errorText);
           throw new Error(`PDF Upload failed: ${pdfRes.status} ${pdfRes.statusText}`);
         }
-        const pdfData = await pdfRes.json();
-        if (pdfData.success) pdfUrl = pdfData.url;
+        const pdfData = await pdfRes.json() as any;
+        if (pdfData && "success" in pdfData && pdfData.success) pdfUrl = pdfData.url;
 
         // --- NEW: GENERATE BERITA ACARA PDF ---
         const baPdf = new jsPDF("p", "mm", "a4");
@@ -389,8 +389,8 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
 
         const baRes = await fetch('/api/upload', { method: 'POST', body: baFormData });
         if (baRes.ok) {
-          const baData = await baRes.json();
-          if (baData.success) baUrl = baData.url;
+          const baData = await baRes.json() as any;
+          if (baData && "success" in baData && baData.success) baUrl = baData.url;
         }
 
         baRoot.unmount();
@@ -414,8 +414,8 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
         
         const mRes = await fetch("/api/upload", { method: "POST", body: mForm });
         if (!mRes.ok) throw new Error(`Media Upload failed: ${mRes.status}`);
-        const mData = await mRes.json();
-        if (mData.success) {
+        const mData = await mRes.json() as any;
+        if (mData && "success" in mData && mData.success) {
           uploadedMedia.push({ 
             photo_url: mData.url, 
             media_type: item.type,
@@ -438,14 +438,14 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
         ? await updatePreventiveActivity(initialData.id, dbPayload) as any
         : await createPreventiveActivity(dbPayload) as any;
 
-      if (dbRes.success) {
+      if (dbRes && "success" in dbRes && dbRes.success) {
         if (onSuccess) {
           onSuccess();
         } else {
           setSuccess(true);
         }
       } else {
-        alert("Database Error: " + dbRes.error);
+        alert("Database Error: " + ((dbRes as any).error || "Unknown error"));
       }
     } catch (err: any) {
       console.error(err);
