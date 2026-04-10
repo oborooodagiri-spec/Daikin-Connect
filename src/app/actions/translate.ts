@@ -19,7 +19,7 @@ export async function translateReportStringsAction(
 
   try {
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.5-flash", // Using the confirmed available model
+      model: "gemini-1.5-flash", // Corrected to a stable available model
       systemInstruction: `You are a Senior Daikin HVAC Technical Specialist and Professional Japanese Translator. 
       Your task is to translate technical maintenance notes into ${targetLang === 'en' ? 'Technical English' : targetLang === 'ja' ? 'Technical Japanese' : 'Bahasa Indonesia'}.
       
