@@ -43,7 +43,29 @@ export default function ReportHubPage() {
   const probeRef = useRef<HTMLDivElement>(null);
 
   const type = params.type as string;
+  // Auto-scaling for mobile
+  const [reportScale, setReportScale] = useState(1);
+  
   const id = params.id as string;
+
+  useEffect(() => {
+    const handleResize = () => {
+      // 210mm is approx 794px at 96dpi
+      const reportWidth = 794; 
+      // Add small side padding
+      const availableWidth = window.innerWidth - 20; 
+      
+      if (availableWidth < reportWidth) {
+        setReportScale(availableWidth / reportWidth);
+      } else {
+        setReportScale(1);
+      }
+    };
+    
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     async function init() {
@@ -418,12 +440,14 @@ export default function ReportHubPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-200 py-12 px-4 print:p-0 print:bg-white transition-all duration-500">
+    <div 
+      className="min-h-screen bg-slate-200 py-6 sm:py-12 px-2 sm:px-4 print:p-0 print:bg-white transition-all duration-500"
+    >
       {/* FLOATING ACTION BAR */}
-      <div className="fixed top-6 left-4 right-4 z-50 flex items-center gap-2 bg-white/90 backdrop-blur-xl border border-white/20 p-2 rounded-2xl shadow-2xl overflow-x-auto no-scrollbar print:hidden max-w-[95vw] mx-auto">
+      <div className="fixed top-0 left-0 right-0 sm:top-6 sm:left-4 sm:right-4 z-50 flex items-center gap-2 bg-white/95 sm:bg-white/90 backdrop-blur-xl border-b sm:border border-slate-200 sm:border-white/20 p-2 sm:rounded-2xl shadow-lg sm:shadow-2xl overflow-x-auto no-scrollbar print:hidden max-w-full sm:max-w-[95vw] mx-auto">
         <button 
           onClick={() => window.close()} 
-          className="h-12 px-4 hover:bg-slate-100 rounded-xl transition-all flex items-center gap-2 text-slate-600 font-bold shrink-0"
+          className="h-10 sm:h-12 px-3 sm:px-4 hover:bg-slate-100 rounded-lg sm:rounded-xl transition-all flex items-center gap-2 text-slate-600 font-bold shrink-0"
         >
           <X size={18} />
           <span className="hidden md:inline">Tutup</span>
@@ -444,9 +468,9 @@ export default function ReportHubPage() {
               disabled={translating}
               className={`px-3 py-2 rounded-lg text-[10px] font-black transition-all ${
                 activeLang === lang.id 
-                  ? 'bg-white text-[#00a1e4] shadow-sm scale-110' 
+                  ? 'bg-white text-[#00a1e4] shadow-sm scale-110 border border-slate-100' 
                   : 'text-slate-400 hover:text-slate-600'
-              } ${translating ? 'opacity-50 cursor-not-allowed' : ''}`}
+              } ${translating ? 'opacity-50 cursor-not-allowed' : ''} shrink-0`}
             >
               {translating && activeLang !== lang.id ? '...' : lang.label}
             </button>
@@ -467,7 +491,7 @@ export default function ReportHubPage() {
            </div>
            <div className="w-px h-6 bg-slate-200 hidden lg:block" />
            <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase leading-none mb-1">Doc Type</p>
+              <p className="text-[10px] font-black text-slate-400 uppercase leading-none mb-1">Doc</p>
               <p className="text-xs font-black text-[#00a1e4] uppercase">{type}</p>
            </div>
         </div>
@@ -493,10 +517,10 @@ export default function ReportHubPage() {
           <button 
             onClick={() => handleSign('engineer')}
             disabled={approving}
-            className="h-12 px-6 bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-900/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 font-black disabled:opacity-50 border border-blue-500 shrink-0"
+            className="h-10 sm:h-12 px-4 sm:px-6 bg-blue-600 text-white rounded-lg sm:rounded-xl shadow-lg shadow-blue-900/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 font-black disabled:opacity-50 border border-blue-500 shrink-0"
           >
-            {approving ? <Loader2 size={18} className="animate-spin" /> : <ShieldCheck size={18} />}
-            <span>Review</span>
+            {approving ? <Loader2 size={16} className="animate-spin" /> : <ShieldCheck size={18} />}
+            <span className="text-xs sm:text-sm">Review</span>
           </button>
         ) : (
           <div className="h-12 px-4 flex items-center gap-2 text-amber-600 font-black bg-amber-50 rounded-xl border border-amber-200 shrink-0">
@@ -533,10 +557,10 @@ export default function ReportHubPage() {
         <button 
           onClick={handleDownloadPDF}
           disabled={downloading}
-          className="h-12 px-6 bg-[#003366] text-white rounded-xl shadow-lg shadow-blue-900/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 font-black disabled:opacity-50 shrink-0"
+          className="h-10 sm:h-12 px-4 sm:px-6 bg-[#003366] text-white rounded-lg sm:rounded-xl shadow-lg shadow-blue-900/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 font-black disabled:opacity-50 shrink-0"
         >
-          {downloading ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />}
-          <span className="hidden sm:inline">Download</span>
+          {downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={18} />}
+          <span className="hidden sm:inline text-xs sm:text-sm">Download</span>
         </button>
       </div>
 
@@ -554,8 +578,18 @@ export default function ReportHubPage() {
         {techSections}
       </div>
 
-      {/* A4 REPORT PREVIEW (PAGINATED) */}
-      <div ref={reportRef} className="flex flex-col items-center gap-8 mt-12 print:mt-0 print:gap-0">
+      {/* A4 REPORT PREVIEW (PAGINATED WITH AUTO-SCALE) */}
+      <div 
+        ref={reportRef} 
+        className="flex flex-col items-center gap-8 mt-16 sm:mt-12 print:mt-0 print:gap-0"
+        style={{ 
+          transform: reportScale < 1 ? `scale(${reportScale})` : 'none',
+          transformOrigin: 'top center',
+          width: reportScale < 1 ? '100%' : 'auto',
+          height: reportScale < 1 ? `calc(100% * ${reportScale})` : 'auto',
+          marginBottom: reportScale < 1 ? `-${(1 - reportScale) * 100}%` : '0' // Mitigate scale spacing
+        }}
+      >
         {pages.map((pageSections, index) => (
           <div key={index} className="print:shadow-none shadow-2xl">
             <ReportBase 
