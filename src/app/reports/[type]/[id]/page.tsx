@@ -418,15 +418,15 @@ export default function ReportHubPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-200 py-12 px-4 print:p-0 print:bg-white overflow-x-hidden">
+    <div className="min-h-screen bg-slate-200 py-12 px-4 print:p-0 print:bg-white transition-all duration-500">
       {/* FLOATING ACTION BAR */}
-      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-white/80 backdrop-blur-xl border border-white/20 p-2 rounded-2xl shadow-2xl print:hidden">
+      <div className="fixed top-6 left-4 right-4 z-50 flex items-center gap-2 bg-white/90 backdrop-blur-xl border border-white/20 p-2 rounded-2xl shadow-2xl overflow-x-auto no-scrollbar print:hidden max-w-[95vw] mx-auto">
         <button 
           onClick={() => window.close()} 
-          className="h-12 px-4 hover:bg-slate-100 rounded-xl transition-all flex items-center gap-2 text-slate-600 font-bold"
+          className="h-12 px-4 hover:bg-slate-100 rounded-xl transition-all flex items-center gap-2 text-slate-600 font-bold shrink-0"
         >
           <X size={18} />
-          <span className="hidden sm:inline">Tutup</span>
+          <span className="hidden md:inline">Tutup</span>
         </button>
         
         <div className="w-px h-6 bg-slate-200 mx-1" />
@@ -448,7 +448,7 @@ export default function ReportHubPage() {
                   : 'text-slate-400 hover:text-slate-600'
               } ${translating ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {translating && activeLang !== lang.id && activeLang !== lang.id ? '...' : lang.label}
+              {translating && activeLang !== lang.id ? '...' : lang.label}
             </button>
           ))}
           {translating && (
@@ -460,7 +460,7 @@ export default function ReportHubPage() {
 
         <div className="w-px h-6 bg-slate-200 mx-1" />
         
-        <div className="flex items-center gap-4 px-4 py-2 border border-slate-100 rounded-xl bg-slate-50">
+        <div className="hidden sm:flex items-center gap-4 px-4 py-2 border border-slate-100 rounded-xl bg-slate-50 shrink-0">
            <div className="hidden lg:block">
               <p className="text-[10px] font-black text-slate-400 uppercase leading-none mb-1">Unit ID</p>
               <p className="text-xs font-black text-[#003366]">{data.unit?.tag_number}</p>
@@ -474,18 +474,18 @@ export default function ReportHubPage() {
 
         <button 
           onClick={handlePrint}
-          className="h-12 px-4 hover:bg-slate-100 rounded-xl transition-all flex items-center gap-2 text-slate-800 font-bold underline decoration-[#00a1e4]"
+          className="h-12 px-4 hover:bg-slate-100 rounded-xl transition-all flex items-center gap-2 text-slate-800 font-bold underline decoration-[#00a1e4] shrink-0"
         >
           <Printer size={18} />
-          <span className="hidden sm:inline">Official Print</span>
+          <span className="hidden md:inline">Print</span>
         </button>
 
         {/* ENGINEER SIGN STATUS/BUTTON */}
         {isReviewedLocal ? (
-          <div className="h-12 px-6 flex items-center gap-2 text-emerald-600 font-black bg-emerald-50 rounded-xl border border-emerald-100 shadow-sm">
+          <div className="h-12 px-6 flex items-center gap-2 text-emerald-600 font-black bg-emerald-50 rounded-xl border border-emerald-100 shadow-sm shrink-0">
             <CheckCircle2 size={18} />
-            <div className="flex flex-col items-start leading-none">
-              <span className="text-[10px] uppercase opacity-60">Verified by Engineer</span>
+            <div className="hidden sm:flex flex-col items-start leading-none">
+              <span className="text-[10px] uppercase opacity-60">Verified</span>
               <span className="text-xs">{data.activity.engineer_signer_name || session?.name}</span>
             </div>
           </div>
@@ -493,24 +493,24 @@ export default function ReportHubPage() {
           <button 
             onClick={() => handleSign('engineer')}
             disabled={approving}
-            className="h-12 px-6 bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-900/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 font-black disabled:opacity-50 border border-blue-500"
+            className="h-12 px-6 bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-900/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 font-black disabled:opacity-50 border border-blue-500 shrink-0"
           >
             {approving ? <Loader2 size={18} className="animate-spin" /> : <ShieldCheck size={18} />}
-            <span>Engineer Review</span>
+            <span>Review</span>
           </button>
         ) : (
-          <div className="h-12 px-6 flex items-center gap-2 text-amber-600 font-black bg-amber-50 rounded-xl border border-amber-200">
+          <div className="h-12 px-4 flex items-center gap-2 text-amber-600 font-black bg-amber-50 rounded-xl border border-amber-200 shrink-0">
             <Loader2 size={16} className="animate-spin" />
-            <span className="text-[10px] uppercase">Awaiting Engineer Review</span>
+            <span className="text-[10px] uppercase hidden sm:inline">Awaiting Review</span>
           </div>
         )}
 
         {/* CUSTOMER SIGN STATUS/BUTTON */}
         {isApprovedLocal ? (
-          <div className="h-12 px-6 flex items-center gap-2 text-[#003366] font-black bg-blue-50 rounded-xl border border-blue-200 shadow-sm">
+          <div className="h-12 px-6 flex items-center gap-2 text-[#003366] font-black bg-blue-50 rounded-xl border border-blue-200 shadow-sm shrink-0">
             <CheckCircle2 size={18} className="text-[#00a1e4]" />
-            <div className="flex flex-col items-start leading-none">
-              <span className="text-[10px] uppercase opacity-60">Final Approved by Customer</span>
+            <div className="hidden sm:flex flex-col items-start leading-none">
+              <span className="text-[10px] uppercase opacity-60">Approved</span>
               <span className="text-xs">{data.activity.customer_approver_name}</span>
             </div>
           </div>
@@ -533,10 +533,10 @@ export default function ReportHubPage() {
         <button 
           onClick={handleDownloadPDF}
           disabled={downloading}
-          className="h-12 px-6 bg-[#003366] text-white rounded-xl shadow-lg shadow-blue-900/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 font-black disabled:opacity-50"
+          className="h-12 px-6 bg-[#003366] text-white rounded-xl shadow-lg shadow-blue-900/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 font-black disabled:opacity-50 shrink-0"
         >
           {downloading ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />}
-          <span>Download</span>
+          <span className="hidden sm:inline">Download</span>
         </button>
       </div>
 

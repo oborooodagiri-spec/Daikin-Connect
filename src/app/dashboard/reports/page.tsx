@@ -349,6 +349,7 @@ function ReportsContent() {
                 <Loader2 className="w-4 h-4 text-slate-300 animate-spin" />
               </div>
             )}
+            </div>
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
              <div className="flex flex-1 items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 gap-2">
