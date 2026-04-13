@@ -8,6 +8,14 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '10mb',
     },
   },
+  async rewrites() {
+    return [
+      {
+        source: '/uploads/:path*',
+        destination: '/api/assets/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;

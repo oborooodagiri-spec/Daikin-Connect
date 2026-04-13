@@ -82,15 +82,15 @@ export const getBeritaAcaraSections = (data: any, unit: any, engineerName: strin
       <div style={sectionHeader}>II. {t("Unit ID", lang)}</div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "5mm" }}>
         <div>
-          <p style={labelStyle}>Tag Number</p>
+          <p style={labelStyle}>{t("Tag Number", lang)}</p>
           <p style={valueStyle}>{unit.tag_number}</p>
         </div>
         <div>
-          <p style={labelStyle}>Model / Brand</p>
+          <p style={labelStyle}>{t("Model / Brand", lang)}</p>
           <p style={valueStyle}>{unit.model} / {unit.brand}</p>
         </div>
         <div>
-          <p style={labelStyle}>Serial Number</p>
+          <p style={labelStyle}>{t("Serial Number", lang)}</p>
           <p style={valueStyle}>{unit.serial_number || '-'}</p>
         </div>
       </div>
@@ -100,13 +100,17 @@ export const getBeritaAcaraSections = (data: any, unit: any, engineerName: strin
     <div key="hasil">
       <div style={sectionHeader}>III. {t("Technical Advice & Summary", lang)}</div>
       <div style={{ minHeight: "25mm", border: "1px solid #e2e8f0", padding: "3mm", borderRadius: "1.5mm", backgroundColor: "#f8fafd" }}>
-        <p style={{ fontSize: "9.5pt", fontWeight: 700, color: "#1e293b", marginBottom: "1.5mm", textDecoration: "underline" }}>Jenis Pekerjaan: {data.type || 'Service Activity'}</p>
+        <p style={{ fontSize: "9.5pt", fontWeight: 700, color: "#1e293b", marginBottom: "1.5mm", textDecoration: "underline" }}>
+          {lang === 'id' ? 'Jenis Pekerjaan' : lang === 'ja' ? '作業の種類' : 'Activity Type'}: {data.type || 'Service Activity'}
+        </p>
         <p style={{ fontSize: "9pt", color: "#334155", lineHeight: "1.4", whiteSpace: "pre-wrap" }}>
           {data.engineer_note || (lang === 'id' ? "Pekerjaan telah dilaksanakan sesuai prosedur Daikin." : lang === 'ja' ? "作業はダイキンの手順に従って実施されました。" : "The work has been carried out according to Daikin procedures.")}
         </p>
         {data.technical_advice && (
           <div style={{ marginTop: "2mm", paddingTop: "2mm", borderTop: "1px dashed #cbd5e1" }}>
-             <p style={{ fontSize: "8.5pt", fontWeight: 900, color: "#003366", textTransform: "uppercase" }}>{lang === 'ja' ? 'アドバイス' : 'Advice'}:</p>
+             <p style={{ fontSize: "8.5pt", fontWeight: 900, color: "#003366", textTransform: "uppercase" }}>
+               {lang === 'ja' ? 'アドバイス' : lang === 'id' ? 'SARAN TEKNIS' : 'ADVICE'}:
+             </p>
              <p style={{ fontSize: "8.5pt", color: "#475569" }}>{data.technical_advice}</p>
           </div>
         )}

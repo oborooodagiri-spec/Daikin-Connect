@@ -115,19 +115,55 @@ export default function ReportHubPage() {
     
     setDownloading(true);
     try {
+      const { createRoot } = await import("react-dom/client");
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       
-      const pages = reportRef.current.querySelectorAll(".print-report-container");
-      
-      for (let i = 0; i < pages.length; i++) {
-        const page = pages[i] as HTMLElement;
-        
-        // Ensure all images (server-side photos) on this page are loaded
-        await waitForImages(page);
+      const fileName = `${type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()}_Report_${data.unit?.tag_number || "Draft"}_${format(new Date(), "yyyyMMdd")}.pdf`;
 
-        const canvas = await html2canvas(page, {
+      // CAPTURE SANDBOX: Create a hidden unscaled container for high-fidelity capture
+      const sandbox = document.createElement("div");
+      sandbox.style.position = "absolute";
+      sandbox.style.top = "-9999px";
+      sandbox.style.left = "-9999px";
+      sandbox.style.width = "794px"; // Fixed A4 width at 96dpi
+      document.body.appendChild(sandbox);
+
+      const renderPage = async (pageIndex: number) => {
+        const pageContainer = document.createElement("div");
+        sandbox.appendChild(pageContainer);
+        const root = createRoot(pageContainer);
+        
+        root.render(
+          <ReportBase 
+            reportTitle={reportTitle} 
+            reportCode={reportCode}
+            unit={data.unit}
+            date={data.activity.service_date}
+            inputDate={type.toLowerCase() !== 'ba' ? data.activity.created_at : undefined}
+            pageNumber={pageIndex + 1}
+            totalPages={pages.length}
+            isFixedHeight={true}
+            lang={activeLang}
+          >
+            <div 
+              className="flex-1 flex flex-col w-full"
+              style={{ 
+                justifyContent: pageIndex >= (pages.length - photoSections.length) ? 'center' : 'flex-start',
+                paddingTop: pageIndex >= (pages.length - photoSections.length) ? '0' : '4mm'
+              }}
+            >
+              {pages[pageIndex]}
+            </div>
+          </ReportBase>
+        );
+
+        // Wait for render and images
+        await new Promise(r => setTimeout(r, 1000));
+        await waitForImages(pageContainer);
+
+        const canvas = await html2canvas(pageContainer, {
           scale: 2,
           useCORS: true,
           logging: false,
@@ -136,15 +172,22 @@ export default function ReportHubPage() {
         });
         
         const imgData = canvas.toDataURL("image/jpeg", 0.95);
-        if (i > 0) pdf.addPage();
+        if (pageIndex > 0) pdf.addPage();
         pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+        
+        root.unmount();
+        sandbox.removeChild(pageContainer);
+      };
+
+      for (let i = 0; i < pages.length; i++) {
+        await renderPage(i);
       }
       
-      const fileName = `${type}_Daikin-Connect_${data.unit?.tag_number || "Report"}.pdf`;
       pdf.save(fileName);
+      document.body.removeChild(sandbox);
     } catch (err) {
       console.error("Download error:", err);
-      alert("Failed to generate PDF. Please try again or use the Print button.");
+      alert("Failed to generate PDF. Please try again.");
     } finally {
       setDownloading(false);
     }
@@ -181,8 +224,17 @@ export default function ReportHubPage() {
         perm_action: activity.perm_action,
         recommendation: activity.recommendation,
         technical_advice: activity.technical_advice,
-        technicalAdvice: technicalJson.technicalAdvice,
+        technicalAdvice: technicalJson.technicalAdvice || technicalJson.technical_advice,
       };
+
+      // Extract Part comments for PM
+      if (technicalJson.parts) {
+        translatableMap.parts_vbelt = technicalJson.parts.vbelt_type;
+        translatableMap.parts_motor_p = technicalJson.parts.motor_pulley;
+        translatableMap.parts_motor_b = technicalJson.parts.motor_bearing;
+        translatableMap.parts_blower_p = technicalJson.parts.blower_pulley;
+        translatableMap.parts_blower_b = technicalJson.parts.blower_bearing;
+      }
 
       if (technicalJson.scope) {
         const scopeRemarks: any = {};
@@ -226,6 +278,13 @@ export default function ReportHubPage() {
              
            if (translatedMap.technicalAdvice) {
              tj.technicalAdvice = translatedMap.technicalAdvice;
+           }
+           if (translatedMap.parts_vbelt && tj.parts) {
+             tj.parts.vbelt_type = translatedMap.parts_vbelt;
+             tj.parts.motor_pulley = translatedMap.parts_motor_p;
+             tj.parts.motor_bearing = translatedMap.parts_motor_b;
+             tj.parts.blower_pulley = translatedMap.parts_blower_p;
+             tj.parts.blower_bearing = translatedMap.parts_blower_b;
            }
            if (translatedMap.scopeRemarks && tj.scope) {
              Object.keys(translatedMap.scopeRemarks).forEach(key => {
@@ -293,33 +352,74 @@ export default function ReportHubPage() {
       // Wait for React to render the stamp
       await new Promise(r => setTimeout(r, 1200));
       
+      // CAPTURE SANDBOX: High fidelity capture for digital archiving
+      const { createRoot } = await import("react-dom/client");
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       
-      // MULTI-PAGE SUPPORT (CRITICAL)
-      const pages = reportRef.current.querySelectorAll(".print-report-container");
-      for (let i = 0; i < pages.length; i++) {
-        const page = pages[i] as HTMLElement;
-        
-        // Ensure all images (including the new stamps/signatures) are loaded
-        await waitForImages(page);
+      const sandbox = document.createElement("div");
+      sandbox.style.position = "absolute";
+      sandbox.style.top = "-9999px";
+      sandbox.style.left = "-9999px";
+      sandbox.style.width = "794px";
+      document.body.appendChild(sandbox);
 
-        const canvas = await html2canvas(page, {
+      const renderPage = async (pageIndex: number) => {
+        const pageContainer = document.createElement("div");
+        sandbox.appendChild(pageContainer);
+        const root = createRoot(pageContainer);
+        
+        root.render(
+          <ReportBase 
+            reportTitle={reportTitle} 
+            reportCode={reportCode}
+            unit={data.unit}
+            date={data.activity.service_date}
+            inputDate={type.toLowerCase() !== 'ba' ? data.activity.created_at : undefined}
+            pageNumber={pageIndex + 1}
+            totalPages={pages.length}
+            isFixedHeight={true}
+            lang={activeLang}
+          >
+            <div 
+              className="flex-1 flex flex-col w-full"
+              style={{ 
+                justifyContent: pageIndex >= (pages.length - photoSections.length) ? 'center' : 'flex-start',
+                paddingTop: pageIndex >= (pages.length - photoSections.length) ? '0' : '4mm'
+              }}
+            >
+              {pages[pageIndex]}
+            </div>
+          </ReportBase>
+        );
+
+        // Wait for render, stamps and images
+        await new Promise(r => setTimeout(r, 1500));
+        await waitForImages(pageContainer);
+
+        const canvas = await html2canvas(pageContainer, {
           scale: 2,
           useCORS: true,
           backgroundColor: "#ffffff",
           windowWidth: 794
         });
         const imgData = canvas.toDataURL("image/jpeg", 0.95);
-        if (i > 0) pdf.addPage();
+        if (pageIndex > 0) pdf.addPage();
         pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+        
+        root.unmount();
+        sandbox.removeChild(pageContainer);
+      };
+
+      for (let i = 0; i < pages.length; i++) {
+        await renderPage(i);
       }
       
       // 3. Upload to Server
       const blob = pdf.output("blob");
       const folder = type.toLowerCase() === 'ba' ? 'berita-acara' : type.toLowerCase();
-      const fileName = `${type}_SIGNED_Daikin-Connect_${data.unit?.tag_number}.pdf`;
+      const fileName = `${type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()}_Report_${data.unit?.tag_number}_${format(new Date(), "yyyyMMdd")}.pdf`;
       
       const formData = new FormData();
       formData.append("file", new File([blob], fileName, { type: "application/pdf" }));
@@ -327,6 +427,7 @@ export default function ReportHubPage() {
 
       const uploadRes = await fetch("/api/upload", { method: "POST", body: formData });
       const { url } = await uploadRes.json();
+      document.body.removeChild(sandbox);
 
       // 4. Update URLs in DB
       let reportUrl = data.activity.pdf_report_url;

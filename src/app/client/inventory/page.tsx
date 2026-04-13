@@ -1,22 +1,11 @@
-"use client";
-
-import { useEffect, useState, useMemo } from "react";
-import { getClientInventory } from "@/app/actions/client_dashboard";
-import { 
-  Package, Search, ChevronRight,
-  ShieldCheck, AlertTriangle, 
-  CheckCircle2, Info, MapPin,
-  ExternalLink, ChevronLeft,
-  ChevronRight as ChevronRightIcon
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import UnitDetailModal from "@/components/UnitDetailModal";
+import { Language, t } from "@/lib/i18n";
 
 export default function ClientInventoryPage() {
   const [units, setUnits] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedUnit, setSelectedUnit] = useState<any>(null);
+  const [lang, setLang] = useState<Language>("en");
   
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,6 +13,8 @@ export default function ClientInventoryPage() {
 
   useEffect(() => {
     loadData();
+    const saved = localStorage.getItem("daikin_lang") as Language;
+    if (saved) setLang(saved);
   }, []);
 
   const loadData = async () => {
@@ -117,7 +108,7 @@ export default function ClientInventoryPage() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h1 className="text-4xl font-black text-[#003366] tracking-tighter">
-            Asset <span className="text-[#00a1e4]">Inventory</span>
+            {t("Asset", lang)} <span className="text-[#00a1e4]">{t("Inventory", lang)}</span>
           </h1>
           <p className="text-slate-500 text-sm font-bold mt-2">
             Managing <span className="text-[#003366] font-black">{units.length} registered units</span> across your facility.
@@ -144,9 +135,9 @@ export default function ClientInventoryPage() {
           <table className="w-full text-left border-collapse min-w-[800px] sm:min-w-[1000px]">
             <thead>
               <tr className="bg-slate-50/80 border-b border-slate-100">
-                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Identity / Tag</th>
-                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Spec / Cap</th>
-                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Area / Floor</th>
+                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{t("Identity / Tag", lang)}</th>
+                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{t("Spec / Cap", lang)}</th>
+                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{t("Area / Floor", lang)}</th>
                 <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Health Index</th>
                 <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Status</th>
                 <th className="px-8 py-6 text-right text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Action</th>
@@ -202,7 +193,7 @@ export default function ClientInventoryPage() {
                       <td className="px-8 py-5">
                          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest ${sInfo.classes} ${sInfo.isBlinking ? 'animate-pulse' : ''}`}>
                             <div className={`w-1.5 h-1.5 rounded-full ${sInfo.accent}`} />
-                            {u.status.replace("_", " ")}
+                            {t(u.status, lang)}
                          </div>
                       </td>
                       <td className="px-8 py-5 text-right">

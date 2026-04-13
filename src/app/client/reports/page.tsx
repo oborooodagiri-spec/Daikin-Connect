@@ -1,25 +1,16 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { getClientReports } from "@/app/actions/client_dashboard";
-import { 
-  FileText, Search, Download, 
-  ChevronRight, Calendar, Tag,
-  FileCheck, ShieldCheck, Activity,
-  Filter, ExternalLink, Eye
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { format } from "date-fns";
-import Link from "next/link";
+import { Language, t } from "@/lib/i18n";
 
 export default function ClientReportsPage() {
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState<string>("All");
+  const [lang, setLang] = useState<Language>("en");
 
   useEffect(() => {
     loadData();
+    const saved = localStorage.getItem("daikin_lang") as Language;
+    if (saved) setLang(saved);
   }, []);
 
   const loadData = async () => {
@@ -63,7 +54,7 @@ export default function ClientReportsPage() {
               <span>Certified Technical Records</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-[#003366] tracking-tighter">
-            Service <span className="text-[#00a1e4]">Reports</span>
+            Service <span className="text-[#00a1e4]">{t("Reports", lang)}</span>
           </h1>
           <p className="text-slate-500 text-sm font-bold mt-2">
             Explore and download certified technical documentation for all maintenance activities.
@@ -81,7 +72,7 @@ export default function ClientReportsPage() {
                      filterType === type ? 'bg-[#003366] text-white shadow-md shadow-blue-900/10' : 'text-slate-400 hover:text-slate-700'
                    }`}
                  >
-                   {type}
+                   {type === "All" ? t("Semua", lang) || "All" : t(type, lang)}
                  </button>
               ))}
            </div>
@@ -106,8 +97,8 @@ export default function ClientReportsPage() {
           <thead>
             <tr className="bg-slate-50 border-b border-slate-100 font-black text-[10px] text-slate-400 uppercase tracking-widest">
               <th className="px-8 py-6 text-left">Document / Activity</th>
-              <th className="px-8 py-6 text-left">Asset Tag</th>
-              <th className="px-8 py-6 text-left">Service Date</th>
+              <th className="px-8 py-6 text-left">{t("Tag Number", lang)}</th>
+              <th className="px-8 py-6 text-left">{t("Service Date", lang)}</th>
               <th className="px-8 py-6 text-left">Inspector</th>
               <th className="px-8 py-6 text-right">Actions</th>
             </tr>
@@ -131,7 +122,7 @@ export default function ClientReportsPage() {
                          <FileText size={18} />
                       </div>
                       <div>
-                         <p className="text-sm font-black text-[#003366] tracking-tight">{report.type} Service Record</p>
+                         <p className="text-sm font-black text-[#003366] tracking-tight">{t(report.type, lang)} {t("Service Record", lang) || "Service Record"}</p>
                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">ID: #{report.id}</p>
                       </div>
                    </div>

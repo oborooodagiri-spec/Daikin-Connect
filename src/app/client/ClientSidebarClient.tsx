@@ -27,26 +27,37 @@ export default function ClientSidebarClient({
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
+  const isVendor = session?.roles?.some((r: any) => 
+    /vendor|partner|service/i.test(typeof r === 'string' ? r : r.role_name)
+  );
+
+  const lang = (typeof window !== 'undefined' ? localStorage.getItem('daikin_lang') : 'en') as Language || 'en';
+
   const menuItems = [
     { 
       href: "/client/dashboard", 
-      label: "Overview", 
+      label: t("Overview", lang), 
       icon: LayoutDashboard 
     },
     { 
       href: "/client/inventory", 
-      label: "My Assets", 
+      label: t("My Assets", lang), 
       icon: Package 
     },
     { 
       href: "/client/schedules", 
-      label: "Work Plan", 
+      label: t("Work Plan", lang), 
       icon: Calendar 
     },
     { 
       href: "/client/reports", 
-      label: "Reports", 
+      label: t("Reports", lang), 
       icon: FileText 
+    },
+    { 
+      href: "/client/settings", 
+      label: t("Settings", lang), 
+      icon: Settings 
     },
   ];
 
@@ -79,12 +90,16 @@ export default function ClientSidebarClient({
         ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0
       `}>
         <div className="p-8 border-b border-white/10 flex flex-col items-center shrink-0">
-          <img src="/daikin_logo.png" className="h-6 brightness-0 invert mb-6" alt="Daikin" />
+          <div className="relative h-10 w-48 mb-6">
+            <img src="/logo_epl_connect_1.png" className="h-10 brightness-0 invert" alt="EPL Connect" />
+          </div>
           <div className="text-center">
-            <p className="text-xs font-black uppercase tracking-[0.3em] text-blue-300 opacity-60">CLIENT PORTAL</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-300 opacity-60">
+              {isVendor ? t("PARTNER PORTAL", lang) : t("CLIENT PORTAL", lang)}
+            </p>
             <p className="text-sm font-bold mt-1 text-white truncate max-w-[200px]">{session?.name}</p>
             <span className="text-[10px] px-2 py-0.5 bg-blue-500/30 text-blue-200 rounded-full border border-blue-400/20 mt-2 inline-block font-black uppercase tracking-widest">
-              Project Partner
+              {isVendor ? t("Service Partner", lang) : t("Project Partner", lang)}
             </span>
           </div>
         </div>
@@ -114,13 +129,14 @@ export default function ClientSidebarClient({
         <div className="p-4 mt-auto border-t border-white/5">
           <button 
             onClick={() => { 
+                localStorage.removeItem("daikin_last_project");
               logout(); 
               setIsOpen(false); 
             }}
             className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white transition-all duration-500 group"
           >
             <LogOut className="w-5 h-5 transition-transform group-hover:scale-110" />
-            <span className="text-sm font-black uppercase tracking-widest">Exit Portal</span>
+            <span className="text-sm font-black uppercase tracking-widest">{t("Exit Portal", lang)}</span>
           </button>
         </div>
       </aside>

@@ -251,7 +251,7 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
       </div>
 
       <div className="grid grid-cols-12 gap-6 lg:gap-8 flex-1 overflow-hidden">
-        <div className="col-span-12 lg:col-span-8 flex flex-col overflow-hidden">
+        <div className="col-span-12 lg:col-span-7 flex flex-col overflow-hidden">
           <div className="grid grid-cols-7 mb-4">
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
               <div key={d} className="text-center text-[10px] font-black text-slate-300 uppercase tracking-widest">{d}</div>
@@ -297,7 +297,7 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
           </div>
         </div>
 
-        <div className="col-span-12 lg:col-span-4 bg-slate-50/50 rounded-[2rem] border border-slate-100 p-1 flex flex-col overflow-hidden h-full shadow-inner">
+        <div className="col-span-12 lg:col-span-5 bg-slate-50/50 rounded-[2rem] border border-slate-100 p-1 flex flex-col overflow-hidden h-full shadow-inner">
           {isCreating ? (
             <ScheduleInputForm 
               selectedDate={selectedDate}

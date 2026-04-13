@@ -22,7 +22,7 @@ export async function translateReportStringsAction(
     
     // Using v1beta for advanced preview models
     const model = genAI.getGenerativeModel(
-      { model: "gemini-2.5-flash" }, 
+      { model: "gemini-1.5-flash" }, 
       { apiVersion: 'v1beta' }
     );
 
@@ -46,11 +46,10 @@ export async function translateReportStringsAction(
     const response = await result.response;
     let text = response.text();
     
-    // Clean up response
-    if (text.includes("```json")) {
-      text = text.match(/```json\n([\s\S]*?)\n```/)?.[1] || text;
-    } else if (text.includes("```")) {
-       text = text.match(/```\n([\s\S]*?)\n```/)?.[1] || text;
+    // Robust cleaning: extract first { to last }
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      text = jsonMatch[0];
     }
 
     const translatedMap = JSON.parse(text);

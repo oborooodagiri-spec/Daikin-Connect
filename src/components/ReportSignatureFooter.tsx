@@ -34,7 +34,7 @@ export const ReportSignatureFooter = ({
                 {preparedBy || "TEKNISI LAPANGAN"}
             </p>
         </div>
-        <p style={{ fontSize: "6pt", fontWeight: 600, color: "#64748b", marginTop: "1mm" }}>Field Technician</p>
+        <p style={{ fontSize: "6pt", fontWeight: 600, color: "#64748b", marginTop: "1mm" }}>{t("Field Technician", lang)}</p>
       </div>
 
       {/* COLUMN 2: REVIEWED BY (INTERNAL ENGINEER) */}
@@ -51,13 +51,13 @@ export const ReportSignatureFooter = ({
           ) : (
             <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <div style={{ border: "1px dashed #cbd5e1", borderRadius: "8px", width: "80%", height: "80%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <p style={{ fontSize: "7pt", color: "#94a3b8", fontStyle: "italic" }}>Awaiting Review</p>
+                <p style={{ fontSize: "7pt", color: "#94a3b8", fontStyle: "italic" }}>{t("Awaiting Review", lang)}</p>
               </div>
             </div>
           )}
         </div>
         <p style={{ fontSize: "9pt", fontWeight: 900, color: "#111", marginTop: "1mm" }}>{reviewedBy || "-"}</p>
-        <p style={{ fontSize: "6pt", fontWeight: 600, color: "#64748b" }}>Internal Engineer</p>
+        <p style={{ fontSize: "6pt", fontWeight: 600, color: "#64748b" }}>{t("Internal Engineer", lang)}</p>
       </div>
 
       {/* COLUMN 3: WITNESSED BY (CUSTOMER) */}
@@ -74,7 +74,7 @@ export const ReportSignatureFooter = ({
           ) : (
             <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <div style={{ border: "1px dashed #cbd5e1", borderRadius: "8px", width: "80%", height: "80%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <p style={{ fontSize: "7pt", color: "#94a3b8", fontStyle: "italic" }}>Awaiting Approval</p>
+                <p style={{ fontSize: "7pt", color: "#94a3b8", fontStyle: "italic" }}>{t("Awaiting Approval", lang)}</p>
               </div>
             </div>
           )}

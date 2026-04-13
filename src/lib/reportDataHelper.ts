@@ -76,9 +76,9 @@ export const processReportData = (report: any) => {
     // NEW: For Audit, if we have component states, use the balanced AHI
     if (report.type === "Audit") {
       const ahi = calculateBalancedAHI({
-        fincoil: t.fincoil_cond || (report.fincoil_cond as any) || 'GOOD',
-        drainPan: t.drain_pan_cond || (report.drain_pan_cond as any) || 'GOOD',
-        blowerFan: t.blower_fan_cond || (report.blower_fan_cond as any) || 'GOOD',
+        fincoil: t.fincoil_cond || report.fincoil_cond || 'GOOD',
+        drainPan: t.drain_pan_cond || report.drain_pan_cond || 'GOOD',
+        blowerFan: t.blower_fan_cond || report.blower_fan_cond || 'GOOD',
         accessories: [...(t.inlet || []), ...(t.outlet || [])],
         enteringDB: report.entering_db || t.entering_db || t.temp_inlet || 25,
         leavingDB: report.leaving_db || t.leaving_db || t.temp_outlet || 15,

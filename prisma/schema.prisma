@@ -323,7 +323,7 @@ model corrective {
   perm_action     String?   @db.Text
   recommendation  String?   @db.Text
   photo_url       String?   @db.Text
-  status          String?   @default("Pending") @db.VarChar(50)
+  status          String?   @default("Final Approved") @db.VarChar(50)
   created_at      DateTime? @default(now()) @db.Timestamp(0)
   deleted_at      DateTime? @db.DateTime(0)
   units           units     @relation(fields: [unit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "corrective_ibfk_1")

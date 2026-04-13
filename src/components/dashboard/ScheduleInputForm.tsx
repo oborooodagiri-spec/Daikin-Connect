@@ -147,8 +147,8 @@ export default function ScheduleInputForm({ selectedDate, projectId: initialProj
       </AnimatePresence>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="flex-1 p-6 space-y-5 overflow-y-auto custom-scrollbar flex flex-col justify-between">
-        <div className="space-y-5">
+      <form onSubmit={handleSubmit} className="flex-1 p-3 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto custom-scrollbar flex flex-col justify-between">
+        <div className="space-y-4 sm:space-y-5">
             {/* Job Title */}
             <div className="space-y-1.5">
                 <label className="text-[9px] font-black uppercase tracking-widest text-slate-400">Job Title</label>
@@ -179,7 +179,7 @@ export default function ScheduleInputForm({ selectedDate, projectId: initialProj
                                 : 'bg-white border-slate-100 text-slate-400 hover:border-slate-200'
                             }`}
                         >
-                            <p className="text-[10px] font-black uppercase tracking-tighter">{t}</p>
+                            <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-tighter sm:tracking-normal">{t}</p>
                         </div>
                     ))}
                 </div>
@@ -240,7 +240,7 @@ export default function ScheduleInputForm({ selectedDate, projectId: initialProj
                 {!formData.project_id ? (
                     <select 
                        required
-                       className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-xs font-bold text-[#003366] uppercase"
+                       className="w-full px-3 sm:px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-[10px] sm:text-xs font-bold text-[#003366] uppercase"
                        value={formData.project_id}
                        onChange={(e) => setFormData({ ...formData, project_id: e.target.value })}
                     >
@@ -320,7 +320,7 @@ export default function ScheduleInputForm({ selectedDate, projectId: initialProj
             <button 
                 type="submit" 
                 disabled={loading}
-                className="px-10 py-4 bg-[#003366] text-white text-[11px] font-black tracking-[0.2em] uppercase rounded-2xl shadow-xl shadow-blue-500/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
+                className="px-6 sm:px-10 py-4 bg-[#003366] text-white text-[10px] sm:text-[11px] font-black tracking-[0.2em] uppercase rounded-2xl shadow-xl shadow-blue-500/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
             >
                 {loading ? "SAVING..." : "SCHEDULE"}
                 {!loading && <Check size={14} className="text-[#00a1e4]" />}

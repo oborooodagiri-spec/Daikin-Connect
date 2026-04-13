@@ -52,14 +52,17 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
     design_airflow: initialData.design_airflow?.toString() || "",
     design_cooling_capacity: initialData.design_cooling_capacity?.toString() || "",
     
-    t: (typeof initialData.technical_json === 'string' ? JSON.parse(initialData.technical_json) : initialData.technical_json) || {
-      supplyArea: "", returnArea: "", freshArea: "",
-      supplyVelocity: Array(15).fill(""),
-      returnVelocity: Array(15).fill(""),
-      freshVelocity: Array(15).fill(""),
-      inlet: Array(6).fill("N/A"),
-      outlet: Array(6).fill("N/A")
-    }
+      t: (typeof initialData.technical_json === 'string' ? JSON.parse(initialData.technical_json) : initialData.technical_json) || {
+        supplyArea: "", returnArea: "", freshArea: "",
+        supplyVelocity: Array(15).fill(""),
+        returnVelocity: Array(15).fill(""),
+        freshVelocity: Array(15).fill(""),
+        inlet: Array(6).fill("N/A"),
+        outlet: Array(6).fill("N/A"),
+        fincoil_cond: "GOOD",
+        drain_pan_cond: "GOOD",
+        blower_fan_cond: "GOOD"
+      }
   } : {
     unit_id: unit.id,
     unit_tag: unit.tag_number || "",
@@ -77,16 +80,16 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
       returnVelocity: Array(15).fill(""),
       freshVelocity: Array(15).fill(""),
       inlet: Array(6).fill("N/A"),
-      outlet: Array(6).fill("N/A")
+      outlet: Array(6).fill("N/A"),
+      fincoil_cond: "GOOD",
+      drain_pan_cond: "GOOD",
+      blower_fan_cond: "GOOD"
     },
     chws_temp: "", chwr_temp: "", chws_press: "", chwr_press: "",
     water_flow_gpm: "", pipe_size: "",
     power_kw: "",
     amp_r: "", amp_s: "", amp_t: "",
-    volt_rs: "", volt_rt: "", volt_st: "", volt_ln: "",
-    fincoil_cond: "GOOD",
-    drain_pan_cond: "GOOD",
-    blower_fan_cond: "GOOD"
+    volt_rs: "", volt_rt: "", volt_st: "", volt_ln: ""
   });
 
   // If we have supplyVelocity etc from processReportData fallback, use them
@@ -156,9 +159,9 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
   // Health Vitality Calculation (Balanced AHI Utility)
   const healthResult = useMemo<AHIResult>(() => {
     return calculateBalancedAHI({
-      fincoil: formData.fincoil_cond,
-      drainPan: formData.drain_pan_cond,
-      blowerFan: formData.blower_fan_cond,
+      fincoil: formData.t.fincoil_cond,
+      drainPan: formData.t.drain_pan_cond,
+      blowerFan: formData.t.blower_fan_cond,
       accessories: [...formData.t.inlet, ...formData.t.outlet],
       enteringDB: parseFloat(formData.entering_db) || 0,
       leavingDB: parseFloat(formData.leaving_db) || 0,
@@ -742,8 +745,8 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
                            {['GOOD', 'BAD'].map(v => (
                              <button
                                key={v}
-                               onClick={() => setFormData({...formData, [comp.key]: v})}
-                               className={`px-4 py-1.5 rounded-lg text-[10px] font-black transition-all ${formData[comp.key] === v ? (v === 'GOOD' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white') : 'text-slate-400'}`}
+                               onClick={() => setT(comp.key, v)}
+                               className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${formData.t[comp.key] === v ? (v === 'GOOD' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white') : 'bg-slate-100 text-slate-400'}`}
                              >
                                {v}
                              </button>

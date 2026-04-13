@@ -1,25 +1,16 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { getClientSchedules, requestClientVisit } from "@/app/actions/client_dashboard";
-import { 
-  Calendar, Clock, MapPin, 
-  ChevronRight, ArrowUpRight, CheckCircle2,
-  CalendarCheck, Plus, AlertCircle
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { format, isAfter, parseISO } from "date-fns";
-import { useRouter } from "next/navigation";
-import ScheduleCalendarWidget from "@/components/dashboard/ScheduleCalendarWidget";
+import { Language, t } from "@/lib/i18n";
 
 export default function ClientSchedulesPage() {
   const router = useRouter();
   const [schedules, setSchedules] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [requestStatus, setRequestStatus] = useState<"idle" | "sending" | "success">("idle");
+  const [lang, setLang] = useState<Language>("en");
 
   useEffect(() => {
     loadData();
+    const saved = localStorage.getItem("daikin_lang") as Language;
+    if (saved) setLang(saved);
   }, []);
 
   const loadData = async () => {
@@ -66,8 +57,8 @@ export default function ClientSchedulesPage() {
             <span>Service Schedule Tracking</span>
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#003366] tracking-tighter leading-tight">
-            Work Plan <br/>
-            <span className="text-[#00a1e4]">& Service Log</span>
+            {t("Work Plan", lang)} <br/>
+            <span className="text-[#00a1e4]">& {t("Service History", lang)}</span>
           </h1>
         </div>
 
@@ -80,7 +71,6 @@ export default function ClientSchedulesPage() {
                'bg-[#003366] text-white shadow-blue-900/20 hover:bg-blue-900 group'
              }`}
            >
-              {/* ... button content stayed the same inner logic ... */}
               {requestStatus === 'idle' && <><Plus size={16} className="group-hover:rotate-90 transition-transform" /> Request Service Visit</>}
               {requestStatus === 'sending' && <><div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Submitting...</>}
               {requestStatus === 'success' && <><CheckCircle2 size={16} /> Sent Successfully</>}
@@ -94,7 +84,7 @@ export default function ClientSchedulesPage() {
            <div className="bg-white border border-slate-100 p-4 sm:p-8 rounded-[1.5rem] sm:rounded-[3rem] shadow-sm">
               <h3 className="text-sm font-black text-[#003366] mb-8 flex items-center gap-2 uppercase tracking-tight">
                  <CalendarCheck size={18} className="text-[#00a1e4]"/>
-                 Maintenance Calendar
+                 {t("Maintenance Calendar", lang)}
               </h3>
               <ScheduleCalendarWidget isInternal={false} />
            </div>
@@ -107,13 +97,13 @@ export default function ClientSchedulesPage() {
               
               <div className="space-y-4">
                  {upcoming.length === 0 ? (
-                   <div className="p-10 border-2 border-dashed border-slate-100 rounded-[2.5rem] flex flex-col items-center justify-center grayscale opacity-40 text-slate-300">
-                      <Calendar size={40} />
-                      <p className="text-xs font-bold mt-2 uppercase">No upcoming visits scheduled</p>
-                   </div>
+                    <div className="p-10 border-2 border-dashed border-slate-100 rounded-[2.5rem] flex flex-col items-center justify-center grayscale opacity-40 text-slate-300">
+                       <Calendar size={40} />
+                       <p className="text-xs font-bold mt-2 uppercase">No upcoming visits scheduled</p>
+                    </div>
                  ) : (
                     upcoming.map((s, i) => (
-                       <ScheduleItem key={s.id} schedule={s} />
+                       <ScheduleItem key={s.id} schedule={s} lang={lang} />
                     ))
                  )}
               </div>
@@ -125,7 +115,7 @@ export default function ClientSchedulesPage() {
            <div className="bg-slate-50 border border-slate-100 p-6 sm:p-8 rounded-[2rem] sm:rounded-[3rem] space-y-8">
               <h3 className="text-sm font-black text-slate-400 flex items-center gap-2 uppercase tracking-tight">
                  <CheckCircle2 size={18} className="text-emerald-500"/>
-                 Service History
+                 {t("Service History", lang)}
               </h3>
               
               <div className="space-y-6">
@@ -158,7 +148,7 @@ export default function ClientSchedulesPage() {
   );
 }
 
-function ScheduleItem({ schedule }: { schedule: any }) {
+function ScheduleItem({ schedule, lang }: { schedule: any, lang: Language }) {
    return (
       <motion.div 
         initial={{ opacity: 0, x: -10 }}
@@ -171,7 +161,7 @@ function ScheduleItem({ schedule }: { schedule: any }) {
                <span className="text-[9px] uppercase tracking-tighter">{format(new Date(schedule.start_at), "MMM")}</span>
             </div>
             <div>
-               <p className="text-[10px] font-black text-[#00a1e4] uppercase tracking-widest mb-0.5">{schedule.type}</p>
+               <p className="text-[10px] font-black text-[#00a1e4] uppercase tracking-widest mb-0.5">{t(schedule.type, lang)}</p>
                <h4 className="text-lg font-black text-[#003366] tracking-tight">{schedule.title}</h4>
                <div className="flex items-center gap-4 mt-1 text-xs font-bold text-slate-400">
                   <span className="flex items-center gap-1"><Clock size={12}/> {format(new Date(schedule.start_at), "HH:mm")} - {format(new Date(schedule.end_at), "HH:mm")}</span>
@@ -190,7 +180,7 @@ function ScheduleItem({ schedule }: { schedule: any }) {
                  schedule.status === 'Planned' ? 'text-amber-500' : 
                  schedule.status === 'InProgress' ? 'text-blue-500' : 'text-emerald-500'
                }`}>
-                  {schedule.status}
+                  {t(schedule.status, lang)}
                </p>
             </div>
          </div>

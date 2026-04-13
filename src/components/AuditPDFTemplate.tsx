@@ -45,26 +45,26 @@ export const getAuditSections = (data: any, unit: any) => {
       <div style={sectionHeader}>{t("A. GENERAL DATA", lang)}</div>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "8pt", fontWeight: "bold" }}>
         <tbody>
-            <tr>
-              <td style={cellLabel}>{t("Room / Tenant", lang)}</td>
-              <td style={cellVal}>{unit?.room_tenant || "-"}</td>
-            <td style={cellLabel}>Design Air Temp</td>
+          <tr>
+            <td style={cellLabel}>{t("Room / Tenant", lang)}</td>
+            <td style={cellVal}>{unit?.room_tenant || "-"}</td>
+            <td style={cellLabel}>{t("Design Air Temp", lang)}</td>
             <td style={cellVal}>{data.design_temp || 'N/A'} (°C)</td>
           </tr>
           <tr>
-            <td style={cellLabel}>Unit Tag Number</td>
+            <td style={cellLabel}>{t("Unit Tag Number", lang)}</td>
             <td style={cellVal}>{data.unit_tag || unit?.tag_number || '-'}</td>
-            <td style={cellLabel}>Design Cooling Cap.</td>
+            <td style={cellLabel}>{t("Design Cooling Cap.", lang)}</td>
             <td style={cellVal}>{data.design_cooling_capacity || '0'} (Btu/h)</td>
           </tr>
           <tr>
-            <td style={cellLabel}>Machine Brand</td>
+            <td style={cellLabel}>{t("Machine Brand", lang)}</td>
             <td style={cellVal}>{unit?.brand || '-'} ({unit?.model})</td>
-            <td style={cellLabel}>Design Air Flow</td>
+            <td style={cellLabel}>{t("Design Air Flow", lang)}</td>
             <td style={cellVal}>{data.design_airflow || '0'} (Cfm)</td>
           </tr>
           <tr>
-            <td style={cellLabel}>Machine Type</td>
+            <td style={cellLabel}>{t("Machine Type", lang)}</td>
             <td style={cellVal}>{unit?.unit_type || 'FCU/AHU'}</td>
             <td style={cellLabel}>-</td>
             <td style={cellVal}>-</td>
@@ -111,37 +111,37 @@ export const getAuditSections = (data: any, unit: any) => {
             <td style={tdStyle}>{techData.freshArea || 'N/A'}</td>
             
             <td style={{ ...tdStyle, textAlign: "left", verticalAlign: "top", padding: "1mm" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "2px", fontSize: "5pt" }}>
                 {Array.from({length: 15}).map((_, i) => (
-                  <div key={i} style={{ borderBottom: "0.1pt solid #eee" }}>{i+1}. {techData.supplyVelocity?.[i] || '0'}</div>
+                  <div key={i} style={{ borderBottom: "0.1pt solid #eee", whiteSpace: "nowrap" }}>{i+1}. {techData.supplyVelocity?.[i] || '0.0'}</div>
                 ))}
               </div>
               <div style={{ marginTop: "1mm", color: "#00a1e4", borderTop: "1px solid #ddd", paddingTop: "0.5mm" }}>Avg: {avgSupply} m/s</div>
             </td>
             
             <td style={{ ...tdStyle, textAlign: "left", verticalAlign: "top", padding: "1mm" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "2px", fontSize: "5pt" }}>
                 {Array.from({length: 15}).map((_, i) => (
-                  <div key={i} style={{ borderBottom: "0.1pt solid #eee" }}>{i+1}. {techData.returnVelocity?.[i] || '0'}</div>
+                  <div key={i} style={{ borderBottom: "0.1pt solid #eee", whiteSpace: "nowrap" }}>{i+1}. {techData.returnVelocity?.[i] || '0.0'}</div>
                 ))}
               </div>
               <div style={{ marginTop: "1mm", color: "#00a1e4", borderTop: "1px solid #ddd", paddingTop: "0.5mm" }}>Avg: {avgReturn} m/s</div>
             </td>
             
             <td style={{ ...tdStyle, textAlign: "left", verticalAlign: "top", padding: "1mm" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "2px", fontSize: "5pt" }}>
                 {Array.from({length: 15}).map((_, i) => (
-                  <div key={i} style={{ borderBottom: "0.1pt solid #eee" }}>{i+1}. {techData.freshVelocity?.[i] || '0'}</div>
+                  <div key={i} style={{ borderBottom: "0.1pt solid #eee", whiteSpace: "nowrap" }}>{i+1}. {techData.freshVelocity?.[i] || '0.0'}</div>
                 ))}
               </div>
               <div style={{ marginTop: "1mm", color: "#00a1e4", borderTop: "1px solid #ddd", paddingTop: "0.5mm" }}>Avg: {avgFresh} m/s</div>
             </td>
           </tr>
           <tr style={{ backgroundColor: "#f8fafc", fontWeight: "900" }}>
-            <td colSpan={3} style={{ ...tdStyle, textAlign: "right", color: "#003366" }}>TOTAL CALCULATED AIR FLOW (Cfm)</td>
-            <td style={{ ...tdStyle, color: "#d946ef" }}>{techData.totalCfmSupply || '0'}</td>
-            <td style={{ ...tdStyle, color: "#d946ef" }}>{techData.totalCfmReturn || '0'}</td>
-            <td style={{ ...tdStyle, color: "#d946ef" }}>{techData.totalCfmFresh || '0'}</td>
+            <td colSpan={3} style={{ ...tdStyle, textAlign: "right", color: "#003366" }}>{lang === 'id' ? 'TOTAL KALKULASI ALIRAN UDARA' : lang === 'ja' ? '計算された総風量' : 'TOTAL CALCULATED AIR FLOW'} (Cfm)</td>
+            <td style={{ ...tdStyle, color: "#d946ef" }}>{techData.totalCfmSupply && techData.totalCfmSupply !== '-' ? techData.totalCfmSupply : '0'}</td>
+            <td style={{ ...tdStyle, color: "#d946ef" }}>{techData.totalCfmReturn && techData.totalCfmReturn !== '-' ? techData.totalCfmReturn : '0'}</td>
+            <td style={{ ...tdStyle, color: "#d946ef" }}>{techData.totalCfmFresh && techData.totalCfmFresh !== '-' ? techData.totalCfmFresh : '0'}</td>
           </tr>
         </tbody>
       </table>

@@ -47,7 +47,7 @@ export const getCorrectiveSections = (data: any, unit: any) => {
             <tr>
               <td style={cellLabel}>{t("Service Time", lang)}</td>
               <td style={cellVal}>{personnel?.service_time || "-"} {lang === 'id' ? 'WIB' : ''}</td>
-              <td style={cellLabel}>Last PM Date</td>
+              <td style={cellLabel}>{t("Last PM Date", lang)}</td>
               <td style={cellVal}>{data.lastPreventiveDate ? new Date(data.lastPreventiveDate).toLocaleDateString(lang === 'ja' ? 'ja-JP' : lang === 'en' ? 'en-US' : 'id-ID') : "N/A"}</td>
             </tr>
           </tbody>
@@ -66,9 +66,9 @@ export const getCorrectiveSections = (data: any, unit: any) => {
             <td style={cellVal}>{pic?.department || "-"}</td>
           </tr>
           <tr>
-            <td style={cellLabel}>Phone / WA</td>
+            <td style={cellLabel}>{lang === 'id' ? 'No. HP / WA' : 'Phone / WA'}</td>
             <td style={cellVal}>{pic?.phone || "-"}</td>
-            <td style={cellLabel}>Email</td>
+            <td style={cellLabel}>{lang === 'id' ? 'Email' : 'Email'}</td>
             <td style={cellVal}>{pic?.email || "-"}</td>
           </tr>
         </tbody>
@@ -79,13 +79,13 @@ export const getCorrectiveSections = (data: any, unit: any) => {
     <div key="s3" style={{ marginBottom: "4mm" }}>
       <div style={sectionHeader}>03 - {t("Technical Advice & Summary", lang)}</div>
       <div style={{ display: "flex", flexDirection: "column", gap: "1.5mm" }}>
-        <AnalysisBlock label={lang === 'ja' ? '申告 / 依頼事項' : 'CASE / COMPLAINT'} value={analysis?.complain} color="#dc2626" />
-        <AnalysisBlock label={lang === 'ja' ? '原因分析' : 'ROOT CAUSE ANALYSIS'} value={analysis?.root_cause} color="#d97706" />
+        <AnalysisBlock label={t("CASE / COMPLAINT", lang)} value={analysis?.complain} color="#dc2626" />
+        <AnalysisBlock label={t("ROOT CAUSE ANALYSIS", lang)} value={analysis?.root_cause} color="#d97706" />
         <div style={{ display: "flex", gap: "2mm" }}>
-          <AnalysisBlock label={lang === 'ja' ? '応急処置' : 'TEMPORARY ACTION'} value={analysis?.temp_action} color="#2563eb" flex={1} />
-          <AnalysisBlock label={lang === 'ja' ? '恒久処置' : 'PERMANENT ACTION'} value={analysis?.perm_action} color="#059669" flex={1} />
+          <AnalysisBlock label={t("TEMPORARY ACTION", lang)} value={analysis?.temp_action} color="#2563eb" flex={1} />
+          <AnalysisBlock label={t("PERMANENT ACTION", lang)} value={analysis?.perm_action} color="#059669" flex={1} />
         </div>
-        <AnalysisBlock label={lang === 'ja' ? '提言 / 推奨事項' : 'RECOMMENDATION'} value={analysis?.recommendation} color="#7c3aed" />
+        <AnalysisBlock label={t("RECOMMENDATION", lang)} value={analysis?.recommendation} color="#7c3aed" />
       </div>
     </div>,
 

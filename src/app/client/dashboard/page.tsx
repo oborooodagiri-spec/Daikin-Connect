@@ -1,24 +1,10 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { getClientDashboardData } from "@/app/actions/client_dashboard";
-import { 
-  Building2, Activity, Calendar, 
-  ChevronRight, ArrowUpRight, Clock,
-  User as UserIcon, Package, ShieldCheck, 
-  CalendarCheck
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import ProgressIndicator from "@/components/ProgressIndicator";
-import { format } from "date-fns";
-import ScheduleCalendarWidget from "@/components/dashboard/ScheduleCalendarWidget";
-import Link from "next/link";
-import { requestClientVisit } from "@/app/actions/client_dashboard";
+import { Language, t } from "@/lib/i18n";
 
 export default function ClientDashboardPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [lang, setLang] = useState<Language>("en");
 
   const fetchData = async () => {
     setLoading(true);
@@ -44,6 +30,8 @@ export default function ClientDashboardPage() {
 
   useEffect(() => {
     fetchData();
+    const saved = localStorage.getItem("daikin_lang") as Language;
+    if (saved) setLang(saved);
   }, []);
 
   if (loading) {
@@ -66,11 +54,11 @@ export default function ClientDashboardPage() {
               <span>Project Transparency Active</span>
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#003366] tracking-tighter leading-tight">
-              Operational <br/>
-              <span className="text-[#00a1e4]">Insight Dashboard</span>
+              {t("Operational", lang)} <br/>
+              <span className="text-[#00a1e4]">{t("Operational Insight Dashboard", lang).split(" ").slice(1).join(" ")}</span>
             </h1>
             <p className="text-slate-500 text-sm font-bold tracking-wide flex items-center gap-2">
-               Managing <span className="text-slate-900">{data?.total_assets} Integrated Assets</span> across {data?.projects.length} sites.
+               {t("Managing", lang)} <span className="text-slate-900">{data?.total_assets} {t("Integrated Assets", lang)}</span> {t("across", lang)} {data?.projects.length} sites.
             </p>
          </div>
          
@@ -114,7 +102,7 @@ export default function ClientDashboardPage() {
                      <div className="grid grid-cols-3 gap-6">
                         {project.progress.map((p: any) => (
                            <ProgressIndicator 
-                             key={p.type} size="md" label={p.type} 
+                             key={p.type} size="md" label={t(p.type, lang)} 
                              percentage={p.percentage} 
                              color={p.type === 'Preventive' ? 'indigo' : p.type === 'Corrective' ? 'rose' : 'emerald'} 
                              subLabel={`${p.actual}/${p.target}`}
@@ -167,7 +155,7 @@ export default function ClientDashboardPage() {
                         href="/client/inventory"
                         className="w-full py-4 bg-[#003366] text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-blue-900/10 hover:bg-[#002244] transition-all flex items-center justify-center gap-2 group/btn"
                       >
-                         Asset Directory
+                         {t("Asset Inventory", lang)}
                          <ChevronRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                       </Link>
                   </div>
