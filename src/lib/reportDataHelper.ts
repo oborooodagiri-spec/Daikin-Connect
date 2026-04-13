@@ -38,8 +38,9 @@ export const processReportData = (report: any) => {
       let folder = (report.type || "misc").toLowerCase();
       // Enforce standardized folders matching SyncManager & FormClients
       if (folder === "audit") folder = "audit";
-      else if (folder === "preventive") folder = "preventive";
+      else if (folder === "preventive" || folder === "pm") folder = "preventive";
       else if (folder === "corrective") folder = "corrective";
+      else if (folder === "ba" || folder === "berita_acara") folder = "berita-acara";
       else if (p.media_type === "video") folder = "videos";
       else folder = "photos";
       

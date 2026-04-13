@@ -18,6 +18,7 @@ import { approveServiceActivity, updateActivityReportUrls, getActivityDetailForR
 import { getSession } from "@/app/actions/auth";
 import { translateReportStringsAction } from "@/app/actions/translate";
 import { Language, t } from "@/lib/i18n";
+import { processReportData } from "@/lib/reportDataHelper";
 
 export default function ReportHubPage() {
   const params = useParams();
@@ -95,6 +96,20 @@ export default function ReportHubPage() {
     init();
   }, [id, type]);
 
+  const waitForImages = async (element: HTMLElement) => {
+    const imgs = Array.from(element.getElementsByTagName('img'));
+    const promises = imgs.map(img => {
+      return new Promise((resolve) => {
+        if (img.complete) resolve(true);
+        else {
+          img.onload = () => resolve(true);
+          img.onerror = () => resolve(false);
+        }
+      });
+    });
+    await Promise.all(promises);
+  };
+
   const handleDownloadPDF = async () => {
     if (!reportRef.current || !data) return;
     
@@ -108,6 +123,10 @@ export default function ReportHubPage() {
       
       for (let i = 0; i < pages.length; i++) {
         const page = pages[i] as HTMLElement;
+        
+        // Ensure all images (server-side photos) on this page are loaded
+        await waitForImages(page);
+
         const canvas = await html2canvas(page, {
           scale: 2,
           useCORS: true,
@@ -282,6 +301,10 @@ export default function ReportHubPage() {
       const pages = reportRef.current.querySelectorAll(".print-report-container");
       for (let i = 0; i < pages.length; i++) {
         const page = pages[i] as HTMLElement;
+        
+        // Ensure all images (including the new stamps/signatures) are loaded
+        await waitForImages(page);
+
         const canvas = await html2canvas(page, {
           scale: 2,
           useCORS: true,
@@ -363,13 +386,12 @@ export default function ReportHubPage() {
   let reportTitle = "Service Report";
   let reportCode = `DOC-${data.unit?.id}-${format(new Date(data.activity.service_date || Date.now()), "yyyyMMdd")}`;
 
-  const activityData = {
+  // Prepare standardized report data using helper (handles photo URL resolution & JSON flattening)
+  const activityData = processReportData({
     ...data.activity,
-    technical_json: typeof data.activity.technical_json === 'string' 
-      ? JSON.parse(data.activity.technical_json) 
-      : data.activity.technical_json,
-    activity_photos: data.photos
-  };
+    activity_photos: data.photos,
+    type: type.charAt(0).toUpperCase() + type.slice(1).toLowerCase() // Normalize type for folder matching
+  });
 
   const commonApproval = {
     isApproved: isApprovedLocal,

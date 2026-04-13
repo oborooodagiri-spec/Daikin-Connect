@@ -490,7 +490,7 @@ export default function UnitDetailModal({
                             isMono
                           />
                           <EditableField 
-                            label="Normal Capacity (BTU, kW, PK)" 
+                            label="Normal Capacity (Btu/h)" 
                             value={formData?.capacity} 
                             isEditing={isEditing} 
                             onChange={(v) => handleInputChange("capacity", v)}

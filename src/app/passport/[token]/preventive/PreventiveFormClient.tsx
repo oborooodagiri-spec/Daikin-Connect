@@ -155,8 +155,13 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
         let finalFile = f;
         
         if (!isVideo) {
-          // Compress only if image
-          const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1280, useWebWorker: true };
+          // Automatic Compression: 1MB max, 1280px resolution
+          const options = { 
+            maxSizeMB: 1, 
+            maxWidthOrHeight: 1280, 
+            useWebWorker: true,
+            initialQuality: 0.8
+          };
           finalFile = await imageCompression(f, options);
         } else {
           // For video, check size (alert if > 20MB for mobile sanity)
@@ -178,6 +183,20 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
 
   const removeMedia = (idx: number) => {
     setMediaItems(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const waitForImages = async (element: HTMLElement) => {
+    const imgs = Array.from(element.getElementsByTagName('img'));
+    const promises = imgs.map(img => {
+      return new Promise((resolve) => {
+        if (img.complete) resolve(true);
+        else {
+          img.onload = () => resolve(true);
+          img.onerror = () => resolve(false);
+        }
+      });
+    });
+    await Promise.all(promises);
   };
 
   // Build render data
@@ -216,187 +235,9 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
         return;
       }
 
-      let pdfUrl = "";      
-      let baUrl = "";
-      // 1. Generate PDF (TECH CHECKSHEET)
-      // --- NEW TRUE PAGINATION LOGIC ---
-        const A4_HEIGHT_MM = 297;
-        const SAFE_CONTENT_MM = 220; // Slightly more for PM since mostly text/table
-        const PX_PER_MM = 3.78; 
-        const SAFE_PX = SAFE_CONTENT_MM * PX_PER_MM;
-
-        // Get sections
-        const { getPreventiveSections } = await import("@/components/PreventivePDFTemplate");
-        const sections = getPreventiveSections(renderData, unit, engineerName, customerName);
-
-        // Measurement Layer (Invisible)
-        const measureDiv = document.createElement("div");
-        measureDiv.style.width = "794px"; // A4 Width
-        measureDiv.style.position = "fixed";
-        measureDiv.style.top = "0";
-        measureDiv.style.left = "0";
-        measureDiv.style.zIndex = "-1000";
-        measureDiv.style.opacity = "0";
-        measureDiv.style.pointerEvents = "none";
-        document.body.appendChild(measureDiv);
-
-        const pages: any[][] = [[]];
-        let currentHeight = 0;
-
-        for (const section of sections) {
-          const tempWrap = document.createElement("div");
-          tempWrap.style.width = "100%";
-          measureDiv.appendChild(tempWrap);
-          
-          const { createRoot } = await import("react-dom/client");
-          const root = createRoot(tempWrap);
-          
-          await new Promise<void>((resolve) => {
-            root.render(section);
-            setTimeout(resolve, 50); 
-          });
-
-          const sectionHeight = tempWrap.offsetHeight;
-          
-          if (currentHeight + sectionHeight > SAFE_PX && currentHeight > 0) {
-              pages.push([section]);
-              currentHeight = sectionHeight;
-          } else {
-              pages[pages.length - 1].push(section);
-              currentHeight += sectionHeight;
-          }
-        }
-        document.body.removeChild(measureDiv);
-
-        // Render Pages to PDF
-        const pdf = new jsPDF("p", "mm", "a4");
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const totalPages = pages.length;
-
-        for (let i = 0; i < totalPages; i++) {
-          if (i > 0) pdf.addPage();
-
-          // Temporary container for this page
-          const pageDiv = document.createElement("div");
-          pageDiv.style.width = "210mm";
-          pageDiv.style.height = "297mm";
-          pageDiv.style.position = "fixed";
-          pageDiv.style.top = "0";
-          pageDiv.style.left = "0";
-          pageDiv.style.zIndex = "-1000";
-          pageDiv.style.opacity = "0";
-          pageDiv.style.pointerEvents = "none";
-          document.body.appendChild(pageDiv);
-
-          const { createRoot } = await import("react-dom/client");
-          const root = createRoot(pageDiv);
-          const { ReportBase } = await import("@/components/ReportBase");
-          
-          await new Promise<void>((resolve) => {
-            root.render(
-              <ReportBase 
-                reportTitle="MAINTENANCE CHECKSHEET" 
-                reportCode={header?.so_number || `PM-${unit.id}`} 
-                unit={unit}
-                pageNumber={i + 1}
-                totalPages={totalPages}
-                isFixedHeight={true}
-              >
-                <div style={{ padding: "0 5mm" }}>
-                  {pages[i]}
-                </div>
-              </ReportBase>
-            );
-            setTimeout(resolve, 200); 
-          });
-
-          const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-          const canvas = await html2canvas(pageDiv, { 
-            scale: isMobile ? 1.5 : 2, 
-            useCORS: true, 
-            windowWidth: 794, 
-            height: 1123,
-            logging: false
-          });
-          const imgData = canvas.toDataURL("image/jpeg", 1.0);
-          pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, A4_HEIGHT_MM);
-
-          root.unmount();
-          document.body.removeChild(pageDiv);
-        }
-
-        const pdfBlob = pdf.output("blob");
-        const pdfFormData = new FormData();
-        pdfFormData.append("file", new File([pdfBlob], `${unit.tag_number}_Preventive_${Date.now()}.pdf`, { type: "application/pdf" }));
-        pdfFormData.append("folder", "preventive");
-
-        const pdfRes = await fetch("/api/upload", { method: "POST", body: pdfFormData });
-        if (!pdfRes.ok) {
-          const errorText = await pdfRes.text();
-          console.error("PDF Upload Failed:", errorText);
-          throw new Error(`PDF Upload failed: ${pdfRes.status} ${pdfRes.statusText}`);
-        }
-        const pdfData = await pdfRes.json() as any;
-        if (pdfData && "success" in pdfData && pdfData.success) pdfUrl = pdfData.url;
-
-        // --- NEW: GENERATE BERITA ACARA PDF ---
-        const baPdf = new jsPDF("p", "mm", "a4");
-        const { BeritaAcaraPDFTemplate } = await import("@/components/BeritaAcaraPDFTemplate");
-        const { ReportBase } = await import("@/components/ReportBase");
-
-        const baDiv = document.createElement("div");
-        baDiv.style.width = "210mm";
-        baDiv.style.height = "297mm";
-        baDiv.style.position = "fixed";
-        baDiv.style.top = "0";
-        baDiv.style.left = "0";
-        baDiv.style.zIndex = "-1000";
-        baDiv.style.opacity = "0";
-        baDiv.style.pointerEvents = "none";
-        document.body.appendChild(baDiv);
-
-        const { createRoot: baRootInit } = await import("react-dom/client");
-        const baRoot = baRootInit(baDiv);
-        
-        await new Promise<void>((resolve) => {
-          baRoot.render(
-            <ReportBase reportTitle="BERITA ACARA PEKERJAAN" reportCode={`BA-PM-${unit.id}-${Date.now()}`} unit={unit}>
-              <BeritaAcaraPDFTemplate 
-                data={renderData} 
-                unit={unit} 
-                engineerName={engineerName} 
-              />
-            </ReportBase>
-          );
-          setTimeout(resolve, 300);
-        });
-
-        const isMobileBA = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        const baCanvas = await html2canvas(baDiv, { 
-          scale: isMobileBA ? 1.5 : 2, 
-          useCORS: true, 
-          windowWidth: 794, 
-          height: 1123,
-          logging: false
-        });
-        const baImg = baCanvas.toDataURL("image/jpeg", 0.9);
-        baPdf.addImage(baImg, 'JPEG', 0, 0, 210, 297);
-        
-        const baBlob = baPdf.output("blob");
-        const baFormData = new FormData();
-        baFormData.append("file", new File([baBlob], `${unit.tag_number}_BA_${Date.now()}.pdf`, { type: 'application/pdf' }));
-        baFormData.append("folder", "berita-acara");
-
-        const baRes = await fetch('/api/upload', { method: 'POST', body: baFormData });
-        if (baRes.ok) {
-          const baData = await baRes.json() as any;
-          if (baData && "success" in baData && baData.success) baUrl = baData.url;
-        }
-
-        baRoot.unmount();
-        document.body.removeChild(baDiv);
-
-      // 2. Upload Media (Photos & Videos)
+      // --- ONLINE FLOW: UPLOAD FIRST ---
+      
+      // 1. Upload Media (Photos & Videos) BEFORE generating PDF
       const uploadedMedia: { photo_url: string; description: string; media_type: string }[] = [];
       for (const item of mediaItems) {
         if (!item.file) {
@@ -424,10 +265,197 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
         }
       }
 
-      // 3. Save to DB
-      const dbPayload = {
+      // Update state with server URLs for PDF generation
+      const finalRenderData = {
         ...renderData,
-        technical_json: JSON.stringify(renderData, (_, v) => typeof v === 'bigint' ? v.toString() : v), 
+        activity_photos: uploadedMedia
+      };
+
+      let pdfUrl = "";      
+      let baUrl = "";
+      
+      // 2. Generate PDF (TECH CHECKSHEET)
+      const A4_HEIGHT_MM = 297;
+      const SAFE_CONTENT_MM = 220; 
+      const PX_PER_MM = 3.78; 
+      const SAFE_PX = SAFE_CONTENT_MM * PX_PER_MM;
+
+      const { getPreventiveSections } = await import("@/components/PreventivePDFTemplate");
+      const sections = getPreventiveSections(finalRenderData, unit, engineerName, customerName);
+
+      // Measurement Layer
+      const measureDiv = document.createElement("div");
+      measureDiv.style.width = "794px";
+      measureDiv.style.position = "fixed";
+      measureDiv.style.top = "0";
+      measureDiv.style.left = "0";
+      measureDiv.style.zIndex = "-1000";
+      measureDiv.style.opacity = "0";
+      measureDiv.style.pointerEvents = "none";
+      document.body.appendChild(measureDiv);
+
+      const pages: any[][] = [[]];
+      let currentHeight = 0;
+
+      for (const section of sections) {
+        const tempWrap = document.createElement("div");
+        tempWrap.style.width = "100%";
+        measureDiv.appendChild(tempWrap);
+        
+        const { createRoot } = await import("react-dom/client");
+        const root = createRoot(tempWrap);
+        
+        await new Promise<void>((resolve) => {
+          root.render(section);
+          setTimeout(resolve, 50); 
+        });
+
+        await waitForImages(tempWrap);
+
+        const sectionHeight = tempWrap.offsetHeight;
+        
+        if (currentHeight + sectionHeight > SAFE_PX && currentHeight > 0) {
+            pages.push([section]);
+            currentHeight = sectionHeight;
+        } else {
+            pages[pages.length - 1].push(section);
+            currentHeight += sectionHeight;
+        }
+      }
+      document.body.removeChild(measureDiv);
+
+      // Render Pages to PDF
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const totalPages = pages.length;
+
+      for (let i = 0; i < totalPages; i++) {
+        if (i > 0) pdf.addPage();
+
+        const pageDiv = document.createElement("div");
+        pageDiv.style.width = "210mm";
+        pageDiv.style.height = "297mm";
+        pageDiv.style.position = "fixed";
+        pageDiv.style.top = "0";
+        pageDiv.style.left = "0";
+        pageDiv.style.zIndex = "-1000";
+        pageDiv.style.opacity = "0";
+        pageDiv.style.pointerEvents = "none";
+        document.body.appendChild(pageDiv);
+
+        const { createRoot } = await import("react-dom/client");
+        const root = createRoot(pageDiv);
+        const { ReportBase } = await import("@/components/ReportBase");
+        
+        await new Promise<void>((resolve) => {
+          root.render(
+            <ReportBase 
+              reportTitle="MAINTENANCE CHECKSHEET" 
+              reportCode={header?.so_number || `PM-${unit.id}`} 
+              unit={unit}
+              pageNumber={i + 1}
+              totalPages={totalPages}
+              isFixedHeight={true}
+            >
+              <div style={{ padding: "0 5mm" }}>
+                {pages[i]}
+              </div>
+            </ReportBase>
+          );
+          setTimeout(resolve, 400); 
+        });
+
+        await waitForImages(pageDiv);
+
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const canvas = await html2canvas(pageDiv, { 
+          scale: isMobile ? 1.5 : 2, 
+          useCORS: true, 
+          windowWidth: 794, 
+          height: 1123,
+          logging: false
+        });
+        const imgData = canvas.toDataURL("image/jpeg", 1.0);
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, A4_HEIGHT_MM);
+
+        root.unmount();
+        document.body.removeChild(pageDiv);
+      }
+
+      const pdfBlob = pdf.output("blob");
+      const pdfFormData = new FormData();
+      pdfFormData.append("file", new File([pdfBlob], `${unit.tag_number}_Preventive_${Date.now()}.pdf`, { type: "application/pdf" }));
+      pdfFormData.append("folder", "preventive");
+
+      const pdfRes = await fetch("/api/upload", { method: "POST", body: pdfFormData });
+      if (pdfRes.ok) {
+        const pData = await pdfRes.json() as any;
+        if (pData && "success" in pData && pData.success) pdfUrl = pData.url;
+      }
+
+      // 3. GENERATE BERITA ACARA PDF
+      const baPdf = new jsPDF("p", "mm", "a4");
+      const { BeritaAcaraPDFTemplate } = await import("@/components/BeritaAcaraPDFTemplate");
+      const { ReportBase: BA_ReportBase } = await import("@/components/ReportBase");
+
+      const baDiv = document.createElement("div");
+      baDiv.style.width = "210mm";
+      baDiv.style.height = "297mm";
+      baDiv.style.position = "fixed";
+      baDiv.style.top = "0";
+      baDiv.style.left = "0";
+      baDiv.style.zIndex = "-1000";
+      baDiv.style.opacity = "0";
+      baDiv.style.pointerEvents = "none";
+      document.body.appendChild(baDiv);
+
+      const { createRoot: baRootInit } = await import("react-dom/client");
+      const baRoot = baRootInit(baDiv);
+      
+      await new Promise<void>((resolve) => {
+        baRoot.render(
+          <BA_ReportBase reportTitle="BERITA ACARA PEKERJAAN" reportCode={`BA-PM-${unit.id}-${Date.now()}`} unit={unit}>
+            <BeritaAcaraPDFTemplate 
+              data={finalRenderData} 
+              unit={unit} 
+              engineerName={engineerName} 
+            />
+          </BA_ReportBase>
+        );
+        setTimeout(resolve, 400);
+      });
+
+      await waitForImages(baDiv);
+
+      const isMobileBA = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const baCanvas = await html2canvas(baDiv, { 
+        scale: isMobileBA ? 1.5 : 2, 
+        useCORS: true, 
+        windowWidth: 794, 
+        height: 1123,
+        logging: false
+      });
+      const baImg = baCanvas.toDataURL("image/jpeg", 0.9);
+      baPdf.addImage(baImg, 'JPEG', 0, 0, 210, 297);
+      
+      const baBlob = baPdf.output("blob");
+      const baFormData = new FormData();
+      baFormData.append("file", new File([baBlob], `${unit.tag_number}_BA_${Date.now()}.pdf`, { type: 'application/pdf' }));
+      baFormData.append("folder", "berita-acara");
+
+      const baRes = await fetch('/api/upload', { method: 'POST', body: baFormData });
+      if (baRes.ok) {
+        const baData = await baRes.json() as any;
+        if (baData && "success" in baData && baData.success) baUrl = baData.url;
+      }
+
+      baRoot.unmount();
+      document.body.removeChild(baDiv);
+
+      // 4. Save to DB
+      const dbPayload = {
+        ...finalRenderData,
+        technical_json: JSON.stringify(finalRenderData, (_, v) => typeof v === 'bigint' ? v.toString() : v), 
         pdf_report_url: pdfUrl,
         berita_acara_pdf_url: baUrl,
         engineer_signer_name: engineerName,

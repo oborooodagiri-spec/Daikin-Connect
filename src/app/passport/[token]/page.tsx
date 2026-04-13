@@ -271,7 +271,7 @@ export default function PassportLandingPage() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Capacity</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Capacity (Btu/h)</p>
                       <p className="text-sm font-bold text-slate-800">{unit.capacity || "N/A"}</p>
                     </div>
                     <div>

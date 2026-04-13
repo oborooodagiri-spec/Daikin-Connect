@@ -55,7 +55,7 @@ export const getAuditSections = (data: any, unit: any) => {
             <td style={cellLabel}>Unit Tag Number</td>
             <td style={cellVal}>{data.unit_tag || unit?.tag_number || '-'}</td>
             <td style={cellLabel}>Design Cooling Cap.</td>
-            <td style={cellVal}>{data.design_cooling_capacity || '0'} (Btuh)</td>
+            <td style={cellVal}>{data.design_cooling_capacity || '0'} (Btu/h)</td>
           </tr>
           <tr>
             <td style={cellLabel}>Machine Brand</td>

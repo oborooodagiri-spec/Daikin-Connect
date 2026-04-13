@@ -209,7 +209,13 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
         let finalFile = f;
 
         if (!isVideo) {
-          const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1280, useWebWorker: true };
+          // Automatic Compression: 1MB max, 1280px resolution
+          const options = { 
+            maxSizeMB: 1, 
+            maxWidthOrHeight: 1280, 
+            useWebWorker: true,
+            initialQuality: 0.8
+          };
           finalFile = await imageCompression(f, options);
         } else {
           if (f.size > 20 * 1024 * 1024) {
@@ -230,6 +236,21 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
 
   const removeMedia = (idx: number) => {
     setMediaItems(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  // Helper helper to wait for server-side images to load in the DOM
+  const waitForImages = async (element: HTMLElement) => {
+    const imgs = Array.from(element.getElementsByTagName('img'));
+    const promises = imgs.map(img => {
+      return new Promise((resolve) => {
+        if (img.complete) resolve(true);
+        else {
+          img.onload = () => resolve(true);
+          img.onerror = () => resolve(false);
+        }
+      });
+    });
+    await Promise.all(promises);
   };
 
   // --- SUBMIT PIPELINE ---
@@ -256,23 +277,58 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
         return;
       }
 
+      // --- ONLINE FLOW: UPLOAD FIRST ---
+      
+      // 1. Upload Media (Photos & Videos) BEFORE generating PDF
+      const uploadedMedia: { photo_url: string; description: string; media_type: string }[] = [];
+      for (const item of mediaItems) {
+        if (!item.file) {
+          // Carry over existing photos (already have previews/URLs)
+          uploadedMedia.push({
+            photo_url: item.preview,
+            media_type: item.type,
+            description: "Audit Documentation"
+          });
+          continue;
+        }
+
+        const mForm = new FormData();
+        mForm.append("file", item.file);
+        mForm.append("folder", "audit");
+        
+        const mRes = await fetch("/api/upload", { method: "POST", body: mForm });
+        if (!mRes.ok) throw new Error(`Media Upload failed: ${mRes.status}`);
+        const mData = await mRes.json() as any;
+        if (mData && "success" in mData && mData.success) {
+          uploadedMedia.push({ 
+            photo_url: mData.url, 
+            media_type: item.type,
+            description: "Audit Documentation" 
+          });
+        }
+      }
+
+      // Update state with server URLs for PDF generation
+      const finalRenderData = {
+        ...renderData,
+        activity_photos: uploadedMedia
+      };
+
       let pdfUrl = "";
       let baUrl = "";
       
-      // 1. GENERATE PDF (TECH CHECKSHEET)
-      // --- NEW TRUE PAGINATION LOGIC ---
+      // 2. GENERATE PDF (TECH CHECKSHEET)
       const A4_HEIGHT_MM = 297;
       const SAFE_CONTENT_MM = 220; 
       const PX_PER_MM = 3.78; 
       const SAFE_PX = SAFE_CONTENT_MM * PX_PER_MM;
 
-      // Get sections
       const { getAuditSections } = await import("@/components/AuditPDFTemplate");
-      const sections = getAuditSections(renderData, unit);
+      const sections = getAuditSections(finalRenderData, unit);
 
-      // Measurement Layer (Invisible)
+      // Measurement Layer
       const measureDiv = document.createElement("div");
-      measureDiv.style.width = "794px"; // A4 Width
+      measureDiv.style.width = "794px";
       measureDiv.style.position = "fixed";
       measureDiv.style.top = "0";
       measureDiv.style.left = "0";
@@ -297,6 +353,9 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
           setTimeout(resolve, 50); 
         });
 
+        // Ensure images in section are loaded before measuring height
+        await waitForImages(tempWrap);
+
         const sectionHeight = tempWrap.offsetHeight;
         
         if (currentHeight + sectionHeight > SAFE_PX && currentHeight > 0) {
@@ -317,7 +376,6 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
       for (let i = 0; i < totalPages; i++) {
         if (i > 0) pdf.addPage();
 
-        // Temporary container for this page
         const pageDiv = document.createElement("div");
         pageDiv.style.width = "210mm";
         pageDiv.style.height = "297mm";
@@ -348,8 +406,11 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
               </div>
             </ReportBase>
           );
-          setTimeout(resolve, 200); 
+          setTimeout(resolve, 400); // Wait for React to settle
         });
+
+        // CRITICAL: Wait for server-side images to load on this page
+        await waitForImages(pageDiv);
 
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         const canvas = await html2canvas(pageDiv, { 
@@ -367,117 +428,85 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
       }
 
       const pdfBlob = pdf.output("blob");
-        
-        // Upload PDF
-        const pdfFormData = new FormData();
-        pdfFormData.append("file", new File([pdfBlob], `${unit.tag_number}_Audit_${Date.now()}.pdf`, { type: 'application/pdf' }));
-        pdfFormData.append("folder", "audits");
+      const pdfFormData = new FormData();
+      pdfFormData.append("file", new File([pdfBlob], `${unit.tag_number}_Audit_${Date.now()}.pdf`, { type: 'application/pdf' }));
+      pdfFormData.append("folder", "audit");
 
-        const pdfRes = await fetch('/api/upload', { method: 'POST', body: pdfFormData });
-        if (!pdfRes.ok) {
-          const errorText = await pdfRes.text();
-          console.error("PDF Upload Failed:", errorText);
-          throw new Error(`PDF Upload failed: ${pdfRes.status} ${pdfRes.statusText}`);
-        }
-        const pdfData = await pdfRes.json() as any;
-        if (pdfData && "success" in pdfData && pdfData.success) pdfUrl = pdfData.url;
-
-        // --- NEW: GENERATE BERITA ACARA PDF ---
-        const baPdf = new jsPDF("p", "mm", "a4");
-        const { BeritaAcaraPDFTemplate } = await import("@/components/BeritaAcaraPDFTemplate");
-        const { ReportBase } = await import("@/components/ReportBase");
-
-        const baDiv = document.createElement("div");
-        baDiv.style.width = "210mm";
-        baDiv.style.height = "297mm";
-        baDiv.style.position = "fixed";
-        baDiv.style.top = "0";
-        baDiv.style.left = "0";
-        baDiv.style.zIndex = "-1000";
-        baDiv.style.opacity = "0";
-        baDiv.style.pointerEvents = "none";
-        document.body.appendChild(baDiv);
-
-        const { createRoot: baRootInit } = await import("react-dom/client");
-        const baRoot = baRootInit(baDiv);
-        
-        await new Promise<void>((resolve) => {
-          baRoot.render(
-            <ReportBase reportTitle="BERITA ACARA PEKERJAAN" reportCode={`BA-AUDIT-${unit.id}-${Date.now()}`} unit={unit}>
-              <BeritaAcaraPDFTemplate 
-                data={renderData} 
-                unit={unit} 
-                engineerName={formData.inspector_name} 
-              />
-            </ReportBase>
-          );
-          setTimeout(resolve, 300);
-        });
-
-        const isMobileBA = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        const baCanvas = await html2canvas(baDiv, { 
-          scale: isMobileBA ? 1.5 : 2, 
-          useCORS: true, 
-          windowWidth: 794, 
-          height: 1123,
-          logging: false 
-        });
-        const baImg = baCanvas.toDataURL("image/jpeg", 0.9);
-        baPdf.addImage(baImg, 'JPEG', 0, 0, 210, 297);
-        
-        const baBlob = baPdf.output("blob");
-        const baFormData = new FormData();
-        baFormData.append("file", new File([baBlob], `${unit.tag_number}_BA_${Date.now()}.pdf`, { type: 'application/pdf' }));
-        baFormData.append("folder", "berita-acara");
-
-        const baRes = await fetch('/api/upload', { method: 'POST', body: baFormData });
-        if (baRes.ok) {
-          const baData = await baRes.json() as any;
-          if (baData && "success" in baData && baData.success) baUrl = baData.url;
-        }
-
-        baRoot.unmount();
-        document.body.removeChild(baDiv);
-
-      // 2. Upload Media (Photos & Videos)
-      const uploadedMedia: { photo_url: string; description: string; media_type: string }[] = [];
-      for (const item of mediaItems) {
-        if (!item.file) {
-          // Carry over existing photos
-          uploadedMedia.push({
-            photo_url: item.preview,
-            media_type: item.type,
-            description: "Audit Documentation"
-          });
-          continue;
-        }
-
-        const mForm = new FormData();
-        mForm.append("file", item.file);
-        mForm.append("folder", "audit"); // Standardize to audit folder for better tracking
-        
-        const mRes = await fetch("/api/upload", { method: "POST", body: mForm });
-        if (!mRes.ok) throw new Error(`Media Upload failed: ${mRes.status}`);
-        const mData = await mRes.json() as any;
-        if (mData && "success" in mData && mData.success) {
-          uploadedMedia.push({ 
-            photo_url: mData.url, 
-            media_type: item.type,
-            description: "Audit Documentation" 
-          });
-        }
+      const pdfRes = await fetch('/api/upload', { method: 'POST', body: pdfFormData });
+      if (pdfRes.ok) {
+        const pData = await pdfRes.json() as any;
+        if (pData && "success" in pData && pData.success) pdfUrl = pData.url;
       }
 
-      // 3. COMPILE VELOCITY POINTS DB ARRAY (COMPLETE 45 POINTS)
+      // 3. GENERATE BERITA ACARA PDF
+      const baPdf = new jsPDF("p", "mm", "a4");
+      const { BeritaAcaraPDFTemplate } = await import("@/components/BeritaAcaraPDFTemplate");
+      const { ReportBase: BA_ReportBase } = await import("@/components/ReportBase");
+
+      const baDiv = document.createElement("div");
+      baDiv.style.width = "210mm";
+      baDiv.style.height = "297mm";
+      baDiv.style.position = "fixed";
+      baDiv.style.top = "0";
+      baDiv.style.left = "0";
+      baDiv.style.zIndex = "-1000";
+      baDiv.style.opacity = "0";
+      baDiv.style.pointerEvents = "none";
+      document.body.appendChild(baDiv);
+
+      const { createRoot: baRootInit } = await import("react-dom/client");
+      const baRoot = baRootInit(baDiv);
+      
+      await new Promise<void>((resolve) => {
+        baRoot.render(
+          <BA_ReportBase reportTitle="BERITA ACARA PEKERJAAN" reportCode={`BA-AUDIT-${unit.id}-${Date.now()}`} unit={unit}>
+            <BeritaAcaraPDFTemplate 
+              data={finalRenderData} 
+              unit={unit} 
+              engineerName={formData.inspector_name} 
+            />
+          </BA_ReportBase>
+        );
+        setTimeout(resolve, 400);
+      });
+
+      await waitForImages(baDiv);
+
+      const isMobileBA = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const baCanvas = await html2canvas(baDiv, { 
+        scale: isMobileBA ? 1.5 : 2, 
+        useCORS: true, 
+        windowWidth: 794, 
+        height: 1123,
+        logging: false 
+      });
+      const baImg = baCanvas.toDataURL("image/jpeg", 0.9);
+      baPdf.addImage(baImg, 'JPEG', 0, 0, 210, 297);
+      
+      const baBlob = baPdf.output("blob");
+      const baFormData = new FormData();
+      baFormData.append("file", new File([baBlob], `${unit.tag_number}_BA_${Date.now()}.pdf`, { type: 'application/pdf' }));
+      baFormData.append("folder", "berita-acara");
+
+      const baRes = await fetch('/api/upload', { method: 'POST', body: baFormData });
+      if (baRes.ok) {
+        const baData = await baRes.json() as any;
+        if (baData && "success" in baData && baData.success) baUrl = baData.url;
+      }
+
+      baRoot.unmount();
+      document.body.removeChild(baDiv);
+
+      // 4. COMPILE VELOCITY POINTS DB ARRAY
       const velocity_points: any[] = [];
       formData.t.supplyVelocity.forEach((v:any,i:number) => { if(v) velocity_points.push({ point_number: i+1, velocity_value: parseFloat(v) }) });
       formData.t.returnVelocity.forEach((v:any,i:number) => { if(v) velocity_points.push({ point_number: i+16, velocity_value: parseFloat(v) }) });
       formData.t.freshVelocity.forEach((v:any,i:number) => { if(v) velocity_points.push({ point_number: i+31, velocity_value: parseFloat(v) }) });
 
-      // 4. SAVE TO MYSQL DB
+      // 5. SAVE TO MYSQL DB
       const dbPayload = {
-        ...renderData,
-        technical_json: JSON.stringify(renderData.t, (_, v) => typeof v === 'bigint' ? v.toString() : v), 
+        ...finalRenderData, // Use the one with uploaded photos
+        technical_json: JSON.stringify(finalRenderData.t, (_, v) => typeof v === 'bigint' ? v.toString() : v), 
         pdf_report_url: pdfUrl,
         berita_acara_pdf_url: baUrl,
         engineer_signer_name: formData.inspector_name,

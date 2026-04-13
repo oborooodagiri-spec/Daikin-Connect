@@ -52,16 +52,41 @@ export function SyncManager() {
   }, []);
 
   const uploadPhotos = async (photos: Blob[], folder: string) => {
-    const uploadedUrls: { photo_url: string, description: string }[] = [];
+    const uploadedUrls: { photo_url: string, description: string, media_type: string }[] = [];
+    
+    // Lazy import compression for offline sync
+    const imageCompression = (await import("browser-image-compression")).default;
+
     for (const blob of photos) {
-      const formData = new FormData();
-      formData.append("file", blob, `offline_photo_${Date.now()}.jpg`);
-      formData.append("folder", folder);
-      
-      const res = await fetch("/api/upload", { method: "POST", body: formData });
-      const data = await res.json() as any;
-      if (data && "success" in data && data.success) {
-        uploadedUrls.push({ photo_url: data.url, description: "Offline Sync Backup" });
+      try {
+        let finalFile: Blob = blob;
+        const isVideo = blob.type.startsWith("video/");
+
+        if (!isVideo) {
+          const options = { 
+            maxSizeMB: 1, 
+            maxWidthOrHeight: 1280, 
+            useWebWorker: true,
+            initialQuality: 0.8
+          };
+          finalFile = await imageCompression(blob as File, options);
+        }
+
+        const formData = new FormData();
+        formData.append("file", finalFile, `offline_${isVideo ? 'video' : 'photo'}_${Date.now()}.${isVideo ? 'mp4' : 'jpg'}`);
+        formData.append("folder", folder);
+        
+        const res = await fetch("/api/upload", { method: "POST", body: formData });
+        const data = await res.json() as any;
+        if (data && "success" in data && data.success) {
+          uploadedUrls.push({ 
+            photo_url: data.url, 
+            description: "Offline Sync Backup",
+            media_type: isVideo ? "video" : "image"
+          });
+        }
+      } catch (err) {
+        console.error("Error compressing/uploading offline photo:", err);
       }
     }
     return uploadedUrls;

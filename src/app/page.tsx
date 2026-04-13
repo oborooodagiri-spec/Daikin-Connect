@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Mail, Lock, AlertCircle, ArrowRight, CheckCircle2, Eye, EyeOff, 
-  Activity, Apple, Smartphone, User, Building2
+  Activity, Apple, Smartphone, User, Building2, Play, Sparkles
 } from "lucide-react";
 
 import { login, register } from "./actions/auth";
@@ -124,7 +124,27 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Android & iOS Download Section */}
+        {/* Motion Ad Trigger (Hidden for Production Push)
+        <div className="relative z-10 mb-8 mt-auto">
+          <Link href="/ad">
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="group relative flex items-center gap-4 p-1 pr-6 bg-white/5 border border-white/10 rounded-2xl hover:bg-[#00a1e4]/10 hover:border-[#00a1e4]/30 transition-all duration-500"
+            >
+              <div className="w-12 h-12 rounded-xl bg-[#00a1e4] flex items-center justify-center shadow-lg shadow-[#00a1e4]/40 group-hover:rotate-[360deg] transition-transform duration-1000">
+                <Sparkles className="w-5 h-5 text-white fill-white" />
+              </div>
+              <div className="text-left">
+                <p className="text-[10px] font-black text-[#00a1e4] uppercase tracking-widest leading-none mb-1">Cinematic Experience</p>
+                <p className="text-[11px] font-bold text-white uppercase tracking-tighter">Launch The Future</p>
+              </div>
+            </motion.button>
+          </Link>
+        </div>
+        */}
+
+        {/* Android & iOS Download Section (Hidden for Production Push)
         {!isInsideApp && (
           <div className="relative z-10 py-12">
             <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6">DOWNLOAD MOBILE APP</p>
@@ -144,6 +164,7 @@ export default function LoginPage() {
             </div>
           </div>
         )}
+        */}
         {/* Quality Assurance Section */}
         <div className="mt-auto pt-12">
            <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Certified & Compliant By</p>
@@ -354,7 +375,7 @@ export default function LoginPage() {
           </div>
         </motion.div>
 
-        {/* Mobile Download Links (Visible on Mobile Only) */}
+        {/* Mobile Download Links (Visible on Mobile Only) (Hidden for Production Push)
         {!isInsideApp && (
           <div className="md:hidden mt-12 w-full max-w-md text-center">
               <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6">DOWNLOAD MOBILE APP</p>
@@ -374,6 +395,7 @@ export default function LoginPage() {
               </div>
           </div>
         )}
+        */}
         {/* Mobile Copyright Footer */}
         <div className="mt-12 md:mt-24 text-center pb-8 md:pb-0 relative z-10 w-full">
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">

@@ -138,9 +138,9 @@ export async function createAuditActivity(data: any) {
     return serializePrisma({ success: false, error: (error as any).message }) as any;
   }
 }
-
-export async function updateAuditActivity(id: number, data: any) {
+export async function updateAuditActivity(id: number | string, data: any) {
   try {
+    const auditId = typeof id === 'string' ? Number(id) : id;
     const {
       engineer_note,
       inspector_name,
@@ -178,7 +178,7 @@ export async function updateAuditActivity(id: number, data: any) {
 
     // 1. Update the Main Activity Record
     const updatedActivity = await prisma.service_activities.update({
-      where: { id },
+      where: { id: auditId },
       data: {
         engineer_note,
         inspector_name,
@@ -213,24 +213,22 @@ export async function updateAuditActivity(id: number, data: any) {
       }
     });
 
-    // 2. Refresh Velocity Points (Delete & Recreate)
     if (velocity_points && Array.isArray(velocity_points)) {
-      await (prisma as any).audit_velocity_points.deleteMany({ where: { audit_id: id } });
+      await (prisma as any).audit_velocity_points.deleteMany({ where: { audit_id: auditId } });
       await prisma.audit_velocity_points.createMany({
         data: velocity_points.map((vp: any) => ({
-          audit_id: id,
+          audit_id: auditId,
           point_number: vp.point_number,
           velocity_value: vp.velocity_value ? new Decimal(vp.velocity_value) : new Decimal(0)
         }))
       });
     }
 
-    // 3. Refresh Media Photos (Delete & Recreate)
     if (photos && Array.isArray(photos)) {
-      await (prisma as any).activity_photos.deleteMany({ where: { activity_id: id } });
+      await (prisma as any).activity_photos.deleteMany({ where: { activity_id: auditId } });
       await prisma.activity_photos.createMany({
         data: photos.map((p: any) => ({
-          activity_id: id,
+          activity_id: auditId,
           type: "AUDIT",
           media_type: p.media_type || "image",
           photo_url: p.photo_url,

@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { 
   LayoutDashboard, Users, LogOut, Settings, Menu, X,
-  ChevronRight, Building2, Calendar, FileText, Package
+  ChevronRight, Building2, Calendar, FileText, Package, Sparkles
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -54,6 +54,12 @@ export default function DashboardSidebarClient({
       label: "Reports", 
       icon: FileText, 
       show: true 
+    },
+    { 
+      href: "/admin/blueprint", 
+      label: "Strategic Blueprint", 
+      icon: Sparkles, 
+      show: false // Hidden for Production Push Prep
     },
     { 
       href: "/dashboard/settings", 

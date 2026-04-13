@@ -162,27 +162,45 @@ export async function updateUnit(unitId: number, data: any) {
   if (!session || (!session.isInternal && !isVendor)) return { error: "Unauthorized access" };
 
   try {
+    // Sanitize input: Trim and convert empty strings to null for unique fields
+    const serial = (data.serial_number && data.serial_number.trim() !== "") ? data.serial_number.trim() : null;
+    const tag = (data.tag_number && data.tag_number.trim() !== "") ? data.tag_number.trim() : null;
+
     await (prisma.units as any).update({
       where: { id: unitId },
       data: {
-        tag_number: data.tag_number,
-        model: data.model,
-        brand: data.brand,
-        location: data.location,
-        area: data.area,
-        building_floor: data.building_floor,
-        room_tenant: data.room_tenant,
-        capacity: data.capacity,
-        yoi: data.yoi ? parseInt(data.yoi) : null,
-        serial_number: data.serial_number,
+        tag_number: tag,
+        model: data.model?.trim() || "Unknown",
+        brand: data.brand?.trim() || "Daikin",
+        location: data.location?.trim() || null,
+        area: data.area?.trim() || null,
+        building_floor: data.building_floor?.trim() || null,
+        room_tenant: data.room_tenant?.trim() || null,
+        capacity: data.capacity?.trim() || "0",
+        yoi: (data.yoi && !isNaN(parseInt(data.yoi))) ? parseInt(data.yoi) : null,
+        serial_number: serial,
         status: data.status,
         unit_type: data.unit_type
       }
     });
+    
+    revalidatePath("/dashboard");
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Update unit error:", error);
-    return { error: "Failed to update unit." };
+    
+    // Handle Prisma specific unique constraint error
+    if (error.code === 'P2002') {
+      const target = error.meta?.target || "";
+      if (target.includes('serial_number')) {
+        return { error: "Serial number already exists on another unit." };
+      }
+      if (target.includes('tag_number')) {
+        return { error: "Tag number already exists on another unit." };
+      }
+    }
+    
+    return { error: "Failed to update unit. Please check your data and try again." };
   }
 }
 

@@ -729,7 +729,7 @@ export default function UnitsPage() {
                       <input type="text" value={formData.model} onChange={e => setFormData({...formData, model: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Capacity (BTU, kW, PK)</label>
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Capacity (Btu/h)</label>
                       <input type="text" value={formData.capacity} onChange={e => setFormData({...formData, capacity: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]" />
                     </div>
                   </div>

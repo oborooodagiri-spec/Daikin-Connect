@@ -60,7 +60,7 @@ export const getPreventiveSections = (data: any, unit: any, engineerName?: strin
             <tr>
               <td style={cellLabel}>{t("Unit Tag Number", lang)}</td>
               <td style={cellVal}>{header?.unit_number || unit?.tag_number || "-"}</td>
-              <td style={cellLabel}>{t("Capacity", lang)}</td>
+              <td style={cellLabel}>{t("Capacity", lang)} (Btu/h)</td>
               <td style={cellVal}>{header?.nominal_capacity || unit?.capacity || "-"}</td>
             </tr>
             <tr>
