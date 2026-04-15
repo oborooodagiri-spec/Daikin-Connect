@@ -169,25 +169,25 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
   const isCompleted = activeRecord && activeRecord.check_out_time;
 
   return (
-    <div className="max-w-3xl mx-auto w-full px-4 sm:px-6">
-      <div className="bg-white min-h-[500px] rounded-[2.5rem] sm:rounded-[3.5rem] border border-slate-200 overflow-hidden relative shadow-2xl shadow-blue-900/10 flex flex-col md:flex-row transition-all duration-500">
+    <div className="max-w-4xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-12">
+      <div className="bg-white min-h-[550px] md:min-h-[600px] rounded-[2.5rem] md:rounded-[3rem] border border-slate-200 overflow-hidden relative shadow-2xl flex flex-col md:flex-row transition-all duration-500">
         
         {/* Header Section (Left Side on Desktop) */}
-        <div className="bg-gradient-to-br from-[#003366] to-[#001f40] text-white p-6 sm:p-10 pb-16 md:pb-10 md:w-1/3 relative overflow-hidden shrink-0 flex flex-col justify-between">
+        <div className="bg-gradient-to-br from-[#003366] to-[#001f40] text-white p-8 sm:p-12 pb-16 md:pb-12 md:w-[40%] relative overflow-hidden shrink-0 flex flex-col justify-between">
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
           
           <div className="relative z-10">
             <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-blue-300/80 mb-2">
               {format(new Date(), "EEEE, dd MMM yyyy")}
             </p>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-tight">Live<br />Attendance</h1>
+            <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight">Live<br />Attendance</h1>
           </div>
           
-          <div className="relative z-10 mt-8 md:mt-0 flex items-center gap-4">
+          <div className="relative z-10 mt-12 md:mt-0 flex items-center gap-4">
             <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 backdrop-blur-xl shrink-0">
               <Clock className="w-5 h-5 text-blue-200" />
             </div>
-            <div className="hidden md:block">
+            <div>
               <p className="text-[10px] font-black text-blue-300 uppercase tracking-widest">Time Server</p>
               <p className="font-bold text-white text-sm">{format(new Date(), "HH:mm O")}</p>
             </div>
@@ -195,10 +195,10 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
         </div>
 
         {/* Main Interaction Section (Right Side on Desktop) */}
-        <div className="bg-white rounded-[2.5rem] md:rounded-none md:rounded-l-[3.5rem] -mt-10 md:mt-0 relative z-20 p-6 sm:p-10 flex-1 flex flex-col shadow-inner md:shadow-none">
+        <div className="bg-white rounded-[2.5rem] md:rounded-none md:rounded-l-[3.5rem] -mt-10 md:mt-0 relative z-20 p-6 sm:p-12 flex-1 flex flex-col shadow-inner md:shadow-none">
           
           {/* Interactive GPS Status Indicator */}
-          <div className="space-y-3 mb-8">
+          <div className="space-y-4 mb-10">
             <button 
               onClick={startLocationTracking}
               className={`w-full p-4 rounded-2xl flex items-center gap-4 border transition-all active:scale-[0.98] group/gps ${location ? 'bg-emerald-50 border-emerald-100' : 'bg-rose-50 border-rose-100'}`}
@@ -220,12 +220,12 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
             {/* Help text for Permission Denied */}
             {!location && locError.includes("Denied") && (
               <div className="p-4 bg-amber-50 border border-amber-100 rounded-2xl animate-in zoom-in-95 duration-300">
-                <div className="flex gap-3">
-                  <ShieldAlert className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                <div className="flex gap-4">
+                  <ShieldAlert className="w-6 h-6 text-amber-500 shrink-0 mt-0.5" />
                   <div className="space-y-2">
-                    <p className="text-xs font-black text-amber-800 uppercase tracking-tight">Action Required: Reset Browser Permissions</p>
+                    <p className="text-[11px] font-black text-amber-800 uppercase tracking-tight leading-tight">Action Required:<br/>Reset Browser Permissions</p>
                     <p className="text-[11px] text-amber-700 font-medium leading-relaxed">
-                      Location access is blocked. Please click the <span className="font-black">Lock Icon</span> (🔒) in your browser's address bar next to the URL, then reset the Location permission and Refresh this page.
+                      Location access is blocked. Please click the <span className="font-bold underline">Lock Icon (🔒)</span> in your browser's address bar, select <span className="font-bold underline">"Permissions for this site"</span>, find <span className="font-bold underline">Location</span> and set it to <span className="font-bold underline">Allow</span>. Then refresh this page.
                     </p>
                   </div>
                 </div>
