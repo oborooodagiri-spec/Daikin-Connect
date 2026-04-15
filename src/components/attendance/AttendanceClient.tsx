@@ -18,8 +18,21 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
 
   useEffect(() => {
     fetchStatus();
-    startLocationTracking();
+    checkPermissionsAndTrack();
   }, [projectId]);
+
+  const checkPermissionsAndTrack = async () => {
+    try {
+      const result = await navigator.permissions.query({ name: 'geolocation' });
+      if (result.state === 'granted') {
+        startLocationTracking();
+      } else {
+        // Wait for user gesture before requesting location to prevent browser auto-block
+      }
+    } catch (e) {
+      // If Permissions API is unsupported, we wait for user gesture anyway
+    }
+  };
 
   const fetchStatus = async () => {
     setLoading(true);
@@ -34,7 +47,7 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
 
   const startLocationTracking = () => {
     if (!navigator.geolocation) {
-      fallbackToNetwork();
+      fallbackToNetwork("GPS not supported on device.");
       return;
     }
     
@@ -48,15 +61,15 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
       },
       (err) => {
         console.warn("GPS Failed:", err.message);
-        fallbackToNetwork();
+        fallbackToNetwork("GPS Denied. Engaging Network Triangulation...");
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
   };
 
-  const fallbackToNetwork = async () => {
+  const fallbackToNetwork = async (reasonMsg: string) => {
     try {
-      setLocError("GPS Denied. Engaging Network Triangulation...");
+      setLocError(reasonMsg);
       const res = await fetch("https://get.geojs.io/v1/ip/geo.json");
       const data = await res.json();
       if (data.latitude && data.longitude) {
