@@ -3,9 +3,11 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
 import { serializePrisma } from "@/lib/serialize";
+import { unstable_noStore } from "next/cache";
 
 // Fetch Attendance logs for an admin, filtered by projectId
 export async function getAttendanceRecords(projectId?: string) {
+    unstable_noStore();
     const session = await getSession();
     // Verify Admin rights
     const isAdmin = session?.roles?.some((r: any) => /admin|super/i.test(typeof r === "string" ? r : r.role_name));
@@ -16,7 +18,7 @@ export async function getAttendanceRecords(projectId?: string) {
     try {
         const whereClause: any = {};
         if (projectId && projectId !== "empty") {
-            whereClause.project_id = Number(projectId);
+            whereClause.project_id = BigInt(projectId);
         }
 
         const records = await prisma.vendor_attendance.findMany({

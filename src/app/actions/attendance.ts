@@ -2,12 +2,15 @@
 
 import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_noStore } from "next/cache";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import fs from "fs";
+import path from "path";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function getActiveAttendance(projectId: string) {
+  unstable_noStore();
   try {
     const session = await getSession();
     if (!session) return { error: "Unauthorized" };
@@ -69,6 +72,7 @@ export async function submitCheckIn(data: {
 
     revalidatePath("/dashboard");
     revalidatePath("/client/dashboard");
+    revalidatePath("/(dashboard)"); // Revalidate groups
     
     return { success: true, id: Number(record.id) };
   } catch (err) {
@@ -99,6 +103,7 @@ export async function submitCheckOut(data: {
 
     revalidatePath("/dashboard");
     revalidatePath("/client/dashboard");
+    revalidatePath("/(dashboard)"); // Revalidate groups
 
     return { success: true, id: Number(record.id) };
   } catch (err) {
@@ -191,13 +196,27 @@ export async function updateFaceProfile(photoUrl: string) {
   }
 }
 
-// HELPER: Convert URL to Base64 for Gemini
+// HELPER: Convert URL to Base64 for Gemini (Optimized for Server-side)
 async function imageUrlToBase64(url: string) {
   try {
-    const isAbsolute = url.startsWith('http');
-    const fullUrl = isAbsolute ? url : `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}${url}`;
+    const isLocal = url.startsWith('/') || url.includes('localhost') || url.includes('127.0.0.1');
     
-    const response = await fetch(fullUrl);
+    if (isLocal) {
+      // Resolve path: /api/assets/attendance/filename.jpg -> public/uploads/attendance/filename.jpg
+      const parts = url.split('/');
+      const folder = parts[parts.length - 2];
+      const filename = parts[parts.length - 1];
+      
+      const filePath = path.join(process.cwd(), 'public', 'uploads', folder, filename);
+      
+      if (fs.existsSync(filePath)) {
+        const buffer = fs.readFileSync(filePath);
+        return buffer.toString('base64');
+      }
+    }
+
+    // Fallback to fetch for absolute external URLs
+    const response = await fetch(url);
     const arrayBuffer = await response.arrayBuffer();
     return Buffer.from(arrayBuffer).toString('base64');
   } catch (e) {
