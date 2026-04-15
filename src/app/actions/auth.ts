@@ -218,11 +218,8 @@ export async function login(formData: FormData) {
     console.error("Redirect check error:", e);
   }
 
-  if (isInternal) {
-    redirect("/dashboard");
-  } else {
-    redirect("/client/dashboard");
-  }
+  // All users now go through the /dashboard dispatcher which handles workspace routing
+  redirect("/dashboard");
 }
 
 // Security: Trusted Device Logic (30 days)
