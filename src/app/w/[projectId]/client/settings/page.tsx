@@ -85,7 +85,9 @@ export default function ClientSettingsPage() {
                {item.label}
              </button>
            ))}
-        </        {/* Content */}
+        </div>
+
+        {/* Content */}
         <div className="md:col-span-2 space-y-6">
            <AnimatePresence mode="wait">
              {activeTab === "Preferences" && (
