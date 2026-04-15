@@ -28,8 +28,8 @@ export async function POST(req: Request) {
 
     fs.writeFileSync(filePath, buffer);
 
-    // Return the relative URL so it can be accessed directly from the web
-    return NextResponse.json({ url: `/uploads/${folder}/${fileName}`, success: true });
+    // Return the relative URL so it can be accessed immediately via the proxy route
+    return NextResponse.json({ url: `/api/assets/${folder}/${fileName}`, success: true });
   } catch (error: any) {
     console.error("Upload API Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });

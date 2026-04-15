@@ -1,4 +1,14 @@
+"use client";
+
+import React, { useState, useEffect, useMemo } from "react";
+import { 
+  Search, Package, ChevronRight, ChevronLeft, 
+  ChevronRight as ChevronRightIcon
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Language, t } from "@/lib/i18n";
+import { getClientInventory } from "@/app/actions/client_dashboard";
+import UnitDetailModal from "@/components/UnitDetailModal";
 
 export default function ClientInventoryPage() {
   const [units, setUnits] = useState<any[]>([]);

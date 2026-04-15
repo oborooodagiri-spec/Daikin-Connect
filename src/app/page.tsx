@@ -10,6 +10,7 @@ import {
 
 import { login, register } from "./actions/auth";
 import { APP_VERSION } from "@/lib/version";
+import TwoFactorModal from "@/components/auth/TwoFactorModal";
 
 export default function LoginPage() {
   const [isRequestMode, setIsRequestMode] = useState(false);
@@ -21,9 +22,13 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
   const [isInsideApp, setIsInsideApp] = useState(false);
+  const [show2fModal, setShow2fModal] = useState(false);
+  const [tempEmail, setTempEmail] = useState("");
 
   useEffect(() => {
+    setIsMounted(true);
     if (typeof window !== "undefined") {
       const isUA = window.navigator.userAgent.includes("DaikinConnectMobile");
       const isQuery = new URLSearchParams(window.location.search).get("isApp") === "true";
@@ -33,6 +38,8 @@ export default function LoginPage() {
       localStorage.removeItem("daikin_last_project");
     }
   }, []);
+
+  if (!isMounted) return <div className="min-h-screen bg-[#040814]" />;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +57,7 @@ export default function LoginPage() {
         formData.append("company_name", companyName);
         const result = await register(formData);
         if (result?.error) {
-          setError(result.error);
+          setError(result.error || "Registration failed");
         } else if (result && "success" in result && result.success) {
           setMessage(result.success as string);
           setIsRequestMode(false);
@@ -60,8 +67,11 @@ export default function LoginPage() {
         }
       } else {
         const result = await login(formData);
-        if (result && "error" in result) {
-          setError(result.error || "An unknown error occurred");
+        if (result && "requires2f" in result) {
+          setTempEmail(email);
+          setShow2fModal(true);
+        } else if (result && "error" in result) {
+          setError(result.error || "Login failed");
         }
       }
     } catch (err: any) {
@@ -124,47 +134,6 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Motion Ad Trigger (Hidden for Production Push)
-        <div className="relative z-10 mb-8 mt-auto">
-          <Link href="/ad">
-            <motion.button 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="group relative flex items-center gap-4 p-1 pr-6 bg-white/5 border border-white/10 rounded-2xl hover:bg-[#00a1e4]/10 hover:border-[#00a1e4]/30 transition-all duration-500"
-            >
-              <div className="w-12 h-12 rounded-xl bg-[#00a1e4] flex items-center justify-center shadow-lg shadow-[#00a1e4]/40 group-hover:rotate-[360deg] transition-transform duration-1000">
-                <Sparkles className="w-5 h-5 text-white fill-white" />
-              </div>
-              <div className="text-left">
-                <p className="text-[10px] font-black text-[#00a1e4] uppercase tracking-widest leading-none mb-1">Cinematic Experience</p>
-                <p className="text-[11px] font-bold text-white uppercase tracking-tighter">Launch The Future</p>
-              </div>
-            </motion.button>
-          </Link>
-        </div>
-        */}
-
-        {/* Android & iOS Download Section (Hidden for Production Push)
-        {!isInsideApp && (
-          <div className="relative z-10 py-12">
-            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6">DOWNLOAD MOBILE APP</p>
-            <div className="flex items-center gap-8">
-                <a href="/downloads/daikin-connect.apk" download className="group/dl flex flex-col items-center gap-2 transition-all duration-500">
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 group-hover/dl:bg-[#00a1e4]/10 group-hover/dl:border-[#00a1e4]/30 group-hover/dl:scale-110 active:scale-95 transition-all">
-                    <Smartphone className="w-6 h-6 text-white" />
-                  </div>
-                  <span className="text-[8px] font-black text-slate-500 group-hover/dl:text-white uppercase tracking-widest text-center">ANDROID<br/>.APK</span>
-                </a>
-                <a href="#" className="group/dl flex flex-col items-center gap-2 transition-all duration-500 cursor-not-allowed opacity-50">
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 group-hover/dl:bg-[#00a1e4]/10 group-hover/dl:border-[#00a1e4]/30 transition-all">
-                    <Apple className="w-6 h-6 text-white" />
-                  </div>
-                  <span className="text-[8px] font-black text-slate-500 group-hover/dl:text-white uppercase tracking-widest text-center">APPLE<br/>READY SOON</span>
-                </a>
-            </div>
-          </div>
-        )}
-        */}
         {/* Quality Assurance Section */}
         <div className="mt-auto pt-12">
            <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Certified & Compliant By</p>
@@ -375,27 +344,6 @@ export default function LoginPage() {
           </div>
         </motion.div>
 
-        {/* Mobile Download Links (Visible on Mobile Only) (Hidden for Production Push)
-        {!isInsideApp && (
-          <div className="md:hidden mt-12 w-full max-w-md text-center">
-              <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6">DOWNLOAD MOBILE APP</p>
-              <div className="flex justify-center gap-12">
-                  <a href="/downloads/daikin-connect.apk" download className="flex flex-col items-center gap-2 group/mobile-dl">
-                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 group-active/mobile-dl:bg-[#00a1e4]/20 transition-all">
-                      <Smartphone className="w-6 h-6 text-white" />
-                    </div>
-                    <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest text-center">ANDROID<br/>.APK</span>
-                  </a>
-                  <a href="#" className="flex flex-col items-center gap-2 group/mobile-dl opacity-50 cursor-not-allowed">
-                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 group-active/mobile-dl:bg-[#00a1e4]/20 transition-all">
-                      <Apple className="w-6 h-6 text-white" />
-                    </div>
-                    <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest text-center">IOS<br/>READY SOON</span>
-                  </a>
-              </div>
-          </div>
-        )}
-        */}
         {/* Mobile Copyright Footer */}
         <div className="mt-12 md:mt-24 text-center pb-8 md:pb-0 relative z-10 w-full">
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
@@ -404,8 +352,37 @@ export default function LoginPage() {
           <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.25em] mt-2">
             {APP_VERSION}
           </p>
-        </div>
+         </div>
       </div>
+
+      <TwoFactorModal 
+        isOpen={show2fModal}
+        onClose={() => setShow2fModal(false)}
+        email={tempEmail}
+        isLoading={isLoading}
+        onVerify={async (otp, trustDevice) => {
+          setIsLoading(true);
+          setError(null);
+          try {
+            const formData = new FormData();
+            formData.append("email", tempEmail);
+            formData.append("otpCode", otp);
+            formData.append("is2fVerification", "true");
+            if (trustDevice) formData.append("trustDevice", "true");
+            
+            const result = await login(formData);
+            if (result && "error" in result) {
+              setError(result.error || "An error occurred");
+            } else {
+              setShow2fModal(false);
+            }
+          } catch (err: any) {
+            setError("Verification failed. Please try again.");
+          } finally {
+            setIsLoading(false);
+          }
+        }}
+      />
     </div>
   );
 }

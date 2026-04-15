@@ -53,7 +53,7 @@ export default function UnitHistoryTimeline({ history, session, unit }: { histor
     let folder = candidates[0];
     if (folder.includes('acara')) folder = "berita-acara";
     
-    return `/uploads/${folder}/${url}`;
+    return `/api/assets/${folder}/${url}`;
   };
 
 

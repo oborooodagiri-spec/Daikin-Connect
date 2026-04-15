@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { 
   LayoutDashboard, Users, LogOut, Settings, Menu, X,
-  ChevronRight, Building2, Calendar, FileText, Package, Sparkles
+  ChevronRight, Building2, Calendar, FileText, Package, Sparkles, ShieldCheck
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -19,6 +19,13 @@ export default function DashboardSidebarClient({
   logout: () => void 
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) return <div className="fixed inset-y-0 left-0 z-[95] w-72 bg-[#003366] invisible md:visible opacity-0" />;
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
@@ -48,6 +55,12 @@ export default function DashboardSidebarClient({
         });
         return hasAdminRole || roleStr.includes("admin") || roleStr.includes("super");
       })()
+    },
+    { 
+      href: "/dashboard/profile", 
+      label: "Profile & Security", 
+      icon: ShieldCheck, 
+      show: true 
     },
     { 
       href: "/dashboard/reports", 

@@ -1,4 +1,16 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { 
+  Calendar, CalendarCheck, Clock, MapPin, Plus, 
+  CheckCircle2, ChevronRight
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { format, isAfter } from "date-fns";
 import { Language, t } from "@/lib/i18n";
+import { getClientSchedules, requestClientVisit } from "@/app/actions/client_dashboard";
+import ScheduleCalendarWidget from "@/components/dashboard/ScheduleCalendarWidget";
 
 export default function ClientSchedulesPage() {
   const router = useRouter();

@@ -12,6 +12,7 @@ import {
   Eye, ExternalLink, Image as ImageIcon, X, Printer, Play, FileVideo, Loader2, Trash2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { t, Language } from "@/lib/i18n";
 
 // PDF Templates for high-fidelity printing
 import { getAuditSections } from "@/components/AuditPDFTemplate";
@@ -31,7 +32,7 @@ const TYPE_CONFIG: Record<string, { color: string; bg: string; border: string; i
   Corrective: { color: "text-rose-700", bg: "bg-rose-50", border: "border-rose-200", icon: AlertTriangle, label: "Corrective" },
 };
 
-function ReportsContent() {
+function ReportsContent({ lang }: { lang: Language }) {
   const searchParams = useSearchParams();
   const initialType = searchParams.get("type") || "all";
 
@@ -58,7 +59,6 @@ function ReportsContent() {
   const [printData, setPrintData] = useState<any>(null);
   const [printPages, setPrintPages] = useState<any[][]>([]);
   const [isEditing, setIsEditing] = useState<any>(null);
-  const printRef = useRef<HTMLDivElement>(null);
 
   const fetchReports = async (page = 1) => {
     setLoading(true);
@@ -87,10 +87,7 @@ function ReportsContent() {
   }, [searchQuery, dateFrom, dateTo]);
 
   useEffect(() => {
-    // Initial fetch handled by debounced effect if searchQuery is empty initially, 
-    // but typeFilter needs its own immediate trigger or included in the same effect.
     fetchReports(1);
-    
     const init = async () => {
       const s = await getSession();
       setSession(s);
@@ -113,27 +110,30 @@ function ReportsContent() {
       }
     } catch (e) {
       console.error(e);
-      alert("Gagal memuat detail laporan.");
+      alert(lang === 'ja' ? "詳細の読み込みに失敗しました。" : "Gagal memuat detail laporan.");
     } finally {
       setIsSelecting(null);
     }
   };
 
   const handleDelete = async (reportId: string) => {
-    if (!confirm("PERHATIAN: Laporan ini akan dipindahkan ke Trash selama 7 hari sebelum dihapus permanen.\n\nApakah Anda yakin ingin menghapus laporan ini?")) return;
+    const msg = lang === 'ja' 
+      ? "注意: このレポートは完全削除される前に7日間ゴミ箱に移動されます。\n\n削除してもよろしいですか？"
+      : "PERHATIAN: Laporan ini akan dipindahkan ke Trash selama 7 hari sebelum dihapus permanen.\n\nApakah Anda yakin ingin menghapus laporan ini?";
+    if (!confirm(msg)) return;
     
     setIsDeleting(reportId);
     try {
       const res = await softDeleteActivity(Number(reportId), 'formal');
       if ("success" in res && res.success) {
-        alert("Laporan berhasil dipindahkan ke Trash.");
+        alert(lang === 'ja' ? "レポートをゴミ箱に移動しました。" : "Laporan berhasil dipindahkan ke Trash.");
         setSelectedReport(null);
         fetchReports(pagination.page);
       } else {
-        alert("Gagal menghapus: " + ((res as any).error || "Unknown error"));
+        alert(lang === 'ja' ? "削除失敗: " : "Gagal menghapus: " + ((res as any).error || "Unknown error"));
       }
     } catch (e) {
-      alert("Terjadi kesalahan sistem.");
+      alert(lang === 'ja' ? "システムエラーが発生しました。" : "Terjadi kesalahan sistem.");
     } finally {
       setIsDeleting(null);
     }
@@ -141,7 +141,7 @@ function ReportsContent() {
 
   const handleExportSummary = async () => {
     if (!dateFrom || !dateTo) {
-      alert("Mohon pilih rentang tanggal (Dari & Sampai) terlebih dahulu.");
+      alert(lang === 'ja' ? "日付範囲（開始と終了）を選択してください。" : "Mohon pilih rentang tanggal (Dari & Sampai) terlebih dahulu.");
       return;
     }
     setIsExporting(true);
@@ -150,13 +150,13 @@ function ReportsContent() {
       const res = await getSummaryData(dateFrom, dateTo) as any;
       if (res && "success" in res && res.success) {
         const summaryData = res.data;
-        setPrintData({ type: "SUMMARY", reference_id: `SR-${Date.now()}` }); // Mock for ReportBase
+        setPrintData({ type: "SUMMARY", reference_id: `SR-${Date.now()}` }); 
 
         const PX_PER_MM = 3.78;
         const SAFE_CONTENT_MM = 220;
         const SAFE_PX = SAFE_CONTENT_MM * PX_PER_MM;
 
-        const sections = getSummarySections(summaryData);
+        const sections = getSummarySections(summaryData, lang);
         const pages: any[][] = [[]];
         let currentHeight = 0;
 
@@ -206,7 +206,7 @@ function ReportsContent() {
       }
     } catch (e) {
       console.error(e);
-      alert("Gagal mengexport summary.");
+      alert(t("Gagal mengexport summary.", lang));
       setIsPrinting(false);
       setIsExporting(false);
     }
@@ -216,103 +216,19 @@ function ReportsContent() {
     window.open(`/reports/${type}/${id}`, "_blank");
   };
 
-  const handlePrint = async (reportId: string) => {
-    setIsPrinting(true);
-    try {
-      // If already selected, use it, otherwise fetch
-      let report = selectedReport;
-      if (!report || report.id !== reportId.toString()) {
-        const res = await getReportDetail(reportId);
-        if ("success" in res && res.success) {
-          report = processReportData(res.data);
-        }
-      }
-
-      if (report) {
-        setPrintData(report);
-        
-        const PX_PER_MM = 3.78;
-        const SAFE_CONTENT_MM = 220;
-        const SAFE_PX = SAFE_CONTENT_MM * PX_PER_MM;
-
-        let sections: any[] = [];
-        if (report.type === "Audit") sections = getAuditSections(report, report.units);
-        if (report.type === "Preventive") sections = getPreventiveSections(report, report.units, report.engineerName, report.customerName);
-        if (report.type === "Corrective") sections = getCorrectiveSections(report, report.units);
-
-        const measureDiv = document.createElement("div");
-        measureDiv.style.width = "794px";
-        measureDiv.style.position = "fixed";
-        measureDiv.style.top = "0";
-        measureDiv.style.left = "0";
-        measureDiv.style.zIndex = "-1000";
-        measureDiv.style.opacity = "0";
-        measureDiv.style.pointerEvents = "none";
-        document.body.appendChild(measureDiv);
-
-        const pages: any[][] = [[]];
-        let currentHeight = 0;
-
-        const { createRoot } = await import("react-dom/client");
-
-        for (const section of sections) {
-          const tempWrap = document.createElement("div");
-          tempWrap.style.width = "100%";
-          measureDiv.appendChild(tempWrap);
-          const root = createRoot(tempWrap);
-          
-          await new Promise<void>((resolve) => {
-            root.render(section);
-            setTimeout(resolve, 100); // Increased wait for accurate measurement
-          });
-
-          const sectionHeight = tempWrap.offsetHeight;
-          if (currentHeight + sectionHeight > SAFE_PX && currentHeight > 0) {
-            pages.push([section]);
-            currentHeight = sectionHeight;
-          } else {
-            pages[pages.length - 1].push(section);
-            currentHeight += sectionHeight;
-          }
-          
-          root.unmount();
-        }
-        document.body.removeChild(measureDiv);
-        setPrintPages(pages);
-
-        const type = report.type || "Report";
-        const tag = report.units?.tag_number || report.unit_tag || report.id;
-        const oldTitle = document.title;
-        document.title = `${type}_${tag}`;
-
-        // Wait for state to catch up and images to load in the print view
-        setTimeout(() => {
-          window.print();
-          setIsPrinting(false);
-          setPrintData(null);
-          setPrintPages([]);
-          document.title = oldTitle;
-        }, 1200);
-      }
-    } catch (err) {
-      console.error(err);
-      setIsPrinting(false);
-    }
-  };
-
   const formatDate = (d: string) => {
     if (!d) return "-";
-    return new Date(d).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" });
+    return new Date(d).toLocaleDateString(lang === 'ja' ? 'ja-JP' : lang === 'en' ? 'en-US' : 'id-ID', { day: "2-digit", month: "short", year: "numeric" });
   };
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 no-print">
         {[
-          { label: "Total Reports", value: stats.totalAll, color: "from-slate-600 to-slate-800", icon: BarChart3 },
-          { label: "Audit", value: stats.totalAudit, color: "from-emerald-500 to-emerald-700", icon: ClipboardCheck },
-          { label: "Preventive", value: stats.totalPreventive, color: "from-indigo-500 to-indigo-700", icon: Wrench },
-          { label: "Corrective", value: stats.totalCorrective, color: "from-rose-500 to-rose-700", icon: AlertTriangle },
+          { label: t("Total Reports", lang), value: stats.totalAll, color: "from-slate-600 to-slate-800", icon: BarChart3 },
+          { label: t("Audit", lang), value: stats.totalAudit, color: "from-emerald-500 to-emerald-700", icon: ClipboardCheck },
+          { label: t("Preventive", lang), value: stats.totalPreventive, color: "from-indigo-500 to-indigo-700", icon: Wrench },
+          { label: t("Corrective", lang), value: stats.totalCorrective, color: "from-rose-500 to-rose-700", icon: AlertTriangle },
         ].map((card, i) => (
           <motion.div key={i} className={`bg-gradient-to-br ${card.color} text-white rounded-2xl p-5 shadow-lg`}>
             <div className="flex justify-between items-start">
@@ -331,8 +247,10 @@ function ReportsContent() {
         <div className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="flex gap-1 bg-slate-100 rounded-xl p-1 overflow-x-auto no-scrollbar shrink-0">
-            {["all", "Audit", "Preventive", "Corrective"].map((t) => (
-              <button key={t} onClick={() => setTypeFilter(t)} className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${typeFilter === t ? "bg-white text-[#003366] shadow-sm" : "text-slate-400 hover:text-slate-600"}`}>{t === "all" ? "Semua" : t}</button>
+            {["all", "Audit", "Preventive", "Corrective"].map((tab) => (
+              <button key={tab} onClick={() => setTypeFilter(tab)} className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${typeFilter === tab ? "bg-white text-[#003366] shadow-sm" : "text-slate-400 hover:text-slate-600"}`}>
+                {tab === "all" ? t("Semua", lang) : (lang === 'ja' ? (tab === 'Audit' ? '監査' : tab === 'Preventive' ? '予防' : '是正') : t(tab, lang))}
+              </button>
             ))}
           </div>
             <div className="flex-1 relative group w-full">
@@ -341,21 +259,16 @@ function ReportsContent() {
                 type="text" 
                 value={searchQuery} 
                 onChange={(e) => setSearchQuery(e.target.value)} 
-                placeholder="Cari tim, unit, ruangan, atau tenant..." 
+                placeholder={t("Search Placeholder Reports", lang)} 
                 className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:bg-white focus:border-blue-400 transition-all outline-none" 
               />
-            {loading && searchQuery && (
-              <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                <Loader2 className="w-4 h-4 text-slate-300 animate-spin" />
-              </div>
-            )}
             </div>
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
              <div className="flex flex-1 items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 gap-2">
                 <Calendar size={14} className="text-slate-400" />
                 <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="bg-transparent text-[10px] font-bold focus:outline-none flex-1" />
-                <span className="text-slate-300 text-[10px]">to</span>
+                <span className="text-slate-300 text-[10px] lowercase">{t("to", lang)}</span>
                 <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="bg-transparent text-[10px] font-bold focus:outline-none flex-1" />
              </div>
              <button 
@@ -364,7 +277,7 @@ function ReportsContent() {
                className="px-5 py-3 bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md hover:bg-emerald-700 flex items-center justify-center gap-2 transform active:scale-95 transition-all disabled:opacity-50"
              >
                 {isExporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
-                Export Summary
+                {t("Export Summary", lang)}
              </button>
           </div>
         </div>
@@ -373,19 +286,19 @@ function ReportsContent() {
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden no-print">
         <div className="overflow-x-auto">
           {loading ? (
-            <div className="p-12 text-center text-slate-400 font-bold text-xs uppercase tracking-widest">Loading...</div>
+            <div className="p-12 text-center text-slate-400 font-bold text-xs uppercase tracking-widest">{t("Loading...", lang)}</div>
           ) : reports.length === 0 ? (
-            <div className="p-12 text-center text-slate-400 font-bold">No reports found.</div>
+            <div className="p-12 text-center text-slate-400 font-bold">{t("No reports found.", lang)}</div>
           ) : (
             <table className="w-full text-sm min-w-[800px]">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
-                <th className="text-left p-4 text-[10px] font-black uppercase tracking-widest text-slate-500">ID</th>
-                <th className="text-left p-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Type</th>
-                <th className="text-left p-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Unit / Tag</th>
-                <th className="text-left p-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Engineer</th>
-                <th className="text-left p-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Date</th>
-                <th className="text-left p-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Print</th>
+                <th className="text-left p-4 text-[10px] font-black uppercase tracking-widest text-slate-500">{t("ID", lang)}</th>
+                <th className="text-left p-4 text-[10px] font-black uppercase tracking-widest text-slate-500">{t("Type", lang)}</th>
+                <th className="text-left p-4 text-[10px] font-black uppercase tracking-widest text-slate-500">{t("Unit / Tag", lang)}</th>
+                <th className="text-left p-4 text-[10px] font-black uppercase tracking-widest text-slate-500">{t("Engineer", lang)}</th>
+                <th className="text-left p-4 text-[10px] font-black uppercase tracking-widest text-slate-500">{t("Date", lang)}</th>
+                <th className="text-left p-4 text-[10px] font-black uppercase tracking-widest text-slate-500">{t("Print", lang)}</th>
                 <th className="p-4"></th>
               </tr>
             </thead>
@@ -433,20 +346,20 @@ function ReportsContent() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setSelectedReport(null)} />
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-3xl shadow-2xl relative z-10 w-full max-w-2xl overflow-hidden">
                <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                  <h3 className="text-xl font-black text-[#003366] tracking-tight">{selectedReport.units?.tag_number || "Report Detail"}</h3>
+                  <h3 className="text-xl font-black text-[#003366] tracking-tight">{selectedReport.units?.tag_number || t("Report Detail", lang)}</h3>
                   <button onClick={() => setSelectedReport(null)} className="p-2 hover:bg-slate-200 rounded-xl transition-colors"><X size={20} /></button>
                </div>
                <div className="p-8">
                   <div className="grid grid-cols-2 gap-4 mb-8">
-                     <InfoItem label="Room / Tenant" value={selectedReport.units?.room_tenant} />
-                     <InfoItem label="Area" value={selectedReport.units?.area} />
-                     <InfoItem label="Engineer" value={selectedReport.inspector_name} />
+                     <InfoItem label={t("Room / Tenant", lang)} value={selectedReport.units?.room_tenant} />
+                     <InfoItem label={t("Area", lang)} value={selectedReport.units?.area} />
+                     <InfoItem label={t("Engineer", lang)} value={selectedReport.inspector_name} />
                      <div className="flex flex-col">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Date</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{t("Date", lang)}</p>
                         <p className="text-sm font-bold text-slate-800">{formatDate(selectedReport.service_date)}</p>
                      </div>
                      <div className="col-span-2">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Report Status</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{t("Report Status", lang)}</p>
                         <div className="flex items-center gap-2">
                           <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
                             selectedReport.is_approved_by_customer 
@@ -456,16 +369,11 @@ function ReportsContent() {
                             : "bg-slate-50 text-slate-500 border-slate-200"
                           }`}>
                             {selectedReport.is_approved_by_customer 
-                              ? "Final Approved" 
+                              ? t("Final Approved", lang) 
                               : selectedReport.engineer_signer_name 
-                              ? "Reviewed (Awaiting Customer)" 
-                              : "Draft Report"}
+                              ? t("Reviewed (Awaiting Customer)", lang) 
+                              : t("Draft Report", lang)}
                           </span>
-                          {selectedReport.engineer_signer_name && (
-                            <span className="text-[10px] font-bold text-slate-400 italic">
-                              Reviewed by {selectedReport.engineer_signer_name}
-                            </span>
-                          )}
                         </div>
                       </div>
                   </div>
@@ -474,7 +382,7 @@ function ReportsContent() {
                   {selectedReport.activity_photos && selectedReport.activity_photos.length > 0 && (
                     <div className="mb-8 p-6 bg-slate-50 rounded-2xl border border-slate-100">
                        <p className="text-[10px] font-black uppercase tracking-widest text-[#003366] mb-4 flex items-center gap-2">
-                          <ImageIcon size={14} className="text-[#00a1e4]" /> Media Documentation
+                          <ImageIcon size={14} className="text-[#00a1e4]" /> {t("Media Documentation", lang)}
                        </p>
                        <div className="max-h-72 overflow-y-auto pr-2 custom-scrollbar">
                            <div className="grid grid-cols-3 gap-4">
@@ -494,19 +402,8 @@ function ReportsContent() {
                                        src={m.photo_url} 
                                        className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700" 
                                        alt={m.description || `Documentation ${i+1}`} 
-                                       onError={(e) => {
-                                         const currentUrl = (e.target as any).src;
-                                         if (currentUrl.includes('/audit/')) {
-                                           (e.target as any).src = currentUrl.replace('/audit/', '/photos/');
-                                         } else if (currentUrl.includes('/photos/')) {
-                                           (e.target as any).src = currentUrl.replace('/photos/', '/videos/');
-                                         } else if (currentUrl.includes('/videos/')) {
-                                           (e.target as any).src = "https://placehold.co/600x600/f8fafc/64748b?text=Not+Synced";
-                                         }
-                                       }}
                                      />
                                   )}
-                                  <div className="absolute inset-0 bg-blue-900/0 group-hover:bg-blue-900/10 transition-all pointer-events-none" />
                                 </div>
                               ))}
                            </div>
@@ -515,25 +412,16 @@ function ReportsContent() {
                   )}
 
                     <div className="flex gap-3">
-                      <button onClick={() => handleViewReport(selectedReport.id, selectedReport.type)} className="flex-1 py-4 bg-[#003366] text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-900/10 hover:scale-[1.02] transition-all">Print Official (A4)</button>
+                      <button onClick={() => handleViewReport(selectedReport.id, selectedReport.type)} className="flex-1 py-4 bg-[#003366] text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-900/10 hover:scale-[1.02] transition-all">
+                        {t("Print Official (A4)", lang)}
+                      </button>
                       
-                      {/* EDIT BUTTON: Role-gated for Admin/Engineer */}
                       {session?.roles?.some((role: any) => /admin|engineer|super/i.test(role)) && (
                         <button 
                           onClick={() => setIsEditing(selectedReport)}
                           className="flex-1 py-4 bg-[#00a1e4] text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-400/20 hover:scale-[1.02] transition-all"
                         >
-                          Edit Report
-                        </button>
-                      )}
-
-                      {session?.roles?.some((role: any) => /admin|super/i.test(role)) && (
-                        <button 
-                          onClick={() => handleDelete(selectedReport.id)}
-                          disabled={isDeleting === selectedReport.id}
-                          className="px-6 py-4 bg-rose-50 text-rose-600 text-xs font-black uppercase tracking-widest rounded-2xl hover:bg-rose-100 transition-all flex items-center justify-center border border-rose-100"
-                        >
-                          {isDeleting === selectedReport.id ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                          {t("Edit Report", lang)}
                         </button>
                       )}
                     </div>
@@ -543,72 +431,13 @@ function ReportsContent() {
         )}
       </AnimatePresence>
 
-      {/* Media Lightbox */}
-      <AnimatePresence>
-        {selectedMedia && (
-          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-12">
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
-              className="absolute inset-0 bg-slate-900/95 backdrop-blur-xl" 
-              onClick={() => setSelectedMedia(null)} 
-            />
-            <motion.button 
-               whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
-               onClick={() => setSelectedMedia(null)}
-               className="absolute top-8 right-8 z-[120] p-4 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all"
-            >
-               <X size={32} />
-            </motion.button>
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} 
-              className="relative z-[115] w-full max-w-5xl max-h-full flex items-center justify-center"
-            >
-               {selectedMedia.media_type === 'video' ? (
-                 <video 
-                   src={selectedMedia.photo_url} 
-                   className="w-full h-auto max-h-[80vh] rounded-3xl shadow-2xl border border-white/10" 
-                   controls 
-                   autoPlay
-                   playsInline
-                   onError={(e) => {
-                     const currentSrc = (e.target as any).src;
-                     if (currentSrc.includes('/audit/')) {
-                       (e.target as any).src = currentSrc.replace('/audit/', '/photos/');
-                     } else if (currentSrc.includes('/photos/')) {
-                       (e.target as any).src = currentSrc.replace('/photos/', '/videos/');
-                     }
-                   }}
-                 />
-               ) : (
-                 <img 
-                   src={selectedMedia.photo_url} 
-                   className="w-full h-auto max-h-[80vh] object-contain rounded-3xl shadow-2xl border border-white/10" 
-                   alt="Documentation" 
-                   onError={(e) => {
-                     const currentUrl = (e.target as any).src;
-                     if (currentUrl.includes('/audit/')) {
-                       (e.target as any).src = currentUrl.replace('/audit/', '/photos/');
-                     } else if (currentUrl.includes('/photos/')) {
-                       (e.target as any).src = currentUrl.replace('/photos/', '/videos/');
-                     } else if (currentUrl.includes('/videos/')) {
-                       (e.target as any).src = "https://placehold.co/600x600/f8fafc/64748b?text=File+Not+Synced";
-                     }
-                   }}
-                 />
-               )}
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* Edit Modal Overlay */}
       <AnimatePresence>
         {isEditing && (
           <div className="fixed inset-0 z-[150] flex flex-col bg-white">
             <div className="p-4 border-b flex justify-between items-center bg-slate-50 sticky top-0 z-[160]">
                <div className="flex items-center gap-4">
                   <button onClick={() => setIsEditing(null)} className="p-2 hover:bg-slate-200 rounded-xl transition-colors"><ChevronLeft size={24} /></button>
-                  <h2 className="text-xl font-black text-[#003366]">Editing Report #{isEditing.id} — {isEditing.type}</h2>
+                  <h2 className="text-xl font-black text-[#003366]">{lang === 'ja' ? 'レポート編集' : 'Editing Report'} #{isEditing.id} — {isEditing.type}</h2>
                </div>
                <span className="px-4 py-1.5 bg-amber-100 text-amber-700 rounded-full text-[10px] font-black uppercase tracking-widest">Edit Mode</span>
             </div>
@@ -643,12 +472,13 @@ function ReportsContent() {
         {printPages.map((pageContent, i) => (
           <div key={i} style={{ marginBottom: i < printPages.length - 1 ? "10mm" : 0, breakAfter: "page" }}>
             <ReportBase 
-              reportTitle={printData?.type === "SUMMARY" ? "SUMMARY REPORT" : (printData?.type || "Report") + " REPORT"} 
+              reportTitle={printData?.type === "SUMMARY" ? t("SUMMARY REPORT", lang) : (t(printData?.type || "Report", lang)) + " REPORT"} 
               reportCode={printData?.reference_id} 
               unit={printData?.units} 
               pageNumber={i + 1} 
               totalPages={printPages.length} 
               isFixedHeight={true}
+              lang={lang}
             >
               <div style={{ padding: "0 5mm" }}>{pageContent}</div>
             </ReportBase>
@@ -660,9 +490,28 @@ function ReportsContent() {
 }
 
 export default function ReportsPage() {
+  const [isMounted, setIsMounted] = useState(false);
+  const [lang, setLang] = useState<Language>('id');
+
+  useEffect(() => {
+    setIsMounted(true);
+    const saved = localStorage.getItem("daikin_lang") as Language;
+    if (saved) setLang(saved);
+
+    const handleStorage = () => {
+      const updatedLang = localStorage.getItem("daikin_lang") as Language;
+      if (updatedLang) setLang(updatedLang);
+    };
+
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  if (!isMounted) return null;
+
   return (
-    <Suspense fallback={<div className="p-12 text-center font-black uppercase tracking-widest text-slate-300">Loading Analysis...</div>}>
-      <ReportsContent />
+    <Suspense fallback={<div className="p-12 text-center font-black uppercase tracking-widest text-slate-300">{t("Loading Analysis...", lang)}</div>}>
+      <ReportsContent lang={lang} />
     </Suspense>
   );
 }

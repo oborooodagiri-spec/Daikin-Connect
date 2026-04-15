@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/generated/client_v2";
 import { notFound } from "next/navigation";
 import PreventiveFormClient from "./PreventiveFormClient";
 

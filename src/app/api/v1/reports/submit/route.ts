@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/generated/client_v2";
 import jwt from "jsonwebtoken";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
       const filePath = path.join(uploadDir, filename);
       
       await writeFile(filePath, buffer);
-      uploadedFilePaths.push(`/uploads/mobile_reports/${filename}`);
+      uploadedFilePaths.push(`/api/assets/mobile_reports/${filename}`);
     }
 
     // (Opt) Store photo paths in activity if your schema supports it

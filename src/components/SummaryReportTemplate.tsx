@@ -1,4 +1,5 @@
 import React from "react";
+import { t, Language } from "@/lib/i18n";
 
 interface SummaryReportTemplateProps {
   data: {
@@ -19,12 +20,12 @@ interface SummaryReportTemplateProps {
   };
 }
 
-export const getSummarySections = (data: SummaryReportTemplateProps["data"]) => {
+export const getSummarySections = (data: SummaryReportTemplateProps["data"], lang: Language = 'id') => {
   const { period, dailyServices, complaints, performance } = data;
 
   const formatDate = (d: string) => {
     if (!d) return "-";
-    return new Date(d).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" });
+    return new Date(d).toLocaleDateString(lang === 'ja' ? 'ja-JP' : lang === 'en' ? 'en-US' : 'id-ID', { day: "2-digit", month: "long", year: "numeric" });
   };
 
   const sections: any[] = [];
@@ -33,43 +34,43 @@ export const getSummarySections = (data: SummaryReportTemplateProps["data"]) => 
   sections.push(
     <div key="cover" style={{ height: "100%", display: "flex", flexDirection: "column" }}>
        <div style={{ marginTop: "10mm", textAlign: "center", marginBottom: "15mm" }}>
-          <h2 style={{ fontSize: "28pt", fontWeight: 900, color: "#003366", margin: 0, letterSpacing: "-1px" }}>SUMMARY REPORT</h2>
+          <h2 style={{ fontSize: "28pt", fontWeight: 900, color: "#003366", margin: 0, letterSpacing: "-1px" }}>{t("SUMMARY REPORT", lang)}</h2>
           <p style={{ fontSize: "12pt", color: "#64748b", fontWeight: 700, marginTop: "2mm", textTransform: "uppercase", letterSpacing: "1px" }}>
-             Periode: {formatDate(period.from)} — {formatDate(period.to)}
+             {t("Periode", lang)}: {formatDate(period.from)} — {formatDate(period.to)}
           </p>
        </div>
 
        {/* QUICK STATS CARDS */}
        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "5mm", marginBottom: "10mm" }}>
-          <StatCard label="Total Preventive" value={performance.pm.totalServiced} sub="Units Serviced" color="#00a1e4" />
-          <StatCard label="Total Corrective" value={complaints.length} sub="Resolved Issues" color="#e11d48" />
-          <StatCard label="Actual Progress" value={`${performance.pm.totalScheduled > 0 ? Math.round((performance.pm.onSchedule / performance.pm.totalScheduled) * 100) : 100}%`} sub="On-Schedule" color="#059669" />
+          <StatCard label={t("Total Preventive", lang)} value={performance.pm.totalServiced} sub={t("Units Serviced", lang)} color="#00a1e4" />
+          <StatCard label={t("Total Corrective", lang)} value={complaints.length} sub={t("Resolved Issues", lang)} color="#e11d48" />
+          <StatCard label={t("Operational Achievement", lang)} value={`${performance.pm.totalScheduled > 0 ? Math.round((performance.pm.onSchedule / performance.pm.totalScheduled) * 100) : 100}%`} sub={t("On-Schedule", lang)} color="#059669" />
        </div>
 
        {/* PERFORMANCE ANALYTICS SECTION */}
        <div style={{ display: "flex", gap: "8mm", marginBottom: "10mm" }}>
           <div style={{ flex: 1.2, backgroundColor: "#f8fafd", padding: "6mm", borderRadius: "4mm", border: "1px solid #e2e8f0", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" }}>
-             <h3 style={sectionSubHeader}>PM Performance Tracking</h3>
+             <h3 style={sectionSubHeader}>{t("PM Performance Tracking", lang)}</h3>
              <div style={{ marginTop: "4mm" }}>
-                <ProgressBar label="On Schedule" value={performance.pm.onSchedule} total={performance.pm.totalScheduled} color="#059669" />
-                <ProgressBar label="Delay" value={performance.pm.delay} total={performance.pm.totalScheduled} color="#f59e0b" />
-                <ProgressBar label="Out of Schedule" value={performance.pm.outOfSchedule} total={performance.pm.totalScheduled || 1} color="#6366f1" isExtra />
+                <ProgressBar label={t("On-Schedule", lang)} value={performance.pm.onSchedule} total={performance.pm.totalScheduled} color="#059669" />
+                <ProgressBar label={t("Delay", lang)} value={performance.pm.delay} total={performance.pm.totalScheduled} color="#f59e0b" />
+                <ProgressBar label={t("Out of Schedule", lang)} value={performance.pm.outOfSchedule} total={performance.pm.totalScheduled || 1} color="#6366f1" isExtra lang={lang} />
              </div>
              
              <div style={{ marginTop: "6mm", borderTop: "1px solid #e2e8f0", paddingTop: "4mm", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4mm" }}>
                 <div>
-                   <p style={{ fontSize: "6.5pt", fontWeight: 900, color: "#64748b", textTransform: "uppercase" }}>Total Planned</p>
+                   <p style={{ fontSize: "6.5pt", fontWeight: 900, color: "#64748b", textTransform: "uppercase" }}>{t("Total Planned", lang)}</p>
                    <p style={{ fontSize: "14pt", fontWeight: 900, color: "#003366" }}>{performance.pm.totalScheduled}</p>
                 </div>
                 <div>
-                   <p style={{ fontSize: "6.5pt", fontWeight: 900, color: "#64748b", textTransform: "uppercase" }}>Success Rate</p>
+                   <p style={{ fontSize: "6.5pt", fontWeight: 900, color: "#64748b", textTransform: "uppercase" }}>{t("Success Rate", lang)}</p>
                    <p style={{ fontSize: "14pt", fontWeight: 900, color: "#059669" }}>{performance.pm.totalScheduled > 0 ? Math.round((performance.pm.onSchedule / performance.pm.totalScheduled) * 100) : 100}%</p>
                 </div>
              </div>
           </div>
           
           <div style={{ flex: 1, backgroundColor: "#fff", padding: "6mm", borderRadius: "4mm", border: "1.5pt solid #fee2e2" }}>
-             <h3 style={{ ...sectionSubHeader, color: "#991b1b", borderBottomColor: "#fee2e2" }}>Non-Service Reasons</h3>
+             <h3 style={{ ...sectionSubHeader, color: "#991b1b", borderBottomColor: "#fee2e2" }}>{t("Non-Service Reasons", lang)}</h3>
              <div style={{ marginTop: "5mm" }}>
                 {performance.reasons.length > 0 ? performance.reasons.map((r, i) => (
                   <div key={i} style={{ marginBottom: "3mm" }}>
@@ -83,7 +84,7 @@ export const getSummarySections = (data: SummaryReportTemplateProps["data"]) => 
                   </div>
                 )) : (
                   <div style={{ textAlign: "center", paddingTop: "10mm" }}>
-                     <p style={{ fontSize: "8pt", color: "#166534", fontWeight: 800 }}>✓ All units inspected</p>
+                     <p style={{ fontSize: "8pt", color: "#166534", fontWeight: 800 }}>✓ {t("All units inspected", lang)}</p>
                   </div>
                 )}
              </div>
@@ -92,7 +93,7 @@ export const getSummarySections = (data: SummaryReportTemplateProps["data"]) => 
 
        {/* COMPLAINT ANALYSIS CHART */}
        <div style={{ backgroundColor: "#f0fdf4", padding: "6mm", borderRadius: "4mm", border: "1px solid #dcfce7" }}>
-          <h3 style={{ ...sectionSubHeader, color: "#166534", borderBottomColor: "#dcfce7" }}>Complaint Analytics by Category</h3>
+          <h3 style={{ ...sectionSubHeader, color: "#166534", borderBottomColor: "#dcfce7" }}>{t("Complaint Analytics by Category", lang)}</h3>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10mm", marginTop: "5mm" }}>
              <div style={{ display: "flex", flexDirection: "column", gap: "3.5mm" }}>
                 {performance.complaintCategories.map((c, i) => (
@@ -112,7 +113,7 @@ export const getSummarySections = (data: SummaryReportTemplateProps["data"]) => 
              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", borderLeft: "1px dashed #dcfce7", paddingLeft: "10mm" }}>
                 <div style={{ textAlign: "center" }}>
                    <p style={{ fontSize: "28pt", fontWeight: 900, color: "#166534", margin: 0 }}>{complaints.length}</p>
-                   <p style={{ fontSize: "7pt", fontWeight: 900, color: "#166534", textTransform: "uppercase", margin: 0, letterSpacing: "1mm" }}>Total Complaints</p>
+                   <p style={{ fontSize: "7pt", fontWeight: 900, color: "#166534", textTransform: "uppercase", margin: 0, letterSpacing: "1mm" }}>{t("Total Complaints", lang)}</p>
                 </div>
              </div>
           </div>
@@ -128,31 +129,31 @@ export const getSummarySections = (data: SummaryReportTemplateProps["data"]) => 
       const chunk = dailyServices.slice(i, i + rowsPerPage);
       sections.push(
         <div key={`daily_${i}`} style={{ height: "100%" }}>
-           <h3 style={tableHeader}>DAILY LIST SERVICE</h3>
+           <h3 style={tableHeader}>{t("DAILY LIST SERVICE", lang)}</h3>
            <table style={tableStyle}>
               <thead>
                  <tr style={thGroup}>
-                    <th style={thCol}>No</th>
-                    <th style={thCol}>Tanggal</th>
-                    <th style={thCol}>Lantai</th>
-                    <th style={thCol}>Ruangan / Tenant</th>
-                    <th style={thCol}>Brand/Model</th>
-                    <th style={thCol}>Tipe</th>
-                    <th style={thCol}>Finding (Kategori)</th>
+                    <th style={thCol}>{t("No", lang)}</th>
+                    <th style={thCol}>{t("Date", lang)}</th>
+                    <th style={thCol}>{t("Lantai", lang)}</th>
+                    <th style={thCol}>{t("Room / Tenant", lang)}</th>
+                    <th style={thCol}>{t("Model / Brand", lang)}</th>
+                    <th style={thCol}>{t("Type", lang)}</th>
+                    <th style={thCol}>{t("Finding (Kategori)", lang)}</th>
                  </tr>
               </thead>
               <tbody>
                  {chunk.map((s, idx) => (
                    <tr key={idx} style={idx % 2 === 0 ? trEven : trOdd}>
                       <td style={tdCol}>{i + idx + 1}</td>
-                      <td style={tdCol}>{new Date(s.date).toLocaleDateString('id-ID')}</td>
+                      <td style={tdCol}>{new Date(s.date).toLocaleDateString(lang === 'ja' ? 'ja-JP' : lang === 'en' ? 'en-US' : 'id-ID')}</td>
                       <td style={tdCol}>{s.floor}</td>
                       <td style={tdCol}>{s.room}</td>
                       <td style={tdCol}>{s.brand} / {s.model}</td>
                       <td style={tdCol}>{s.type}</td>
                       <td style={tdCol}>
                          <div style={{ color: s.status === 'NOT_SERVICED' ? '#e11d48' : '#111' }}>
-                            {s.status === 'NOT_SERVICED' ? `[NOT SERVICED] ${s.reason}` : s.finding}
+                            {s.status === 'NOT_SERVICED' ? `[${t("NOT DONE", lang)}] ${s.reason}` : s.finding}
                          </div>
                       </td>
                    </tr>
@@ -171,27 +172,27 @@ export const getSummarySections = (data: SummaryReportTemplateProps["data"]) => 
       const chunk = complaints.slice(i, i + rowsPerPage);
       sections.push(
         <div key={`complaints_${i}`} style={{ height: "100%" }}>
-           <h3 style={{ ...tableHeader, color: "#991b1b", borderLeftColor: "#991b1b" }}>LIST COMPLAINT & ANALYSIS</h3>
+           <h3 style={{ ...tableHeader, color: "#991b1b", borderLeftColor: "#991b1b" }}>{t("LIST COMPLAINT & ANALYSIS", lang)}</h3>
            <div style={{ display: "flex", flexDirection: "column", gap: "4mm" }}>
               {chunk.map((c, idx) => (
                 <div key={idx} style={{ border: "1px solid #e2e8f0", borderRadius: "2mm", overflow: "hidden" }}>
                    <div style={{ backgroundColor: "#f1f5f9", padding: "2mm 4mm", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <span style={{ fontSize: "8pt", fontWeight: 900, color: "#003366" }}>#{i + idx + 1} | {c.tag} ({c.brand} {c.model})</span>
-                      <span style={{ fontSize: "7pt", fontWeight: 700, color: "#64748b" }}>{new Date(c.date).toLocaleDateString('id-ID')} {c.time}</span>
+                      <span style={{ fontSize: "7pt", fontWeight: 700, color: "#64748b" }}>{new Date(c.date).toLocaleDateString(lang === 'ja' ? 'ja-JP' : lang === 'en' ? 'en-US' : 'id-ID')} {c.time}</span>
                    </div>
                    <div style={{ padding: "3mm 4mm", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4mm", fontSize: "7.5pt" }}>
                       <div>
-                         <p style={compLabel}>Issue / Category</p>
+                         <p style={compLabel}>{t("Issue / Category", lang)}</p>
                          <p style={compVal}><span style={{ color: "#e11d48" }}>[{c.category}]</span> {c.rootCause}</p>
-                         <p style={compLabel}>Technician</p>
+                         <p style={compLabel}>{t("Engineer", lang)}</p>
                          <p style={compVal}>{c.technician}</p>
                       </div>
                       <div>
-                         <p style={compLabel}>Actions (Temp / Perm)</p>
+                         <p style={compLabel}>{t("Actions (Temp / Perm)", lang)}</p>
                          <p style={compVal}>{c.tempAction} / {c.permAction}</p>
-                         <p style={compLabel}>Recommendation</p>
+                         <p style={compLabel}>{t("RECOMMENDATION", lang)}</p>
                          <p style={compVal}>{c.recommendation}</p>
-                         <p style={compLabel}>Last PM</p>
+                         <p style={compLabel}>{t("Last PM", lang)}</p>
                          <p style={compVal}>{formatDate(c.lastPm)}</p>
                       </div>
                    </div>
@@ -215,12 +216,12 @@ const StatCard = ({ label, value, sub, color }: any) => (
   </div>
 );
 
-const ProgressBar = ({ label, value, total, color, isExtra }: any) => {
+const ProgressBar = ({ label, value, total, color, isExtra, lang }: any) => {
   const percentage = Math.min(100, Math.round((value / (total || 1)) * 100));
   return (
     <div style={{ marginBottom: "3mm" }}>
        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "7.5pt", fontWeight: 800, color: "#334155", marginBottom: "1mm" }}>
-          <span>{label} {isExtra && "(Outside Schedule)"}</span>
+          <span>{label} {isExtra && `(${t("Out of Schedule", lang)})`}</span>
           <span>{value} Units ({percentage}%)</span>
        </div>
        <div style={{ width: "100%", height: "2.5mm", backgroundColor: "#e2e8f0", borderRadius: "1mm", overflow: "hidden" }}>

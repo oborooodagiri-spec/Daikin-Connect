@@ -1,25 +1,24 @@
 import { ReportSignatureFooter } from "./ReportSignatureFooter";
 import { t, Language } from "@/lib/i18n";
 
-export const getPreventiveSections = (data: any, unit: any, engineerName?: string, customerName?: string) => {
+export const getPreventiveSections = (data: any, unit: any, engineerName?: string, customerName?: string, lang: Language = 'id') => {
   const { header, scope, parts, technicalAdvice, activity_photos } = data || {};
-  const lang = data.lang as Language || 'id';
   
   const SCOPE_ROWS = [
     { key: "power_supply", label: t("Power Supply", lang), type: "measure" },
     { key: "ampere_motor", label: t("Ampere Motor", lang), type: "measure" },
-    { key: "pressure_inlet", label: t("Pressure Inlet Water", lang), type: "measure" },
-    { key: "pressure_outlet", label: t("Pressure Outlet Water", lang), type: "measure" },
-    { key: "temp_inlet", label: t("Temperature Inlet Water", lang), type: "measure" },
-    { key: "temp_outlet", label: t("Temperature Outlet Water", lang), type: "measure" },
+    { key: "pressure_inlet", label: t("Entering Water Pressure", lang), type: "measure" },
+    { key: "pressure_outlet", label: t("Leaving Water Pressure", lang), type: "measure" },
+    { key: "temp_inlet", label: t("Entering Water Temperature", lang), type: "measure" },
+    { key: "temp_outlet", label: t("Leaving Water Temperature", lang), type: "measure" },
     { key: "return_air_temp", label: t("Return Air Temperature", lang), type: "measure" },
     { key: "supply_air_temp", label: t("Supply Air Temperature", lang), type: "measure" },
-    { key: "clean_air_filter", label: t("Cleaning or Replace Air Filter", lang), type: "action" },
-    { key: "clean_coil", label: t("Cleaning Coil AHU/FCU", lang), type: "action" },
-    { key: "clean_drainage", label: t("Cleaning Drainage", lang), type: "action" },
-    { key: "clean_body", label: t("Cleaning Body Unit", lang), type: "action" },
-    { key: "check_vbelt", label: t("Check V-Belt / Tension", lang), type: "action" },
-    { key: "check_bearing", label: t("Check Bearing Motor/Blower", lang), type: "action" },
+    { key: "clean_air_filter", label: t("Filter Cleaning/Replacement", lang), type: "action" },
+    { key: "clean_coil", label: t("AHU Coil Cleaning", lang), type: "action" },
+    { key: "clean_drainage", label: t("Condensate Drain Cleaning", lang), type: "action" },
+    { key: "clean_body", label: t("Unit Cabinet Cleaning", lang), type: "action" },
+    { key: "check_vbelt", label: t("V-Belt Inspection & Tension Adjustment", lang), type: "action" },
+    { key: "check_bearing", label: t("Motor/Blower Bearing Inspection", lang), type: "action" },
   ];
   
   const chunkArray = (arr: any[], size: number) => {

@@ -1,8 +1,7 @@
 import { ReportSignatureFooter } from "./ReportSignatureFooter";
 import { t, Language } from "@/lib/i18n";
 
-export const getCorrectiveSections = (data: any, unit: any) => {
-  const lang = data.lang as Language || 'id';
+export const getCorrectiveSections = (data: any, unit: any, lang: Language = 'id') => {
   const { personnel, pic, analysis, engineerNote, activity_photos } = data || {};
   
   const chunkArray = (arr: any[], size: number) => {
@@ -91,7 +90,7 @@ export const getCorrectiveSections = (data: any, unit: any) => {
 
     // SECTION 04: ENGINEER NOTES
     <div key="s4" style={{ marginBottom: "4mm" }}>
-      <div style={sectionHeader}>04 - {t("Technical Advice & Summary", lang)}</div>
+      <div style={sectionHeader}>04 - {t("Technical Advice", lang)}</div>
       <div style={{ border: "1px solid #ddd", padding: "2mm", fontSize: "8pt", fontWeight: 500, whiteSpace: "pre-wrap", color: "#444" }}>
         {engineerNote || "-"}
       </div>

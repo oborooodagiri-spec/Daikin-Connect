@@ -1,4 +1,16 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { 
+  ShieldCheck, Package, Building2, CalendarCheck, 
+  Clock, User as UserIcon, ArrowUpRight, ChevronRight 
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { format } from "date-fns";
 import { Language, t } from "@/lib/i18n";
+import { getClientDashboardData, requestClientVisit } from "@/app/actions/client_dashboard";
+import ProgressIndicator from "@/components/ProgressIndicator";
 
 export default function ClientDashboardPage() {
   const [data, setData] = useState<any>(null);

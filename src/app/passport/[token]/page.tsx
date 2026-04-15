@@ -15,6 +15,7 @@ import UnitHistoryTimeline from "@/components/UnitHistoryTimeline";
 import MediaGallery from "@/components/dashboard/MediaGallery";
 import { getUnitMediaHistory } from "@/app/actions/media";
 import imageCompression from "browser-image-compression";
+import { t, Language } from "@/lib/i18n";
 
 // Import Form Components
 import PreventiveFormClient from "./preventive/PreventiveFormClient";
@@ -30,6 +31,8 @@ export default function PassportLandingPage() {
   const [unit, setUnit] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [lang, setLang] = useState<Language>('id');
+  const [isMounted, setIsMounted] = useState(false);
 
   const [activeTab, setActiveTab] = useState<"info" | "corrective" | "preventive" | "audit" | "daily" | "history" | "complaint" | "media">("info");
   
@@ -57,6 +60,10 @@ export default function PassportLandingPage() {
   const [isCompressing, setIsCompressing] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
+    const saved = localStorage.getItem("daikin_lang") as Language;
+    if (saved) setLang(saved);
+
     async function loadData() {
       const res = await getUnitByToken(token) as any;
       if (res && "success" in res && res.success) {
@@ -64,7 +71,7 @@ export default function PassportLandingPage() {
         loadHistory(res.data.id);
         loadMedia(res.data.id);
       } else {
-        setError((res as any).error || "Malfuctioned QR Code.");
+        setError((res as any).error || t("Invalid Passport QR", lang));
       }
       setLoading(false);
     }
@@ -137,17 +144,17 @@ export default function PassportLandingPage() {
           setComplaintPhotoPreview(null);
         }, 3000);
       } else {
-        alert((res as any).error || "Gagal Mengirim Pengaduan");
+        alert((res as any).error || t("Gagal Mengirim Pengaduan", lang));
       }
     });
   };
 
-  if (loading) {
+  if (!isMounted || loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="animate-pulse flex flex-col items-center">
           <div className="w-16 h-16 border-4 border-[#00a1e4] border-t-transparent rounded-full animate-spin"></div>
-          <p className="mt-4 text-sm font-bold tracking-widest text-[#003366] uppercase">Syncing Passport...</p>
+          <p className="mt-4 text-sm font-bold tracking-widest text-[#003366] uppercase">{t("Syncing Passport...", lang)}</p>
         </div>
       </div>
     );
@@ -159,7 +166,7 @@ export default function PassportLandingPage() {
         <div className="w-24 h-24 bg-rose-100 rounded-full flex items-center justify-center mb-6">
           <Search className="w-10 h-10 text-rose-500" />
         </div>
-        <h1 className="text-2xl font-black text-slate-800">Invalid Passport QR</h1>
+        <h1 className="text-2xl font-black text-slate-800">{t("Invalid Passport QR", lang)}</h1>
         <p className="text-slate-500 mt-2">{error}</p>
       </div>
     );
@@ -203,21 +210,21 @@ export default function PassportLandingPage() {
 
         {/* Tab Navigation */}
         <div className="flex overflow-x-auto border-b border-slate-100 bg-white shrink-0 scrollbar-hide no-scrollbar">
-          <TabButton active={activeTab === "info"} onClick={() => setActiveTab("info")} label="Info" />
+          <TabButton active={activeTab === "info"} onClick={() => setActiveTab("info")} label={t("Overview", lang)} />
           {unit.enabledForms?.includes("Corrective") && (
-            <TabButton active={activeTab === "corrective"} onClick={() => setActiveTab("corrective")} label="Corrective" icon={<Hammer size={12}/>} />
+            <TabButton active={activeTab === "corrective"} onClick={() => setActiveTab("corrective")} label={t("Corrective", lang)} icon={<Hammer size={12}/>} />
           )}
           {unit.enabledForms?.includes("Preventive") && (
-            <TabButton active={activeTab === "preventive"} onClick={() => setActiveTab("preventive")} label="Preventive" icon={<Wrench size={12}/>} />
+            <TabButton active={activeTab === "preventive"} onClick={() => setActiveTab("preventive")} label={t("Preventive", lang)} icon={<Wrench size={12}/>} />
           )}
           {unit.enabledForms?.includes("Audit") && (
-            <TabButton active={activeTab === "audit"} onClick={() => setActiveTab("audit")} label="Audit" icon={<ClipboardCheck size={12}/>} />
+            <TabButton active={activeTab === "audit"} onClick={() => setActiveTab("audit")} label={t("Audit", lang)} icon={<ClipboardCheck size={12}/>} />
           )}
           {unit.enabledForms?.includes("DailyLog") && (
-            <TabButton active={activeTab === "daily"} onClick={() => setActiveTab("daily")} label="Daily Log" icon={<Activity size={12}/>} />
+            <TabButton active={activeTab === "daily"} onClick={() => setActiveTab("daily")} label={t("Daily Log", lang)} icon={<Activity size={12}/>} />
           )}
-          <TabButton active={activeTab === "history"} onClick={() => setActiveTab("history")} label="Log" icon={<HistoryIcon size={12}/>} />
-          <TabButton active={activeTab === "media"} onClick={() => setActiveTab("media")} label="Gallery" icon={<ImageIcon size={12}/>} />
+          <TabButton active={activeTab === "history"} onClick={() => setActiveTab("history")} label={t("Log", lang)} icon={<HistoryIcon size={12}/>} />
+          <TabButton active={activeTab === "media"} onClick={() => setActiveTab("media")} label={t("Gallery", lang)} icon={<ImageIcon size={12}/>} />
         </div>
 
         {/* Content Area */}
@@ -236,12 +243,12 @@ export default function PassportLandingPage() {
                     className="bg-white rounded-[24px] p-6 border border-slate-200 shadow-sm flex items-center justify-between cursor-pointer group hover:border-[#00a1e4] transition-all"
                   >
                     <div className="space-y-1">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-[#00a1e4]">Unit Health Score</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-[#00a1e4]">{t("Unit Health Score", lang)}</p>
                       <h4 className="text-xl font-black text-slate-800 uppercase italic">
-                        {unit.healthMetrics.status === 'optimal' ? 'Optimal Performance' : 
-                         unit.healthMetrics.status === 'degrading' ? 'Degrading' : 'Critical Maintenance'}
+                        {unit.healthMetrics.status === 'optimal' ? t('Optimal Performance', lang) : 
+                         unit.healthMetrics.status === 'degrading' ? t('Degrading', lang) : t('Critical Maintenance', lang)}
                       </h4>
-                      <p className="text-[10px] font-bold text-slate-400">Click to see calculation formula</p>
+                      <p className="text-[10px] font-bold text-slate-400">{lang === 'ja' ? '計算式を見るにはクリックしてください' : 'Click to see calculation formula'}</p>
                     </div>
                     <div className="relative w-16 h-16 flex items-center justify-center">
                       <svg className="w-full h-full -rotate-90">
@@ -262,27 +269,27 @@ export default function PassportLandingPage() {
 
                 <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
                   <div className="flex justify-between items-center">
-                    <h3 className="text-[10px] font-black uppercase tracking-widest text-[#00a1e4]">Specifications</h3>
+                    <h3 className="text-[10px] font-black uppercase tracking-widest text-[#00a1e4]">{t("Specifications", lang)}</h3>
                   </div>
 
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Brand / Model</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t("Model / Brand", lang)}</p>
                     <p className="text-base font-bold text-slate-800">{unit.brand} - {unit.model}</p>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Capacity (Btu/h)</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t("Capacity (Btu/h)", lang)}</p>
                       <p className="text-sm font-bold text-slate-800">{unit.capacity || "N/A"}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Unit Type</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t("Type", lang)}</p>
                       <span className={`inline-block mt-1 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border 
                         ${unit.unit_type === "AHU" ? "bg-cyan-50 text-cyan-700 border-cyan-100" : 
                           unit.unit_type === "FCU" ? "bg-indigo-50 text-indigo-700 border-indigo-100" :
                           unit.unit_type === "Chiller" ? "bg-rose-50 text-rose-700 border-rose-100" :
                           unit.unit_type === "Split" ? "bg-amber-50 text-amber-700 border-amber-100" :
                           "bg-slate-50 text-slate-400 border-slate-100"}`}>
-                        {unit.unit_type || "Uncategorized"}
+                        {unit.unit_type || t("N/A", lang)}
                       </span>
                     </div>
                   </div>
@@ -311,26 +318,26 @@ export default function PassportLandingPage() {
                 <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1 mb-1"><MapPin size={12}/> Area Building</p>
-                      <p className="text-sm font-bold text-slate-800">{unit.area || "Area Not Set"}</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1 mb-1"><MapPin size={12}/> {t("Area Building", lang)}</p>
+                      <p className="text-sm font-bold text-slate-800">{unit.area || t("N/A", lang)}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1 mb-1"><MapPin size={12}/> City / Location</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1 mb-1"><MapPin size={12}/> {t("City / Location", lang)}</p>
                       <p className="text-sm font-bold text-slate-800">{unit.location || "-"}</p>
                     </div>
                   </div>
                   <div className="pt-4 border-t border-slate-50 grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Floor Level</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t("Floor Level", lang)}</p>
                       <p className="text-sm font-bold text-slate-800">{unit.building_floor || "-"}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Room / Tenant</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t("Room / Tenant", lang)}</p>
                       <p className="text-sm font-bold text-slate-800">{unit.room_tenant || "-"}</p>
                     </div>
                   </div>
                    <div className="pt-4 border-t border-slate-50">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Customer Group</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t("Customer Group", lang)}</p>
                       <p className="text-sm font-bold text-slate-800">{unit.customer_group || "-"}</p>
                    </div>
                 </div>
@@ -340,7 +347,7 @@ export default function PassportLandingPage() {
                   onClick={() => setActiveTab("complaint")}
                   className="w-full py-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-center justify-center gap-3 text-rose-600 font-black uppercase text-xs tracking-widest"
                 >
-                   <AlertTriangle size={16}/> Lapor Masalah
+                   <AlertTriangle size={16}/> {t("Lapor Masalah", lang)}
                 </button>
               </motion.div>
             ) : activeTab === "corrective" ? (
@@ -354,10 +361,10 @@ export default function PassportLandingPage() {
                       <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Hammer size={28} />
                       </div>
-                      <span className="font-black uppercase tracking-widest text-xs">Input Laporan Corrective</span>
+                      <span className="font-black uppercase tracking-widest text-xs">{t("Input Laporan Corrective", lang)}</span>
                     </button>
                     <div className="space-y-4">
-                      <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Riwayat Corrective</h3>
+                      <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t("Riwayat Corrective", lang)}</h3>
                       <UnitHistoryTimeline history={unitHistory.filter(h => h.type === 'Corrective')} />
                     </div>
                   </>
@@ -379,10 +386,10 @@ export default function PassportLandingPage() {
                       <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Wrench size={28} />
                       </div>
-                      <span className="font-black uppercase tracking-widest text-xs">Input Laporan Preventive</span>
+                      <span className="font-black uppercase tracking-widest text-xs">{t("Input Laporan Preventive", lang)}</span>
                     </button>
                     <div className="space-y-4">
-                      <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Riwayat Preventive</h3>
+                      <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t("Riwayat Preventive", lang)}</h3>
                       <UnitHistoryTimeline history={unitHistory.filter(h => h.type === 'Preventive')} />
                     </div>
                   </>
@@ -404,10 +411,10 @@ export default function PassportLandingPage() {
                       <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                         <ClipboardCheck size={28} />
                       </div>
-                      <span className="font-black uppercase tracking-widest text-xs">Input Laporan Audit</span>
+                      <span className="font-black uppercase tracking-widest text-xs">{t("Input Laporan Audit", lang)}</span>
                     </button>
                     <div className="space-y-4">
-                      <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Riwayat Audit</h3>
+                      <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t("Riwayat Audit", lang)}</h3>
                       <UnitHistoryTimeline history={unitHistory.filter(h => h.type === 'Audit')} />
                     </div>
                   </>
@@ -428,7 +435,7 @@ export default function PassportLandingPage() {
                 className="space-y-4"
               >
                 <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-sm font-black text-[#003366] uppercase tracking-widest">Master Service Log</h3>
+                  <h3 className="text-sm font-black text-[#003366] uppercase tracking-widest">{t("Master Service Log", lang)}</h3>
                 </div>
                 {historyLoading ? (
                   <div className="py-20 text-center flex flex-col items-center gap-4">
@@ -446,8 +453,8 @@ export default function PassportLandingPage() {
               >
                 <div className="flex justify-between items-center mb-6 px-1">
                   <div>
-                    <h3 className="text-sm font-black text-[#003366] uppercase tracking-widest">Media Documentation</h3>
-                    <p className="text-[10px] font-bold text-slate-400 mt-0.5">Proof of work photos and videos</p>
+                    <h3 className="text-sm font-black text-[#003366] uppercase tracking-widest">{t("Media Documentation", lang)}</h3>
+                    <p className="text-[10px] font-bold text-slate-400 mt-0.5">{t("Proof of work photos and videos", lang)}</p>
                   </div>
                 </div>
                 {mediaLoading ? (
@@ -465,38 +472,38 @@ export default function PassportLandingPage() {
                 className="space-y-6"
               >
                 <button onClick={() => setActiveTab("info")} className="flex items-center gap-2 text-xs font-black uppercase text-slate-400 mb-4">
-                  <ChevronLeft size={16}/> Kembali
+                  <ChevronLeft size={16}/> {lang === 'ja' ? '戻る' : 'Back'}
                 </button>
                 {complaintMsg ? (
                   <div className="bg-rose-50 border border-rose-200 rounded-3xl p-8 flex flex-col items-center text-center">
                     <CheckCircle2 className="w-16 h-16 text-rose-500 mb-4" />
-                    <h3 className="text-xl font-black text-rose-800 uppercase tracking-tight">Terkirim!</h3>
-                    <p className="text-sm text-rose-600 font-bold mt-2">Masalah telah kami catat.</p>
+                    <h3 className="text-xl font-black text-rose-800 uppercase tracking-tight">{t("Terkirim!", lang)}</h3>
+                    <p className="text-sm text-rose-600 font-bold mt-2">{t("Masalah telah kami catat.", lang)}</p>
                   </div>
                 ) : (
                   <form onSubmit={handleComplaintSubmit} className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xl shadow-slate-200/40 space-y-6">
                     <div className="space-y-2">
-                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Nama Pelapor</label>
+                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{t("Nama Pelapor", lang)}</label>
                        <input 
                          type="text" required value={complaintForm.customerName} 
                          onChange={e => setComplaintForm({ ...complaintForm, customerName: e.target.value })}
-                         placeholder="Nama Anda"
+                         placeholder={t("Nama Pelapor", lang)}
                          className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-500/10"
                        />
                     </div>
 
                     <div className="space-y-2">
-                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Detail Masalah</label>
+                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{t("Detail Masalah", lang)}</label>
                        <textarea 
                          required rows={4} value={complaintForm.description}
                          onChange={e => setComplaintForm({ ...complaintForm, description: e.target.value })}
-                         placeholder="Jelaskan masalah..."
+                         placeholder={t("Detail Masalah", lang)}
                          className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-500/10"
                        />
                     </div>
 
                     <div className="space-y-4">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Foto Kondisi (Opsional)</label>
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{t("Foto Kondisi (Opsional)", lang)}</label>
                       <div className="flex items-center gap-4">
                         {complaintPhotoPreview ? (
                           <div className="relative w-24 h-24 rounded-2xl overflow-hidden border border-slate-200 group">
@@ -511,13 +518,13 @@ export default function PassportLandingPage() {
                         ) : (
                           <label className="w-24 h-24 rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400 hover:border-rose-300 hover:text-rose-500 cursor-pointer transition-all">
                             <Camera size={24}/>
-                            <span className="text-[10px] font-bold mt-1 uppercase">Ambil Foto</span>
+                            <span className="text-[10px] font-bold mt-1 uppercase">{t("Ambil Foto", lang)}</span>
                             <input type="file" accept="image/*" onChange={handleComplaintPhoto} className="hidden" />
                           </label>
                         )}
                         <div className="flex-1">
                            <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
-                             {isCompressing ? "Sedang memproses foto..." : "Upload foto kerusakan untuk mempercepat analisis teknisi kami."}
+                             {isCompressing ? "Processing..." : "Capture real-time site conditions to help our engineers diagnose faster."}
                            </p>
                         </div>
                       </div>
@@ -527,7 +534,7 @@ export default function PassportLandingPage() {
                       type="submit" disabled={isPending || isCompressing}
                       className="w-full py-4 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl text-sm font-black uppercase tracking-[0.2em] shadow-xl shadow-rose-200 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                     >
-                      {isPending ? "Mengirim..." : "Kirim Laporan"}
+                      {isPending ? "Sending..." : t("Kirim Laporan", lang)}
                       <AlertTriangle size={18} />
                     </button>
                   </form>
@@ -543,6 +550,7 @@ export default function PassportLandingPage() {
         isOpen={showHealthModal} 
         onClose={() => setShowHealthModal(false)} 
         metrics={unit.healthMetrics} 
+        lang={lang}
       />
     </div>
   );
@@ -565,7 +573,7 @@ function TabButton({ active, onClick, label, icon }: { active: boolean; onClick:
 }
 
 
-function HealthExplanationModal({ isOpen, onClose, metrics }: { isOpen: boolean; onClose: () => void; metrics: any }) {
+function HealthExplanationModal({ isOpen, onClose, metrics, lang }: { isOpen: boolean; onClose: () => void; metrics: any; lang: Language }) {
   if (!metrics) return null;
 
   return (
@@ -583,24 +591,24 @@ function HealthExplanationModal({ isOpen, onClose, metrics }: { isOpen: boolean;
               <h1 className="text-xl font-black italic tracking-tight uppercase">
                 Health <span className="text-[#00a1e4] not-italic">Analytics</span>
               </h1>
-              <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mt-1">Transparency Engine V1.0</p>
+              <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mt-1">{t("Transparency Engine", lang)}</p>
             </div>
 
             <div className="p-6 space-y-6 max-h-[60vh] overflow-y-auto no-scrollbar">
               <section className="space-y-3">
                 <div className="flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] font-black">1</span>
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Psychrometric Mapping</h4>
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t("Psychrometric Mapping", lang)}</h4>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-3 bg-slate-50 rounded-2xl">
-                    <p className="text-[8px] font-bold text-slate-400 uppercase">Enthalpy In (h_in)</p>
+                    <p className="text-[8px] font-bold text-slate-400 uppercase">{t("Enthalpy", lang)} In (h_in)</p>
                     <p className="text-sm font-bold text-slate-700">
                       {metrics.entering.enthalpy.toFixed(1)} <span className="text-[8px] opacity-40">kJ/kg</span>
                     </p>
                   </div>
                   <div className="p-3 bg-slate-50 rounded-2xl">
-                    <p className="text-[8px] font-bold text-slate-400 uppercase">Enthalpy Out (h_out)</p>
+                    <p className="text-[8px] font-bold text-slate-400 uppercase">{t("Enthalpy", lang)} Out (h_out)</p>
                     <p className="text-sm font-bold text-slate-700">
                       {metrics.leaving.enthalpy.toFixed(1)} <span className="text-[8px] opacity-40">kJ/kg</span>
                     </p>
@@ -611,18 +619,18 @@ function HealthExplanationModal({ isOpen, onClose, metrics }: { isOpen: boolean;
               <section className="space-y-3">
                 <div className="flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] font-black">2</span>
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Capacity Integration</h4>
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t("Mass Flow", lang)} Integration</h4>
                 </div>
                 <div className="p-4 border border-slate-100 rounded-2xl bg-slate-50/50">
                   <code className="text-[10px] font-bold text-blue-600 block mb-2">Q = m * (h_in - h_out)</code>
                   <div className="space-y-1">
-                    <p className="text-[10px] text-slate-500 leading-relaxed font-medium">Dimana m (Mass Flow) = ({metrics.airflow} m³/h / 3600) * 1.2 kg/m³</p>
+                    <p className="text-[10px] text-slate-500 leading-relaxed font-medium">Where m (Mass Flow) = ({metrics.airflow} m³/h / 3600) * 1.2 kg/m³</p>
                     <p className="text-[10px] text-slate-500 leading-relaxed font-medium">
-                      Actual Capacity = m * ({metrics.entering.enthalpy.toFixed(1)} - {metrics.leaving.enthalpy.toFixed(1)})
+                      {t("Actual Capacity", lang)} = m * ({metrics.entering.enthalpy.toFixed(1)} - {metrics.leaving.enthalpy.toFixed(1)})
                     </p>
                   </div>
                   <div className="mt-3 pt-3 border-t border-slate-100 flex justify-between items-end">
-                    <span className="text-[8px] font-black text-slate-400 uppercase">Hasil Terukur:</span>
+                    <span className="text-[8px] font-black text-slate-400 uppercase">{lang === 'ja' ? '測定結果:' : 'Measured Result:'}</span>
                     <span className="text-lg font-black text-slate-800">
                       {metrics.actualCapacitykW} <span className="text-xs">kW</span>
                     </span>
@@ -633,7 +641,7 @@ function HealthExplanationModal({ isOpen, onClose, metrics }: { isOpen: boolean;
               <section className="space-y-3">
                 <div className="flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] font-black">3</span>
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Health Final Score</h4>
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t("Unit Health Score", lang)}</h4>
                 </div>
                 <div className="p-4 bg-blue-50/30 rounded-2xl border border-blue-100">
                   <p className="text-[10px] text-blue-700 font-bold mb-1">Reality vs Design Comparison</p>
@@ -649,7 +657,7 @@ function HealthExplanationModal({ isOpen, onClose, metrics }: { isOpen: boolean;
 
             <div className="p-6 pt-0">
               <button onClick={onClose} className="w-full py-4 bg-slate-800 text-white rounded-2xl text-xs font-black uppercase tracking-widest">
-                MENGERTI
+                {lang === 'ja' ? '了解しました' : 'UNDERSTOOD'}
               </button>
             </div>
           </motion.div>

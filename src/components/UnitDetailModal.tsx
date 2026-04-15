@@ -16,6 +16,7 @@ import { getUnitComplaints, deleteComplaint } from "@/app/actions/complaints";
 import MediaGallery from "./dashboard/MediaGallery";
 import { AlertCircle, Trash2, ShieldCheck, Zap, Activity } from "lucide-react";
 import Portal from "./Portal";
+import { t, Language } from "@/lib/i18n";
 
 interface Unit {
   id: string | number;
@@ -55,12 +56,13 @@ interface UnitDetailModalProps {
   customerId?: string;
   projectId?: string;
   session?: any;
+  onRefresh?: () => void;
 }
 
 export default function UnitDetailModal({
   isOpen, onClose, unit, history, historyLoading, 
   isStatusUpdating, onStatusUpdate, onPrintQR, onEdit,
-  customerId, projectId, session
+  customerId, projectId, session, onRefresh
 }: UnitDetailModalProps) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
@@ -78,11 +80,16 @@ export default function UnitDetailModal({
   const [showEngineering, setShowEngineering] = useState(false);
   const [showQRZoom, setShowQRZoom] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
-  
+  const [isMounted, setIsMounted] = useState(false);
+  const [lang, setLang] = useState<Language>('id');
   const isVendor = session?.roles?.some((r: string) => r.toLowerCase().includes("vendor"));
   const canEdit = session?.isInternal || isVendor;
 
   useEffect(() => {
+    setIsMounted(true);
+    const saved = localStorage.getItem("daikin_lang") as Language;
+    if (saved) setLang(saved);
+
     if (unit) {
       setFormData({ ...unit });
       fetchHealth();
@@ -127,6 +134,7 @@ export default function UnitDetailModal({
       const result = await updateUnit(Number(unit.id), formData);
       if ("success" in result && result.success) {
         setIsEditing(false);
+        onRefresh?.();
         router.refresh();
       } else {
         alert("Failed to update: " + result.error);
@@ -144,7 +152,10 @@ export default function UnitDetailModal({
   };
 
   const handleDeleteComplaint = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this complaint record? This action cannot be undone.")) return;
+    const confirmMsg = lang === 'id' ? "Apakah Anda yakin ingin menghapus catatan keluhan ini? Tindakan ini tidak dapat dibatalkan." :
+                       lang === 'ja' ? "この苦情記録を削除してもよろしいですか？この操作は取り消せません。" :
+                       "Are you sure you want to delete this complaint record? This action cannot be undone.";
+    if (!confirm(confirmMsg)) return;
     setIsDeleting(id);
     const res: any = await deleteComplaint(id);
     if (res && "success" in res && res.success) {
@@ -168,11 +179,9 @@ export default function UnitDetailModal({
       const ctx = canvas.getContext("2d");
       if (!ctx) throw new Error("Canvas context failed");
 
-      // Target size 1000x1000 pixels (1:1 Ratio)
       canvas.width = 1000;
       canvas.height = 1000;
 
-      // Helper to load images
       const loadImage = (src: string) => new Promise<HTMLImageElement>((resolve, reject) => {
         const img = new Image();
         img.crossOrigin = "anonymous";
@@ -181,17 +190,14 @@ export default function UnitDetailModal({
         img.src = src;
       });
 
-      // Load branding assets
       const [logoDaikin, logoEpl] = await Promise.all([
         loadImage("/daikin_logo.png"),
         loadImage("/logo_epl_connect_1.png")
       ]);
 
-      // 1. Draw Professional Background
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, 1000, 1000);
       
-      // Engineering Dot Grid Background
       ctx.fillStyle = "#f1f5f9";
       for (let x = 40; x < 1000; x += 40) {
         for (let y = 40; y < 1000; y += 40) {
@@ -201,24 +207,18 @@ export default function UnitDetailModal({
         }
       }
       
-      // Premium Thick Border
       ctx.strokeStyle = "#003366";
       ctx.lineWidth = 24;
       ctx.strokeRect(12, 12, 976, 976);
 
-      // 2. Draw Top Branding (Spaced Apart & Larger)
       const eplW = 280;
       const eplH = (logoEpl.height / logoEpl.width) * eplW;
       const daikinW = 260;
       const daikinH = (logoDaikin.height / logoDaikin.width) * daikinW;
       
-      // Calculate positions for left/right spread
       const margin = 100;
       
-      // EPL on the Left
       ctx.drawImage(logoEpl, margin, 60 + (daikinH - eplH)/2, eplW, eplH);
-      
-      // Daikin on the Right
       ctx.drawImage(logoDaikin, 1000 - margin - daikinW, 60, daikinW, daikinH);
       
       ctx.fillStyle = "#003366";
@@ -226,7 +226,6 @@ export default function UnitDetailModal({
       ctx.textAlign = "center";
       ctx.fillText("DIGITAL ASSET IDENTIFICATION", 500, 195);
 
-      // 3. Draw QR Code with Shadow (CLEAN - NO OVERLAY)
       const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
       const qrUrl = URL.createObjectURL(svgBlob);
       const qrImg = await loadImage(qrUrl);
@@ -235,21 +234,16 @@ export default function UnitDetailModal({
       const qrX = (1000 - qrSize) / 2;
       const qrY = 225;
 
-      // Add soft shadow for QR
       ctx.shadowColor = "rgba(0, 51, 102, 0.1)";
       ctx.shadowBlur = 40;
       ctx.shadowOffsetY = 20;
       ctx.fillStyle = "white";
       ctx.fillRect(qrX - 20, qrY - 20, qrSize + 40, qrSize + 40);
       
-      // Reset shadow for QR image
       ctx.shadowColor = "transparent";
       ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
       URL.revokeObjectURL(qrUrl);
 
-      // 4. (Logo Overlay Removed as per request)
-
-      // 5. Draw Metadata Footer
       ctx.fillStyle = "#003366";
       ctx.font = "900 64px Arial";
       const roomName = (unit.room_tenant || unit.area || "DAIKIN ASSET").toUpperCase();
@@ -268,7 +262,7 @@ export default function UnitDetailModal({
       document.body.removeChild(downloadLink);
     } catch (e) {
       console.error(e);
-      alert("Failed to generate professional QR label");
+      alert(lang === 'ja' ? "プロフェッショナルなQRラベルの生成に失敗しました" : "Failed to generate professional QR label");
     } finally {
       setIsDownloading(false);
     }
@@ -293,13 +287,12 @@ export default function UnitDetailModal({
                 exit={{ opacity: 0, scale: 0.95, y: 20 }} 
                 className="bg-white border border-slate-200 rounded-[2.5rem] shadow-2xl relative z-10 w-full max-w-6xl h-[90vh] overflow-hidden flex flex-col"
               >
-                {/* Modal Header */}
                 <div className="bg-[#003366] text-white p-6 sm:p-8 relative overflow-hidden shrink-0">
                   <div className="absolute top-0 right-0 w-96 h-96 bg-[#00a1e4]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                   <div className="relative z-10 flex justify-between items-start">
                     <div className="max-w-[80%]">
                       <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-white/10 text-[#00a1e4] text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] rounded-lg border border-white/10">Unit Operations Hub</span>
+                        <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-white/10 text-[#00a1e4] text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] rounded-lg border border-white/10">{t("Unit Operations Hub", lang)}</span>
                         <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-white/10 text-white/60 text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] rounded-lg border border-white/10 tracking-widest">{unit.brand || "Daikin"}</span>
                       </div>
                       <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter uppercase break-all leading-none">{unit.tag_number}</h2>
@@ -317,14 +310,13 @@ export default function UnitDetailModal({
                   </div>
                 </div>
 
-                {/* Hub Action Bar */}
                 <div className="bg-slate-50 border-b border-slate-200 px-4 sm:px-8 py-4 sm:py-5 flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0 overflow-x-auto sm:overflow-visible transition-all">
                   <div className="flex items-center w-full sm:w-auto">
                     <div className="flex bg-white p-1 rounded-2xl border border-slate-200 shadow-sm w-full sm:w-auto justify-center">
                       {[
-                        { id: "Normal", label: "Normal", color: "bg-emerald-500" },
-                        { id: "Problem", label: "Problem", color: "bg-rose-500" },
-                        { id: "On_Progress", label: "Processing", color: "bg-amber-500" }
+                        { id: "Normal", label: t("Normal", lang), color: "bg-emerald-500" },
+                        { id: "Problem", label: t("Problem", lang), color: "bg-rose-500" },
+                        { id: "On_Progress", label: t("Processing", lang), color: "bg-amber-500" }
                       ].map(s => (
                         <button 
                           key={s.id}
@@ -356,7 +348,7 @@ export default function UnitDetailModal({
                             onClick={() => setIsEditing(true)} 
                             className="flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-white border border-[#003366]/20 text-[#003366] text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-[#003366] hover:text-white transition-all shadow-sm group"
                           >
-                            <Edit2 size={14} className="group-hover:rotate-12 transition-transform"/> Specs
+                            <Edit2 size={14} className="group-hover:rotate-12 transition-transform"/> {t("Specifications", lang)}
                           </button>
                         )}
                         {onPrintQR && (
@@ -364,7 +356,7 @@ export default function UnitDetailModal({
                             onClick={() => onPrintQR(unit)} 
                             className="flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-emerald-50 text-emerald-700 text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-emerald-600 hover:text-white transition-all shadow-sm border border-emerald-100"
                           >
-                            <QrCode size={14}/> Print
+                            <QrCode size={14}/> {lang === 'ja' ? '印刷' : 'Print'}
                           </button>
                         )}
                       </>
@@ -374,7 +366,7 @@ export default function UnitDetailModal({
                           onClick={handleCancel}
                           className="flex items-center gap-2 px-6 py-3 bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-slate-200 transition-all"
                         >
-                          <RotateCcw size={14}/> Cancel
+                          <RotateCcw size={14}/> {lang === 'ja' ? 'キャンセル' : 'Cancel'}
                         </button>
                         <button 
                           onClick={handleSave}
@@ -389,13 +381,10 @@ export default function UnitDetailModal({
                   </div>
                 </div>
 
-                {/* Info Hub - The Horizontal Core */}
                 <div className="flex-1 overflow-y-auto custom-scrollbar">
                   <div className="p-8 pb-4">
                     <div className="grid grid-cols-12 gap-8 bg-slate-50/50 border border-slate-100 p-8 rounded-[2.5rem]">
-                      {/* Column 1: Identity & Vitality (Stacked) */}
                        <div className="col-span-12 lg:col-span-3 space-y-6">
-                        {/* Passport Card */}
                         <div 
                           className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 group relative overflow-hidden flex flex-col items-center justify-center gap-4 cursor-pointer"
                           onClick={() => setShowQRZoom(true)}
@@ -413,12 +402,11 @@ export default function UnitDetailModal({
                             )}
                           </div>
                           <div className="text-center group-hover:scale-110 transition-transform">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-[#00a1e4]">Click to expand</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-[#00a1e4]">{lang === 'ja' ? '拡大するにはクリック' : 'Click to expand'}</p>
                             <p className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">QR CODE HUB</p>
                           </div>
                         </div>
 
-                        {/* Health Vitality Hub (Stacked) */}
                         <button 
                           onClick={() => setShowHealthBreakdown(true)}
                           className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center relative overflow-hidden group hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer w-full"
@@ -461,111 +449,120 @@ export default function UnitDetailModal({
                               {healthData?.label || "Status"}
                             </h4>
                             {healthData?.auditDate && (
-                              <p className="text-[9px] font-semibold text-slate-300 mt-2">Audit: {new Date(healthData.auditDate).toLocaleDateString()}</p>
+                              <p className="text-[9px] font-semibold text-slate-300 mt-2">Audit: {new Date(healthData.auditDate).toLocaleDateString(lang === 'ja' ? 'ja-JP' : lang === 'en' ? 'en-US' : 'id-ID')}</p>
                             )}
-                            <p className="text-[8px] font-black uppercase text-[#00a1e4] tracking-[0.2em] mt-2 opacity-0 group-hover:opacity-100 transition-opacity">View Formula</p>
+                            <p className="text-[8px] font-black uppercase text-[#00a1e4] tracking-[0.2em] mt-2 opacity-0 group-hover:opacity-100 transition-opacity">{lang === 'ja' ? '計算式を表示' : 'View Formula'}</p>
                           </div>
                         </button>
                       </div>
 
-                      {/* Column 2: Technical Specs Hub */}
                       <div className="col-span-12 lg:col-span-4 bg-white p-8 rounded-3xl shadow-sm border border-slate-100 space-y-8">
                         <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-indigo-700 w-fit rounded-lg">
                           <Zap size={14}/>
-                          <span className="text-[10px] font-black uppercase tracking-[0.1em]">Technical Metrics</span>
+                          <span className="text-[10px] font-black uppercase tracking-[0.1em]">{t("Technical Metrics", lang)}</span>
                         </div>
                         <div className="grid grid-cols-2 gap-x-8 gap-y-8">
                           <EditableField 
-                            label="Serial Number" 
+                            label={t("Serial Number", lang)} 
                             value={formData?.serial_number} 
                             isEditing={isEditing} 
                             onChange={(v) => handleInputChange("serial_number", v)}
                             isMono
+                            lang={lang}
                           />
                           <EditableField 
-                            label="Internal ID / Code" 
+                            label={t("Internal ID / Code", lang)} 
                             value={formData?.code} 
                             isEditing={isEditing} 
                             onChange={(v) => handleInputChange("code", v)}
                             isMono
+                            lang={lang}
                           />
                           <EditableField 
-                            label="Normal Capacity (Btu/h)" 
+                            label={t("Capacity (Btu/h)", lang)} 
                             value={formData?.capacity} 
                             isEditing={isEditing} 
                             onChange={(v) => handleInputChange("capacity", v)}
+                            lang={lang}
                           />
                           <EditableField 
-                            label="Installation Year" 
+                            label={t("Installation Year", lang)} 
                             value={formData?.yoi?.toString()} 
                             isEditing={isEditing} 
                             onChange={(v) => handleInputChange("yoi", v)}
+                            lang={lang}
                           />
                           <EditableField 
-                            label="Unit Asset Type" 
+                            label={t("Type", lang)} 
                             value={formData?.unit_type} 
                             isEditing={isEditing} 
                             onChange={(v) => handleInputChange("unit_type", v)}
                             isBadge
+                            lang={lang}
                           />
                           <EditableField 
-                            label="Model Info" 
+                            label={t("Model / Brand", lang)} 
                             value={formData?.model} 
                             isEditing={isEditing} 
                             onChange={(v) => handleInputChange("model", v)}
+                            lang={lang}
                           />
                         </div>
                       </div>
 
-                      {/* Column 3: Location Details Hub */}
                       <div className="col-span-12 lg:col-span-5 bg-white p-8 rounded-3xl shadow-sm border border-slate-100 space-y-8">
                         <div className="flex items-center gap-2 px-3 py-1.5 bg-[#00a1e4]/10 text-[#00a1e4] w-fit rounded-lg">
                           <MapPin size={14}/>
-                          <span className="text-[10px] font-black uppercase tracking-[0.1em]">Deployment Location</span>
+                          <span className="text-[10px] font-black uppercase tracking-[0.1em]">{t("Deployment Location", lang)}</span>
                         </div>
                         <div className="grid grid-cols-2 gap-x-8 gap-y-8">
                           <EditableField 
-                            label="Building Area" 
+                            label={t("Area Building", lang)} 
                             value={formData?.area} 
                             isEditing={isEditing} 
                             onChange={(v) => handleInputChange("area", v)}
+                            lang={lang}
                           />
                           <EditableField 
                             label="Floor Level" 
                             value={formData?.building_floor} 
                             isEditing={isEditing} 
                             onChange={(v) => handleInputChange("building_floor", v)}
+                            lang={lang}
                           />
                           <EditableField 
-                            label="Room / Tenant" 
+                            label={t("Room / Tenant", lang)} 
                             value={formData?.room_tenant} 
                             isEditing={isEditing} 
                             onChange={(v) => handleInputChange("room_tenant", v)}
+                            lang={lang}
                           />
                           <EditableField 
                             label="Operational City" 
                             value={formData?.location} 
                             isEditing={isEditing} 
                             onChange={(v) => handleInputChange("location", v)}
+                            lang={lang}
                           />
                           <EditableField 
-                            label="Company Group" 
+                            label={t("Customer Group", lang)} 
                             value={formData?.customer_group} 
                             isEditing={isEditing} 
                             onChange={(v) => handleInputChange("customer_group", v)}
+                            lang={lang}
                           />
                           <EditableField 
                             label="Site ID Reference" 
                             value={formData?.site_id?.toString()} 
                             isEditing={isEditing} 
                             onChange={(v) => handleInputChange("site_id", v)}
+                            lang={lang}
                           />
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* History Timeline */}
                   <div className="px-8 py-10 bg-white">
                     <div className="flex justify-between items-center mb-10 pb-6 border-b border-slate-100 flex-wrap gap-4">
                       <div className="flex items-center gap-4">
@@ -573,8 +570,8 @@ export default function UnitDetailModal({
                           <HistoryIcon size={24}/>
                         </div>
                         <div>
-                          <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-800">Unit Activity Hub</h3>
-                          <p className="text-xs font-bold text-slate-400 mt-0.5">Comprehensive history of service & media documentation</p>
+                          <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-800">{t("Unit Activity Hub", lang)}</h3>
+                          <p className="text-xs font-bold text-slate-400 mt-0.5">{lang === 'ja' ? 'サービスとメディアドキュメントの包括的な履歴' : 'Comprehensive history of service & media documentation'}</p>
                         </div>
                       </div>
                       
@@ -583,7 +580,7 @@ export default function UnitDetailModal({
                           onClick={() => setActiveTab("timeline")}
                           className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 ${activeTab === 'timeline' ? 'bg-[#003366] text-white shadow-lg' : 'text-slate-400 hover:text-slate-600'}`}
                         >
-                          <HistoryIcon size={14}/> Timeline
+                          <HistoryIcon size={14}/> {lang === 'ja' ? 'タイムライン' : 'Timeline'}
                         </button>
                         <button 
                           onClick={() => setActiveTab("media")}
@@ -595,7 +592,7 @@ export default function UnitDetailModal({
                           onClick={() => setActiveTab("complaints")}
                           className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 ${activeTab === 'complaints' ? 'bg-[#003366] text-white shadow-lg' : 'text-slate-400 hover:text-slate-600'}`}
                         >
-                          <AlertCircle size={14}/> Complaints
+                          <AlertCircle size={14}/> {lang === 'ja' ? '苦情' : 'Complaints'}
                         </button>
                       </div>
 
@@ -603,7 +600,7 @@ export default function UnitDetailModal({
                         onClick={() => router.push(`/dashboard/schedules`)} 
                         className="flex items-center gap-3 px-6 py-3 bg-white border border-[#003366]/20 text-[#003366] text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-[#00a1e4] hover:text-white transition-all shadow-sm group"
                       >
-                        <Clock size={16} className="group-hover:translate-x-1 transition-transform"/> View Site Calendar
+                        <Clock size={16} className="group-hover:translate-x-1 transition-transform"/> {lang === 'ja' ? 'サイトカレンダーを表示' : 'View Site Calendar'}
                       </button>
                     </div>
 
@@ -641,8 +638,8 @@ export default function UnitDetailModal({
                       ) : complaintHistory.length === 0 ? (
                         <div className="py-24 text-center text-slate-400 px-6">
                           <AlertCircle className="w-12 h-12 mx-auto mb-4 opacity-10" />
-                          <p className="text-sm font-bold">No complaints recorded for this unit.</p>
-                          <p className="text-xs">History is clean and healthy</p>
+                          <p className="text-sm font-bold">{lang === 'ja' ? 'このユニットに対する苦情は記録されていません。' : 'No complaints recorded for this unit.'}</p>
+                          <p className="text-xs">{lang === 'ja' ? '履歴はクリーンで健全です' : 'History is clean and healthy'}</p>
                         </div>
                       ) : (
                         <div className="space-y-4 max-w-4xl mx-auto">
@@ -693,7 +690,6 @@ export default function UnitDetailModal({
         )}
       </AnimatePresence>
 
-      {/* Health Breakdown Overlay */}
       <AnimatePresence>
         {showHealthBreakdown && healthData && (
           <Portal>
@@ -710,8 +706,8 @@ export default function UnitDetailModal({
                 <div className="p-10 overflow-y-auto flex-1 custom-scrollbar">
                   <div className="flex justify-between items-start mb-10">
                     <div>
-                      <h3 className="text-2xl font-black text-[#003366] tracking-tight mb-2">Health Calculation Analysis</h3>
-                      <p className="text-sm font-bold text-slate-400">Physics-based Performance Audit & Enthalpy comparison</p>
+                      <h3 className="text-2xl font-black text-[#003366] tracking-tight mb-2">{t("Asset Health Analytics", lang)}</h3>
+                      <p className="text-sm font-bold text-slate-400">{lang === 'ja' ? '物理ベースのパフォーマンス監査とエンタルピー比較' : 'Physics-based Performance Audit & Enthalpy comparison'}</p>
                     </div>
                     <button onClick={() => setShowHealthBreakdown(false)} className="p-3 bg-slate-50 hover:bg-slate-100 rounded-2xl transition-all">
                       <X size={20} />
@@ -719,7 +715,6 @@ export default function UnitDetailModal({
                   </div>
 
                   <div className="space-y-8">
-                    {/* NEW: Balanced AHI Formula Section */}
                     <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
                       <div className="flex justify-between items-center mb-6">
                         <p className="text-[10px] font-black uppercase tracking-widest text-[#00a1e4]">Balanced Asset Health Index</p>
@@ -729,7 +724,7 @@ export default function UnitDetailModal({
                        <div className="grid grid-cols-3 gap-4 mb-8">
                          <div className="text-center p-4 bg-white rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
                             <Activity size={16} className="text-[#00a1e4] absolute top-2 right-2 opacity-20 group-hover:opacity-100 transition-opacity" />
-                            <p className="text-[10px] font-black uppercase text-slate-400 mb-1">Condition</p>
+                            <p className="text-[10px] font-black uppercase text-slate-400 mb-1">{lang === 'ja' ? '状態' : 'Condition'}</p>
                             <p className="text-xl font-black text-[#003366]">{healthData.ahi?.conditionScore || '--'}%</p>
                             <div className="mt-2 w-full bg-slate-100 h-1 rounded-full overflow-hidden">
                                <div className="bg-[#00a1e4] h-full" style={{ width: `${healthData.ahi?.conditionScore || 0}%` }}></div>
@@ -737,7 +732,7 @@ export default function UnitDetailModal({
                          </div>
                          <div className="text-center p-4 bg-white rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
                             <Zap size={16} className="text-emerald-500 absolute top-2 right-2 opacity-20 group-hover:opacity-100 transition-opacity" />
-                            <p className="text-[10px] font-black uppercase text-slate-400 mb-1">Performance</p>
+                            <p className="text-[10px] font-black uppercase text-slate-400 mb-1">{lang === 'ja' ? 'パフォーマンス' : 'Performance'}</p>
                             <p className="text-xl font-black text-[#003366]">{healthData.ahi?.performanceScore || '--'}%</p>
                             <div className="mt-2 w-full bg-slate-100 h-1 rounded-full overflow-hidden">
                                <div className="bg-emerald-500 h-full" style={{ width: `${healthData.ahi?.performanceScore || 0}%` }}></div>
@@ -745,7 +740,7 @@ export default function UnitDetailModal({
                          </div>
                          <div className="text-center p-4 bg-white rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
                             <History size={16} className="text-rose-500 absolute top-2 right-2 opacity-20 group-hover:opacity-100 transition-opacity" />
-                            <p className="text-[10px] font-black uppercase text-slate-400 mb-1">Reliability</p>
+                            <p className="text-[10px] font-black uppercase text-slate-400 mb-1">{lang === 'ja' ? '信頼性' : 'Reliability'}</p>
                             <p className="text-xl font-black text-[#003366]">{healthData.ahi?.reliabilityScore || '--'}%</p>
                             <div className="mt-2 w-full bg-slate-100 h-1 rounded-full overflow-hidden">
                                <div className="bg-rose-500 h-full" style={{ width: `${healthData.ahi?.reliabilityScore || 0}%` }}></div>
@@ -753,7 +748,6 @@ export default function UnitDetailModal({
                          </div>
                       </div>
 
-                      {/* NEW: Condition Breakdown Detail */}
                       {healthData.ahi?.breakdown?.condition && (
                          <div className="mb-8 grid grid-cols-4 gap-2">
                             {[
@@ -771,33 +765,32 @@ export default function UnitDetailModal({
                       )}
 
                       <div className="bg-white/50 p-6 rounded-2xl border border-slate-200/50 flex flex-col items-center gap-2">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Global Formula</p>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Global Formula</p>
                         <div className="text-lg font-black text-[#003366] font-mono tracking-tighter pt-2">
                            $Score = (CI \cdot 0.4) + (PI \cdot 0.4) + (RI \cdot 0.2)$
                         </div>
                       </div>
                     </div>
 
-                    {/* Data Metrics */}
                     {healthData.metrics && (
                       <div className="grid grid-cols-2 gap-4">
                         <div className="p-6 bg-white border border-slate-100 rounded-3xl shadow-sm">
-                          <p className="text-[10px] font-black uppercase tracking-widest text-[#00a1e4] mb-4">Measured Airflow</p>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-[#00a1e4] mb-4">{t("Measured Airflow", lang)}</p>
                           <p className="text-2xl font-black text-slate-800">{healthData.metrics.airflow} <span className="text-sm text-slate-400">m³/h</span></p>
                         </div>
                         <div className="p-6 bg-white border border-slate-100 rounded-3xl shadow-sm">
-                          <p className="text-[10px] font-black uppercase tracking-widest text-[#00a1e4] mb-4">Air Mass Flow (&#775;m)</p>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-[#00a1e4] mb-4">{t("Mass Flow Rate", lang)} (&#775;m)</p>
                           <p className="text-2xl font-black text-slate-800">{(healthData.metrics.airflow * 1.204 / 3600).toFixed(3)} <span className="text-sm text-slate-400">kg/s</span></p>
                         </div>
                         
                         <div className="col-span-2 grid grid-cols-2 gap-px bg-slate-100 border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
                           <div className="bg-white p-6">
-                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Entering (Inlet)</p>
+                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">{t("Entering Air Properties", lang)}</p>
                              <p className="text-lg font-black text-slate-800">{healthData.metrics.entering.temperature}&deg;C / {healthData.metrics.entering.humidity}%</p>
                              <p className="text-xs font-bold text-indigo-500 mt-1">h: {healthData.metrics.entering.enthalpy.toFixed(2)} kJ/kg</p>
                           </div>
                           <div className="bg-white p-6 border-l border-slate-100">
-                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Leaving (Outlet)</p>
+                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">{t("Exiting Air Properties", lang)}</p>
                              <p className="text-lg font-black text-slate-800">{healthData.metrics.leaving.temperature}&deg;C / {healthData.metrics.leaving.humidity}%</p>
                              <p className="text-xs font-bold text-indigo-500 mt-1">h: {healthData.metrics.leaving.enthalpy.toFixed(2)} kJ/kg</p>
                           </div>
@@ -825,7 +818,7 @@ export default function UnitDetailModal({
                               
                               <div className="pt-6 border-t border-white/10 flex justify-between items-center">
                                  <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#00a1e4] leading-none mb-1">Asset Status</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#00a1e4] leading-none mb-1">{lang === 'ja' ? 'アセットステータス' : 'Asset Status'}</p>
                                     <p className="text-sm font-black uppercase">{healthData.label}</p>
                                  </div>
                                  <p className="text-5xl font-black tracking-tighter">{healthData.score}%</p>
@@ -833,7 +826,6 @@ export default function UnitDetailModal({
                            </div>
                         </div>
 
-                        {/* Engineering Performance Detail Sub-section */}
                         <div className="col-span-2 mt-4">
                            <button 
                              className={`w-full flex items-center justify-between p-6 rounded-3xl group transition-all duration-500 border ${
@@ -861,17 +853,17 @@ export default function UnitDetailModal({
                                  <div className="pt-6 space-y-4">
                                    <div className="grid grid-cols-2 gap-4">
                                       <div className="p-5 bg-white border border-slate-100 rounded-2xl shadow-sm">
-                                         <p className="text-[9px] font-black text-slate-400 uppercase mb-2 tracking-widest">Cooling Capacity (Actual)</p>
+                                         <p className="text-[9px] font-black text-slate-400 uppercase mb-2 tracking-widest">{t("Cooling Capacity (Actual)", lang)}</p>
                                          <p className="text-xl font-black text-[#003366]">{healthData.metrics.actualCapacitykW} <span className="text-xs font-bold text-slate-400">kW</span></p>
                                       </div>
                                       <div className="p-5 bg-white border border-slate-100 rounded-2xl shadow-sm">
-                                         <p className="text-[9px] font-black text-slate-400 uppercase mb-2 tracking-widest">Cooling Capacity (Design)</p>
+                                         <p className="text-[9px] font-black text-slate-400 uppercase mb-2 tracking-widest">{t("Cooling Capacity (Design)", lang)}</p>
                                          <p className="text-xl font-black text-[#003366]">{healthData.metrics.designCapacitykW} <span className="text-xs font-bold text-slate-400">kW</span></p>
                                       </div>
                                    </div>
                                    <div className="p-8 bg-slate-900 rounded-[2rem] text-center relative overflow-hidden">
                                       <div className="absolute inset-0 bg-blue-500/5 pointer-events-none"></div>
-                                      <p className="text-[10px] font-black text-[#00a1e4] uppercase mb-4 tracking-[0.3em] relative z-10">Physics Extraction Logic</p>
+                                      <p className="text-[10px] font-black text-[#00a1e4] uppercase mb-4 tracking-[0.3em] relative z-10">{t("Physics Extraction Logic", lang)}</p>
                                       <div className="space-y-6 text-white/90 font-mono relative z-10 text-center">
                                          <div>
                                             <p className="text-[9px] font-black opacity-40 uppercase tracking-widest mb-1.5">1. Physical Condition Index</p>
@@ -908,8 +900,12 @@ export default function UnitDetailModal({
                       <div className="p-8 bg-amber-50 text-amber-700 rounded-3xl border border-amber-100 text-center">
                          <AlertCircle size={24} className="mx-auto mb-3 opacity-50" />
                          <p className="text-sm font-bold leading-relaxed">
-                            Unit ini belum memiliki data audit mendalam (Thermal Analytics). <br/>
-                            Skor saat ini didasarkan pada data instalasi awal unit.
+                            {lang === 'id' 
+                               ? "Unit ini belum memiliki data audit mendalam (Analitik Performa)." 
+                               : lang === 'ja' ? "このユニットには詳細な監査データ（性能分析）がありません。" : "This unit has no in-depth audit data (Performance Analytics)."} <br/>
+                            {lang === 'id' 
+                               ? "Skor saat ini didasarkan pada data instalasi awal unit." 
+                               : lang === 'ja' ? "現在のスコアは初期導入データに基づいています。" : "The current score is based on initial installation data."}
                          </p>
                       </div>
                     )}
@@ -952,9 +948,7 @@ export default function UnitDetailModal({
                 <div className="bg-white p-8 rounded-3xl shadow-inner border border-slate-100 relative group flex flex-col items-center">
                   <div className="absolute inset-0 bg-slate-50/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl pointer-events-none"></div>
                   
-                  {/* DESIGN PREVIEW START */}
                   <div className="w-[340px] h-[340px] border-4 border-[#003366] p-5 flex flex-col items-center justify-between bg-white relative shadow-2xl shadow-blue-900/10">
-                     {/* Engineering Grid Decoration */}
                      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#003366 1px, transparent 0)', backgroundSize: '15px 15px' }}></div>
                      
                      <div className="flex items-center justify-between relative z-10 w-full pb-2 border-b border-slate-50 px-2">
@@ -974,7 +968,6 @@ export default function UnitDetailModal({
                             <QrCode size={100} className="text-slate-100" />
                           </div>
                         )}
-                        {/* Overlay Removed */}
                      </div>
 
                      <div className="text-center mt-3 relative z-10">
@@ -982,7 +975,6 @@ export default function UnitDetailModal({
                         <p className="text-[7px] font-black text-slate-400 tracking-[0.3em] uppercase opacity-70">Asset ID: {unit.tag_number}</p>
                      </div>
                   </div>
-                  {/* DESIGN PREVIEW END */}
                 </div>
 
                 <div className="w-full space-y-4">
@@ -993,7 +985,7 @@ export default function UnitDetailModal({
                       onClick={() => setShowQRZoom(false)}
                       className="flex-1 py-4 bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-slate-200 transition-all"
                     >
-                      Close Preview
+                      {lang === 'ja' ? 'プレビューを閉じる' : 'Close Preview'}
                     </button>
                     <button 
                       onClick={handleDownloadQR}
@@ -1005,7 +997,7 @@ export default function UnitDetailModal({
                       ) : (
                         <Download size={16} className="group-hover:translate-y-0.5 transition-transform" />
                       )}
-                      {isDownloading ? "Generating HQ PNG..." : "Download HQ PNG"}
+                      {isDownloading ? (lang === 'ja' ? 'HQ PNGを生成中...' : "Generating HQ PNG...") : (lang === 'ja' ? 'HQ PNGをダウンロード' : "Download HQ PNG")}
                     </button>
                   </div>
                   
@@ -1021,9 +1013,9 @@ export default function UnitDetailModal({
 }
 
 function EditableField({ 
-  label, value, isEditing, onChange, isMono = false, isBadge = false 
+  label, value, isEditing, onChange, lang, isMono = false, isBadge = false 
 }: { 
-  label: string; value?: string; isEditing: boolean; onChange: (v: string) => void; isMono?: boolean; isBadge?: boolean 
+  label: string; value?: string; isEditing: boolean; onChange: (v: string) => void; lang: Language; isMono?: boolean; isBadge?: boolean 
 }) {
   return (
     <div className="group/field">
@@ -1036,7 +1028,7 @@ function EditableField({
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
           className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm font-bold text-[#003366] focus:ring-2 focus:ring-[#00a1e4]/20 focus:border-[#00a1e4] outline-none transition-all shadow-sm"
-          placeholder={`Enter ${label}...`}
+          placeholder={lang === 'ja' ? `${label}を入力...` : `Enter ${label}...`}
         />
       ) : (
         <div>

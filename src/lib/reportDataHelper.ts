@@ -44,7 +44,7 @@ export const processReportData = (report: any) => {
       else if (p.media_type === "video") folder = "videos";
       else folder = "photos";
       
-      url = `/uploads/${folder}/${url}`;
+      url = `/api/assets/${folder}/${url}`;
     }
     return { ...p, photo_url: url };
   });

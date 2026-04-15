@@ -192,6 +192,9 @@ export async function getDashboardData(filters: { customerId?: string; projectId
          // Access control
          if (accessibleIds && accessibleIds.length > 0) {
            conditions.push(`u.project_ref_id IN (${accessibleIds.join(',')})`);
+         } else if (accessibleIds && accessibleIds.length === 0) {
+           // User has role restrictions but zero projects. Return 0 instantly.
+           return 0;
          }
 
          const sql = `${query} WHERE ${conditions.join(' AND ')}`;
@@ -340,7 +343,12 @@ export async function getTrendChartData(filters: { customerId?: string; projectI
       let conditions = [`d.service_date >= '${startOfYear.toISOString().split('T')[0]}'`];
       if (pid) conditions.push(`u.project_ref_id = ${pid}`);
       if (cid) conditions.push(`u.project_ref_id IN (SELECT id FROM projects WHERE customer_id = ${cid})`);
-      if (accessibleIds) conditions.push(`u.project_ref_id IN (${accessibleIds.join(",")})`);
+      
+      if (accessibleIds && accessibleIds.length > 0) {
+        conditions.push(`u.project_ref_id IN (${accessibleIds.join(",")})`);
+      } else if (accessibleIds && accessibleIds.length === 0) {
+        conditions.push(`1=0`); // Force no results if restricted and 0 projects
+      }
 
       const sql = `SELECT d.service_date FROM daily_ops_logs d JOIN units u ON d.unit_id = u.id WHERE ${conditions.join(" AND ")}`;
       dailyLogs = await prisma.$queryRawUnsafe(sql) as any[];

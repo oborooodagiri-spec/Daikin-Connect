@@ -1,4 +1,15 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { 
+  FileText, FileCheck, Calendar, Search, 
+  ShieldCheck, Eye, Download, ExternalLink
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { format } from "date-fns";
 import { Language, t } from "@/lib/i18n";
+import { getClientReports } from "@/app/actions/client_dashboard";
 
 export default function ClientReportsPage() {
   const [reports, setReports] = useState<any[]>([]);

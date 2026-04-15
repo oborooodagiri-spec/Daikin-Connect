@@ -39,7 +39,7 @@ export async function generateConsolidatedPDF(data: any) {
               <p className="text-[9pt] font-bold text-slate-400 mt-2">{data.summary.totalActual} of {data.summary.totalTarget} units completed</p>
            </div>
            <div className="p-8 bg-white rounded-3xl border border-slate-200 shadow-sm">
-              <p className="text-[8pt] font-black text-slate-400 uppercase mb-4">Average Vitality</p>
+              <p className="text-[8pt] font-black text-slate-400 uppercase mb-4">Overall Performance Health</p>
               <p className="text-4xl font-black text-emerald-500">{data.summary.avgPerformance}%</p>
               <p className="text-[9pt] font-bold text-slate-400 mt-2">Overall site efficiency rating</p>
            </div>
@@ -101,10 +101,10 @@ export async function generateConsolidatedPDF(data: any) {
           </div>
        </div>
 
-       <div className="p-8 bg-blue-50/50 rounded-3xl border border-blue-100">
-          <p className="text-[8pt] font-black text-blue-600 uppercase mb-4">Operations Analyst Note</p>
+        <div className="p-8 bg-blue-50/50 rounded-3xl border border-blue-100">
+          <p className="text-[8pt] font-black text-blue-600 uppercase mb-4">Performance Audit Insight</p>
           <p className="text-[10pt] font-medium text-slate-600 leading-relaxed italic">
-            "Based on the consolidated thermal analytics for {data.summary.monthName}, the site exhibits an average vitality of {data.summary.avgPerformance}%. 
+            "Based on the consolidated performance enthalpy analysis for {data.summary.monthName}, the site exhibits an average performance health of {data.summary.avgPerformance}%. 
             Weekly consistency peaked in {[...data.charts.weeklyTrends].sort((a:any,b:any)=>b.actual-a.actual)[0]?.name}. 
             Technical logsheets for problematic units are attached for further investigation."
           </p>
@@ -121,7 +121,7 @@ export async function generateConsolidatedPDF(data: any) {
     const pageItems = data.activities.slice(i * itemsPerPage, (i + 1) * itemsPerPage);
     technicalPages.push(
       <div className="py-6 h-full flex flex-col">
-        <h3 className="text-[9pt] font-black text-slate-400 uppercase tracking-[0.3em] mb-6">Daily List Service HVAC Units (Logsheets)</h3>
+        <h3 className="text-[9pt] font-black text-slate-400 uppercase tracking-[0.3em] mb-6">Maintenance Operations Technical Logsheets</h3>
         <table className="w-full text-left border-collapse border border-slate-200">
           <thead>
             <tr className="bg-slate-50">
@@ -129,10 +129,10 @@ export async function generateConsolidatedPDF(data: any) {
               <th className="p-3 text-[7pt] font-black uppercase text-slate-400 border border-slate-200">Unit Tag</th>
               <th className="p-3 text-[7pt] font-black uppercase text-slate-400 border border-slate-200">Area</th>
               <th className="p-3 text-[7pt] font-black uppercase text-slate-400 border border-slate-200">Amp (Avg)</th>
-              <th className="p-3 text-[7pt] font-black uppercase text-slate-400 border border-slate-200">Flow</th>
-              <th className="p-3 text-[7pt] font-black uppercase text-slate-400 border border-slate-200">Ent/Lvg DB</th>
-              <th className="p-3 text-[7pt] font-black uppercase text-slate-400 border border-slate-200">ΔT</th>
-              <th className="p-3 text-[7pt] font-black uppercase text-slate-400 border border-slate-200">Score</th>
+              <th className="p-3 text-[7pt] font-black uppercase text-slate-400 border border-slate-200">Measured Flow</th>
+              <th className="p-3 text-[7pt] font-black uppercase text-slate-400 border border-slate-200">Entering/Leaving DB</th>
+              <th className="p-3 text-[7pt] font-black uppercase text-slate-400 border border-slate-200">Air-side ΔT</th>
+              <th className="p-3 text-[7pt] font-black uppercase text-slate-400 border border-slate-200">Health Score</th>
               <th className="p-3 text-[7pt] font-black uppercase text-slate-400 border border-slate-200">Status & Recommendations</th>
             </tr>
           </thead>

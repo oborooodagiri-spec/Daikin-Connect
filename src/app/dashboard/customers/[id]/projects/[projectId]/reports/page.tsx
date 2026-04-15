@@ -18,13 +18,14 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { getConsolidatedMonthlyReport } from "@/app/actions/consolidated_reports";
 import { generateConsolidatedPDF } from "@/lib/pdf-consolidated-generator";
+import PresentationModal from "@/components/dashboard/PresentationModal";
 
 const MAIN_TABS = [
   { id: 'analytics', label: 'Chart Performance', icon: <PieIcon size={16} /> },
   { id: 'planning', label: 'Schedule vs Actual', icon: <Target size={16} /> },
   { id: 'logsheets', label: 'Daily List Service', icon: <Activity size={16} /> },
   { id: 'corrective', label: 'Corrective & Complaint', icon: <Wrench size={16} /> },
-  { id: 'audit', label: 'Audit Summary', icon: <Search size={16} /> },
+  { id: 'audit', label: 'Performance Audit', icon: <Search size={16} /> },
 ];
 
 export default function MonthlyReportPage() {
@@ -40,6 +41,15 @@ export default function MonthlyReportPage() {
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || 'analytics');
   const [subTab, setSubTab] = useState(searchParams.get("subTab") || 'ALL');
   const [searchQuery, setSearchQuery] = useState("");
+  const [capacityUnit, setCapacityUnit] = useState<'kW' | 'BTUh' | 'TR'>('kW');
+  const [selectedDetail, setSelectedDetail] = useState<'vitality' | 'achievement' | 'volume' | 'pareto' | null>(null);
+
+  const convertCapacity = (value: number | string, unit: 'kW' | 'BTUh' | 'TR') => {
+    const val = Number(value) || 0;
+    if (unit === 'BTUh') return (val * 3412.14).toLocaleString(undefined, { maximumFractionDigits: 0 });
+    if (unit === 'TR') return (val / 3.51685).toFixed(2);
+    return val.toFixed(1);
+  };
 
   // Filter State
   const now = new Date();
@@ -241,6 +251,12 @@ export default function MonthlyReportPage() {
           </motion.div>
         </AnimatePresence>
       </div>
+      <PresentationModal 
+        isOpen={!!selectedDetail}
+        onClose={() => setSelectedDetail(null)}
+        type={selectedDetail}
+        data={data}
+      />
     </div>
   );
 
@@ -251,18 +267,22 @@ export default function MonthlyReportPage() {
           <MetricCard 
             label="Vitality Score" value={`${data?.summary?.avgPerformance}%`}
             desc="Global avg site health" color="emerald" icon={<Activity size={24} />}
+            onClick={() => setSelectedDetail('vitality')}
           />
           <MetricCard 
             label="Achievement" value={`${data?.summary?.achievementRate}%`}
             desc="Contractual target realized" color="blue" icon={<CheckCircle2 size={24} />}
+            onClick={() => setSelectedDetail('achievement')}
           />
           <MetricCard 
             label="Service Volume" value={data?.summary?.totalActual}
             desc="Units realized this month" color="indigo" icon={<Settings size={24} />}
+            onClick={() => setSelectedDetail('volume')}
           />
           <MetricCard 
             label="Issue Pareto" value={data?.complaints?.length + (data?.activities?.filter((a:any)=>a.performance?.score < 80).length)}
             desc="Items needing attention" color="rose" icon={<AlertTriangle size={24} />}
+            onClick={() => setSelectedDetail('pareto')}
           />
         </div>
 
@@ -378,9 +398,10 @@ export default function MonthlyReportPage() {
                 <th className="px-8 py-6">Date / Tag</th>
                 <th className="px-8 py-6">Type</th>
                 <th className="px-8 py-6 text-center">Electrical (Amp)</th>
-                <th className="px-8 py-6 text-center">Thermal (ΔT)</th>
+                <th className="px-8 py-6 text-center">Temperature (ΔT)</th>
                 <th className="px-8 py-6 text-center">Health</th>
                 <th className="px-8 py-6">Engineer Note</th>
+                <th className="px-8 py-6 text-right">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -434,6 +455,15 @@ export default function MonthlyReportPage() {
                          {act.engineer_note || "Operational."}
                        </p>
                     </td>
+                    <td className="px-8 py-6 text-right">
+                        <Link 
+                           href={`/reports/${act.type || 'Audit'}/${act.id}`} 
+                           target="_blank"
+                           className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 hover:border-blue-400 hover:text-blue-600 transition-all shadow-sm"
+                        >
+                           <Eye size={12} /> View
+                        </Link>
+                     </td>
                   </tr>
                 );
               })}
@@ -477,9 +507,16 @@ export default function MonthlyReportPage() {
                          </div>
                          <span className="px-2 py-0.5 rounded-lg bg-red-50 text-red-600 text-[8px] font-black uppercase">REPAIR</span>
                       </div>
-                      <p className="text-xs font-medium text-slate-600 italic bg-slate-50 p-4 rounded-xl border border-slate-100">
+                      <p className="text-xs font-medium text-slate-600 italic bg-slate-50 p-4 rounded-xl border border-slate-100 mb-4">
                          {fix.engineer_note || "Repairs completed."}
                       </p>
+                      <Link 
+                         href={`/reports/Corrective/${fix.id}`}
+                         target="_blank"
+                         className="flex items-center justify-center gap-2 w-fit px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-slate-50 hover:border-blue-400 hover:text-blue-600 transition-all shadow-sm"
+                      >
+                         <Eye size={12} /> View Formal Report
+                      </Link>
                    </div>
                  ))}
                  {data?.activities?.filter((a:any)=>a.type === 'Corrective').length === 0 && (
@@ -539,7 +576,7 @@ export default function MonthlyReportPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
            {/* HEALTH DISTRIBUTION */}
            <div className="bg-white p-10 rounded-[2.5rem] border border-slate-200 shadow-sm">
-              <h3 className="text-xl font-black text-[#003366] uppercase tracking-tight mb-8">Vitality Distribution</h3>
+              <h3 className="text-xl font-black text-[#003366] uppercase tracking-tight mb-8">Performance Health Distribution</h3>
               <div className="flex flex-col md:flex-row items-center gap-10">
                  <div className="h-[250px] w-full max-w-[250px]">
                     <ResponsiveContainer width="100%" height="100%">
@@ -573,20 +610,20 @@ export default function MonthlyReportPage() {
 
            {/* SUMMARY INSIGHT */}
            <div className="bg-[#003366] p-10 rounded-[2.5rem] shadow-xl text-white">
-              <h3 className="text-xl font-black uppercase tracking-tight mb-6">Technical Audit Insights</h3>
+              <h3 className="text-xl font-black uppercase tracking-tight mb-6">Performance Audit Insights</h3>
               <div className="space-y-6">
                  <div>
                     <h4 className="text-4xl font-black text-[#00a1e4]">{data?.summary?.avgPerformance}%</h4>
                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">Average Site Health Score</p>
                  </div>
                  <p className="text-sm font-medium text-slate-300 leading-relaxed italic border-l-2 border-[#00a1e4] pl-6 py-2">
-                    "Based on the thermal enthalpy analysis for {data?.summary?.monthName}, the site exhibits {data?.summary?.avgPerformance >= 80 ? 'stable' : 'varying'} efficiency. 
+                    "Based on the air-side performance enthalpy analysis for {data?.summary?.monthName}, the site exhibits {data?.summary?.avgPerformance >= 80 ? 'stable' : 'varying'} efficiency. 
                     Monitoring prioritized for units in the critical segment is highly recommended."
                  </p>
                  <div className="pt-6 border-t border-white/10 grid grid-cols-2 gap-4">
                     <div className="bg-white/5 p-4 rounded-2xl">
                        <p className="text-xs font-black text-[#00a1e4] mb-1">{audits.length}</p>
-                       <p className="text-[8px] font-black uppercase text-slate-400">Total Audits</p>
+                       <p className="text-[8px] font-black uppercase text-slate-400">Total Audit Activities</p>
                     </div>
                     <div className="bg-white/5 p-4 rounded-2xl">
                        <p className="text-xs font-black text-rose-400 mb-1">
@@ -601,20 +638,35 @@ export default function MonthlyReportPage() {
 
         {/* DETAILED AUDIT TABLE */}
         <div className="bg-white border border-slate-200 rounded-[2.5rem] shadow-sm overflow-hidden">
-           <div className="p-8 border-b border-slate-100 bg-slate-50/50">
-              <h3 className="text-xl font-black text-[#003366] uppercase tracking-tight">Audit Technical Ledger</h3>
-              <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Enthalpy analysis & Cooling Capacity Realization</p>
+           <div className="p-8 border-b border-slate-100 bg-slate-50/50 flex flex-col md:flex-row justify-between items-center gap-4">
+               <div>
+                  <h3 className="text-xl font-black text-[#003366] uppercase tracking-tight">Performance Audit Ledger</h3>
+                  <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Air-side Enthalpy Analysis & Measured Cooling Capacity Verification</p>
+               </div>
+               <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+                  {(['kW', 'BTUh', 'TR'] as const).map((unit) => (
+                     <button 
+                        key={unit}
+                        onClick={() => setCapacityUnit(unit)}
+                        className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all 
+                           ${capacityUnit === unit ? 'bg-white text-[#00a1e4] shadow-sm' : 'text-slate-400'}`}
+                     >
+                        {unit === 'BTUh' ? 'BTU/h' : unit}
+                     </button>
+                  ))}
+               </div>
            </div>
            <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse min-w-[1000px]">
                  <thead>
                     <tr className="bg-white border-b border-slate-100 font-black text-[9px] uppercase tracking-widest text-slate-400">
                        <th className="px-8 py-6">Unit / Location</th>
-                       <th className="px-8 py-6 text-center">Thermal ∆T</th>
-                       <th className="px-8 py-6 text-center">Design Capacity</th>
-                       <th className="px-8 py-6 text-center">Actual Capacity</th>
+                       <th className="px-8 py-6 text-center">Air-side ∆T</th>
+                       <th className="px-8 py-6 text-center">Design Cooling Capacity</th>
+                       <th className="px-8 py-6 text-center">Measured Cooling Capacity</th>
                        <th className="px-8 py-6 text-center">Health %</th>
                        <th className="px-8 py-6">Status</th>
+                       <th className="px-8 py-6 text-right">Action</th>
                     </tr>
                  </thead>
                  <tbody className="divide-y divide-slate-100">
@@ -638,10 +690,10 @@ export default function MonthlyReportPage() {
                                 </div>
                              </td>
                              <td className="px-8 py-6 text-center font-black text-[#003366] text-xs">
-                                {act.design_cooling_capacity || "10.0"} kW
+                                {convertCapacity(act.design_cooling_capacity || "10.0", capacityUnit)} {capacityUnit === 'BTUh' ? 'BTU/h' : capacityUnit}
                              </td>
                              <td className="px-8 py-6 text-center font-black text-xs text-blue-600">
-                                {act.performance?.actualCapacity || "0.00"} kW
+                                {convertCapacity(act.performance?.actualCapacity || "0.00", capacityUnit)} {capacityUnit === 'BTUh' ? 'BTU/h' : capacityUnit}
                              </td>
                              <td className="px-8 py-6">
                                 <div className="flex flex-col items-center">
@@ -661,12 +713,21 @@ export default function MonthlyReportPage() {
                                    {score >= 90 ? 'Excellent' : score >= 80 ? 'Stable' : score >= 60 ? 'Moderate' : 'Critical'}
                                 </span>
                              </td>
+                             <td className="px-8 py-6 text-right">
+                                 <Link 
+                                    href={`/reports/Audit/${act.id}`} 
+                                    target="_blank"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 hover:border-blue-400 hover:text-blue-600 transition-all shadow-sm"
+                                 >
+                                    <Eye size={12} /> View
+                                 </Link>
+                              </td>
                           </tr>
                        );
                     })}
                     {audits.length === 0 && (
                        <tr>
-                          <td colSpan={6} className="px-8 py-20 text-center text-[10px] font-black uppercase text-slate-300 tracking-[0.3em]">
+                          <td colSpan={7} className="px-8 py-20 text-center text-[10px] font-black uppercase text-slate-300 tracking-[0.3em]">
                              No Audit Data Available for this period
                           </td>
                        </tr>

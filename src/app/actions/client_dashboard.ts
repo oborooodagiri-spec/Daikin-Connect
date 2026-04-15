@@ -190,7 +190,9 @@ export async function getClientReports() {
       include: { 
         units: { 
           select: { tag_number: true, code: true, brand: true, model: true } 
-        } 
+        },
+        activity_photos: true,
+        audit_velocity_points: true
       },
       orderBy: { service_date: 'desc' }
     });

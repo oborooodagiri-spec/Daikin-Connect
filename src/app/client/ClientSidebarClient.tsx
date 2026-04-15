@@ -11,9 +11,12 @@ import {
   Calendar,
   FileText,
   Menu,
-  X
+  X,
+  Settings,
+  ShieldCheck
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { t, Language } from "@/lib/i18n";
 
 export default function ClientSidebarClient({ 
   session, 
@@ -53,6 +56,11 @@ export default function ClientSidebarClient({
       href: "/client/reports", 
       label: t("Reports", lang), 
       icon: FileText 
+    },
+    { 
+      href: "/dashboard/profile", 
+      label: t("Profile & Security", lang), 
+      icon: ShieldCheck 
     },
     { 
       href: "/client/settings", 

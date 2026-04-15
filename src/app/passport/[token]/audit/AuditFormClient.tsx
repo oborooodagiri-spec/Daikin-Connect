@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { calculateBalancedAHI, AHIResult } from "@/lib/physics/ahi-calculation";
+import { t, Language } from "@/lib/i18n";
 
 export default function AuditFormClient({ unit, initialData, onSuccess }: { unit: any, initialData?: any, onSuccess?: () => void }) {
   const router = useRouter();
@@ -22,8 +23,14 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
   const [success, setSuccess] = useState(false);
   const [isQueued, setIsQueued] = useState(false);
   const [showFormula, setShowFormula] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const [lang, setLang] = useState<Language>('id');
 
   React.useEffect(() => {
+    setIsMounted(true);
+    const savedLang = localStorage.getItem("daikin_lang") as Language;
+    if (savedLang) setLang(savedLang);
+
     const handleStatus = () => {}; // Just force re-render if needed
     window.addEventListener('online', handleStatus);
     window.addEventListener('offline', handleStatus);
@@ -91,6 +98,19 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
     amp_r: "", amp_s: "", amp_t: "",
     volt_rs: "", volt_rt: "", volt_st: "", volt_ln: ""
   });
+  
+  // Smart Auto-fill for name
+  React.useEffect(() => {
+    if (!formData.inspector_name && !initialData) {
+      const savedName = localStorage.getItem("daikin_inspector_name");
+      if (savedName) setFormData((prev: any) => ({ ...prev, inspector_name: savedName }));
+    }
+  }, [isMounted]);
+
+  const updateInspectorName = (name: string) => {
+    setFormData((prev: any) => ({ ...prev, inspector_name: name }));
+    localStorage.setItem("daikin_inspector_name", name);
+  };
 
   // If we have supplyVelocity etc from processReportData fallback, use them
   useEffect(() => {
@@ -176,24 +196,25 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
   const healthScore = healthResult.totalScore;
 
   const healthLabel = useMemo(() => {
-    if (healthScore < 40) return { text: "REPLACE", color: "rose" };
-    if (healthScore < 60) return { text: "MAINTENANCE", color: "amber" };
-    if (healthScore < 85) return { text: "MONITOR", color: "indigo" };
-    return { text: "EXCELLENT", color: "emerald" };
-  }, [healthScore]);
+    if (healthScore < 40) return { text: lang === 'ja' ? "更新推奨" : "REPLACE", color: "rose" };
+    if (healthScore < 60) return { text: lang === 'ja' ? "要メンテナンス" : "MAINTENANCE", color: "amber" };
+    if (healthScore < 85) return { text: lang === 'ja' ? "要経過観察" : "MONITOR", color: "indigo" };
+    return { text: lang === 'ja' ? "良好" : "EXCELLENT", color: "emerald" };
+  }, [healthScore, lang]);
 
-  // Sync calculated CFMs into t object for the PDF
-  const renderData = {
-    ...formData,
-    healthScore, // Add to payload
-    healthStatus: healthLabel.text,
-    t: {
-      ...formData.t,
-      totalCfmSupply: calculateCfm(formData.t.supplyArea, avgSupply) || "-",
-      totalCfmReturn: calculateCfm(formData.t.returnArea, avgReturn) || "-",
-      totalCfmFresh: calculateCfm(formData.t.freshArea, avgFresh) || "-"
-    }
-  };
+  const renderData = useMemo(() => {
+    return {
+      ...formData,
+      t: {
+        ...formData.t,
+        totalCfmSupply: calculateCfm(formData.t.supplyArea, avgSupply) || "-",
+        totalCfmReturn: calculateCfm(formData.t.returnArea, avgReturn) || "-",
+        totalCfmFresh: calculateCfm(formData.t.freshArea, avgFresh) || "-"
+      }
+    };
+  }, [formData, avgSupply, avgReturn, avgFresh]);
+
+  // The data snapshot is now built inside handleSubmit for total synchronization.
 
   // --- MEDIA HANDLING (Photos & Videos) ---
   const handleMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -201,7 +222,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
     const files = Array.from(e.target.files);
     
     if (mediaItems.length + files.length > 10) {
-      alert("Maksimal 10 file!");
+      alert(lang === 'ja' ? "最大10ファイルまで！" : "Maksimal 10 file!");
       return;
     }
 
@@ -222,7 +243,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
           finalFile = await imageCompression(f, options);
         } else {
           if (f.size > 20 * 1024 * 1024) {
-             alert(`Video ${f.name} terlalu besar (>20MB). Mohon gunakan video berdurasi pendek.`);
+             alert(lang === 'ja' ? `ビデオ ${f.name} が大きすぎます (>20MB)。` : `Video ${f.name} terlalu besar (>20MB). Mohon gunakan video berdurasi pendek.`);
              continue;
           }
         }
@@ -258,7 +279,10 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
 
   // --- SUBMIT PIPELINE ---
   const handleSubmit = async () => {
-    if (!formData.inspector_name) { alert("Nama Inspector (General Data) wajib diisi!"); setStep(1); return; }
+    if (!formData.inspector_name) { 
+        alert(lang === 'ja' ? "インスペクター名は必須です！" : "Nama Inspector (General Data) wajib diisi!"); 
+        setStep(1); return; 
+    }
     setLoading(true);
     try {
       // --- OFFLINE CHECK ---
@@ -280,8 +304,20 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
         return;
       }
 
-      // --- ONLINE FLOW: UPLOAD FIRST ---
-      
+      // 0. Build latest data snapshot for PDF & DB
+      // Built INSIDE handleSubmit to ensure it uses state as of clicking the button.
+      const freshRenderData = {
+        ...formData,
+        healthScore,
+        healthStatus: healthLabel.text,
+        t: {
+          ...formData.t,
+          totalCfmSupply: calculateCfm(formData.t.supplyArea, avgSupply) || "-",
+          totalCfmReturn: calculateCfm(formData.t.returnArea, avgReturn) || "-",
+          totalCfmFresh: calculateCfm(formData.t.freshArea, avgFresh) || "-"
+        }
+      };
+
       // 1. Upload Media (Photos & Videos) BEFORE generating PDF
       const uploadedMedia: { photo_url: string; description: string; media_type: string }[] = [];
       for (const item of mediaItems) {
@@ -311,9 +347,9 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
         }
       }
 
-      // Update state with server URLs for PDF generation
+      // Update snapshot with server URLs for PDF generation
       const finalRenderData = {
-        ...renderData,
+        ...freshRenderData,
         activity_photos: uploadedMedia
       };
 
@@ -327,7 +363,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
       const SAFE_PX = SAFE_CONTENT_MM * PX_PER_MM;
 
       const { getAuditSections } = await import("@/components/AuditPDFTemplate");
-      const sections = getAuditSections(finalRenderData, unit);
+      const sections = getAuditSections(finalRenderData, unit, lang);
 
       // Measurement Layer
       const measureDiv = document.createElement("div");
@@ -397,7 +433,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
         await new Promise<void>((resolve) => {
           root.render(
             <ReportBase 
-              reportTitle="FORM PENGUKURAN (AUDIT)" 
+              reportTitle={t("FORM PENGUKURAN (AUDIT)", lang)} 
               reportCode={formData.report_number || "01/MF-FCU/DASI/VI/2026"} 
               unit={unit}
               pageNumber={i + 1}
@@ -537,6 +573,9 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
     setLoading(false);
   };
 
+  // HYDRATION GUARD
+  if (!isMounted) return null;
+
   if (success || isQueued) {
     return (
       <div className="min-h-screen bg-[#003366] flex flex-col justify-center items-center p-6 text-white text-center">
@@ -544,15 +583,15 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
           {isQueued ? <WifiOff size={48} /> : <CheckCircle2 size={48} />}
         </div>
         <h1 className="text-3xl font-black tracking-tight mb-2">
-          {isQueued ? "Queued Offline!" : "Audit Submitted!"}
+          {isQueued ? (lang === 'ja' ? 'オフラインでキューされました！' : "Queued Offline!") : (lang === 'ja' ? '提出完了！' : "Audit Submitted!")}
         </h1>
         <p className="text-blue-200 mb-8 max-w-sm font-medium">
           {isQueued 
-            ? "Koneksi mati. Laporan Anda telah disimpan di HP dan akan otomatis terkirim saat internet kembali aktif." 
-            : "Laporan ukur, penghitungan matematis, & PDF dokumen berlogo sudah berhasil digenerate dan dikirim ke server."}
+            ? (lang === 'ja' ? "接続がありません。レポートは保存されました。インターネット接続時に自動送信されます。" : "Koneksi mati. Laporan Anda telah disimpan di HP dan akan otomatis terkirim saat internet kembali aktif.") 
+            : (lang === 'ja' ? "資産監査レポートとPDFドキュメントが正常に送信されました。" : "Laporan ukur, penghitungan matematis, & PDF dokumen berlogo sudah berhasil digenerate dan dikirim ke server.")}
         </p>
         <button onClick={() => router.push(`/unit/${unit.qr_code_token}`)} className="px-8 py-4 bg-white text-[#003366] font-black rounded-2xl uppercase tracking-widest text-sm hover:scale-105 transition-transform shadow-xl">
-          Kembali ke Passport
+          {lang === 'ja' ? "パスポートに戻る" : "Kembali ke Passport"}
         </button>
       </div>
     );
@@ -565,19 +604,19 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
       <div className="bg-[#003366] text-white p-6 rounded-b-[2rem] shadow-lg mb-6 pt-12 sticky top-0 z-40">
         <div className="flex justify-between items-start mb-2">
           <h1 className="text-2xl font-black tracking-tight flex items-center gap-2">
-            <FileText size={20}/> Pengukuran
+            <FileText size={20}/> {t("FORM PENGUKURAN (AUDIT)", lang)}
           </h1>
           <button 
             onClick={() => setShowFormula(true)}
             className={`px-4 py-2 rounded-2xl border bg-white/10 backdrop-blur-md flex flex-col items-center border-white/20 shadow-lg min-w-[100px] hover:bg-white/20 transition-all`}
           >
-            <span className="text-[8px] font-black uppercase tracking-[0.2em] opacity-60">Health Score</span>
+            <span className="text-[8px] font-black uppercase tracking-[0.2em] opacity-60">{t("Unit Health Score", lang)}</span>
             <span className={`text-xl font-black text-${healthLabel.color}-400`}>{healthScore}%</span>
           </button>
         </div>
         <div className="flex justify-between items-center mt-3">
           <p className="text-sm font-medium opacity-80 flex items-center gap-1"><MapPin size={14}/> {unit.area}</p>
-          <span className="px-3 py-1 bg-[#00a1e4] rounded-lg text-xs font-black uppercase tracking-widest">Step {step} / 5</span>
+          <span className="px-3 py-1 bg-[#00a1e4] rounded-lg text-xs font-black uppercase tracking-widest">{lang === 'ja' ? 'ステップ' : 'Step'} {step} / 5</span>
         </div>
         {/* Progress Bar */}
         <div className="w-full bg-slate-800 h-2 mt-4 rounded-full overflow-hidden">
@@ -592,19 +631,19 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
           {step === 1 && (
             <motion.div key="step1" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} className="space-y-6">
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">A. General Data</h2>
+                <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">A. {lang === 'ja' ? '一般データ' : 'General Data'}</h2>
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Nama Auditor/Inspector*</label>
-                    <input type="text" value={formData.inspector_name} onChange={e => setFormData({...formData, inspector_name: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:ring-2 focus:ring-[#00a1e4]" placeholder="Masukkan Nama Lengkap"/>
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">{lang === 'ja' ? '監査員名*' : 'Nama Auditor/Inspector*'}</label>
+                    <input type="text" value={formData.inspector_name} onChange={e => updateInspectorName(e.target.value)} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:ring-2 focus:ring-[#00a1e4]" placeholder={lang === 'ja' ? 'フルネームを入力' : "Masukkan Nama Lengkap"}/>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase">Design Cooling Cap (Btuh)</label>
+                      <label className="text-[10px] font-bold text-slate-500 uppercase">{t("Design Cooling Cap.", lang)} (Btuh)</label>
                       <input type="number" value={formData.design_cooling_capacity} onChange={e => setFormData({...formData, design_cooling_capacity: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase">Design Airflow (Cfm)</label>
+                      <label className="text-[10px] font-bold text-slate-500 uppercase">{t("Design Air Flow", lang)} (Cfm)</label>
                       <input type="number" value={formData.design_airflow} onChange={e => setFormData({...formData, design_airflow: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
                     </div>
                   </div>
@@ -612,11 +651,11 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
               </div>
 
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">B. Air Side Temperatures</h2>
+                <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">B. {lang === 'ja' ? '空気側温度' : 'Air Side Temperatures'}</h2>
                 {[
-                  { label: "Leaving Coil Temp", prefix: "leaving" },
-                  { label: "Entering Coil Temp", prefix: "entering" },
-                  { label: "Fresh Air Temp", prefix: "room" }
+                  { label: t("Leaving Air Temperature", lang), prefix: "leaving" },
+                  { label: t("Entering Air Temperature", lang), prefix: "entering" },
+                  { label: t("Outdoor Air (OA)", lang), prefix: "room" }
                 ].map((sec) => (
                   <div key={sec.prefix} className="mb-4">
                     <label className="text-xs font-black uppercase text-slate-700">{sec.label}</label>
@@ -636,16 +675,15 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
             <motion.div key="step2" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} className="space-y-6">
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
                 <div className="flex justify-between items-center mb-4 border-b pb-2">
-                   <h4 className="text-xs font-black text-slate-700 uppercase tracking-widest">Findings / Temuan</h4>
-                   <p className="text-[10px] font-medium text-slate-400 mt-1 uppercase">Document highlights, findings / temuan, and follow-up activities.</p>
-                   <div className="text-[10px] bg-amber-100 text-amber-800 px-2 py-1 rounded font-bold uppercase">15 Titik Pengukuran</div>
+                   <h4 className="text-xs font-black text-slate-700 uppercase tracking-widest">{t("B. AIR SIDE MEASUREMENTS", lang)}</h4>
+                   <div className="text-[10px] bg-amber-100 text-amber-800 px-2 py-1 rounded font-bold uppercase">{lang === 'ja' ? '15点測定' : '15-Point Traverse Matrix'}</div>
                 </div>
 
                 {['supply', 'return', 'fresh'].map((type) => (
                   <div key={type} className="mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-200">
                     <div className="flex justify-between items-center mb-3">
-                       <label className="text-sm font-black uppercase text-slate-700 capitalize">{type} Air</label>
-                       <input type="text" placeholder="Area (e.g. 100x100 mm)" value={formData.t[`${type}Area`]} onChange={e => setT(`${type}Area`, e.target.value)} className="w-[150px] p-2 text-xs font-bold border rounded-lg text-center" />
+                       <label className="text-sm font-black uppercase text-slate-700 capitalize">{type === 'fresh' ? 'Outdoor (OA)' : type} Air</label>
+                       <input type="text" placeholder={lang === 'ja' ? '面積 (例: 100x100 mm)' : "Area (e.g. 100x100 mm)"} value={formData.t[`${type}Area`]} onChange={e => setT(`${type}Area`, e.target.value)} className="w-[150px] p-2 text-xs font-bold border rounded-lg text-center" />
                     </div>
                     <div className="grid grid-cols-5 gap-2">
                        {Array.from({length: 15}).map((_, i) => (
@@ -666,7 +704,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
           {step === 3 && (
             <motion.div key="step3" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} className="space-y-6">
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">C. Chilled Water Side</h2>
+                <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">D. {lang === 'ja' ? '冷水側' : 'Chilled Water Side'}</h2>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase">CHWS Temp (°C)</label>
@@ -685,25 +723,25 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
                     <input type="number" step="0.1" value={formData.chwr_press} onChange={e => setFormData({...formData, chwr_press: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase">Water Flow Rate (m3/h)</label>
+                    <label className="text-xs font-bold text-slate-500 uppercase">{lang === 'ja' ? '水流量 (m3/h)' : 'Water Flow Rate (m3/h)'}</label>
                     <input type="number" step="0.1" value={formData.water_flow_gpm} onChange={e => setFormData({...formData, water_flow_gpm: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase">Pipe Size Inlet/Outlet (mm)</label>
+                    <label className="text-xs font-bold text-slate-500 uppercase">{lang === 'ja' ? '配管サイズ 入口/出口 (mm)' : 'Pipe Size Inlet/Outlet (mm)'}</label>
                     <input type="text" value={formData.pipe_size} onChange={e => setFormData({...formData, pipe_size: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder="e.g. 50/50"/>
                   </div>
                 </div>
               </div>
 
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">D. Electrical</h2>
+                <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">E. {lang === 'ja' ? '電気系統' : 'Electrical'}</h2>
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase">Power (kW)</label>
+                    <label className="text-xs font-bold text-slate-500 uppercase">{lang === 'ja' ? '電力 (kW)' : 'Power (kW)'}</label>
                     <input type="number" value={formData.power_kw} onChange={e => setFormData({...formData, power_kw: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase">Current (A)</label>
+                    <label className="text-xs font-bold text-slate-500 uppercase">{lang === 'ja' ? '電流 (A)' : 'Current (A)'}</label>
                     <div className="grid grid-cols-3 gap-2 mt-1">
                       <input type="number" placeholder="R." value={formData.amp_r} onChange={e => setFormData({...formData, amp_r: e.target.value})} className="w-full p-3 text-center bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
                       <input type="number" placeholder="S." value={formData.amp_s} onChange={e => setFormData({...formData, amp_s: e.target.value})} className="w-full p-3 text-center bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
@@ -711,7 +749,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
                     </div>
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase">Voltage (V)</label>
+                    <label className="text-xs font-bold text-slate-500 uppercase">{lang === 'ja' ? '電圧 (V)' : 'Voltage (V)'}</label>
                     <div className="grid grid-cols-4 gap-2 mt-1">
                       <input type="number" placeholder="RS." value={formData.volt_rs} onChange={e => setFormData({...formData, volt_rs: e.target.value})} className="w-full p-3 text-center bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
                       <input type="number" placeholder="RT." value={formData.volt_rt} onChange={e => setFormData({...formData, volt_rt: e.target.value})} className="w-full p-3 text-center bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
@@ -728,16 +766,16 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
           {step === 4 && (
             <motion.div key="step4" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} className="space-y-6">
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">E. Component & Accessories Condition</h2>
+                <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">F. {lang === 'ja' ? 'コンポーネントとアクセサリの状態' : 'Component & Accessories Condition'}</h2>
                 
                 {/* NEW: Major Component Conditions */}
                 <div className="bg-slate-50 p-4 rounded-2xl mb-6 border border-slate-100">
-                  <p className="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-[0.2em]">Major Components</p>
+                  <p className="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-[0.2em]">{lang === 'ja' ? '主要コンポーネント' : 'Major Components'}</p>
                   <div className="space-y-4">
                     {[
-                      { label: "Kondisi Fincoil", key: "fincoil_cond" },
-                      { label: "Kondisi Drain Pan", key: "drain_pan_cond" },
-                      { label: "Kondisi Blower Fan", key: "blower_fan_cond" }
+                      { label: lang === 'ja' ? "フィンコイルの状態" : "Kondisi Fincoil", key: "fincoil_cond" },
+                      { label: lang === 'ja' ? "ドレンパンの状態" : "Kondisi Drain Pan", key: "drain_pan_cond" },
+                      { label: lang === 'ja' ? "ブロワーファンの状態" : "Kondisi Blower Fan", key: "blower_fan_cond" }
                     ].map((comp) => (
                       <div key={comp.key} className="flex justify-between items-center">
                         <span className="text-sm font-bold text-slate-700">{comp.label}</span>
@@ -757,7 +795,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
                   </div>
                 </div>
 
-                <p className="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-[0.2em]">Accessories Details</p>
+                <p className="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-[0.2em]">{lang === 'ja' ? 'アクセサリ詳細' : 'Accessories Details'}</p>
                 {["Gate/Butterfly Valve", "Flexible Joint", "Motorized Valve", "Balancing Valve", "Thermometer", "Pressure Gauge"].map((acc, i) => (
                   <div key={i} className="mb-4 pb-4 border-b border-slate-100 last:border-0 last:pb-0">
                     <label className="text-sm font-bold text-slate-800 flex items-center gap-2 mb-2">
@@ -791,16 +829,16 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
           {step === 5 && (
             <motion.div key="step5" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} className="space-y-6">
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">F. Visual Notes & Photos</h2>
+                <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">G. {lang === 'ja' ? '外観ノートと写真' : 'Visual Notes & Photos'}</h2>
                 <textarea 
-                  rows={4} placeholder="Masukkan catatan visual atau temuan lapangan..."
+                  rows={4} placeholder={lang === 'ja' ? '外観のメモや現場での発見事項を入力してください...' : "Masukkan catatan visual atau temuan lapangan..."}
                   value={formData.engineer_note} onChange={e => setFormData({...formData, engineer_note: e.target.value})}
                   className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]"
                 />
                 
                 <div className="mt-6">
                   <h3 className="text-xs font-black uppercase text-slate-500 mb-2 flex justify-between">
-                    <span>Dokumentasi Lapangan</span>
+                    <span>{t("Media Documentation", lang)}</span>
                     <span className="text-[#00a1e4]">{mediaItems.length}/10</span>
                   </h3>
                   
@@ -826,14 +864,14 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
                     {mediaItems.length < 10 && (
                       <label className="aspect-square rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400 hover:text-[#00a1e4] hover:bg-blue-50 hover:border-[#00a1e4] cursor-pointer transition-colors">
                         <Camera size={24} className="mb-1" />
-                        <span className="text-[10px] font-bold uppercase">Tambah</span>
+                        <span className="text-[10px] font-bold uppercase">{lang === 'ja' ? '追加' : 'Tambah'}</span>
                         <input type="file" multiple accept="image/*,video/*" onChange={handleMediaUpload} className="hidden" />
                       </label>
                     )}
                   </div>
                   <p className="text-[10px] text-amber-600 font-bold flex items-start gap-1">
                     <AlertCircle size={14} className="shrink-0"/> 
-                    Media otomatis di-optimasi. Video akan terkompresi secara otomatis di server.
+                    {lang === 'ja' ? 'メディアは自動的に最適化されます。' : 'Media otomatis di-optimasi. Video akan terkompresi secara otomatis di server.'}
                   </p>
                 </div>
               </div>
@@ -845,8 +883,8 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
               >
                 <div className="text-center p-10 bg-white rounded-xl shadow-2xl">
                   <Printer className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-slate-800">Laporan Siap Dibuat</h3>
-                  <p className="text-slate-500 text-sm">Laporan akan secara otomatis dibagi menjadi halaman-halaman profesional saat tombol "Selesai & Simpan" diklik.</p>
+                  <h3 className="text-xl font-bold text-slate-800">{lang === 'ja' ? 'レポート作成の準備ができました' : 'Laporan Siap Dibuat'}</h3>
+                  <p className="text-slate-500 text-sm">{lang === 'ja' ? '「送信」をクリックすると、プロフェッショナルなページに分割されたレポートが自動的に作成されます。' : 'Laporan akan secara otomatis dibagi menjadi halaman-halaman profesional saat tombol "Selesai & Simpan" diklik.'}</p>
                 </div>
               </motion.div>
 
@@ -861,20 +899,20 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
         <div className="max-w-lg mx-auto flex justify-between gap-4">
           {step > 1 ? (
             <button onClick={() => setStep(step-1)} className="flex-1 py-4 bg-slate-100 text-slate-600 font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-slate-200 transition-colors uppercase text-xs tracking-widest">
-              <ChevronLeft size={16} /> Mundur
+              <ChevronLeft size={16} /> {t("Back", lang)}
             </button>
           ) : <div className="flex-1"></div>}
           
           {step < 5 ? (
             <button onClick={() => setStep(step+1)} className="flex-1 py-4 bg-[#00a1e4] text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-[#008cc6] transition-colors shadow-lg shadow-blue-200 uppercase text-xs tracking-widest">
-              Lanjut <ChevronRight size={16} />
+              {t("Next", lang)} <ChevronRight size={16} />
             </button>
           ) : (
             <button onClick={handleSubmit} disabled={loading} className="flex-[2] py-4 bg-emerald-500 text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-200 uppercase text-xs tracking-widest disabled:opacity-50">
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               ) : <Printer size={18} />}
-              {loading ? "Generating Report..." : "Generate PDF & Submit"}
+              {loading ? (lang === 'ja' ? '生成中...' : "Generating...") : t("Generate PDF & Submit", lang)}
             </button>
           )}
         </div>
@@ -899,7 +937,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
                         <Activity size={24} className="text-[#00a1e4]" />
                      </div>
                      <div>
-                        <p className="text-xs font-black text-[#003366] uppercase">Physical Condition (40%)</p>
+                        <p className="text-xs font-black text-[#003366] uppercase">{lang === 'ja' ? '物理的状態 (40%)' : 'Physical Condition (40%)'}</p>
                         <p className="text-xs text-slate-500 font-medium">Fincoil, Drain Pan, Fan, & Accessories. <span className="text-[#00a1e4] font-bold">Score: {healthResult.conditionScore}%</span></p>
                      </div>
                   </div>
@@ -909,7 +947,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
                         <Zap size={24} className="text-emerald-500" />
                      </div>
                      <div>
-                        <p className="text-xs font-black text-[#003366] uppercase">Performance Index (40%)</p>
+                        <p className="text-xs font-black text-[#003366] uppercase">{lang === 'ja' ? 'パフォーマン指数 (40%)' : 'Performance Index (40%)'}</p>
                         <p className="text-xs text-slate-500 font-medium">Thermodynamic capacity efficiency. <span className="text-emerald-500 font-bold">Score: {healthResult.performanceScore}%</span></p>
                      </div>
                   </div>
@@ -919,7 +957,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
                         <History size={24} className="text-rose-500" />
                      </div>
                      <div>
-                        <p className="text-xs font-black text-[#003366] uppercase">Reliability Factor (20%)</p>
+                        <p className="text-xs font-black text-[#003366] uppercase">{lang === 'ja' ? '信頼性係数 (20%)' : 'Reliability Factor (20%)'}</p>
                         <p className="text-xs text-slate-500 font-medium">Unit degradation based on age ({healthResult.breakdown.reliability.age} yrs). <span className="text-rose-500 font-bold">Score: {healthResult.reliabilityScore}%</span></p>
                      </div>
                   </div>
@@ -929,7 +967,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
                   "$Score = (CI \cdot 0.4) + (PI \cdot 0.4) + (RI \cdot 0.2)$"
                </div>
 
-               <button onClick={() => setShowFormula(false)} className="w-full mt-6 py-4 bg-[#003366] text-white font-black rounded-2xl uppercase tracking-widest text-xs shadow-xl shadow-blue-900/10">Understood</button>
+               <button onClick={() => setShowFormula(false)} className="w-full mt-6 py-4 bg-[#003366] text-white font-black rounded-2xl uppercase tracking-widest text-xs shadow-xl shadow-blue-900/10">{lang === 'ja' ? '了解しました' : 'Understood'}</button>
             </motion.div>
           </div>
         )}

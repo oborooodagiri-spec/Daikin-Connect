@@ -426,6 +426,7 @@ export default function DashboardWrapper() {
         isStatusUpdating={isStatusUpdating}
         onStatusUpdate={handleStatusUpdate}
         projectId={selectedUnit?.project_ref_id?.toString()}
+        onRefresh={() => fetchData(filters)}
       />
     </div>
   );
@@ -504,7 +505,7 @@ function ComplaintWidget({ items, onItemClick }: any) {
             return (
               <div 
                 key={c.id} 
-                onClick={() => onItemClick({ id: c.unit_id || 0, tag_number: c.unit_tag })} 
+                onClick={() => onItemClick(c.unit_tag)} 
                 className={`p-4 ${isProcessing ? 'bg-amber-50/50 border-amber-200' : 'bg-indigo-50/30 border-indigo-50'} hover:bg-slate-50 rounded-2xl border transition-all flex flex-col gap-1 shadow-sm cursor-pointer group/card`}
               >
                 <div className="flex justify-between items-center">

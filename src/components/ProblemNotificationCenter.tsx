@@ -55,6 +55,10 @@ export default function ProblemNotificationCenter() {
     return () => clearInterval(interval);
   }, []);
 
+  const unreadCount = problems.filter(p => !seenIds.includes(p.id)).length;
+
+  if (!isMounted) return null;
+
   const handleUnitClick = (unit: any) => {
     if (!seenIds.includes(unit.id)) {
       const updated = [...seenIds, unit.id];
@@ -65,7 +69,6 @@ export default function ProblemNotificationCenter() {
     router.push(`/dashboard/customers/${unit.projects.customer_id}/projects/${unit.projects.id}/units`);
   };
 
-  const unreadCount = problems.filter(p => !seenIds.includes(p.id)).length;
 
   return (
     <div className="relative">

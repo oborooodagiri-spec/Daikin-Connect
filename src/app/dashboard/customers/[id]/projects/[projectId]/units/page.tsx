@@ -77,7 +77,14 @@ export default function UnitsPage() {
 
     const res = await getUnitsByProject(projectId);
     if (res && 'success' in res) {
-      setUnits(res.data || []);
+      const allUnits = res.data || [];
+      setUnits(allUnits);
+      
+      // Sync selectedUnit for the Detail Modal if open
+      if (selectedUnit) {
+        const updated = allUnits.find((u: any) => u.id === selectedUnit.id);
+        if (updated) setSelectedUnit(updated);
+      }
     }
 
     const cRes = await getProjectComplaints(projectId);
@@ -692,6 +699,7 @@ export default function UnitsPage() {
         isStatusUpdating={isStatusUpdating} onStatusUpdate={handleStatusUpdate}
         onPrintQR={openPrintQR} onEdit={openModal}
         customerId={customerId} projectId={projectId} session={session}
+        onRefresh={fetchData}
       />
 
       <QuickInputModal 

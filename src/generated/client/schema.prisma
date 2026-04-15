@@ -1,0 +1,762 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model customers {
+  id            Int                      @id @default(autoincrement())
+  name          String                   @db.VarChar(150)
+  pic_name      String?                  @db.VarChar(100)
+  bidang_usaha  String?                  @db.VarChar(100)
+  pic_phone     String?                  @db.VarChar(20)
+  customer_type customers_customer_type? @default(Corporate)
+  address       String?                  @db.Text
+  created_at    DateTime?                @default(now()) @db.Timestamp(0)
+  is_active     Boolean                  @default(true)
+  contracts     contracts[]
+  projects      projects[]
+  sites         sites[]
+  tickets       tickets[]
+}
+
+model permissions {
+  id               BigInt             @id @default(autoincrement()) @db.UnsignedBigInt
+  name             String             @unique(map: "name") @db.VarChar(80)
+  role_permissions role_permissions[]
+}
+
+model projects {
+  id                  BigInt                @id @default(autoincrement()) @db.UnsignedBigInt
+  customer_id         Int
+  name                String                @db.VarChar(150)
+  code                String?               @db.VarChar(50)
+  status              projects_status       @default(active)
+  created_at          DateTime              @default(now()) @db.Timestamp(0)
+  enabled_forms       String?               @db.Text
+  customers           customers             @relation(fields: [customer_id], references: [id], onUpdate: Restrict, map: "fk_projects_customer")
+  schedule_targets    schedule_targets[]
+  schedules           schedules[]
+  units               units[]
+  user_project_access user_project_access[]
+
+  @@unique([customer_id, name], map: "uq_project_per_customer")
+  @@index([customer_id], map: "idx_projects_customer")
+}
+
+model refresh_tokens {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  user_id    Int
+  token_hash String    @unique(map: "uniq_token_hash") @db.VarChar(255)
+  expires_at DateTime  @db.DateTime(0)
+  revoked_at DateTime? @db.DateTime(0)
+  created_at DateTime? @default(now()) @db.DateTime(0)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_refresh_user")
+
+  @@unique([user_id, revoked_at], map: "uniq_active_token_per_user")
+  @@index([user_id], map: "idx_user_id")
+}
+
+model role_permissions {
+  role_id       Int
+  permission_id BigInt      @db.UnsignedBigInt
+  permissions   permissions @relation(fields: [permission_id], references: [id], onUpdate: Restrict, map: "fk_rp_perm")
+  roles         roles       @relation(fields: [role_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_rp_role")
+
+  @@id([role_id, permission_id])
+  @@index([permission_id], map: "fk_rp_perm")
+}
+
+model roles {
+  id               Int                @id @default(autoincrement())
+  role_name        String             @db.VarChar(50)
+  role_permissions role_permissions[]
+  user_roles       user_roles[]
+  users            users[]
+}
+
+model units {
+  id                 Int                  @id @default(autoincrement())
+  project_id         String?              @db.VarChar(50)
+  project_type       String?              @db.VarChar(100)
+  unit_type          String?              @db.VarChar(100)
+  site_id            Int?
+  qr_code_token      String?              @unique(map: "qr_code_token") @db.VarChar(100)
+  tag_number         String?              @db.VarChar(20)
+  code               String?              @db.VarChar(50)
+  customer_name      String?              @db.VarChar(150)
+  customer_group     String?              @db.VarChar(150)
+  location           String?              @db.VarChar(255)
+  area               String?              @db.VarChar(100)
+  building_floor     String?              @db.VarChar(100)
+  room_tenant        String?              @db.VarChar(150)
+  brand              String?              @default("Daikin") @db.VarChar(100)
+  model              String?              @db.VarChar(150)
+  capacity           String?              @db.VarChar(50)
+  yoi                Int?
+  serial_number      String?              @unique(map: "serial_number") @db.VarChar(100)
+  status             units_status?        @default(Normal)
+  last_service_date  DateTime?            @db.Date
+  created_at         DateTime?            @default(now()) @db.Timestamp(0)
+  project_ref_id     BigInt?              @db.UnsignedBigInt
+  activities         activities[]
+  audit_tickets      audit_tickets[]
+  audits             audits[]
+  complaints         complaints[]
+  corrective         corrective[]
+  daily_ops_logs     daily_ops_logs[]
+  schedules          schedules[]
+  service_activities service_activities[]
+  service_logs       service_logs[]
+  tickets            tickets[]
+  unit_comments      unit_comments[]
+  projects           projects?            @relation(fields: [project_ref_id], references: [id], onUpdate: Restrict, map: "fk_units_project_ref")
+  user_unit_access   user_unit_access[]
+
+  @@index([project_ref_id], map: "fk_units_project_ref")
+}
+
+model user_project_access {
+  user_id    Int
+  project_id BigInt   @db.UnsignedBigInt
+  projects   projects @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_upa_project")
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_upa_user")
+
+  @@id([user_id, project_id])
+  @@index([project_id], map: "fk_upa_project")
+}
+
+model user_roles {
+  user_id Int
+  role_id Int
+  roles   roles @relation(fields: [role_id], references: [id], onUpdate: Restrict, map: "fk_ur_role")
+  users   users @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_ur_user")
+
+  @@id([user_id, role_id])
+  @@index([role_id], map: "fk_ur_role")
+}
+
+model user_unit_access {
+  user_id Int
+  unit_id Int
+  units   units @relation(fields: [unit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_uua_unit")
+  users   users @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_uua_user")
+
+  @@id([user_id, unit_id])
+  @@index([unit_id], map: "fk_uua_unit")
+}
+
+model users {
+  id           Int     @id @default(autoincrement())
+  role_id      Int?
+  name         String  @db.VarChar(150)
+  email        String  @unique(map: "email") @db.VarChar(150)
+  password     String  @db.VarChar(255)
+  phone        String? @db.VarChar(20)
+  is_active    Boolean @default(true)
+  company_name String? @db.VarChar(150)
+
+  // Security & 2FA
+  two_factor_enabled    Boolean   @default(false)
+  two_factor_secret     String?   @db.VarChar(255)
+  otp_code              String?   @db.VarChar(6)
+  otp_expiry            DateTime? @db.DateTime(0)
+  failed_login_attempts Int       @default(0)
+  locked_until          DateTime? @db.DateTime(0)
+
+  refresh_tokens      refresh_tokens[]
+  schedule_messages   schedule_messages[]
+  schedule_targets    schedule_targets[]
+  schedules           schedules[]
+  service_activities  service_activities[]
+  user_project_access user_project_access[]
+  user_push_tokens    user_push_tokens[]
+  user_roles          user_roles[]
+  user_unit_access    user_unit_access[]
+  audit_logs          audit_logs[]
+  roles               roles?                @relation(fields: [role_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "users_ibfk_1")
+
+  @@index([role_id], map: "role_id")
+}
+
+model audit_logs {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  user_id     Int?
+  action      String    @db.VarChar(100)
+  target_type String?   @db.VarChar(50)
+  target_id   String?   @db.VarChar(100)
+  details     String?   @db.Text
+  ip_address  String?   @db.VarChar(45)
+  user_agent  String?   @db.Text
+  created_at  DateTime? @default(now()) @db.Timestamp(0)
+  users       users?    @relation(fields: [user_id], references: [id], onDelete: SetNull, onUpdate: Restrict, map: "fk_audit_user")
+
+  @@index([user_id], map: "idx_audit_user")
+}
+
+model password_reset_tokens {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique(map: "email_reset") @db.VarChar(150)
+  token_hash String   @unique(map: "token_hash") @db.VarChar(255)
+  expires_at DateTime @db.DateTime(0)
+  created_at DateTime @default(now()) @db.Timestamp(0)
+}
+
+model activities {
+  id               Int       @id @default(autoincrement())
+  unit_id          Int
+  type             String?   @db.VarChar(50)
+  service_date     DateTime  @db.Date
+  inspector_name   String?   @db.VarChar(100)
+  engineer_note    String?   @db.Text
+  technical_advice String?   @db.Text
+  voltage          String?   @db.VarChar(50)
+  current_amp      String?   @db.VarChar(50)
+  pressure         String?   @db.VarChar(50)
+  photo_url        String?   @db.VarChar(255)
+  pdf_report_url   String?   @db.VarChar(255)
+  created_at       DateTime? @default(now()) @db.Timestamp(0)
+  technical_json   String?   @db.LongText
+  status           String?   @default("Completed") @db.VarChar(50)
+  deleted_at       DateTime? @db.DateTime(0)
+  units            units     @relation(fields: [unit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_unit_activity")
+
+  @@index([unit_id], map: "fk_unit_activity")
+}
+
+model activity_photos {
+  id                 Int                 @id @default(autoincrement())
+  activity_id        Int?
+  type               String?             @default("AUDIT") @db.VarChar(50)
+  photo_url          String              @db.VarChar(255)
+  notes              String?             @db.Text
+  description        String?             @db.Text
+  caption            String?             @db.Text
+  media_type         String              @default("image") @db.VarChar(10)
+  service_activities service_activities? @relation(fields: [activity_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "activity_photos_ibfk_1")
+
+  @@index([activity_id], map: "activity_id")
+}
+
+model ahu_audits {
+  id                      Int                         @id @default(autoincrement())
+  unit_id                 Int?
+  location                String?                     @db.VarChar(255)
+  unit_tag                String?                     @db.VarChar(100)
+  audit_date              DateTime?                   @db.Date
+  prepared_by             String?                     @db.VarChar(100)
+  design_airflow          Decimal?                    @db.Decimal(10, 2)
+  design_cooling_capacity Decimal?                    @db.Decimal(10, 2)
+  leaving_db              Decimal?                    @db.Decimal(5, 2)
+  leaving_wb              Decimal?                    @db.Decimal(5, 2)
+  leaving_rh              Decimal?                    @db.Decimal(5, 2)
+  entering_db             Decimal?                    @db.Decimal(5, 2)
+  entering_wb             Decimal?                    @db.Decimal(5, 2)
+  entering_rh             Decimal?                    @db.Decimal(5, 2)
+  room_db                 Decimal?                    @db.Decimal(5, 2)
+  room_wb                 Decimal?                    @db.Decimal(5, 2)
+  room_rh                 Decimal?                    @db.Decimal(5, 2)
+  chws_temp               Decimal?                    @db.Decimal(5, 2)
+  chwr_temp               Decimal?                    @db.Decimal(5, 2)
+  chws_press              Decimal?                    @db.Decimal(5, 2)
+  chwr_press              Decimal?                    @db.Decimal(5, 2)
+  water_flow_gpm          Decimal?                    @db.Decimal(10, 2)
+  amp_r                   Decimal?                    @db.Decimal(5, 2)
+  amp_s                   Decimal?                    @db.Decimal(5, 2)
+  amp_t                   Decimal?                    @db.Decimal(5, 2)
+  volt_rs                 Int?
+  volt_st                 Int?
+  volt_rt                 Int?
+  volt_ln                 Int?
+  visual_notes            String?                     @db.Text
+  recommendation          String?                     @db.Text
+  pdf_url                 String?                     @db.VarChar(255)
+  created_at              DateTime?                   @default(now()) @db.Timestamp(0)
+  approval_status         ahu_audits_approval_status? @default(Pending)
+  approved_by             String?                     @db.VarChar(100)
+}
+
+model audit_tickets {
+  id                 Int                               @id @default(autoincrement())
+  ticket_number      String?                           @unique(map: "ticket_number") @db.VarChar(20)
+  unit_id            Int?
+  auditor_name       String?                           @db.VarChar(100)
+  audit_date         DateTime?                         @db.Date
+  physical_condition audit_tickets_physical_condition?
+  suction_pressure   String?                           @db.VarChar(20)
+  discharge_pressure String?                           @db.VarChar(20)
+  ampere             String?                           @db.VarChar(20)
+  voltage            String?                           @db.VarChar(20)
+  notes              String?                           @db.Text
+  finding_status     audit_tickets_finding_status?
+  created_at         DateTime?                         @default(now()) @db.Timestamp(0)
+  units              units?                            @relation(fields: [unit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "audit_tickets_ibfk_1")
+
+  @@index([unit_id], map: "unit_id")
+}
+
+model audit_velocity_points {
+  id                 Int                 @id @default(autoincrement())
+  audit_id           Int?
+  point_number       Int?
+  velocity_value     Decimal?            @db.Decimal(5, 2)
+  service_activities service_activities? @relation(fields: [audit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "audit_velocity_points_ibfk_1")
+
+  @@index([audit_id], map: "audit_velocity_points_ibfk_1")
+}
+
+model audits {
+  id          Int            @id @default(autoincrement())
+  unit_id     Int
+  room_tenant String?        @db.VarChar(150)
+  type        String?        @default("Audit") @db.VarChar(50)
+  notes       String?        @db.Text
+  status      audits_status? @default(Normal)
+  photo_url   String?        @db.VarChar(255)
+  created_at  DateTime?      @default(now()) @db.Timestamp(0)
+  deleted_at  DateTime?      @db.DateTime(0)
+  units       units          @relation(fields: [unit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "audits_ibfk_1")
+
+  @@index([unit_id], map: "unit_id")
+}
+
+model contracts {
+  id                Int               @id @default(autoincrement())
+  customer_id       Int?
+  site_id           Int?
+  contract_number   String?           @unique(map: "contract_number") @db.VarChar(100)
+  start_date        DateTime?         @db.Date
+  end_date          DateTime?         @db.Date
+  service_frequency Int?
+  status            contracts_status? @default(Active)
+  customers         customers?        @relation(fields: [customer_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "contracts_ibfk_1")
+
+  @@index([customer_id], map: "customer_id")
+}
+
+model corrective {
+  id              Int       @id @default(autoincrement())
+  unit_id         Int
+  service_date    DateTime  @db.Date
+  technician_name String?   @db.VarChar(100)
+  case_complain   String?   @db.Text
+  root_cause      String?   @db.Text
+  temp_action     String?   @db.Text
+  perm_action     String?   @db.Text
+  recommendation  String?   @db.Text
+  photo_url       String?   @db.Text
+  status          String?   @default("Final Approved") @db.VarChar(50)
+  created_at      DateTime? @default(now()) @db.Timestamp(0)
+  deleted_at      DateTime? @db.DateTime(0)
+  units           units     @relation(fields: [unit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "corrective_ibfk_1")
+
+  @@index([unit_id], map: "unit_id")
+}
+
+model corrective_maintenances {
+  id                Int       @id @default(autoincrement())
+  unit_id           Int?
+  tech_name         String?   @db.VarChar(255)
+  issue_description String?   @db.Text
+  created_at        DateTime? @default(now()) @db.Timestamp(0)
+  inspector_name    String?   @db.VarChar(255)
+  repair_date       DateTime? @db.Date
+  finding           String?   @db.Text
+  advise            String?   @db.Text
+  report_pdf        String?   @db.VarChar(255)
+}
+
+model maintenance_contracts {
+  id              Int       @id @default(autoincrement())
+  unit_id         Int?
+  technician_name String?   @db.VarChar(255)
+  status          String?   @db.Text
+  created_at      DateTime? @default(now()) @db.Timestamp(0)
+}
+
+model service_activities {
+  id                      Int                        @id @default(autoincrement())
+  unit_id                 Int?
+  type                    service_activities_type
+  reference_id            Int?
+  engineer_id             Int?
+  sales_engineer_id       Int?
+  pdf_report_url          String?                    @db.VarChar(255)
+  photo_url               String?                    @db.VarChar(255)
+  service_date            DateTime?                  @db.Date
+  status                  service_activities_status? @default(Pending)
+  engineer_note           String?                    @db.Text
+  sales_note              String?                    @db.Text
+  created_at              DateTime?                  @default(now()) @db.Timestamp(0)
+  inspector_name          String?                    @db.VarChar(255)
+  technical_json          String?                    @db.LongText
+  technical_advice        String?                    @db.Text
+  location                String?                    @db.VarChar(255)
+  unit_tag                String?                    @db.VarChar(100)
+  design_airflow          Float?                     @default(0) @db.Float
+  design_cooling_capacity Float?                     @default(0) @db.Float
+  entering_db             Float?                     @default(0) @db.Float
+  entering_wb             Float?                     @default(0) @db.Float
+  entering_rh             Float?                     @default(0) @db.Float
+  leaving_db              Float?                     @default(0) @db.Float
+  leaving_wb              Float?                     @default(0) @db.Float
+  leaving_rh              Float?                     @default(0) @db.Float
+  room_db                 Float?                     @default(0) @db.Float
+  room_wb                 Float?                     @default(0) @db.Float
+  room_rh                 Float?                     @default(0) @db.Float
+  chws_temp               Float?                     @default(0) @db.Float
+  chwr_temp               Float?                     @default(0) @db.Float
+  chws_press              Float?                     @default(0) @db.Float
+  chwr_press              Float?                     @default(0) @db.Float
+  water_flow_gpm          Float?                     @default(0) @db.Float
+  amp_r                   Decimal?                   @default(0.00) @db.Decimal(5, 2)
+  amp_s                   Decimal?                   @default(0.00) @db.Decimal(5, 2)
+  amp_t                   Decimal?                   @default(0.00) @db.Decimal(5, 2)
+  volt_rs                 Int?                       @default(0)
+  volt_st                 Int?                       @default(0)
+  volt_rt                 Int?                       @default(0)
+  volt_ln                 Int?                       @default(0)
+  berita_acara_pdf_url    String?                    @db.VarChar(255)
+  customer_approved_at    DateTime?                  @db.DateTime(0)
+  customer_approver_name  String?                    @db.VarChar(255)
+  engineer_signer_name    String?                    @db.VarChar(255)
+  is_approved_by_customer Boolean?                   @default(false)
+  deleted_at              DateTime?                  @db.DateTime(0)
+  activity_photos         activity_photos[]
+  audit_velocity_points   audit_velocity_points[]
+  units                   units?                     @relation(fields: [unit_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "service_activities_ibfk_1")
+  users                   users?                     @relation(fields: [engineer_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "service_activities_ibfk_2")
+
+  @@index([engineer_id], map: "engineer_id")
+  @@index([unit_id], map: "unit_id")
+}
+
+model service_logs {
+  id              Int                        @id @default(autoincrement())
+  unit_id         Int?
+  service_date    DateTime?                  @db.Date
+  service_type    service_logs_service_type?
+  technician_name String?                    @db.VarChar(100)
+  description     String?                    @db.Text
+  status_after    service_logs_status_after?
+  created_at      DateTime?                  @default(now()) @db.Timestamp(0)
+  units           units?                     @relation(fields: [unit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "service_logs_ibfk_1")
+
+  @@index([unit_id], map: "unit_id")
+}
+
+model service_photos {
+  id          Int       @id @default(autoincrement())
+  log_id      Int?
+  photo_path  String?   @db.VarChar(255)
+  description String?   @db.Text
+  created_at  DateTime? @default(now()) @db.Timestamp(0)
+}
+
+model sites {
+  id             Int                 @id @default(autoincrement())
+  customer_id    Int?
+  site_name      String              @db.VarChar(150)
+  address        String?             @db.Text
+  gps_location   String?             @db.VarChar(100)
+  project_type   sites_project_type? @default(Maintenance)
+  progress_value Int?                @default(0)
+  customers      customers?          @relation(fields: [customer_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_customer")
+
+  @@index([customer_id], map: "fk_customer")
+}
+
+model tickets {
+  id          Int               @id @default(autoincrement())
+  unit_id     Int?
+  customer_id Int?
+  subject     String?           @db.VarChar(255)
+  description String?           @db.Text
+  priority    tickets_priority?
+  status      tickets_status?   @default(Open)
+  created_at  DateTime?         @default(now()) @db.Timestamp(0)
+  units       units?            @relation(fields: [unit_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "tickets_ibfk_1")
+  customers   customers?        @relation(fields: [customer_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "tickets_ibfk_2")
+
+  @@index([customer_id], map: "customer_id")
+  @@index([unit_id], map: "unit_id")
+}
+
+model unit_comments {
+  id         Int       @id @default(autoincrement())
+  unit_id    Int
+  user_name  String?   @default("Customer") @db.VarChar(100)
+  comment    String    @db.Text
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  units      units     @relation(fields: [unit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "unit_comments_ibfk_1")
+
+  @@index([unit_id], map: "unit_id")
+}
+
+model schedules {
+  id                  BigInt                @id @default(autoincrement()) @db.UnsignedBigInt
+  title               String                @db.VarChar(150)
+  description         String?               @db.Text
+  start_at            DateTime              @db.DateTime(0)
+  end_at              DateTime              @db.DateTime(0)
+  type                ScheduleType
+  status              ScheduleStatus        @default(Planned)
+  google_event_id     String?               @db.VarChar(255)
+  project_id          BigInt                @db.UnsignedBigInt
+  unit_id             Int?
+  assignee_id         Int?
+  created_at          DateTime              @default(now()) @db.Timestamp(0)
+  schedule_attendance schedule_attendance[]
+  schedule_messages   schedule_messages[]
+  schedule_mom        schedule_mom[]
+  users               users?                @relation(fields: [assignee_id], references: [id])
+  projects            projects              @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  units               units?                @relation(fields: [unit_id], references: [id])
+
+  @@index([project_id])
+  @@index([unit_id])
+  @@index([assignee_id])
+}
+
+model schedule_attendance {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  schedule_id BigInt    @db.UnsignedBigInt
+  name        String    @db.VarChar(150)
+  role        String?   @db.VarChar(100)
+  is_present  Boolean   @default(false)
+  signature   String?   @db.LongText
+  created_at  DateTime  @default(now()) @db.Timestamp(0)
+  schedules   schedules @relation(fields: [schedule_id], references: [id], onDelete: Cascade)
+
+  @@index([schedule_id])
+}
+
+model schedule_mom {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  schedule_id BigInt    @db.UnsignedBigInt
+  content     String    @db.LongText
+  updated_at  DateTime  @updatedAt
+  schedules   schedules @relation(fields: [schedule_id], references: [id], onDelete: Cascade)
+
+  @@index([schedule_id])
+}
+
+model schedule_messages {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  schedule_id BigInt    @db.UnsignedBigInt
+  user_id     Int?
+  message     String    @db.LongText
+  attachments String?   @db.LongText
+  is_system   Boolean   @default(false)
+  system_type String?   @db.VarChar(50)
+  created_at  DateTime  @default(now()) @db.Timestamp(0)
+  schedules   schedules @relation(fields: [schedule_id], references: [id], onDelete: Cascade)
+  users       users?    @relation(fields: [user_id], references: [id])
+
+  @@index([schedule_id])
+  @@index([user_id])
+}
+
+model schedule_targets {
+  id             Int          @id @default(autoincrement())
+  assignee_id    Int?
+  project_id     BigInt?      @db.UnsignedBigInt
+  type           ScheduleType
+  daily_target   Int          @default(0)
+  monthly_target Int          @default(0)
+  month          Int
+  year           Int
+  yearly_target  Int          @default(0)
+  users          users?       @relation(fields: [assignee_id], references: [id], onDelete: Cascade)
+  projects       projects?    @relation(fields: [project_id], references: [id], onDelete: Cascade)
+
+  @@index([assignee_id, type, month, year])
+  @@index([project_id, type, month, year])
+  @@index([assignee_id])
+  @@index([project_id])
+}
+
+model complaints {
+  id            Int      @id @default(autoincrement())
+  unit_id       Int
+  customer_name String   @db.VarChar(150)
+  description   String   @db.Text
+  photo_url     String?  @db.VarChar(255)
+  status        String   @default("Pending")
+  created_at    DateTime @default(now()) @db.Timestamp(0)
+  units         units    @relation(fields: [unit_id], references: [id], onDelete: Cascade)
+
+  @@index([unit_id], map: "idx_complaint_unit")
+}
+
+model user_push_tokens {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  token      String   @unique @db.VarChar(512)
+  platform   String   @default("web") @db.VarChar(50)
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model daily_ops_logs {
+  id               Int      @id @default(autoincrement())
+  unit_id          Int
+  inspector_name   String   @db.VarChar(150)
+  service_date     DateTime @db.Date
+  created_at       DateTime @default(now()) @db.Timestamp(0)
+  fan_on           Boolean  @default(true)
+  fan_speed        Decimal? @db.Decimal(5, 2)
+  fan_curr_r       Decimal? @db.Decimal(5, 2)
+  fan_curr_s       Decimal? @db.Decimal(5, 2)
+  fan_curr_t       Decimal? @db.Decimal(5, 2)
+  fan_volt_r       Int?
+  fan_volt_s       Int?
+  fan_volt_t       Int?
+  heater_on        Boolean  @default(false)
+  heater_curr_r    Decimal? @db.Decimal(5, 2)
+  heater_curr_s    Decimal? @db.Decimal(5, 2)
+  heater_curr_t    Decimal? @db.Decimal(5, 2)
+  heater_volt_r    Int?
+  heater_volt_s    Int?
+  heater_volt_t    Int?
+  valve_opening    Decimal? @db.Decimal(5, 2)
+  supply_temp      Decimal? @db.Decimal(5, 2)
+  supply_rh        Decimal? @db.Decimal(5, 2)
+  return_temp      Decimal? @db.Decimal(5, 2)
+  return_rh        Decimal? @db.Decimal(5, 2)
+  fresh_temp       Decimal? @db.Decimal(5, 2)
+  fresh_rh         Decimal? @db.Decimal(5, 2)
+  filter_pre       String?  @db.VarChar(20)
+  filter_med       String?  @db.VarChar(20)
+  filter_hepa      String?  @db.VarChar(20)
+  room_temp        Decimal? @db.Decimal(5, 2)
+  room_diff_press  Decimal? @db.Decimal(5, 2)
+  temp_s1          Decimal? @db.Decimal(5, 2)
+  temp_s2          Decimal? @db.Decimal(5, 2)
+  temp_s3          Decimal? @db.Decimal(5, 2)
+  temp_s4          Decimal? @db.Decimal(5, 2)
+  temp_s5          Decimal? @db.Decimal(5, 2)
+  static_pressure  Decimal? @db.Decimal(10, 2)
+  vibration_status String?  @db.VarChar(50)
+  drainage_status  String?  @db.VarChar(50)
+  notes            String?  @db.Text
+  units            units    @relation(fields: [unit_id], references: [id], onDelete: Cascade)
+
+  @@index([unit_id], map: "idx_daily_ops_unit")
+  @@index([service_date], map: "idx_daily_ops_date")
+}
+
+enum projects_status {
+  active
+  archived
+}
+
+enum service_activities_type {
+  Audit
+  Preventive
+  Corrective
+}
+
+enum service_logs_service_type {
+  Cleaning
+  Repair
+  Maintenance
+  Part_Replacement @map("Part Replacement")
+}
+
+enum tickets_priority {
+  Low
+  Medium
+  High
+  Critical
+}
+
+enum audit_tickets_physical_condition {
+  Good
+  Dirty
+  Damaged
+}
+
+enum audits_status {
+  Normal
+  Warning
+  Critical
+}
+
+enum customers_customer_type {
+  Corporate
+  Individual
+}
+
+enum sites_project_type {
+  Maintenance
+  Audit
+  Corrective
+}
+
+enum service_logs_status_after {
+  Normal
+  Warning
+  Critical
+}
+
+enum tickets_status {
+  Open
+  In_Progress @map("In Progress")
+  Resolved
+  Closed
+}
+
+enum contracts_status {
+  Active
+  Expired
+  Pending
+}
+
+enum service_activities_status {
+  Pending
+  Engineer_Approved @map("Engineer Approved")
+  Final_Approved    @map("Final Approved")
+  Rejected
+}
+
+enum audit_tickets_finding_status {
+  Normal
+  Warning
+  Critical
+}
+
+enum units_status {
+  Normal
+  Warning
+  Critical
+  Problem
+  Pending
+  On_Progress
+}
+
+enum ahu_audits_approval_status {
+  Pending
+  Approved
+  Rejected
+}
+
+enum ScheduleType {
+  Preventive
+  Corrective
+  Audit
+  DailyLog
+}
+
+enum ScheduleStatus {
+  Planned
+  InProgress
+  Completed
+  Missed
+}

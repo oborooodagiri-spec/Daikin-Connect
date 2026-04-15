@@ -14,6 +14,7 @@ import {
   FileVideo, Play
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { t, Language } from "@/lib/i18n";
 
 export default function CorrectiveFormClient({ unit, lastPreventiveDate, initialData, onSuccess }: { unit: any, lastPreventiveDate?: string | null, initialData?: any, onSuccess?: () => void }) {
   const router = useRouter();
@@ -22,8 +23,14 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [isQueued, setIsQueued] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const [lang, setLang] = useState<Language>('id');
 
   React.useEffect(() => {
+    setIsMounted(true);
+    const savedLang = localStorage.getItem("daikin_lang") as Language;
+    if (savedLang) setLang(savedLang);
+
     const handleStatus = () => {}; 
     window.addEventListener('online', handleStatus);
     window.addEventListener('offline', handleStatus);
@@ -46,6 +53,19 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
     service_time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).replace('.', ':'),
     visit: "1",
   });
+
+  // Smart Auto-fill for name
+  React.useEffect(() => {
+    if (!personnel.name && !initialData) {
+      const savedName = localStorage.getItem("daikin_inspector_name");
+      if (savedName) setPersonnel((p: any) => ({ ...p, name: savedName }));
+    }
+  }, [isMounted]);
+
+  const updatePersonnelName = (name: string) => {
+    setPersonnel({ ...personnel, name });
+    localStorage.setItem("daikin_inspector_name", name);
+  };
 
   // Step 2: PIC Contact
   const [pic, setPic] = useState(parsed?.pic || {
@@ -79,18 +99,21 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
   const [currentStatus, setCurrentStatus] = useState(parsed?.currentStatus || "Problem");
 
   const COMPLAINT_CATEGORIES = [
-    "Kebocoran (Leakage)",
-    "Non AC (Keluhan non-teknis)",
-    "AC Noise (Berisik)",
-    "AC Mati (Power Issue)",
-    "Lainnya"
+    lang === 'ja' ? "漏えい" : "Kebocoran (Leakage)",
+    lang === 'ja' ? "非AC関連 (技術以外の苦情)" : "Non AC (Keluhan non-teknis)",
+    lang === 'ja' ? "AC 異音" : "AC Noise (Berisik)",
+    lang === 'ja' ? "AC 電源不良" : "AC Mati (Power Issue)",
+    lang === 'ja' ? "その他" : "Lainnya"
   ];
 
   // Media Handling (Photos & Videos)
   const handleMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const files = Array.from(e.target.files);
-    if (mediaItems.length + files.length > 10) { alert("Maksimal 10 file!"); return; }
+    if (mediaItems.length + files.length > 10) { 
+        alert(lang === 'ja' ? "最大10ファイルまで！" : lang === 'id' ? "Maksimal 10 file!" : "Maximum 10 files!"); 
+        return; 
+    }
 
     setLoading(true);
     for (const f of files) {
@@ -109,7 +132,7 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
           finalFile = await imageCompression(f, options);
         } else {
           if (f.size > 20 * 1024 * 1024) {
-             alert(`Video ${f.name} terlalu besar (>20MB). Mohon gunakan video berdurasi pendek.`);
+             alert(lang === 'ja' ? `ビデオ ${f.name} が大きすぎます (>20MB)。` : `Video ${f.name} terlalu besar (>20MB). Mohon gunakan video berdurasi pendek.`);
              continue;
           }
         }
@@ -142,23 +165,13 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
     await Promise.all(promises);
   };
 
-  // Build render data for PDF
-  const renderData = { 
-    personnel, 
-    pic, 
-    analysis, 
-    engineerNote, 
-    unit, 
-    category, 
-    currentStatus, 
-    lastPreventiveDate 
-  };
+  // The data snapshot is now built inside handleSubmit to ensure it uses the freshest state variables.
 
   // Submit
   const handleSubmit = async () => {
-    if (!personnel.name) { alert("Nama Teknisi wajib diisi!"); setStep(1); return; }
-    if (!category) { alert("Kategori Komplain wajib dipilih!"); setStep(3); return; }
-    if (!analysis.complain) { alert("Keluhan/Case wajib diisi!"); setStep(3); return; }
+    if (!personnel.name) { alert(lang === 'ja' ? "エンジニア名は必須です！" : "Nama Teknisi wajib diisi!"); setStep(1); return; }
+    if (!category) { alert(lang === 'ja' ? "苦情カテゴリを選択してください！" : "Kategori Komplain wajib dipilih!"); setStep(3); return; }
+    if (!analysis.complain) { alert(lang === 'ja' ? "苦情内容を入力してください！" : "Keluhan/Case wajib diisi!"); setStep(3); return; }
     setLoading(true);
     try {
       // --- OFFLINE CHECK ---
@@ -177,7 +190,7 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
             temp_action: analysis.temp_action,
             perm_action: analysis.perm_action,
             recommendation: analysis.recommendation,
-            technical_json: JSON.stringify(renderData, (_, v) => typeof v === 'bigint' ? v.toString() : v),
+            technical_json: JSON.stringify({ personnel, pic, analysis, engineerNote, unit, category, currentStatus, lastPreventiveDate }, (_, v) => typeof v === 'bigint' ? v.toString() : v),
           },
           photos: mediaItems.map(m => m.file).filter((f): f is File => f !== null)
         });
@@ -186,8 +199,19 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
         return;
       }
 
-      // --- ONLINE FLOW: UPLOAD FIRST ---
-      
+      // 0. Build latest data snapshot for PDF & DB
+      // We do this INSIDE handleSubmit to ensure we capture variables as of this exact moment.
+      const freshRenderData = {
+        personnel, 
+        pic, 
+        analysis, 
+        engineerNote, 
+        unit, 
+        category, 
+        currentStatus, 
+        lastPreventiveDate 
+      };
+
       // 1. Upload Media (Photos & Videos) BEFORE generating PDF
       const uploadedMedia: { photo_url: string; description: string; media_type: string }[] = [];
       for (const item of mediaItems) {
@@ -216,9 +240,9 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
         }
       }
 
-      // Update state with server URLs for PDF generation
+      // Update snapshot with server URLs for PDF generation
       const finalRenderData = {
-        ...renderData,
+        ...freshRenderData,
         activity_photos: uploadedMedia
       };
 
@@ -232,7 +256,7 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
       const SAFE_PX = SAFE_CONTENT_MM * PX_PER_MM;
 
       const { getCorrectiveSections } = await import("@/components/CorrectivePDFTemplate");
-      const sections = getCorrectiveSections(finalRenderData, unit);
+      const sections = getCorrectiveSections(finalRenderData, unit, lang);
 
       // Measurement Layer
       const measureDiv = document.createElement("div");
@@ -444,6 +468,9 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
     setLoading(false);
   };
 
+  // HYDRATION GUARD
+  if (!isMounted) return null;
+
   // Success screen
   if (success || isQueued) {
     return (
@@ -452,15 +479,15 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
           {isQueued ? <WifiOff size={48} /> : <CheckCircle2 size={48} />}
         </div>
         <h1 className="text-3xl font-black tracking-tight mb-2">
-          {isQueued ? "Queued Offline!" : "Corrective Submitted!"}
+          {isQueued ? (lang === 'ja' ? 'オフラインでキューされました！' : "Queued Offline!") : (lang === 'ja' ? '提出完了！' : "Corrective Submitted!")}
         </h1>
         <p className="text-blue-200 mb-8 max-w-sm font-medium">
           {isQueued
-            ? "Koneksi mati. Laporan Perbaikan telah disimpan di HP dan akan otomatis terkirim saat internet kembali aktif."
-            : "Laporan Corrective Maintenance & PDF telah di-generate dan dikirim ke server. Status unit diubah ke Problem."}
+            ? (lang === 'ja' ? "接続がありません。レポートは保存されました。インターネット接続時に自動送信されます。" : "Koneksi mati. Laporan Perbaikan telah disimpan di HP dan akan otomatis terkirim saat internet kembali aktif.")
+            : (lang === 'ja' ? "レポートとPDFドキュメントが正常に送信されました。ユニットの状態が「異常」に更新されました。" : "Laporan Corrective Maintenance & PDF telah di-generate dan dikirim ke server. Status unit diubah ke Problem.")}
         </p>
         <button onClick={() => router.push(`/unit/${unit.qr_code_token}`)} className="px-8 py-4 bg-white text-[#003366] font-black rounded-2xl uppercase tracking-widest text-sm hover:scale-105 transition-transform shadow-xl">
-          Kembali ke Passport
+          {lang === 'ja' ? "パスポートに戻る" : "Kembali ke Passport"}
         </button>
       </div>
     );
@@ -472,11 +499,11 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
       {/* HEADER */}
       <div className="bg-gradient-to-br from-rose-700 to-rose-900 text-white p-6 rounded-b-[2rem] shadow-lg mb-6 pt-12 sticky top-0 z-40">
         <h1 className="text-xl font-black tracking-tight flex items-center gap-2">
-          <AlertTriangle size={22} /> Corrective Maintenance
+          <AlertTriangle size={22} /> {lang === 'ja' ? '故障修理レポート' : 'Corrective Maintenance'}
         </h1>
         <div className="flex justify-between items-center mt-3">
           <p className="text-sm font-medium opacity-80 flex items-center gap-1"><MapPin size={14} /> {unit.area} — {unit.tag_number}</p>
-          <span className="px-3 py-1 bg-rose-500/50 rounded-lg text-xs font-black uppercase tracking-widest">Step {step}/4</span>
+          <span className="px-3 py-1 bg-rose-500/50 rounded-lg text-xs font-black uppercase tracking-widest">{lang === 'ja' ? 'ステップ' : 'Step'} {step}/4</span>
         </div>
         <div className="w-full bg-rose-950 h-2 mt-4 rounded-full overflow-hidden">
           <div className="bg-white h-full transition-all duration-500" style={{ width: `${(step / 4) * 100}%` }}></div>
@@ -491,37 +518,37 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
             <motion.div key="s1" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} className="space-y-5">
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
                 <h2 className="text-lg font-black text-rose-800 mb-4 border-b pb-2 flex items-center gap-2">
-                  <User size={20} /> Personnel & Schedule
+                  <User size={20} /> {t("Personnel & Schedule Header", lang)}
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Nama Lengkap*</label>
-                    <input type="text" value={personnel.name} onChange={e => setPersonnel({ ...personnel, name: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:ring-2 focus:ring-[#00a1e4]" placeholder="Contoh: Nama Terang" />
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">{lang === 'ja' ? '氏名*' : 'Nama Lengkap*'}</label>
+                    <input type="text" value={personnel.name} onChange={e => updatePersonnelName(e.target.value)} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:ring-2 focus:ring-[#00a1e4]" placeholder={lang === 'ja' ? '正式名称を入力' : "Contoh: Nama Terang"} />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase">Tanggal Servis</label>
+                      <label className="text-[10px] font-bold text-slate-500 uppercase">{lang === 'ja' ? '作業日' : 'Tanggal Servis'}</label>
                       <input type="date" value={personnel.service_date} onChange={e => setPersonnel({ ...personnel, service_date: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" />
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase">Jam (WIB)</label>
+                      <label className="text-[10px] font-bold text-slate-500 uppercase">{lang === 'ja' ? '時刻' : 'Jam (WIB)'}</label>
                       <input type="time" value={personnel.service_time} onChange={e => setPersonnel({ ...personnel, service_time: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" />
                     </div>
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold text-slate-500 uppercase italic">Terakhir Preventive Maintenance</label>
-                    <input type="text" value={lastPreventiveDate ? new Date(lastPreventiveDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : "Belum Pernah"} readOnly className="w-full mt-1 p-3 bg-blue-50 border border-blue-100 rounded-xl text-sm font-bold text-blue-700" />
+                    <label className="text-[10px] font-bold text-slate-500 uppercase italic">{lang === 'ja' ? '最終定期点検日' : 'Terakhir Preventive Maintenance'}</label>
+                    <input type="text" value={lastPreventiveDate ? new Date(lastPreventiveDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : (lang === 'ja' ? "未実施" : "Belum Pernah")} readOnly className="w-full mt-1 p-3 bg-blue-50 border border-blue-100 rounded-xl text-sm font-bold text-blue-700" />
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold text-slate-500 uppercase">Nomor Work Order (WO)</label>
-                    <input type="text" value={personnel.wo_number} onChange={e => setPersonnel({ ...personnel, wo_number: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder="Masukkan No. WO" />
+                    <label className="text-[10px] font-bold text-slate-500 uppercase">{lang === 'ja' ? '作業指示番号 (WO)' : 'Nomor Work Order (WO)'}</label>
+                    <input type="text" value={personnel.wo_number} onChange={e => setPersonnel({ ...personnel, wo_number: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder={lang === 'ja' ? 'WO番号を入力' : "Masukkan No. WO"} />
                   </div>
                 </div>
               </div>
 
               {/* Auto-filled unit card */}
               <div className="bg-gradient-to-br from-rose-50 to-pink-50 p-5 rounded-2xl border border-rose-100">
-                <p className="text-[10px] font-black uppercase text-rose-500 tracking-widest mb-2">UNIT DATA (AUTO)</p>
+                <p className="text-[10px] font-black uppercase text-rose-500 tracking-widest mb-2">{lang === 'ja' ? 'ユニットデータ (自動)' : 'UNIT DATA (AUTO)'}</p>
                 <div className="grid grid-cols-2 gap-3 text-xs font-bold text-slate-700">
                   <div><span className="text-slate-400">Tag:</span> {unit.tag_number}</div>
                   <div><span className="text-slate-400">Brand:</span> {unit.brand}</div>
@@ -539,20 +566,20 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
             <motion.div key="s2" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} className="space-y-5">
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
                 <h2 className="text-lg font-black text-rose-800 mb-4 border-b pb-2 flex items-center gap-2">
-                  <Phone size={20} /> PIC Contact <span className="text-slate-400 text-sm font-medium">(Perwakilan Customer)</span>
+                  <Phone size={20} /> {t("PIC Contact Header", lang)}
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase">Nama Lengkap PIC</label>
+                    <label className="text-xs font-bold text-slate-500 uppercase">{lang === 'ja' ? '氏名' : 'Nama Lengkap PIC'}</label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                       <input type="text" value={pic.name} onChange={e => setPic({ ...pic, name: e.target.value })}
-                        className="w-full mt-1 pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder="Nama PIC" />
+                        className="w-full mt-1 pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder={lang === 'ja' ? '担当者名' : "Nama PIC"} />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs font-bold text-slate-500 uppercase">No. HP / WhatsApp</label>
+                      <label className="text-xs font-bold text-slate-500 uppercase">{lang === 'ja' ? '電話番号' : 'No. HP / WhatsApp'}</label>
                       <input type="tel" value={pic.phone} onChange={e => setPic({ ...pic, phone: e.target.value })}
                         className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder="08xx-xxxx-xxxx" />
                     </div>
@@ -563,11 +590,11 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
                     </div>
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase">Department / Bagian</label>
+                    <label className="text-xs font-bold text-slate-500 uppercase">{lang === 'ja' ? '部署' : 'Department / Bagian'}</label>
                     <div className="relative">
                       <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                       <input type="text" value={pic.department} onChange={e => setPic({ ...pic, department: e.target.value })}
-                        className="w-full mt-1 pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder="Contoh: Building Management" />
+                        className="w-full mt-1 pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder={lang === 'ja' ? '部門名' : "Contoh: Building Management"} />
                     </div>
                   </div>
                 </div>
@@ -580,22 +607,22 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
             <motion.div key="s3" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} className="space-y-5">
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
                 <h2 className="text-lg font-black text-rose-800 mb-4 border-b pb-2 flex items-center gap-2">
-                  <AlertTriangle size={20} /> Analysis & Corrective Action
+                  <AlertTriangle size={20} /> {t("Analysis & Corrective Header", lang)}
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs font-bold text-rose-500 uppercase tracking-widest block mb-1">Kategori Komplain*</label>
+                    <label className="text-xs font-bold text-rose-500 uppercase tracking-widest block mb-1">{lang === 'ja' ? '苦情カテゴリ*' : 'Kategori Komplain*'}</label>
                     <select 
                       value={category} 
                       onChange={(e) => setCategory(e.target.value)}
                       className="w-full p-3 bg-rose-50 border border-rose-200 rounded-xl text-sm font-bold text-rose-700"
                     >
-                       <option value="">-- Pilih Kategori --</option>
+                       <option value="">{lang === 'ja' ? '-- カテゴリを選択 --' : '-- Pilih Kategori --'}</option>
                        {COMPLAINT_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1">Status Unit Saat Ini*</label>
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1">{lang === 'ja' ? '現在の状態*' : 'Status Unit Saat Ini*'}</label>
                     <div className="grid grid-cols-2 gap-2">
                        {["Normal", "Warning", "Critical", "Problem"].map(s => (
                          <button 
@@ -609,26 +636,26 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
                     </div>
                   </div>
                   <div className="pt-2 border-t border-slate-100">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Deskripsi Keluhan / Case*</label>
-                    <textarea rows={3} value={analysis.complain} onChange={e => setAnalysis({ ...analysis, complain: e.target.value })} className="w-full mt-1 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" placeholder="Jelaskan keluhan unit atau kronologi masalah..." />
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">{lang === 'ja' ? '苦情内容*' : 'Deskripsi Keluhan / Case*'}</label>
+                    <textarea rows={3} value={analysis.complain} onChange={e => setAnalysis({ ...analysis, complain: e.target.value })} className="w-full mt-1 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" placeholder={lang === 'ja' ? '不具合の内容を記入してください...' : "Jelaskan keluhan unit atau kronologi masalah..."} />
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Akar Masalah (Root Cause)</label>
-                    <textarea rows={3} value={analysis.root_cause} onChange={e => setAnalysis({ ...analysis, root_cause: e.target.value })} className="w-full mt-1 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" placeholder="Analisis penyebab kerusakan..." />
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">{lang === 'ja' ? '根本原因' : 'Akar Masalah (Root Cause)'}</label>
+                    <textarea rows={3} value={analysis.root_cause} onChange={e => setAnalysis({ ...analysis, root_cause: e.target.value })} className="w-full mt-1 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" placeholder={lang === 'ja' ? '故障の原因を分析してください...' : "Analisis penyebab kerusakan..."} />
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Tindakan Sementara (Temporary Action)</label>
-                    <textarea rows={3} value={analysis.temp_action} onChange={e => setAnalysis({ ...analysis, temp_action: e.target.value })} className="w-full mt-1 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" placeholder="Langkah perbaikan sementara yang dilakukan..." />
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">{lang === 'ja' ? '応急処置' : 'Tindakan Sementara (Temporary Action)'}</label>
+                    <textarea rows={3} value={analysis.temp_action} onChange={e => setAnalysis({ ...analysis, temp_action: e.target.value })} className="w-full mt-1 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" placeholder={lang === 'ja' ? '実施した一時的な修正ステップ...' : "Langkah perbaikan sementara yang dilakukan..."} />
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-emerald-600 uppercase tracking-widest">Permanent Action</label>
+                    <label className="text-xs font-bold text-emerald-600 uppercase tracking-widest">{lang === 'ja' ? '恒久対策' : 'Permanent Action'}</label>
                     <textarea rows={2} value={analysis.perm_action} onChange={e => setAnalysis({ ...analysis, perm_action: e.target.value })}
                       className="w-full mt-1 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-emerald-400"
-                      placeholder="Solusi permanen untuk mencegah terulang..." />
+                      placeholder={lang === 'ja' ? '再発防止のための恒久的な解決策...' : "Solusi permanen untuk mencegah terulang..."} />
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Saran / Rekomendasi (Advise)</label>
-                    <textarea rows={3} value={analysis.recommendation} onChange={e => setAnalysis({ ...analysis, recommendation: e.target.value })} className="w-full mt-1 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" placeholder="Saran perbaikan permanen untuk pelanggan..." />
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">{lang === 'ja' ? '技術アドバイス' : 'Saran / Rekomendasi (Advise)'}</label>
+                    <textarea rows={3} value={analysis.recommendation} onChange={e => setAnalysis({ ...analysis, recommendation: e.target.value })} className="w-full mt-1 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" placeholder={lang === 'ja' ? '顧客への推奨事項...' : "Saran perbaikan permanen untuk pelanggan..."} />
                   </div>
                 </div>
               </div>
@@ -640,13 +667,13 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
             <motion.div key="s4" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} className="space-y-5">
 
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">Catatan Tambahan</h2>
-                <textarea rows={4} placeholder="Catatan servis lainnya..." value={engineerNote} onChange={e => setEngineerNote(e.target.value)} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" />
+                <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">{lang === 'ja' ? '追加メモ' : 'Catatan Tambahan'}</h2>
+                <textarea rows={4} placeholder={lang === 'ja' ? 'その他のサービスメモ...' : "Catatan servis lainnya..."} value={engineerNote} onChange={e => setEngineerNote(e.target.value)} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" />
               </div>
 
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
                 <h3 className="text-xs font-black uppercase text-slate-500 mb-2 flex justify-between">
-                  <span>Dokumentasi Foto</span>
+                  <span>{lang === 'ja' ? '写真ドキュメント' : 'Dokumentasi Foto'}</span>
                   <span className="text-rose-500">{mediaItems.length}/10</span>
                 </h3>
                 <div className="grid grid-cols-3 gap-2 mb-4">
@@ -671,23 +698,22 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
                   {mediaItems.length < 10 && (
                     <label className="aspect-square rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-400 cursor-pointer transition-colors">
                       <Camera size={24} className="mb-1" />
-                      <span className="text-[10px] font-bold uppercase">Tambah</span>
+                      <span className="text-[10px] font-bold uppercase">{lang === 'ja' ? '追加' : 'Tambah'}</span>
                       <input type="file" multiple accept="image/*,video/*" onChange={handleMediaUpload} className="hidden" />
                     </label>
                   )}
                 </div>
                 <p className="text-[10px] text-amber-600 font-bold flex items-start gap-1">
                   <AlertCircle size={14} className="shrink-0" />
-                  Media otomatis di-optimasi. Video akan terkompresi secara otomatis di server.
+                  {lang === 'ja' ? 'メディアは自動的に最適化されます。' : 'Media otomatis di-optimasi. Video akan terkompresi secara otomatis di server.'}
                 </p>
               </div>
 
               {/* HIDDEN PDF */}
-              {/* Preview with Real Pagination logic is complex, for now we show a "Ready to Print" state or a simplified version */}
               <div className="text-center p-10 bg-white rounded-xl shadow-2xl">
                 <Printer className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-slate-800">Laporan Siap Dibuat</h3>
-                <p className="text-slate-500 text-sm">Laporan akan secara otomatis dibagi menjadi halaman-halaman profesional saat tombol "Selesai & Simpan" diklik.</p>
+                <h3 className="text-xl font-bold text-slate-800">{lang === 'ja' ? 'レポート作成の準備ができました' : 'Laporan Siap Dibuat'}</h3>
+                <p className="text-slate-500 text-sm">{lang === 'ja' ? '「送信」をクリックすると、プロフェッショナルなページに分割されたレポートが自動的に作成されます。' : 'Laporan akan secara otomatis dibagi menjadi halaman-halaman profesional saat tombol "Selesai & Simpan" diklik.'}</p>
               </div>
             </motion.div>
           )}
@@ -700,18 +726,18 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
         <div className="max-w-lg mx-auto flex justify-between gap-4">
           {step > 1 ? (
             <button onClick={() => setStep(step - 1)} className="flex-1 py-4 bg-slate-100 text-slate-600 font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-slate-200 transition-colors uppercase text-xs tracking-widest">
-              <ChevronLeft size={16} /> Mundur
+              <ChevronLeft size={16} /> {t("Back", lang)}
             </button>
           ) : <div className="flex-1"></div>}
 
           {step < 4 ? (
             <button onClick={() => setStep(step + 1)} className="flex-1 py-4 bg-rose-600 text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-rose-700 transition-colors shadow-lg shadow-rose-200 uppercase text-xs tracking-widest">
-              Lanjut <ChevronRight size={16} />
+              {t("Next", lang)} <ChevronRight size={16} />
             </button>
           ) : (
             <button onClick={handleSubmit} disabled={loading} className="flex-[2] py-4 bg-rose-600 text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-rose-700 transition-colors shadow-lg shadow-rose-200 uppercase text-xs tracking-widest disabled:opacity-50">
               {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <Printer size={18} />}
-              {loading ? "Generating..." : "Generate PDF & Submit"}
+              {loading ? (lang === 'ja' ? '生成中...' : "Generating...") : t("Generate PDF & Submit", lang)}
             </button>
           )}
         </div>

@@ -1,7 +1,7 @@
 import { ReportSignatureFooter } from './ReportSignatureFooter';
 import { t, Language } from '@/lib/i18n';
 
-export const getAuditSections = (data: any, unit: any) => {
+export const getAuditSections = (data: any, unit: any, lang: Language = 'id') => {
   const techData = data.t || data.technical_json || {};
   const { activity_photos } = data || {};
 
@@ -23,7 +23,6 @@ export const getAuditSections = (data: any, unit: any) => {
   };
 
   const photoChunks = chunkArray(activity_photos, 6);
-  const lang = data.lang as Language || 'id';
 
   return [
     // TITLE
@@ -79,13 +78,13 @@ export const getAuditSections = (data: any, unit: any) => {
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "8pt", fontWeight: "bold", textAlign: "center", marginBottom: "2mm" }}>
         <tbody style={{ backgroundColor: "#f8fafc" }}>
           <tr>
-            <td style={{ ...tdStyle, textAlign: "left", width: "25%", backgroundColor: "#f1f5f9" }}>{t("Leaving Coil Temp", lang)}</td>
+            <td style={{ ...tdStyle, textAlign: "left", width: "25%", backgroundColor: "#f1f5f9" }}>{t("Leaving Air Temperature", lang)}</td>
             <td style={tdStyle}>{data.leaving_db || '0'} (°C) DB</td>
             <td style={tdStyle}>{data.leaving_wb || '0'} (°C) WB</td>
             <td style={tdStyle}>{data.leaving_rh || '0'} % RH</td>
           </tr>
           <tr>
-            <td style={{ ...tdStyle, textAlign: "left", backgroundColor: "#f1f5f9" }}>{t("Entering Coil Temp", lang)}</td>
+            <td style={{ ...tdStyle, textAlign: "left", backgroundColor: "#f1f5f9" }}>{t("Entering Air Temperature", lang)}</td>
             <td style={tdStyle}>{data.entering_db || '0'} (°C) DB</td>
             <td style={tdStyle}>{data.entering_wb || '0'} (°C) WB</td>
             <td style={tdStyle}>{data.entering_rh || '0'} % RH</td>
@@ -96,12 +95,12 @@ export const getAuditSections = (data: any, unit: any) => {
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "7pt", fontWeight: "bold", textAlign: "center" }}>
         <thead>
           <tr style={{ backgroundColor: "#003366", color: "white" }}>
-             <th colSpan={3} style={thStyleWhite}>{t("Unit ID", lang)} Area (m2)</th>
-             <th colSpan={3} style={thStyleWhite}>{t("Air Velocity", lang)} (m/s) - 15 Points Matrix</th>
+             <th colSpan={3} style={thStyleWhite}>{t("Unit ID Area (m2)", lang)}</th>
+             <th colSpan={3} style={thStyleWhite}>{t("Air Velocity", lang)} (m/s) - 15-Point Traverse Matrix</th>
           </tr>
           <tr style={{ backgroundColor: "#f1f5f9", color: "#003366" }}>
-             <th style={thStyle}>{t("Supply", lang)}</th><th style={thStyle}>{t("Return", lang)}</th><th style={thStyle}>{t("Fresh Air", lang)}</th>
-             <th style={thStyle}>{t("Supply", lang)}</th><th style={thStyle}>{t("Return", lang)}</th><th style={thStyle}>{t("Fresh Air", lang)}</th>
+             <th style={thStyle}>{t("Supply", lang)}</th><th style={thStyle}>{t("Return", lang)}</th><th style={thStyle}>{t("Outdoor Air (OA)", lang)}</th>
+             <th style={thStyle}>{t("Supply", lang)}</th><th style={thStyle}>{t("Return", lang)}</th><th style={thStyle}>{t("Outdoor Air (OA)", lang)}</th>
           </tr>
         </thead>
         <tbody>
@@ -138,7 +137,7 @@ export const getAuditSections = (data: any, unit: any) => {
             </td>
           </tr>
           <tr style={{ backgroundColor: "#f8fafc", fontWeight: "900" }}>
-            <td colSpan={3} style={{ ...tdStyle, textAlign: "right", color: "#003366" }}>{lang === 'id' ? 'TOTAL KALKULASI ALIRAN UDARA' : lang === 'ja' ? '計算された総風量' : 'TOTAL CALCULATED AIR FLOW'} (Cfm)</td>
+            <td colSpan={3} style={{ ...tdStyle, textAlign: "right", color: "#003366" }}>{lang === 'id' ? 'TOTAL KALKULASI ALIRAN UDARA' : lang === 'ja' ? '計算された総風量' : 'TOTAL MEASURED AIRFLOW'} (Cfm)</td>
             <td style={{ ...tdStyle, color: "#d946ef" }}>{techData.totalCfmSupply && techData.totalCfmSupply !== '-' ? techData.totalCfmSupply : '0'}</td>
             <td style={{ ...tdStyle, color: "#d946ef" }}>{techData.totalCfmReturn && techData.totalCfmReturn !== '-' ? techData.totalCfmReturn : '0'}</td>
             <td style={{ ...tdStyle, color: "#d946ef" }}>{techData.totalCfmFresh && techData.totalCfmFresh !== '-' ? techData.totalCfmFresh : '0'}</td>
@@ -154,15 +153,15 @@ export const getAuditSections = (data: any, unit: any) => {
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "7pt", fontWeight: "bold" }}>
           <tbody>
             <tr>
-              <td style={cellLabelCompact}>CHWS Temp</td>
+              <td style={cellLabelCompact}>{t("Entering Chilled Water (CHWS)", lang)} Temp</td>
               <td style={cellValCompact}>{data.chws_temp || '0'} °C</td>
-              <td style={cellLabelCompact}>CHWS Press</td>
+              <td style={cellLabelCompact}>{t("Entering Chilled Water (CHWS)", lang)} Press</td>
               <td style={cellValCompact}>{data.chws_press || '0'} Bar</td>
             </tr>
             <tr>
-              <td style={cellLabelCompact}>CHWR Temp</td>
+              <td style={cellLabelCompact}>{t("Leaving Chilled Water (CHWR)", lang)} Temp</td>
               <td style={cellValCompact}>{data.chwr_temp || '0'} °C</td>
-              <td style={cellLabelCompact}>CHWR Press</td>
+              <td style={cellLabelCompact}>{t("Leaving Chilled Water (CHWR)", lang)} Press</td>
               <td style={cellValCompact}>{data.chwr_press || '0'} Bar</td>
             </tr>
             <tr>
@@ -234,8 +233,8 @@ export const getAuditSections = (data: any, unit: any) => {
         <thead>
           <tr style={{ backgroundColor: "#f8fafc" }}>
             <th style={{ ...tdStyle, width: "40%", textAlign: "left" }}>Accessories Description</th>
-            <th style={{ ...tdStyle, textAlign: "center" }}>Inlet Condition</th>
-            <th style={{ ...tdStyle, textAlign: "center" }}>Outlet Condition</th>
+            <th style={{ ...tdStyle, textAlign: "center" }}>{t("Inlet Condition", lang)}</th>
+            <th style={{ ...tdStyle, textAlign: "center" }}>{t("Outlet Condition", lang)}</th>
           </tr>
         </thead>
         <tbody>
