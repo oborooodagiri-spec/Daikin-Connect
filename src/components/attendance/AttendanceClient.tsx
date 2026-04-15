@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Camera, MapPin, MapPinOff, Clock, CheckCircle2, ChevronRight, Loader2, Play, Square } from "lucide-react";
+import { Camera, MapPin, MapPinOff, Clock, CheckCircle2, ChevronRight, Loader2, Play, Square, X } from "lucide-react";
 import { getActiveAttendance, submitCheckIn, submitCheckOut, verifyFaceMatch } from "@/app/actions/attendance";
 import { format } from "date-fns";
 import { ShieldCheck, ShieldAlert, Fingerprint } from "lucide-react";
@@ -15,7 +15,53 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
   const [verifying, setVerifying] = useState(false);
   const [hasFace, setHasFace] = useState(true);
   const [verifyResult, setVerifyResult] = useState<any>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Custom WebRTC Scanner States
+  const [showScanner, setShowScanner] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  // Clean up WebRTC on unmount
+  useEffect(() => {
+    return () => stopCamera();
+  }, []);
+
+  const stopCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach(track => track.stop());
+      videoRef.current.srcObject = null;
+    }
+  };
+
+  const startScanner = async () => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert("Browser does not support Live Scanner. Please use a modern browser.");
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user", width: { ideal: 1080 }, height: { ideal: 1920 } },
+        audio: false
+      });
+      setShowScanner(true);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        // Some older browsers might require this
+        videoRef.current.play().catch(console.error);
+      }
+    } catch (err) {
+      console.error("Camera access error:", err);
+      alert("Gagal mengakses kamera. Harap pastikan izin kamera diberikan di pengaturan browser/perangkat Anda.");
+    }
+  };
+
+  // Keep an effect to bind stream when toggling scanner if ref was unmounted
+  useEffect(() => {
+    if (showScanner && videoRef.current && !videoRef.current.srcObject) {
+       startScanner();
+    }
+  }, [showScanner]);
 
   useEffect(() => {
     fetchStatus();
@@ -117,9 +163,32 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
     return null;
   };
 
-  const handleCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const captureFrame = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        // Draw video frame to canvas
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // Convert to Blob and process
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const file = new File([blob], "live_capture.jpg", { type: "image/jpeg" });
+            setShowScanner(false);
+            stopCamera();
+            processFile(file);
+          }
+        }, "image/jpeg", 0.85); // 85% quality to save bandwidth
+      }
+    }
+  };
+
+  const processFile = async (file: File) => {
     if (!location) {
       alert("Location is required. Please wait for the system to detect your network.");
       return;
@@ -185,8 +254,6 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
     } finally {
       setSubmitting(false);
       setVerifying(false);
-      // Reset input
-      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -196,7 +263,7 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
       startLocationTracking();
       return;
     }
-    fileInputRef.current?.click();
+    startScanner();
   };
 
   if (loading) {
@@ -340,15 +407,68 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
         </div>
       </div>
 
-      {/* Hidden File Input for Native Camera API */}
-      <input 
-        type="file" 
-        accept="image/*" 
-        capture="user" 
-        ref={fileInputRef} 
-        onChange={handleCapture}
-        className="hidden" 
-      />
+      {/* Native WebRTC Live Scanner Overlay Component */}
+      {showScanner && (
+        <div className="fixed inset-0 z-[9999] bg-black flex flex-col justify-between animate-in slide-in-from-bottom duration-500 overflow-hidden">
+          
+          {/* Hardware Video Stream Layer */}
+          <video 
+            ref={videoRef} 
+            autoPlay 
+            playsInline 
+            muted 
+            className="absolute inset-0 w-full h-full object-cover z-0" 
+          />
+          
+          {/* Smart Symmetrical Guidance Mask Area */}
+          <div className="absolute inset-0 z-10 pointer-events-none flex flex-col items-center justify-center overflow-hidden">
+             {/* The Cutout - using box-shadow to dim everything outside the oval */}
+             <div className="w-72 h-[420px] rounded-[5rem] shadow-[0_0_0_9999px_rgba(0,0,0,0.7)] relative flex flex-col items-center pt-10 transition-all duration-300">
+                {/* HUD Elements */}
+                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/40 rounded-full" />
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/40 rounded-full" />
+                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-1 h-12 bg-white/40 rounded-full" />
+                <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-1 h-12 bg-white/40 rounded-full" />
+
+                {/* Symmetrical Guide Lines (Head & Shoulder Silhouette) */}
+                <div className="w-36 h-44 rounded-full border-2 border-white/30 border-dashed absolute top-8" />
+                <div className="w-56 h-24 rounded-t-[3rem] border-t-2 border-x-2 border-white/30 border-dashed absolute bottom-0" />
+                
+                {/* Visual Feedback Message */}
+                <div className="absolute -bottom-16 w-max max-w-[90%] bg-black/60 px-5 py-3 rounded-full backdrop-blur-md shadow-xl border border-white/10 text-center animate-pulse">
+                   <p className="text-white text-[11px] font-black tracking-widest uppercase">Sejajarkan Wajah dan Pundak</p>
+                </div>
+             </div>
+          </div>
+          
+          {/* Top Controls */}
+          <div className="absolute top-0 left-0 w-full p-4 sm:p-6 z-20 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent">
+             <button 
+               onClick={() => { setShowScanner(false); stopCamera(); }} 
+               className="text-white p-3 bg-white/10 hover:bg-rose-500/80 rounded-full backdrop-blur-md transition-all active:scale-90 shadow-lg"
+              >
+                <X size={24} strokeWidth={2.5} />
+             </button>
+             <div className="text-white text-xs font-black tracking-[0.3em] uppercase opacity-90 drop-shadow-md">
+                Live Scanner
+             </div>
+             <div className="w-12"></div> {/* Spacer to center the text */}
+          </div>
+
+          {/* Bottom Controls / Capture Shutter */}
+          <div className="absolute bottom-0 left-0 w-full p-8 z-20 flex justify-center pb-12 bg-gradient-to-t from-black/80 to-transparent">
+             <button 
+               onClick={captureFrame} 
+               className="w-20 h-20 bg-white/90 hover:bg-white rounded-full border-[6px] border-slate-300 flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.3)] active:scale-90 transition-all group"
+             >
+                <div className="w-14 h-14 rounded-full border-2 border-black/10 group-active:scale-90 transition-all bg-white" />
+             </button>
+          </div>
+          
+          {/* Hidden Canvas for Frame Processing */}
+          <canvas ref={canvasRef} className="hidden" />
+        </div>
+      )}
     </div>
   );
 }
