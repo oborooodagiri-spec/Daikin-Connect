@@ -166,7 +166,6 @@ export default function ClientSettingsPage() {
              )}
            </AnimatePresence>
         </div>
-/div>
       </div>
     </div>
   );
