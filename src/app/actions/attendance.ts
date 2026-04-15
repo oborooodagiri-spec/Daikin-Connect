@@ -126,8 +126,20 @@ export async function verifyFaceMatch(photoUrl: string) {
     });
 
     if (!user) return { error: "User not found" };
+
+    // Zero-Friction First-Time Enrollment
+    if (!user.face_reference_url) {
+      await prisma.users.update({
+        where: { id: parseInt(session.userId) },
+        data: { 
+          face_reference_url: photoUrl,
+          face_verification_enabled: true 
+        }
+      });
+      return { success: true, match: true, confidence: 100, isEnrollment: true };
+    }
+
     if (!user.face_verification_enabled) return { success: true, match: true, confidence: 100 };
-    if (!user.face_reference_url) return { error: "IDENTITY_NOT_REGISTERED" };
 
     // Fetch images and convert to base64 for Gemini
     const [refImageBase64, currentImageBase64] = await Promise.all([

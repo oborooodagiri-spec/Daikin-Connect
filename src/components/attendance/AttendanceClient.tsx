@@ -114,20 +114,20 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
         const faceRes = await verifyFaceMatch(photoUrl);
         setVerifying(false);
 
-        if (faceRes.error === "IDENTITY_NOT_REGISTERED") {
-           alert("Identity not registered. Please go to Settings > Security to register your face first.");
-           return;
-        }
+        if (faceRes.isEnrollment) {
+           alert("✨ Security Profile Established! Your face has been successfully registered as your permanent identity. Check-in Proceeding...");
+           setVerifyResult({ success: true, confidence: 100 });
+        } else {
+           if (faceRes.error) throw new Error(faceRes.error);
 
-        if (faceRes.error) throw new Error(faceRes.error);
-
-        if (!faceRes.match) {
-           setVerifyResult({ success: false, reason: faceRes.reason });
-           alert(`Face Mismatch: ${faceRes.reason}`);
-           return;
+           if (!faceRes.match) {
+              setVerifyResult({ success: false, reason: faceRes.reason });
+              alert(`Face Mismatch: ${faceRes.reason}`);
+              return;
+           }
+           
+           setVerifyResult({ success: true, confidence: faceRes.confidence });
         }
-        
-        setVerifyResult({ success: true, confidence: faceRes.confidence });
       }
 
       // 3. Submit API
