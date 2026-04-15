@@ -3,7 +3,8 @@ import { getSession } from "@/app/actions/auth";
 import { getUserAssignedProjects } from "@/app/actions/complaints";
 import { redirect } from "next/navigation";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ params }: { params: Promise<{ projectId: string }> }) {
+  const { projectId } = await params;
   const session = await getSession();
 
   // If not internal (Customer or Vendor), redirect to their unit list
@@ -11,7 +12,9 @@ export default async function DashboardPage() {
     const assignedProjects = await getUserAssignedProjects();
     
     if (assignedProjects.length > 0) {
-      redirect(`/client/dashboard`);
+      // Extract projectId from params (we can use the component level projectId if we want, 
+      // but let's assume we want them to stay in this workspace)
+      redirect(`/w/${projectId}/client/dashboard`);
     } else {
       // If no projects assigned, show a restricted access message or empty state
       return (
