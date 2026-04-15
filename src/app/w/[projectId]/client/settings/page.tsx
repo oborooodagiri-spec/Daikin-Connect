@@ -67,6 +67,7 @@ export default function ClientSettingsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Sidebar Nav (Internal to page) */}
         <div className="space-y-2">
+           {[
              { label: "Preferences", icon: Settings },
              { label: "Security", icon: Shield },
              { label: "Profile Info", icon: User, disabled: true },
