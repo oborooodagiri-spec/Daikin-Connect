@@ -377,6 +377,9 @@ export default function LoginPage() {
               setShow2fModal(false);
             }
           } catch (err: any) {
+            if (err?.message?.includes('NEXT_REDIRECT') || err?.digest?.includes('NEXT_REDIRECT')) {
+              throw err;
+            }
             setError("Verification failed. Please try again.");
           } finally {
             setIsLoading(false);
