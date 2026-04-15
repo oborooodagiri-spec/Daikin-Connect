@@ -1,7 +1,5 @@
-import { PrismaClient } from "../generated/client_v2";
+import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
-
-const prisma = new PrismaClient();
 
 /**
  * Enterprise Audit Logging Utility

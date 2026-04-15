@@ -188,7 +188,7 @@ export async function login(formData: FormData) {
 
   } catch (error: any) {
     console.error("Login error:", error?.message || error);
-    return { error: "An unexpected error occurred. Please try again." };
+    return { error: `System Error: ${error?.message || "Unknown error"}` };
   }
 
   // Set cookie
