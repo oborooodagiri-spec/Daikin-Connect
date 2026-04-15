@@ -10,7 +10,7 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
   const [activeRecord, setActiveRecord] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [location, setLocation] = useState<{ lat: number; long: number } | null>(null);
+  const [location, setLocation] = useState<{ lat: number; long: number; isFallback?: boolean; city?: string } | null>(null);
   const [locError, setLocError] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [verifyResult, setVerifyResult] = useState<any>(null);
@@ -34,7 +34,7 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
 
   const startLocationTracking = () => {
     if (!navigator.geolocation) {
-      setLocError("GPS not supported on this device.");
+      fallbackToNetwork();
       return;
     }
     
@@ -43,19 +43,36 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
     // Get high accuracy position
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        setLocation({ lat: pos.coords.latitude, long: pos.coords.longitude });
+        setLocation({ lat: pos.coords.latitude, long: pos.coords.longitude, isFallback: false });
         setLocError("");
       },
       (err) => {
-        let msg = "Please enable GPS/Location Services.";
-        if (err.code === 1) msg = "Location Permission Denied. Please enable it in browser settings.";
-        if (err.code === 2) msg = "GPS Signal Unavailable. Moving outside may help.";
-        if (err.code === 3) msg = "Location detection timed out. Try again.";
-        setLocError(msg);
-        console.warn(err);
+        console.warn("GPS Failed:", err.message);
+        fallbackToNetwork();
       },
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
+  };
+
+  const fallbackToNetwork = async () => {
+    try {
+      setLocError("GPS Denied. Engaging Network Triangulation...");
+      const res = await fetch("https://get.geojs.io/v1/ip/geo.json");
+      const data = await res.json();
+      if (data.latitude && data.longitude) {
+        setLocation({ 
+          lat: parseFloat(data.latitude), 
+          long: parseFloat(data.longitude), 
+          isFallback: true,
+          city: data.city || "Unknown City"
+        });
+        setLocError("");
+      } else {
+        setLocError("All location detection systems failed.");
+      }
+    } catch (e) {
+      setLocError("All location detection systems failed.");
+    }
   };
 
   const compressAndUploadFile = async (file: File): Promise<string | null> => {
@@ -80,7 +97,7 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!location) {
-      alert("GPS location is required before taking a photo.");
+      alert("Location is required. Please wait for the system to detect your network.");
       return;
     }
 
@@ -149,7 +166,7 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
 
   const triggerCamera = () => {
     if (!location) {
-      alert("Location not found. Please wait for GPS signal or tap the red status banner to retry.");
+      alert("Location not found. Please wait for GPS signal or Network Triangulation.");
       startLocationTracking();
       return;
     }
@@ -201,36 +218,27 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
           <div className="space-y-4 mb-10">
             <button 
               onClick={startLocationTracking}
-              className={`w-full p-4 rounded-2xl flex items-center gap-4 border transition-all active:scale-[0.98] group/gps ${location ? 'bg-emerald-50 border-emerald-100' : 'bg-rose-50 border-rose-100'}`}
+              className={`w-full p-4 rounded-2xl flex items-center gap-4 border transition-all active:scale-[0.98] group/gps 
+                ${!location ? 'bg-rose-50 border-rose-100' : 
+                  location.isFallback ? 'bg-amber-50 border-amber-100' : 'bg-emerald-50 border-emerald-100'}`}
             >
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors shrink-0 ${location ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600 animate-pulse'}`}>
-                {location ? <MapPin size={22} /> : <MapPinOff size={22} />}
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors shrink-0 
+                ${!location ? 'bg-rose-100 text-rose-600 animate-pulse' : 
+                  location.isFallback ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'}`}>
+                {!location ? <Loader2 className="animate-spin" size={22} /> : location.isFallback ? <ShieldAlert size={22} /> : <MapPin size={22} />}
               </div>
               <div className="flex-1 text-left min-w-0">
-                <p className={`text-[10px] font-black uppercase tracking-widest ${location ? 'text-emerald-600' : 'text-rose-600'}`}>
-                  GPS Region: {location ? 'Locked & Verified' : 'Detection Required'}
+                <p className={`text-[10px] font-black uppercase tracking-widest leading-tight 
+                  ${!location ? 'text-rose-600' : location.isFallback ? 'text-amber-700' : 'text-emerald-600'}`}>
+                  {!location ? locError || 'Detection Required' : 
+                   location.isFallback ? 'Network Triangulation (GPS Blocked)' : 'GPS Region Locked & Verified'}
                 </p>
                 <p className="text-[12px] font-bold text-slate-500 mt-1 truncate">
-                  {location ? `${location.lat.toFixed(5)}, ${location.long.toFixed(5)}` : locError || 'Waiting for permission...'}
+                  {location ? `${location.lat.toFixed(5)}, ${location.long.toFixed(5)} ${location.city ? `(${location.city})` : ''}` : 'Waiting for connection...'}
                 </p>
               </div>
               {!location && <ChevronRight className="w-5 h-5 text-rose-400 group-hover/gps:translate-x-1 transition-transform" />}
             </button>
-
-            {/* Help text for Permission Denied */}
-            {!location && locError.includes("Denied") && (
-              <div className="p-4 bg-amber-50 border border-amber-100 rounded-2xl animate-in zoom-in-95 duration-300">
-                <div className="flex gap-4">
-                  <ShieldAlert className="w-6 h-6 text-amber-500 shrink-0 mt-0.5" />
-                  <div className="space-y-2">
-                    <p className="text-[11px] font-black text-amber-800 uppercase tracking-tight leading-tight">Action Required:<br/>Reset Browser Permissions</p>
-                    <p className="text-[11px] text-amber-700 font-medium leading-relaxed">
-                      Location access is blocked. Please click the <span className="font-bold underline">Lock Icon (🔒)</span> in your browser's address bar, select <span className="font-bold underline">"Permissions for this site"</span>, find <span className="font-bold underline">Location</span> and set it to <span className="font-bold underline">Allow</span>. Then refresh this page.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Status Display Area */}
