@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
 import { 
   LayoutDashboard, 
   LogOut, 
@@ -27,6 +27,8 @@ export default function ClientSidebarClient({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const params = useParams();
+  const projectId = params?.projectId as string || "empty";
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
@@ -38,34 +40,46 @@ export default function ClientSidebarClient({
 
   const menuItems = [
     { 
-      href: "/client/dashboard", 
+      href: `/w/${projectId}/client/dashboard`, 
       label: t("Overview", lang), 
-      icon: LayoutDashboard 
+      icon: LayoutDashboard,
+      show: true 
     },
     { 
-      href: "/client/inventory", 
+      href: `/w/${projectId}/client/inventory`, 
       label: t("My Assets", lang), 
-      icon: Package 
+      icon: Package,
+      show: true 
     },
     { 
-      href: "/client/schedules", 
+      href: `/w/${projectId}/client/schedules`, 
       label: t("Work Plan", lang), 
-      icon: Calendar 
+      icon: Calendar,
+      show: true 
     },
     { 
-      href: "/client/reports", 
+      href: `/w/${projectId}/client/reports`, 
       label: t("Reports", lang), 
-      icon: FileText 
+      icon: FileText,
+      show: true 
     },
     { 
-      href: "/dashboard/profile", 
+      href: `/w/${projectId}/dashboard/profile`, 
       label: t("Profile & Security", lang), 
-      icon: ShieldCheck 
+      icon: ShieldCheck,
+      show: true 
+    },
+    {
+      href: `/w/${projectId}/dashboard/attendance`,
+      label: t("Live Attendance", lang),
+      icon: Calendar,
+      show: session?.attendance_enabled
     },
     { 
-      href: "/client/settings", 
+      href: `/w/${projectId}/client/settings`, 
       label: t("Settings", lang), 
-      icon: Settings 
+      icon: Settings,
+      show: true 
     },
   ];
 
@@ -113,7 +127,7 @@ export default function ClientSidebarClient({
         </div>
 
         <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto custom-scrollbar">
-          {menuItems.map((item, idx) => {
+          {menuItems.filter(item => item.show !== false).map((item, idx) => {
             const isActive = pathname === item.href;
             return (
               <Link 

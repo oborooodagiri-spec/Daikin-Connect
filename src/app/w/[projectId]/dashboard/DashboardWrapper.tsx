@@ -1,29 +1,28 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useParams, usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useTransition, useRef } from "react";
-import { useRouter } from "next/navigation";
 import { 
   getDashboardData, 
   getTrendChartData, 
   getRecentActivities, 
   getUnitHealthStats,
   getDetailedUnitStatus
-} from "../actions/dashboard";
-import { getUnitHistory, updateUnitStatus, getUnitByTag } from "../actions/units";
-import { getProjectComplaints } from "../actions/complaints";
-import { getComprehensiveReportData } from "../actions/report";
+} from "@/app/actions/dashboard";
+import { getUnitHistory, updateUnitStatus, getUnitByTag } from "@/app/actions/units";
+import { getProjectComplaints } from "@/app/actions/complaints";
+import { getComprehensiveReportData } from "@/app/actions/report";
 import { generateComprehensivePDF } from "@/lib/pdf-report-generator";
 import { APP_VERSION } from "@/lib/version";
-import SummaryCards from "../../components/dashboard/SummaryCards";
-import SummaryDetailModal from "../../components/dashboard/SummaryDetailModal";
-import TrendChart from "../../components/dashboard/TrendChart";
-import ProjectSpotlight from "../../components/dashboard/ProjectSpotlight";
-import UnitStatusChart from "../../components/dashboard/UnitStatusChart";
-import ActivityFeed from "../../components/dashboard/ActivityFeed";
-import UnitDetailModal from "../../components/UnitDetailModal";
-import ExportOptionsModal from "../../components/dashboard/ExportOptionsModal";
-import ScheduleCalendarWidget from "../../components/dashboard/ScheduleCalendarWidget";
+import SummaryCards from "@/components/dashboard/SummaryCards";
+import SummaryDetailModal from "@/components/dashboard/SummaryDetailModal";
+import TrendChart from "@/components/dashboard/TrendChart";
+import ProjectSpotlight from "@/components/dashboard/ProjectSpotlight";
+import UnitStatusChart from "@/components/dashboard/UnitStatusChart";
+import ActivityFeed from "@/components/dashboard/ActivityFeed";
+import UnitDetailModal from "@/components/UnitDetailModal";
+import ExportOptionsModal from "@/components/dashboard/ExportOptionsModal";
+import ScheduleCalendarWidget from "@/components/dashboard/ScheduleCalendarWidget";
 import { Clock, BarChart3, Activity, Zap, AlertTriangle, Hammer, ArrowRight, LayoutGrid, Search } from "lucide-react";
 
 export default function DashboardWrapper() {
@@ -47,6 +46,11 @@ export default function DashboardWrapper() {
     enabled_forms: "audit,preventive,corrective,dailylog"
   });
 
+  const params = useParams();
+  const pathname = usePathname();
+  const urlProjectId = params?.projectId as string;
+  const isClientPortal = pathname.includes("/client");
+
   const [chartData, setChartData] = useState<any[]>([]);
   const [recentActivities, setRecentActivities] = useState<any[]>([]);
   const [healthStats, setHealthStats] = useState<any[]>([]);
@@ -65,24 +69,23 @@ export default function DashboardWrapper() {
   const [isMetricModalOpen, setIsMetricModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
-  const [isOnline, setIsOnline] = useState(typeof window !== "undefined" ? navigator.onLine : true);
+  const [isOnline, setIsOnline] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    // PERSISTENCE: Check if there's a saved project
-    const saved = localStorage.getItem("daikin_last_project");
-    if (saved) {
-      try {
-        const { cid, pid, name } = JSON.parse(saved);
-        setFilters({ customerId: cid, projectId: pid });
-        setProjectName(name);
-        setIsSpotlightOpen(false);
-      } catch (e) {
-        setIsSpotlightOpen(true);
-      }
-    } else {
+    setIsMounted(true);
+    if (!urlProjectId || urlProjectId === "empty") {
       setIsSpotlightOpen(true);
+    } else {
+      setFilters({ projectId: urlProjectId });
+      setIsSpotlightOpen(false);
+      // Ensure local storage is still set for older non-migrated endpoints safely
+      const saved = localStorage.getItem("daikin_last_project");
+      if (!saved || JSON.parse(saved).pid !== urlProjectId) {
+         localStorage.setItem("daikin_last_project", JSON.stringify({ pid: urlProjectId, name: "Workspace Active" }));
+      }
     }
-  }, []);
+  }, [urlProjectId]);
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -98,12 +101,14 @@ export default function DashboardWrapper() {
   }, []);
 
   const handleProjectSelect = (cid: string, pid: string, name: string) => {
-    setFilters({ customerId: cid, projectId: pid });
-    setProjectName(name);
     setIsSpotlightOpen(false);
-    
-    // PERSISTENCE: Save to localStorage
     localStorage.setItem("daikin_last_project", JSON.stringify({ cid, pid, name }));
+    // Hard navigate to completely purge cache and switch workspace completely
+    if (isClientPortal) {
+      router.push(`/w/${pid}/client/dashboard`);
+    } else {
+      router.push(`/w/${pid}/dashboard`);
+    }
   };
 
   const fetchData = async (f: { customerId?: string; projectId?: string }) => {
@@ -175,7 +180,11 @@ export default function DashboardWrapper() {
 
   const handleOpenReports = (type: string) => {
     setIsMetricModalOpen(false);
-    router.push(`/dashboard/reports?type=${type}`);
+    if (isClientPortal) {
+      router.push(`/w/${urlProjectId}/client/reports?type=${type}`);
+    } else {
+      router.push(`/w/${urlProjectId}/dashboard/reports?type=${type}`);
+    }
   };
 
   const handleActivityClick = async (unitTag: string) => {
@@ -231,6 +240,8 @@ export default function DashboardWrapper() {
   };
 
   useEffect(() => { fetchData(filters); }, [filters]);
+
+  if (!isMounted) return null;
 
   return (
     <div className="w-full flex flex-col space-y-8 pb-32 relative">

@@ -7,6 +7,7 @@ import { getAuditSections } from "@/components/AuditPDFTemplate";
 import { getPreventiveSections } from "@/components/PreventivePDFTemplate";
 import { getCorrectiveSections } from "@/components/CorrectivePDFTemplate";
 import { getBeritaAcaraSections } from "@/components/BeritaAcaraPDFTemplate";
+import { getDailyLogSections } from "@/components/DailyLogPDFTemplate";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas-pro";
 import { format } from "date-fns";
@@ -522,6 +523,9 @@ export default function ReportHubPage() {
     sections = getBeritaAcaraSections(data.activity, data.unit, data.activity.inspector_name, {
       ...commonApproval,
     });
+  } else if (type.toLowerCase() === 'dailylog') {
+    reportTitle = t("DAILY OPERATIONAL LOGSHEET", activeLang);
+    sections = getDailyLogSections(data.activity, data.unit, data.activity.inspector_name, data.customer?.name, activeLang);
   }
 
   // Separate technical content from photos for smart partitioning

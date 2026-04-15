@@ -84,7 +84,7 @@ export default function ProblemAlertBanner() {
                 {problems.map((unit, i) => (
                   <button 
                     key={i}
-                    onClick={() => router.push(`/dashboard/customers/${unit.projects.customer_id}/projects/${unit.projects.id}/units`)}
+                    onClick={() => router.push(`/w/${unit.projects.id}/dashboard/customers/${unit.projects.customer_id}/projects/${unit.projects.id}/units`)}
                     className="flex items-center gap-2 hover:underline group decoration-white/40"
                   >
                     <span className="text-[10px] font-black text-white/70 uppercase tracking-widest">

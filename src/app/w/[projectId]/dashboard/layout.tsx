@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { getSession, logout } from "../actions/auth";
+import { getSession, logout } from "@/app/actions/auth";
 import { 
   Menu,
   ChevronRight,
@@ -9,7 +9,7 @@ import {
   FileText,
   Package
 } from "lucide-react";
-import { getUserAssignedProjects } from "../actions/complaints";
+import { getUserAssignedProjects } from "@/app/actions/complaints";
 import DashboardSidebarClient from "./DashboardSidebarClient";
 import ProblemNotificationCenter from "@/components/ProblemNotificationCenter";
 import NotificationManager from "@/components/dashboard/NotificationManager";
@@ -18,16 +18,19 @@ import { Suspense } from "react";
 
 export default async function DashboardLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ projectId: string }>;
 }) {
+  const { projectId } = await params;
   const session = await getSession();
   const assignedProjects = await getUserAssignedProjects();
   
-  let dashboardHref = "/dashboard";
+  let dashboardHref = `/w/${projectId}/dashboard`;
   if (session && !session.isInternal && assignedProjects.length > 0) {
     const p = assignedProjects[0];
-    dashboardHref = `/dashboard/customers/${p.customer_id}/projects/${p.id}/units`;
+    dashboardHref = `/w/${projectId}/dashboard/customers/${p.customer_id}/projects/${p.id}/units`;
   }
 
   return (

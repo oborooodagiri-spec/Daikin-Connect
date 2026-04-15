@@ -21,8 +21,10 @@ export default function SmartProjectNavigator({ onFilterChange }: Props) {
   
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [isGridOpen, setIsGridOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     async function load() {
       const res = await getFilterOptions();
       if (res && 'success' in res && res.success) {
@@ -63,6 +65,8 @@ export default function SmartProjectNavigator({ onFilterChange }: Props) {
       projectId: projectId === "all" ? undefined : projectId 
     });
   };
+
+  if (!isMounted) return <div className="h-14 w-80 bg-slate-50 animate-pulse rounded-[2rem]" />;
 
   return (
     <>

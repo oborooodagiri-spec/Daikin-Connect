@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition, useRef, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useParams } from "next/navigation";
 import { getAllReports, getReportDetail, getSummaryData } from "@/app/actions/reports";
 import { processReportData } from "@/lib/reportDataHelper";
 import { getSession } from "@/app/actions/auth";
@@ -25,15 +25,19 @@ import { ReportBase } from "@/components/ReportBase";
 import AuditFormClient from "@/app/passport/[token]/audit/AuditFormClient";
 import PreventiveFormClient from "@/app/passport/[token]/preventive/PreventiveFormClient";
 import CorrectiveFormClient from "@/app/passport/[token]/corrective/CorrectiveFormClient";
+import DailyLogFormClient from "@/app/passport/daily/DailyLogFormClient";
 
 const TYPE_CONFIG: Record<string, { color: string; bg: string; border: string; icon: any; label: string }> = {
   Audit: { color: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-200", icon: ClipboardCheck, label: "Audit" },
   Preventive: { color: "text-indigo-700", bg: "bg-indigo-50", border: "border-indigo-200", icon: Wrench, label: "Preventive" },
   Corrective: { color: "text-rose-700", bg: "bg-rose-50", border: "border-rose-200", icon: AlertTriangle, label: "Corrective" },
+  DailyLog: { color: "text-blue-700", bg: "bg-blue-50", border: "border-blue-200", icon: FileText, label: "Daily Log" },
 };
 
 function ReportsContent({ lang }: { lang: Language }) {
   const searchParams = useSearchParams();
+  const params = useParams();
+  const projectId = params?.projectId as string || "empty";
   const initialType = searchParams.get("type") || "all";
 
   const [reports, setReports] = useState<any[]>([]);
@@ -64,6 +68,7 @@ function ReportsContent({ lang }: { lang: Language }) {
     setLoading(true);
     const res = await getAllReports({
       type: typeFilter,
+      projectId: projectId,
       search: searchQuery,
       dateFrom,
       dateTo,
@@ -124,7 +129,8 @@ function ReportsContent({ lang }: { lang: Language }) {
     
     setIsDeleting(reportId);
     try {
-      const res = await softDeleteActivity(Number(reportId), 'formal');
+      const isDaily = reportId.toString().startsWith("DL-");
+      const res = await softDeleteActivity(isDaily ? reportId : Number(reportId), 'formal');
       if ("success" in res && res.success) {
         alert(lang === 'ja' ? "レポートをゴミ箱に移動しました。" : "Laporan berhasil dipindahkan ke Trash.");
         setSelectedReport(null);
@@ -247,9 +253,9 @@ function ReportsContent({ lang }: { lang: Language }) {
         <div className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="flex gap-1 bg-slate-100 rounded-xl p-1 overflow-x-auto no-scrollbar shrink-0">
-            {["all", "Audit", "Preventive", "Corrective"].map((tab) => (
+            {["all", "Audit", "Preventive", "Corrective", "DailyLog"].map((tab) => (
               <button key={tab} onClick={() => setTypeFilter(tab)} className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${typeFilter === tab ? "bg-white text-[#003366] shadow-sm" : "text-slate-400 hover:text-slate-600"}`}>
-                {tab === "all" ? t("Semua", lang) : (lang === 'ja' ? (tab === 'Audit' ? '監査' : tab === 'Preventive' ? '予防' : '是正') : t(tab, lang))}
+                {tab === "all" ? t("Semua", lang) : (lang === 'ja' ? (tab === 'Audit' ? '監査' : tab === 'Preventive' ? '予防' : tab === 'DailyLog' ? '日報' : '是正') : t(tab, lang))}
               </button>
             ))}
           </div>
@@ -462,6 +468,15 @@ function ReportsContent({ lang }: { lang: Language }) {
                    initialData={isEditing} 
                    onSuccess={() => { setIsEditing(null); setSelectedReport(null); fetchReports(pagination.page); }} 
                  />
+               )}
+               {isEditing.type === "DailyLog" && (
+                 <div className="max-w-xl mx-auto p-6">
+                    <DailyLogFormClient 
+                      unitId={isEditing.unit_id} 
+                      initialData={isEditing} 
+                      onSuccess={() => { setIsEditing(null); setSelectedReport(null); fetchReports(pagination.page); }} 
+                    />
+                 </div>
                )}
             </div>
           </div>

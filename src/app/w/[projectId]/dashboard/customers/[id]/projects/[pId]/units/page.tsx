@@ -24,7 +24,8 @@ import Portal from "@/components/Portal";
 export default function UnitsPage() {
   const params = useParams();
   const router = useRouter();
-  const projectId = params.projectId as string;
+  const workspaceId = params.projectId as string;
+  const targetProjectId = params.pId as string;
   const customerId = params.id as string;
 
   const [projectData, setProjectData] = useState<any>(null);
@@ -72,10 +73,10 @@ export default function UnitsPage() {
 
   const fetchData = async () => {
     setLoading(true);
-    const pRes = await getProjectData(projectId);
+    const pRes = await getProjectData(targetProjectId);
     if (pRes && 'success' in pRes) setProjectData(pRes.data);
 
-    const res = await getUnitsByProject(projectId);
+    const res = await getUnitsByProject(targetProjectId);
     if (res && 'success' in res) {
       const allUnits = res.data || [];
       setUnits(allUnits);
@@ -87,7 +88,7 @@ export default function UnitsPage() {
       }
     }
 
-    const cRes = await getProjectComplaints(projectId);
+    const cRes = await getProjectComplaints(targetProjectId);
     if (cRes && 'success' in cRes) {
       setComplaints(cRes.data || []);
     }
@@ -100,7 +101,7 @@ export default function UnitsPage() {
 
   useEffect(() => {
     fetchData();
-  }, [projectId]);
+  }, [targetProjectId]);
 
   // Derived Metrics
   const metrics = useMemo(() => {
@@ -371,7 +372,7 @@ export default function UnitsPage() {
     if (modalMode === "edit" && editId) {
       res = await updateUnit(editId, formData);
     } else {
-      res = await createUnit(projectId, formData);
+      res = await createUnit(targetProjectId, formData);
     }
     const response = res as any;
     if (response && "success" in response && response.success) {
@@ -384,7 +385,7 @@ export default function UnitsPage() {
   };
 
   const handleExport = async () => {
-    const res = await exportUnitsExcel(projectId) as any;
+    const res = await exportUnitsExcel(targetProjectId) as any;
     if (res && "success" in res && res.success && res.base64) {
       const link = document.createElement("a");
       link.href = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," + res.base64;
@@ -402,7 +403,7 @@ export default function UnitsPage() {
     const reader = new FileReader();
     reader.onload = async (evt) => {
       const b64 = (evt.target?.result as string).split(",")[1];
-      const res = await importUnitsExcel(projectId, b64) as any;
+      const res = await importUnitsExcel(targetProjectId, b64) as any;
       if (res && "success" in res && res.success) {
         alert(`Successfully imported ${res.imported} units!`);
         fetchData();
@@ -439,7 +440,7 @@ export default function UnitsPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-8">
           <div>
-            <button onClick={() => router.push(`/dashboard/customers/${customerId}/projects`)}
+            <button onClick={() => router.push(`/w/${workspaceId}/dashboard/customers/${customerId}/projects`)}
               className="flex items-center gap-2 text-slate-500 hover:text-[#00a1e4] transition-colors mb-4 text-sm font-bold w-fit bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200"
             >
               <ArrowLeft size={16} /> Back to Projects
@@ -698,7 +699,7 @@ export default function UnitsPage() {
         unit={selectedUnit} history={unitHistory} historyLoading={historyLoading}
         isStatusUpdating={isStatusUpdating} onStatusUpdate={handleStatusUpdate}
         onPrintQR={openPrintQR} onEdit={openModal}
-        customerId={customerId} projectId={projectId} session={session}
+        customerId={customerId} projectId={targetProjectId} session={session}
         onRefresh={fetchData}
       />
 

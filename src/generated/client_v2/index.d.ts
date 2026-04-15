@@ -198,6 +198,11 @@ export type user_push_tokens = $Result.DefaultSelection<Prisma.$user_push_tokens
  * 
  */
 export type daily_ops_logs = $Result.DefaultSelection<Prisma.$daily_ops_logsPayload>
+/**
+ * Model vendor_attendance
+ * 
+ */
+export type vendor_attendance = $Result.DefaultSelection<Prisma.$vendor_attendancePayload>
 
 /**
  * Enums
@@ -926,6 +931,16 @@ export class PrismaClient<
     * ```
     */
   get daily_ops_logs(): Prisma.daily_ops_logsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.vendor_attendance`: Exposes CRUD operations for the **vendor_attendance** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Vendor_attendances
+    * const vendor_attendances = await prisma.vendor_attendance.findMany()
+    * ```
+    */
+  get vendor_attendance(): Prisma.vendor_attendanceDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1402,7 +1417,8 @@ export namespace Prisma {
     schedule_targets: 'schedule_targets',
     complaints: 'complaints',
     user_push_tokens: 'user_push_tokens',
-    daily_ops_logs: 'daily_ops_logs'
+    daily_ops_logs: 'daily_ops_logs',
+    vendor_attendance: 'vendor_attendance'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1418,7 +1434,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "customers" | "permissions" | "projects" | "refresh_tokens" | "role_permissions" | "roles" | "units" | "user_project_access" | "user_roles" | "user_unit_access" | "users" | "audit_logs" | "password_reset_tokens" | "activities" | "activity_photos" | "ahu_audits" | "audit_tickets" | "audit_velocity_points" | "audits" | "contracts" | "corrective" | "corrective_maintenances" | "maintenance_contracts" | "service_activities" | "service_logs" | "service_photos" | "sites" | "tickets" | "unit_comments" | "schedules" | "schedule_attendance" | "schedule_mom" | "schedule_messages" | "schedule_targets" | "complaints" | "user_push_tokens" | "daily_ops_logs"
+      modelProps: "customers" | "permissions" | "projects" | "refresh_tokens" | "role_permissions" | "roles" | "units" | "user_project_access" | "user_roles" | "user_unit_access" | "users" | "audit_logs" | "password_reset_tokens" | "activities" | "activity_photos" | "ahu_audits" | "audit_tickets" | "audit_velocity_points" | "audits" | "contracts" | "corrective" | "corrective_maintenances" | "maintenance_contracts" | "service_activities" | "service_logs" | "service_photos" | "sites" | "tickets" | "unit_comments" | "schedules" | "schedule_attendance" | "schedule_mom" | "schedule_messages" | "schedule_targets" | "complaints" | "user_push_tokens" | "daily_ops_logs" | "vendor_attendance"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3864,6 +3880,72 @@ export namespace Prisma {
           }
         }
       }
+      vendor_attendance: {
+        payload: Prisma.$vendor_attendancePayload<ExtArgs>
+        fields: Prisma.vendor_attendanceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.vendor_attendanceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$vendor_attendancePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.vendor_attendanceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$vendor_attendancePayload>
+          }
+          findFirst: {
+            args: Prisma.vendor_attendanceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$vendor_attendancePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.vendor_attendanceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$vendor_attendancePayload>
+          }
+          findMany: {
+            args: Prisma.vendor_attendanceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$vendor_attendancePayload>[]
+          }
+          create: {
+            args: Prisma.vendor_attendanceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$vendor_attendancePayload>
+          }
+          createMany: {
+            args: Prisma.vendor_attendanceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.vendor_attendanceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$vendor_attendancePayload>
+          }
+          update: {
+            args: Prisma.vendor_attendanceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$vendor_attendancePayload>
+          }
+          deleteMany: {
+            args: Prisma.vendor_attendanceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.vendor_attendanceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.vendor_attendanceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$vendor_attendancePayload>
+          }
+          aggregate: {
+            args: Prisma.Vendor_attendanceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateVendor_attendance>
+          }
+          groupBy: {
+            args: Prisma.vendor_attendanceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Vendor_attendanceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.vendor_attendanceCountArgs<ExtArgs>
+            result: $Utils.Optional<Vendor_attendanceCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -3985,6 +4067,7 @@ export namespace Prisma {
     complaints?: complaintsOmit
     user_push_tokens?: user_push_tokensOmit
     daily_ops_logs?: daily_ops_logsOmit
+    vendor_attendance?: vendor_attendanceOmit
   }
 
   /* Types for Logging */
@@ -4172,6 +4255,7 @@ export namespace Prisma {
     schedules: number
     units: number
     user_project_access: number
+    vendor_attendance: number
   }
 
   export type ProjectsCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4179,6 +4263,7 @@ export namespace Prisma {
     schedules?: boolean | ProjectsCountOutputTypeCountSchedulesArgs
     units?: boolean | ProjectsCountOutputTypeCountUnitsArgs
     user_project_access?: boolean | ProjectsCountOutputTypeCountUser_project_accessArgs
+    vendor_attendance?: boolean | ProjectsCountOutputTypeCountVendor_attendanceArgs
   }
 
   // Custom InputTypes
@@ -4218,6 +4303,13 @@ export namespace Prisma {
    */
   export type ProjectsCountOutputTypeCountUser_project_accessArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: user_project_accessWhereInput
+  }
+
+  /**
+   * ProjectsCountOutputType without action
+   */
+  export type ProjectsCountOutputTypeCountVendor_attendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: vendor_attendanceWhereInput
   }
 
 
@@ -4415,6 +4507,7 @@ export namespace Prisma {
     user_roles: number
     user_unit_access: number
     audit_logs: number
+    vendor_attendance: number
   }
 
   export type UsersCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4428,6 +4521,7 @@ export namespace Prisma {
     user_roles?: boolean | UsersCountOutputTypeCountUser_rolesArgs
     user_unit_access?: boolean | UsersCountOutputTypeCountUser_unit_accessArgs
     audit_logs?: boolean | UsersCountOutputTypeCountAudit_logsArgs
+    vendor_attendance?: boolean | UsersCountOutputTypeCountVendor_attendanceArgs
   }
 
   // Custom InputTypes
@@ -4509,6 +4603,13 @@ export namespace Prisma {
    */
   export type UsersCountOutputTypeCountAudit_logsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: audit_logsWhereInput
+  }
+
+  /**
+   * UsersCountOutputType without action
+   */
+  export type UsersCountOutputTypeCountVendor_attendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: vendor_attendanceWhereInput
   }
 
 
@@ -6901,6 +7002,7 @@ export namespace Prisma {
     schedules?: boolean | projects$schedulesArgs<ExtArgs>
     units?: boolean | projects$unitsArgs<ExtArgs>
     user_project_access?: boolean | projects$user_project_accessArgs<ExtArgs>
+    vendor_attendance?: boolean | projects$vendor_attendanceArgs<ExtArgs>
     _count?: boolean | ProjectsCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["projects"]>
 
@@ -6923,6 +7025,7 @@ export namespace Prisma {
     schedules?: boolean | projects$schedulesArgs<ExtArgs>
     units?: boolean | projects$unitsArgs<ExtArgs>
     user_project_access?: boolean | projects$user_project_accessArgs<ExtArgs>
+    vendor_attendance?: boolean | projects$vendor_attendanceArgs<ExtArgs>
     _count?: boolean | ProjectsCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -6934,6 +7037,7 @@ export namespace Prisma {
       schedules: Prisma.$schedulesPayload<ExtArgs>[]
       units: Prisma.$unitsPayload<ExtArgs>[]
       user_project_access: Prisma.$user_project_accessPayload<ExtArgs>[]
+      vendor_attendance: Prisma.$vendor_attendancePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: bigint
@@ -7288,6 +7392,7 @@ export namespace Prisma {
     schedules<T extends projects$schedulesArgs<ExtArgs> = {}>(args?: Subset<T, projects$schedulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$schedulesPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     units<T extends projects$unitsArgs<ExtArgs> = {}>(args?: Subset<T, projects$unitsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$unitsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     user_project_access<T extends projects$user_project_accessArgs<ExtArgs> = {}>(args?: Subset<T, projects$user_project_accessArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$user_project_accessPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    vendor_attendance<T extends projects$vendor_attendanceArgs<ExtArgs> = {}>(args?: Subset<T, projects$vendor_attendanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$vendor_attendancePayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7760,6 +7865,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: User_project_accessScalarFieldEnum | User_project_accessScalarFieldEnum[]
+  }
+
+  /**
+   * projects.vendor_attendance
+   */
+  export type projects$vendor_attendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the vendor_attendance
+     */
+    select?: vendor_attendanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the vendor_attendance
+     */
+    omit?: vendor_attendanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: vendor_attendanceInclude<ExtArgs> | null
+    where?: vendor_attendanceWhereInput
+    orderBy?: vendor_attendanceOrderByWithRelationInput | vendor_attendanceOrderByWithRelationInput[]
+    cursor?: vendor_attendanceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Vendor_attendanceScalarFieldEnum | Vendor_attendanceScalarFieldEnum[]
   }
 
   /**
@@ -15092,6 +15221,9 @@ export namespace Prisma {
     otp_expiry: Date | null
     failed_login_attempts: number | null
     locked_until: Date | null
+    attendance_enabled: boolean | null
+    face_reference_url: string | null
+    face_verification_enabled: boolean | null
   }
 
   export type UsersMaxAggregateOutputType = {
@@ -15109,6 +15241,9 @@ export namespace Prisma {
     otp_expiry: Date | null
     failed_login_attempts: number | null
     locked_until: Date | null
+    attendance_enabled: boolean | null
+    face_reference_url: string | null
+    face_verification_enabled: boolean | null
   }
 
   export type UsersCountAggregateOutputType = {
@@ -15126,6 +15261,9 @@ export namespace Prisma {
     otp_expiry: number
     failed_login_attempts: number
     locked_until: number
+    attendance_enabled: number
+    face_reference_url: number
+    face_verification_enabled: number
     _all: number
   }
 
@@ -15157,6 +15295,9 @@ export namespace Prisma {
     otp_expiry?: true
     failed_login_attempts?: true
     locked_until?: true
+    attendance_enabled?: true
+    face_reference_url?: true
+    face_verification_enabled?: true
   }
 
   export type UsersMaxAggregateInputType = {
@@ -15174,6 +15315,9 @@ export namespace Prisma {
     otp_expiry?: true
     failed_login_attempts?: true
     locked_until?: true
+    attendance_enabled?: true
+    face_reference_url?: true
+    face_verification_enabled?: true
   }
 
   export type UsersCountAggregateInputType = {
@@ -15191,6 +15335,9 @@ export namespace Prisma {
     otp_expiry?: true
     failed_login_attempts?: true
     locked_until?: true
+    attendance_enabled?: true
+    face_reference_url?: true
+    face_verification_enabled?: true
     _all?: true
   }
 
@@ -15295,6 +15442,9 @@ export namespace Prisma {
     otp_expiry: Date | null
     failed_login_attempts: number
     locked_until: Date | null
+    attendance_enabled: boolean
+    face_reference_url: string | null
+    face_verification_enabled: boolean
     _count: UsersCountAggregateOutputType | null
     _avg: UsersAvgAggregateOutputType | null
     _sum: UsersSumAggregateOutputType | null
@@ -15331,6 +15481,9 @@ export namespace Prisma {
     otp_expiry?: boolean
     failed_login_attempts?: boolean
     locked_until?: boolean
+    attendance_enabled?: boolean
+    face_reference_url?: boolean
+    face_verification_enabled?: boolean
     refresh_tokens?: boolean | users$refresh_tokensArgs<ExtArgs>
     schedule_messages?: boolean | users$schedule_messagesArgs<ExtArgs>
     schedule_targets?: boolean | users$schedule_targetsArgs<ExtArgs>
@@ -15342,6 +15495,7 @@ export namespace Prisma {
     user_unit_access?: boolean | users$user_unit_accessArgs<ExtArgs>
     audit_logs?: boolean | users$audit_logsArgs<ExtArgs>
     roles?: boolean | users$rolesArgs<ExtArgs>
+    vendor_attendance?: boolean | users$vendor_attendanceArgs<ExtArgs>
     _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["users"]>
 
@@ -15362,9 +15516,12 @@ export namespace Prisma {
     otp_expiry?: boolean
     failed_login_attempts?: boolean
     locked_until?: boolean
+    attendance_enabled?: boolean
+    face_reference_url?: boolean
+    face_verification_enabled?: boolean
   }
 
-  export type usersOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "role_id" | "name" | "email" | "password" | "phone" | "is_active" | "company_name" | "two_factor_enabled" | "two_factor_secret" | "otp_code" | "otp_expiry" | "failed_login_attempts" | "locked_until", ExtArgs["result"]["users"]>
+  export type usersOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "role_id" | "name" | "email" | "password" | "phone" | "is_active" | "company_name" | "two_factor_enabled" | "two_factor_secret" | "otp_code" | "otp_expiry" | "failed_login_attempts" | "locked_until" | "attendance_enabled" | "face_reference_url" | "face_verification_enabled", ExtArgs["result"]["users"]>
   export type usersInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     refresh_tokens?: boolean | users$refresh_tokensArgs<ExtArgs>
     schedule_messages?: boolean | users$schedule_messagesArgs<ExtArgs>
@@ -15377,6 +15534,7 @@ export namespace Prisma {
     user_unit_access?: boolean | users$user_unit_accessArgs<ExtArgs>
     audit_logs?: boolean | users$audit_logsArgs<ExtArgs>
     roles?: boolean | users$rolesArgs<ExtArgs>
+    vendor_attendance?: boolean | users$vendor_attendanceArgs<ExtArgs>
     _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -15394,6 +15552,7 @@ export namespace Prisma {
       user_unit_access: Prisma.$user_unit_accessPayload<ExtArgs>[]
       audit_logs: Prisma.$audit_logsPayload<ExtArgs>[]
       roles: Prisma.$rolesPayload<ExtArgs> | null
+      vendor_attendance: Prisma.$vendor_attendancePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -15410,6 +15569,9 @@ export namespace Prisma {
       otp_expiry: Date | null
       failed_login_attempts: number
       locked_until: Date | null
+      attendance_enabled: boolean
+      face_reference_url: string | null
+      face_verification_enabled: boolean
     }, ExtArgs["result"]["users"]>
     composites: {}
   }
@@ -15761,6 +15923,7 @@ export namespace Prisma {
     user_unit_access<T extends users$user_unit_accessArgs<ExtArgs> = {}>(args?: Subset<T, users$user_unit_accessArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$user_unit_accessPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     audit_logs<T extends users$audit_logsArgs<ExtArgs> = {}>(args?: Subset<T, users$audit_logsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$audit_logsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     roles<T extends users$rolesArgs<ExtArgs> = {}>(args?: Subset<T, users$rolesArgs<ExtArgs>>): Prisma__rolesClient<$Result.GetResult<Prisma.$rolesPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
+    vendor_attendance<T extends users$vendor_attendanceArgs<ExtArgs> = {}>(args?: Subset<T, users$vendor_attendanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$vendor_attendancePayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -15804,6 +15967,9 @@ export namespace Prisma {
     readonly otp_expiry: FieldRef<"users", 'DateTime'>
     readonly failed_login_attempts: FieldRef<"users", 'Int'>
     readonly locked_until: FieldRef<"users", 'DateTime'>
+    readonly attendance_enabled: FieldRef<"users", 'Boolean'>
+    readonly face_reference_url: FieldRef<"users", 'String'>
+    readonly face_verification_enabled: FieldRef<"users", 'Boolean'>
   }
     
 
@@ -16403,6 +16569,30 @@ export namespace Prisma {
      */
     include?: rolesInclude<ExtArgs> | null
     where?: rolesWhereInput
+  }
+
+  /**
+   * users.vendor_attendance
+   */
+  export type users$vendor_attendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the vendor_attendance
+     */
+    select?: vendor_attendanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the vendor_attendance
+     */
+    omit?: vendor_attendanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: vendor_attendanceInclude<ExtArgs> | null
+    where?: vendor_attendanceWhereInput
+    orderBy?: vendor_attendanceOrderByWithRelationInput | vendor_attendanceOrderByWithRelationInput[]
+    cursor?: vendor_attendanceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Vendor_attendanceScalarFieldEnum | Vendor_attendanceScalarFieldEnum[]
   }
 
   /**
@@ -44126,6 +44316,1063 @@ export namespace Prisma {
 
 
   /**
+   * Model vendor_attendance
+   */
+
+  export type AggregateVendor_attendance = {
+    _count: Vendor_attendanceCountAggregateOutputType | null
+    _avg: Vendor_attendanceAvgAggregateOutputType | null
+    _sum: Vendor_attendanceSumAggregateOutputType | null
+    _min: Vendor_attendanceMinAggregateOutputType | null
+    _max: Vendor_attendanceMaxAggregateOutputType | null
+  }
+
+  export type Vendor_attendanceAvgAggregateOutputType = {
+    id: number | null
+    user_id: number | null
+    project_id: number | null
+    check_in_lat: Decimal | null
+    check_in_long: Decimal | null
+    check_out_lat: Decimal | null
+    check_out_long: Decimal | null
+  }
+
+  export type Vendor_attendanceSumAggregateOutputType = {
+    id: number | null
+    user_id: number | null
+    project_id: bigint | null
+    check_in_lat: Decimal | null
+    check_in_long: Decimal | null
+    check_out_lat: Decimal | null
+    check_out_long: Decimal | null
+  }
+
+  export type Vendor_attendanceMinAggregateOutputType = {
+    id: number | null
+    user_id: number | null
+    project_id: bigint | null
+    check_in_time: Date | null
+    check_out_time: Date | null
+    check_in_lat: Decimal | null
+    check_in_long: Decimal | null
+    check_out_lat: Decimal | null
+    check_out_long: Decimal | null
+    check_in_photo: string | null
+    check_out_photo: string | null
+  }
+
+  export type Vendor_attendanceMaxAggregateOutputType = {
+    id: number | null
+    user_id: number | null
+    project_id: bigint | null
+    check_in_time: Date | null
+    check_out_time: Date | null
+    check_in_lat: Decimal | null
+    check_in_long: Decimal | null
+    check_out_lat: Decimal | null
+    check_out_long: Decimal | null
+    check_in_photo: string | null
+    check_out_photo: string | null
+  }
+
+  export type Vendor_attendanceCountAggregateOutputType = {
+    id: number
+    user_id: number
+    project_id: number
+    check_in_time: number
+    check_out_time: number
+    check_in_lat: number
+    check_in_long: number
+    check_out_lat: number
+    check_out_long: number
+    check_in_photo: number
+    check_out_photo: number
+    _all: number
+  }
+
+
+  export type Vendor_attendanceAvgAggregateInputType = {
+    id?: true
+    user_id?: true
+    project_id?: true
+    check_in_lat?: true
+    check_in_long?: true
+    check_out_lat?: true
+    check_out_long?: true
+  }
+
+  export type Vendor_attendanceSumAggregateInputType = {
+    id?: true
+    user_id?: true
+    project_id?: true
+    check_in_lat?: true
+    check_in_long?: true
+    check_out_lat?: true
+    check_out_long?: true
+  }
+
+  export type Vendor_attendanceMinAggregateInputType = {
+    id?: true
+    user_id?: true
+    project_id?: true
+    check_in_time?: true
+    check_out_time?: true
+    check_in_lat?: true
+    check_in_long?: true
+    check_out_lat?: true
+    check_out_long?: true
+    check_in_photo?: true
+    check_out_photo?: true
+  }
+
+  export type Vendor_attendanceMaxAggregateInputType = {
+    id?: true
+    user_id?: true
+    project_id?: true
+    check_in_time?: true
+    check_out_time?: true
+    check_in_lat?: true
+    check_in_long?: true
+    check_out_lat?: true
+    check_out_long?: true
+    check_in_photo?: true
+    check_out_photo?: true
+  }
+
+  export type Vendor_attendanceCountAggregateInputType = {
+    id?: true
+    user_id?: true
+    project_id?: true
+    check_in_time?: true
+    check_out_time?: true
+    check_in_lat?: true
+    check_in_long?: true
+    check_out_lat?: true
+    check_out_long?: true
+    check_in_photo?: true
+    check_out_photo?: true
+    _all?: true
+  }
+
+  export type Vendor_attendanceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which vendor_attendance to aggregate.
+     */
+    where?: vendor_attendanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of vendor_attendances to fetch.
+     */
+    orderBy?: vendor_attendanceOrderByWithRelationInput | vendor_attendanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: vendor_attendanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` vendor_attendances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` vendor_attendances.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned vendor_attendances
+    **/
+    _count?: true | Vendor_attendanceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Vendor_attendanceAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Vendor_attendanceSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Vendor_attendanceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Vendor_attendanceMaxAggregateInputType
+  }
+
+  export type GetVendor_attendanceAggregateType<T extends Vendor_attendanceAggregateArgs> = {
+        [P in keyof T & keyof AggregateVendor_attendance]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateVendor_attendance[P]>
+      : GetScalarType<T[P], AggregateVendor_attendance[P]>
+  }
+
+
+
+
+  export type vendor_attendanceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: vendor_attendanceWhereInput
+    orderBy?: vendor_attendanceOrderByWithAggregationInput | vendor_attendanceOrderByWithAggregationInput[]
+    by: Vendor_attendanceScalarFieldEnum[] | Vendor_attendanceScalarFieldEnum
+    having?: vendor_attendanceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Vendor_attendanceCountAggregateInputType | true
+    _avg?: Vendor_attendanceAvgAggregateInputType
+    _sum?: Vendor_attendanceSumAggregateInputType
+    _min?: Vendor_attendanceMinAggregateInputType
+    _max?: Vendor_attendanceMaxAggregateInputType
+  }
+
+  export type Vendor_attendanceGroupByOutputType = {
+    id: number
+    user_id: number
+    project_id: bigint
+    check_in_time: Date
+    check_out_time: Date | null
+    check_in_lat: Decimal | null
+    check_in_long: Decimal | null
+    check_out_lat: Decimal | null
+    check_out_long: Decimal | null
+    check_in_photo: string | null
+    check_out_photo: string | null
+    _count: Vendor_attendanceCountAggregateOutputType | null
+    _avg: Vendor_attendanceAvgAggregateOutputType | null
+    _sum: Vendor_attendanceSumAggregateOutputType | null
+    _min: Vendor_attendanceMinAggregateOutputType | null
+    _max: Vendor_attendanceMaxAggregateOutputType | null
+  }
+
+  type GetVendor_attendanceGroupByPayload<T extends vendor_attendanceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Vendor_attendanceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Vendor_attendanceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Vendor_attendanceGroupByOutputType[P]>
+            : GetScalarType<T[P], Vendor_attendanceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type vendor_attendanceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    user_id?: boolean
+    project_id?: boolean
+    check_in_time?: boolean
+    check_out_time?: boolean
+    check_in_lat?: boolean
+    check_in_long?: boolean
+    check_out_lat?: boolean
+    check_out_long?: boolean
+    check_in_photo?: boolean
+    check_out_photo?: boolean
+    users?: boolean | usersDefaultArgs<ExtArgs>
+    projects?: boolean | projectsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["vendor_attendance"]>
+
+
+
+  export type vendor_attendanceSelectScalar = {
+    id?: boolean
+    user_id?: boolean
+    project_id?: boolean
+    check_in_time?: boolean
+    check_out_time?: boolean
+    check_in_lat?: boolean
+    check_in_long?: boolean
+    check_out_lat?: boolean
+    check_out_long?: boolean
+    check_in_photo?: boolean
+    check_out_photo?: boolean
+  }
+
+  export type vendor_attendanceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "user_id" | "project_id" | "check_in_time" | "check_out_time" | "check_in_lat" | "check_in_long" | "check_out_lat" | "check_out_long" | "check_in_photo" | "check_out_photo", ExtArgs["result"]["vendor_attendance"]>
+  export type vendor_attendanceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    users?: boolean | usersDefaultArgs<ExtArgs>
+    projects?: boolean | projectsDefaultArgs<ExtArgs>
+  }
+
+  export type $vendor_attendancePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "vendor_attendance"
+    objects: {
+      users: Prisma.$usersPayload<ExtArgs>
+      projects: Prisma.$projectsPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      user_id: number
+      project_id: bigint
+      check_in_time: Date
+      check_out_time: Date | null
+      check_in_lat: Prisma.Decimal | null
+      check_in_long: Prisma.Decimal | null
+      check_out_lat: Prisma.Decimal | null
+      check_out_long: Prisma.Decimal | null
+      check_in_photo: string | null
+      check_out_photo: string | null
+    }, ExtArgs["result"]["vendor_attendance"]>
+    composites: {}
+  }
+
+  type vendor_attendanceGetPayload<S extends boolean | null | undefined | vendor_attendanceDefaultArgs> = $Result.GetResult<Prisma.$vendor_attendancePayload, S>
+
+  type vendor_attendanceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<vendor_attendanceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Vendor_attendanceCountAggregateInputType | true
+    }
+
+  export interface vendor_attendanceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['vendor_attendance'], meta: { name: 'vendor_attendance' } }
+    /**
+     * Find zero or one Vendor_attendance that matches the filter.
+     * @param {vendor_attendanceFindUniqueArgs} args - Arguments to find a Vendor_attendance
+     * @example
+     * // Get one Vendor_attendance
+     * const vendor_attendance = await prisma.vendor_attendance.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends vendor_attendanceFindUniqueArgs>(args: SelectSubset<T, vendor_attendanceFindUniqueArgs<ExtArgs>>): Prisma__vendor_attendanceClient<$Result.GetResult<Prisma.$vendor_attendancePayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one Vendor_attendance that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {vendor_attendanceFindUniqueOrThrowArgs} args - Arguments to find a Vendor_attendance
+     * @example
+     * // Get one Vendor_attendance
+     * const vendor_attendance = await prisma.vendor_attendance.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends vendor_attendanceFindUniqueOrThrowArgs>(args: SelectSubset<T, vendor_attendanceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__vendor_attendanceClient<$Result.GetResult<Prisma.$vendor_attendancePayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Vendor_attendance that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {vendor_attendanceFindFirstArgs} args - Arguments to find a Vendor_attendance
+     * @example
+     * // Get one Vendor_attendance
+     * const vendor_attendance = await prisma.vendor_attendance.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends vendor_attendanceFindFirstArgs>(args?: SelectSubset<T, vendor_attendanceFindFirstArgs<ExtArgs>>): Prisma__vendor_attendanceClient<$Result.GetResult<Prisma.$vendor_attendancePayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Vendor_attendance that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {vendor_attendanceFindFirstOrThrowArgs} args - Arguments to find a Vendor_attendance
+     * @example
+     * // Get one Vendor_attendance
+     * const vendor_attendance = await prisma.vendor_attendance.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends vendor_attendanceFindFirstOrThrowArgs>(args?: SelectSubset<T, vendor_attendanceFindFirstOrThrowArgs<ExtArgs>>): Prisma__vendor_attendanceClient<$Result.GetResult<Prisma.$vendor_attendancePayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more Vendor_attendances that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {vendor_attendanceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Vendor_attendances
+     * const vendor_attendances = await prisma.vendor_attendance.findMany()
+     * 
+     * // Get first 10 Vendor_attendances
+     * const vendor_attendances = await prisma.vendor_attendance.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const vendor_attendanceWithIdOnly = await prisma.vendor_attendance.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends vendor_attendanceFindManyArgs>(args?: SelectSubset<T, vendor_attendanceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$vendor_attendancePayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a Vendor_attendance.
+     * @param {vendor_attendanceCreateArgs} args - Arguments to create a Vendor_attendance.
+     * @example
+     * // Create one Vendor_attendance
+     * const Vendor_attendance = await prisma.vendor_attendance.create({
+     *   data: {
+     *     // ... data to create a Vendor_attendance
+     *   }
+     * })
+     * 
+     */
+    create<T extends vendor_attendanceCreateArgs>(args: SelectSubset<T, vendor_attendanceCreateArgs<ExtArgs>>): Prisma__vendor_attendanceClient<$Result.GetResult<Prisma.$vendor_attendancePayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many Vendor_attendances.
+     * @param {vendor_attendanceCreateManyArgs} args - Arguments to create many Vendor_attendances.
+     * @example
+     * // Create many Vendor_attendances
+     * const vendor_attendance = await prisma.vendor_attendance.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends vendor_attendanceCreateManyArgs>(args?: SelectSubset<T, vendor_attendanceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Vendor_attendance.
+     * @param {vendor_attendanceDeleteArgs} args - Arguments to delete one Vendor_attendance.
+     * @example
+     * // Delete one Vendor_attendance
+     * const Vendor_attendance = await prisma.vendor_attendance.delete({
+     *   where: {
+     *     // ... filter to delete one Vendor_attendance
+     *   }
+     * })
+     * 
+     */
+    delete<T extends vendor_attendanceDeleteArgs>(args: SelectSubset<T, vendor_attendanceDeleteArgs<ExtArgs>>): Prisma__vendor_attendanceClient<$Result.GetResult<Prisma.$vendor_attendancePayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one Vendor_attendance.
+     * @param {vendor_attendanceUpdateArgs} args - Arguments to update one Vendor_attendance.
+     * @example
+     * // Update one Vendor_attendance
+     * const vendor_attendance = await prisma.vendor_attendance.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends vendor_attendanceUpdateArgs>(args: SelectSubset<T, vendor_attendanceUpdateArgs<ExtArgs>>): Prisma__vendor_attendanceClient<$Result.GetResult<Prisma.$vendor_attendancePayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more Vendor_attendances.
+     * @param {vendor_attendanceDeleteManyArgs} args - Arguments to filter Vendor_attendances to delete.
+     * @example
+     * // Delete a few Vendor_attendances
+     * const { count } = await prisma.vendor_attendance.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends vendor_attendanceDeleteManyArgs>(args?: SelectSubset<T, vendor_attendanceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Vendor_attendances.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {vendor_attendanceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Vendor_attendances
+     * const vendor_attendance = await prisma.vendor_attendance.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends vendor_attendanceUpdateManyArgs>(args: SelectSubset<T, vendor_attendanceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Vendor_attendance.
+     * @param {vendor_attendanceUpsertArgs} args - Arguments to update or create a Vendor_attendance.
+     * @example
+     * // Update or create a Vendor_attendance
+     * const vendor_attendance = await prisma.vendor_attendance.upsert({
+     *   create: {
+     *     // ... data to create a Vendor_attendance
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Vendor_attendance we want to update
+     *   }
+     * })
+     */
+    upsert<T extends vendor_attendanceUpsertArgs>(args: SelectSubset<T, vendor_attendanceUpsertArgs<ExtArgs>>): Prisma__vendor_attendanceClient<$Result.GetResult<Prisma.$vendor_attendancePayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of Vendor_attendances.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {vendor_attendanceCountArgs} args - Arguments to filter Vendor_attendances to count.
+     * @example
+     * // Count the number of Vendor_attendances
+     * const count = await prisma.vendor_attendance.count({
+     *   where: {
+     *     // ... the filter for the Vendor_attendances we want to count
+     *   }
+     * })
+    **/
+    count<T extends vendor_attendanceCountArgs>(
+      args?: Subset<T, vendor_attendanceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Vendor_attendanceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Vendor_attendance.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Vendor_attendanceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Vendor_attendanceAggregateArgs>(args: Subset<T, Vendor_attendanceAggregateArgs>): Prisma.PrismaPromise<GetVendor_attendanceAggregateType<T>>
+
+    /**
+     * Group by Vendor_attendance.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {vendor_attendanceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends vendor_attendanceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: vendor_attendanceGroupByArgs['orderBy'] }
+        : { orderBy?: vendor_attendanceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, vendor_attendanceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetVendor_attendanceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the vendor_attendance model
+   */
+  readonly fields: vendor_attendanceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for vendor_attendance.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__vendor_attendanceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    users<T extends usersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, usersDefaultArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    projects<T extends projectsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, projectsDefaultArgs<ExtArgs>>): Prisma__projectsClient<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the vendor_attendance model
+   */ 
+  interface vendor_attendanceFieldRefs {
+    readonly id: FieldRef<"vendor_attendance", 'Int'>
+    readonly user_id: FieldRef<"vendor_attendance", 'Int'>
+    readonly project_id: FieldRef<"vendor_attendance", 'BigInt'>
+    readonly check_in_time: FieldRef<"vendor_attendance", 'DateTime'>
+    readonly check_out_time: FieldRef<"vendor_attendance", 'DateTime'>
+    readonly check_in_lat: FieldRef<"vendor_attendance", 'Decimal'>
+    readonly check_in_long: FieldRef<"vendor_attendance", 'Decimal'>
+    readonly check_out_lat: FieldRef<"vendor_attendance", 'Decimal'>
+    readonly check_out_long: FieldRef<"vendor_attendance", 'Decimal'>
+    readonly check_in_photo: FieldRef<"vendor_attendance", 'String'>
+    readonly check_out_photo: FieldRef<"vendor_attendance", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * vendor_attendance findUnique
+   */
+  export type vendor_attendanceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the vendor_attendance
+     */
+    select?: vendor_attendanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the vendor_attendance
+     */
+    omit?: vendor_attendanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: vendor_attendanceInclude<ExtArgs> | null
+    /**
+     * Filter, which vendor_attendance to fetch.
+     */
+    where: vendor_attendanceWhereUniqueInput
+  }
+
+  /**
+   * vendor_attendance findUniqueOrThrow
+   */
+  export type vendor_attendanceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the vendor_attendance
+     */
+    select?: vendor_attendanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the vendor_attendance
+     */
+    omit?: vendor_attendanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: vendor_attendanceInclude<ExtArgs> | null
+    /**
+     * Filter, which vendor_attendance to fetch.
+     */
+    where: vendor_attendanceWhereUniqueInput
+  }
+
+  /**
+   * vendor_attendance findFirst
+   */
+  export type vendor_attendanceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the vendor_attendance
+     */
+    select?: vendor_attendanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the vendor_attendance
+     */
+    omit?: vendor_attendanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: vendor_attendanceInclude<ExtArgs> | null
+    /**
+     * Filter, which vendor_attendance to fetch.
+     */
+    where?: vendor_attendanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of vendor_attendances to fetch.
+     */
+    orderBy?: vendor_attendanceOrderByWithRelationInput | vendor_attendanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for vendor_attendances.
+     */
+    cursor?: vendor_attendanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` vendor_attendances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` vendor_attendances.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of vendor_attendances.
+     */
+    distinct?: Vendor_attendanceScalarFieldEnum | Vendor_attendanceScalarFieldEnum[]
+  }
+
+  /**
+   * vendor_attendance findFirstOrThrow
+   */
+  export type vendor_attendanceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the vendor_attendance
+     */
+    select?: vendor_attendanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the vendor_attendance
+     */
+    omit?: vendor_attendanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: vendor_attendanceInclude<ExtArgs> | null
+    /**
+     * Filter, which vendor_attendance to fetch.
+     */
+    where?: vendor_attendanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of vendor_attendances to fetch.
+     */
+    orderBy?: vendor_attendanceOrderByWithRelationInput | vendor_attendanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for vendor_attendances.
+     */
+    cursor?: vendor_attendanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` vendor_attendances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` vendor_attendances.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of vendor_attendances.
+     */
+    distinct?: Vendor_attendanceScalarFieldEnum | Vendor_attendanceScalarFieldEnum[]
+  }
+
+  /**
+   * vendor_attendance findMany
+   */
+  export type vendor_attendanceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the vendor_attendance
+     */
+    select?: vendor_attendanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the vendor_attendance
+     */
+    omit?: vendor_attendanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: vendor_attendanceInclude<ExtArgs> | null
+    /**
+     * Filter, which vendor_attendances to fetch.
+     */
+    where?: vendor_attendanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of vendor_attendances to fetch.
+     */
+    orderBy?: vendor_attendanceOrderByWithRelationInput | vendor_attendanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing vendor_attendances.
+     */
+    cursor?: vendor_attendanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` vendor_attendances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` vendor_attendances.
+     */
+    skip?: number
+    distinct?: Vendor_attendanceScalarFieldEnum | Vendor_attendanceScalarFieldEnum[]
+  }
+
+  /**
+   * vendor_attendance create
+   */
+  export type vendor_attendanceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the vendor_attendance
+     */
+    select?: vendor_attendanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the vendor_attendance
+     */
+    omit?: vendor_attendanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: vendor_attendanceInclude<ExtArgs> | null
+    /**
+     * The data needed to create a vendor_attendance.
+     */
+    data: XOR<vendor_attendanceCreateInput, vendor_attendanceUncheckedCreateInput>
+  }
+
+  /**
+   * vendor_attendance createMany
+   */
+  export type vendor_attendanceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many vendor_attendances.
+     */
+    data: vendor_attendanceCreateManyInput | vendor_attendanceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * vendor_attendance update
+   */
+  export type vendor_attendanceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the vendor_attendance
+     */
+    select?: vendor_attendanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the vendor_attendance
+     */
+    omit?: vendor_attendanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: vendor_attendanceInclude<ExtArgs> | null
+    /**
+     * The data needed to update a vendor_attendance.
+     */
+    data: XOR<vendor_attendanceUpdateInput, vendor_attendanceUncheckedUpdateInput>
+    /**
+     * Choose, which vendor_attendance to update.
+     */
+    where: vendor_attendanceWhereUniqueInput
+  }
+
+  /**
+   * vendor_attendance updateMany
+   */
+  export type vendor_attendanceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update vendor_attendances.
+     */
+    data: XOR<vendor_attendanceUpdateManyMutationInput, vendor_attendanceUncheckedUpdateManyInput>
+    /**
+     * Filter which vendor_attendances to update
+     */
+    where?: vendor_attendanceWhereInput
+    /**
+     * Limit how many vendor_attendances to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * vendor_attendance upsert
+   */
+  export type vendor_attendanceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the vendor_attendance
+     */
+    select?: vendor_attendanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the vendor_attendance
+     */
+    omit?: vendor_attendanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: vendor_attendanceInclude<ExtArgs> | null
+    /**
+     * The filter to search for the vendor_attendance to update in case it exists.
+     */
+    where: vendor_attendanceWhereUniqueInput
+    /**
+     * In case the vendor_attendance found by the `where` argument doesn't exist, create a new vendor_attendance with this data.
+     */
+    create: XOR<vendor_attendanceCreateInput, vendor_attendanceUncheckedCreateInput>
+    /**
+     * In case the vendor_attendance was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<vendor_attendanceUpdateInput, vendor_attendanceUncheckedUpdateInput>
+  }
+
+  /**
+   * vendor_attendance delete
+   */
+  export type vendor_attendanceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the vendor_attendance
+     */
+    select?: vendor_attendanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the vendor_attendance
+     */
+    omit?: vendor_attendanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: vendor_attendanceInclude<ExtArgs> | null
+    /**
+     * Filter which vendor_attendance to delete.
+     */
+    where: vendor_attendanceWhereUniqueInput
+  }
+
+  /**
+   * vendor_attendance deleteMany
+   */
+  export type vendor_attendanceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which vendor_attendances to delete
+     */
+    where?: vendor_attendanceWhereInput
+    /**
+     * Limit how many vendor_attendances to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * vendor_attendance without action
+   */
+  export type vendor_attendanceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the vendor_attendance
+     */
+    select?: vendor_attendanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the vendor_attendance
+     */
+    omit?: vendor_attendanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: vendor_attendanceInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -44270,7 +45517,10 @@ export namespace Prisma {
     otp_code: 'otp_code',
     otp_expiry: 'otp_expiry',
     failed_login_attempts: 'failed_login_attempts',
-    locked_until: 'locked_until'
+    locked_until: 'locked_until',
+    attendance_enabled: 'attendance_enabled',
+    face_reference_url: 'face_reference_url',
+    face_verification_enabled: 'face_verification_enabled'
   };
 
   export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
@@ -44740,6 +45990,23 @@ export namespace Prisma {
   export type Daily_ops_logsScalarFieldEnum = (typeof Daily_ops_logsScalarFieldEnum)[keyof typeof Daily_ops_logsScalarFieldEnum]
 
 
+  export const Vendor_attendanceScalarFieldEnum: {
+    id: 'id',
+    user_id: 'user_id',
+    project_id: 'project_id',
+    check_in_time: 'check_in_time',
+    check_out_time: 'check_out_time',
+    check_in_lat: 'check_in_lat',
+    check_in_long: 'check_in_long',
+    check_out_lat: 'check_out_lat',
+    check_out_long: 'check_out_long',
+    check_in_photo: 'check_in_photo',
+    check_out_photo: 'check_out_photo'
+  };
+
+  export type Vendor_attendanceScalarFieldEnum = (typeof Vendor_attendanceScalarFieldEnum)[keyof typeof Vendor_attendanceScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -44826,7 +46093,8 @@ export namespace Prisma {
     phone: 'phone',
     company_name: 'company_name',
     two_factor_secret: 'two_factor_secret',
-    otp_code: 'otp_code'
+    otp_code: 'otp_code',
+    face_reference_url: 'face_reference_url'
   };
 
   export type usersOrderByRelevanceFieldEnum = (typeof usersOrderByRelevanceFieldEnum)[keyof typeof usersOrderByRelevanceFieldEnum]
@@ -45080,6 +46348,14 @@ export namespace Prisma {
   };
 
   export type daily_ops_logsOrderByRelevanceFieldEnum = (typeof daily_ops_logsOrderByRelevanceFieldEnum)[keyof typeof daily_ops_logsOrderByRelevanceFieldEnum]
+
+
+  export const vendor_attendanceOrderByRelevanceFieldEnum: {
+    check_in_photo: 'check_in_photo',
+    check_out_photo: 'check_out_photo'
+  };
+
+  export type vendor_attendanceOrderByRelevanceFieldEnum = (typeof vendor_attendanceOrderByRelevanceFieldEnum)[keyof typeof vendor_attendanceOrderByRelevanceFieldEnum]
 
 
   /**
@@ -45404,6 +46680,7 @@ export namespace Prisma {
     schedules?: SchedulesListRelationFilter
     units?: UnitsListRelationFilter
     user_project_access?: User_project_accessListRelationFilter
+    vendor_attendance?: Vendor_attendanceListRelationFilter
   }
 
   export type projectsOrderByWithRelationInput = {
@@ -45419,6 +46696,7 @@ export namespace Prisma {
     schedules?: schedulesOrderByRelationAggregateInput
     units?: unitsOrderByRelationAggregateInput
     user_project_access?: user_project_accessOrderByRelationAggregateInput
+    vendor_attendance?: vendor_attendanceOrderByRelationAggregateInput
     _relevance?: projectsOrderByRelevanceInput
   }
 
@@ -45439,6 +46717,7 @@ export namespace Prisma {
     schedules?: SchedulesListRelationFilter
     units?: UnitsListRelationFilter
     user_project_access?: User_project_accessListRelationFilter
+    vendor_attendance?: Vendor_attendanceListRelationFilter
   }, "id" | "customer_id_name">
 
   export type projectsOrderByWithAggregationInput = {
@@ -45968,6 +47247,9 @@ export namespace Prisma {
     otp_expiry?: DateTimeNullableFilter<"users"> | Date | string | null
     failed_login_attempts?: IntFilter<"users"> | number
     locked_until?: DateTimeNullableFilter<"users"> | Date | string | null
+    attendance_enabled?: BoolFilter<"users"> | boolean
+    face_reference_url?: StringNullableFilter<"users"> | string | null
+    face_verification_enabled?: BoolFilter<"users"> | boolean
     refresh_tokens?: Refresh_tokensListRelationFilter
     schedule_messages?: Schedule_messagesListRelationFilter
     schedule_targets?: Schedule_targetsListRelationFilter
@@ -45979,6 +47261,7 @@ export namespace Prisma {
     user_unit_access?: User_unit_accessListRelationFilter
     audit_logs?: Audit_logsListRelationFilter
     roles?: XOR<RolesNullableScalarRelationFilter, rolesWhereInput> | null
+    vendor_attendance?: Vendor_attendanceListRelationFilter
   }
 
   export type usersOrderByWithRelationInput = {
@@ -45996,6 +47279,9 @@ export namespace Prisma {
     otp_expiry?: SortOrderInput | SortOrder
     failed_login_attempts?: SortOrder
     locked_until?: SortOrderInput | SortOrder
+    attendance_enabled?: SortOrder
+    face_reference_url?: SortOrderInput | SortOrder
+    face_verification_enabled?: SortOrder
     refresh_tokens?: refresh_tokensOrderByRelationAggregateInput
     schedule_messages?: schedule_messagesOrderByRelationAggregateInput
     schedule_targets?: schedule_targetsOrderByRelationAggregateInput
@@ -46007,6 +47293,7 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessOrderByRelationAggregateInput
     audit_logs?: audit_logsOrderByRelationAggregateInput
     roles?: rolesOrderByWithRelationInput
+    vendor_attendance?: vendor_attendanceOrderByRelationAggregateInput
     _relevance?: usersOrderByRelevanceInput
   }
 
@@ -46028,6 +47315,9 @@ export namespace Prisma {
     otp_expiry?: DateTimeNullableFilter<"users"> | Date | string | null
     failed_login_attempts?: IntFilter<"users"> | number
     locked_until?: DateTimeNullableFilter<"users"> | Date | string | null
+    attendance_enabled?: BoolFilter<"users"> | boolean
+    face_reference_url?: StringNullableFilter<"users"> | string | null
+    face_verification_enabled?: BoolFilter<"users"> | boolean
     refresh_tokens?: Refresh_tokensListRelationFilter
     schedule_messages?: Schedule_messagesListRelationFilter
     schedule_targets?: Schedule_targetsListRelationFilter
@@ -46039,6 +47329,7 @@ export namespace Prisma {
     user_unit_access?: User_unit_accessListRelationFilter
     audit_logs?: Audit_logsListRelationFilter
     roles?: XOR<RolesNullableScalarRelationFilter, rolesWhereInput> | null
+    vendor_attendance?: Vendor_attendanceListRelationFilter
   }, "id" | "email">
 
   export type usersOrderByWithAggregationInput = {
@@ -46056,6 +47347,9 @@ export namespace Prisma {
     otp_expiry?: SortOrderInput | SortOrder
     failed_login_attempts?: SortOrder
     locked_until?: SortOrderInput | SortOrder
+    attendance_enabled?: SortOrder
+    face_reference_url?: SortOrderInput | SortOrder
+    face_verification_enabled?: SortOrder
     _count?: usersCountOrderByAggregateInput
     _avg?: usersAvgOrderByAggregateInput
     _max?: usersMaxOrderByAggregateInput
@@ -46081,6 +47375,9 @@ export namespace Prisma {
     otp_expiry?: DateTimeNullableWithAggregatesFilter<"users"> | Date | string | null
     failed_login_attempts?: IntWithAggregatesFilter<"users"> | number
     locked_until?: DateTimeNullableWithAggregatesFilter<"users"> | Date | string | null
+    attendance_enabled?: BoolWithAggregatesFilter<"users"> | boolean
+    face_reference_url?: StringNullableWithAggregatesFilter<"users"> | string | null
+    face_verification_enabled?: BoolWithAggregatesFilter<"users"> | boolean
   }
 
   export type audit_logsWhereInput = {
@@ -48497,6 +49794,97 @@ export namespace Prisma {
     notes?: StringNullableWithAggregatesFilter<"daily_ops_logs"> | string | null
   }
 
+  export type vendor_attendanceWhereInput = {
+    AND?: vendor_attendanceWhereInput | vendor_attendanceWhereInput[]
+    OR?: vendor_attendanceWhereInput[]
+    NOT?: vendor_attendanceWhereInput | vendor_attendanceWhereInput[]
+    id?: IntFilter<"vendor_attendance"> | number
+    user_id?: IntFilter<"vendor_attendance"> | number
+    project_id?: BigIntFilter<"vendor_attendance"> | bigint | number
+    check_in_time?: DateTimeFilter<"vendor_attendance"> | Date | string
+    check_out_time?: DateTimeNullableFilter<"vendor_attendance"> | Date | string | null
+    check_in_lat?: DecimalNullableFilter<"vendor_attendance"> | Decimal | DecimalJsLike | number | string | null
+    check_in_long?: DecimalNullableFilter<"vendor_attendance"> | Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: DecimalNullableFilter<"vendor_attendance"> | Decimal | DecimalJsLike | number | string | null
+    check_out_long?: DecimalNullableFilter<"vendor_attendance"> | Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: StringNullableFilter<"vendor_attendance"> | string | null
+    check_out_photo?: StringNullableFilter<"vendor_attendance"> | string | null
+    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    projects?: XOR<ProjectsScalarRelationFilter, projectsWhereInput>
+  }
+
+  export type vendor_attendanceOrderByWithRelationInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    project_id?: SortOrder
+    check_in_time?: SortOrder
+    check_out_time?: SortOrderInput | SortOrder
+    check_in_lat?: SortOrderInput | SortOrder
+    check_in_long?: SortOrderInput | SortOrder
+    check_out_lat?: SortOrderInput | SortOrder
+    check_out_long?: SortOrderInput | SortOrder
+    check_in_photo?: SortOrderInput | SortOrder
+    check_out_photo?: SortOrderInput | SortOrder
+    users?: usersOrderByWithRelationInput
+    projects?: projectsOrderByWithRelationInput
+    _relevance?: vendor_attendanceOrderByRelevanceInput
+  }
+
+  export type vendor_attendanceWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: vendor_attendanceWhereInput | vendor_attendanceWhereInput[]
+    OR?: vendor_attendanceWhereInput[]
+    NOT?: vendor_attendanceWhereInput | vendor_attendanceWhereInput[]
+    user_id?: IntFilter<"vendor_attendance"> | number
+    project_id?: BigIntFilter<"vendor_attendance"> | bigint | number
+    check_in_time?: DateTimeFilter<"vendor_attendance"> | Date | string
+    check_out_time?: DateTimeNullableFilter<"vendor_attendance"> | Date | string | null
+    check_in_lat?: DecimalNullableFilter<"vendor_attendance"> | Decimal | DecimalJsLike | number | string | null
+    check_in_long?: DecimalNullableFilter<"vendor_attendance"> | Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: DecimalNullableFilter<"vendor_attendance"> | Decimal | DecimalJsLike | number | string | null
+    check_out_long?: DecimalNullableFilter<"vendor_attendance"> | Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: StringNullableFilter<"vendor_attendance"> | string | null
+    check_out_photo?: StringNullableFilter<"vendor_attendance"> | string | null
+    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    projects?: XOR<ProjectsScalarRelationFilter, projectsWhereInput>
+  }, "id">
+
+  export type vendor_attendanceOrderByWithAggregationInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    project_id?: SortOrder
+    check_in_time?: SortOrder
+    check_out_time?: SortOrderInput | SortOrder
+    check_in_lat?: SortOrderInput | SortOrder
+    check_in_long?: SortOrderInput | SortOrder
+    check_out_lat?: SortOrderInput | SortOrder
+    check_out_long?: SortOrderInput | SortOrder
+    check_in_photo?: SortOrderInput | SortOrder
+    check_out_photo?: SortOrderInput | SortOrder
+    _count?: vendor_attendanceCountOrderByAggregateInput
+    _avg?: vendor_attendanceAvgOrderByAggregateInput
+    _max?: vendor_attendanceMaxOrderByAggregateInput
+    _min?: vendor_attendanceMinOrderByAggregateInput
+    _sum?: vendor_attendanceSumOrderByAggregateInput
+  }
+
+  export type vendor_attendanceScalarWhereWithAggregatesInput = {
+    AND?: vendor_attendanceScalarWhereWithAggregatesInput | vendor_attendanceScalarWhereWithAggregatesInput[]
+    OR?: vendor_attendanceScalarWhereWithAggregatesInput[]
+    NOT?: vendor_attendanceScalarWhereWithAggregatesInput | vendor_attendanceScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"vendor_attendance"> | number
+    user_id?: IntWithAggregatesFilter<"vendor_attendance"> | number
+    project_id?: BigIntWithAggregatesFilter<"vendor_attendance"> | bigint | number
+    check_in_time?: DateTimeWithAggregatesFilter<"vendor_attendance"> | Date | string
+    check_out_time?: DateTimeNullableWithAggregatesFilter<"vendor_attendance"> | Date | string | null
+    check_in_lat?: DecimalNullableWithAggregatesFilter<"vendor_attendance"> | Decimal | DecimalJsLike | number | string | null
+    check_in_long?: DecimalNullableWithAggregatesFilter<"vendor_attendance"> | Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: DecimalNullableWithAggregatesFilter<"vendor_attendance"> | Decimal | DecimalJsLike | number | string | null
+    check_out_long?: DecimalNullableWithAggregatesFilter<"vendor_attendance"> | Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: StringNullableWithAggregatesFilter<"vendor_attendance"> | string | null
+    check_out_photo?: StringNullableWithAggregatesFilter<"vendor_attendance"> | string | null
+  }
+
   export type customersCreateInput = {
     name: string
     pic_name?: string | null
@@ -48645,6 +50033,7 @@ export namespace Prisma {
     schedules?: schedulesCreateNestedManyWithoutProjectsInput
     units?: unitsCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateInput = {
@@ -48659,6 +50048,7 @@ export namespace Prisma {
     schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUpdateInput = {
@@ -48673,6 +50063,7 @@ export namespace Prisma {
     schedules?: schedulesUpdateManyWithoutProjectsNestedInput
     units?: unitsUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateInput = {
@@ -48687,6 +50078,7 @@ export namespace Prisma {
     schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsCreateManyInput = {
@@ -49199,6 +50591,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
@@ -49210,6 +50605,7 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateInput = {
@@ -49227,6 +50623,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
@@ -49237,6 +50636,7 @@ export namespace Prisma {
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersUpdateInput = {
@@ -49252,6 +50652,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
@@ -49263,6 +50666,7 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateInput = {
@@ -49280,6 +50684,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
@@ -49290,6 +50697,7 @@ export namespace Prisma {
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type usersCreateManyInput = {
@@ -49307,6 +50715,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
   }
 
   export type usersUpdateManyMutationInput = {
@@ -49322,6 +50733,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type usersUncheckedUpdateManyInput = {
@@ -49339,6 +50753,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type audit_logsCreateInput = {
@@ -51973,6 +53390,99 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type vendor_attendanceCreateInput = {
+    check_in_time?: Date | string
+    check_out_time?: Date | string | null
+    check_in_lat?: Decimal | DecimalJsLike | number | string | null
+    check_in_long?: Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: Decimal | DecimalJsLike | number | string | null
+    check_out_long?: Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: string | null
+    check_out_photo?: string | null
+    users: usersCreateNestedOneWithoutVendor_attendanceInput
+    projects: projectsCreateNestedOneWithoutVendor_attendanceInput
+  }
+
+  export type vendor_attendanceUncheckedCreateInput = {
+    id?: number
+    user_id: number
+    project_id: bigint | number
+    check_in_time?: Date | string
+    check_out_time?: Date | string | null
+    check_in_lat?: Decimal | DecimalJsLike | number | string | null
+    check_in_long?: Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: Decimal | DecimalJsLike | number | string | null
+    check_out_long?: Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: string | null
+    check_out_photo?: string | null
+  }
+
+  export type vendor_attendanceUpdateInput = {
+    check_in_time?: DateTimeFieldUpdateOperationsInput | Date | string
+    check_out_time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    check_in_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: NullableStringFieldUpdateOperationsInput | string | null
+    check_out_photo?: NullableStringFieldUpdateOperationsInput | string | null
+    users?: usersUpdateOneRequiredWithoutVendor_attendanceNestedInput
+    projects?: projectsUpdateOneRequiredWithoutVendor_attendanceNestedInput
+  }
+
+  export type vendor_attendanceUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    user_id?: IntFieldUpdateOperationsInput | number
+    project_id?: BigIntFieldUpdateOperationsInput | bigint | number
+    check_in_time?: DateTimeFieldUpdateOperationsInput | Date | string
+    check_out_time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    check_in_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: NullableStringFieldUpdateOperationsInput | string | null
+    check_out_photo?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type vendor_attendanceCreateManyInput = {
+    id?: number
+    user_id: number
+    project_id: bigint | number
+    check_in_time?: Date | string
+    check_out_time?: Date | string | null
+    check_in_lat?: Decimal | DecimalJsLike | number | string | null
+    check_in_long?: Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: Decimal | DecimalJsLike | number | string | null
+    check_out_long?: Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: string | null
+    check_out_photo?: string | null
+  }
+
+  export type vendor_attendanceUpdateManyMutationInput = {
+    check_in_time?: DateTimeFieldUpdateOperationsInput | Date | string
+    check_out_time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    check_in_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: NullableStringFieldUpdateOperationsInput | string | null
+    check_out_photo?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type vendor_attendanceUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    user_id?: IntFieldUpdateOperationsInput | number
+    project_id?: BigIntFieldUpdateOperationsInput | bigint | number
+    check_in_time?: DateTimeFieldUpdateOperationsInput | Date | string
+    check_out_time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    check_in_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: NullableStringFieldUpdateOperationsInput | string | null
+    check_out_photo?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -52329,6 +53839,12 @@ export namespace Prisma {
     none?: user_project_accessWhereInput
   }
 
+  export type Vendor_attendanceListRelationFilter = {
+    every?: vendor_attendanceWhereInput
+    some?: vendor_attendanceWhereInput
+    none?: vendor_attendanceWhereInput
+  }
+
   export type schedule_targetsOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -52342,6 +53858,10 @@ export namespace Prisma {
   }
 
   export type user_project_accessOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type vendor_attendanceOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -53002,6 +54522,9 @@ export namespace Prisma {
     otp_expiry?: SortOrder
     failed_login_attempts?: SortOrder
     locked_until?: SortOrder
+    attendance_enabled?: SortOrder
+    face_reference_url?: SortOrder
+    face_verification_enabled?: SortOrder
   }
 
   export type usersAvgOrderByAggregateInput = {
@@ -53025,6 +54548,9 @@ export namespace Prisma {
     otp_expiry?: SortOrder
     failed_login_attempts?: SortOrder
     locked_until?: SortOrder
+    attendance_enabled?: SortOrder
+    face_reference_url?: SortOrder
+    face_verification_enabled?: SortOrder
   }
 
   export type usersMinOrderByAggregateInput = {
@@ -53042,6 +54568,9 @@ export namespace Prisma {
     otp_expiry?: SortOrder
     failed_login_attempts?: SortOrder
     locked_until?: SortOrder
+    attendance_enabled?: SortOrder
+    face_reference_url?: SortOrder
+    face_verification_enabled?: SortOrder
   }
 
   export type usersSumOrderByAggregateInput = {
@@ -55164,6 +56693,74 @@ export namespace Prisma {
     static_pressure?: SortOrder
   }
 
+  export type vendor_attendanceOrderByRelevanceInput = {
+    fields: vendor_attendanceOrderByRelevanceFieldEnum | vendor_attendanceOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type vendor_attendanceCountOrderByAggregateInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    project_id?: SortOrder
+    check_in_time?: SortOrder
+    check_out_time?: SortOrder
+    check_in_lat?: SortOrder
+    check_in_long?: SortOrder
+    check_out_lat?: SortOrder
+    check_out_long?: SortOrder
+    check_in_photo?: SortOrder
+    check_out_photo?: SortOrder
+  }
+
+  export type vendor_attendanceAvgOrderByAggregateInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    project_id?: SortOrder
+    check_in_lat?: SortOrder
+    check_in_long?: SortOrder
+    check_out_lat?: SortOrder
+    check_out_long?: SortOrder
+  }
+
+  export type vendor_attendanceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    project_id?: SortOrder
+    check_in_time?: SortOrder
+    check_out_time?: SortOrder
+    check_in_lat?: SortOrder
+    check_in_long?: SortOrder
+    check_out_lat?: SortOrder
+    check_out_long?: SortOrder
+    check_in_photo?: SortOrder
+    check_out_photo?: SortOrder
+  }
+
+  export type vendor_attendanceMinOrderByAggregateInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    project_id?: SortOrder
+    check_in_time?: SortOrder
+    check_out_time?: SortOrder
+    check_in_lat?: SortOrder
+    check_in_long?: SortOrder
+    check_out_lat?: SortOrder
+    check_out_long?: SortOrder
+    check_in_photo?: SortOrder
+    check_out_photo?: SortOrder
+  }
+
+  export type vendor_attendanceSumOrderByAggregateInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    project_id?: SortOrder
+    check_in_lat?: SortOrder
+    check_in_long?: SortOrder
+    check_out_lat?: SortOrder
+    check_out_long?: SortOrder
+  }
+
   export type contractsCreateNestedManyWithoutCustomersInput = {
     create?: XOR<contractsCreateWithoutCustomersInput, contractsUncheckedCreateWithoutCustomersInput> | contractsCreateWithoutCustomersInput[] | contractsUncheckedCreateWithoutCustomersInput[]
     connectOrCreate?: contractsCreateOrConnectWithoutCustomersInput | contractsCreateOrConnectWithoutCustomersInput[]
@@ -55444,6 +57041,13 @@ export namespace Prisma {
     connect?: user_project_accessWhereUniqueInput | user_project_accessWhereUniqueInput[]
   }
 
+  export type vendor_attendanceCreateNestedManyWithoutProjectsInput = {
+    create?: XOR<vendor_attendanceCreateWithoutProjectsInput, vendor_attendanceUncheckedCreateWithoutProjectsInput> | vendor_attendanceCreateWithoutProjectsInput[] | vendor_attendanceUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: vendor_attendanceCreateOrConnectWithoutProjectsInput | vendor_attendanceCreateOrConnectWithoutProjectsInput[]
+    createMany?: vendor_attendanceCreateManyProjectsInputEnvelope
+    connect?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+  }
+
   export type schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput = {
     create?: XOR<schedule_targetsCreateWithoutProjectsInput, schedule_targetsUncheckedCreateWithoutProjectsInput> | schedule_targetsCreateWithoutProjectsInput[] | schedule_targetsUncheckedCreateWithoutProjectsInput[]
     connectOrCreate?: schedule_targetsCreateOrConnectWithoutProjectsInput | schedule_targetsCreateOrConnectWithoutProjectsInput[]
@@ -55470,6 +57074,13 @@ export namespace Prisma {
     connectOrCreate?: user_project_accessCreateOrConnectWithoutProjectsInput | user_project_accessCreateOrConnectWithoutProjectsInput[]
     createMany?: user_project_accessCreateManyProjectsInputEnvelope
     connect?: user_project_accessWhereUniqueInput | user_project_accessWhereUniqueInput[]
+  }
+
+  export type vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput = {
+    create?: XOR<vendor_attendanceCreateWithoutProjectsInput, vendor_attendanceUncheckedCreateWithoutProjectsInput> | vendor_attendanceCreateWithoutProjectsInput[] | vendor_attendanceUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: vendor_attendanceCreateOrConnectWithoutProjectsInput | vendor_attendanceCreateOrConnectWithoutProjectsInput[]
+    createMany?: vendor_attendanceCreateManyProjectsInputEnvelope
+    connect?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
   }
 
   export type Enumprojects_statusFieldUpdateOperationsInput = {
@@ -55544,6 +57155,20 @@ export namespace Prisma {
     deleteMany?: user_project_accessScalarWhereInput | user_project_accessScalarWhereInput[]
   }
 
+  export type vendor_attendanceUpdateManyWithoutProjectsNestedInput = {
+    create?: XOR<vendor_attendanceCreateWithoutProjectsInput, vendor_attendanceUncheckedCreateWithoutProjectsInput> | vendor_attendanceCreateWithoutProjectsInput[] | vendor_attendanceUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: vendor_attendanceCreateOrConnectWithoutProjectsInput | vendor_attendanceCreateOrConnectWithoutProjectsInput[]
+    upsert?: vendor_attendanceUpsertWithWhereUniqueWithoutProjectsInput | vendor_attendanceUpsertWithWhereUniqueWithoutProjectsInput[]
+    createMany?: vendor_attendanceCreateManyProjectsInputEnvelope
+    set?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+    disconnect?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+    delete?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+    connect?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+    update?: vendor_attendanceUpdateWithWhereUniqueWithoutProjectsInput | vendor_attendanceUpdateWithWhereUniqueWithoutProjectsInput[]
+    updateMany?: vendor_attendanceUpdateManyWithWhereWithoutProjectsInput | vendor_attendanceUpdateManyWithWhereWithoutProjectsInput[]
+    deleteMany?: vendor_attendanceScalarWhereInput | vendor_attendanceScalarWhereInput[]
+  }
+
   export type schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput = {
     create?: XOR<schedule_targetsCreateWithoutProjectsInput, schedule_targetsUncheckedCreateWithoutProjectsInput> | schedule_targetsCreateWithoutProjectsInput[] | schedule_targetsUncheckedCreateWithoutProjectsInput[]
     connectOrCreate?: schedule_targetsCreateOrConnectWithoutProjectsInput | schedule_targetsCreateOrConnectWithoutProjectsInput[]
@@ -55598,6 +57223,20 @@ export namespace Prisma {
     update?: user_project_accessUpdateWithWhereUniqueWithoutProjectsInput | user_project_accessUpdateWithWhereUniqueWithoutProjectsInput[]
     updateMany?: user_project_accessUpdateManyWithWhereWithoutProjectsInput | user_project_accessUpdateManyWithWhereWithoutProjectsInput[]
     deleteMany?: user_project_accessScalarWhereInput | user_project_accessScalarWhereInput[]
+  }
+
+  export type vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput = {
+    create?: XOR<vendor_attendanceCreateWithoutProjectsInput, vendor_attendanceUncheckedCreateWithoutProjectsInput> | vendor_attendanceCreateWithoutProjectsInput[] | vendor_attendanceUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: vendor_attendanceCreateOrConnectWithoutProjectsInput | vendor_attendanceCreateOrConnectWithoutProjectsInput[]
+    upsert?: vendor_attendanceUpsertWithWhereUniqueWithoutProjectsInput | vendor_attendanceUpsertWithWhereUniqueWithoutProjectsInput[]
+    createMany?: vendor_attendanceCreateManyProjectsInputEnvelope
+    set?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+    disconnect?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+    delete?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+    connect?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+    update?: vendor_attendanceUpdateWithWhereUniqueWithoutProjectsInput | vendor_attendanceUpdateWithWhereUniqueWithoutProjectsInput[]
+    updateMany?: vendor_attendanceUpdateManyWithWhereWithoutProjectsInput | vendor_attendanceUpdateManyWithWhereWithoutProjectsInput[]
+    deleteMany?: vendor_attendanceScalarWhereInput | vendor_attendanceScalarWhereInput[]
   }
 
   export type usersCreateNestedOneWithoutRefresh_tokensInput = {
@@ -56468,6 +58107,13 @@ export namespace Prisma {
     connect?: rolesWhereUniqueInput
   }
 
+  export type vendor_attendanceCreateNestedManyWithoutUsersInput = {
+    create?: XOR<vendor_attendanceCreateWithoutUsersInput, vendor_attendanceUncheckedCreateWithoutUsersInput> | vendor_attendanceCreateWithoutUsersInput[] | vendor_attendanceUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: vendor_attendanceCreateOrConnectWithoutUsersInput | vendor_attendanceCreateOrConnectWithoutUsersInput[]
+    createMany?: vendor_attendanceCreateManyUsersInputEnvelope
+    connect?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+  }
+
   export type refresh_tokensUncheckedCreateNestedManyWithoutUsersInput = {
     create?: XOR<refresh_tokensCreateWithoutUsersInput, refresh_tokensUncheckedCreateWithoutUsersInput> | refresh_tokensCreateWithoutUsersInput[] | refresh_tokensUncheckedCreateWithoutUsersInput[]
     connectOrCreate?: refresh_tokensCreateOrConnectWithoutUsersInput | refresh_tokensCreateOrConnectWithoutUsersInput[]
@@ -56536,6 +58182,13 @@ export namespace Prisma {
     connectOrCreate?: audit_logsCreateOrConnectWithoutUsersInput | audit_logsCreateOrConnectWithoutUsersInput[]
     createMany?: audit_logsCreateManyUsersInputEnvelope
     connect?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
+  }
+
+  export type vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput = {
+    create?: XOR<vendor_attendanceCreateWithoutUsersInput, vendor_attendanceUncheckedCreateWithoutUsersInput> | vendor_attendanceCreateWithoutUsersInput[] | vendor_attendanceUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: vendor_attendanceCreateOrConnectWithoutUsersInput | vendor_attendanceCreateOrConnectWithoutUsersInput[]
+    createMany?: vendor_attendanceCreateManyUsersInputEnvelope
+    connect?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
   }
 
   export type refresh_tokensUpdateManyWithoutUsersNestedInput = {
@@ -56688,6 +58341,20 @@ export namespace Prisma {
     update?: XOR<XOR<rolesUpdateToOneWithWhereWithoutUsersInput, rolesUpdateWithoutUsersInput>, rolesUncheckedUpdateWithoutUsersInput>
   }
 
+  export type vendor_attendanceUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<vendor_attendanceCreateWithoutUsersInput, vendor_attendanceUncheckedCreateWithoutUsersInput> | vendor_attendanceCreateWithoutUsersInput[] | vendor_attendanceUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: vendor_attendanceCreateOrConnectWithoutUsersInput | vendor_attendanceCreateOrConnectWithoutUsersInput[]
+    upsert?: vendor_attendanceUpsertWithWhereUniqueWithoutUsersInput | vendor_attendanceUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: vendor_attendanceCreateManyUsersInputEnvelope
+    set?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+    disconnect?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+    delete?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+    connect?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+    update?: vendor_attendanceUpdateWithWhereUniqueWithoutUsersInput | vendor_attendanceUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: vendor_attendanceUpdateManyWithWhereWithoutUsersInput | vendor_attendanceUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: vendor_attendanceScalarWhereInput | vendor_attendanceScalarWhereInput[]
+  }
+
   export type refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput = {
     create?: XOR<refresh_tokensCreateWithoutUsersInput, refresh_tokensUncheckedCreateWithoutUsersInput> | refresh_tokensCreateWithoutUsersInput[] | refresh_tokensUncheckedCreateWithoutUsersInput[]
     connectOrCreate?: refresh_tokensCreateOrConnectWithoutUsersInput | refresh_tokensCreateOrConnectWithoutUsersInput[]
@@ -56826,6 +58493,20 @@ export namespace Prisma {
     update?: audit_logsUpdateWithWhereUniqueWithoutUsersInput | audit_logsUpdateWithWhereUniqueWithoutUsersInput[]
     updateMany?: audit_logsUpdateManyWithWhereWithoutUsersInput | audit_logsUpdateManyWithWhereWithoutUsersInput[]
     deleteMany?: audit_logsScalarWhereInput | audit_logsScalarWhereInput[]
+  }
+
+  export type vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<vendor_attendanceCreateWithoutUsersInput, vendor_attendanceUncheckedCreateWithoutUsersInput> | vendor_attendanceCreateWithoutUsersInput[] | vendor_attendanceUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: vendor_attendanceCreateOrConnectWithoutUsersInput | vendor_attendanceCreateOrConnectWithoutUsersInput[]
+    upsert?: vendor_attendanceUpsertWithWhereUniqueWithoutUsersInput | vendor_attendanceUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: vendor_attendanceCreateManyUsersInputEnvelope
+    set?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+    disconnect?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+    delete?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+    connect?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+    update?: vendor_attendanceUpdateWithWhereUniqueWithoutUsersInput | vendor_attendanceUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: vendor_attendanceUpdateManyWithWhereWithoutUsersInput | vendor_attendanceUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: vendor_attendanceScalarWhereInput | vendor_attendanceScalarWhereInput[]
   }
 
   export type usersCreateNestedOneWithoutAudit_logsInput = {
@@ -57524,6 +59205,34 @@ export namespace Prisma {
     update?: XOR<XOR<unitsUpdateToOneWithWhereWithoutDaily_ops_logsInput, unitsUpdateWithoutDaily_ops_logsInput>, unitsUncheckedUpdateWithoutDaily_ops_logsInput>
   }
 
+  export type usersCreateNestedOneWithoutVendor_attendanceInput = {
+    create?: XOR<usersCreateWithoutVendor_attendanceInput, usersUncheckedCreateWithoutVendor_attendanceInput>
+    connectOrCreate?: usersCreateOrConnectWithoutVendor_attendanceInput
+    connect?: usersWhereUniqueInput
+  }
+
+  export type projectsCreateNestedOneWithoutVendor_attendanceInput = {
+    create?: XOR<projectsCreateWithoutVendor_attendanceInput, projectsUncheckedCreateWithoutVendor_attendanceInput>
+    connectOrCreate?: projectsCreateOrConnectWithoutVendor_attendanceInput
+    connect?: projectsWhereUniqueInput
+  }
+
+  export type usersUpdateOneRequiredWithoutVendor_attendanceNestedInput = {
+    create?: XOR<usersCreateWithoutVendor_attendanceInput, usersUncheckedCreateWithoutVendor_attendanceInput>
+    connectOrCreate?: usersCreateOrConnectWithoutVendor_attendanceInput
+    upsert?: usersUpsertWithoutVendor_attendanceInput
+    connect?: usersWhereUniqueInput
+    update?: XOR<XOR<usersUpdateToOneWithWhereWithoutVendor_attendanceInput, usersUpdateWithoutVendor_attendanceInput>, usersUncheckedUpdateWithoutVendor_attendanceInput>
+  }
+
+  export type projectsUpdateOneRequiredWithoutVendor_attendanceNestedInput = {
+    create?: XOR<projectsCreateWithoutVendor_attendanceInput, projectsUncheckedCreateWithoutVendor_attendanceInput>
+    connectOrCreate?: projectsCreateOrConnectWithoutVendor_attendanceInput
+    upsert?: projectsUpsertWithoutVendor_attendanceInput
+    connect?: projectsWhereUniqueInput
+    update?: XOR<XOR<projectsUpdateToOneWithWhereWithoutVendor_attendanceInput, projectsUpdateWithoutVendor_attendanceInput>, projectsUncheckedUpdateWithoutVendor_attendanceInput>
+  }
+
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -58168,6 +59877,7 @@ export namespace Prisma {
     schedules?: schedulesCreateNestedManyWithoutProjectsInput
     units?: unitsCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutCustomersInput = {
@@ -58181,6 +59891,7 @@ export namespace Prisma {
     schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutCustomersInput = {
@@ -58619,6 +60330,41 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type vendor_attendanceCreateWithoutProjectsInput = {
+    check_in_time?: Date | string
+    check_out_time?: Date | string | null
+    check_in_lat?: Decimal | DecimalJsLike | number | string | null
+    check_in_long?: Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: Decimal | DecimalJsLike | number | string | null
+    check_out_long?: Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: string | null
+    check_out_photo?: string | null
+    users: usersCreateNestedOneWithoutVendor_attendanceInput
+  }
+
+  export type vendor_attendanceUncheckedCreateWithoutProjectsInput = {
+    id?: number
+    user_id: number
+    check_in_time?: Date | string
+    check_out_time?: Date | string | null
+    check_in_lat?: Decimal | DecimalJsLike | number | string | null
+    check_in_long?: Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: Decimal | DecimalJsLike | number | string | null
+    check_out_long?: Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: string | null
+    check_out_photo?: string | null
+  }
+
+  export type vendor_attendanceCreateOrConnectWithoutProjectsInput = {
+    where: vendor_attendanceWhereUniqueInput
+    create: XOR<vendor_attendanceCreateWithoutProjectsInput, vendor_attendanceUncheckedCreateWithoutProjectsInput>
+  }
+
+  export type vendor_attendanceCreateManyProjectsInputEnvelope = {
+    data: vendor_attendanceCreateManyProjectsInput | vendor_attendanceCreateManyProjectsInput[]
+    skipDuplicates?: boolean
+  }
+
   export type customersUpsertWithoutProjectsInput = {
     update: XOR<customersUpdateWithoutProjectsInput, customersUncheckedUpdateWithoutProjectsInput>
     create: XOR<customersCreateWithoutProjectsInput, customersUncheckedCreateWithoutProjectsInput>
@@ -58793,6 +60539,39 @@ export namespace Prisma {
     project_id?: BigIntFilter<"user_project_access"> | bigint | number
   }
 
+  export type vendor_attendanceUpsertWithWhereUniqueWithoutProjectsInput = {
+    where: vendor_attendanceWhereUniqueInput
+    update: XOR<vendor_attendanceUpdateWithoutProjectsInput, vendor_attendanceUncheckedUpdateWithoutProjectsInput>
+    create: XOR<vendor_attendanceCreateWithoutProjectsInput, vendor_attendanceUncheckedCreateWithoutProjectsInput>
+  }
+
+  export type vendor_attendanceUpdateWithWhereUniqueWithoutProjectsInput = {
+    where: vendor_attendanceWhereUniqueInput
+    data: XOR<vendor_attendanceUpdateWithoutProjectsInput, vendor_attendanceUncheckedUpdateWithoutProjectsInput>
+  }
+
+  export type vendor_attendanceUpdateManyWithWhereWithoutProjectsInput = {
+    where: vendor_attendanceScalarWhereInput
+    data: XOR<vendor_attendanceUpdateManyMutationInput, vendor_attendanceUncheckedUpdateManyWithoutProjectsInput>
+  }
+
+  export type vendor_attendanceScalarWhereInput = {
+    AND?: vendor_attendanceScalarWhereInput | vendor_attendanceScalarWhereInput[]
+    OR?: vendor_attendanceScalarWhereInput[]
+    NOT?: vendor_attendanceScalarWhereInput | vendor_attendanceScalarWhereInput[]
+    id?: IntFilter<"vendor_attendance"> | number
+    user_id?: IntFilter<"vendor_attendance"> | number
+    project_id?: BigIntFilter<"vendor_attendance"> | bigint | number
+    check_in_time?: DateTimeFilter<"vendor_attendance"> | Date | string
+    check_out_time?: DateTimeNullableFilter<"vendor_attendance"> | Date | string | null
+    check_in_lat?: DecimalNullableFilter<"vendor_attendance"> | Decimal | DecimalJsLike | number | string | null
+    check_in_long?: DecimalNullableFilter<"vendor_attendance"> | Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: DecimalNullableFilter<"vendor_attendance"> | Decimal | DecimalJsLike | number | string | null
+    check_out_long?: DecimalNullableFilter<"vendor_attendance"> | Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: StringNullableFilter<"vendor_attendance"> | string | null
+    check_out_photo?: StringNullableFilter<"vendor_attendance"> | string | null
+  }
+
   export type usersCreateWithoutRefresh_tokensInput = {
     name: string
     email: string
@@ -58806,6 +60585,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
     schedules?: schedulesCreateNestedManyWithoutUsersInput
@@ -58816,6 +60598,7 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutRefresh_tokensInput = {
@@ -58833,6 +60616,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
     schedules?: schedulesUncheckedCreateNestedManyWithoutUsersInput
@@ -58842,6 +60628,7 @@ export namespace Prisma {
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutRefresh_tokensInput = {
@@ -58873,6 +60660,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
     schedules?: schedulesUpdateManyWithoutUsersNestedInput
@@ -58883,6 +60673,7 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutRefresh_tokensInput = {
@@ -58900,6 +60691,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
     schedules?: schedulesUncheckedUpdateManyWithoutUsersNestedInput
@@ -58909,6 +60703,7 @@ export namespace Prisma {
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type permissionsCreateWithoutRole_permissionsInput = {
@@ -59038,6 +60833,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
@@ -59048,6 +60846,7 @@ export namespace Prisma {
     user_roles?: user_rolesCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutRolesInput = {
@@ -59064,6 +60863,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
@@ -59074,6 +60876,7 @@ export namespace Prisma {
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutRolesInput = {
@@ -59160,6 +60963,9 @@ export namespace Prisma {
     otp_expiry?: DateTimeNullableFilter<"users"> | Date | string | null
     failed_login_attempts?: IntFilter<"users"> | number
     locked_until?: DateTimeNullableFilter<"users"> | Date | string | null
+    attendance_enabled?: BoolFilter<"users"> | boolean
+    face_reference_url?: StringNullableFilter<"users"> | string | null
+    face_verification_enabled?: BoolFilter<"users"> | boolean
   }
 
   export type activitiesCreateWithoutUnitsInput = {
@@ -59685,6 +61491,7 @@ export namespace Prisma {
     schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
     schedules?: schedulesCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutUnitsInput = {
@@ -59698,6 +61505,7 @@ export namespace Prisma {
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
     schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutUnitsInput = {
@@ -60134,6 +61942,7 @@ export namespace Prisma {
     schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutUnitsInput = {
@@ -60147,6 +61956,7 @@ export namespace Prisma {
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type user_unit_accessUpsertWithWhereUniqueWithoutUnitsInput = {
@@ -60184,6 +61994,7 @@ export namespace Prisma {
     schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
     schedules?: schedulesCreateNestedManyWithoutProjectsInput
     units?: unitsCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutUser_project_accessInput = {
@@ -60197,6 +62008,7 @@ export namespace Prisma {
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
     schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutUser_project_accessInput = {
@@ -60217,6 +62029,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
@@ -60227,6 +62042,7 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutUser_project_accessInput = {
@@ -60244,6 +62060,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
@@ -60253,6 +62072,7 @@ export namespace Prisma {
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutUser_project_accessInput = {
@@ -60282,6 +62102,7 @@ export namespace Prisma {
     schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUpdateManyWithoutProjectsNestedInput
     units?: unitsUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutUser_project_accessInput = {
@@ -60295,6 +62116,7 @@ export namespace Prisma {
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type usersUpsertWithoutUser_project_accessInput = {
@@ -60321,6 +62143,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
@@ -60331,6 +62156,7 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutUser_project_accessInput = {
@@ -60348,6 +62174,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
@@ -60357,6 +62186,7 @@ export namespace Prisma {
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type rolesCreateWithoutUser_rolesInput = {
@@ -60390,6 +62220,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
@@ -60400,6 +62233,7 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutUser_rolesInput = {
@@ -60417,6 +62251,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
@@ -60426,6 +62263,7 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutUser_rolesInput = {
@@ -60481,6 +62319,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
@@ -60491,6 +62332,7 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutUser_rolesInput = {
@@ -60508,6 +62350,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
@@ -60517,6 +62362,7 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type unitsCreateWithoutUser_unit_accessInput = {
@@ -60610,6 +62456,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
@@ -60620,6 +62469,7 @@ export namespace Prisma {
     user_roles?: user_rolesCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutUser_unit_accessInput = {
@@ -60637,6 +62487,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
@@ -60646,6 +62499,7 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutUser_unit_accessInput = {
@@ -60761,6 +62615,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
@@ -60771,6 +62628,7 @@ export namespace Prisma {
     user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutUser_unit_accessInput = {
@@ -60788,6 +62646,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
@@ -60797,6 +62658,7 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type refresh_tokensCreateWithoutUsersInput = {
@@ -61168,6 +63030,41 @@ export namespace Prisma {
     create: XOR<rolesCreateWithoutUsersInput, rolesUncheckedCreateWithoutUsersInput>
   }
 
+  export type vendor_attendanceCreateWithoutUsersInput = {
+    check_in_time?: Date | string
+    check_out_time?: Date | string | null
+    check_in_lat?: Decimal | DecimalJsLike | number | string | null
+    check_in_long?: Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: Decimal | DecimalJsLike | number | string | null
+    check_out_long?: Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: string | null
+    check_out_photo?: string | null
+    projects: projectsCreateNestedOneWithoutVendor_attendanceInput
+  }
+
+  export type vendor_attendanceUncheckedCreateWithoutUsersInput = {
+    id?: number
+    project_id: bigint | number
+    check_in_time?: Date | string
+    check_out_time?: Date | string | null
+    check_in_lat?: Decimal | DecimalJsLike | number | string | null
+    check_in_long?: Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: Decimal | DecimalJsLike | number | string | null
+    check_out_long?: Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: string | null
+    check_out_photo?: string | null
+  }
+
+  export type vendor_attendanceCreateOrConnectWithoutUsersInput = {
+    where: vendor_attendanceWhereUniqueInput
+    create: XOR<vendor_attendanceCreateWithoutUsersInput, vendor_attendanceUncheckedCreateWithoutUsersInput>
+  }
+
+  export type vendor_attendanceCreateManyUsersInputEnvelope = {
+    data: vendor_attendanceCreateManyUsersInput | vendor_attendanceCreateManyUsersInput[]
+    skipDuplicates?: boolean
+  }
+
   export type refresh_tokensUpsertWithWhereUniqueWithoutUsersInput = {
     where: refresh_tokensWhereUniqueInput
     update: XOR<refresh_tokensUpdateWithoutUsersInput, refresh_tokensUncheckedUpdateWithoutUsersInput>
@@ -61404,6 +63301,22 @@ export namespace Prisma {
     user_roles?: user_rolesUncheckedUpdateManyWithoutRolesNestedInput
   }
 
+  export type vendor_attendanceUpsertWithWhereUniqueWithoutUsersInput = {
+    where: vendor_attendanceWhereUniqueInput
+    update: XOR<vendor_attendanceUpdateWithoutUsersInput, vendor_attendanceUncheckedUpdateWithoutUsersInput>
+    create: XOR<vendor_attendanceCreateWithoutUsersInput, vendor_attendanceUncheckedCreateWithoutUsersInput>
+  }
+
+  export type vendor_attendanceUpdateWithWhereUniqueWithoutUsersInput = {
+    where: vendor_attendanceWhereUniqueInput
+    data: XOR<vendor_attendanceUpdateWithoutUsersInput, vendor_attendanceUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type vendor_attendanceUpdateManyWithWhereWithoutUsersInput = {
+    where: vendor_attendanceScalarWhereInput
+    data: XOR<vendor_attendanceUpdateManyMutationInput, vendor_attendanceUncheckedUpdateManyWithoutUsersInput>
+  }
+
   export type usersCreateWithoutAudit_logsInput = {
     name: string
     email: string
@@ -61417,6 +63330,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
@@ -61427,6 +63343,7 @@ export namespace Prisma {
     user_roles?: user_rolesCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutAudit_logsInput = {
@@ -61444,6 +63361,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
@@ -61453,6 +63373,7 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutAudit_logsInput = {
@@ -61484,6 +63405,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
@@ -61494,6 +63418,7 @@ export namespace Prisma {
     user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutAudit_logsInput = {
@@ -61511,6 +63436,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
@@ -61520,6 +63448,7 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type unitsCreateWithoutActivitiesInput = {
@@ -62821,6 +64750,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
@@ -62831,6 +64763,7 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutService_activitiesInput = {
@@ -62848,6 +64781,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
@@ -62857,6 +64793,7 @@ export namespace Prisma {
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutService_activitiesInput = {
@@ -63028,6 +64965,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
@@ -63038,6 +64978,7 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutService_activitiesInput = {
@@ -63055,6 +64996,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
@@ -63064,6 +65008,7 @@ export namespace Prisma {
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type unitsCreateWithoutService_logsInput = {
@@ -63793,6 +65738,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
@@ -63803,6 +65751,7 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutSchedulesInput = {
@@ -63820,6 +65769,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
@@ -63829,6 +65781,7 @@ export namespace Prisma {
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutSchedulesInput = {
@@ -63847,6 +65800,7 @@ export namespace Prisma {
     schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
     units?: unitsCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutSchedulesInput = {
@@ -63860,6 +65814,7 @@ export namespace Prisma {
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutSchedulesInput = {
@@ -64040,6 +65995,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
@@ -64050,6 +66008,7 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutSchedulesInput = {
@@ -64067,6 +66026,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
@@ -64076,6 +66038,7 @@ export namespace Prisma {
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type projectsUpsertWithoutSchedulesInput = {
@@ -64100,6 +66063,7 @@ export namespace Prisma {
     schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
     units?: unitsUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutSchedulesInput = {
@@ -64113,6 +66077,7 @@ export namespace Prisma {
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type unitsUpsertWithoutSchedulesInput = {
@@ -64419,6 +66384,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
     schedules?: schedulesCreateNestedManyWithoutUsersInput
@@ -64429,6 +66397,7 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutSchedule_messagesInput = {
@@ -64446,6 +66415,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
     schedules?: schedulesUncheckedCreateNestedManyWithoutUsersInput
@@ -64455,6 +66427,7 @@ export namespace Prisma {
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutSchedule_messagesInput = {
@@ -64531,6 +66504,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
     schedules?: schedulesUpdateManyWithoutUsersNestedInput
@@ -64541,6 +66517,7 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutSchedule_messagesInput = {
@@ -64558,6 +66535,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
     schedules?: schedulesUncheckedUpdateManyWithoutUsersNestedInput
@@ -64567,6 +66547,7 @@ export namespace Prisma {
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type usersCreateWithoutSchedule_targetsInput = {
@@ -64582,6 +66563,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedules?: schedulesCreateNestedManyWithoutUsersInput
@@ -64592,6 +66576,7 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutSchedule_targetsInput = {
@@ -64609,6 +66594,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedules?: schedulesUncheckedCreateNestedManyWithoutUsersInput
@@ -64618,6 +66606,7 @@ export namespace Prisma {
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutSchedule_targetsInput = {
@@ -64636,6 +66625,7 @@ export namespace Prisma {
     schedules?: schedulesCreateNestedManyWithoutProjectsInput
     units?: unitsCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutSchedule_targetsInput = {
@@ -64649,6 +66639,7 @@ export namespace Prisma {
     schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutSchedule_targetsInput = {
@@ -64680,6 +66671,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedules?: schedulesUpdateManyWithoutUsersNestedInput
@@ -64690,6 +66684,7 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutSchedule_targetsInput = {
@@ -64707,6 +66702,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedules?: schedulesUncheckedUpdateManyWithoutUsersNestedInput
@@ -64716,6 +66714,7 @@ export namespace Prisma {
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type projectsUpsertWithoutSchedule_targetsInput = {
@@ -64740,6 +66739,7 @@ export namespace Prisma {
     schedules?: schedulesUpdateManyWithoutProjectsNestedInput
     units?: unitsUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutSchedule_targetsInput = {
@@ -64753,6 +66753,7 @@ export namespace Prisma {
     schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type unitsCreateWithoutComplaintsInput = {
@@ -64930,6 +66931,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
@@ -64940,6 +66944,7 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutUser_push_tokensInput = {
@@ -64957,6 +66962,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
@@ -64966,6 +66974,7 @@ export namespace Prisma {
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
     audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutUser_push_tokensInput = {
@@ -64997,6 +67006,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
@@ -65007,6 +67019,7 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutUser_push_tokensInput = {
@@ -65024,6 +67037,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
@@ -65033,6 +67049,7 @@ export namespace Prisma {
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type unitsCreateWithoutDaily_ops_logsInput = {
@@ -65197,6 +67214,212 @@ export namespace Prisma {
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUnitsNestedInput
   }
 
+  export type usersCreateWithoutVendor_attendanceInput = {
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
+    schedules?: schedulesCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    roles?: rolesCreateNestedOneWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateWithoutVendor_attendanceInput = {
+    id?: number
+    role_id?: number | null
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
+    schedules?: schedulesUncheckedCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesUncheckedCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersCreateOrConnectWithoutVendor_attendanceInput = {
+    where: usersWhereUniqueInput
+    create: XOR<usersCreateWithoutVendor_attendanceInput, usersUncheckedCreateWithoutVendor_attendanceInput>
+  }
+
+  export type projectsCreateWithoutVendor_attendanceInput = {
+    id?: bigint | number
+    name: string
+    code?: string | null
+    status?: $Enums.projects_status
+    created_at?: Date | string
+    enabled_forms?: string | null
+    customers: customersCreateNestedOneWithoutProjectsInput
+    schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
+    schedules?: schedulesCreateNestedManyWithoutProjectsInput
+    units?: unitsCreateNestedManyWithoutProjectsInput
+    user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
+  }
+
+  export type projectsUncheckedCreateWithoutVendor_attendanceInput = {
+    id?: bigint | number
+    customer_id: number
+    name: string
+    code?: string | null
+    status?: $Enums.projects_status
+    created_at?: Date | string
+    enabled_forms?: string | null
+    schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
+    schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
+    units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
+    user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
+  }
+
+  export type projectsCreateOrConnectWithoutVendor_attendanceInput = {
+    where: projectsWhereUniqueInput
+    create: XOR<projectsCreateWithoutVendor_attendanceInput, projectsUncheckedCreateWithoutVendor_attendanceInput>
+  }
+
+  export type usersUpsertWithoutVendor_attendanceInput = {
+    update: XOR<usersUpdateWithoutVendor_attendanceInput, usersUncheckedUpdateWithoutVendor_attendanceInput>
+    create: XOR<usersCreateWithoutVendor_attendanceInput, usersUncheckedCreateWithoutVendor_attendanceInput>
+    where?: usersWhereInput
+  }
+
+  export type usersUpdateToOneWithWhereWithoutVendor_attendanceInput = {
+    where?: usersWhereInput
+    data: XOR<usersUpdateWithoutVendor_attendanceInput, usersUncheckedUpdateWithoutVendor_attendanceInput>
+  }
+
+  export type usersUpdateWithoutVendor_attendanceInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    roles?: rolesUpdateOneWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateWithoutVendor_attendanceInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    role_id?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUncheckedUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUncheckedUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUncheckedUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type projectsUpsertWithoutVendor_attendanceInput = {
+    update: XOR<projectsUpdateWithoutVendor_attendanceInput, projectsUncheckedUpdateWithoutVendor_attendanceInput>
+    create: XOR<projectsCreateWithoutVendor_attendanceInput, projectsUncheckedCreateWithoutVendor_attendanceInput>
+    where?: projectsWhereInput
+  }
+
+  export type projectsUpdateToOneWithWhereWithoutVendor_attendanceInput = {
+    where?: projectsWhereInput
+    data: XOR<projectsUpdateWithoutVendor_attendanceInput, projectsUncheckedUpdateWithoutVendor_attendanceInput>
+  }
+
+  export type projectsUpdateWithoutVendor_attendanceInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
+    schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
+    schedules?: schedulesUpdateManyWithoutProjectsNestedInput
+    units?: unitsUpdateManyWithoutProjectsNestedInput
+    user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
+  }
+
+  export type projectsUncheckedUpdateWithoutVendor_attendanceInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    customer_id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
+    schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
+    units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
+    user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
+  }
+
   export type contractsCreateManyCustomersInput = {
     id?: number
     site_id?: number | null
@@ -65275,6 +67498,7 @@ export namespace Prisma {
     schedules?: schedulesUpdateManyWithoutProjectsNestedInput
     units?: unitsUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutCustomersInput = {
@@ -65288,6 +67512,7 @@ export namespace Prisma {
     schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateManyWithoutCustomersInput = {
@@ -65422,6 +67647,19 @@ export namespace Prisma {
 
   export type user_project_accessCreateManyProjectsInput = {
     user_id: number
+  }
+
+  export type vendor_attendanceCreateManyProjectsInput = {
+    id?: number
+    user_id: number
+    check_in_time?: Date | string
+    check_out_time?: Date | string | null
+    check_in_lat?: Decimal | DecimalJsLike | number | string | null
+    check_in_long?: Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: Decimal | DecimalJsLike | number | string | null
+    check_out_long?: Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: string | null
+    check_out_photo?: string | null
   }
 
   export type schedule_targetsUpdateWithoutProjectsInput = {
@@ -65614,6 +67852,44 @@ export namespace Prisma {
     user_id?: IntFieldUpdateOperationsInput | number
   }
 
+  export type vendor_attendanceUpdateWithoutProjectsInput = {
+    check_in_time?: DateTimeFieldUpdateOperationsInput | Date | string
+    check_out_time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    check_in_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: NullableStringFieldUpdateOperationsInput | string | null
+    check_out_photo?: NullableStringFieldUpdateOperationsInput | string | null
+    users?: usersUpdateOneRequiredWithoutVendor_attendanceNestedInput
+  }
+
+  export type vendor_attendanceUncheckedUpdateWithoutProjectsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    user_id?: IntFieldUpdateOperationsInput | number
+    check_in_time?: DateTimeFieldUpdateOperationsInput | Date | string
+    check_out_time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    check_in_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: NullableStringFieldUpdateOperationsInput | string | null
+    check_out_photo?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type vendor_attendanceUncheckedUpdateManyWithoutProjectsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    user_id?: IntFieldUpdateOperationsInput | number
+    check_in_time?: DateTimeFieldUpdateOperationsInput | Date | string
+    check_out_time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    check_in_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: NullableStringFieldUpdateOperationsInput | string | null
+    check_out_photo?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type role_permissionsCreateManyRolesInput = {
     permission_id: bigint | number
   }
@@ -65636,6 +67912,9 @@ export namespace Prisma {
     otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
   }
 
   export type role_permissionsUpdateWithoutRolesInput = {
@@ -65675,6 +67954,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
@@ -65685,6 +67967,7 @@ export namespace Prisma {
     user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutRolesInput = {
@@ -65701,6 +67984,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
@@ -65711,6 +67997,7 @@ export namespace Prisma {
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
     audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateManyWithoutRolesInput = {
@@ -65727,6 +68014,9 @@ export namespace Prisma {
     otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type activitiesCreateManyUnitsInput = {
@@ -66671,6 +68961,19 @@ export namespace Prisma {
     created_at?: Date | string | null
   }
 
+  export type vendor_attendanceCreateManyUsersInput = {
+    id?: number
+    project_id: bigint | number
+    check_in_time?: Date | string
+    check_out_time?: Date | string | null
+    check_in_lat?: Decimal | DecimalJsLike | number | string | null
+    check_in_long?: Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: Decimal | DecimalJsLike | number | string | null
+    check_out_long?: Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: string | null
+    check_out_photo?: string | null
+  }
+
   export type refresh_tokensUpdateWithoutUsersInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     token_hash?: StringFieldUpdateOperationsInput | string
@@ -67042,6 +69345,44 @@ export namespace Prisma {
     ip_address?: NullableStringFieldUpdateOperationsInput | string | null
     user_agent?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type vendor_attendanceUpdateWithoutUsersInput = {
+    check_in_time?: DateTimeFieldUpdateOperationsInput | Date | string
+    check_out_time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    check_in_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: NullableStringFieldUpdateOperationsInput | string | null
+    check_out_photo?: NullableStringFieldUpdateOperationsInput | string | null
+    projects?: projectsUpdateOneRequiredWithoutVendor_attendanceNestedInput
+  }
+
+  export type vendor_attendanceUncheckedUpdateWithoutUsersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    project_id?: BigIntFieldUpdateOperationsInput | bigint | number
+    check_in_time?: DateTimeFieldUpdateOperationsInput | Date | string
+    check_out_time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    check_in_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: NullableStringFieldUpdateOperationsInput | string | null
+    check_out_photo?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type vendor_attendanceUncheckedUpdateManyWithoutUsersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    project_id?: BigIntFieldUpdateOperationsInput | bigint | number
+    check_in_time?: DateTimeFieldUpdateOperationsInput | Date | string
+    check_out_time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    check_in_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_out_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    check_in_photo?: NullableStringFieldUpdateOperationsInput | string | null
+    check_out_photo?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type activity_photosCreateManyService_activitiesInput = {

@@ -6,9 +6,11 @@ import { APP_VERSION } from "@/lib/version";
 
 export default function UpdatePrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const [serverVersion, setServerVersion] = useState(APP_VERSION);
 
   useEffect(() => {
+    setIsMounted(true);
     const isStandalone = (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator as any).standalone;
     if (!isStandalone) return;
 
@@ -40,7 +42,7 @@ export default function UpdatePrompt() {
     window.location.reload();
   };
 
-  if (!showPrompt) return null;
+  if (!isMounted || !showPrompt) return null;
 
   return (
     <div className="fixed bottom-24 left-4 right-4 md:left-auto md:right-8 md:bottom-8 z-[9999] animate-in fade-in slide-in-from-bottom-4 duration-500">

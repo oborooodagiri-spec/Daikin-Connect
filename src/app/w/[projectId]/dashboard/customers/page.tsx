@@ -11,8 +11,11 @@ import {
   Power, PowerOff, X, Save, AlertTriangle
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useParams } from "next/navigation";
 
 export default function CustomersPage() {
+  const params = useParams();
+  const projectId = params.projectId as string;
   const [customers, setCustomers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -245,7 +248,7 @@ export default function CustomersPage() {
                       </td>
 
                       <td className="px-8 py-5 text-right w-40">
-                        <Link href={`/dashboard/customers/${customer.id}/projects`} className={`inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl border border-slate-200/60 shadow-sm transition-all hover:ring-2 hover:ring-blue-100
+                        <Link href={`/w/${projectId}/dashboard/customers/${customer.id}/projects`} className={`inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl border border-slate-200/60 shadow-sm transition-all hover:ring-2 hover:ring-blue-100
                           ${customer.is_active ? 'bg-white text-[#003366] hover:border-blue-300 cursor-pointer' : 'bg-slate-50 text-slate-400 cursor-not-allowed pointer-events-none'}`}>
                           <Bookmark size={14} className="opacity-50" />
                           <span className="text-sm font-black">{customer.projects_count}</span>

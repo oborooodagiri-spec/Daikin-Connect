@@ -8,7 +8,7 @@ import {
   ChevronRight, Building2, User, ImageIcon, ExternalLink, History, Download
 } from "lucide-react";
 import UnitHistoryTimeline from "./UnitHistoryTimeline";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import QRCode from "react-qr-code";
 import { updateUnit, getUnitHealthScore } from "@/app/actions/units";
 import { getUnitMediaHistory } from "@/app/actions/media";
@@ -65,6 +65,7 @@ export default function UnitDetailModal({
   customerId, projectId, session, onRefresh
 }: UnitDetailModalProps) {
   const router = useRouter();
+  const params = useParams();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<any>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -597,7 +598,7 @@ export default function UnitDetailModal({
                       </div>
 
                       <button 
-                        onClick={() => router.push(`/dashboard/schedules`)} 
+                        onClick={() => router.push(`/w/${params.projectId || projectId}/dashboard/schedules?projectId=${projectId}`)} 
                         className="flex items-center gap-3 px-6 py-3 bg-white border border-[#003366]/20 text-[#003366] text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-[#00a1e4] hover:text-white transition-all shadow-sm group"
                       >
                         <Clock size={16} className="group-hover:translate-x-1 transition-transform"/> {lang === 'ja' ? 'サイトカレンダーを表示' : 'View Site Calendar'}

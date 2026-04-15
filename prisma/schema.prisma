@@ -43,6 +43,7 @@ model projects {
   schedules           schedules[]
   units               units[]
   user_project_access user_project_access[]
+  vendor_attendance   vendor_attendance[]
 
   @@unique([customer_id, name], map: "uq_project_per_customer")
   @@index([customer_id], map: "idx_projects_customer")
@@ -151,22 +152,25 @@ model user_unit_access {
 }
 
 model users {
-  id                  Int                   @id @default(autoincrement())
-  role_id             Int?
-  name                String                @db.VarChar(150)
-  email               String                @unique(map: "email") @db.VarChar(150)
-  password            String                @db.VarChar(255)
-  phone               String?               @db.VarChar(20)
-  is_active           Boolean               @default(true)
-  company_name        String?               @db.VarChar(150)
-  
+  id           Int     @id @default(autoincrement())
+  role_id      Int?
+  name         String  @db.VarChar(150)
+  email        String  @unique(map: "email") @db.VarChar(150)
+  password     String  @db.VarChar(255)
+  phone        String? @db.VarChar(20)
+  is_active    Boolean @default(true)
+  company_name String? @db.VarChar(150)
+
   // Security & 2FA
-  two_factor_enabled  Boolean               @default(true)
-  two_factor_secret   String?               @db.VarChar(255)
-  otp_code            String?               @db.VarChar(6)
-  otp_expiry          DateTime?             @db.DateTime(0)
-  failed_login_attempts Int                 @default(0)
-  locked_until        DateTime?             @db.DateTime(0)
+  two_factor_enabled    Boolean   @default(true)
+  two_factor_secret     String?   @db.VarChar(255)
+  otp_code              String?   @db.VarChar(6)
+  otp_expiry            DateTime? @db.DateTime(0)
+  failed_login_attempts Int       @default(0)
+  locked_until          DateTime? @db.DateTime(0)
+  attendance_enabled    Boolean   @default(false)
+  face_reference_url    String?   @db.VarChar(255)
+  face_verification_enabled Boolean @default(true)
 
   refresh_tokens      refresh_tokens[]
   schedule_messages   schedule_messages[]
@@ -179,6 +183,7 @@ model users {
   user_unit_access    user_unit_access[]
   audit_logs          audit_logs[]
   roles               roles?                @relation(fields: [role_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "users_ibfk_1")
+  vendor_attendance   vendor_attendance[]
 
   @@index([role_id], map: "role_id")
 }
@@ -759,4 +764,26 @@ enum ScheduleStatus {
   InProgress
   Completed
   Missed
+}
+
+model vendor_attendance {
+  id             Int       @id @default(autoincrement())
+  user_id        Int
+  project_id     BigInt    @db.UnsignedBigInt
+  check_in_time  DateTime  @default(now()) @db.Timestamp(0)
+  check_out_time DateTime? @db.Timestamp(0)
+
+  check_in_lat   Decimal? @db.Decimal(10, 8)
+  check_in_long  Decimal? @db.Decimal(11, 8)
+  check_out_lat  Decimal? @db.Decimal(10, 8)
+  check_out_long Decimal? @db.Decimal(11, 8)
+
+  check_in_photo  String? @db.VarChar(255)
+  check_out_photo String? @db.VarChar(255)
+
+  users    users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  projects projects @relation(fields: [project_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id, check_in_time])
+  @@index([project_id])
 }

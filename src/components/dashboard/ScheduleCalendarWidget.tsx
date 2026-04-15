@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { getCalendarSchedules } from "@/app/actions/schedules";
 import { 
   Calendar as CalendarIcon, 
@@ -42,6 +42,7 @@ import QuickInputModal from "./QuickInputModal";
 
 export default function ScheduleCalendarWidget({ projectId, isInternal = true }: { projectId?: string; isInternal?: boolean }) {
   const router = useRouter();
+  const params = useParams();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [schedules, setSchedules] = useState<any[]>([]);
@@ -400,7 +401,7 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
                 {isInternal && !isCreating && (
                    <div className="mt-4 pt-4 border-t border-slate-100">
                        <button 
-                        onClick={() => router.push("/dashboard/schedules")}
+                        onClick={() => router.push(`/w/${params.projectId || projectId}/dashboard/schedules`)}
                         className="w-full py-4 text-[9px] font-black uppercase tracking-[0.2em] text-white bg-[#003366] rounded-2xl shadow-lg shadow-blue-900/10 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group"
                        >
                          Master Timeline View <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />

@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useParams } from "next/navigation";
 import { 
   LayoutDashboard, Users, LogOut, Settings, Menu, X,
   ChevronRight, Building2, Calendar, FileText, Package, Sparkles, ShieldCheck
@@ -18,6 +19,9 @@ export default function DashboardSidebarClient({
   dashboardHref: string, 
   logout: () => void 
 }) {
+  const params = useParams();
+  const projectId = params?.projectId as string || "empty";
+
   const [isOpen, setIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -37,13 +41,13 @@ export default function DashboardSidebarClient({
       show: true 
     },
     { 
-      href: "/dashboard/customers", 
+      href: `/w/${projectId}/dashboard/customers`, 
       label: "Customers", 
       icon: Building2, 
       show: session?.isInternal 
     },
     { 
-      href: "/dashboard/users", 
+      href: `/w/${projectId}/dashboard/users`, 
       label: "User Management", 
       icon: Users, 
       show: (() => {
@@ -57,13 +61,33 @@ export default function DashboardSidebarClient({
       })()
     },
     { 
-      href: "/dashboard/profile", 
+      href: `/w/${projectId}/dashboard/profile`, 
       label: "Profile & Security", 
       icon: ShieldCheck, 
       show: true 
     },
+    {
+      href: `/w/${projectId}/dashboard/attendance`,
+      label: "Live Attendance",
+      icon: Calendar,
+      show: session?.attendance_enabled
+    },
+    {
+      href: `/w/${projectId}/dashboard/attendance-records`,
+      label: "Attendance Records",
+      icon: ShieldCheck,
+      show: (() => {
+        const roles = session?.roles || [];
+        const roleStr = String(session?.role || "").toLowerCase();
+        const hasAdminRole = roles.some((r: any) => {
+          const val = typeof r === 'string' ? r : (r?.role_name || JSON.stringify(r));
+          return val.toLowerCase().includes("admin") || val.toLowerCase().includes("super");
+        });
+        return hasAdminRole || roleStr.includes("admin") || roleStr.includes("super");
+      })()
+    },
     { 
-      href: "/dashboard/reports", 
+      href: `/w/${projectId}/dashboard/reports`, 
       label: "Reports", 
       icon: FileText, 
       show: true 
@@ -75,7 +99,7 @@ export default function DashboardSidebarClient({
       show: false // Hidden for Production Push Prep
     },
     { 
-      href: "/dashboard/settings", 
+      href: `/w/${projectId}/dashboard/settings`, 
       label: "Settings", 
       icon: Settings, 
       show: session?.isInternal,

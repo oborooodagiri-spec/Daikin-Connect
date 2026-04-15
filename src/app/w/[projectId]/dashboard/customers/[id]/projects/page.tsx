@@ -20,6 +20,7 @@ import Portal from "@/components/Portal";
 
 export default function ProjectsPage() {
   const params = useParams();
+  const projectId = params.projectId as string;
   const customerId = params.id as string;
 
   const [customer, setCustomer] = useState<any>(null);
@@ -157,7 +158,7 @@ export default function ProjectsPage() {
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center w-full">
         <h2 className="text-3xl font-black text-[#003366] tracking-tight mb-2">Error</h2>
         <p className="text-slate-500 text-sm max-w-sm">{error}</p>
-        <Link href="/dashboard/customers" className="mt-6 text-blue-600 font-bold text-sm tracking-widest uppercase hover:underline">
+        <Link href={`/w/${projectId}/dashboard/customers`} className="mt-6 text-blue-600 font-bold text-sm tracking-widest uppercase hover:underline">
           Return to Customers
         </Link>
       </div>
@@ -170,7 +171,7 @@ export default function ProjectsPage() {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-6 border-b border-slate-200">
         <div className="space-y-4">
-          <Link href="/dashboard/customers" className="inline-flex items-center gap-2 text-xs font-black text-slate-400 hover:text-blue-600 uppercase tracking-widest transition-colors w-max">
+          <Link href={`/w/${projectId}/dashboard/customers`} className="inline-flex items-center gap-2 text-xs font-black text-slate-400 hover:text-blue-600 uppercase tracking-widest transition-colors w-max">
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Directory</span>
           </Link>
@@ -358,14 +359,14 @@ export default function ProjectsPage() {
 
                       <td className="px-8 py-5">
                         <div className="flex gap-3 justify-center">
-                          <Link href={`/dashboard/customers/${customerId}/projects/${project.id}/units`} className={`inline-flex flex-col items-center justify-center p-3 w-16 rounded-xl border border-slate-200/60 shadow-sm transition-all hover:ring-2 hover:ring-indigo-100
+                          <Link href={`/w/${projectId}/dashboard/customers/${customerId}/projects/${project.id}/units`} className={`inline-flex flex-col items-center justify-center p-3 w-16 rounded-xl border border-slate-200/60 shadow-sm transition-all hover:ring-2 hover:ring-indigo-100
                             ${isActive ? 'bg-white text-indigo-700 hover:border-indigo-300 cursor-pointer' : 'bg-slate-50 text-slate-400 cursor-not-allowed pointer-events-none'}`}>
                             <BarChart3 size={14} className={isActive ? "text-indigo-400 mb-1" : "opacity-50"} />
                             <span className="text-sm font-black leading-none">{project.units_count}</span>
                             <span className="text-[8px] font-black uppercase tracking-widest opacity-70 mt-1">Units</span>
                           </Link>
                           <Link 
-                            href={`/dashboard/schedules?projectId=${project.id}`}
+                            href={`/w/${projectId}/dashboard/schedules?projectId=${project.id}`}
                             className={`inline-flex flex-col items-center justify-center p-3 w-16 rounded-xl border border-slate-200/60 shadow-sm transition-all hover:ring-2 hover:ring-blue-100
                             ${isActive ? 'bg-white text-blue-700 hover:border-blue-300 cursor-pointer' : 'bg-slate-50 text-slate-400 cursor-not-allowed pointer-events-none'}`}>
                             <CalendarDays size={14} className={isActive ? "text-blue-400 mb-1" : "opacity-50"} />
@@ -392,7 +393,7 @@ export default function ProjectsPage() {
                           </button>
 
                           <Link 
-                            href={`/dashboard/customers/${customerId}/projects/${project.id}/reports`}
+                            href={`/w/${projectId}/dashboard/customers/${customerId}/projects/${project.id}/reports`}
                             className={`inline-flex flex-col items-center justify-center p-3 w-16 rounded-xl border border-slate-200/60 shadow-sm transition-all hover:ring-2 hover:ring-blue-100
                             ${isActive ? 'bg-white text-blue-700 hover:border-blue-300 cursor-pointer' : 'bg-slate-50 text-slate-400 cursor-not-allowed pointer-events-none'}`}>
                             <TrendingUp size={14} className={isActive ? "text-blue-400 mb-1" : "opacity-50"} />

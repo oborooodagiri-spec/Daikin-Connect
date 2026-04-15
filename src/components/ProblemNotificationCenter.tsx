@@ -66,7 +66,7 @@ export default function ProblemNotificationCenter() {
       localStorage.setItem("daikin_seen_problems", JSON.stringify(updated));
     }
     setIsOpen(false);
-    router.push(`/dashboard/customers/${unit.projects.customer_id}/projects/${unit.projects.id}/units`);
+    router.push(`/w/${unit.projects.id}/dashboard/customers/${unit.projects.customer_id}/projects/${unit.projects.id}/units`);
   };
 
 

@@ -36,11 +36,13 @@ function urlBase64ToUint8Array(base64String: string) {
 }
 
 export default function NotificationManager() {
+  const [isMounted, setIsMounted] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>("default");
   const [showPrompt, setShowPrompt] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
 
   useEffect(() => {
+    setIsMounted(true);
     if (typeof window !== "undefined" && "Notification" in window) {
       setPermission(Notification.permission);
       
@@ -110,6 +112,8 @@ export default function NotificationManager() {
       throw err; // Rethrow to let handleRequestPermission handle completion
     }
   };
+
+  if (!isMounted) return null;
 
   return (
     <>

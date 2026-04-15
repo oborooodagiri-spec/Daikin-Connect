@@ -793,7 +793,7 @@ export async function updateActivityReportUrls(activityId: number, reportUrl: st
 /**
  * 16. SOFT DELETE ACTIVITY (7-Day Retention)
  */
-export async function softDeleteActivity(id: number, type: 'formal' | 'quick') {
+export async function softDeleteActivity(id: number | string, type: 'formal' | 'quick') {
   const session = await getSession();
   const isAdmin = session?.roles?.some(r => /admin|super/i.test(r)) || false;
   
@@ -802,10 +802,16 @@ export async function softDeleteActivity(id: number, type: 'formal' | 'quick') {
   }
 
   try {
-    const table = type === 'formal' ? 'service_activities' : 'activities';
+    const activityIdRaw = id.toString();
+    const isDailyLog = activityIdRaw.startsWith("DL-");
+    const numericId = isDailyLog ? parseInt(activityIdRaw.replace("DL-", "")) : Number(id);
+
+    let table = "";
+    if (isDailyLog) table = "daily_ops_logs";
+    else table = type === 'formal' ? 'service_activities' : 'activities';
     
     await (prisma as any)[table].update({
-      where: { id },
+      where: { id: numericId },
       data: { deleted_at: new Date() }
     });
 
@@ -867,7 +873,42 @@ export async function permanentPurgeOldRecords() {
 export async function getActivityDetailForReport(id: string | number, isFormal: boolean = true) {
   noStore();
   try {
-    const activityId = typeof id === 'string' ? Number(id) : id;
+    const activityIdRaw = id.toString();
+    const isDailyLog = activityIdRaw.startsWith("DL-");
+    const activityId = isDailyLog ? parseInt(activityIdRaw.replace("DL-", "")) : Number(id);
+
+    if (isDailyLog) {
+      const activity = await (prisma.daily_ops_logs as any).findUnique({
+        where: { id: activityId },
+        include: {
+          units: {
+            include: {
+              projects: {
+                include: { customers: true }
+              }
+            }
+          }
+        }
+      });
+
+      if (!activity) return { error: "Daily Log not found" };
+
+      return serializePrisma({
+        success: true,
+        data: {
+          activity: {
+            ...activity,
+            type: "DailyLog",
+            service_date: activity.service_date || activity.created_at
+          },
+          unit: activity.units,
+          project: activity.units.projects,
+          customer: activity.units.projects.customers,
+          photos: [], // Daily logs don't have separate photos in this schema branch yet
+          velocityPoints: []
+        }
+      });
+    }
 
     if (isFormal) {
       const activity = await (prisma.service_activities as any).findUnique({

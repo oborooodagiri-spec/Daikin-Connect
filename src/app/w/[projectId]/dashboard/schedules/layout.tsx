@@ -1,15 +1,17 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
 import Link from "next/link";
 import { CalendarDays, Target, FileText } from "lucide-react";
 
 export default function SchedulesLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const params = useParams();
+  const projectId = params.projectId as string;
 
   const tabs = [
-    { name: "Calendar Board", href: "/dashboard/schedules", icon: CalendarDays },
-    { name: "Tracking", href: "/dashboard/schedules/targets", icon: Target },
+    { name: "Calendar Board", href: `/w/${projectId}/dashboard/schedules`, icon: CalendarDays },
+    { name: "Tracking", href: `/w/${projectId}/dashboard/schedules/targets`, icon: Target },
   ];
 
   return (

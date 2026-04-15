@@ -218,7 +218,10 @@ exports.Prisma.UsersScalarFieldEnum = {
   otp_code: 'otp_code',
   otp_expiry: 'otp_expiry',
   failed_login_attempts: 'failed_login_attempts',
-  locked_until: 'locked_until'
+  locked_until: 'locked_until',
+  attendance_enabled: 'attendance_enabled',
+  face_reference_url: 'face_reference_url',
+  face_verification_enabled: 'face_verification_enabled'
 };
 
 exports.Prisma.Audit_logsScalarFieldEnum = {
@@ -607,6 +610,20 @@ exports.Prisma.Daily_ops_logsScalarFieldEnum = {
   notes: 'notes'
 };
 
+exports.Prisma.Vendor_attendanceScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  project_id: 'project_id',
+  check_in_time: 'check_in_time',
+  check_out_time: 'check_out_time',
+  check_in_lat: 'check_in_lat',
+  check_in_long: 'check_in_long',
+  check_out_lat: 'check_out_lat',
+  check_out_long: 'check_out_long',
+  check_in_photo: 'check_in_photo',
+  check_out_photo: 'check_out_photo'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -669,7 +686,8 @@ exports.Prisma.usersOrderByRelevanceFieldEnum = {
   phone: 'phone',
   company_name: 'company_name',
   two_factor_secret: 'two_factor_secret',
-  otp_code: 'otp_code'
+  otp_code: 'otp_code',
+  face_reference_url: 'face_reference_url'
 };
 
 exports.Prisma.audit_logsOrderByRelevanceFieldEnum = {
@@ -849,6 +867,11 @@ exports.Prisma.daily_ops_logsOrderByRelevanceFieldEnum = {
   drainage_status: 'drainage_status',
   notes: 'notes'
 };
+
+exports.Prisma.vendor_attendanceOrderByRelevanceFieldEnum = {
+  check_in_photo: 'check_in_photo',
+  check_out_photo: 'check_out_photo'
+};
 exports.customers_customer_type = exports.$Enums.customers_customer_type = {
   Corporate: 'Corporate',
   Individual: 'Individual'
@@ -995,7 +1018,8 @@ exports.Prisma.ModelName = {
   schedule_targets: 'schedule_targets',
   complaints: 'complaints',
   user_push_tokens: 'user_push_tokens',
-  daily_ops_logs: 'daily_ops_logs'
+  daily_ops_logs: 'daily_ops_logs',
+  vendor_attendance: 'vendor_attendance'
 };
 
 /**

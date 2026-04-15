@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { getSession, logout } from "../actions/auth";
+import { getSession, logout } from "@/app/actions/auth";
 import { 
   LayoutDashboard, 
   LogOut, 

@@ -6,6 +6,7 @@ import { serializePrisma } from "@/lib/serialize";
 
 export async function getAllReports(filters?: {
   type?: string;
+  projectId?: string;
   search?: string;
   dateFrom?: string;
   dateTo?: string;
@@ -49,6 +50,45 @@ export async function getAllReports(filters?: {
         { units: { model: { contains: search } } },
         { units: { serial_number: { contains: search } } },
       ];
+    }
+    
+    // WORKSPACE ISOLATION: FILTER BY PROJECT ID
+    if (filters?.projectId && filters.projectId !== "empty") {
+      where.units = { ...where.units, project_ref_id: Number(filters.projectId) };
+    }
+
+    // DAILY OPS LOG
+    let dailyLogs: any[] = [];
+    let totalDailyLogDb = 0;
+    const includeDailyLog = !filters?.type || filters.type === "all" || filters.type === "DailyLog";
+    
+    if (includeDailyLog) {
+       const logWhere: any = {};
+       if (filters?.projectId && filters.projectId !== "empty") {
+         logWhere.units = { project_ref_id: Number(filters.projectId) };
+       }
+       if (filters?.dateFrom) { logWhere.service_date = logWhere.service_date || {}; logWhere.service_date.gte = new Date(filters.dateFrom); }
+       if (filters?.dateTo) { logWhere.service_date = logWhere.service_date || {}; logWhere.service_date.lte = new Date(filters.dateTo); }
+       if (filters?.search) {
+         logWhere.OR = [
+           { inspector_name: { contains: filters.search } },
+           { notes: { contains: filters.search } }
+         ];
+       }
+
+       [dailyLogs, totalDailyLogDb] = await Promise.all([
+         (prisma.daily_ops_logs as any).findMany({
+           where: logWhere,
+           include: {
+             units: {
+               select: { id: true, tag_number: true, brand: true, model: true, area: true, building_floor: true, room_tenant: true }
+             }
+           },
+           orderBy: { created_at: "desc" },
+           take: limit
+         }),
+         (prisma.daily_ops_logs as any).count({ where: logWhere })
+       ]);
     }
 
     const [reports, total] = await Promise.all([
@@ -97,14 +137,36 @@ export async function getAllReports(filters?: {
 
     // Stats
     const [totalAudit, totalPreventive, totalCorrective] = await Promise.all([
-      (prisma.service_activities as any).count({ where: { type: "Audit" } }),
-      (prisma.service_activities as any).count({ where: { type: "Preventive" } }),
-      (prisma.service_activities as any).count({ where: { type: "Corrective" } }),
+      (prisma.service_activities as any).count({ where: { ...where, type: "Audit" } }),
+      (prisma.service_activities as any).count({ where: { ...where, type: "Preventive" } }),
+      (prisma.service_activities as any).count({ where: { ...where, type: "Corrective" } }),
     ]);
+
+    const mappedDailyLogs = dailyLogs.map((dl: any) => ({
+      id: "DL-" + dl.id, // Prefix DL to prevent ID collision
+      type: "DailyLog",
+      unit_id: dl.unit_id,
+      inspector_name: dl.inspector_name,
+      service_date: dl.service_date,
+      created_at: dl.created_at,
+      status: "Verified",
+      engineer_note: dl.notes,
+      units: dl.units,
+      activity_photos: [] // Daily logs don't have direct photos in schema
+    }));
+
+    // Merge and re-sort
+    let mergedReports = [...reports, ...mappedDailyLogs].sort((a, b) => {
+      const dateA = new Date(b.created_at || 0).getTime();
+      const dateB = new Date(a.created_at || 0).getTime();
+      return dateA - dateB; 
+    }).slice(0, limit);
+
+    const grandTotal = total + totalDailyLogDb;
 
     return serializePrisma({
       success: true,
-      data: reports.map((r: any) => ({
+      data: mergedReports.map((r: any) => ({
         ...r,
         id: r.id.toString(),
         created_at: r.created_at?.toISOString() || "",
@@ -116,12 +178,13 @@ export async function getAllReports(filters?: {
         created_at: r.created_at?.toISOString() || "",
         service_date: r.service_date?.toISOString() || "",
       })),
-      pagination: { total, page, limit, totalPages: Math.ceil(total / limit) },
+      pagination: { total: grandTotal, page, limit, totalPages: Math.ceil(grandTotal / limit) },
       stats: {
         totalAudit,
         totalPreventive,
         totalCorrective,
-        totalAll: totalAudit + totalPreventive + totalCorrective,
+        totalDailyLog: totalDailyLogDb,
+        totalAll: totalAudit + totalPreventive + totalCorrective + totalDailyLogDb,
       },
     });
   } catch (error: any) {
@@ -135,6 +198,27 @@ export async function getReportDetail(id: string) {
   if (!session) return { error: "Unauthorized" };
 
   try {
+    if (id.startsWith("DL-")) {
+      const logId = parseInt(id.replace("DL-", ""));
+      const dlReport = await (prisma.daily_ops_logs as any).findUnique({
+        where: { id: logId },
+        include: { units: true }
+      });
+      if (!dlReport) return { error: "Daily Log not found" };
+
+      return serializePrisma({
+        success: true,
+        data: {
+          ...dlReport,
+          id: id,
+          type: "DailyLog",
+          created_at: dlReport.created_at?.toISOString() || "",
+          service_date: dlReport.service_date?.toISOString() || "",
+          activity_photos: [] // Required by UI
+        }
+      });
+    }
+
     const report = await (prisma.service_activities as any).findUnique({
       where: { id: parseInt(id) },
       include: {

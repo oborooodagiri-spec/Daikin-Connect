@@ -9,7 +9,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { checkDailyLogStatus, submitDailyLog } from "@/app/actions/daily_logs";
 import { t, Language } from "@/lib/i18n";
 
-export default function DailyLogFormClient({ unitId, token }: { unitId: number; token: string }) {
+export default function DailyLogFormClient({ 
+  unitId, 
+  token, 
+  initialData, 
+  onSuccess 
+}: { 
+  unitId: number | any; 
+  token?: string; 
+  initialData?: any;
+  onSuccess?: () => void;
+}) {
   const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState(true);
   const [existingLog, setExistingLog] = useState<any>(null);
@@ -18,28 +28,28 @@ export default function DailyLogFormClient({ unitId, token }: { unitId: number; 
   const [lang, setLang] = useState<Language>('id');
 
   const [formData, setFormData] = useState({
-    inspectorName: "",
-    fan_on: true,
-    fan_speed: "",
-    fan_curr_r: "", fan_curr_s: "", fan_curr_t: "",
-    fan_volt_r: "", fan_volt_s: "", fan_volt_t: "",
-    heater_on: false,
-    heater_curr_r: "", heater_curr_s: "", heater_curr_t: "",
-    heater_volt_r: "", heater_volt_s: "", heater_volt_t: "",
-    valve_opening: "",
-    supply_temp: "", supply_rh: "",
-    return_temp: "", return_rh: "",
-    fresh_temp: "", fresh_rh: "",
-    filter_pre: "Bersih",
-    filter_med: "Bersih",
-    filter_hepa: "Bersih",
-    room_temp: "",
-    room_diff_press: "",
-    temp_s1: "", temp_s2: "", temp_s3: "", temp_s4: "", temp_s5: "",
-    static_pressure: "",
-    vibration_status: "OK",
-    drainage_status: "OK",
-    notes: ""
+    inspectorName: initialData?.inspector_name || "",
+    fan_on: initialData ? !!initialData.fan_on : true,
+    fan_speed: initialData?.fan_speed || "",
+    fan_curr_r: initialData?.fan_curr_r || "", fan_curr_s: initialData?.fan_curr_s || "", fan_curr_t: initialData?.fan_curr_t || "",
+    fan_volt_r: initialData?.fan_volt_r || "", fan_volt_s: initialData?.fan_volt_s || "", fan_volt_t: initialData?.fan_volt_t || "",
+    heater_on: initialData ? !!initialData.heater_on : false,
+    heater_curr_r: initialData?.heater_curr_r || "", heater_curr_s: initialData?.heater_curr_s || "", heater_curr_t: initialData?.heater_curr_t || "",
+    heater_volt_r: initialData?.heater_volt_r || "", heater_volt_s: initialData?.heater_volt_s || "", heater_volt_t: initialData?.heater_volt_t || "",
+    valve_opening: initialData?.valve_opening || "",
+    supply_temp: initialData?.supply_temp || "", supply_rh: initialData?.supply_rh || "",
+    return_temp: initialData?.return_temp || "", return_rh: initialData?.return_rh || "",
+    fresh_temp: initialData?.fresh_temp || "", fresh_rh: initialData?.fresh_rh || "",
+    filter_pre: initialData?.filter_pre || "Bersih",
+    filter_med: initialData?.filter_med || "Bersih",
+    filter_hepa: initialData?.filter_hepa || "Bersih",
+    room_temp: initialData?.room_temp || "",
+    room_diff_press: initialData?.room_diff_press || "",
+    temp_s1: initialData?.temp_s1 || "", temp_s2: initialData?.temp_s2 || "", temp_s3: initialData?.temp_s3 || "", temp_s4: initialData?.temp_s4 || "", temp_s5: initialData?.temp_s5 || "",
+    static_pressure: initialData?.static_pressure || "",
+    vibration_status: initialData?.vibration_status || "Tidak Ada",
+    drainage_status: initialData?.drainage_status || "Ada",
+    notes: initialData?.notes || ""
   });
 
   // Smart Auto-fill for name
@@ -60,6 +70,11 @@ export default function DailyLogFormClient({ unitId, token }: { unitId: number; 
     const savedLang = localStorage.getItem("daikin_lang") as Language;
     if (savedLang) setLang(savedLang);
 
+    if (initialData) {
+      setLoading(false);
+      return;
+    }
+
     async function checkStatus() {
       const res = await checkDailyLogStatus(unitId) as any;
       if (res && "success" in res && res.success && res.exists) {
@@ -78,11 +93,17 @@ export default function DailyLogFormClient({ unitId, token }: { unitId: number; 
     }
 
     startTransition(async () => {
-      const res = await submitDailyLog(unitId, formData) as any;
+      const res = await submitDailyLog(initialData ? initialData.unit_id : unitId, formData) as any;
       if (res && "success" in res && res.success) {
         setSubmitSuccess(true);
+        if (onSuccess) {
+           setTimeout(() => onSuccess(), 1500);
+           return;
+        }
         const status = await checkDailyLogStatus(unitId) as any;
         if (status && "success" in status && status.exists) setExistingLog(status.data);
+        
+        setTimeout(() => setSubmitSuccess(false), 3000);
       } else {
         alert(res?.error || (lang === 'ja' ? "データの保存に失敗しました。" : "Gagal menyimpan data."));
       }
@@ -140,9 +161,28 @@ export default function DailyLogFormClient({ unitId, token }: { unitId: number; 
   );
 
   return (
-    <div className="space-y-8 pb-20">
+    <div className="space-y-8 pb-20 relative">
+      <AnimatePresence>
+        {submitSuccess && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="fixed bottom-24 left-6 right-6 z-[100] bg-emerald-600 text-white p-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-emerald-400/30 backdrop-blur-md"
+          >
+             <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center shrink-0">
+                <CheckCircle2 size={20} />
+             </div>
+             <div>
+                <p className="text-sm font-black uppercase tracking-widest">{lang === 'ja' ? '保存完了' : 'Berhasil Disimpan'}</p>
+                <p className="text-[10px] opacity-80 font-bold">{lang === 'ja' ? '点検データが正常にアーカイブされました。' : 'Data logsheet hari ini telah berhasil diarsipkan ke sistem.'}</p>
+             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="flex flex-col gap-1">
-        <h2 className="text-2xl font-black text-[#003366] tracking-tight">{lang === 'ja' ? '日次点検ログ' : 'Daily Check Logsheet'}</h2>
+        <h2 className="text-2xl font-black text-[#003366] tracking-tight">{lang === 'ja' ? '日次点検ログ' : (initialData ? 'Edit Daily Logsheet' : 'Daily Check Logsheet')}</h2>
         <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">{lang === 'ja' ? '運転監視パラメータ' : 'Operational Monitoring Parameter'}</p>
       </div>
 
@@ -267,8 +307,8 @@ export default function DailyLogFormClient({ unitId, token }: { unitId: number; 
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-               <StatusSelect label={lang === 'ja' ? "モータ振動" : "Vibration Motor"} value={formData.vibration_status} onChange={(v: string) => setFormData({...formData, vibration_status: v})} options={["OK", "Abnormal"]} />
-               <StatusSelect label={lang === 'ja' ? "ドレン排水" : "Condensate Drain"} value={formData.drainage_status} onChange={(v: string) => setFormData({...formData, drainage_status: v})} options={["OK", "Abnormal"]} />
+               <StatusSelect label={lang === 'ja' ? "モータ振動" : "Vibration Motor"} value={formData.vibration_status} onChange={(v: string) => setFormData({...formData, vibration_status: v})} options={["Ada", "Tidak Ada"]} />
+               <StatusSelect label={lang === 'ja' ? "ドレン排水" : "Condensate Drain"} value={formData.drainage_status} onChange={(v: string) => setFormData({...formData, drainage_status: v})} options={["Ada", "Tidak Ada"]} />
             </div>
           </div>
         </Section>
@@ -376,16 +416,16 @@ function Toggle({ active, onClick }: { active: boolean; onClick: () => void }) {
 }
 
 function FilterToggle({ label, value, onChange, lang }: { label: string; value: string; onChange: (v: string) => void, lang: string }) {
-  const options = ["Bersih", "Sedang", "Kotor"];
+  const options = ["Bersih", "Sedang", "Kotor", "Tidak Ada"];
   const displayLabels: any = {
-    'ja': { "Bersih": "良好", "Sedang": "普通", "Kotor": "汚れ" },
-    'id': { "Bersih": "Bersih", "Sedang": "Sedang", "Kotor": "Kotor" },
-    'en': { "Bersih": "Clean", "Sedang": "Medium", "Kotor": "Dirty" }
+    'ja': { "Bersih": "良好", "Sedang": "普通", "Kotor": "汚れ", "Tidak Ada": "なし" },
+    'id': { "Bersih": "Bersih", "Sedang": "Sedang", "Kotor": "Kotor", "Tidak Ada": "Tidak Ada" },
+    'en': { "Bersih": "Clean", "Sedang": "Medium", "Kotor": "Dirty", "Tidak Ada": "None" }
   };
   
-  const colors: any = { Bersih: "bg-emerald-500", Sedang: "bg-amber-500", Kotor: "bg-rose-500" };
-  const lightColors: any = { Bersih: "bg-emerald-50", Sedang: "bg-amber-50", Kotor: "bg-rose-50" };
-  const borderColors: any = { Bersih: "border-emerald-200", Sedang: "border-amber-200", Kotor: "border-rose-200" };
+  const colors: any = { Bersih: "bg-emerald-500", Sedang: "bg-amber-500", Kotor: "bg-rose-500", "Tidak Ada": "bg-slate-400" };
+  const lightColors: any = { Bersih: "bg-emerald-50", Sedang: "bg-amber-50", Kotor: "bg-rose-50", "Tidak Ada": "bg-slate-50" };
+  const borderColors: any = { Bersih: "border-emerald-200", Sedang: "border-amber-200", Kotor: "border-rose-200", "Tidak Ada": "border-slate-200" };
   
   return (
     <div className="space-y-2">

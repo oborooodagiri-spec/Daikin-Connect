@@ -32,7 +32,8 @@ export async function getAllUsers() {
       ...u,
       roles: u.user_roles.map((ur: any) => ur.roles.role_name),
       primaryRole: u.user_roles[0]?.roles.role_name || "No Role",
-      projectCount: u._count?.user_project_access || 0
+      projectCount: u._count?.user_project_access || 0,
+      attendance_enabled: u.attendance_enabled
     }));
 
     return { success: true, data: formattedUsers };
@@ -169,3 +170,19 @@ export async function deleteUser(userId: number) {
     return { error: error.message };
   }
 }
+
+export async function toggleUserAttendance(userId: number, currentStatus: boolean) {
+  if (!await checkAdmin()) return { error: "Unauthorized" };
+
+  try {
+    await prisma.users.update({
+      where: { id: userId },
+      data: { attendance_enabled: !currentStatus }
+    });
+    revalidatePath("/dashboard/users");
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+

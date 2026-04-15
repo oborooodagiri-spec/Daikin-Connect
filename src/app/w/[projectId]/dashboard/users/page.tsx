@@ -4,13 +4,13 @@ import { useEffect, useState, useTransition } from "react";
 import { 
   Users, Search, ShieldCheck, Mail, ShieldAlert, 
   Trash2, ChevronRight, CheckCircle2, XCircle, X,
-  UserCog, Filter, MoreVertical, Shield, Building2
+  UserCog, Filter, MoreVertical, Shield, Building2, Calendar
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   getAllUsers, toggleUserStatus, updateUserRole, 
   deleteUser, getAllRoles, getAllAvailableProjects,
-  getUserProjectAccess, updateUserProjectAccess 
+  getUserProjectAccess, updateUserProjectAccess, toggleUserAttendance
 } from "@/app/actions/users";
 import { useRouter } from "next/navigation";
 import { getSession } from "@/app/actions/auth";
@@ -110,6 +110,20 @@ export default function UsersPage() {
     startTransition(async () => {
       const res = await deleteUser(user.id);
       if ("success" in res && res.success) fetchData();
+    });
+  };
+
+  const handleToggleAttendance = (user: any) => {
+    const verb = user.attendance_enabled ? "Disable" : "Enable";
+    if (!confirm(`Are you sure you want to ${verb} Live Attendance for ${user.name}?`)) return;
+
+    startTransition(async () => {
+      const res = await toggleUserAttendance(user.id, user.attendance_enabled);
+      if ("success" in res && res.success) {
+        fetchData();
+      } else {
+        alert((res as any).error);
+      }
     });
   };
 
@@ -300,6 +314,12 @@ export default function UsersPage() {
                                 {user.is_active ? "Active" : needsProject ? "Setup required" : "Inactive"}
                             </span>
                             </span>
+                            {user.attendance_enabled && (
+                                <div className="mt-2 flex items-center gap-1.5 px-2 py-0.5 bg-blue-50 text-blue-500 border border-blue-100 rounded-md w-fit">
+                                    <Calendar size={10} />
+                                    <span className="text-[8px] font-black uppercase tracking-tighter">Attendance ON</span>
+                                </div>
+                            )}
                         </td>
 
                         <td className="px-8 py-6 text-right">
@@ -324,7 +344,19 @@ export default function UsersPage() {
                                 }`}
                                 title={user.is_active ? "Suspend Account" : "Approve Account"}
                             >
-                                {user.is_active ? <XCircle size={16} /> : <CheckCircle2 size={16} />}
+                              {user.is_active ? <XCircle size={16} /> : <CheckCircle2 size={16} />}
+                            </button>
+
+                            <button 
+                                onClick={() => handleToggleAttendance(user)}
+                                className={`p-2.5 bg-white border rounded-xl transition-all shadow-sm ${
+                                  user.attendance_enabled 
+                                    ? "border-blue-200 text-blue-600 hover:bg-blue-50" 
+                                    : "border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50"
+                                }`}
+                                title={user.attendance_enabled ? "Disable Attendance" : "Enable Attendance"}
+                            >
+                                <Calendar size={16} />
                             </button>
 
                             <div className="w-[1px] h-6 bg-slate-100 mx-1" />

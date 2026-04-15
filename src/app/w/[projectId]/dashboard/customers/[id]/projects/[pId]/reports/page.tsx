@@ -32,7 +32,8 @@ export default function MonthlyReportPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { id: customerId, projectId } = params;
+  const { id: customerId, pId: targetProjectId } = params;
+  const workspaceId = params.projectId as string;
 
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -59,7 +60,7 @@ export default function MonthlyReportPage() {
 
   const fetchData = async () => {
     setLoading(true);
-    const res = await getConsolidatedMonthlyReport(projectId as string, month, year, type);
+    const res = await getConsolidatedMonthlyReport(targetProjectId as string, month, year, type);
     if ('success' in res && res.success && 'data' in res) {
       setData(res.data);
     }
@@ -68,7 +69,7 @@ export default function MonthlyReportPage() {
 
   useEffect(() => {
     fetchData();
-  }, [projectId, month, year, type]);
+  }, [targetProjectId, month, year, type]);
 
   const handleFilterChange = (m: number, y: number, t: string) => {
     setMonth(m);
@@ -121,7 +122,7 @@ export default function MonthlyReportPage() {
       {/* HEADER SECTION */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-6 border-b border-slate-200">
         <div className="space-y-4">
-          <Link href={`/dashboard/customers/${customerId}/projects`} className="inline-flex items-center gap-2 text-xs font-black text-slate-400 hover:text-blue-600 uppercase tracking-widest transition-colors w-max">
+          <Link href={`/w/${workspaceId}/dashboard/customers/${customerId}/projects`} className="inline-flex items-center gap-2 text-xs font-black text-slate-400 hover:text-blue-600 uppercase tracking-widest transition-colors w-max">
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Projects</span>
           </Link>

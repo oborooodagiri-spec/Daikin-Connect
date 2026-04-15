@@ -311,7 +311,8 @@ export async function getSession() {
       email: user.email,
       name: user.name,
       roles: roles,
-      isInternal: isInternal
+      isInternal: isInternal,
+      attendance_enabled: user.attendance_enabled
     });
   } catch {
     return null;
