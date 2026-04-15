@@ -33,7 +33,7 @@ export default function AttendancePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto w-full pb-32 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="w-full pb-32 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <AttendanceClient projectId={projectId} />
     </div>
   );

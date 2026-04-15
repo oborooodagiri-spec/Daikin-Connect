@@ -169,118 +169,141 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
   const isCompleted = activeRecord && activeRecord.check_out_time;
 
   return (
-    <div className="max-w-md mx-auto bg-white min-h-[90vh] sm:min-h-0 sm:rounded-[4rem] sm:border border-slate-200 overflow-hidden relative shadow-2xl flex flex-col">
-      
-      {/* Header */}
-      <div className="bg-gradient-to-br from-[#003366] to-[#001f40] text-white p-6 sm:p-10 pb-20 relative overflow-hidden shrink-0">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
+    <div className="max-w-3xl mx-auto w-full px-4 sm:px-6">
+      <div className="bg-white min-h-[500px] rounded-[2.5rem] sm:rounded-[3.5rem] border border-slate-200 overflow-hidden relative shadow-2xl shadow-blue-900/10 flex flex-col md:flex-row transition-all duration-500">
         
-        <div className="relative z-10 flex items-center justify-between">
-          <div>
-            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-300/80 mb-1">
+        {/* Header Section (Left Side on Desktop) */}
+        <div className="bg-gradient-to-br from-[#003366] to-[#001f40] text-white p-6 sm:p-10 pb-16 md:pb-10 md:w-1/3 relative overflow-hidden shrink-0 flex flex-col justify-between">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
+          
+          <div className="relative z-10">
+            <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-blue-300/80 mb-2">
               {format(new Date(), "EEEE, dd MMM yyyy")}
             </p>
-            <h1 className="text-2xl font-black tracking-tight leading-none">Live Attendance</h1>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-tight">Live<br />Attendance</h1>
           </div>
-          <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10 backdrop-blur-xl">
-            <Clock className="w-4 h-4 text-blue-200" />
+          
+          <div className="relative z-10 mt-8 md:mt-0 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 backdrop-blur-xl shrink-0">
+              <Clock className="w-5 h-5 text-blue-200" />
+            </div>
+            <div className="hidden md:block">
+              <p className="text-[10px] font-black text-blue-300 uppercase tracking-widest">Time Server</p>
+              <p className="font-bold text-white text-sm">{format(new Date(), "HH:mm O")}</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Content Card - Floating Style */}
-      <div className="bg-white rounded-[2.5rem] sm:rounded-t-[4rem] -mt-12 relative z-20 p-6 sm:p-10 flex-1 flex flex-col shadow-inner">
-        
-        {/* Interactive GPS Status Indicator */}
-        <button 
-          onClick={startLocationTracking}
-          className={`w-full p-3 rounded-2xl flex items-center gap-3 mb-8 border transition-all active:scale-[0.98] group/gps ${location ? 'bg-emerald-50 border-emerald-100' : 'bg-rose-50 border-rose-100 animate-pulse'}`}
-        >
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${location ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}`}>
-            {location ? <MapPin size={18} /> : <MapPinOff size={18} />}
-          </div>
-          <div className="flex-1 text-left">
-            <p className={`text-[9px] font-black uppercase tracking-widest ${location ? 'text-emerald-600' : 'text-rose-600'}`}>
-              Region Status: {location ? 'Locked & Verified' : 'Signal Searching...'}
-            </p>
-            <p className="text-[11px] font-bold text-slate-500 mt-0.5 line-clamp-1">
-              {location ? `${location.lat.toFixed(5)}, ${location.long.toFixed(5)}` : locError || 'Tap to grant GPS permission'}
-            </p>
-          </div>
-          {!location && <ChevronRight className="w-4 h-4 text-rose-400 group-hover/gps:translate-x-1 transition-transform" />}
-        </button>
+        {/* Main Interaction Section (Right Side on Desktop) */}
+        <div className="bg-white rounded-[2.5rem] md:rounded-none md:rounded-l-[3.5rem] -mt-10 md:mt-0 relative z-20 p-6 sm:p-10 flex-1 flex flex-col shadow-inner md:shadow-none">
+          
+          {/* Interactive GPS Status Indicator */}
+          <div className="space-y-3 mb-8">
+            <button 
+              onClick={startLocationTracking}
+              className={`w-full p-4 rounded-2xl flex items-center gap-4 border transition-all active:scale-[0.98] group/gps ${location ? 'bg-emerald-50 border-emerald-100' : 'bg-rose-50 border-rose-100'}`}
+            >
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors shrink-0 ${location ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600 animate-pulse'}`}>
+                {location ? <MapPin size={22} /> : <MapPinOff size={22} />}
+              </div>
+              <div className="flex-1 text-left min-w-0">
+                <p className={`text-[10px] font-black uppercase tracking-widest ${location ? 'text-emerald-600' : 'text-rose-600'}`}>
+                  GPS Region: {location ? 'Locked & Verified' : 'Detection Required'}
+                </p>
+                <p className="text-[12px] font-bold text-slate-500 mt-1 truncate">
+                  {location ? `${location.lat.toFixed(5)}, ${location.long.toFixed(5)}` : locError || 'Waiting for permission...'}
+                </p>
+              </div>
+              {!location && <ChevronRight className="w-5 h-5 text-rose-400 group-hover/gps:translate-x-1 transition-transform" />}
+            </button>
 
-        {/* Status Display */}
-        {isCompleted ? (
-          <div className="flex-1 flex flex-col justify-center items-center text-center py-10">
-            <div className="w-20 h-20 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center mb-6 shadow-sm">
-              <CheckCircle2 size={40} />
-            </div>
-            <h2 className="text-2xl font-black text-slate-800 tracking-tight mb-2">Shift Over</h2>
-            <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">
-              Checked out at {format(new Date(activeRecord.check_out_time), "HH:mm")}
-            </p>
-          </div>
-        ) : (
-          <div className="flex-1 flex flex-col justify-center items-center py-2">
-            
-            {/* Massive Circular Button - Scaled for Mobile */}
-            <div className="relative group perspective">
-              {/* Outer Glow */}
-              <div className={`absolute inset-0 rounded-full blur-2xl transition-all duration-1000 opacity-40 ${
-                isWorking ? 'bg-rose-500 group-hover:bg-rose-600' : 'bg-[#00a1e4] group-hover:bg-blue-600'
-              }`} />
-              
-              <button
-                disabled={submitting || !location}
-                onClick={triggerCamera}
-                className={`relative w-44 h-44 sm:w-56 sm:h-56 rounded-full flex flex-col items-center justify-center text-white shadow-2xl transition-all duration-500 transform group-hover:scale-105 active:scale-95 disabled:opacity-30 disabled:grayscale disabled:cursor-not-allowed
-                  ${isWorking 
-                    ? 'bg-gradient-to-br from-rose-400 to-rose-600 shadow-rose-900/40' 
-                    : 'bg-gradient-to-br from-[#00a1e4] to-blue-600 shadow-blue-900/40'
-                  }
-                `}
-              >
-                {submitting ? (
-                  <Loader2 className="w-10 h-10 animate-spin mb-4" />
-                ) : (
-                  <>
-                    <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md mb-4 border border-white/20">
-                      {verifying ? <Fingerprint className="w-8 h-8 animate-pulse" /> : <Camera size={24} strokeWidth={2.5} />}
-                    </div>
-                    <span className="text-lg font-black uppercase tracking-widest text-center px-4 leading-tight">
-                      {verifying ? 'Verifying...' : (isWorking ? 'End Shift' : 'Begin Shift')}
-                    </span>
-                    <span className="text-[9px] font-black opacity-70 uppercase tracking-widest mt-2 flex items-center gap-1">
-                      Take Selfie <ChevronRight size={10} />
-                    </span>
-                  </>
-                )}
-              </button>
-            </div>
-            
-            {isWorking && (
-              <div className="mt-10 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 mb-3">Service Duration In Progress</p>
-                <div className="inline-flex items-center gap-3 bg-blue-50/50 border border-blue-100/50 px-5 py-3 rounded-2xl backdrop-blur-sm">
-                   <div className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />
-                   <p className="font-black text-[#003366] text-base tracking-tight">
-                     On Duty: {format(new Date(activeRecord.check_in_time), "HH:mm")}
-                   </p>
+            {/* Help text for Permission Denied */}
+            {!location && locError.includes("Denied") && (
+              <div className="p-4 bg-amber-50 border border-amber-100 rounded-2xl animate-in zoom-in-95 duration-300">
+                <div className="flex gap-3">
+                  <ShieldAlert className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                  <div className="space-y-2">
+                    <p className="text-xs font-black text-amber-800 uppercase tracking-tight">Action Required: Reset Browser Permissions</p>
+                    <p className="text-[11px] text-amber-700 font-medium leading-relaxed">
+                      Location access is blocked. Please click the <span className="font-black">Lock Icon</span> (🔒) in your browser's address bar next to the URL, then reset the Location permission and Refresh this page.
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
           </div>
-        )}
 
-      </div>
+          {/* Status Display Area */}
+          {isCompleted ? (
+            <div className="flex-1 flex flex-col justify-center items-center text-center py-10 space-y-6">
+              <div className="w-24 h-24 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center shadow-sm">
+                <CheckCircle2 size={48} />
+              </div>
+              <div>
+                <h2 className="text-2xl font-black text-slate-800 tracking-tight mb-2">Shift Completed</h2>
+                <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">
+                  Checked out at {format(new Date(activeRecord.check_out_time), "HH:mm")}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex-1 flex flex-col justify-center items-center py-4">
+              <div className="relative group perspective mb-8">
+                <div className={`absolute inset-0 rounded-full blur-3xl transition-all duration-1000 opacity-30 ${
+                  isWorking ? 'bg-rose-500 group-hover:bg-rose-600' : 'bg-blue-400 group-hover:bg-blue-600'
+                }`} />
+                
+                <button
+                  disabled={submitting || !location}
+                  onClick={triggerCamera}
+                  className={`relative w-48 h-48 sm:w-56 sm:h-56 rounded-full flex flex-col items-center justify-center text-white shadow-2xl transition-all duration-500 transform group-hover:scale-105 active:scale-95 disabled:opacity-40 disabled:grayscale disabled:cursor-not-allowed
+                    ${isWorking 
+                      ? 'bg-gradient-to-br from-rose-400 to-rose-600 shadow-rose-900/40' 
+                      : 'bg-gradient-to-br from-[#00a1e4] to-blue-600 shadow-blue-900/40'
+                    }
+                  `}
+                >
+                  {submitting ? (
+                    <Loader2 className="w-12 h-12 animate-spin" />
+                  ) : (
+                    <>
+                      <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md mb-4 border border-white/20">
+                        {verifying ? <Fingerprint className="w-10 h-10 animate-pulse" /> : <Camera size={28} strokeWidth={2.5} />}
+                      </div>
+                      <span className="text-xl font-black uppercase tracking-widest text-center px-4 leading-tight">
+                        {verifying ? 'Scanning...' : (isWorking ? 'End Shift' : 'Begin Shift')}
+                      </span>
+                      <span className="text-[10px] font-black opacity-70 uppercase tracking-widest mt-2 flex items-center gap-1">
+                        Take Photo <ChevronRight size={12} />
+                      </span>
+                    </>
+                  )}
+                </button>
+              </div>
+              
+              {isWorking && (
+                <div className="text-center animate-in fade-in slide-in-from-bottom-4 duration-700 w-full">
+                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4">Live Shift Session</p>
+                  <div className="inline-flex items-center gap-4 bg-slate-50 border border-slate-100 px-6 py-4 rounded-3xl shadow-sm">
+                     <div className="relative flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-600"></span>
+                     </div>
+                     <p className="font-black text-[#003366] text-lg tracking-tight">
+                       Started: {format(new Date(activeRecord.check_in_time), "HH:mm")}
+                     </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
-      {/* Mobile-Friendly Copyright Footer */}
-      <div className="p-6 text-center shrink-0">
-         <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">
-           Secure Biometric Identity Verification<br />
-           &copy; 2026 VALVES ENG • D2
-         </p>
+          <div className="mt-8 pt-8 border-t border-slate-100 text-center opacity-50">
+             <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] leading-relaxed">
+               Enterprise Secure Biometric Identity Protocol // &copy; 2026 VALVES ENG
+             </p>
+          </div>
+        </div>
       </div>
 
       {/* Hidden File Input for Native Camera API */}
