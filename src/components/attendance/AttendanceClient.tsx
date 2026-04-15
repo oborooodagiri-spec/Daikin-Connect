@@ -45,25 +45,34 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
     setLoading(false);
   };
 
-  const startLocationTracking = () => {
+  const startLocationTracking = (useHighAccuracy = true) => {
     if (!navigator.geolocation) {
       fallbackToNetwork("GPS not supported on device.");
       return;
     }
     
-    setLocError("Requesting GPS...");
+    setLocError(useHighAccuracy ? "Requesting High Accuracy GPS..." : "Requesting Basic Location...");
     
-    // Get high accuracy position
+    // Get position 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setLocation({ lat: pos.coords.latitude, long: pos.coords.longitude, isFallback: false });
         setLocError("");
       },
       (err) => {
-        console.warn("GPS Failed:", err.message);
-        fallbackToNetwork("GPS Denied. Engaging Network Triangulation...");
+        console.warn(`GPS Failed (HighAcc: ${useHighAccuracy}):`, err.code, err.message);
+        
+        // If High Accuracy fails (Code 2: Unavailable, or Code 3: Timeout), retry with Low Accuracy
+        if (useHighAccuracy && (err.code === 2 || err.code === 3)) {
+          startLocationTracking(false);
+        } else {
+          // If it's Permission Denied (1) or Low Accuracy also fails, run IP Fallback
+          const reason = err.code === 1 ? "Permission Denied" : 
+                         err.code === 2 ? "Signal Unavailable" : "Timeout";
+          fallbackToNetwork(`GPS Blokir (${reason}). Engaging Triangulation...`);
+        }
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+      { enableHighAccuracy: useHighAccuracy, timeout: useHighAccuracy ? 10000 : 15000, maximumAge: 10000 }
     );
   };
 
