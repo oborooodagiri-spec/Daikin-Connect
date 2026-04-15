@@ -65,6 +65,29 @@ export async function submitCheckIn(data: {
     const session = await getSession();
     if (!session) return { error: "Unauthorized" };
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Strict Single-Lock: Prevent simultaneous active shifts in multiple projects
+    const activeOtherProject = await (prisma as any).vendor_attendance.findFirst({
+      where: {
+        user_id: parseInt(session.userId),
+        check_out_time: null,
+        check_in_time: {
+           gte: today
+        }
+      },
+      include: {
+        projects: { select: { name: true } }
+      }
+    });
+
+    if (activeOtherProject) {
+      if (Number(activeOtherProject.project_id) !== Number(data.projectId)) {
+         return { error: `System Locked: Anda masih berstatus AKTIF di lokasi "${activeOtherProject.projects?.name}". Silakan Check-out dari lokasi tersebut terlebih dahulu sebelum Check-in di lokasi baru.` };
+      }
+    }
+
     const record = await (prisma as any).vendor_attendance.create({
       data: {
         user_id: parseInt(session.userId),
