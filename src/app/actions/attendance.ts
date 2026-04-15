@@ -31,8 +31,13 @@ export async function getActiveAttendance(projectId: string) {
       },
     });
 
+    const user = await prisma.users.findUnique({
+      where: { id: parseInt(session.userId) },
+      select: { face_reference_url: true }
+    });
+
     if (!activeRecord) {
-      return { data: null };
+      return { data: null, hasFace: !!user?.face_reference_url };
     }
 
     // Convert BigInt for JSON serialization
@@ -42,6 +47,7 @@ export async function getActiveAttendance(projectId: string) {
         id: Number(activeRecord.id),
         project_id: Number(activeRecord.project_id),
       },
+      hasFace: !!user?.face_reference_url
     };
   } catch (error) {
     console.error("Error fetching attendance:", error);

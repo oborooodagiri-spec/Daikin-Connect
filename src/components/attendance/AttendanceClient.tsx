@@ -13,6 +13,7 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
   const [location, setLocation] = useState<{ lat: number; long: number; isFallback?: boolean; city?: string } | null>(null);
   const [locError, setLocError] = useState("");
   const [verifying, setVerifying] = useState(false);
+  const [hasFace, setHasFace] = useState(true);
   const [verifyResult, setVerifyResult] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -42,6 +43,7 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
     } else {
       setActiveRecord(null);
     }
+    setHasFace(res?.hasFace ?? true);
     setLoading(false);
   };
 
@@ -137,8 +139,10 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
         setVerifying(false);
 
         if (faceRes.isEnrollment) {
-           alert("✨ Security Profile Established! Your face has been successfully registered as your permanent identity. Check-in Proceeding...");
+           alert("✨ REGISTRASI WAJAH BERHASIL! Identitas Anda telah dikunci ke dalam sistem keamanan. Silakan tap tombol 'BEGIN SHIFT' sekali lagi untuk melakukan absen masuk.");
            setVerifyResult({ success: true, confidence: 100 });
+           await fetchStatus();
+           return; // Stop execution, forcing them to click 'Begin Shift' again!
         } else {
            if (faceRes.error) throw new Error(faceRes.error);
 
@@ -301,7 +305,7 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
                         {verifying ? <Fingerprint className="w-10 h-10 animate-pulse" /> : <Camera size={28} strokeWidth={2.5} />}
                       </div>
                       <span className="text-xl font-black uppercase tracking-widest text-center px-4 leading-tight">
-                        {verifying ? 'Scanning...' : (isWorking ? 'End Shift' : 'Begin Shift')}
+                        {verifying ? 'Scanning...' : (!hasFace ? 'Register Face' : (isWorking ? 'End Shift' : 'Begin Shift'))}
                       </span>
                       <span className="text-[10px] font-black opacity-70 uppercase tracking-widest mt-2 flex items-center gap-1">
                         Take Photo <ChevronRight size={12} />

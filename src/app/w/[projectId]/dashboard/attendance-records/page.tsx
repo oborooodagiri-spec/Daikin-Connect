@@ -32,7 +32,7 @@ export default function AttendanceRecordsPage() {
     // Basic CSV export logic
     const header = "Name,Project,Check In,Check In Loc,Check Out,Check Out Loc,Subcontractor\n";
     const csv = records.map(r => {
-      return `"${r.users?.name || 'Unknown'}","${r.projects?.name || ''}","${formatDate(r.check_in)}","${r.check_in_lat},${r.check_in_lng}","${formatDate(r.check_out)}","${r.check_out_lat},${r.check_out_lng}","${r.subcontractor_company || '-'}"`;
+      return `"${r.users?.name || 'Unknown'}","${r.projects?.name || ''}","${formatDate(r.check_in_time)}","${r.check_in_lat},${r.check_in_long}","${formatDate(r.check_out_time)}","${r.check_out_lat},${r.check_out_long}","${r.subcontractor_company || '-'}"`;
     }).join("\n");
     
     const blob = new Blob([header + csv], { type: 'text/csv' });
@@ -93,20 +93,20 @@ export default function AttendanceRecordsPage() {
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-2 text-xs font-bold text-emerald-600">
-                         <Clock size={12} /> {formatDate(r.check_in)}
+                         <Clock size={12} /> {formatDate(r.check_in_time)}
                       </div>
                       <div className="flex items-center gap-2 text-[9px] font-black text-slate-400 mt-1 uppercase tracking-wider">
-                         <MapPin size={10} /> {r.check_in_lat?.toFixed(4)}, {r.check_in_lng?.toFixed(4)}
+                         <MapPin size={10} /> {r.check_in_lat?.toFixed(4)}, {r.check_in_long?.toFixed(4)}
                       </div>
                     </td>
                     <td className="p-4">
-                      {r.check_out ? (
+                      {r.check_out_time ? (
                         <>
                           <div className="flex items-center gap-2 text-xs font-bold text-rose-600">
-                             <Clock size={12} /> {formatDate(r.check_out)}
+                             <Clock size={12} /> {formatDate(r.check_out_time)}
                           </div>
                           <div className="flex items-center gap-2 text-[9px] font-black text-slate-400 mt-1 uppercase tracking-wider">
-                             <MapPin size={10} /> {r.check_out_lat?.toFixed(4)}, {r.check_out_lng?.toFixed(4)}
+                             <MapPin size={10} /> {r.check_out_lat?.toFixed(4)}, {r.check_out_long?.toFixed(4)}
                           </div>
                         </>
                       ) : (
@@ -114,15 +114,15 @@ export default function AttendanceRecordsPage() {
                       )}
                     </td>
                     <td className="p-4 text-center">
-                      {r.check_in_photo_url ? (
-                        <a href={r.check_in_photo_url} target="_blank" className="inline-block p-2 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors">
+                      {r.check_in_photo ? (
+                        <a href={r.check_in_photo} target="_blank" className="inline-block p-2 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors">
                           <FileImage size={16} />
                         </a>
                       ) : "-"}
                     </td>
                     <td className="p-4 text-center">
-                      {r.check_out_photo_url ? (
-                        <a href={r.check_out_photo_url} target="_blank" className="inline-block p-2 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-100 transition-colors">
+                      {r.check_out_photo ? (
+                        <a href={r.check_out_photo} target="_blank" className="inline-block p-2 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-100 transition-colors">
                           <FileImage size={16} />
                         </a>
                       ) : "-"}
