@@ -141,7 +141,10 @@ exports.Prisma.ProjectsScalarFieldEnum = {
   code: 'code',
   status: 'status',
   created_at: 'created_at',
-  enabled_forms: 'enabled_forms'
+  enabled_forms: 'enabled_forms',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  radius_meters: 'radius_meters'
 };
 
 exports.Prisma.Refresh_tokensScalarFieldEnum = {

@@ -10,7 +10,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   getAllProjectsConfig, 
   updateProjectCapabilities, 
-  getAllCustomersForFilter 
+  getAllCustomersForFilter,
+  updateProjectLocation
 } from "@/app/actions/projects_config";
 import Link from "next/link";
 
@@ -74,6 +75,34 @@ export default function SettingsPage() {
     const matchesCustomer = customerFilter === "all" || p.customerId === customerFilter;
     return matchesSearch && matchesCustomer;
   });
+
+  const handlePinLocation = async (projectId: string) => {
+    if (!navigator.geolocation) {
+       alert("Geolocation is not supported by this browser.");
+       return;
+    }
+
+    setUpdatingId(`pin-${projectId}`);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const res = await updateProjectLocation(projectId, pos.coords.latitude, pos.coords.longitude);
+        if ("success" in res && res.success) {
+           setProjects(prev => prev.map(p => 
+             p.id === projectId ? { ...p, latitude: pos.coords.latitude, longitude: pos.coords.longitude } : p
+           ));
+           alert("✨ SITE PINNED SUCCESSFULLY! Location has been locked to this site.");
+        } else {
+           alert("Error saving location: " + (res.error || "Unknown error"));
+        }
+        setUpdatingId(null);
+      },
+      (err) => {
+        alert("Failed to get your current location. Please ensure GPS is active and permissions are granted.");
+        setUpdatingId(null);
+      },
+      { enableHighAccuracy: true }
+    );
+  };
 
   return (
     <div className="w-full space-y-8 animate-in fade-in duration-700 pb-20">
@@ -147,6 +176,7 @@ export default function SettingsPage() {
                     </div>
                   </th>
                 ))}
+                <th className="px-6 py-6 text-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 whitespace-nowrap">Geo-Lock</th>
                 <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 text-right">Status</th>
               </tr>
             </thead>
@@ -231,6 +261,30 @@ export default function SettingsPage() {
                           </td>
                         );
                       })}
+
+                      {/* Geo-Lock Pinning Column */}
+                      <td className="px-6 py-6 text-center">
+                         <button 
+                           onClick={() => handlePinLocation(project.id)}
+                           disabled={updatingId?.startsWith('pin-')}
+                           className={`w-12 h-12 rounded-2xl mx-auto flex flex-col items-center justify-center transition-all border-2 
+                             ${project.latitude ? 'bg-indigo-50 border-indigo-100 text-indigo-500 shadow-sm' : 'bg-slate-50 border-slate-100 text-slate-300 hover:border-blue-200 hover:text-blue-500'}
+                             ${updatingId === `pin-${project.id}` ? 'animate-pulse scale-95' : 'active:scale-90'}
+                           `}
+                           title={project.latitude ? `Locked: ${project.latitude}, ${project.longitude}` : "Pin current location as site HQ"}
+                         >
+                            {updatingId === `pin-${project.id}` ? (
+                              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <>
+                                <MapPin size={18} />
+                                <span className="text-[7px] font-black uppercase mt-1">
+                                   {project.latitude ? 'LOCKED' : 'PIN'}
+                                </span>
+                              </>
+                            )}
+                         </button>
+                      </td>
 
                       <td className="px-10 py-6 text-right">
                          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-[10px] font-black uppercase tracking-widest

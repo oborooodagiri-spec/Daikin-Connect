@@ -232,14 +232,14 @@ export async function setTrustedDevice(email: string) {
   const token = await new SignJWT({ email })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("30d")
+    .setExpirationTime("24h")
     .sign(TRUSTED_DEVICE_SECRET);
 
   cookieStore.set("trusted_device", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 30, // 30 days
+    maxAge: 60 * 60 * 24, // 24 hours (Today)
     path: "/",
   });
 }

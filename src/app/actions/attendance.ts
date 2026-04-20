@@ -31,13 +31,17 @@ export async function getActiveAttendance(projectId: string) {
       },
     });
 
-    const user = await prisma.users.findUnique({
-      where: { id: parseInt(session.userId) },
-      select: { face_reference_url: true }
+    const project = await prisma.projects.findUnique({
+      where: { id: BigInt(projectId) },
+      select: { latitude: true, longitude: true, radius_meters: true }
     });
 
     if (!activeRecord) {
-      return { data: null, hasFace: !!user?.face_reference_url };
+      return { 
+        data: null, 
+        hasFace: !!user?.face_reference_url,
+        projectLocation: project ? { lat: Number(project.latitude), long: Number(project.longitude), radius: project.radius_meters } : null
+      };
     }
 
     // Convert BigInt for JSON serialization
@@ -47,7 +51,8 @@ export async function getActiveAttendance(projectId: string) {
         id: Number(activeRecord.id),
         project_id: Number(activeRecord.project_id),
       },
-      hasFace: !!user?.face_reference_url
+      hasFace: !!user?.face_reference_url,
+      projectLocation: project ? { lat: Number(project.latitude), long: Number(project.longitude), radius: project.radius_meters } : null
     };
   } catch (error) {
     console.error("Error fetching attendance:", error);
@@ -85,6 +90,23 @@ export async function submitCheckIn(data: {
     if (activeOtherProject) {
       if (Number(activeOtherProject.project_id) !== Number(data.projectId)) {
          return { error: `System Locked: Anda masih berstatus AKTIF di lokasi "${activeOtherProject.projects?.name}". Silakan Check-out dari lokasi tersebut terlebih dahulu sebelum Check-in di lokasi baru.` };
+      }
+    }
+
+    // 2. Geofencing Enforcement
+    const project = await prisma.projects.findUnique({
+      where: { id: BigInt(data.projectId) }
+    });
+
+    if (project?.latitude && project?.longitude) {
+      const distance = calculateDistance(
+        data.lat, data.long, 
+        Number(project.latitude), Number(project.longitude)
+      );
+      const radius = project.radius_meters || 100;
+
+      if (distance > radius) {
+        return { error: `Out of Range: Anda berada ${Math.round(distance)}m dari lokasi proyek. (Radius maksimal: ${radius}m).` };
       }
     }
 
@@ -265,4 +287,21 @@ async function imageUrlToBase64(url: string) {
     return null;
   }
 }
+
+/**
+ * HELPER: Haversine Formula for Geofencing
+ * Calculates distance between two points in meters
+ */
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const R = 6371e3; // Earth radius in meters
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
+
 

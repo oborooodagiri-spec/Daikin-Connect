@@ -104,7 +104,7 @@ export default function TwoFactorModal({ isOpen, onClose, email, onVerify, isLoa
                     <div className="w-full h-full border-2 border-slate-200 rounded-lg group-hover:border-[#00a1e4] peer-checked:bg-[#00a1e4] peer-checked:border-[#00a1e4] transition-all duration-300"></div>
                     <ShieldCheck className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
                   </div>
-                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest group-hover:text-[#00a1e4] transition-colors">Trust this device for 30 days</span>
+                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest group-hover:text-[#00a1e4] transition-colors">Trust this device for today</span>
                 </label>
               </div>
 

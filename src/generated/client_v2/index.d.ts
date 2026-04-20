@@ -6794,11 +6794,17 @@ export namespace Prisma {
   export type ProjectsAvgAggregateOutputType = {
     id: number | null
     customer_id: number | null
+    latitude: Decimal | null
+    longitude: Decimal | null
+    radius_meters: number | null
   }
 
   export type ProjectsSumAggregateOutputType = {
     id: bigint | null
     customer_id: number | null
+    latitude: Decimal | null
+    longitude: Decimal | null
+    radius_meters: number | null
   }
 
   export type ProjectsMinAggregateOutputType = {
@@ -6809,6 +6815,9 @@ export namespace Prisma {
     status: $Enums.projects_status | null
     created_at: Date | null
     enabled_forms: string | null
+    latitude: Decimal | null
+    longitude: Decimal | null
+    radius_meters: number | null
   }
 
   export type ProjectsMaxAggregateOutputType = {
@@ -6819,6 +6828,9 @@ export namespace Prisma {
     status: $Enums.projects_status | null
     created_at: Date | null
     enabled_forms: string | null
+    latitude: Decimal | null
+    longitude: Decimal | null
+    radius_meters: number | null
   }
 
   export type ProjectsCountAggregateOutputType = {
@@ -6829,6 +6841,9 @@ export namespace Prisma {
     status: number
     created_at: number
     enabled_forms: number
+    latitude: number
+    longitude: number
+    radius_meters: number
     _all: number
   }
 
@@ -6836,11 +6851,17 @@ export namespace Prisma {
   export type ProjectsAvgAggregateInputType = {
     id?: true
     customer_id?: true
+    latitude?: true
+    longitude?: true
+    radius_meters?: true
   }
 
   export type ProjectsSumAggregateInputType = {
     id?: true
     customer_id?: true
+    latitude?: true
+    longitude?: true
+    radius_meters?: true
   }
 
   export type ProjectsMinAggregateInputType = {
@@ -6851,6 +6872,9 @@ export namespace Prisma {
     status?: true
     created_at?: true
     enabled_forms?: true
+    latitude?: true
+    longitude?: true
+    radius_meters?: true
   }
 
   export type ProjectsMaxAggregateInputType = {
@@ -6861,6 +6885,9 @@ export namespace Prisma {
     status?: true
     created_at?: true
     enabled_forms?: true
+    latitude?: true
+    longitude?: true
+    radius_meters?: true
   }
 
   export type ProjectsCountAggregateInputType = {
@@ -6871,6 +6898,9 @@ export namespace Prisma {
     status?: true
     created_at?: true
     enabled_forms?: true
+    latitude?: true
+    longitude?: true
+    radius_meters?: true
     _all?: true
   }
 
@@ -6968,6 +6998,9 @@ export namespace Prisma {
     status: $Enums.projects_status
     created_at: Date
     enabled_forms: string | null
+    latitude: Decimal | null
+    longitude: Decimal | null
+    radius_meters: number
     _count: ProjectsCountAggregateOutputType | null
     _avg: ProjectsAvgAggregateOutputType | null
     _sum: ProjectsSumAggregateOutputType | null
@@ -6997,6 +7030,9 @@ export namespace Prisma {
     status?: boolean
     created_at?: boolean
     enabled_forms?: boolean
+    latitude?: boolean
+    longitude?: boolean
+    radius_meters?: boolean
     customers?: boolean | customersDefaultArgs<ExtArgs>
     schedule_targets?: boolean | projects$schedule_targetsArgs<ExtArgs>
     schedules?: boolean | projects$schedulesArgs<ExtArgs>
@@ -7016,9 +7052,12 @@ export namespace Prisma {
     status?: boolean
     created_at?: boolean
     enabled_forms?: boolean
+    latitude?: boolean
+    longitude?: boolean
+    radius_meters?: boolean
   }
 
-  export type projectsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customer_id" | "name" | "code" | "status" | "created_at" | "enabled_forms", ExtArgs["result"]["projects"]>
+  export type projectsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customer_id" | "name" | "code" | "status" | "created_at" | "enabled_forms" | "latitude" | "longitude" | "radius_meters", ExtArgs["result"]["projects"]>
   export type projectsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customers?: boolean | customersDefaultArgs<ExtArgs>
     schedule_targets?: boolean | projects$schedule_targetsArgs<ExtArgs>
@@ -7047,6 +7086,9 @@ export namespace Prisma {
       status: $Enums.projects_status
       created_at: Date
       enabled_forms: string | null
+      latitude: Prisma.Decimal | null
+      longitude: Prisma.Decimal | null
+      radius_meters: number
     }, ExtArgs["result"]["projects"]>
     composites: {}
   }
@@ -7429,6 +7471,9 @@ export namespace Prisma {
     readonly status: FieldRef<"projects", 'projects_status'>
     readonly created_at: FieldRef<"projects", 'DateTime'>
     readonly enabled_forms: FieldRef<"projects", 'String'>
+    readonly latitude: FieldRef<"projects", 'Decimal'>
+    readonly longitude: FieldRef<"projects", 'Decimal'>
+    readonly radius_meters: FieldRef<"projects", 'Int'>
   }
     
 
@@ -45416,7 +45461,10 @@ export namespace Prisma {
     code: 'code',
     status: 'status',
     created_at: 'created_at',
-    enabled_forms: 'enabled_forms'
+    enabled_forms: 'enabled_forms',
+    latitude: 'latitude',
+    longitude: 'longitude',
+    radius_meters: 'radius_meters'
   };
 
   export type ProjectsScalarFieldEnum = (typeof ProjectsScalarFieldEnum)[keyof typeof ProjectsScalarFieldEnum]
@@ -46413,16 +46461,16 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'units_status'
+   * Reference to a field of type 'Decimal'
    */
-  export type Enumunits_statusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'units_status'>
+  export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
     
 
 
   /**
-   * Reference to a field of type 'Decimal'
+   * Reference to a field of type 'units_status'
    */
-  export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+  export type Enumunits_statusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'units_status'>
     
 
 
@@ -46675,6 +46723,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFilter<"projects"> | $Enums.projects_status
     created_at?: DateTimeFilter<"projects"> | Date | string
     enabled_forms?: StringNullableFilter<"projects"> | string | null
+    latitude?: DecimalNullableFilter<"projects"> | Decimal | DecimalJsLike | number | string | null
+    longitude?: DecimalNullableFilter<"projects"> | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFilter<"projects"> | number
     customers?: XOR<CustomersScalarRelationFilter, customersWhereInput>
     schedule_targets?: Schedule_targetsListRelationFilter
     schedules?: SchedulesListRelationFilter
@@ -46691,6 +46742,9 @@ export namespace Prisma {
     status?: SortOrder
     created_at?: SortOrder
     enabled_forms?: SortOrderInput | SortOrder
+    latitude?: SortOrderInput | SortOrder
+    longitude?: SortOrderInput | SortOrder
+    radius_meters?: SortOrder
     customers?: customersOrderByWithRelationInput
     schedule_targets?: schedule_targetsOrderByRelationAggregateInput
     schedules?: schedulesOrderByRelationAggregateInput
@@ -46712,6 +46766,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFilter<"projects"> | $Enums.projects_status
     created_at?: DateTimeFilter<"projects"> | Date | string
     enabled_forms?: StringNullableFilter<"projects"> | string | null
+    latitude?: DecimalNullableFilter<"projects"> | Decimal | DecimalJsLike | number | string | null
+    longitude?: DecimalNullableFilter<"projects"> | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFilter<"projects"> | number
     customers?: XOR<CustomersScalarRelationFilter, customersWhereInput>
     schedule_targets?: Schedule_targetsListRelationFilter
     schedules?: SchedulesListRelationFilter
@@ -46728,6 +46785,9 @@ export namespace Prisma {
     status?: SortOrder
     created_at?: SortOrder
     enabled_forms?: SortOrderInput | SortOrder
+    latitude?: SortOrderInput | SortOrder
+    longitude?: SortOrderInput | SortOrder
+    radius_meters?: SortOrder
     _count?: projectsCountOrderByAggregateInput
     _avg?: projectsAvgOrderByAggregateInput
     _max?: projectsMaxOrderByAggregateInput
@@ -46746,6 +46806,9 @@ export namespace Prisma {
     status?: Enumprojects_statusWithAggregatesFilter<"projects"> | $Enums.projects_status
     created_at?: DateTimeWithAggregatesFilter<"projects"> | Date | string
     enabled_forms?: StringNullableWithAggregatesFilter<"projects"> | string | null
+    latitude?: DecimalNullableWithAggregatesFilter<"projects"> | Decimal | DecimalJsLike | number | string | null
+    longitude?: DecimalNullableWithAggregatesFilter<"projects"> | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntWithAggregatesFilter<"projects"> | number
   }
 
   export type refresh_tokensWhereInput = {
@@ -50028,6 +50091,9 @@ export namespace Prisma {
     status?: $Enums.projects_status
     created_at?: Date | string
     enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
     customers: customersCreateNestedOneWithoutProjectsInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
     schedules?: schedulesCreateNestedManyWithoutProjectsInput
@@ -50044,6 +50110,9 @@ export namespace Prisma {
     status?: $Enums.projects_status
     created_at?: Date | string
     enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
     schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
@@ -50058,6 +50127,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
     customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUpdateManyWithoutProjectsNestedInput
@@ -50074,6 +50146,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
@@ -50089,6 +50164,9 @@ export namespace Prisma {
     status?: $Enums.projects_status
     created_at?: Date | string
     enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
   }
 
   export type projectsUpdateManyMutationInput = {
@@ -50098,6 +50176,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
   }
 
   export type projectsUncheckedUpdateManyInput = {
@@ -50108,6 +50189,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
   }
 
   export type refresh_tokensCreateInput = {
@@ -53810,6 +53894,17 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type DecimalNullableFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+  }
+
   export type CustomersScalarRelationFilter = {
     is?: customersWhereInput
     isNot?: customersWhereInput
@@ -53884,11 +53979,17 @@ export namespace Prisma {
     status?: SortOrder
     created_at?: SortOrder
     enabled_forms?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    radius_meters?: SortOrder
   }
 
   export type projectsAvgOrderByAggregateInput = {
     id?: SortOrder
     customer_id?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    radius_meters?: SortOrder
   }
 
   export type projectsMaxOrderByAggregateInput = {
@@ -53899,6 +54000,9 @@ export namespace Prisma {
     status?: SortOrder
     created_at?: SortOrder
     enabled_forms?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    radius_meters?: SortOrder
   }
 
   export type projectsMinOrderByAggregateInput = {
@@ -53909,11 +54013,17 @@ export namespace Prisma {
     status?: SortOrder
     created_at?: SortOrder
     enabled_forms?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    radius_meters?: SortOrder
   }
 
   export type projectsSumOrderByAggregateInput = {
     id?: SortOrder
     customer_id?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    radius_meters?: SortOrder
   }
 
   export type Enumprojects_statusWithAggregatesFilter<$PrismaModel = never> = {
@@ -53938,6 +54048,22 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type DecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedDecimalNullableFilter<$PrismaModel>
+    _sum?: NestedDecimalNullableFilter<$PrismaModel>
+    _min?: NestedDecimalNullableFilter<$PrismaModel>
+    _max?: NestedDecimalNullableFilter<$PrismaModel>
   }
 
   export type UsersScalarRelationFilter = {
@@ -54801,17 +54927,6 @@ export namespace Prisma {
     activity_id?: SortOrder
   }
 
-  export type DecimalNullableFilter<$PrismaModel = never> = {
-    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
-    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
-    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
-    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
-  }
-
   export type Enumahu_audits_approval_statusNullableFilter<$PrismaModel = never> = {
     equals?: $Enums.ahu_audits_approval_status | Enumahu_audits_approval_statusFieldRefInput<$PrismaModel> | null
     in?: $Enums.ahu_audits_approval_status[] | null
@@ -54993,22 +55108,6 @@ export namespace Prisma {
     volt_st?: SortOrder
     volt_rt?: SortOrder
     volt_ln?: SortOrder
-  }
-
-  export type DecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
-    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
-    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
-    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    not?: NestedDecimalNullableWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedDecimalNullableFilter<$PrismaModel>
-    _sum?: NestedDecimalNullableFilter<$PrismaModel>
-    _min?: NestedDecimalNullableFilter<$PrismaModel>
-    _max?: NestedDecimalNullableFilter<$PrismaModel>
   }
 
   export type Enumahu_audits_approval_statusNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -57091,6 +57190,14 @@ export namespace Prisma {
     set?: Date | string
   }
 
+  export type NullableDecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string | null
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
+  }
+
   export type customersUpdateOneRequiredWithoutProjectsNestedInput = {
     create?: XOR<customersCreateWithoutProjectsInput, customersUncheckedCreateWithoutProjectsInput>
     connectOrCreate?: customersCreateOrConnectWithoutProjectsInput
@@ -58555,14 +58662,6 @@ export namespace Prisma {
     update?: XOR<XOR<service_activitiesUpdateToOneWithWhereWithoutActivity_photosInput, service_activitiesUpdateWithoutActivity_photosInput>, service_activitiesUncheckedUpdateWithoutActivity_photosInput>
   }
 
-  export type NullableDecimalFieldUpdateOperationsInput = {
-    set?: Decimal | DecimalJsLike | number | string | null
-    increment?: Decimal | DecimalJsLike | number | string
-    decrement?: Decimal | DecimalJsLike | number | string
-    multiply?: Decimal | DecimalJsLike | number | string
-    divide?: Decimal | DecimalJsLike | number | string
-  }
-
   export type NullableEnumahu_audits_approval_statusFieldUpdateOperationsInput = {
     set?: $Enums.ahu_audits_approval_status | null
   }
@@ -59448,6 +59547,17 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type NestedDecimalNullableFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+  }
+
   export type NestedEnumprojects_statusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.projects_status | Enumprojects_statusFieldRefInput<$PrismaModel>
     in?: $Enums.projects_status[]
@@ -59470,6 +59580,22 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedDecimalNullableFilter<$PrismaModel>
+    _sum?: NestedDecimalNullableFilter<$PrismaModel>
+    _min?: NestedDecimalNullableFilter<$PrismaModel>
+    _max?: NestedDecimalNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumunits_statusNullableFilter<$PrismaModel = never> = {
@@ -59543,38 +59669,11 @@ export namespace Prisma {
     _max?: NestedBigIntNullableFilter<$PrismaModel>
   }
 
-  export type NestedDecimalNullableFilter<$PrismaModel = never> = {
-    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
-    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
-    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
-    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
-  }
-
   export type NestedEnumahu_audits_approval_statusNullableFilter<$PrismaModel = never> = {
     equals?: $Enums.ahu_audits_approval_status | Enumahu_audits_approval_statusFieldRefInput<$PrismaModel> | null
     in?: $Enums.ahu_audits_approval_status[] | null
     notIn?: $Enums.ahu_audits_approval_status[] | null
     not?: NestedEnumahu_audits_approval_statusNullableFilter<$PrismaModel> | $Enums.ahu_audits_approval_status | null
-  }
-
-  export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
-    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
-    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
-    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    not?: NestedDecimalNullableWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedDecimalNullableFilter<$PrismaModel>
-    _sum?: NestedDecimalNullableFilter<$PrismaModel>
-    _min?: NestedDecimalNullableFilter<$PrismaModel>
-    _max?: NestedDecimalNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumahu_audits_approval_statusNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -59873,6 +59972,9 @@ export namespace Prisma {
     status?: $Enums.projects_status
     created_at?: Date | string
     enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
     schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
     schedules?: schedulesCreateNestedManyWithoutProjectsInput
     units?: unitsCreateNestedManyWithoutProjectsInput
@@ -59887,6 +59989,9 @@ export namespace Prisma {
     status?: $Enums.projects_status
     created_at?: Date | string
     enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
     schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
@@ -60017,6 +60122,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFilter<"projects"> | $Enums.projects_status
     created_at?: DateTimeFilter<"projects"> | Date | string
     enabled_forms?: StringNullableFilter<"projects"> | string | null
+    latitude?: DecimalNullableFilter<"projects"> | Decimal | DecimalJsLike | number | string | null
+    longitude?: DecimalNullableFilter<"projects"> | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFilter<"projects"> | number
   }
 
   export type sitesUpsertWithWhereUniqueWithoutCustomersInput = {
@@ -61487,6 +61595,9 @@ export namespace Prisma {
     status?: $Enums.projects_status
     created_at?: Date | string
     enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
     customers: customersCreateNestedOneWithoutProjectsInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
     schedules?: schedulesCreateNestedManyWithoutProjectsInput
@@ -61502,6 +61613,9 @@ export namespace Prisma {
     status?: $Enums.projects_status
     created_at?: Date | string
     enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
     schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
@@ -61938,6 +62052,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
     customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUpdateManyWithoutProjectsNestedInput
@@ -61953,6 +62070,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
@@ -61990,6 +62110,9 @@ export namespace Prisma {
     status?: $Enums.projects_status
     created_at?: Date | string
     enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
     customers: customersCreateNestedOneWithoutProjectsInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
     schedules?: schedulesCreateNestedManyWithoutProjectsInput
@@ -62005,6 +62128,9 @@ export namespace Prisma {
     status?: $Enums.projects_status
     created_at?: Date | string
     enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
     schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
@@ -62098,6 +62224,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
     customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUpdateManyWithoutProjectsNestedInput
@@ -62113,6 +62242,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
@@ -65796,6 +65928,9 @@ export namespace Prisma {
     status?: $Enums.projects_status
     created_at?: Date | string
     enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
     customers: customersCreateNestedOneWithoutProjectsInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
     units?: unitsCreateNestedManyWithoutProjectsInput
@@ -65811,6 +65946,9 @@ export namespace Prisma {
     status?: $Enums.projects_status
     created_at?: Date | string
     enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
@@ -66059,6 +66197,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
     customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
     units?: unitsUpdateManyWithoutProjectsNestedInput
@@ -66074,6 +66215,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
@@ -66621,6 +66765,9 @@ export namespace Prisma {
     status?: $Enums.projects_status
     created_at?: Date | string
     enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
     customers: customersCreateNestedOneWithoutProjectsInput
     schedules?: schedulesCreateNestedManyWithoutProjectsInput
     units?: unitsCreateNestedManyWithoutProjectsInput
@@ -66636,6 +66783,9 @@ export namespace Prisma {
     status?: $Enums.projects_status
     created_at?: Date | string
     enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
     schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
@@ -66735,6 +66885,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
     customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
     schedules?: schedulesUpdateManyWithoutProjectsNestedInput
     units?: unitsUpdateManyWithoutProjectsNestedInput
@@ -66750,6 +66903,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
     schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
@@ -67285,6 +67441,9 @@ export namespace Prisma {
     status?: $Enums.projects_status
     created_at?: Date | string
     enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
     customers: customersCreateNestedOneWithoutProjectsInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
     schedules?: schedulesCreateNestedManyWithoutProjectsInput
@@ -67300,6 +67459,9 @@ export namespace Prisma {
     status?: $Enums.projects_status
     created_at?: Date | string
     enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
     schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
@@ -67399,6 +67561,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
     customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUpdateManyWithoutProjectsNestedInput
@@ -67414,6 +67579,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
@@ -67437,6 +67605,9 @@ export namespace Prisma {
     status?: $Enums.projects_status
     created_at?: Date | string
     enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
   }
 
   export type sitesCreateManyCustomersInput = {
@@ -67494,6 +67665,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
     schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUpdateManyWithoutProjectsNestedInput
     units?: unitsUpdateManyWithoutProjectsNestedInput
@@ -67508,6 +67682,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
@@ -67522,6 +67699,9 @@ export namespace Prisma {
     status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
   }
 
   export type sitesUpdateWithoutCustomersInput = {

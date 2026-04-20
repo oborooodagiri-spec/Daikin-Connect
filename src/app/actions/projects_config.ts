@@ -32,7 +32,10 @@ export async function getAllProjectsConfig() {
         customerId: p.customers?.id?.toString() || "",
         customerName: p.customers?.name || "Unknown",
         status: p.status,
-        enabled_forms: p.enabled_forms || "Audit,Preventive,Corrective"
+        enabled_forms: p.enabled_forms || "Audit,Preventive,Corrective",
+        latitude: p.latitude ? Number(p.latitude) : null,
+        longitude: p.longitude ? Number(p.longitude) : null,
+        radius_meters: p.radius_meters
       }))
     };
   } catch (error) {
@@ -66,6 +69,32 @@ export async function updateProjectCapabilities(projectId: string, forms: string
     return { error: "Failed to update project settings." };
   }
 }
+
+/**
+ * Updates the GPS coordinates for a specific project site.
+ */
+export async function updateProjectLocation(projectId: string, lat: number, long: number) {
+    const session = await getSession();
+    if (!session || !session.isInternal) {
+      return { error: "Unauthorized access" };
+    }
+  
+    try {
+      await prisma.projects.update({
+        where: { id: BigInt(projectId) },
+        data: { 
+          latitude: lat,
+          longitude: long
+        }
+      });
+  
+      revalidatePath("/dashboard/settings");
+      return { success: true };
+    } catch (error) {
+      console.error("Update project location error:", error);
+      return { error: "Failed to save project coordinates." };
+    }
+  }
 
 /**
  * Fetches all active customers for the filter dropdown.

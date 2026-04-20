@@ -14,8 +14,17 @@ export async function getAllSchedules() {
     const schedules = await prisma.schedules.findMany({
       include: {
         projects: { select: { name: true } },
-        units: { select: { tag_number: true } }, 
-        users: { select: { name: true, email: true } }
+        units: { 
+          select: { 
+            id: true,
+            tag_number: true,
+            qr_code_token: true,
+            area: true,
+            model: true,
+            room_tenant: true
+          } 
+        }, 
+        users: { select: { id: true, name: true, email: true } }
       },
       orderBy: { start_at: 'asc' }
     });
@@ -64,8 +73,17 @@ export async function getSchedulesByProject(projectId: string) {
     const schedules = await prisma.schedules.findMany({
       where: { project_id: BigInt(projectId) },
       include: {
-        units: { select: { tag_number: true } }, 
-        users: { select: { name: true, email: true } }
+        units: { 
+          select: { 
+            id: true,
+            tag_number: true,
+            qr_code_token: true,
+            area: true,
+            model: true,
+            room_tenant: true
+          } 
+        }, 
+        users: { select: { id: true, name: true, email: true } }
       },
       orderBy: { start_at: 'asc' }
     });
@@ -154,6 +172,34 @@ export async function createSchedule(data: any) {
   }
 }
 
+export async function updateSchedule(id: string, data: any) {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized access" };
+
+  try {
+    const updated = await prisma.schedules.update({
+      where: { id: BigInt(id) },
+      data: {
+        title: data.title,
+        description: data.description,
+        type: data.type,
+        start_at: new Date(data.start_at),
+        end_at: new Date(data.end_at),
+        unit_id: data.unit_id ? parseInt(data.unit_id) : null,
+        assignee_id: data.assignee_id ? parseInt(data.assignee_id) : null,
+      }
+    });
+
+    revalidatePath(`/dashboard/customers`);
+    revalidatePath(`/dashboard/schedules`);
+
+    return { success: true, id: updated.id.toString() };
+  } catch (error: any) {
+    console.error("[SCHEDULE_ACTION] Update error:", error.message);
+    return { error: `Failed to update schedule: ${error.message}` };
+  }
+}
+
 export async function deleteSchedule(id: string) {
   const session = await getSession();
   if (!session) return { error: "Not authenticated" };
@@ -210,7 +256,7 @@ export async function updateScheduleStatus(scheduleId: string, status: string) {
   }
 }
 
-export async function getScheduleFormOptions() {
+export async function getScheduleFormOptions(projectId?: string) {
   const session = await getSession();
   if (!session) return { error: "Unauthorized access" };
 
@@ -218,6 +264,7 @@ export async function getScheduleFormOptions() {
     const [projects, units, users] = await Promise.all([
       prisma.projects.findMany({ select: { id: true, name: true, customer_id: true, enabled_forms: true } }),
       prisma.units.findMany({ 
+        where: projectId ? { project_ref_id: BigInt(projectId) } : undefined,
         select: { 
           id: true, 
           tag_number: true, 
@@ -232,20 +279,21 @@ export async function getScheduleFormOptions() {
       }),
       prisma.users.findMany({ 
         where: {
-          OR: [
-            { 
-              roles: { 
-                role_name: { in: ["Engineer", "Vendor", "STE", "CAPS"] } 
-              } 
-            },
+          AND: [
+            projectId ? { user_project_access: { some: { project_id: BigInt(projectId) } } } : {},
             {
-              user_roles: {
-                some: {
-                  roles: {
-                    role_name: { in: ["Engineer", "Vendor", "STE", "CAPS"] }
+              OR: [
+                { roles: { role_name: { in: ["Engineer", "Vendor", "STE", "CAPS"] } } },
+                {
+                  user_roles: {
+                    some: {
+                      roles: {
+                        role_name: { in: ["Engineer", "Vendor", "STE", "CAPS"] }
+                      }
+                    }
                   }
                 }
-              }
+              ]
             }
           ]
         },

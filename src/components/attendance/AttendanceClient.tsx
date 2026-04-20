@@ -15,6 +15,8 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
   const [verifying, setVerifying] = useState(false);
   const [hasFace, setHasFace] = useState(true);
   const [verifyResult, setVerifyResult] = useState<any>(null);
+  const [projectLocation, setProjectLocation] = useState<{ lat: number; long: number; radius: number } | null>(null);
+  const [distance, setDistance] = useState<number | null>(null);
   
   // Custom WebRTC Scanner States
   const [showScanner, setShowScanner] = useState(false);
@@ -90,8 +92,36 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
       setActiveRecord(null);
     }
     setHasFace(res?.hasFace ?? true);
+    if (res?.projectLocation) {
+       setProjectLocation(res.projectLocation);
+    }
     setLoading(false);
   };
+
+  // Real-time distance calculation
+  useEffect(() => {
+    if (location && projectLocation) {
+       const d = calculateDistance(
+         location.lat, location.long,
+         projectLocation.lat, projectLocation.long
+       );
+       setDistance(d);
+    } else {
+       setDistance(null);
+    }
+  }, [location, projectLocation]);
+
+  function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+    const R = 6371e3; // meters
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  }
 
   const startLocationTracking = (useHighAccuracy = true) => {
     if (!navigator.geolocation) {
@@ -307,80 +337,113 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
         {/* Main Interaction Section (Right Side on Desktop) */}
         <div className="bg-white rounded-[2.5rem] md:rounded-none md:rounded-l-[3.5rem] -mt-10 md:mt-0 relative z-20 p-6 sm:p-12 flex-1 flex flex-col shadow-inner md:shadow-none">
           
-          {/* Interactive GPS Status Indicator */}
-          <div className="space-y-4 mb-10">
-            <button 
-              onClick={startLocationTracking}
-              className={`w-full p-4 rounded-2xl flex items-center gap-4 border transition-all active:scale-[0.98] group/gps 
-                ${!location ? 'bg-rose-50 border-rose-100' : 
-                  location.isFallback ? 'bg-amber-50 border-amber-100' : 'bg-emerald-50 border-emerald-100'}`}
-            >
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors shrink-0 
-                ${!location ? 'bg-rose-100 text-rose-600 animate-pulse' : 
-                  location.isFallback ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'}`}>
-                {!location ? <Loader2 className="animate-spin" size={22} /> : location.isFallback ? <ShieldAlert size={22} /> : <MapPin size={22} />}
-              </div>
-              <div className="flex-1 text-left min-w-0">
-                <p className={`text-[10px] font-black uppercase tracking-widest leading-tight 
-                  ${!location ? 'text-rose-600' : location.isFallback ? 'text-amber-700' : 'text-emerald-600'}`}>
-                  {!location ? locError || 'Detection Required' : 
-                   location.isFallback ? 'Network Triangulation (GPS Blocked)' : 'GPS Region Locked & Verified'}
-                </p>
-                <p className="text-[12px] font-bold text-slate-500 mt-1 truncate">
-                  {location ? `${location.lat.toFixed(5)}, ${location.long.toFixed(5)} ${location.city ? `(${location.city})` : ''}` : 'Waiting for connection...'}
-                </p>
-              </div>
-              {!location && <ChevronRight className="w-5 h-5 text-rose-400 group-hover/gps:translate-x-1 transition-transform" />}
-            </button>
-          </div>
-
-          {/* Status Display Area */}
-          {isCompleted ? (
-            <div className="flex-1 flex flex-col justify-center items-center text-center py-10 space-y-6">
-              <div className="w-24 h-24 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center shadow-sm">
-                <CheckCircle2 size={48} />
-              </div>
-              <div>
-                <h2 className="text-2xl font-black text-slate-800 tracking-tight mb-2">Shift Completed</h2>
-                <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">
-                  Checked out at {format(new Date(activeRecord.check_out_time), "HH:mm")}
-                </p>
-              </div>
+            {/* Interactive GPS Status Indicator */}
+            <div className="space-y-4 mb-4">
+              <button 
+                onClick={startLocationTracking}
+                className={`w-full p-4 rounded-2xl flex items-center gap-4 border transition-all active:scale-[0.98] group/gps 
+                  ${!location ? 'bg-rose-50 border-rose-100' : 
+                    location.isFallback ? 'bg-amber-50 border-amber-100' : 'bg-emerald-50 border-emerald-100'}`}
+              >
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors shrink-0 
+                  ${!location ? 'bg-rose-100 text-rose-600 animate-pulse' : 
+                    location.isFallback ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'}`}>
+                  {!location ? <Loader2 className="animate-spin" size={22} /> : location.isFallback ? <ShieldAlert size={22} /> : <MapPin size={22} />}
+                </div>
+                <div className="flex-1 text-left min-w-0">
+                  <p className={`text-[10px] font-black uppercase tracking-widest leading-tight 
+                    ${!location ? 'text-rose-600' : location.isFallback ? 'text-amber-700' : 'text-emerald-600'}`}>
+                    {!location ? locError || 'Detection Required' : 
+                     location.isFallback ? 'Network Triangulation (GPS Blocked)' : 'GPS Region Locked & Verified'}
+                  </p>
+                  <p className="text-[12px] font-bold text-slate-500 mt-1 truncate">
+                    {location ? `${location.lat.toFixed(5)}, ${location.long.toFixed(5)} ${location.city ? `(${location.city})` : ''}` : 'Waiting for connection...'}
+                  </p>
+                </div>
+                {!location && <ChevronRight className="w-5 h-5 text-rose-400 group-hover/gps:translate-x-1 transition-transform" />}
+              </button>
             </div>
-          ) : (
-            <div className="flex-1 flex flex-col justify-center items-center py-4">
-              <div className="relative group perspective mb-8">
-                <div className={`absolute inset-0 rounded-full blur-3xl transition-all duration-1000 opacity-30 ${
-                  isWorking ? 'bg-rose-500 group-hover:bg-rose-600' : 'bg-blue-400 group-hover:bg-blue-600'
-                }`} />
-                
-                <button
-                  disabled={submitting || !location}
-                  onClick={triggerCamera}
-                  className={`relative w-48 h-48 sm:w-56 sm:h-56 rounded-full flex flex-col items-center justify-center text-white shadow-2xl transition-all duration-500 transform group-hover:scale-105 active:scale-95 disabled:opacity-40 disabled:grayscale disabled:cursor-not-allowed
-                    ${isWorking 
-                      ? 'bg-gradient-to-br from-rose-400 to-rose-600 shadow-rose-900/40' 
-                      : 'bg-gradient-to-br from-[#00a1e4] to-blue-600 shadow-blue-900/40'
-                    }
-                  `}
-                >
-                  {submitting ? (
-                    <Loader2 className="w-12 h-12 animate-spin" />
-                  ) : (
-                    <>
-                      <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md mb-4 border border-white/20">
-                        {verifying ? <Fingerprint className="w-10 h-10 animate-pulse" /> : <Camera size={28} strokeWidth={2.5} />}
-                      </div>
-                      <span className="text-xl font-black uppercase tracking-widest text-center px-4 leading-tight">
-                        {verifying ? 'Scanning...' : (!hasFace ? 'Register Face' : (isWorking ? 'End Shift' : 'Begin Shift'))}
-                      </span>
-                      <span className="text-[10px] font-black opacity-70 uppercase tracking-widest mt-2 flex items-center gap-1">
-                        Take Photo <ChevronRight size={12} />
-                      </span>
-                    </>
-                  )}
-                </button>
+
+            {/* Geofencing HUD */}
+            {projectLocation && distance !== null && (
+               <div className={`mb-10 p-4 rounded-2xl border flex items-center justify-between animate-in zoom-in duration-500
+                  ${distance <= (projectLocation.radius || 100) 
+                    ? 'bg-blue-50 border-blue-100' 
+                    : 'bg-rose-50 border-rose-200 shadow-lg shadow-rose-100 animate-pulse'}`}>
+                  <div className="flex items-center gap-3">
+                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center 
+                        ${distance <= (projectLocation.radius || 100) ? 'bg-blue-100 text-blue-600' : 'bg-rose-100 text-rose-600'}`}>
+                        <Activity size={18} />
+                     </div>
+                     <div>
+                        <p className={`text-[10px] font-black uppercase tracking-widest leading-none mb-1
+                           ${distance <= (projectLocation.radius || 100) ? 'text-blue-600' : 'text-rose-600'}`}>
+                           Site Proximity
+                        </p>
+                        <p className="text-[12px] font-black text-slate-700">
+                           {Math.round(distance)}m <span className="text-slate-400 font-bold">from Project HQ</span>
+                        </p>
+                     </div>
+                  </div>
+                  <div className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tighter
+                     ${distance <= (projectLocation.radius || 100) ? 'bg-blue-600 text-white' : 'bg-rose-600 text-white'}`}>
+                     {distance <= (projectLocation.radius || 100) ? 'In Range' : 'Out of Range'}
+                  </div>
+               </div>
+            )}
+
+            {/* Status Display Area */}
+            {isCompleted ? (
+              <div className="flex-1 flex flex-col justify-center items-center text-center py-10 space-y-6">
+                <div className="w-24 h-24 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center shadow-sm">
+                  <CheckCircle2 size={48} />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-slate-800 tracking-tight mb-2">Shift Completed</h2>
+                  <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">
+                    Checked out at {format(new Date(activeRecord.check_out_time), "HH:mm")}
+                  </p>
+                </div>
               </div>
+            ) : (
+              <div className="flex-1 flex flex-col justify-center items-center py-4">
+                <div className="relative group perspective mb-8">
+                  <div className={`absolute inset-0 rounded-full blur-3xl transition-all duration-1000 opacity-30 ${
+                    isWorking ? 'bg-rose-500 group-hover:bg-rose-600' : 'bg-blue-400 group-hover:bg-blue-600'
+                  }`} />
+                  
+                  <button
+                    disabled={
+                      submitting || 
+                      !location || 
+                      (projectLocation && distance !== null && distance > (projectLocation.radius || 100) && !isWorking)
+                    }
+                    onClick={triggerCamera}
+                    className={`relative w-48 h-48 sm:w-56 sm:h-56 rounded-full flex flex-col items-center justify-center text-white shadow-2xl transition-all duration-500 transform group-hover:scale-105 active:scale-95 disabled:opacity-40 disabled:grayscale disabled:cursor-not-allowed
+                      ${isWorking 
+                        ? 'bg-gradient-to-br from-rose-400 to-rose-600 shadow-rose-900/40' 
+                        : 'bg-gradient-to-br from-[#00a1e4] to-blue-600 shadow-blue-900/40'
+                      }
+                    `}
+                  >
+                    {submitting ? (
+                      <Loader2 className="w-12 h-12 animate-spin" />
+                    ) : (
+                      <>
+                        <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md mb-4 border border-white/20">
+                          {verifying ? <Fingerprint className="w-10 h-10 animate-pulse" /> : <Camera size={28} strokeWidth={2.5} />}
+                        </div>
+                        <span className="text-xl font-black uppercase tracking-widest text-center px-4 leading-tight">
+                          {distance !== null && projectLocation && distance > (projectLocation.radius || 100) && !isWorking ? 'Out of Range' : 
+                          (verifying ? 'Scanning...' : (!hasFace ? 'Register Face' : (isWorking ? 'End Shift' : 'Begin Shift')))}
+                        </span>
+                        <span className="text-[10px] font-black opacity-70 uppercase tracking-widest mt-2 flex items-center gap-1">
+                          {distance !== null && projectLocation && distance > (projectLocation.radius || 100) && !isWorking ? 'Too far from site' : 'Take Photo'} <ChevronRight size={12} />
+                        </span>
+                      </>
+                    )}
+                  </button>
+                </div>
               
               {isWorking && (
                 <div className="text-center animate-in fade-in slide-in-from-bottom-4 duration-700 w-full">

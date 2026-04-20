@@ -2,23 +2,25 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { useSearchParams } from "next/navigation";
 import { format, startOfWeek, addDays, isSameDay } from "date-fns";
-import { getAllSchedules, getScheduleFormOptions, createSchedule, updateScheduleStatus, getSchedulesByProject } from "@/app/actions/schedules";
-import { Plus, MapPin, CheckCircle2, XCircle, Search, Clock, CalendarIcon, FolderGit2, X, Save, ChevronLeft, ChevronRight, Activity } from "lucide-react";
+import { getAllSchedules, getScheduleFormOptions, createSchedule, updateScheduleStatus, getSchedulesByProject, deleteSchedule } from "@/app/actions/schedules";
+import { Plus, MapPin, CheckCircle2, XCircle, Search, Clock, CalendarIcon, FolderGit2, X, Save, ChevronLeft, ChevronRight, Activity, Pencil, Trash2, MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter, useSearchParams } from "next/navigation";
 import QuickInputModal from "@/components/dashboard/QuickInputModal";
 import ThreadModal from "@/components/dashboard/ThreadModal";
+import ScheduleInputForm from "@/components/dashboard/ScheduleInputForm";
 import { getSession } from "@/app/actions/auth";
-import { MessageSquare } from "lucide-react";
 
 export default function SchedulesPage() {
+  const router = useRouter();
   const [schedules, setSchedules] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
   const searchParams = useSearchParams();
   const filterProjectId = searchParams.get("projectId");
   const [selectedDayMobile, setSelectedDayMobile] = useState(new Date());
+  const [editingSchedule, setEditingSchedule] = useState<any>(null);
 
   // Form & Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -87,16 +89,37 @@ export default function SchedulesPage() {
     });
   };
 
+  const handleDeleteSchedule = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this schedule?")) return;
+    const res = await deleteSchedule(id);
+    if (res && "success" in res && res.success) {
+      fetchSchedules();
+    } else {
+      alert("Failed to delete schedule");
+    }
+  };
+
   const handleOpenForm = (s: any) => {
-    if (s.unitId || s.unit_id) {
-       // Find the unit in options to get its details
-       const unit = options.units.find(u => u.id === (s.unitId || s.unit_id));
-       setPassedUnit(unit || {
-         id: s.unitId || s.unit_id,
-         tag_number: s.unitTag || "Assigned Unit",
-         area: s.unitArea || "",
-         model: s.unitModel || ""
-       });
+    // Priority 1: Direct Redirection if unit has token
+    const unit = s.unit || options.units.find(u => u.id === (s.unitId || s.unit_id));
+    if (unit?.qr_code_token) {
+        const type = s.type?.toLowerCase() || "preventive";
+        const formType = type === "dailylog" ? "daily" : type;
+        router.push(`/passport/${unit.qr_code_token}/${formType}`);
+        return;
+    }
+
+    // Priority 2: Fallback to QuickInputModal for unit selection
+    if (unit) {
+        setPassedUnit(unit);
+    } else if (s.unitId || s.unit_id) {
+        const foundUnit = options.units.find(u => u.id === (s.unitId || s.unit_id));
+        setPassedUnit(foundUnit || {
+          id: s.unitId || s.unit_id,
+          tag_number: s.unitTag || "Assigned Unit",
+          area: s.unitArea || "",
+          model: s.unitModel || ""
+        });
     } else {
       setPassedUnit(null);
     }
@@ -186,64 +209,89 @@ export default function SchedulesPage() {
                 return (
                     <div key={i} className="p-2 border-r border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors">
                     <div className="space-y-2">
-                        {daySchedules.map((s) => (
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-                            key={s.id} 
-                            onClick={() => handleOpenForm(s)}
-                            className={`p-3 rounded-xl border ${getTypeStyle(s.type)} shadow-sm relative group cursor-pointer hover:scale-105 hover:shadow-md transition-all active:scale-95`}
-                        >
-                            <p className="font-black text-xs tracking-tight mb-1">{s.title}</p>
-                            <p className="text-[9px] font-bold opacity-70 flex items-center gap-1 mb-1">
-                            <FolderGit2 size={10} /> {s.project?.name || "Unknown"}
-                            </p>
-                            <p className="text-[9px] font-bold opacity-70 flex items-center gap-1">
-                            <Clock size={10} /> {format(new Date(s.start_at), 'HH:mm')} - {format(new Date(s.end_at), 'HH:mm')}
-                            </p>
+                        {daySchedules.map((s) => {
+                          const roles = session?.roles || [];
+                          const userRole = session?.role_name?.toLowerCase() || "";
+                          const canEditOrDelete = userRole.includes("admin") || userRole.includes("engineer") || roles.some(r => r.toLowerCase().includes("admin") || r.toLowerCase().includes("engineer"));
+                          const isActuallyInternal = session?.isInternal || roles.some((r: string) => 
+                            ["admin", "super", "internal", "management", "engineer"].some(kw => r.toLowerCase().includes(kw))
+                          );
 
-                            <div className="mt-3 pt-2 border-t border-black/5 flex flex-col gap-2">
-                                <div className="flex justify-between items-center">
-                                    <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${
-                                        s.status === 'Completed' ? 'bg-emerald-500 text-white' : 
-                                        s.status === 'Missed' ? 'bg-rose-500 text-white' : 'bg-black/10'
-                                    }`}>
-                                        {s.status}
-                                    </span>
+                          return (
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+                                key={s.id} 
+                                onClick={() => handleOpenForm(s)}
+                                className={`p-3 rounded-xl border ${getTypeStyle(s.type)} shadow-sm relative group cursor-pointer hover:scale-105 hover:shadow-md transition-all active:scale-95`}
+                            >
+                                <p className="font-black text-xs tracking-tight mb-1">{s.title}</p>
+                                <p className="text-[9px] font-bold opacity-70 flex items-center gap-1 mb-1">
+                                <FolderGit2 size={10} /> {s.project?.name || "Unknown"}
+                                </p>
+                                <p className="text-[9px] font-bold opacity-70 flex items-center gap-1">
+                                <Clock size={10} /> {format(new Date(s.start_at), 'HH:mm')} - {format(new Date(s.end_at), 'HH:mm')}
+                                </p>
+
+                                <div className="mt-3 pt-2 border-t border-black/5 flex flex-col gap-2">
+                                    <div className="flex justify-between items-center">
+                                        <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${
+                                            s.status === 'Completed' ? 'bg-emerald-500 text-white' : 
+                                            s.status === 'Missed' ? 'bg-rose-500 text-white' : 'bg-black/10'
+                                        }`}>
+                                            {s.status}
+                                        </span>
+                                    </div>
+                                    
+                                    {isActuallyInternal && (
+                                        <div className="flex flex-col gap-1.5 min-w-0">
+                                            <button 
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                setManagingSchedule(s);
+                                              }}
+                                              className="w-full py-1.5 bg-black/5 hover:bg-black hover:text-white rounded-lg text-[9px] font-black uppercase tracking-widest transition-all"
+                                            >
+                                              <div className="flex items-center justify-center gap-1.5">
+                                                <MessageSquare size={10} />
+                                                Collaboration Thread
+                                              </div>
+                                            </button>
+
+                                            {canEditOrDelete && (
+                                                <div className="flex gap-1">
+                                                    <button 
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setEditingSchedule(s);
+                                                      }}
+                                                      className="flex-1 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-1"
+                                                    >
+                                                        <Pencil size={10} /> Edit
+                                                    </button>
+                                                    <button 
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleDeleteSchedule(s.id);
+                                                      }}
+                                                      className="flex-1 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white rounded-lg text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-1"
+                                                    >
+                                                        <Trash2 size={10} /> Delete
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
-                                {(() => {
-                                   const roles = session?.roles || [];
-                                   const isActuallyInternal = session?.isInternal || roles.some((r: string) => 
-                                     ["admin", "super", "internal", "management", "engineer"].some(kw => r.toLowerCase().includes(kw))
-                                   );
-                                   
-                                   if (isActuallyInternal) {
-                                     return (
-                                       <button 
-                                         onClick={(e) => {
-                                           e.stopPropagation();
-                                           setManagingSchedule(s);
-                                         }}
-                                         className="w-full py-1.5 bg-black/5 hover:bg-black hover:text-white rounded-lg text-[9px] font-black uppercase tracking-widest transition-all"
-                                       >
-                                         <div className="flex items-center justify-center gap-1.5">
-                                           <MessageSquare size={10} />
-                                           Collaboration Thread
-                                         </div>
-                                       </button>
-                                     );
-                                   }
-                                   return null;
-                                 })()}
-                            </div>
-                        </motion.div>
-                        ))}
+                            </motion.div>
+                          );
+                        })}
                     </div>
-                    </div>
-                );
-                })}
-            </div>
-            )}
+                </div>
+            );
+            })}
         </div>
+        )}
+    </div>
 
         {/* Mobile View - Single Day List */}
         <div className="md:hidden flex flex-col min-h-[300px] p-4 bg-slate-50/30">
@@ -284,7 +332,35 @@ export default function SchedulesPage() {
                                     </div>
                                     <h4 className="text-sm font-black text-[#003366] uppercase tracking-tight">{s.title}</h4>
                                 </div>
-                                <p className="text-[10px] font-black text-[#00a1e4]">{format(new Date(s.start_at), 'HH:mm')} - {format(new Date(s.end_at), 'HH:mm')}</p>
+                                <div className="text-right">
+                                    <p className="text-[10px] font-black text-[#00a1e4]">{format(new Date(s.start_at), 'HH:mm')} - {format(new Date(s.end_at), 'HH:mm')}</p>
+                                    <div className="flex gap-2 mt-2">
+                                        {(() => {
+                                            const roles = session?.roles || [];
+                                            const userRole = session?.role_name?.toLowerCase() || "";
+                                            const canEditOrDelete = userRole.includes("admin") || userRole.includes("engineer") || roles.some(r => r.toLowerCase().includes("admin") || r.toLowerCase().includes("engineer"));
+                                            if (canEditOrDelete) {
+                                                return (
+                                                    <>
+                                                        <button 
+                                                            onClick={(e) => { e.stopPropagation(); setEditingSchedule(s); }}
+                                                            className="p-2 bg-blue-50 text-blue-600 rounded-lg"
+                                                        >
+                                                            <Pencil size={14} />
+                                                        </button>
+                                                        <button 
+                                                            onClick={(e) => { e.stopPropagation(); handleDeleteSchedule(s.id); }}
+                                                            className="p-2 bg-rose-50 text-rose-600 rounded-lg"
+                                                        >
+                                                            <Trash2 size={14} />
+                                                        </button>
+                                                    </>
+                                                );
+                                            }
+                                            return null;
+                                        })()}
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="flex items-center justify-between mt-auto">
@@ -427,6 +503,35 @@ export default function SchedulesPage() {
         onClose={() => setIsInputModalOpen(false)} 
         unit={passedUnit} 
       />
+
+      <AnimatePresence>
+        {editingSchedule && (
+            <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                <motion.div 
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    className="absolute inset-0 bg-slate-900/40 backdrop-blur-md"
+                    onClick={() => setEditingSchedule(null)}
+                />
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                    className="relative z-10 w-full max-w-lg h-[80vh] overflow-hidden"
+                >
+                    <ScheduleInputForm 
+                        selectedDate={new Date(editingSchedule.start_at)}
+                        scheduleId={editingSchedule.id}
+                        initialData={editingSchedule}
+                        onSuccess={() => {
+                            setEditingSchedule(null);
+                            fetchSchedules();
+                        }}
+                        onCancel={() => setEditingSchedule(null)}
+                    />
+                </motion.div>
+            </div>
+        )}
+      </AnimatePresence>
 
       <ThreadModal 
         isOpen={!!managingSchedule}

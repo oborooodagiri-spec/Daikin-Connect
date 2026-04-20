@@ -8,17 +8,26 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
-import { getScheduleFormOptions, createSchedule } from "@/app/actions/schedules";
+import { getScheduleFormOptions, createSchedule, updateSchedule } from "@/app/actions/schedules";
 import TimePickerDrum from "./TimePickerDrum";
 
 interface Props {
   selectedDate: Date;
   projectId?: string;
+  scheduleId?: string;
+  initialData?: any;
   onSuccess: () => void;
   onCancel: () => void;
 }
 
-export default function ScheduleInputForm({ selectedDate, projectId: initialProjectId, onSuccess, onCancel }: Props) {
+export default function ScheduleInputForm({ 
+  selectedDate, 
+  projectId: initialProjectId, 
+  scheduleId,
+  initialData,
+  onSuccess, 
+  onCancel 
+}: Props) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -43,22 +52,39 @@ export default function ScheduleInputForm({ selectedDate, projectId: initialProj
 
   useEffect(() => {
     loadOptions();
-    const hours = new Date().getHours();
-    const startTime = `${String(hours).padStart(2, '0')}:00`;
-    const endTime = `${String(hours + 1).padStart(2, '0')}:00`;
     
-    setFormData(prev => ({ 
-      ...prev, 
-      start_at: startTime, 
-      end_at: endTime,
-      project_id: initialProjectId || "",
-      unit_id: "",
-      assignee_id: ""
-    }));
-  }, [selectedDate, initialProjectId]);
+    if (initialData) {
+      const startAt = new Date(initialData.start_at);
+      const endAt = new Date(initialData.end_at);
+      
+      setFormData({
+        title: initialData.title || "",
+        description: initialData.description || "",
+        type: initialData.type || "Preventive",
+        start_at: format(startAt, "HH:mm"),
+        end_at: format(endAt, "HH:mm"),
+        project_id: initialData.project_id || initialProjectId || "",
+        unit_id: initialData.unit?.id?.toString() || initialData.unit_id?.toString() || "",
+        assignee_id: initialData.assignee?.id?.toString() || initialData.assignee_id?.toString() || ""
+      });
+    } else {
+      const hours = new Date().getHours();
+      const startTime = `${String(hours).padStart(2, '0')}:00`;
+      const endTime = `${String(hours + 1).padStart(2, '0')}:00`;
+      
+      setFormData(prev => ({ 
+        ...prev, 
+        start_at: startTime, 
+        end_at: endTime,
+        project_id: initialProjectId || "",
+        unit_id: "",
+        assignee_id: ""
+      }));
+    }
+  }, [selectedDate, initialProjectId, initialData]);
 
   const loadOptions = async () => {
-    const res = await getScheduleFormOptions();
+    const res = await getScheduleFormOptions(initialProjectId);
     if (res && 'success' in res && res.success) {
       setOptions(res.data);
     }
@@ -107,7 +133,13 @@ export default function ScheduleInputForm({ selectedDate, projectId: initialProj
     };
 
     try {
-      const res = await createSchedule(fullData);
+      let res;
+      if (scheduleId) {
+        res = await updateSchedule(scheduleId, fullData);
+      } else {
+        res = await createSchedule(fullData);
+      }
+
       if (res && 'success' in res && res.success) {
         onSuccess();
       } else {
@@ -126,7 +158,7 @@ export default function ScheduleInputForm({ selectedDate, projectId: initialProj
       <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
         <div>
            <h2 className="text-sm font-black text-[#003366] uppercase tracking-[0.2em]">{format(selectedDate, "dd MMM yyyy")}</h2>
-           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Define New Schedule Activity</p>
+           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{scheduleId ? "Update Existing Job Details" : "Define New Schedule Activity"}</p>
         </div>
         <button onClick={onCancel} className="p-2 hover:bg-slate-200 rounded-full text-slate-400 transition-all">
           <X size={18} />
@@ -236,8 +268,18 @@ export default function ScheduleInputForm({ selectedDate, projectId: initialProj
 
             {/* Unit Search (SMART) */}
             <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-widest text-slate-400">Smart Unit Selection</label>
-                {!formData.project_id ? (
+                <div className="flex justify-between items-center">
+                    <label className="text-[9px] font-black uppercase tracking-widest text-slate-400">Smart Unit Selection</label>
+                    {initialProjectId && options.projects.length > 0 && (
+                        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-blue-50 text-[#00a1e4] rounded-md border border-blue-100">
+                            <MapPin size={10} />
+                            <span className="text-[8px] font-black uppercase tracking-tight">
+                                {options.projects.find(p => p.id === initialProjectId)?.name || "Assigned Site"}
+                            </span>
+                        </div>
+                    )}
+                </div>
+                {!formData.project_id && !initialProjectId ? (
                     <select 
                        required
                        className="w-full px-3 sm:px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-[10px] sm:text-xs font-bold text-[#003366] uppercase"
@@ -322,7 +364,7 @@ export default function ScheduleInputForm({ selectedDate, projectId: initialProj
                 disabled={loading}
                 className="px-6 sm:px-10 py-4 bg-[#003366] text-white text-[10px] sm:text-[11px] font-black tracking-[0.2em] uppercase rounded-2xl shadow-xl shadow-blue-500/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
             >
-                {loading ? "SAVING..." : "SCHEDULE"}
+                {loading ? "SAVING..." : (scheduleId ? "UPDATE TASK" : "SCHEDULE")}
                 {!loading && <Check size={14} className="text-[#00a1e4]" />}
             </button>
         </div>

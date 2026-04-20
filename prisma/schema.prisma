@@ -45,6 +45,10 @@ model projects {
   user_project_access user_project_access[]
   vendor_attendance   vendor_attendance[]
 
+  latitude            Decimal?              @db.Decimal(10, 8)
+  longitude           Decimal?              @db.Decimal(11, 8)
+  radius_meters       Int                   @default(100)
+
   @@unique([customer_id, name], map: "uq_project_per_customer")
   @@index([customer_id], map: "idx_projects_customer")
 }
