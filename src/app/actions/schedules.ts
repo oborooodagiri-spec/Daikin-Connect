@@ -49,6 +49,7 @@ export async function getAllSchedules() {
         end_at: s.end_at.toISOString(),
         google_event_id: s.google_event_id,
         project: s.projects,
+        project_id: s.project_id.toString(),
         unit: s.units,
         assignee: s.users
       };
@@ -107,6 +108,7 @@ export async function getSchedulesByProject(projectId: string) {
           start_at: s.start_at.toISOString(),
           end_at: s.end_at.toISOString(),
           google_event_id: s.google_event_id,
+          project_id: s.project_id.toString(),
           unit: s.units,
           assignee: s.users
         };

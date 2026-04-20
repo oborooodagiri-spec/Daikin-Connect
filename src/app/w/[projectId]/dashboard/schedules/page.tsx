@@ -6,7 +6,7 @@ import { format, startOfWeek, addDays, isSameDay } from "date-fns";
 import { getAllSchedules, getScheduleFormOptions, createSchedule, updateScheduleStatus, getSchedulesByProject, deleteSchedule } from "@/app/actions/schedules";
 import { Plus, MapPin, CheckCircle2, XCircle, Search, Clock, CalendarIcon, FolderGit2, X, Save, ChevronLeft, ChevronRight, Activity, Pencil, Trash2, MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, useParams } from "next/navigation";
 import QuickInputModal from "@/components/dashboard/QuickInputModal";
 import ThreadModal from "@/components/dashboard/ThreadModal";
 import ScheduleInputForm from "@/components/dashboard/ScheduleInputForm";
@@ -18,7 +18,9 @@ export default function SchedulesPage() {
   const [loading, setLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
   const searchParams = useSearchParams();
-  const filterProjectId = searchParams.get("projectId");
+  const params = useParams();
+  const projectId = params.projectId;
+  const filterProjectId = searchParams.get("projectId") || projectId;
   const [selectedDayMobile, setSelectedDayMobile] = useState(new Date());
   const [editingSchedule, setEditingSchedule] = useState<any>(null);
 
@@ -520,6 +522,7 @@ export default function SchedulesPage() {
                 >
                     <ScheduleInputForm 
                         selectedDate={new Date(editingSchedule.start_at)}
+                        projectId={projectId}
                         scheduleId={editingSchedule.id}
                         initialData={editingSchedule}
                         onSuccess={() => {
