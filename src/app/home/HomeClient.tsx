@@ -29,7 +29,7 @@ interface Profile {
   id: number; name: string; email: string; phone: string | null;
   company: string | null; avatarUrl: string | null; bio: string | null;
   roles: string[]; isAdmin: boolean; isInternal: boolean;
-  twoFactorEnabled: boolean; projects: Project[];
+  twoFactorEnabled: boolean; attendanceEnabled: boolean; projects: Project[];
 }
 
 
@@ -335,23 +335,25 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
             </div>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-            <motion.div 
-              whileHover={{ y: -4 }}
-              onClick={() => router.push("/home/attendance")}
-              style={adminCardStyle}
-              onMouseEnter={e => handleCardHover(e, true)}
-              onMouseLeave={e => handleCardHover(e, false)}
-            >
-              <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
-                 <div style={{ ...adminIconBox, background: "linear-gradient(135deg, #00c875 0%, #00e68a 100%)" }}>
-                    <Calendar size={22} />
-                 </div>
-                 <div>
-                    <h3 style={adminCardTitle}>Absensi</h3>
-                    <p style={{ fontSize: 11, color: "#676879", margin: "2px 0 0 0" }}>Rekam kehadiran & riwayat absen</p>
-                 </div>
-              </div>
-            </motion.div>
+            {profile.attendanceEnabled && (
+              <motion.div 
+                whileHover={{ y: -4 }}
+                onClick={() => router.push("/home/attendance")}
+                style={adminCardStyle}
+                onMouseEnter={e => handleCardHover(e, true)}
+                onMouseLeave={e => handleCardHover(e, false)}
+              >
+                <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+                   <div style={{ ...adminIconBox, background: "linear-gradient(135deg, #00c875 0%, #00e68a 100%)" }}>
+                      <Calendar size={22} />
+                   </div>
+                   <div>
+                      <h3 style={adminCardTitle}>Absensi</h3>
+                      <p style={{ fontSize: 11, color: "#676879", margin: "2px 0 0 0" }}>Rekam kehadiran & riwayat absen</p>
+                   </div>
+                </div>
+              </motion.div>
+            )}
 
             <motion.div 
               whileHover={{ y: -4 }}

@@ -25,6 +25,7 @@ export async function getProfile() {
       bio: true,
       is_active: true,
       two_factor_enabled: true,
+      attendance_enabled: true,
       user_roles: {
         include: { roles: true }
       },
@@ -95,6 +96,7 @@ export async function getProfile() {
     isAdmin,
     isInternal,
     twoFactorEnabled: user.two_factor_enabled,
+    attendanceEnabled: user.attendance_enabled,
     projects
   });
 }
