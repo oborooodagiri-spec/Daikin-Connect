@@ -76,15 +76,18 @@ export const getCorrectiveSections = (data: any, unit: any, lang: Language = 'id
 
     // SECTION 03: ANALYSIS & ACTIONS
     <div key="s3" style={{ marginBottom: "4mm" }}>
-      <div style={sectionHeader}>03 - {t("Technical Advice & Summary", lang)}</div>
+      <div style={sectionHeader}>03 - {t("Analysis & Findings", lang)}</div>
       <div style={{ display: "flex", flexDirection: "column", gap: "1.5mm" }}>
         <AnalysisBlock label={t("CASE / COMPLAINT", lang)} value={analysis?.complain} color="#dc2626" />
         <AnalysisBlock label={t("ROOT CAUSE ANALYSIS", lang)} value={analysis?.root_cause} color="#d97706" />
         <div style={{ display: "flex", gap: "2mm" }}>
-          <AnalysisBlock label={t("TEMPORARY ACTION", lang)} value={analysis?.temp_action} color="#2563eb" flex={1} />
-          <AnalysisBlock label={t("PERMANENT ACTION", lang)} value={analysis?.perm_action} color="#059669" flex={1} />
+           <AnalysisBlock label={lang === 'id' ? "TINDAKAN PERBAIKAN" : "CORRECTIVE ACTION"} value={analysis?.corrective_action || analysis?.perm_action} color="#059669" flex={3} />
+           <AnalysisBlock label="QTY" value={analysis?.qty} color="#64748b" flex={1} />
         </div>
-        <AnalysisBlock label={t("RECOMMENDATION", lang)} value={analysis?.recommendation} color="#7c3aed" />
+        <div style={{ display: "flex", gap: "2mm" }}>
+           <AnalysisBlock label={t("RECOMMENDATION", lang)} value={analysis?.recommendation} color="#7c3aed" flex={2} />
+           <AnalysisBlock label="STATUS" value={analysis?.status} color={analysis?.status === 'Done' ? '#059669' : '#dc2626'} flex={1} />
+        </div>
       </div>
     </div>,
 
@@ -97,39 +100,87 @@ export const getCorrectiveSections = (data: any, unit: any, lang: Language = 'id
     </div>,
 
     // SIGNATURE SECTION
-    <div key="sign" style={{ marginTop: "10mm" }}>
+    <div key="sign-force-break" style={{ marginTop: "8mm", minHeight: "250px" }}>
        <ReportSignatureFooter 
-         preparedBy={personnel?.name || ""}
+         preparedBy={personnel?.technician_name || personnel?.name || ""}
          reviewedBy={data.engineerSignerName}
-         witnessedBy={data.customerApproverName || pic?.name}
+         witnessedBy={data.customerApproverName}
          reviewedDate={data.reviewedAt}
          witnessedDate={data.approvedAt}
          lang={lang}
+         isBulkSync={data.isBulkSync}
        />
     </div>,
 
-    // PHOTOS SECTION
-    ...photoChunks.map((chunk, chunkIdx) => (
-      <div key={`photos-${chunkIdx}`} style={{ width: "100%" }}>
-        <div style={sectionHeader}>
-          {t("Maintenance Documentation Photos", lang)} {photoChunks.length > 1 ? `(Page ${chunkIdx + 1})` : ''}
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5mm" }}>
-          {chunk.map((p: any, i: number) => (
-            <div key={i} style={{ border: "1px solid #ddd", padding: "0.8mm", borderRadius: "1mm" }}>
-              <img 
-                src={p.photo_url} 
-                alt={`Photo ${i}`} 
-                style={{ width: "100%", height: "48mm", objectFit: "cover", borderRadius: "0.5mm" }} 
-              />
-              <p style={{ fontSize: "7pt", margin: "0.5mm 0 0 0", textAlign: "center", color: "#666", fontWeight: 700 }}>
-                Photo {chunkIdx * 6 + i + 1}
+    // SECTION 05: DOCUMENTATION (PREVIEW)
+    <div key="documentation" style={{ marginBottom: "4mm" }}>
+      <div style={sectionHeader}>05 - {t("Maintenance Documentation Photos", lang)}</div>
+      {activity_photos && activity_photos.length > 0 ? (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2mm" }}>
+          {activity_photos.slice(0, 2).map((p: any, i: number) => {
+             const isBefore = p.category?.toLowerCase().includes('before') || p.label?.toLowerCase().includes('before');
+             const isAfter = p.category?.toLowerCase().includes('after') || p.label?.toLowerCase().includes('after');
+             return (
+               <div key={i} style={{ border: "1px solid #ddd", padding: "1mm", borderRadius: "1mm", position: "relative" }}>
+                 <img src={p.photo_url} style={{ width: "100%", height: "40mm", objectFit: "cover", borderRadius: "0.5mm" }} />
+                 {(isBefore || isAfter) && (
+                   <div style={{ position: "absolute", top: "2mm", left: "2mm", backgroundColor: isBefore ? "#dc2626" : "#059669", color: "white", fontSize: "6pt", fontWeight: 900, padding: "1px 4px", borderRadius: "0.5mm" }}>
+                     {isBefore ? "BEFORE" : "AFTER"}
+                   </div>
+                 )}
+                 <p style={{ fontSize: "7pt", marginTop: "1mm", textAlign: "center", fontWeight: 700 }}>{p.label || `Photo ${i+1}`}</p>
+               </div>
+             );
+          })}
+          {activity_photos.length > 2 && (
+            <div style={{ gridColumn: "span 2", textAlign: "center", padding: "2mm", backgroundColor: "#f8fafd", borderRadius: "1mm", border: "1px solid #e2e8f0" }}>
+              <p style={{ fontSize: "7pt", color: "#64748b", fontWeight: 700 }}>
+                + {activity_photos.length - 2} {t("More photos available in Annex Section", lang)}
               </p>
             </div>
-          ))}
+          )}
         </div>
-      </div>
-    ))
+      ) : (
+        <div style={{ border: "1px dashed #ddd", padding: "8mm", textAlign: "center", color: "#94a3b8", borderRadius: "1mm" }}>
+          <p style={{ fontSize: "8pt", fontStyle: "italic" }}>{t("No photos available for this activity", lang)}</p>
+        </div>
+      )}
+    </div>,
+
+    // ANNEX PHOTOS (Remaining photos starting from index 2)
+    ...photoChunks.map((chunk, chunkIdx) => {
+      // Filter out photos already shown in preview if it's the first chunk
+      const displayPhotos = chunkIdx === 0 ? chunk.slice(2) : chunk;
+      if (displayPhotos.length === 0) return null;
+
+      return (
+        <div key={`photos-${chunkIdx}`} style={{ width: "100%" }}>
+          <div style={sectionHeader}>
+            {t("Maintenance Documentation Annex", lang)} {photoChunks.length > 1 ? `(Part ${chunkIdx + 1})` : ''}
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2mm" }}>
+            {displayPhotos.map((p: any, i: number) => {
+              const isBefore = p.category?.toLowerCase().includes('before') || p.label?.toLowerCase().includes('before');
+              const isAfter = p.category?.toLowerCase().includes('after') || p.label?.toLowerCase().includes('after');
+              
+              return (
+                <div key={i} style={{ border: "1px solid #ddd", padding: "1mm", borderRadius: "1mm", position: "relative" }}>
+                  <img src={p.photo_url} style={{ width: "100%", height: "48mm", objectFit: "cover", borderRadius: "0.5mm" }} />
+                  {(isBefore || isAfter) && (
+                    <div style={{ position: "absolute", top: "2mm", left: "2mm", backgroundColor: isBefore ? "#dc2626" : "#059669", color: "white", fontSize: "6pt", fontWeight: 900, padding: "1px 4px", borderRadius: "0.5mm" }}>
+                      {isBefore ? "BEFORE" : "AFTER"}
+                    </div>
+                  )}
+                  <p style={{ fontSize: "7pt", margin: "1mm 0 0 0", textAlign: "center", color: "#444", fontWeight: 700 }}>
+                    {p.label || `Photo ${chunkIdx * 6 + i + 1}`}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }).filter(Boolean)
   ];
 };
 

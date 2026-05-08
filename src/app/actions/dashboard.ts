@@ -207,21 +207,58 @@ export async function getDashboardData(filters: { customerId?: string; projectId
     };
 
     // helper for project config fetch
-    const fetchEnabledForms = async (pid: string) => {
-      if (!pid || pid === "undefined") return "Audit,Preventive,Corrective"; // UI-Safe fallback
+    const fetchProjectConfig = async (pid: string) => {
+      if (!pid || pid === "undefined") {
+        return {
+          enabled_forms: "Audit,Preventive,Corrective",
+          enabled_unit_types: "Chiller",
+          monitoring_focus: "UNIT"
+        };
+      }
       try {
         const project = await (prisma.projects as any).findUnique({
           where: { id: BigInt(pid) },
-          select: { enabled_forms: true }
+          select: { enabled_forms: true, enabled_unit_types: true, monitoring_focus: true }
         });
         
-        // If project found but no forms configured, use default
-        if (project && project.enabled_forms) return project.enabled_forms;
-        return "Audit,Preventive,Corrective"; 
+        return {
+          enabled_forms: project?.enabled_forms || "Audit,Preventive,Corrective",
+          enabled_unit_types: project?.enabled_unit_types || "Chiller",
+          monitoring_focus: project?.monitoring_focus || "UNIT"
+        };
       } catch (e) {
         console.error("Dashboard Config Sync Error:", e);
-        return "Audit,Preventive,Corrective"; // Resilience: Show major cards on error
+        return {
+          enabled_forms: "Audit,Preventive,Corrective",
+          enabled_unit_types: "Chiller,FCU,AHU,Split,AC SPLIT,SPLIT DUCT,VRV,AC STANDING",
+          monitoring_focus: "UNIT"
+        };
       }
+    };
+
+    // Complaint Stats (Corrective entries with complaint metadata)
+    const fetchComplaintStats = async () => {
+      const complaintCondition = {
+        ...baseActivityWhere,
+        type: "Corrective",
+        technical_json: { not: null }
+      };
+      const [daily, monthly, total, resolved] = await Promise.all([
+        (prisma.service_activities as any).count({
+          where: { ...complaintCondition, service_date: { gte: startOfToday, lte: endOfToday } }
+        }),
+        (prisma.service_activities as any).count({
+          where: { ...complaintCondition, service_date: { gte: startOfMonth } }
+        }),
+        (prisma.service_activities as any).count({
+          where: { ...complaintCondition, service_date: { gte: startOfYear } }
+        }),
+        (prisma.service_activities as any).count({
+          where: { ...complaintCondition, service_date: { gte: startOfMonth }, status: "Final_Approved" }
+        })
+      ]);
+      const monthlyTotal = monthly || 0;
+      return { daily, monthly: monthlyTotal, total, appeared: monthlyTotal, resolved };
     };
 
     const [
@@ -231,10 +268,11 @@ export async function getDashboardData(filters: { customerId?: string; projectId
       corActual,
       dailyLogDaily, dailyLogMonthly, dailyLogTotal,
       dailyLogTarget,
+      complaintStats,
       totalUnits,
       activeProjects,
       totalCustomers,
-      enabledFormsRaw
+      projectConfig
     ] = await Promise.all([
       fetchTypeActuals("Audit").catch(() => ({ daily:0, monthly:0, total:0 })),
       fetchTypeTargets("Audit").catch(() => ({ daily:0, monthly:0, total:0 })),
@@ -246,6 +284,7 @@ export async function getDashboardData(filters: { customerId?: string; projectId
       getDailyLogCount(startOfMonth).catch(() => 0),
       getDailyLogCount(startOfYear).catch(() => 0),
       fetchTypeTargets("DailyLog").catch(() => ({ daily:0, monthly:0, total:0 })),
+      fetchComplaintStats().catch(() => ({ daily:0, monthly:0, total:0, appeared:0, resolved:0 })),
       (prisma.units as any).count({ where: unitWhere }).catch(() => 0),
       (prisma.projects as any).count({ 
         where: { 
@@ -255,11 +294,11 @@ export async function getDashboardData(filters: { customerId?: string; projectId
         } 
       }).catch(() => 0),
       (filters.customerId ? Promise.resolve(1) : (prisma.customers as any).count({ where: { is_active: true } })).catch(() => 0),
-      fetchEnabledForms(filters.projectId || "")
+      fetchProjectConfig(filters.projectId || "")
     ]);
 
     // Split and handle mapping 
-    const formsArray = (enabledFormsRaw || "Audit,Preventive,Corrective")
+    const formsArray = (projectConfig.enabled_forms || "Audit,Preventive,Corrective")
       .split(",")
       .map((s: string) => {
         const clean = s.trim().toLowerCase();
@@ -270,7 +309,24 @@ export async function getDashboardData(filters: { customerId?: string; projectId
         return clean.replace(/\s+/g, '');
       }).filter(Boolean);
 
+    // Fetch Project Name
+    let currentProjectName = "";
+    if (filters.projectId) {
+      const p = await (prisma.projects as any).findUnique({
+        where: { id: BigInt(filters.projectId) },
+        select: { name: true }
+      });
+      currentProjectName = p?.name || "";
+    } else if (filters.customerId) {
+      const c = await (prisma.customers as any).findUnique({
+        where: { id: parseInt(filters.customerId) },
+        select: { name: true }
+      });
+      currentProjectName = c?.name || "";
+    }
+
     return serializePrisma({
+      projectName: currentProjectName,
       audit: { actual: auditActual, target: auditTarget },
       preventive: { actual: pmActual, target: pmTargetMetrics },
       corrective: { 
@@ -281,10 +337,16 @@ export async function getDashboardData(filters: { customerId?: string; projectId
         actual: { daily: dailyLogDaily, monthly: dailyLogMonthly, total: dailyLogTotal }, 
         target: dailyLogTarget 
       },
+      complaint: {
+        actual: { daily: complaintStats.daily, monthly: complaintStats.monthly, total: complaintStats.total },
+        kpi: { appeared: complaintStats.appeared, resolved: complaintStats.resolved }
+      },
       databaseAssets: totalUnits,
       activeSites: activeProjects,
       totalCustomers: totalCustomers,
-      enabled_forms: formsArray.join(",")
+      enabled_forms: formsArray.join(","),
+      monitoring_focus: projectConfig.monitoring_focus,
+      enabled_unit_types: projectConfig.enabled_unit_types
     });
   } catch (error) {
     console.error("Dashboard Stats Error:", error);
@@ -301,9 +363,8 @@ function emptyStats() {
     audit: { actual: { daily:0, monthly:0, total:0 }, target: { daily:0, monthly:0, total:0 } }, 
     preventive: { actual: { daily:0, monthly:0, total:0 }, target: { daily:0, monthly:0, total:0 } }, 
     corrective: { actual: { daily:0, monthly:0, total:0 }, target: { daily:0, monthly:0, total:0 }, kpi: { appeared: 0, resolved: 0 } }, 
-    dailyLog: { actual: { daily: 0, monthly: 0, total: 0 }, target: { daily: 0, monthly: 0, total: 0 } },
     databaseAssets: 0, activeSites: 0, totalCustomers: 0,
-    enabled_forms: "audit,preventive,corrective,dailylog"
+    enabled_forms: "audit,preventive,corrective"
   };
 }
 
@@ -313,61 +374,83 @@ function emptyStats() {
 export async function getTrendChartData(filters: { customerId?: string; projectId?: string }) {
   noStore();
   try {
-    const activityWhere: any = {};
-    if (filters.projectId) {
-      activityWhere.units = { project_ref_id: BigInt(filters.projectId) };
-    } else if (filters.customerId) {
-      activityWhere.units = { projects: { customer_id: parseInt(filters.customerId) } };
-    }
-
-    const startOfYear = new Date(new Date().getFullYear(), 0, 1);
     const accessibleIds = await getAccessibleProjectIds();
+    const startOfYear = new Date(new Date().getFullYear(), 0, 1);
     
-    // 1. Fetch Service Activities (Old Table)
-    let activities: any[] = [];
-    try {
-      activities = await (prisma.service_activities as any).findMany({
-        where: { ...activityWhere, service_date: { gte: startOfYear } },
-        select: { service_date: true, type: true }
-      });
-    } catch (e) {
-      console.error("Trend Activities Error:", e);
-    }
-
-    // 2. Fetch Daily Logs (New Table - Raw SQL Fallback)
-    let dailyLogs: any[] = [];
-    try {
-      const pid = filters.projectId ? BigInt(filters.projectId) : null;
-      const cid = filters.customerId ? parseInt(filters.customerId) : null;
-
-      let conditions = [`d.service_date >= '${startOfYear.toISOString().split('T')[0]}'`];
-      if (pid) conditions.push(`u.project_ref_id = ${pid}`);
-      if (cid) conditions.push(`u.project_ref_id IN (SELECT id FROM projects WHERE customer_id = ${cid})`);
-      
-      if (accessibleIds && accessibleIds.length > 0) {
-        conditions.push(`u.project_ref_id IN (${accessibleIds.join(",")})`);
-      } else if (accessibleIds && accessibleIds.length === 0) {
-        conditions.push(`1=0`); // Force no results if restricted and 0 projects
+    // 1. Resolve unit IDs for this project/filter
+    const unitWhere: any = {};
+    if (filters.projectId) {
+      const pid = BigInt(filters.projectId);
+      // Security: verify requested project is within accessible projects
+      if (accessibleIds && !accessibleIds.map(id => id.toString()).includes(filters.projectId)) {
+        return []; 
       }
-
-      const sql = `SELECT d.service_date FROM daily_ops_logs d JOIN units u ON d.unit_id = u.id WHERE ${conditions.join(" AND ")}`;
-      dailyLogs = await prisma.$queryRawUnsafe(sql) as any[];
-    } catch (e) {
-      console.error("Trend DailyLogs Error:", e);
+      unitWhere.project_ref_id = pid;
+    } else if (filters.customerId) {
+      unitWhere.projects = { customer_id: parseInt(filters.customerId) };
+    } else if (accessibleIds) {
+       unitWhere.project_ref_id = { in: accessibleIds.map(id => BigInt(id)) };
     }
+
+    const unitsList = await prisma.units.findMany({
+      where: unitWhere,
+      select: { id: true }
+    });
+    const unitIds = unitsList.map(u => u.id);
+    if (unitIds.length === 0) return [];
+
+    // 2. Fetch Data from different sources safely
+    const [activities, correctiveMaintenances, dailyLogs] = await Promise.all([
+      (prisma.service_activities as any).findMany({
+        where: { unit_id: { in: unitIds }, service_date: { gte: startOfYear } },
+        select: { service_date: true, type: true, technical_json: true }
+      }).catch(() => []),
+      (prisma.corrective_maintenances as any).findMany({
+        where: { unit_id: { in: unitIds }, created_at: { gte: startOfYear } },
+        select: { created_at: true }
+      }).catch(() => []),
+      prisma.$queryRawUnsafe(`
+        SELECT service_date FROM daily_ops_logs 
+        WHERE unit_id IN (${unitIds.join(',')}) 
+        AND service_date >= '${startOfYear.toISOString().split('T')[0]}'
+      `).catch(() => []) as Promise<any[]>
+    ]);
 
     const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
     const currentMonth = new Date().getMonth();
     
     const chartData = months.slice(0, currentMonth + 1).map((name, i) => {
-      const monthActivities = activities.filter((a: any) => a.service_date && new Date(a.service_date).getMonth() === i);
-      const monthDailyLogs = dailyLogs.filter((l: any) => l.service_date && new Date(l.service_date).getMonth() === i);
+      const monthActivities = (activities as any[]).filter((a: any) => a.service_date && new Date(a.service_date).getMonth() === i);
+      const monthDailyLogs = (dailyLogs as any[]).filter((l: any) => l.service_date && new Date(l.service_date).getMonth() === i);
+      const monthCM = (correctiveMaintenances as any[]).filter((c: any) => c.created_at && new Date(c.created_at).getMonth() === i);
       
+      let correctiveCount = 0;
+      let complaintCount = 0;
+
+      monthActivities.forEach((a: any) => {
+        if (a.type === "Audit" || a.type === "Preventive") return;
+        
+        let isComplaint = false;
+        try {
+          const tj = a.technical_json ? (typeof a.technical_json === 'string' ? JSON.parse(a.technical_json) : a.technical_json) : {};
+          // Comprehensive check for complaint category in reports
+          isComplaint = 
+            tj.is_complaint === true || 
+            !!tj.category || 
+            tj.import_source?.includes("Complaint") || 
+            a.type === "Complaint";
+        } catch (e) {}
+
+        if (isComplaint) complaintCount++;
+        else if (a.type === "Corrective") correctiveCount++;
+      });
+
       return {
         name,
         audit: monthActivities.filter((a: any) => a.type === "Audit").length,
         preventive: monthActivities.filter((a: any) => a.type === "Preventive").length,
-        corrective: monthActivities.filter((a: any) => a.type === "Corrective").length,
+        corrective: correctiveCount + monthCM.length,
+        complaint: complaintCount,
         dailyLog: monthDailyLogs.length
       };
     });
@@ -385,32 +468,83 @@ export async function getTrendChartData(filters: { customerId?: string; projectI
 export async function getRecentActivities(filters: { customerId?: string; projectId?: string }) {
   noStore();
   try {
-    const activityWhere: any = {};
+    const accessibleIds = await getAccessibleProjectIds();
+    const unitWhere: any = {};
     if (filters.projectId) {
-      activityWhere.units = { project_ref_id: BigInt(filters.projectId) };
+      if (accessibleIds && !accessibleIds.map(id => id.toString()).includes(filters.projectId)) return [];
+      unitWhere.project_ref_id = BigInt(filters.projectId);
     } else if (filters.customerId) {
-      activityWhere.units = { projects: { customer_id: parseInt(filters.customerId) } };
+      unitWhere.projects = { customer_id: parseInt(filters.customerId) };
+    } else if (accessibleIds) {
+       unitWhere.project_ref_id = { in: accessibleIds.map(id => BigInt(id)) };
     }
 
-    const recent = await (prisma.service_activities as any).findMany({
-      where: activityWhere,
-      take: 8,
-      orderBy: { created_at: "desc" },
-      include: {
-        units: { select: { tag_number: true, location: true, area: true, room_tenant: true } }
-      }
+    const unitsList = await prisma.units.findMany({
+      where: unitWhere,
+      select: { id: true }
     });
+    const unitIds = unitsList.map(u => u.id);
+    if (unitIds.length === 0) return [];
 
-    return serializePrisma(recent.map((r: any) => ({
-      id: r.id.toString(),
-      type: r.type,
-      engineer: r.inspector_name || "Unknown",
-      unit_tag: r.units?.tag_number || "Unknown Unit",
-      room_tenant: r.units?.room_tenant || "",
-      location: r.units?.area || r.units?.location || "-",
-      at: r.created_at?.toISOString() || ""
-    })));
+    const [recentService, recentCorrective] = await Promise.all([
+      (prisma.service_activities as any).findMany({
+        where: { unit_id: { in: unitIds } },
+        take: 8,
+        orderBy: { created_at: "desc" },
+        include: {
+          units: { select: { tag_number: true, location: true, area: true, room_tenant: true } }
+        }
+      }).catch(() => []),
+      (prisma.corrective_maintenances as any).findMany({
+        where: { unit_id: { in: unitIds } },
+        take: 5,
+        orderBy: { created_at: "desc" }
+      }).catch(() => [])
+    ]);
+
+    // Manual merge for corrective units since relation is missing in schema
+    const correctiveWithUnits = await Promise.all((recentCorrective as any[]).map(async (rc) => {
+       const unit = await (prisma.units as any).findUnique({
+         where: { id: rc.unit_id },
+         select: { tag_number: true, location: true, area: true, room_tenant: true }
+       });
+       return { ...rc, units: unit };
+    }));
+
+    const combined = [
+      ...(recentService as any[]).map((r: any) => {
+        let isComplaint = false;
+        try {
+          const tj = r.technical_json ? (typeof r.technical_json === 'string' ? JSON.parse(r.technical_json) : r.technical_json) : {};
+          isComplaint = tj.is_complaint || tj.import_source?.includes("Complaint") || r.type === "Complaint";
+        } catch (e) {}
+
+        return {
+          id: r.id.toString(),
+          unit_id: r.unit_id?.toString() || "",
+          type: isComplaint ? "Complaint" : r.type,
+          engineer: r.inspector_name || "Unknown",
+          unit_tag: r.units?.tag_number || "",
+          room_tenant: r.units?.room_tenant || "",
+          location: r.units?.area || r.units?.location || "-",
+          at: r.created_at?.toISOString() || ""
+        };
+      }),
+      ...correctiveWithUnits.map((r: any) => ({
+        id: `cm-${r.id}`,
+        unit_id: r.unit_id?.toString() || "",
+        type: "Corrective_Maintenance",
+        engineer: r.tech_name || "Unknown",
+        unit_tag: r.units?.tag_number || "",
+        room_tenant: r.units?.room_tenant || "",
+        location: r.units?.area || r.units?.location || "-",
+        at: r.created_at?.toISOString() || ""
+      }))
+    ].sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime()).slice(0, 8);
+
+    return serializePrisma(combined);
   } catch (err) {
+    console.error("Recent Activity Feed Error:", err);
     return [];
   }
 }
@@ -421,11 +555,15 @@ export async function getRecentActivities(filters: { customerId?: string; projec
 export async function getUnitHealthStats(filters: { customerId?: string; projectId?: string }) {
   noStore();
   try {
+    const accessibleIds = await getAccessibleProjectIds();
     const unitWhere: any = {};
     if (filters.projectId) {
+      if (accessibleIds && !accessibleIds.map(id => id.toString()).includes(filters.projectId)) return [];
       unitWhere.project_ref_id = BigInt(filters.projectId);
     } else if (filters.customerId) {
       unitWhere.projects = { customer_id: parseInt(filters.customerId) };
+    } else if (accessibleIds) {
+       unitWhere.project_ref_id = { in: accessibleIds.map(id => BigInt(id)) };
     }
 
     const stats = await prisma.units.groupBy({
@@ -436,7 +574,8 @@ export async function getUnitHealthStats(filters: { customerId?: string; project
 
     return serializePrisma(stats.map((s: any) => ({
       status: s.status || "Unknown",
-      count: s._count
+      count: s._count,
+      projectId: filters.projectId
     })));
   } catch (err) {
     return [];
@@ -449,11 +588,15 @@ export async function getUnitHealthStats(filters: { customerId?: string; project
 export async function getDetailedUnitStatus(filters: { customerId?: string; projectId?: string }) {
   noStore();
   try {
+    const accessibleIds = await getAccessibleProjectIds();
     const unitWhere: any = {};
     if (filters.projectId) {
+      if (accessibleIds && !accessibleIds.map(id => id.toString()).includes(filters.projectId)) return { success: false, problems: [], progress: [] };
       unitWhere.project_ref_id = BigInt(filters.projectId);
     } else if (filters.customerId) {
       unitWhere.projects = { customer_id: parseInt(filters.customerId) };
+    } else if (accessibleIds) {
+       unitWhere.project_ref_id = { in: accessibleIds.map(id => BigInt(id)) };
     }
 
     const [problems, progress] = await Promise.all([
@@ -478,5 +621,55 @@ export async function getDetailedUnitStatus(filters: { customerId?: string; proj
     });
   } catch (err) {
     return { success: false, problems: [], progress: [] };
+  }
+}
+
+/**
+ * Fetch all units for a project with basic filtering
+ */
+export async function getProjectUnits(projectId: string, query?: string) {
+  noStore();
+  try {
+    if (!projectId) return { success: false, error: "Project ID is required" };
+    
+    const accessibleIds = await getAccessibleProjectIds();
+    if (accessibleIds && !accessibleIds.map(id => id.toString()).includes(projectId)) {
+      return { success: false, error: "Access denied to this project" };
+    }
+    
+    const unitWhere: any = {
+      project_ref_id: BigInt(projectId)
+    };
+
+    if (query) {
+      unitWhere.OR = [
+        { tag_number: { contains: query } },
+        { room_tenant: { contains: query } },
+        { area: { contains: query } },
+        { model: { contains: query } }
+      ];
+    }
+
+    const units = await (prisma.units as any).findMany({
+      where: unitWhere,
+      orderBy: { tag_number: "asc" },
+      select: {
+        id: true,
+        tag_number: true,
+        room_tenant: true,
+        area: true,
+        model: true,
+        status: true,
+        qr_code_token: true
+      }
+    });
+
+    return serializePrisma({
+      success: true,
+      data: units
+    });
+  } catch (err) {
+    console.error("getProjectUnits Error:", err);
+    return { success: false, error: "Failed to fetch units" };
   }
 }

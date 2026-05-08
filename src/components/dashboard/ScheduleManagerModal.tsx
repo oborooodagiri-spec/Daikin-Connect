@@ -6,6 +6,13 @@ import { X, Users, FileText, CheckCircle2, Save, Plus, Trash2, Clock, MapPin, Us
 import { getScheduleManagementData, updateAttendance, updateMoM } from "@/app/actions/schedules_admin";
 import { format, parseISO } from "date-fns";
 
+const safeParseDate = (date: any) => {
+  if (!date) return new Date();
+  if (date instanceof Date) return date;
+  if (typeof date === 'string') return parseISO(date);
+  return new Date(date);
+};
+
 interface ScheduleManagerModalProps {
   schedule: any;
   isOpen: boolean;
@@ -103,7 +110,7 @@ export default function ScheduleManagerModal({ schedule, isOpen, onClose }: Sche
             </div>
             <h2 className="text-2xl font-black text-[#003366] tracking-tight">{schedule.title}</h2>
             <div className="flex items-center gap-4 mt-2 text-xs font-bold text-slate-400">
-              <span className="flex items-center gap-1"><Clock size={14}/> {format(parseISO(schedule.start_at.toString()), "HH:mm")} - {format(parseISO(schedule.end_at.toString()), "HH:mm")}</span>
+              <span className="flex items-center gap-1"><Clock size={14}/> {format(safeParseDate(schedule.start_at), "HH:mm")} - {format(safeParseDate(schedule.end_at), "HH:mm")}</span>
               <span className="flex items-center gap-1"><MapPin size={14}/> {schedule.projects?.name}</span>
             </div>
           </div>

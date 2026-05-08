@@ -3,8 +3,11 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { ensureScheduleForActivity } from "./schedules";
+import { notifyProjectStakeholders } from "@/lib/push";
 
 import { serializePrisma } from "@/lib/serialize";
+import { getSession } from "./auth";
+import { recordAuditLog } from "@/lib/security";
 
 export async function createCorrectiveActivity(data: any) {
   try {
@@ -18,6 +21,8 @@ export async function createCorrectiveActivity(data: any) {
       location,
       unit_tag,
     } = data;
+    
+    console.log(`[CORRECTIVE_SUBMIT] Incoming Payload for Unit #${unit_id}:`, JSON.stringify(data, null, 2));
 
     // Save to service_activities (unified table)
     const newActivity = await prisma.service_activities.create({
@@ -86,6 +91,26 @@ export async function createCorrectiveActivity(data: any) {
     }
 
     revalidatePath("/dashboard", "layout");
+    revalidatePath(`/dashboard/units/${unit_id}`, "page"); 
+    
+    // TRIGGER NOTIFICATION
+    await notifyProjectStakeholders(
+      parseInt(unit_id),
+      `🛠️ Corrective Maintenance: ${unit_tag || 'Unit'}`,
+      `A new corrective report has been submitted by ${inspector_name}.`,
+      `/dashboard/units/${unit_id}`
+    );
+
+    const session = await getSession();
+    if (session?.userId) {
+      await recordAuditLog({
+        userId: parseInt(session.userId),
+        action: "REPORT_SUBMIT",
+        targetType: "Corrective",
+        targetId: newActivity.id.toString(),
+        details: `Submitted Corrective Report for ${unit_tag}`
+      });
+    }
 
     return serializePrisma({ success: true, id: newActivity.id });
   } catch (error: any) {
@@ -134,6 +159,17 @@ export async function updateCorrectiveActivity(id: number, data: any) {
     }
 
     revalidatePath("/dashboard", "layout");
+
+    const session = await getSession();
+    if (session?.userId) {
+      await recordAuditLog({
+        userId: parseInt(session.userId),
+        action: "REPORT_UPDATE",
+        targetType: "Corrective",
+        targetId: id.toString(),
+        details: `Updated Corrective Report`
+      });
+    }
 
     return serializePrisma({ success: true, id: updatedActivity.id });
   } catch (error: any) {

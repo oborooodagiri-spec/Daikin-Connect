@@ -635,7 +635,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
                 <div className="space-y-4">
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">{lang === 'ja' ? '監査員名*' : 'Nama Auditor/Inspector*'}</label>
-                    <input type="text" value={formData.inspector_name} onChange={e => updateInspectorName(e.target.value)} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:ring-2 focus:ring-[#00a1e4]" placeholder={lang === 'ja' ? 'フルネームを入力' : "Masukkan Nama Lengkap"}/>
+                    <input type="text" value={formData.inspector_name} onChange={e => updateInspectorName(e.target.value)} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:ring-2 focus:ring-[#00a1e4]" />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -660,9 +660,9 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
                   <div key={sec.prefix} className="mb-4">
                     <label className="text-xs font-black uppercase text-slate-700">{sec.label}</label>
                     <div className="grid grid-cols-3 gap-2 mt-2">
-                       <input type="number" placeholder="DB (°C)" value={formData[`${sec.prefix}_db`]} onChange={e => setFormData({...formData, [`${sec.prefix}_db`]: e.target.value})} className="w-full p-2.5 text-center bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold"/>
-                       <input type="number" placeholder="WB (°C)" value={formData[`${sec.prefix}_wb`]} onChange={e => setFormData({...formData, [`${sec.prefix}_wb`]: e.target.value})} className="w-full p-2.5 text-center bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold"/>
-                       <input type="number" placeholder="RH (%)" value={formData[`${sec.prefix}_rh`]} onChange={e => setFormData({...formData, [`${sec.prefix}_rh`]: e.target.value})} className="w-full p-2.5 text-center bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold"/>
+                       <input type="number" value={formData[`${sec.prefix}_db`]} onChange={e => setFormData({...formData, [`${sec.prefix}_db`]: e.target.value})} className="w-full p-2.5 text-center bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold"/>
+                       <input type="number" value={formData[`${sec.prefix}_wb`]} onChange={e => setFormData({...formData, [`${sec.prefix}_wb`]: e.target.value})} className="w-full p-2.5 text-center bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold"/>
+                       <input type="number" value={formData[`${sec.prefix}_rh`]} onChange={e => setFormData({...formData, [`${sec.prefix}_rh`]: e.target.value})} className="w-full p-2.5 text-center bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold"/>
                     </div>
                   </div>
                 ))}
@@ -683,11 +683,11 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
                   <div key={type} className="mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-200">
                     <div className="flex justify-between items-center mb-3">
                        <label className="text-sm font-black uppercase text-slate-700 capitalize">{type === 'fresh' ? 'Outdoor (OA)' : type} Air</label>
-                       <input type="text" placeholder={lang === 'ja' ? '面積 (例: 100x100 mm)' : "Area (e.g. 100x100 mm)"} value={formData.t[`${type}Area`]} onChange={e => setT(`${type}Area`, e.target.value)} className="w-[150px] p-2 text-xs font-bold border rounded-lg text-center" />
+                       <input type="text" value={formData.t[`${type}Area`]} onChange={e => setT(`${type}Area`, e.target.value)} className="w-[150px] p-2 text-xs font-bold border rounded-lg text-center" />
                     </div>
                     <div className="grid grid-cols-5 gap-2">
                        {Array.from({length: 15}).map((_, i) => (
-                         <input key={i} type="number" placeholder={`${i+1}`} value={formData.t[`${type}Velocity`][i]} onChange={e => handleMatrixChange(type as any, i, e.target.value)} className="w-full p-2 text-center border border-slate-200 rounded-lg text-xs font-bold focus:ring-[#00a1e4]" />
+                         <input key={i} type="number" value={formData.t[`${type}Velocity`][i]} onChange={e => handleMatrixChange(type as any, i, e.target.value)} className="w-full p-2 text-center border border-slate-200 rounded-lg text-xs font-bold focus:ring-[#00a1e4]" />
                        ))}
                     </div>
                     <div className="mt-3 flex justify-between text-xs font-black text-blue-600 border-t border-slate-200 pt-2">
@@ -728,7 +728,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
                   </div>
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase">{lang === 'ja' ? '配管サイズ 入口/出口 (mm)' : 'Pipe Size Inlet/Outlet (mm)'}</label>
-                    <input type="text" value={formData.pipe_size} onChange={e => setFormData({...formData, pipe_size: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder="e.g. 50/50"/>
+                    <input type="text" value={formData.pipe_size} onChange={e => setFormData({...formData, pipe_size: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" />
                   </div>
                 </div>
               </div>
@@ -743,18 +743,18 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase">{lang === 'ja' ? '電流 (A)' : 'Current (A)'}</label>
                     <div className="grid grid-cols-3 gap-2 mt-1">
-                      <input type="number" placeholder="R." value={formData.amp_r} onChange={e => setFormData({...formData, amp_r: e.target.value})} className="w-full p-3 text-center bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
-                      <input type="number" placeholder="S." value={formData.amp_s} onChange={e => setFormData({...formData, amp_s: e.target.value})} className="w-full p-3 text-center bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
-                      <input type="number" placeholder="T." value={formData.amp_t} onChange={e => setFormData({...formData, amp_t: e.target.value})} className="w-full p-3 text-center bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
+                      <input type="number" value={formData.amp_r} onChange={e => setFormData({...formData, amp_r: e.target.value})} className="w-full p-3 text-center bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
+                      <input type="number" value={formData.amp_s} onChange={e => setFormData({...formData, amp_s: e.target.value})} className="w-full p-3 text-center bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
+                      <input type="number" value={formData.amp_t} onChange={e => setFormData({...formData, amp_t: e.target.value})} className="w-full p-3 text-center bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
                     </div>
                   </div>
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase">{lang === 'ja' ? '電圧 (V)' : 'Voltage (V)'}</label>
                     <div className="grid grid-cols-4 gap-2 mt-1">
-                      <input type="number" placeholder="RS." value={formData.volt_rs} onChange={e => setFormData({...formData, volt_rs: e.target.value})} className="w-full p-3 text-center bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
-                      <input type="number" placeholder="RT." value={formData.volt_rt} onChange={e => setFormData({...formData, volt_rt: e.target.value})} className="w-full p-3 text-center bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
-                      <input type="number" placeholder="ST." value={formData.volt_st} onChange={e => setFormData({...formData, volt_st: e.target.value})} className="w-full p-3 text-center bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
-                      <input type="number" placeholder="LN." value={formData.volt_ln} onChange={e => setFormData({...formData, volt_ln: e.target.value})} className="w-full p-3 text-center bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
+                      <input type="number" value={formData.volt_rs} onChange={e => setFormData({...formData, volt_rs: e.target.value})} className="w-full p-3 text-center bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
+                      <input type="number" value={formData.volt_rt} onChange={e => setFormData({...formData, volt_rt: e.target.value})} className="w-full p-3 text-center bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
+                      <input type="number" value={formData.volt_st} onChange={e => setFormData({...formData, volt_st: e.target.value})} className="w-full p-3 text-center bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
+                      <input type="number" value={formData.volt_ln} onChange={e => setFormData({...formData, volt_ln: e.target.value})} className="w-full p-3 text-center bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"/>
                     </div>
                   </div>
                 </div>
@@ -831,7 +831,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
                 <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">G. {lang === 'ja' ? '外観ノートと写真' : 'Visual Notes & Photos'}</h2>
                 <textarea 
-                  rows={4} placeholder={lang === 'ja' ? '外観のメモや現場での発見事項を入力してください...' : "Masukkan catatan visual atau temuan lapangan..."}
+                  rows={4} 
                   value={formData.engineer_note} onChange={e => setFormData({...formData, engineer_note: e.target.value})}
                   className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]"
                 />

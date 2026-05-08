@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
 import { revalidatePath, unstable_noStore } from "next/cache";
+import { serializePrisma } from "@/lib/serialize";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import fs from "fs";
 import path from "path";
@@ -36,24 +37,12 @@ export async function getActiveAttendance(projectId: string) {
       select: { latitude: true, longitude: true, radius_meters: true }
     });
 
-    if (!activeRecord) {
-      return { 
-        data: null, 
-        hasFace: !!user?.face_reference_url,
-        projectLocation: project ? { lat: Number(project.latitude), long: Number(project.longitude), radius: project.radius_meters } : null
-      };
-    }
-
     // Convert BigInt for JSON serialization
-    return {
-      data: {
-        ...activeRecord,
-        id: Number(activeRecord.id),
-        project_id: Number(activeRecord.project_id),
-      },
+    return serializePrisma({
+      data: activeRecord,
       hasFace: !!user?.face_reference_url,
       projectLocation: project ? { lat: Number(project.latitude), long: Number(project.longitude), radius: project.radius_meters } : null
-    };
+    });
   } catch (error) {
     console.error("Error fetching attendance:", error);
     return { error: "Failed to fetch attendance record" };
@@ -122,8 +111,8 @@ export async function submitCheckIn(data: {
     });
 
     revalidatePath("/dashboard");
-    revalidatePath("/client/dashboard");
-    revalidatePath("/(dashboard)"); // Revalidate groups
+    revalidatePath("/admin/attendance");
+    revalidatePath("/(dashboard)");
     
     return { success: true, id: Number(record.id) };
   } catch (err) {

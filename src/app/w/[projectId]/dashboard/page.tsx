@@ -7,15 +7,12 @@ export default async function DashboardPage({ params }: { params: Promise<{ proj
   const { projectId } = await params;
   const session = await getSession();
 
-  // If not internal (Customer or Vendor), redirect to their unit list
+  // If not internal (Customer or Vendor), we previously redirected to /client/dashboard.
+  // Now we allow everyone to use the main dashboard but restricted by permissions.
   if (session && !session.isInternal) {
     const assignedProjects = await getUserAssignedProjects();
     
-    if (assignedProjects.length > 0) {
-      // Extract projectId from params (we can use the component level projectId if we want, 
-      // but let's assume we want them to stay in this workspace)
-      redirect(`/w/${projectId}/client/dashboard`);
-    } else {
+    if (assignedProjects.length === 0) {
       // If no projects assigned, show a restricted access message or empty state
       return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-10">

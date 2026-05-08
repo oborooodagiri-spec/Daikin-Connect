@@ -8,7 +8,7 @@ import { getSession } from "@/app/actions/auth";
 import { softDeleteActivity, permanentPurgeOldRecords } from "@/app/actions/units";
 import {
   FileText, Search, Download, Filter, ChevronLeft, ChevronRight,
-  ClipboardCheck, Wrench, AlertTriangle, BarChart3, Calendar,
+  ClipboardCheck, Wrench, AlertTriangle, BarChart3, Calendar, MessageSquareWarning,
   Eye, ExternalLink, Image as ImageIcon, X, Printer, Play, FileVideo, Loader2, Trash2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -31,6 +31,7 @@ const TYPE_CONFIG: Record<string, { color: string; bg: string; border: string; i
   Audit: { color: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-200", icon: ClipboardCheck, label: "Audit" },
   Preventive: { color: "text-indigo-700", bg: "bg-indigo-50", border: "border-indigo-200", icon: Wrench, label: "Preventive" },
   Corrective: { color: "text-rose-700", bg: "bg-rose-50", border: "border-rose-200", icon: AlertTriangle, label: "Corrective" },
+  Complaint: { color: "text-amber-700", bg: "bg-amber-50", border: "border-amber-200", icon: MessageSquareWarning, label: "Complaint" },
   DailyLog: { color: "text-blue-700", bg: "bg-blue-50", border: "border-blue-200", icon: FileText, label: "Daily Log" },
 };
 
@@ -41,7 +42,8 @@ function ReportsContent({ lang }: { lang: Language }) {
   const initialType = searchParams.get("type") || "all";
 
   const [reports, setReports] = useState<any[]>([]);
-  const [stats, setStats] = useState({ totalAudit: 0, totalPreventive: 0, totalCorrective: 0, totalAll: 0 });
+  const [stats, setStats] = useState({ totalAudit: 0, totalPreventive: 0, totalCorrective: 0, totalComplaint: 0, totalAll: 0 });
+  const [enabledForms, setEnabledForms] = useState<string[]>(["Audit", "Preventive", "Corrective", "DailyLog"]);
   const [pagination, setPagination] = useState({ total: 0, page: 1, limit: 20, totalPages: 1 });
   const [loading, setLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
@@ -77,8 +79,11 @@ function ReportsContent({ lang }: { lang: Language }) {
     });
     if ("success" in res && res.success) {
       setReports(res.data || []);
-      setStats(res.stats || { totalAudit: 0, totalPreventive: 0, totalCorrective: 0, totalAll: 0 });
+      setStats(res.stats || { totalAudit: 0, totalPreventive: 0, totalCorrective: 0, totalComplaint: 0, totalAll: 0 });
       setPagination(res.pagination || { total: 0, page: 1, limit: 20, totalPages: 1 });
+      if (res.enabledForms) {
+        setEnabledForms(res.enabledForms.split(",").map((s: string) => s.trim()));
+      }
     }
     setLoading(false);
   };
@@ -235,7 +240,14 @@ function ReportsContent({ lang }: { lang: Language }) {
           { label: t("Audit", lang), value: stats.totalAudit, color: "from-emerald-500 to-emerald-700", icon: ClipboardCheck },
           { label: t("Preventive", lang), value: stats.totalPreventive, color: "from-indigo-500 to-indigo-700", icon: Wrench },
           { label: t("Corrective", lang), value: stats.totalCorrective, color: "from-rose-500 to-rose-700", icon: AlertTriangle },
-        ].map((card, i) => (
+          { label: t("Complaint", lang), value: stats.totalComplaint, color: "from-amber-500 to-amber-700", icon: MessageSquareWarning },
+        ].filter(card => {
+          if (card.label === t("Audit", lang)) return enabledForms.includes("Audit");
+          if (card.label === t("Preventive", lang)) return enabledForms.includes("Preventive");
+          if (card.label === t("Corrective", lang)) return enabledForms.includes("Corrective");
+          if (card.label === t("Complaint", lang)) return true; // Always show complaint if there are some? Or check config.
+          return true;
+        }).map((card, i) => (
           <motion.div key={i} className={`bg-gradient-to-br ${card.color} text-white rounded-2xl p-5 shadow-lg`}>
             <div className="flex justify-between items-start">
               <div>
@@ -253,9 +265,13 @@ function ReportsContent({ lang }: { lang: Language }) {
         <div className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="flex gap-1 bg-slate-100 rounded-xl p-1 overflow-x-auto no-scrollbar shrink-0">
-            {["all", "Audit", "Preventive", "Corrective", "DailyLog"].map((tab) => (
+            {["all", "Audit", "Preventive", "Corrective", "Complaint", "DailyLog"].filter(tab => {
+              if (tab === "all") return true;
+              if (tab === "Complaint") return true; // Always allow complaint sort if stats exist
+              return enabledForms.includes(tab);
+            }).map((tab) => (
               <button key={tab} onClick={() => setTypeFilter(tab)} className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${typeFilter === tab ? "bg-white text-[#003366] shadow-sm" : "text-slate-400 hover:text-slate-600"}`}>
-                {tab === "all" ? t("Semua", lang) : (lang === 'ja' ? (tab === 'Audit' ? '監査' : tab === 'Preventive' ? '予防' : tab === 'DailyLog' ? '日報' : '是正') : t(tab, lang))}
+                {tab === "all" ? t("Semua", lang) : (lang === 'ja' ? (tab === 'Audit' ? '監査' : tab === 'Preventive' ? '予防' : tab === 'DailyLog' ? '日報' : tab === 'Complaint' ? '苦情' : '是正') : t(tab, lang))}
               </button>
             ))}
           </div>
@@ -315,8 +331,10 @@ function ReportsContent({ lang }: { lang: Language }) {
                     {isSelecting === r.id ? <Loader2 size={14} className="animate-spin text-[#00a1e4]" /> : `#${r.id}`}
                   </td>
                   <td className="p-4">
-                    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${TYPE_CONFIG[r.type]?.bg} ${TYPE_CONFIG[r.type]?.color}`}>
-                      {r.type}
+                    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${TYPE_CONFIG[r.type]?.bg || 'bg-slate-100'} ${TYPE_CONFIG[r.type]?.color || 'text-slate-600'}`}>
+                      {r.type === 'Corrective' && r.technical_json?.includes('Complaint') ? 'Complaint' : 
+                       r.type === 'Preventive' ? t(r.units?.unit_type?.toUpperCase() === 'AHU' ? 'Preventive AHU' : r.units?.unit_type?.toUpperCase() === 'FCU' ? 'Preventive FCU' : 'Preventive Split Duct', lang) : 
+                       r.type}
                     </span>
                   </td>
                   <td className="p-4">

@@ -12,8 +12,9 @@ import {
   ShieldCheck, 
   Loader2 
 } from "lucide-react";
-import { softDeleteActivity } from "@/app/actions/units";
-import { Trash2 } from "lucide-react";
+import { softDeleteActivity, requestDeletion } from "@/app/actions/units";
+import { Trash2, AlertCircle } from "lucide-react";
+import { t, Language } from "@/lib/i18n";
 
 interface HistoryItem {
   id: string;
@@ -32,7 +33,7 @@ interface HistoryItem {
   healthScore?: number;
 }
 
-export default function UnitHistoryTimeline({ history, session, unit }: { history: HistoryItem[], session?: any, unit?: any }) {
+export default function UnitHistoryTimeline({ history, session, unit, lang = 'id' }: { history: HistoryItem[], session?: any, unit?: any, lang?: Language }) {
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   const normalizeUrl = (url: string | null | undefined, type: string) => {
@@ -80,6 +81,25 @@ export default function UnitHistoryTimeline({ history, session, unit }: { histor
     window.open(`/reports/BA/${item.id}`, "_blank");
   };
 
+  const handleDeleteRequest = async (item: HistoryItem) => {
+    const confirmMsg = `Konfirmasi: Kirim permintaan penghapusan laporan ${item.type} ini ke Admin?`;
+    if (!confirm(confirmMsg)) return;
+
+    setIsDeleting(item.id);
+    try {
+      const res = await requestDeletion(item.id, item.type, "Requested from Timeline");
+      if ("success" in res && res.success) {
+        alert("Permintaan penghapusan telah dikirim ke Admin. Mohon tunggu verifikasi.");
+      } else {
+        alert("Gagal mengirim permintaan: " + res.error);
+      }
+    } catch (e) {
+      alert("Terjadi kesalahan sistem.");
+    } finally {
+      setIsDeleting(null);
+    }
+  };
+
   const handleDelete = async (item: HistoryItem) => {
     const confirmMsg = `PERHATIAN: Laporan ini akan dipindahkan ke Trash selama 7 hari sebelum dihapus PERMANEN.\n\nApakah Anda yakin ingin menghapus laporan ${item.type} ini?`;
     if (!confirm(confirmMsg)) return;
@@ -115,10 +135,19 @@ export default function UnitHistoryTimeline({ history, session, unit }: { histor
         <div key={item.id} className="relative flex items-start gap-6 group">
           {/* Icon Circle */}
           <div className={`relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-4 border-white shadow-sm transition-transform group-hover:scale-110 
-            ${item.type === 'Corrective' ? 'bg-rose-500 text-white' : 
-              item.type === 'Audit' ? 'bg-emerald-500 text-white' : 
-              item.type === 'Preventive' ? 'bg-[#00a1e4] text-white' : 
-              'bg-slate-400 text-white'}`}>
+            ${(() => {
+              let isComplaint = false;
+              try {
+                const tj = item.technical_json ? JSON.parse(item.technical_json) : {};
+                isComplaint = tj.is_complaint || tj.import_source?.includes("Complaint") || item.type === "Complaint";
+              } catch (e) {}
+              if (isComplaint) return 'bg-orange-500 text-white';
+              
+              if (item.type === 'Corrective') return 'bg-rose-500 text-white';
+              if (item.type === 'Audit') return 'bg-emerald-500 text-white';
+              if (item.type === 'Preventive') return 'bg-[#00a1e4] text-white';
+              return 'bg-slate-400 text-white';
+            })()}`}>
             {item.type === 'Corrective' ? <Clock size={16} /> : 
              item.type === 'Audit' ? <FileText size={16} /> : 
              <CheckCircle2 size={16} />}
@@ -128,12 +157,40 @@ export default function UnitHistoryTimeline({ history, session, unit }: { histor
           <div className="flex-1 pt-1">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
               <div className="flex items-center gap-2">
-                <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md border 
-                  ${item.type === 'Corrective' ? 'text-rose-600 border-rose-100 bg-rose-50' : 
-                    item.type === 'Audit' ? 'text-emerald-600 border-emerald-100 bg-emerald-50' : 
-                    'text-blue-600 border-blue-100 bg-blue-50'}`}>
-                  {item.type}
-                </span>
+                {(() => {
+                  let isComplaint = false;
+                  try {
+                    const tj = item.technical_json ? JSON.parse(item.technical_json) : {};
+                    isComplaint = tj.is_complaint || tj.import_source?.includes("Complaint") || item.type === "Complaint";
+                  } catch (e) {}
+
+                  if (isComplaint) {
+                    return (
+                      <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md border text-orange-600 border-orange-100 bg-orange-50">
+                        Complaint
+                      </span>
+                    );
+                  }
+
+                  if (item.type === 'Preventive') {
+                    const isFCU = unit?.unit_type?.toUpperCase() === 'FCU';
+                    const isAHU = unit?.unit_type?.toUpperCase() === 'AHU';
+                    return (
+                      <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md border text-blue-600 border-blue-100 bg-blue-50">
+                        {t(isFCU ? 'Preventive FCU' : isAHU ? 'Preventive AHU' : 'Preventive Split Duct', lang)}
+                      </span>
+                    );
+                  }
+                  
+                  return (
+                    <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md border 
+                      ${item.type === 'Corrective' ? 'text-rose-600 border-rose-100 bg-rose-50' : 
+                        item.type === 'Audit' ? 'text-emerald-600 border-emerald-100 bg-emerald-50' : 
+                        'text-slate-600 border-slate-100 bg-slate-50'}`}>
+                      {item.type}
+                    </span>
+                  );
+                })()}
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                   {new Date(item.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </span>
@@ -150,32 +207,32 @@ export default function UnitHistoryTimeline({ history, session, unit }: { histor
                   <>
                     <button 
                       onClick={() => handleGenerateReport(item)}
-                      className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 text-[9px] font-black uppercase tracking-wider rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors shadow-sm"
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 text-[10px] font-black uppercase tracking-wider rounded-xl border border-blue-100 hover:bg-blue-100 transition-all shadow-sm group/btn"
                       title="Lihat Laporan Teknis"
                     >
-                      <Download size={12} />
+                      <Download size={14} className="group-hover/btn:-translate-y-0.5 transition-transform" />
                       {item.pdf ? 'View Technical Report' : 'Technical Report'}
-                    </button>
-
-                    <button 
-                      onClick={() => handleGenerateBA(item)}
-                      className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 text-amber-700 text-[9px] font-black uppercase tracking-wider rounded-lg border border-amber-100 hover:bg-amber-100 transition-colors shadow-sm"
-                      title="Lihat Berita Acara (BA)"
-                    >
-                      <FileText size={12} />
-                      {item.baPdf ? 'View Berita Acara' : 'Berita Acara'}
                     </button>
                   </>
                 )}
                 
-                {isAdmin && (
+                {isInternal ? (
                   <button 
                     onClick={() => handleDelete(item)}
                     disabled={isDeleting === item.id}
                     className="flex items-center gap-2 px-3 py-1.5 bg-rose-50 text-rose-600 text-[9px] font-black uppercase tracking-wider rounded-lg border border-rose-100 hover:bg-rose-100 transition-colors shadow-sm"
-                    title="Hapus Laporan (Soft Delete 7 Hari)"
+                    title="Hapus Laporan (Internal Staff Only)"
                   >
                     {isDeleting === item.id ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => handleDeleteRequest(item)}
+                    disabled={isDeleting === item.id}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 text-slate-400 text-[9px] font-black uppercase tracking-wider rounded-lg border border-slate-100 hover:bg-slate-100 transition-colors shadow-sm"
+                    title="Minta Hapus (Perlu Verifikasi Admin)"
+                  >
+                    {isDeleting === item.id ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />} Request Delete
                   </button>
                 )}
               </div>
@@ -202,14 +259,6 @@ export default function UnitHistoryTimeline({ history, session, unit }: { histor
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {item.baPdf && !item.isApproved && !isInternal && (
-                    <button
-                      onClick={() => handleApprove(item)}
-                      className="px-4 py-2 bg-[#00a1e4] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-[#008cc6] transition-all shadow-md shadow-blue-200 flex items-center gap-2"
-                    >
-                      <ShieldCheck size={14} /> Approve & Tanda Tangan
-                    </button>
-                  )}
                 </div>
               </div>
             </div>

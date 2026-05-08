@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
 import { revalidatePath } from "next/cache";
+import { serializePrisma } from "@/lib/serialize";
 
 // 1. READ ALL PROJECTS BY CUSTOMER
 export async function getProjectsByCustomer(customerId: string) {
@@ -23,7 +24,7 @@ export async function getProjectsByCustomer(customerId: string) {
       orderBy: { name: 'asc' }
     });
 
-    return {
+    return serializePrisma({
       success: true,
       data: projects.map((p: any) => ({
         id: p.id.toString(),
@@ -35,10 +36,24 @@ export async function getProjectsByCustomer(customerId: string) {
         units_count: p._count.units,
         schedules_count: p._count.schedules
       }))
-    };
+    });
   } catch (error) {
     console.error("Fetch projects error:", error);
     return { error: "Failed to fetch projects." };
+  }
+}
+
+// 1.5 READ ALL PROJECTS (Simplified for Dropdowns)
+export async function getAllProjects() {
+  try {
+    const projects = await prisma.projects.findMany({
+      where: { status: "active" },
+      select: { id: true, name: true },
+      orderBy: { name: "asc" }
+    });
+    return serializePrisma({ success: true, data: projects });
+  } catch (error) {
+    return { error: "Failed to fetch project list" };
   }
 }
 
@@ -108,7 +123,7 @@ export async function getCustomerData(customerId: string) {
     const cust = await prisma.customers.findUnique({
       where: { id: parseInt(customerId) }
     });
-    return { success: true, data: cust };
+    return serializePrisma({ success: true, data: cust });
   } catch (error) {
     return { error: "Failed to fetch customer data" };
   }

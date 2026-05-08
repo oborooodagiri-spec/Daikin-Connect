@@ -131,11 +131,8 @@ export default function CustomersPage() {
             <span>Internal Access</span>
           </div>
           <h1 className="text-4xl font-black text-[#003366] tracking-tight">
-            Client <span className="text-[#00a1e4]">Directory</span>
+            Customer <span className="text-[#00a1e4]">list</span>
           </h1>
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest flex items-center gap-3 mt-4">
-            Managing {customers.length} Registered Portfolios
-          </p>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
@@ -154,7 +151,7 @@ export default function CustomersPage() {
             className="w-full sm:w-auto px-6 py-3.5 bg-[#00a1e4] hover:bg-[#008cc6] text-white rounded-2xl text-sm font-bold shadow-[0_8px_16px_-6px_rgba(0,161,228,0.4)] transition-all flex justify-center items-center gap-2"
           >
             <Plus size={18} />
-            <span>Add Portfolio</span>
+            <span>Add Customer</span>
           </button>
         </div>
       </div>
@@ -181,7 +178,7 @@ export default function CustomersPage() {
                         <div className="relative w-10 h-10">
                           <div className="absolute inset-0 border-4 border-slate-100 border-t-amber-500 rounded-full animate-spin"></div>
                         </div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Fetching Portfolios...</p>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Fetching Customers list...</p>
                       </motion.div>
                     </td>
                   </tr>
@@ -320,7 +317,7 @@ export default function CustomersPage() {
                     <h3 className="text-xl font-black text-[#003366] tracking-tight">
                       {modalMode === 'create' ? 'New Customer' : 'Edit Customer'}
                     </h3>
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Portfolio Details</p>
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Customer Details</p>
                   </div>
                 </div>
                 <button onClick={closeModal} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-xl transition-colors">

@@ -23,6 +23,8 @@ export const processReportData = (report: any) => {
     console.error("JSON Parse Error in processReportData", e);
   }
 
+  const isBulkSync = t.is_bulk_sync || t.import_source?.includes("Bulk") || (typeof report.technical_json === 'string' && report.technical_json.includes("is_bulk_sync"));
+
   // 1.5. Flatten Native Nested Payloads (Mechanical, Performance, Environment, Functionality)
   // This ensures the web UI and PDF generator see flattened data
   if (t.mechanical) t = { ...t, ...t.mechanical };
@@ -103,33 +105,116 @@ export const processReportData = (report: any) => {
   // A. PREVENTIVE
   if (report.type === "Preventive") {
     const labels = [
+      { label: "Ampere Name Plate", key: "ampere_nameplate" },
       { label: "Power Supply", key: "power_supply" },
-      { label: "Ampere", key: "ampere_motor" },
+      { label: "Ampere Motor", key: "ampere_motor" },
+      { label: "Ampere (Phase R)", key: "ampere_r" },
+      { label: "Ampere (Phase S)", key: "ampere_s" },
+      { label: "Ampere (Phase T)", key: "ampere_t" },
       { label: "Pressure Inlet", key: "pressure_inlet" },
       { label: "Pressure Outlet", key: "pressure_outlet" },
       { label: "Temperature Inlet", key: "temp_inlet" },
       { label: "Temperature Outlet", key: "temp_outlet" },
-      { label: "Return Air", key: "return_air_temp" },
       { label: "Supply Air", key: "supply_air_temp" },
+      { label: "Return Air", key: "return_air_temp" },
+      { label: "Room Temp", key: "room_temp" },
+      { label: "Diff. Temp", key: "diff_temp" },
+      { label: "Air Flow", key: "air_flow" },
+      { label: "Performa Unit", key: "performa_unit" },
       { label: "Air filter", key: "clean_air_filter" },
       { label: "Cleaning coil", key: "clean_coil" },
       { label: "Cleaning drainage", key: "clean_drainage" },
+      { label: "Cleaning body", key: "clean_body" },
       { label: "V-Belt", key: "check_vbelt" },
       { label: "Bearing", key: "check_bearing" },
     ];
 
     const scope: any = {};
-    Object.keys(t).forEach(dbLabel => {
+
+    const processVal = (dbLabel: string, val: any) => {
       const found = labels.find(l => dbLabel.toLowerCase().includes(l.label.toLowerCase()));
       if (found) {
-        const val = t[dbLabel];
-        if (typeof val === 'object') {
-           scope[found.key] = { before: val.before, after: val.after, remarks: val.remarks };
+        if (typeof val === 'object' && val !== null) {
+          const before = val.before ?? val.Before ?? val.b ?? "-";
+          const after = val.after ?? val.After ?? val.a ?? "-";
+          
+          // AUTO MARGIN: Calculate difference automatically
+          let margin = val.remarks ?? val.Remarks ?? val.r ?? "";
+          const bNum = parseFloat(String(before).replace(',', '.'));
+          const aNum = parseFloat(String(after).replace(',', '.'));
+          
+          if (!isNaN(bNum) && !isNaN(aNum)) {
+             const diff = aNum - bNum;
+             margin = diff === 0 ? "0" : diff > 0 ? `+${diff.toFixed(2)}` : diff.toFixed(2);
+          }
+
+          scope[found.key] = { 
+            before, 
+            after, 
+            remarks: margin 
+          };
         } else {
-           scope[found.key] = { done: val, remarks: "" };
+          // If single value, map to 'before' or 'after' based on label
+          const isAfterLabel = dbLabel.toLowerCase().includes("after") || dbLabel.toLowerCase().includes("sesudah");
+          scope[found.key] = isAfterLabel 
+            ? { before: "-", after: val || "-", remarks: "" }
+            : { before: val || "-", after: "-", remarks: "" };
         }
       }
-    });
+    };
+
+    // 1. Process root keys
+    Object.keys(t).forEach(dbLabel => processVal(dbLabel, t[dbLabel]));
+
+    // 2. Process nested parameters or metrics (Bulk Sync)
+    if (t.parameters || t.metrics) {
+      const p = t.parameters || t.metrics || {};
+      // Amperes (Handle R,S,T or single)
+      if (p.amp || p.ampere_after) {
+        if (typeof p.amp === 'object') {
+          if (p.amp.nameplate) processVal("Ampere Name Plate", p.amp.nameplate);
+          if (p.amp.r) {
+            processVal("Ampere (Phase R)", p.amp.r);
+            if (!p.amp.s && !p.amp.t) processVal("Ampere Motor", p.amp.r);
+          }
+          if (p.amp.s) processVal("Ampere (Phase S)", p.amp.s);
+          if (p.amp.t) processVal("Ampere (Phase T)", p.amp.t);
+          if (!p.amp.r && !p.amp.s && !p.amp.t) processVal("Ampere Motor", p.amp);
+        } else {
+          processVal("Ampere Motor", p.amp || p.ampere_after);
+        }
+      }
+      if (p.diff_temp) processVal("Diff. Temp", p.diff_temp);
+      if (p.supply_air_temp || p.supply_temp || p.temp_after) processVal("Supply Air", p.supply_air_temp || p.supply_temp || p.temp_after);
+      if (p.return_air_temp || p.return_temp || p.temp_before) processVal("Return Air", p.return_air_temp || p.return_temp || p.temp_before);
+      if (p.room_temp) {
+        processVal("Room Temp", p.room_temp);
+        if (!p.return_air_temp && !p.return_temp && !p.temp_before) processVal("Return Air", p.room_temp);
+      }
+      if (p.air_flow || p.airflow || p.air_volume) processVal("Air Flow", p.air_flow || p.airflow || p.air_volume);
+      if (p.finding) scope["finding"] = { before: p.finding, after: "-", remarks: "" };
+      if (p.recommendation) scope["recommendation"] = { before: p.recommendation, after: "-", remarks: "" };
+      if (p.performa_unit !== undefined && p.performa_unit !== null) {
+        if (typeof p.performa_unit === 'object') {
+          scope["performa_unit"] = { before: p.performa_unit.before, after: p.performa_unit.after, remarks: "" };
+        } else {
+          scope["performa_unit"] = { before: p.performa_unit, after: "-", remarks: "" };
+        }
+      }
+      if (p.kw) scope["kw"] = { before: p.kw.before, after: p.kw.after, remarks: "" };
+      if (p.rpm) scope["rpm"] = { before: p.rpm.before, after: p.rpm.after, remarks: "" };
+      if (p.diff_temp) scope["diff_temp"] = { before: p.diff_temp.before, after: p.diff_temp.after, remarks: "" };
+      if (p.diffuser_count) scope["diffuser_count"] = { before: p.diffuser_count, after: p.diffuser_count, remarks: "" };
+      if (p.air_volume_actual) scope["air_volume_actual"] = { before: p.air_volume_actual, after: p.air_volume_actual, remarks: "" };
+      if (p.air_volume_nameplate) scope["air_volume_nameplate"] = { before: p.air_volume_nameplate, after: p.air_volume_nameplate, remarks: "" };
+      if (p.performa_cfm) scope["performa_cfm"] = { before: p.performa_cfm, after: p.performa_cfm, remarks: "" };
+      if (p.performa_score) scope["performa_score"] = { before: p.performa_score + "%", after: p.performa_score + "%", remarks: "" };
+    }
+
+    // 4. Capture Phase Amperes if they exist in root (Fallback for direct DB fields)
+    if (report.amp_r && report.amp_r !== "0" && !scope["ampere_r"]) scope["ampere_r"] = { before: "-", after: report.amp_r, remarks: "" };
+    if (report.amp_s && report.amp_s !== "0" && !scope["ampere_s"]) scope["ampere_s"] = { before: "-", after: report.amp_s, remarks: "" };
+    if (report.amp_t && report.amp_t !== "0" && !scope["ampere_t"]) scope["ampere_t"] = { before: "-", after: report.amp_t, remarks: "" };
 
     return {
       ...report,
@@ -142,40 +227,60 @@ export const processReportData = (report: any) => {
         serial_number: report.units?.serial_number || report.unit_serial,
         unit_number: report.units?.tag_number || report.unit_tag,
         location: report.units?.area || report.unit_area,
-        so_number: report.reference_id || "PM-" + report.id
+        so_number: report.reference_id || "PM-" + report.id,
+        nominal_capacity: report.units?.capacity || report.units?.capacity_pk || t.header?.nominal_capacity || "-",
+        category: report.units?.unit_type || report.units?.category || "-",
+        floor: report.units?.building_floor || report.location || "-",
+        area: report.units?.area || report.unit_area || "-",
+        tenant: report.units?.room_tenant || "-",
+        brand: report.units?.brand || report.unit_brand || "-",
+        capacity_pk: report.units?.capacity_pk || "-"
       },
       scope: Object.keys(scope).length > 0 ? scope : t.scope,
       parts: t.parts || [],
-      technicalAdvice: report.technical_advice || t.technicalAdvice || "-",
+      technicalAdvice: report.technical_advice || report.engineer_note || t.technicalAdvice || "-",
       engineerName: report.inspector_name || report.engineer || t.engineerName || "-",
       customerName: t.customerName || "-",
       activity_photos: photos,
       reportCode: report.reference_id || `REPORT-${report.id}`,
-      reportTitle: "PREVENTIVE MAINTENANCE REPORT"
+      reportTitle: "PREVENTIVE MAINTENANCE REPORT",
+      isBulkSync: !!isBulkSync
     };
   }
 
   // B. CORRECTIVE
   if (report.type === "Corrective") {
+    const isComplaint = t.is_complaint || t.import_source?.includes("Complaint") || t.category || (typeof report.technical_json === 'string' && report.technical_json.includes("Complaint"));
+    
+    // Technician handling - remove "Tim Teknisi PI" and replace with "Bulk Synchronized" if needed
+    let techName = report.inspector_name || report.engineer || t.personnel?.technician_name;
+    if (techName === "Tim Teknisi PI") techName = "Bulk Synchronized";
+
     return {
       ...report,
       ...t,
       personnel: t.personnel || { 
-        technician_name: report.inspector_name || report.engineer, 
+        technician_name: techName, 
         service_date: report.service_date 
       },
+      inspector_name: techName,
       pic: t.pic || {},
-      analysis: t.analysis || {
-        case_complain: t.case_complain || "-",
-        root_cause: t.root_cause || "-",
-        temp_action: t.temp_action || "-",
-        perm_action: t.perm_action || "-",
-        recommendation: t.recommendation || report.technical_advice
+      analysis: {
+        complain: t.analysis?.complain || t.analysis?.case_complain || t.case_complain || t.category || t.kategori || report.engineer_note || "-",
+        root_cause: t.analysis?.root_cause || t.root_cause || "-",
+        temp_action: t.analysis?.temp_action || t.temp_action || "-",
+        perm_action: t.analysis?.perm_action || t.perm_action || t.corrective_action || "-",
+        recommendation: t.analysis?.recommendation || t.rekomendasi || report.technical_advice || t.recommendation || "-",
+        qty: t.qty || t.analysis?.qty || t.Qty || "-",
+        corrective_action: t.corrective_action || t.analysis?.corrective_action || t.perm_action || t.corrective_action || "-",
+        status: t.status || t.analysis?.status || t.Status || report.status || "-"
       },
+      isComplaint,
       engineerNote: report.engineer_note || t.engineerNote || "-",
       activity_photos: photos,
       reportCode: report.reference_id || `REPORT-${report.id}`,
-      reportTitle: "CORRECTIVE MAINTENANCE REPORT"
+      reportTitle: isComplaint ? "COMPLAINT REPORT" : "CORRECTIVE MAINTENANCE REPORT",
+      isBulkSync: !!isBulkSync
     };
   }
 
@@ -192,10 +297,37 @@ export const processReportData = (report: any) => {
       if (vp.point_number >= 31 && vp.point_number <= 45) fresh[vp.point_number - 31] = val;
     });
 
+    // Map bulk-synced fields from technical_json to template-expected keys
+    // health_score from spreadsheet is a decimal (0.88) → convert to percentage (88)
+    let healthScore = t.health_score ?? performance.score ?? 0;
+    if (healthScore > 0 && healthScore <= 1) healthScore = Math.round(healthScore * 100);
+    const healthStatus = t.health_status || performance.rating || "N/A";
+
+    // Resolve enthalpy/airflow: prefer technical_json, fallback to DB columns
+    const entering_enthalpy = t.entering_enthalpy || 0;
+    const leaving_enthalpy = t.leaving_enthalpy || 0;
+    const enthalpy_diff = t.enthalpy_diff || 0;
+    const face_velocity = t.face_velocity || 0;
+    const face_area = t.face_area || 0;
+    const actual_airflow = t.actual_airflow || report.measured_airflow || 0;
+    const actual_cooling_capacity = t.actual_cooling_capacity || performance.actualCapacity || 0;
+    const power_kw = t.power_kw || 0;
+
     return { 
       ...report, 
       ...t, 
       performance,
+      // Explicitly mapped fields for template
+      entering_enthalpy,
+      leaving_enthalpy,
+      enthalpy_diff,
+      face_velocity,
+      face_area,
+      actual_airflow,
+      actual_cooling_capacity,
+      healthScore,
+      healthStatus,
+      power_kw,
       t: { 
         ...t, 
         supplyVelocity: supply, 
@@ -208,7 +340,8 @@ export const processReportData = (report: any) => {
       }, 
       activity_photos: photos,
       reportCode: report.reference_id || `REPORT-${report.id}`,
-      reportTitle: "AUDIT TECHNICAL REPORT"
+      reportTitle: "AUDIT TECHNICAL REPORT",
+      isBulkSync: !!isBulkSync
     };
   }
 
@@ -219,6 +352,7 @@ export const processReportData = (report: any) => {
     performance,
     activity_photos: photos,
     reportCode: report.reference_id || `REPORT-${report.id}`,
-    reportTitle: `${(report.type || 'Activity').toUpperCase()} REPORT`
+    reportTitle: `${(report.type || 'Activity').toUpperCase()} REPORT`,
+    isBulkSync: !!isBulkSync
   };
 };

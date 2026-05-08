@@ -619,7 +619,7 @@ export default function UnitDetailModal({
                           ))}
                         </div>
                       ) : (
-                        <UnitHistoryTimeline history={history || []} session={session} unit={unit} />
+                        <UnitHistoryTimeline history={history || []} session={session} unit={unit} lang={lang} />
                       )
                     ) : activeTab === "media" ? (
                       mediaLoading ? (

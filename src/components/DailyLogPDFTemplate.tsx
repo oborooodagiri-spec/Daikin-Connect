@@ -2,7 +2,7 @@ import { ReportSignatureFooter } from "./ReportSignatureFooter";
 import { t, Language } from "@/lib/i18n";
 import { format } from "date-fns";
 
-export const getDailyLogSections = (data: any, unit: any, engineerName?: string, customerName?: string, lang: Language = 'id') => {
+export const getDailyLogSections = (data: any, unit: any, engineerName?: string, customerName?: string, lang: Language = 'id', options: any = {}) => {
   const log = data.activity || data;
   
   const cellLabel: React.CSSProperties = { border: "1px solid #ddd", padding: "1mm 2mm", backgroundColor: "#f8fafd", width: "22%", fontSize: "7pt", fontWeight: 800, color: "#003366" };
@@ -179,12 +179,13 @@ export const getDailyLogSections = (data: any, unit: any, engineerName?: string,
     // SIGNATURES
     <div key="sign" style={{ marginTop: "10mm" }}>
        <ReportSignatureFooter 
-         preparedBy={log.inspector_name || ""}
-         reviewedBy={log.engineer_signer_name}
-         witnessedBy={log.customer_approver_name || customerName}
-         reviewedDate={log.engineer_approved_at}
-         witnessedDate={log.customer_approved_at}
+         preparedBy={engineerName || ""}
+         reviewedBy={options?.reviewedBy}
+         witnessedBy={options?.witnessedBy}
+         reviewedDate={options?.reviewedDate}
+         witnessedDate={options?.witnessedDate}
          lang={lang}
+         isBulkSync={options?.isBulkSync}
        />
     </div>
   ];

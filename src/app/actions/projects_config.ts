@@ -24,7 +24,7 @@ export async function getAllProjectsConfig() {
       orderBy: { name: 'asc' }
     });
 
-    return {
+    return serializePrisma({
       success: true,
       data: projects.map((p: any) => ({
         id: p.id.toString(),
@@ -33,11 +33,13 @@ export async function getAllProjectsConfig() {
         customerName: p.customers?.name || "Unknown",
         status: p.status,
         enabled_forms: p.enabled_forms || "Audit,Preventive,Corrective",
+        enabled_unit_types: p.enabled_unit_types || "Chiller",
+        monitoring_focus: p.monitoring_focus || "UNIT",
         latitude: p.latitude ? Number(p.latitude) : null,
         longitude: p.longitude ? Number(p.longitude) : null,
         radius_meters: p.radius_meters
       }))
-    };
+    });
   } catch (error) {
     console.error("Fetch all projects config error:", error);
     return { error: "Failed to fetch projects configuration." };
@@ -45,9 +47,16 @@ export async function getAllProjectsConfig() {
 }
 
 /**
- * Updates the enabled forms for a specific project.
+ * Updates the configurations for a specific project.
  */
-export async function updateProjectCapabilities(projectId: string, forms: string) {
+export async function updateProjectSettings(
+  projectId: string, 
+  data: { 
+    enabled_forms?: string; 
+    enabled_unit_types?: string; 
+    monitoring_focus?: string;
+  }
+) {
   const session = await getSession();
   if (!session || !session.isInternal) {
     return { error: "Unauthorized access" };
@@ -56,16 +65,20 @@ export async function updateProjectCapabilities(projectId: string, forms: string
   try {
     await prisma.projects.update({
       where: { id: BigInt(projectId) },
-      data: { enabled_forms: forms }
+      data: {
+        ...(data.enabled_forms !== undefined && { enabled_forms: data.enabled_forms }),
+        ...(data.enabled_unit_types !== undefined && { enabled_unit_types: data.enabled_unit_types }),
+        ...(data.monitoring_focus !== undefined && { monitoring_focus: data.monitoring_focus }),
+      }
     });
 
-    // Revalidate dashboard and settings
-    revalidatePath("/dashboard");
-    revalidatePath("/dashboard/settings");
+    // Revalidate centralized admin settings
+    revalidatePath("/admin/settings");
+    revalidatePath("/home");
     
     return { success: true };
   } catch (error) {
-    console.error("Update project capabilities error:", error);
+    console.error("Update project settings error:", error);
     return { error: "Failed to update project settings." };
   }
 }
@@ -88,7 +101,7 @@ export async function updateProjectLocation(projectId: string, lat: number, long
         }
       });
   
-      revalidatePath("/dashboard/settings");
+      revalidatePath("/admin/settings");
       return { success: true };
     } catch (error) {
       console.error("Update project location error:", error);
@@ -112,13 +125,13 @@ export async function getAllCustomersForFilter() {
         orderBy: { name: 'asc' }
       });
   
-      return {
+      return serializePrisma({
         success: true,
         data: customers.map((c: any) => ({
           id: c.id.toString(),
           name: c.name
         }))
-      };
+      });
     } catch (error) {
       return { error: "Failed to fetch customers list." };
     }

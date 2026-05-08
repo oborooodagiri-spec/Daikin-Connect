@@ -29,7 +29,15 @@ export async function getAllReports(filters?: {
     console.log("DIAGNOSTIC: Total service_activities in DB:", debugCount);
 
     if (filters?.type && filters.type !== "all") {
-      where.type = filters.type;
+      if (filters.type === "Complaint") {
+        where.type = "Corrective";
+        where.technical_json = { contains: "Complaint" };
+      } else if (filters.type === "Corrective") {
+        where.type = "Corrective";
+        where.technical_json = { not: { contains: "Complaint" } };
+      } else {
+        where.type = filters.type;
+      }
     }
 
     if (filters?.dateFrom || filters?.dateTo) {
@@ -104,6 +112,7 @@ export async function getAllReports(filters?: {
               area: true,
               building_floor: true,
               room_tenant: true,
+              unit_type: true,
               qr_code_token: true,
             },
           },
@@ -136,11 +145,22 @@ export async function getAllReports(filters?: {
     });
 
     // Stats
-    const [totalAudit, totalPreventive, totalCorrective] = await Promise.all([
+    const [totalAudit, totalPreventive, totalCorrective, totalComplaint] = await Promise.all([
       (prisma.service_activities as any).count({ where: { ...where, type: "Audit" } }),
       (prisma.service_activities as any).count({ where: { ...where, type: "Preventive" } }),
-      (prisma.service_activities as any).count({ where: { ...where, type: "Corrective" } }),
+      (prisma.service_activities as any).count({ where: { ...where, type: "Corrective", technical_json: { not: { contains: "Complaint" } } } }),
+      (prisma.service_activities as any).count({ where: { ...where, type: "Corrective", technical_json: { contains: "Complaint" } } }),
     ]);
+
+    // Fetch Project Config for UI control
+    let enabledForms = "Audit,Preventive,Corrective"; // Default fallback (hides DailyLog by default)
+    if (filters?.projectId && filters.projectId !== "empty") {
+      const project = await (prisma.projects as any).findUnique({
+        where: { id: BigInt(filters.projectId) },
+        select: { enabled_forms: true }
+      });
+      if (project?.enabled_forms) enabledForms = project.enabled_forms;
+    }
 
     const mappedDailyLogs = dailyLogs.map((dl: any) => ({
       id: "DL-" + dl.id, // Prefix DL to prevent ID collision
@@ -183,9 +203,11 @@ export async function getAllReports(filters?: {
         totalAudit,
         totalPreventive,
         totalCorrective,
+        totalComplaint,
         totalDailyLog: totalDailyLogDb,
-        totalAll: totalAudit + totalPreventive + totalCorrective + totalDailyLogDb,
+        totalAll: totalAudit + totalPreventive + totalCorrective + totalComplaint + totalDailyLogDb,
       },
+      enabledForms,
     });
   } catch (error: any) {
     console.error("Fetch Reports Error:", error);

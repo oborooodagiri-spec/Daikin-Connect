@@ -4,12 +4,13 @@ import React, { useState, useEffect, useTransition } from "react";
 import { 
   Settings, Search, Filter, CheckCircle2, 
   X, Save, Activity, Building2, ClipboardCheck, 
-  Wrench, AlertTriangle, Terminal, ArrowLeft
+  Wrench, AlertTriangle, Terminal, ArrowLeft, MapPin, Cog,
+  LayoutGrid, Map
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   getAllProjectsConfig, 
-  updateProjectCapabilities, 
+  updateProjectSettings, 
   getAllCustomersForFilter,
   updateProjectLocation
 } from "@/app/actions/projects_config";
@@ -18,7 +19,8 @@ import Link from "next/link";
 const FORM_TYPES = [
   { id: "Audit", label: "Audit", icon: ClipboardCheck, color: "text-blue-500", bg: "bg-blue-50" },
   { id: "Preventive", label: "Preventive", icon: Wrench, color: "text-emerald-500", bg: "bg-emerald-50" },
-  { id: "Corrective", label: "Corrective", icon: AlertTriangle, color: "text-rose-500", bg: "bg-rose-50" },
+  { id: "Corrective", label: "Complain/Problem", icon: AlertTriangle, color: "text-rose-500", bg: "bg-rose-50" },
+  { id: "Corrective_Maintenance", label: "Corrective", icon: Cog, color: "text-orange-500", bg: "bg-orange-50" },
   { id: "DailyLog", label: "Daily Log", icon: Activity, color: "text-indigo-500", bg: "bg-indigo-50" }
 ];
 
@@ -30,6 +32,8 @@ export default function SettingsPage() {
   const [customerFilter, setCustomerFilter] = useState("all");
   const [isPending, startTransition] = useTransition();
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -48,7 +52,7 @@ export default function SettingsPage() {
   };
 
   const handleToggle = (projectId: string, formId: string, currentForms: string) => {
-    const list = currentForms.split(",").filter(Boolean);
+    const list = (currentForms || "").split(",").filter(Boolean);
     let updated;
     if (list.includes(formId)) {
       updated = list.filter(f => f !== formId);
@@ -59,7 +63,7 @@ export default function SettingsPage() {
 
     setUpdatingId(`${projectId}-${formId}`);
     startTransition(async () => {
-      const res = await updateProjectCapabilities(projectId, updatedStr);
+      const res = await updateProjectSettings(projectId, { enabled_forms: updatedStr });
       if ("success" in res && res.success) {
         setProjects(prev => prev.map(p => 
           p.id === projectId ? { ...p, enabled_forms: updatedStr } : p
@@ -69,9 +73,26 @@ export default function SettingsPage() {
     });
   };
 
+  const handleUpdateAdvanced = async (projectId: string, unitTypes: string, focus: string) => {
+    setUpdatingId(`adv-${projectId}`);
+    const res = await updateProjectSettings(projectId, { 
+      enabled_unit_types: unitTypes, 
+      monitoring_focus: focus 
+    });
+    if ("success" in res && res.success) {
+      setProjects(prev => prev.map(p => 
+        p.id === projectId ? { ...p, enabled_unit_types: unitTypes, monitoring_focus: focus } : p
+      ));
+      setIsOptionsOpen(false);
+    } else {
+      alert("Error: " + (res.error || "Unknown error"));
+    }
+    setUpdatingId(null);
+  };
+
   const filteredProjects = projects.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         p.customerName.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = (p.name || "").toLowerCase().includes((searchQuery || "").toLowerCase()) || 
+                         (p.customerName || "").toLowerCase().includes((searchQuery || "").toLowerCase());
     const matchesCustomer = customerFilter === "all" || p.customerId === customerFilter;
     return matchesSearch && matchesCustomer;
   });
@@ -140,7 +161,7 @@ export default function SettingsPage() {
             >
               <option value="all">ALL CUSTOMERS</option>
               {customers.map(c => (
-                <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>
+                <option key={c.id} value={c.id}>{(c.name || "Unknown").toUpperCase()}</option>
               ))}
             </select>
           </div>
@@ -177,6 +198,7 @@ export default function SettingsPage() {
                   </th>
                 ))}
                 <th className="px-6 py-6 text-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 whitespace-nowrap">Geo-Lock</th>
+                <th className="px-6 py-6 text-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 whitespace-nowrap">Config</th>
                 <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 text-right">Status</th>
               </tr>
             </thead>
@@ -215,21 +237,30 @@ export default function SettingsPage() {
                       <td className="px-10 py-6">
                         <div className="flex items-center gap-5">
                           <div className="w-12 h-12 bg-white border border-slate-100 rounded-2xl flex items-center justify-center font-black text-slate-300 shadow-sm group-hover:border-blue-200 group-hover:text-blue-500 transition-all">
-                            {project.name.charAt(0)}
+                            {(project.name || "U").charAt(0)}
                           </div>
                           <div>
-                            <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                            <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1 opacity-60 group-hover:opacity-100 transition-opacity flex items-center gap-2">
                               {project.customerName}
+                              <span className="text-slate-300">•</span>
+                              <span className={`px-1.5 py-0.5 rounded text-[8px] ${project.monitoring_focus === 'ROOM' ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-50 text-slate-400'}`}>
+                                {project.monitoring_focus === 'ROOM' ? 'ROOM-BASED' : 'UNIT-BASED'}
+                              </span>
                             </p>
                             <p className="text-base font-black text-slate-800 tracking-tight">
                               {project.name}
                             </p>
+                            <div className="flex flex-wrap gap-1 mt-1.5 opacity-40 group-hover:opacity-100 transition-all">
+                               {(project.enabled_unit_types || "").split(',').filter(Boolean).map((u: string) => (
+                                 <span key={u} className="text-[8px] font-black text-slate-400 border border-slate-100 px-1 rounded uppercase tracking-tighter bg-white">{u}</span>
+                               ))}
+                            </div>
                           </div>
                         </div>
                       </td>
 
                       {FORM_TYPES.map(type => {
-                        const isEnabled = project.enabled_forms.split(",").includes(type.id);
+                        const isEnabled = (project.enabled_forms || "").split(",").includes(type.id);
                         const isThisUpdating = updatingId === `${project.id}-${type.id}`;
 
                         return (
@@ -286,6 +317,18 @@ export default function SettingsPage() {
                          </button>
                       </td>
 
+                       <td className="px-6 py-6 text-center">
+                         <button 
+                           onClick={() => {
+                             setSelectedProject(project);
+                             setIsOptionsOpen(true);
+                           }}
+                           className="w-10 h-10 rounded-xl mx-auto flex items-center justify-center transition-all bg-slate-50 border border-slate-100 text-slate-400 hover:bg-[#003366] hover:text-white"
+                         >
+                            <Cog size={18} />
+                         </button>
+                      </td>
+
                       <td className="px-10 py-6 text-right">
                          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-[10px] font-black uppercase tracking-widest
                             ${project.status === 'active' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100'}`}>
@@ -302,6 +345,126 @@ export default function SettingsPage() {
         </div>
       </div>
 
+      {/* Options Modal */}
+      <AnimatePresence>
+        {isOptionsOpen && selectedProject && (
+          <ProjectOptionsModal 
+            project={selectedProject}
+            onClose={() => setIsOptionsOpen(false)}
+            onSave={handleUpdateAdvanced}
+            isUpdating={updatingId === `adv-${selectedProject.id}`}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function ProjectOptionsModal({ project, onClose, onSave, isUpdating }: any) {
+  const [unitTypes, setUnitTypes] = useState<string[]>((project?.enabled_unit_types || "").split(",").filter(Boolean));
+  const [focus, setFocus] = useState(project?.monitoring_focus || 'UNIT');
+
+  const OPTIONS = ["Chiller", "AHU", "FCU", "Split Duct", "Cooling Tower"];
+
+  const toggleUnit = (type: string) => {
+    if (unitTypes.includes(type)) {
+      setUnitTypes(unitTypes.filter(t => t !== type));
+    } else {
+      setUnitTypes([...unitTypes, type]);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="absolute inset-0 bg-slate-900/40 backdrop-blur-md"
+      />
+      <motion.div 
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        className="relative bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl shadow-blue-900/20 overflow-hidden"
+      >
+        <div className="p-8 border-b border-slate-50 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+             <div className="p-3 bg-blue-50 rounded-2xl text-blue-600">
+                <Cog size={24} />
+             </div>
+             <div>
+                <h3 className="text-xl font-black text-[#003366] uppercase tracking-tighter">Advanced Config</h3>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{project.name}</p>
+             </div>
+          </div>
+          <button onClick={onClose} className="p-2 text-slate-300 hover:text-rose-500 transition-colors">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="p-8 space-y-8">
+           <div className="space-y-4">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                <LayoutGrid size={12} /> Active Unit Types
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                 {OPTIONS.map(opt => (
+                   <button 
+                     key={opt}
+                     onClick={() => toggleUnit(opt)}
+                     className={`px-4 py-3 rounded-2xl border text-[10px] font-black uppercase tracking-widest transition-all
+                        ${unitTypes.includes(opt) ? 'bg-blue-50 border-blue-200 text-blue-600' : 'bg-white border-slate-100 text-slate-300 hover:border-slate-300'}`}
+                   >
+                      {opt}
+                   </button>
+                 ))}
+              </div>
+           </div>
+
+           <div className="space-y-4">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                <Map size={12} /> Monitoring Focus
+              </label>
+              <div className="flex bg-slate-50 p-1.5 rounded-[1.5rem] border border-slate-100 gap-1">
+                 <button 
+                   onClick={() => setFocus('UNIT')}
+                   className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
+                      ${focus === 'UNIT' ? 'bg-white text-[#003366] shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                 >
+                    Physical Asset
+                 </button>
+                 <button 
+                   onClick={() => setFocus('ROOM')}
+                   className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
+                      ${focus === 'ROOM' ? 'bg-white text-[#003366] shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                 >
+                    Space / Room
+                 </button>
+              </div>
+              <p className="text-[9px] font-bold text-slate-400 leading-relaxed italic px-2">
+                * Room-based monitoring changes system labels from "Unit" to "Room" across the portal.
+              </p>
+           </div>
+        </div>
+
+        <div className="p-8 bg-slate-50/50 border-t border-slate-100 flex gap-3">
+           <button 
+             onClick={onClose}
+             className="flex-1 py-4 border border-slate-200 text-[#003366] text-xs font-black uppercase tracking-widest rounded-2xl hover:bg-white transition-all"
+           >
+              Cancel
+           </button>
+           <button 
+             onClick={() => onSave(project.id, unitTypes.join(","), focus)}
+             disabled={isUpdating || unitTypes.length === 0}
+             className="flex-[2] py-4 bg-[#003366] text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-blue-900/20 hover:bg-[#00a1e4] transition-all disabled:opacity-50"
+           >
+              {isUpdating ? 'Synchronizing...' : 'Save Configuration'}
+           </button>
+        </div>
+      </motion.div>
     </div>
   );
 }

@@ -8,6 +8,7 @@ interface SignatureFooterProps {
   reviewedDate?: string | Date;
   witnessedDate?: string | Date;
   lang?: Language;
+  isBulkSync?: boolean;
 }
 
 export const ReportSignatureFooter = ({
@@ -16,7 +17,8 @@ export const ReportSignatureFooter = ({
   witnessedBy,
   reviewedDate,
   witnessedDate,
-  lang = 'id'
+  lang = 'id',
+  isBulkSync = false
 }: SignatureFooterProps) => {
   return (
     <div style={{ 
@@ -31,10 +33,10 @@ export const ReportSignatureFooter = ({
         <p style={{ fontSize: "8pt", fontWeight: 800, color: "#003366", margin: "0 0 15mm 0", textTransform: "uppercase" }}>{t("PREPARED BY", lang)}:</p>
         <div style={{ height: "35mm", display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
             <p style={{ fontSize: "9pt", fontWeight: 900, color: "#111", borderBottom: "1pt solid #003366", paddingBottom: "1mm", display: "inline-block" }}>
-                {preparedBy || "TEKNISI LAPANGAN"}
+                {isBulkSync ? t("Synchronized by System", lang) : (preparedBy || "TEKNISI LAPANGAN")}
             </p>
         </div>
-        <p style={{ fontSize: "6pt", fontWeight: 600, color: "#64748b", marginTop: "1mm" }}>{t("Field Technician", lang)}</p>
+        <p style={{ fontSize: "6pt", fontWeight: 600, color: "#64748b", marginTop: "1mm" }}>{isBulkSync ? "BULK IMPORT" : t("Field Technician", lang)}</p>
       </div>
 
       {/* COLUMN 2: REVIEWED BY (INTERNAL ENGINEER) */}

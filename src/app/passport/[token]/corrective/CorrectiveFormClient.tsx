@@ -325,7 +325,7 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
         await new Promise<void>((resolve) => {
           root.render(
             <ReportBase 
-              reportTitle="CORRECTIVE MAINTENANCE REPORT" 
+              reportTitle={category ? "COMPLAINT REPORT" : "CORRECTIVE MAINTENANCE REPORT"} 
               reportCode={finalRenderData.personnel?.wo_number || `CR-${unit.id}`} 
               unit={unit}
               pageNumber={i + 1}
@@ -441,7 +441,7 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
         temp_action: analysis.temp_action,
         perm_action: analysis.perm_action,
         recommendation: analysis.recommendation,
-        technical_json: JSON.stringify(finalRenderData, (_, v) => typeof v === 'bigint' ? v.toString() : v),
+        technical_json: JSON.stringify({ ...finalRenderData, is_complaint: !!category }, (_, v) => typeof v === 'bigint' ? v.toString() : v),
         pdf_report_url: pdfUrl,
         berita_acara_pdf_url: baUrl,
         engineer_signer_name: personnel.name,
@@ -479,12 +479,12 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
           {isQueued ? <WifiOff size={48} /> : <CheckCircle2 size={48} />}
         </div>
         <h1 className="text-3xl font-black tracking-tight mb-2">
-          {isQueued ? (lang === 'ja' ? 'オフラインでキューされました！' : "Queued Offline!") : (lang === 'ja' ? '提出完了！' : "Corrective Submitted!")}
+          {isQueued ? (lang === 'ja' ? 'オフラインでキューされました！' : "Queued Offline!") : (lang === 'ja' ? '提出完了！' : "Complaint Submitted!")}
         </h1>
         <p className="text-blue-200 mb-8 max-w-sm font-medium">
           {isQueued
-            ? (lang === 'ja' ? "接続がありません。レポートは保存されました。インターネット接続時に自動送信されます。" : "Koneksi mati. Laporan Perbaikan telah disimpan di HP dan akan otomatis terkirim saat internet kembali aktif.")
-            : (lang === 'ja' ? "レポートとPDFドキュメントが正常に送信されました。ユニットの状態が「異常」に更新されました。" : "Laporan Corrective Maintenance & PDF telah di-generate dan dikirim ke server. Status unit diubah ke Problem.")}
+            ? (lang === 'ja' ? "接続がありません。レポートは保存されました。インターネット接続時に自動送信されます。" : "Koneksi mati. Laporan Complaint telah disimpan di HP dan akan otomatis terkirim saat internet kembali aktif.")
+            : (lang === 'ja' ? "レポートとPDFドキュメントが正常に送信されました。ユニットの状態が「異常」に更新されました。" : "Laporan Complaint Report telah di-generate dan dikirim ke server. Status unit diubah ke Problem.")}
         </p>
         <button onClick={() => router.push(`/unit/${unit.qr_code_token}`)} className="px-8 py-4 bg-white text-[#003366] font-black rounded-2xl uppercase tracking-widest text-sm hover:scale-105 transition-transform shadow-xl">
           {lang === 'ja' ? "パスポートに戻る" : "Kembali ke Passport"}
@@ -499,7 +499,7 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
       {/* HEADER */}
       <div className="bg-gradient-to-br from-rose-700 to-rose-900 text-white p-6 rounded-b-[2rem] shadow-lg mb-6 pt-12 sticky top-0 z-40">
         <h1 className="text-xl font-black tracking-tight flex items-center gap-2">
-          <AlertTriangle size={22} /> {lang === 'ja' ? '故障修理レポート' : 'Corrective Maintenance'}
+          <AlertTriangle size={22} /> {lang === 'ja' ? '故障修理レポート' : 'Complain / Problem Report'}
         </h1>
         <div className="flex justify-between items-center mt-3">
           <p className="text-sm font-medium opacity-80 flex items-center gap-1"><MapPin size={14} /> {unit.area} — {unit.tag_number}</p>
@@ -523,7 +523,7 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
                 <div className="space-y-4">
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">{lang === 'ja' ? '氏名*' : 'Nama Lengkap*'}</label>
-                    <input type="text" value={personnel.name} onChange={e => updatePersonnelName(e.target.value)} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:ring-2 focus:ring-[#00a1e4]" placeholder={lang === 'ja' ? '正式名称を入力' : "Contoh: Nama Terang"} />
+                    <input type="text" value={personnel.name} onChange={e => updatePersonnelName(e.target.value)} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:ring-2 focus:ring-[#00a1e4]" />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
@@ -541,7 +541,7 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
                   </div>
                   <div>
                     <label className="text-[10px] font-bold text-slate-500 uppercase">{lang === 'ja' ? '作業指示番号 (WO)' : 'Nomor Work Order (WO)'}</label>
-                    <input type="text" value={personnel.wo_number} onChange={e => setPersonnel({ ...personnel, wo_number: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder={lang === 'ja' ? 'WO番号を入力' : "Masukkan No. WO"} />
+                    <input type="text" value={personnel.wo_number} onChange={e => setPersonnel({ ...personnel, wo_number: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" />
                   </div>
                 </div>
               </div>
@@ -574,19 +574,19 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                       <input type="text" value={pic.name} onChange={e => setPic({ ...pic, name: e.target.value })}
-                        className="w-full mt-1 pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder={lang === 'ja' ? '担当者名' : "Nama PIC"} />
+                        className="w-full mt-1 pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="text-xs font-bold text-slate-500 uppercase">{lang === 'ja' ? '電話番号' : 'No. HP / WhatsApp'}</label>
                       <input type="tel" value={pic.phone} onChange={e => setPic({ ...pic, phone: e.target.value })}
-                        className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder="08xx-xxxx-xxxx" />
+                        className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" />
                     </div>
                     <div>
                       <label className="text-xs font-bold text-slate-500 uppercase">Email</label>
                       <input type="email" value={pic.email} onChange={e => setPic({ ...pic, email: e.target.value })}
-                        className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder="email@domain.com" />
+                        className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" />
                     </div>
                   </div>
                   <div>
@@ -594,7 +594,7 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
                     <div className="relative">
                       <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                       <input type="text" value={pic.department} onChange={e => setPic({ ...pic, department: e.target.value })}
-                        className="w-full mt-1 pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder={lang === 'ja' ? '部門名' : "Contoh: Building Management"} />
+                        className="w-full mt-1 pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" />
                     </div>
                   </div>
                 </div>
@@ -637,25 +637,24 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
                   </div>
                   <div className="pt-2 border-t border-slate-100">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">{lang === 'ja' ? '苦情内容*' : 'Deskripsi Keluhan / Case*'}</label>
-                    <textarea rows={3} value={analysis.complain} onChange={e => setAnalysis({ ...analysis, complain: e.target.value })} className="w-full mt-1 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" placeholder={lang === 'ja' ? '不具合の内容を記入してください...' : "Jelaskan keluhan unit atau kronologi masalah..."} />
+                    <textarea rows={3} value={analysis.complain} onChange={e => setAnalysis({ ...analysis, complain: e.target.value })} className="w-full mt-1 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" />
                   </div>
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">{lang === 'ja' ? '根本原因' : 'Akar Masalah (Root Cause)'}</label>
-                    <textarea rows={3} value={analysis.root_cause} onChange={e => setAnalysis({ ...analysis, root_cause: e.target.value })} className="w-full mt-1 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" placeholder={lang === 'ja' ? '故障の原因を分析してください...' : "Analisis penyebab kerusakan..."} />
+                    <textarea rows={3} value={analysis.root_cause} onChange={e => setAnalysis({ ...analysis, root_cause: e.target.value })} className="w-full mt-1 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" />
                   </div>
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">{lang === 'ja' ? '応急処置' : 'Tindakan Sementara (Temporary Action)'}</label>
-                    <textarea rows={3} value={analysis.temp_action} onChange={e => setAnalysis({ ...analysis, temp_action: e.target.value })} className="w-full mt-1 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" placeholder={lang === 'ja' ? '実施した一時的な修正ステップ...' : "Langkah perbaikan sementara yang dilakukan..."} />
+                    <textarea rows={3} value={analysis.temp_action} onChange={e => setAnalysis({ ...analysis, temp_action: e.target.value })} className="w-full mt-1 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" />
                   </div>
                   <div>
                     <label className="text-xs font-bold text-emerald-600 uppercase tracking-widest">{lang === 'ja' ? '恒久対策' : 'Permanent Action'}</label>
                     <textarea rows={2} value={analysis.perm_action} onChange={e => setAnalysis({ ...analysis, perm_action: e.target.value })}
-                      className="w-full mt-1 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-emerald-400"
-                      placeholder={lang === 'ja' ? '再発防止のための恒久的な解決策...' : "Solusi permanen untuk mencegah terulang..."} />
+                      className="w-full mt-1 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-emerald-400" />
                   </div>
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">{lang === 'ja' ? '技術アドバイス' : 'Saran / Rekomendasi (Advise)'}</label>
-                    <textarea rows={3} value={analysis.recommendation} onChange={e => setAnalysis({ ...analysis, recommendation: e.target.value })} className="w-full mt-1 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" placeholder={lang === 'ja' ? '顧客への推奨事項...' : "Saran perbaikan permanen untuk pelanggan..."} />
+                    <textarea rows={3} value={analysis.recommendation} onChange={e => setAnalysis({ ...analysis, recommendation: e.target.value })} className="w-full mt-1 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" />
                   </div>
                 </div>
               </div>
@@ -668,7 +667,7 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
 
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
                 <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">{lang === 'ja' ? '追加メモ' : 'Catatan Tambahan'}</h2>
-                <textarea rows={4} placeholder={lang === 'ja' ? 'その他のサービスメモ...' : "Catatan servis lainnya..."} value={engineerNote} onChange={e => setEngineerNote(e.target.value)} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" />
+                <textarea rows={4} value={engineerNote} onChange={e => setEngineerNote(e.target.value)} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" />
               </div>
 
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">

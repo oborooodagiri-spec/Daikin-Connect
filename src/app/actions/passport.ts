@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { serializePrisma } from "@/lib/serialize";
 
 import { calculateUnitHealth } from "@/lib/physics/enthalpy";
+import { notifyInternalStaff } from "./notifications";
 
 /**
  * Public API for fetching unit details by QR token
@@ -77,6 +78,13 @@ export async function updateUnitStatusFromPassport(unitId: number, status: strin
       data: { status: status as any }
     });
     
+    await notifyInternalStaff(
+      "Unit Status Update",
+      `${session.name} updated status of unit ${unitId} to ${status} via Passport`,
+      "info",
+      `/dashboard/units/${unitId}`
+    );
+
     revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
@@ -111,6 +119,13 @@ export async function submitActivityFromPassport(token: string, data: any) {
       });
     }
 
+    await notifyInternalStaff(
+      "New Activity Submitted",
+      `${data.reporterName} submitted a ${data.type} report for unit ${unit.tag_number}`,
+      data.type === "Problem" ? "error" : "success",
+      `/w/${unit.project_ref_id}/dashboard/units/${unit.id}`
+    );
+
     revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
@@ -120,29 +135,58 @@ export async function submitActivityFromPassport(token: string, data: any) {
 }
 
 /**
- * Update unit info from passport (Edit mode)
+ * Update unit info from passport (Edit mode - REQUIRES VALIDATION)
  */
+import { notifyInternalForUnitEdit } from "@/lib/push";
+
 export async function updateUnitInfoFromPassport(token: string, data: any) {
   const session = await getSession();
-  if (!session) return { error: "Unauthorized" };
 
   try {
     const unit = await prisma.units.findFirst({ where: { qr_code_token: token } });
     if (!unit) return { error: "Unit not found" };
 
-    await prisma.units.update({
-      where: { id: unit.id },
+    // Instead of direct update, create a request
+    // We use (prisma as any) here because the local Prisma client might not have synced the new model yet
+    await (prisma as any).unit_edit_requests.create({
       data: {
-        unit_type: data.unit_type,
-        brand: data.brand,
-        model: data.model,
-        capacity: data.capacity
+        unit_id: unit.id,
+        requested_by: session ? parseInt(session.userId) : null,
+        reporter_name: session ? session.name : (data.reporter_name || "Public User"),
+        details_json: JSON.stringify({
+          unit_type: data.unit_type,
+          brand: data.brand,
+          model: data.model,
+          capacity: data.capacity,
+          location: data.location,
+          area: data.area,
+          building_floor: data.building_floor,
+          room_tenant: data.room_tenant,
+          yoi: data.yoi,
+          serial_number: data.serial_number,
+          code: data.code,
+          reporter_contact: data.reporter_contact || "N/A"
+        }),
+        status: "Pending"
       }
     });
 
+    // Notify Admin & Engineer (Real-time)
+    const requesterName = session ? session.name : (data.reporter_name || "Public User");
+    await notifyInternalStaff(
+      "Pending Unit Edit",
+      `${requesterName} requested changes for unit ${unit.tag_number}`,
+      "alert",
+      "/dashboard/unit-requests"
+    );
+
+    // Notify Admin & Engineer (Push)
+    await notifyInternalForUnitEdit(unit.id, requesterName);
+
     revalidatePath("/dashboard");
-    return { success: true };
-  } catch (error) {
-    return { error: "Update failed" };
+    return { success: true, message: "Request submitted for validation" };
+  } catch (error: any) {
+    console.error("Update request failed:", error);
+    return { error: "Update request failed: " + error.message };
   }
 }

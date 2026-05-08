@@ -18,6 +18,9 @@ export const DICTIONARY: Record<string, Record<Language, string>> = {
   "Model / Brand": { id: "Model / Merek", en: "Model / Brand", ja: "モデル / ブランド" },
   "Time": { id: "Waktu", en: "Time", ja: "時間" },
   "Department": { id: "Departemen", en: "Department", ja: "部署" },
+  "Category": { id: "Kategori", en: "Category", ja: "カテゴリー" },
+  "Floor": { id: "Lantai", en: "Floor", ja: "フロア" },
+  "Brand": { id: "Merek", en: "Brand", ja: "ブランド" },
   "Service Time": { id: "Waktu Pekerjaan", en: "Service Time", ja: "作業時間" },
 
   // Audit Labels
@@ -39,6 +42,16 @@ export const DICTIONARY: Record<string, Record<Language, string>> = {
   "Outdoor Air (OA)": { id: "Udara Luar (OA)", en: "Outdoor Air (OA)", ja: "外気 (OA)" },
   "Entering Chilled Water (CHWS)": { id: "Air Dingin Masuk (CHWS)", en: "Entering Chilled Water (CHWS)", ja: "入口冷水 (CHWS)" },
   "Leaving Chilled Water (CHWR)": { id: "Air Dingin Keluar (CHWR)", en: "Leaving Chilled Water (CHWR)", ja: "出口冷水 (CHWR)" },
+  "Calculated Performance": { id: "Performa Terkalkulasi", en: "Calculated Performance", ja: "計算されたパフォーマンス" },
+  "Face Velocity": { id: "Kecepatan Permukaan", en: "Face Velocity", ja: "正面風速" },
+  "Face Area": { id: "Area Permukaan", en: "Face Area", ja: "正面面積" },
+  "Enthalpy Diff": { id: "Selisih Entalpi (ΔH)", en: "Enthalpy Diff (ΔH)", ja: "エンタルピー差 (ΔH)" },
+  "Capacity Difference": { id: "Selisih Kapasitas", en: "Capacity Difference", ja: "容量差" },
+  "Efficiency": { id: "Efisiensi", en: "Efficiency", ja: "効率" },
+  "Leaving Air Enthalpy": { id: "Entalpi Udara Keluar", en: "Leaving Air Enthalpy", ja: "吹出空気エンタルピー" },
+  "Entering Air Enthalpy": { id: "Entalpi Udara Masuk", en: "Entering Air Enthalpy", ja: "吸込空気エンタルピー" },
+  "Actual Air Flow": { id: "Aliran Udara Aktual", en: "Actual Airflow", ja: "実測風量" },
+  "Design Air Flow": { id: "Aliran Udara Desain", en: "Design Airflow", ja: "設計風量" },
 
   "Room Temp": { id: "Suhu Ruangan", en: "Room Temp", ja: "室温" },
   "Current": { id: "Arus", en: "Current", ja: "電流" },
@@ -59,6 +72,10 @@ export const DICTIONARY: Record<string, Record<Language, string>> = {
   "RECOMMENDATION": { id: "REKOMENDASI", en: "RECOMMENDATION", ja: "提言 / 推奨事項" },
   "Maintenance Documentation Photos": { id: "Foto Dokumentasi Pemeliharaan", en: "Maintenance Documentation Photos", ja: "メンテナンス記録写真" },
   "Last PM Date": { id: "Tanggal PM Terakhir", en: "Last PM Date", ja: "最終PM日" },
+  "ELECTRICAL PERFORMANCE": { id: "PERFORMA ELEKTRIKAL", en: "ELECTRICAL PERFORMANCE", ja: "電気系統の性能" },
+  "AIR SIDE PERFORMANCE": { id: "PERFORMA SISI UDARA", en: "AIR SIDE PERFORMANCE", ja: "空気側の性能" },
+  "WATER SIDE PERFORMANCE": { id: "PERFORMA SISI AIR", en: "WATER SIDE PERFORMANCE", ja: "水側の性能" },
+  "MAINTENANCE CHECKLIST": { id: "DAFTAR PEMELIHARAAN", en: "MAINTENANCE CHECKLIST", ja: "メンテナンスチェックリスト" },
 
   // Components
   "Unit Fincoil": { id: "Fincoil Unit", en: "Cooling Coil", ja: "冷却コイル" },
@@ -75,7 +92,8 @@ export const DICTIONARY: Record<string, Record<Language, string>> = {
   // Footer
   "PREPARED BY": { id: "DISIAPKAN OLEH", en: "PREPARED BY", ja: "作成者" },
   "REVIEWED BY": { id: "DITINJAU OLEH", en: "REVIEWED BY", ja: "承認者" },
-  "WITNESSED BY": { id: "DISAKSIKAN OLEH", en: "WITNESSED BY", ja: "立会人" },
+  "WITNESSED BY": { id: "DISETUJUI OLEH", en: "APPROVED BY", ja: "立会人" },
+  "Synchronized by System": { id: "Synchronized by System", en: "Synchronized by System", ja: "システムによる同期" },
   "INTERNAL ENGINEER": { id: "ENGINEER INTERNAL", en: "INTERNAL ENGINEER", ja: "社内エンジニア" },
   "CUSTOMER PIC": { id: "PIC PELANGGAN", en: "CUSTOMER PIC", ja: "顧客担当者" },
   "Field Technician": { id: "Teknisi Lapangan", en: "Field Technician", ja: "フィールドエンジニア" },
@@ -97,7 +115,8 @@ export const DICTIONARY: Record<string, Record<Language, string>> = {
   "N/A": { id: "N/A", en: "N/A", ja: "N/A" },
 
   // Client Portal
-  "Overview": { id: "Ikhtisar", en: "Overview", ja: "概要" },
+  "Info": { id: "Info", en: "Info", ja: "情報" },
+  "Overview": { id: "Info", en: "Info", ja: "情報" },
   "My Assets": { id: "Aset Saya", en: "My Assets", ja: "保有資産" },
   "Work Plan": { id: "Rencana Kerja", en: "Work Plan", ja: "作業計画" },
   "Reports": { id: "Laporan", en: "Reports", ja: "報告書" },
@@ -117,6 +136,9 @@ export const DICTIONARY: Record<string, Record<Language, string>> = {
   "Semua": { id: "Semua", en: "All", ja: "すべて" },
   "Audit": { id: "Audit", en: "Audit", ja: "監査" },
   "Preventive": { id: "Preventive", en: "Preventive", ja: "予防" },
+  "Preventive AHU": { id: "Preventive AHU", en: "Preventive AHU", ja: "予防 (AHU)" },
+  "Preventive FCU": { id: "Preventive FCU", en: "Preventive FCU", ja: "予防 (FCU)" },
+  "Preventive Split Duct": { id: "Preventive Split Duct", en: "Preventive Split Duct", ja: "予防 (Split Duct)" },
   "Corrective": { id: "Corrective", en: "Corrective", ja: "是正" },
   "ID": { id: "ID", en: "ID", ja: "ID" },
   "Type": { id: "Tipe", en: "Type", ja: "タイプ" },
@@ -254,7 +276,22 @@ export const DICTIONARY: Record<string, Record<Language, string>> = {
   "Cleaning Drainage": { id: "Pembersihan Drainase", en: "Condensate Drain Cleaning", ja: "ドレン排水の清掃" },
   "Cleaning Body Unit": { id: "Pembersihan Body Unit", en: "Unit Cabinet Cleaning", ja: "ユニット本体の清掃" },
   "Check V-Belt and Adjust Belt Tension": { id: "Cek V-Belt & Adjust Tension", en: "V-Belt Inspection & Tension Adjustment", ja: "Vベルト点検と張力調整" },
-  "Check Bearing Motor and Blower": { id: "Cek Bearing Motor & Blower", en: "Check Bearing Motor and Blower", ja: "モーターとブロワーのベアリング点検" }
+  "Check Bearing Motor and Blower": { id: "Cek Bearing Motor & Blower", en: "Check Bearing Motor and Blower", ja: "モーターとブロワーのベアリング点検" },
+  
+  // New Specialized Preventive Labels
+  "Fan RPM": { id: "RPM Fan", en: "Fan RPM", ja: "ファン回転数" },
+  "Static Pressure (Pa)": { id: "Tekanan Statik (Pa)", en: "Static Pressure (Pa)", ja: "静圧 (Pa)" },
+  "Filter dP (Pa)": { id: "Filter dP (Pa)", en: "Filter dP (Pa)", ja: "フィルター差圧 (Pa)" },
+  "Enthalpy In (kJ/kg)": { id: "Entalpi Masuk (kJ/kg)", en: "Enthalpy In (kJ/kg)", ja: "入口エンタルピー (kJ/kg)" },
+  "Enthalpy Out (kJ/kg)": { id: "Entalpi Keluar (kJ/kg)", en: "Enthalpy Out (kJ/kg)", ja: "出口エンタルピー (kJ/kg)" },
+  "Ampere Nameplate": { id: "Ampere Nameplate", en: "Ampere Nameplate", ja: "定格電流" },
+  "Ampere Phase R": { id: "Ampere Phase R", en: "Ampere Phase R", ja: "R相電流" },
+  "Ampere Phase S": { id: "Ampere Phase S", en: "Ampere Phase S", ja: "S相電流" },
+  "Ampere Phase T": { id: "Ampere Phase T", en: "Ampere Phase T", ja: "T相電流" },
+  "Number of Diffusers": { id: "Jumlah Diffuser", en: "Number of Diffusers", ja: "吹出口数" },
+  "Air Volume (CFM)": { id: "Volume Udara (CFM)", en: "Air Volume (CFM)", ja: "風量 (CFM)" },
+  "AHU TECHNICAL PERFORMANCE": { id: "PERFORMA TEKNIS AHU", en: "AHU TECHNICAL PERFORMANCE", ja: "AHU技術性能" },
+  "ELECTRICAL PERFORMANCE": { id: "PERFORMA ELEKTRIKAL", en: "ELECTRICAL PERFORMANCE", ja: "電気性能" },
 };
 
 export function t(key: string, lang: Language): string {

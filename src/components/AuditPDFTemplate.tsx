@@ -247,10 +247,55 @@ export const getAuditSections = (data: any, unit: any, lang: Language = 'id') =>
           ))}
         </tbody>
       </table>
-      
-      <p style={{ fontSize: "6pt", color: "#64748b", fontStyle: "italic", marginTop: "2mm" }}>
-        * Unit Health Score refers to balanced scoring based on CIBSE Guide M & ASHRAE 1.1 Standard.
-      </p>
+    </div>,
+
+    // SECTION F: CALCULATED PERFORMANCE (Psychrometric & Flow)
+    <div key="performance_calc" style={{ marginBottom: "5mm" }}>
+       <div style={sectionHeader}>F. {t("Calculated Performance", lang)}</div>
+       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "7.5pt", fontWeight: "bold" }}>
+          <tbody style={{ backgroundColor: "#f8fafc" }}>
+             <tr>
+                <td style={cellLabelCompact}>{t("Entering Air Enthalpy", lang)}</td>
+                <td style={cellValCompact}>{data.entering_enthalpy || '0'} Btu/lb</td>
+                <td style={cellLabelCompact}>{t("Leaving Air Enthalpy", lang)}</td>
+                <td style={cellValCompact}>{data.leaving_enthalpy || '0'} Btu/lb</td>
+                <td style={cellLabelCompact}>{t("Enthalpy Diff", lang)}</td>
+                <td style={cellValCompact}>{data.enthalpy_diff || '0'} Btu/lb</td>
+             </tr>
+             <tr>
+                <td style={cellLabelCompact}>{t("Face Velocity", lang)}</td>
+                <td style={cellValCompact}>{data.face_velocity || '0'} m/s</td>
+                <td style={cellLabelCompact}>{t("Face Area", lang)}</td>
+                <td style={cellValCompact}>{data.face_area || '0'} m2</td>
+                <td style={cellLabelCompact}>-</td>
+                <td style={cellValCompact}>-</td>
+             </tr>
+             <tr>
+                <td style={cellLabelCompact}>{t("Design Air Flow", lang)}</td>
+                <td style={cellValCompact}>{data.design_airflow || '0'} CFM</td>
+                <td style={cellLabelCompact}>{t("Actual Airflow", lang)}</td>
+                <td style={cellValCompact}>{data.actual_airflow || '0'} CFM</td>
+                <td style={cellLabelCompact}>Efficiency (Flow)</td>
+                <td style={{ ...cellValCompact, color: (parseFloat(data.actual_airflow)/parseFloat(data.design_airflow) < 0.8) ? '#e11d48' : '#059669' }}>
+                   {data.design_airflow && data.actual_airflow ? ((parseFloat(data.actual_airflow)/parseFloat(data.design_airflow)) * 100).toFixed(0) + '%' : '-'}
+                </td>
+             </tr>
+             <tr>
+                <td style={cellLabelCompact}>{t("Design Cooling Cap.", lang)}</td>
+                <td style={cellValCompact}>{data.design_cooling_capacity || '0'} Btu/h</td>
+                <td style={cellLabelCompact}>{t("Actual Capacity", lang)}</td>
+                <td style={cellValCompact}>{data.actual_cooling_capacity || '0'} Btu/h</td>
+                <td style={cellLabelCompact}>{t("Efficiency", lang)} (Cap.)</td>
+                <td style={{ ...cellValCompact, color: (parseFloat(data.healthScore) < 80) ? '#e11d48' : '#059669', fontSize: '9pt' }}>
+                   {data.healthScore || '0'}%
+                </td>
+             </tr>
+          </tbody>
+       </table>
+       
+       <p style={{ fontSize: "6pt", color: "#64748b", fontStyle: "italic", marginTop: "2mm" }}>
+         * Unit Health Score refers to balanced scoring based on CIBSE Guide M & ASHRAE 1.1 Standard.
+       </p>
     </div>,
 
     // SIGNATURES
@@ -262,6 +307,7 @@ export const getAuditSections = (data: any, unit: any, lang: Language = 'id') =>
          reviewedDate={data.reviewedAt}
          witnessedDate={data.approvedAt}
          lang={lang}
+         isBulkSync={data.isBulkSync}
        />
     </div>,
 

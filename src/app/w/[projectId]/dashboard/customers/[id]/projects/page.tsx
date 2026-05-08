@@ -9,7 +9,7 @@ import {
   Building2, Search, ArrowLeft, Bookmark, 
   MapPin, Plus, Edit2, Activity, CheckCircle2, 
   Power, PowerOff, X, Save, BarChart3, FolderGit2, CalendarDays,
-  Target as TargetIcon, Calendar as CalendarIcon, TrendingUp
+  Target as TargetIcon, Calendar as CalendarIcon, TrendingUp, Wrench
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getProjectProgress } from "@/app/actions/project_targets";
@@ -297,11 +297,11 @@ export default function ProjectsPage() {
                                      />
                                    )}
 
-                                   {/* Corrective KPI - Monthly */}
+                                   {/* Complain/Problem KPI - Monthly */}
                                    {(project.enabled_forms?.includes("Corrective") || !project.enabled_forms) && (
                                      <div className="space-y-1">
                                        <div className="flex justify-between items-center px-1">
-                                         <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest">Corrective KPI</span>
+                                         <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest">Complain/Problem KPI</span>
                                          <span className="text-[10px] font-black text-slate-400">
                                            {projectProgress[project.id].corrective.completed}/{projectProgress[project.id].corrective.total}
                                          </span>
@@ -398,6 +398,14 @@ export default function ProjectsPage() {
                             ${isActive ? 'bg-white text-blue-700 hover:border-blue-300 cursor-pointer' : 'bg-slate-50 text-slate-400 cursor-not-allowed pointer-events-none'}`}>
                             <TrendingUp size={14} className={isActive ? "text-blue-400 mb-1" : "opacity-50"} />
                             <span className="text-[8px] font-black uppercase tracking-widest opacity-70 mt-1">Report</span>
+                          </Link>
+
+                          <Link 
+                            href={`/w/${projectId}/dashboard/corrective?projectId=${project.id}`}
+                            className={`inline-flex flex-col items-center justify-center p-3 w-16 rounded-xl border border-slate-200/60 shadow-sm transition-all hover:ring-2 hover:ring-orange-100
+                            ${isActive ? 'bg-white text-orange-700 hover:border-orange-300 cursor-pointer' : 'bg-slate-50 text-slate-400 cursor-not-allowed pointer-events-none'}`}>
+                            <Wrench size={14} className={isActive ? "text-orange-400 mb-1" : "opacity-50"} />
+                            <span className="text-[8px] font-black uppercase tracking-widest opacity-70 mt-1">Corrective</span>
                           </Link>
                         </div>
                       </td>

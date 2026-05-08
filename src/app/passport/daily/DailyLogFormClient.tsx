@@ -195,7 +195,6 @@ export default function DailyLogFormClient({
               <input 
                 type="text" required
                 value={formData.inspectorName} onChange={e => updateInspectorName(e.target.value)}
-                placeholder="Ex: John Doe"
                 className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-bold focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all outline-none"
               />
             </div>
@@ -212,22 +211,22 @@ export default function DailyLogFormClient({
                 <Toggle active={formData.fan_on} onClick={() => setFormData({...formData, fan_on: !formData.fan_on})} />
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <Input label={lang === 'ja' ? "ファン速度 (%)" : "Fan Speed (%)"} value={formData.fan_speed} onChange={v => setFormData({...formData, fan_speed: v})} />
+                <Input label={lang === 'ja' ? "ファン速度 (%)" : "Fan Speed (%)"} value={formData.fan_speed} onChange={(v: string) => setFormData({...formData, fan_speed: v})} />
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{lang === 'ja' ? '負荷電流 (R / S / T)' : 'Load Amperage (R / S / T)'}</label>
                 <div className="grid grid-cols-3 gap-2">
-                  <input type="number" step="0.1" placeholder="R" value={formData.fan_curr_r} onChange={e => setFormData({...formData, fan_curr_r: e.target.value})} className="input-field" />
-                  <input type="number" step="0.1" placeholder="S" value={formData.fan_curr_s} onChange={e => setFormData({...formData, fan_curr_s: e.target.value})} className="input-field" />
-                  <input type="number" step="0.1" placeholder="T" value={formData.fan_curr_t} onChange={e => setFormData({...formData, fan_curr_t: e.target.value})} className="input-field" />
+                  <input type="number" step="0.1" value={formData.fan_curr_r} onChange={e => setFormData({...formData, fan_curr_r: e.target.value})} className="input-field" />
+                  <input type="number" step="0.1" value={formData.fan_curr_s} onChange={e => setFormData({...formData, fan_curr_s: e.target.value})} className="input-field" />
+                  <input type="number" step="0.1" value={formData.fan_curr_t} onChange={e => setFormData({...formData, fan_curr_t: e.target.value})} className="input-field" />
                 </div>
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{lang === 'ja' ? '電圧 (RS / ST / RT)' : 'Voltage (RS / ST / RT)'}</label>
                 <div className="grid grid-cols-3 gap-2">
-                  <input type="number" placeholder="RS" value={formData.fan_volt_r} onChange={e => setFormData({...formData, fan_volt_r: e.target.value})} className="input-field" />
-                  <input type="number" placeholder="ST" value={formData.fan_volt_s} onChange={e => setFormData({...formData, fan_volt_s: e.target.value})} className="input-field" />
-                  <input type="number" placeholder="RT" value={formData.fan_volt_t} onChange={e => setFormData({...formData, fan_volt_t: e.target.value})} className="input-field" />
+                  <input type="number" value={formData.fan_volt_r} onChange={e => setFormData({...formData, fan_volt_r: e.target.value})} className="input-field" />
+                  <input type="number" value={formData.fan_volt_s} onChange={e => setFormData({...formData, fan_volt_s: e.target.value})} className="input-field" />
+                  <input type="number" value={formData.fan_volt_t} onChange={e => setFormData({...formData, fan_volt_t: e.target.value})} className="input-field" />
                 </div>
               </div>
             </div>
@@ -243,9 +242,9 @@ export default function DailyLogFormClient({
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-rose-400 uppercase tracking-widest">{lang === 'ja' ? '電流 (R / S / T)' : 'Amperage (R / S / T)'}</label>
                     <div className="grid grid-cols-3 gap-2">
-                      <input type="number" step="0.1" placeholder="R" value={formData.heater_curr_r} onChange={e => setFormData({...formData, heater_curr_r: e.target.value})} className="input-field-rose" />
-                      <input type="number" step="0.1" placeholder="S" value={formData.heater_curr_s} onChange={e => setFormData({...formData, heater_curr_s: e.target.value})} className="input-field-rose" />
-                      <input type="number" step="0.1" placeholder="T" value={formData.heater_curr_t} onChange={e => setFormData({...formData, heater_curr_t: e.target.value})} className="input-field-rose" />
+                      <input type="number" step="0.1" value={formData.heater_curr_r} onChange={e => setFormData({...formData, heater_curr_r: e.target.value})} className="input-field-rose" />
+                      <input type="number" step="0.1" value={formData.heater_curr_s} onChange={e => setFormData({...formData, heater_curr_s: e.target.value})} className="input-field-rose" />
+                      <input type="number" step="0.1" value={formData.heater_curr_t} onChange={e => setFormData({...formData, heater_curr_t: e.target.value})} className="input-field-rose" />
                     </div>
                   </div>
                 </motion.div>
@@ -291,18 +290,18 @@ export default function DailyLogFormClient({
         <Section title={lang === 'ja' ? "部屋とスポットの状態" : "Kondisi Ruangan & Spot"} icon={<LayoutList size={18}/>}>
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
-               <Input label={lang === 'ja' ? "室内温度 (°C)" : "Space Temperature (°C)"} value={formData.room_temp} onChange={v => setFormData({...formData, room_temp: v})} />
-               <Input label={lang === 'ja' ? "差圧 (Pa)" : "Diff. Pressure (Pa)"} value={formData.room_diff_press} onChange={v => setFormData({...formData, room_diff_press: v})} />
+               <Input label={lang === 'ja' ? "室内温度 (°C)" : "Space Temperature (°C)"} value={formData.room_temp} onChange={(v: string) => setFormData({...formData, room_temp: v})} />
+               <Input label={lang === 'ja' ? "差圧 (Pa)" : "Diff. Pressure (Pa)"} value={formData.room_diff_press} onChange={(v: string) => setFormData({...formData, room_diff_press: v})} />
             </div>
             
             <div className="space-y-3">
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{lang === 'ja' ? '温度マッピング (5箇所)' : 'Temperature Mapping (5 Spot)'}</label>
               <div className="grid grid-cols-5 gap-2">
-                <input type="number" step="0.1" placeholder="S1" value={formData.temp_s1} onChange={e => setFormData({...formData, temp_s1: e.target.value})} className="input-field text-center px-1" title="Spot 1" />
-                <input type="number" step="0.1" placeholder="S2" value={formData.temp_s2} onChange={e => setFormData({...formData, temp_s2: e.target.value})} className="input-field text-center px-1" title="Spot 2" />
-                <input type="number" step="0.1" placeholder="S3" value={formData.temp_s3} onChange={e => setFormData({...formData, temp_s3: e.target.value})} className="input-field text-center px-1" title="Spot 3" />
-                <input type="number" step="0.1" placeholder="S4" value={formData.temp_s4} onChange={e => setFormData({...formData, temp_s4: e.target.value})} className="input-field text-center px-1" title="Spot 4" />
-                <input type="number" step="0.1" placeholder="S5" value={formData.temp_s5} onChange={e => setFormData({...formData, temp_s5: e.target.value})} className="input-field text-center px-1" title="Spot 5" />
+                <input type="number" step="0.1" value={formData.temp_s1} onChange={e => setFormData({...formData, temp_s1: e.target.value})} className="input-field text-center px-1" title="Spot 1" />
+                <input type="number" step="0.1" value={formData.temp_s2} onChange={e => setFormData({...formData, temp_s2: e.target.value})} className="input-field text-center px-1" title="Spot 2" />
+                <input type="number" step="0.1" value={formData.temp_s3} onChange={e => setFormData({...formData, temp_s3: e.target.value})} className="input-field text-center px-1" title="Spot 3" />
+                <input type="number" step="0.1" value={formData.temp_s4} onChange={e => setFormData({...formData, temp_s4: e.target.value})} className="input-field text-center px-1" title="Spot 4" />
+                <input type="number" step="0.1" value={formData.temp_s5} onChange={e => setFormData({...formData, temp_s5: e.target.value})} className="input-field text-center px-1" title="Spot 5" />
               </div>
             </div>
 
@@ -318,7 +317,6 @@ export default function DailyLogFormClient({
           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{lang === 'ja' ? '追加メモ' : 'Catatan Tambahan'}</label>
           <textarea 
             value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})}
-            placeholder={lang === 'ja' ? "特記事項があれば入力してください..." : "Mohon isi jika ada temuan khusus..."}
             className="w-full p-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all outline-none min-h-[100px]"
           />
         </div>
@@ -395,11 +393,11 @@ function DoubleInput({ label, valT, valR, setT, setR }: any) {
       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</label>
       <div className="grid grid-cols-2 gap-2">
         <div className="relative">
-          <input type="number" step="0.1" placeholder="Temp" value={valT} onChange={e => setT(e.target.value)} className="input-field pr-6" />
+          <input type="number" step="0.1" value={valT} onChange={e => setT(e.target.value)} className="input-field pr-6" />
           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-slate-300 font-bold">°C</span>
         </div>
         <div className="relative">
-          <input type="number" step="0.1" placeholder="RH" value={valR} onChange={e => setR(e.target.value)} className="input-field pr-6" />
+          <input type="number" step="0.1" value={valR} onChange={e => setR(e.target.value)} className="input-field pr-6" />
           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-slate-300 font-bold">%</span>
         </div>
       </div>

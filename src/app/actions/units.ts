@@ -5,6 +5,8 @@ import { getSession } from "./auth";
 import { serializePrisma } from "@/lib/serialize";
 import * as xlsx from "xlsx";
 import { unstable_noStore as noStore, revalidatePath } from "next/cache";
+import { recordAuditLog } from "@/lib/security";
+import { notifyInternalStaff } from "./notifications";
 
 /**
  * 0. HELPER: Generate Tag Number (DKN[CCC][UUU])
@@ -42,8 +44,27 @@ export async function getUnitsByProject(projectId: string) {
   }
 
   try {
+    // Fetch project config for filtering
+    let enabledTypes: string[] = [];
+    try {
+        const project = await (prisma as any).projects.findUnique({
+            where: { id: BigInt(projectId) },
+            select: { enabled_unit_types: true }
+        });
+        if (project?.enabled_unit_types) {
+            enabledTypes = project.enabled_unit_types.split(",").map((s: string) => s.trim());
+        }
+    } catch (configError) {
+        console.warn("Failed to fetch project config, showing all types as fallback:", configError);
+        // Fallback to most common types if config fetch fails
+        enabledTypes = ["Chiller", "FCU", "AHU", "Split", "AC SPLIT", "SPLIT DUCT", "VRV", "AC STANDING"];
+    }
+
     const units = await (prisma.units as any).findMany({
-      where: { project_ref_id: BigInt(projectId) },
+      where: { 
+        project_ref_id: BigInt(projectId),
+        ...(enabledTypes.length > 0 ? { unit_type: { in: enabledTypes } } : {})
+      },
       orderBy: [
         { status: 'asc' }, // Trick: Critical, On_Progress, Problem start with C, O, P. Actually better use manual CASE in Raw Query if needed, but let's try frontend sort or a smarter approach.
         { id: 'desc' }
@@ -93,6 +114,68 @@ export async function getUnitsByProject(projectId: string) {
   }
 }
 
+// 1.5 GET SINGLE UNIT DETAIL
+export async function getUnitDetail(unitId: string | number) {
+  noStore();
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized access" };
+
+  try {
+    const id = typeof unitId === 'string' ? parseInt(unitId) : Number(unitId);
+    const unit = await (prisma.units as any).findUnique({
+      where: { id },
+      include: {
+        projects: {
+          include: { customers: true }
+        }
+      }
+    });
+
+    if (!unit) return { error: "Unit not found" };
+
+    // Check access
+    if (!session.isInternal) {
+      const hasAccess = await prisma.user_project_access.findFirst({
+        where: {
+          user_id: parseInt(session.userId),
+          project_id: unit.project_ref_id
+        }
+      });
+      if (!hasAccess) return { error: "Unauthorized access" };
+    }
+
+    // Fetch latest audit for health calculation
+    const lastAudit = await (prisma.service_activities as any).findFirst({
+      where: { 
+        unit_id: Number(id),
+        type: { in: ['Audit', 'Preventive'] },
+        deleted_at: null
+      },
+      orderBy: { service_date: 'desc' }
+    });
+
+    const healthData = internalCalculateHealth(unit, lastAudit);
+
+    return serializePrisma({
+      success: true,
+      data: {
+        ...unit,
+        customer_name: unit.projects?.customers?.name,
+        customer_group: unit.projects?.customers?.group_name,
+        project_name: unit.projects?.name,
+        health_score: healthData.score,
+        health_label: healthData.label,
+        health_color: healthData.color,
+        ahi: healthData.ahi,
+        metrics: healthData.metrics
+      }
+    });
+  } catch (error) {
+    console.error("Fetch unit detail error:", error);
+    return { error: "Failed to fetch unit details." };
+  }
+}
+
 // 2. CREATE UNIT (Auto Generate Tag Number)
 export async function createUnit(projectId: string, data: any) {
   const session = await getSession();
@@ -138,6 +221,13 @@ export async function createUnit(projectId: string, data: any) {
       }
     });
 
+    await notifyInternalStaff(
+      "New Unit Registered",
+      `${session.name} added a new unit ${finalTagNumber} to ${project.name}`,
+      "success",
+      `/w/${projectId}/dashboard/units`
+    );
+
     return { success: true };
   } catch (error: any) {
     console.error("Create unit error:", error);
@@ -181,10 +271,22 @@ export async function updateUnit(unitId: number, data: any) {
         serial_number: serial,
         status: data.status,
         unit_type: data.unit_type
-      }
+      },
+      include: { projects: true }
     });
+
+    const unit = await (prisma.units as any).findUnique({ where: { id: unitId }, include: { projects: true } });
+    if (unit) {
+      await notifyInternalStaff(
+        "Unit Updated",
+        `${session.name} modified unit ${unit.tag_number} at ${unit.projects?.name}`,
+        "info",
+        `/w/${unit.projects.id}/dashboard/units`
+      );
+    }
     
     revalidatePath("/dashboard");
+    revalidatePath("/admin/settings");
     return { success: true };
   } catch (error: any) {
     console.error("Update unit error:", error);
@@ -201,6 +303,80 @@ export async function updateUnit(unitId: number, data: any) {
     }
     
     return { error: "Failed to update unit. Please check your data and try again." };
+  }
+}
+
+/**
+ * 3.1 CREATE UNIT EDIT REQUEST (For Vendors/External)
+ */
+export async function createUnitEditRequest(unitId: number, data: any) {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
+  try {
+    const unit = await (prisma.units as any).findUnique({
+      where: { id: unitId },
+      include: { projects: true }
+    });
+    if (!unit) return { error: "Unit not found" };
+
+    const projId = unit.projects?.id?.toString() || "empty";
+
+    await (prisma as any).unit_edit_requests.create({
+      data: {
+        unit_id: unitId,
+        requested_by: parseInt(session.userId),
+        reporter_name: session.name,
+        details_json: JSON.stringify(data),
+        status: "Pending"
+      }
+    });
+
+    console.log(`[EDIT_REQUEST] Success for Unit ${unit.tag_number}`);
+
+    await notifyInternalStaff(
+      "Update Request Submitted",
+      `${session.name} proposed changes for unit ${unit.tag_number} at ${unit.projects?.name || 'Unknown Project'}`,
+      "warning",
+      `/w/${projId}/dashboard/unit-requests`
+    );
+
+    revalidatePath(`/w/${projId}/dashboard/unit-requests`);
+
+    return { success: true, message: "Request submitted for admin validation." };
+  } catch (error: any) {
+    console.error("[CRITICAL] createUnitEditRequest failure:", error);
+    return { error: `Submission failed: ${error?.message || "Internal Server Error"}` };
+  }
+}
+
+// 3.5. DELETE UNIT
+export async function deleteUnit(unitId: number) {
+  const session = await getSession();
+  const isAdmin = session?.roles?.some(r => /admin|super/i.test(r)) || session?.isInternal;
+  
+  if (!session || !isAdmin) return { error: "Unauthorized access: Only admins can delete units." };
+
+  try {
+    const unit = await (prisma.units as any).findUnique({ where: { id: unitId } });
+    if (!unit) return { error: "Unit not found" };
+
+    // Permanent Delete (or you could implement soft delete if preferred)
+    await (prisma.units as any).delete({ where: { id: unitId } });
+
+    await recordAuditLog({
+      userId: parseInt(session.userId),
+      action: "DELETE_UNIT",
+      targetType: "Unit",
+      targetId: unitId.toString(),
+      details: `Deleted unit ${unit.tag_number}`
+    });
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Delete unit error:", error);
+    return { error: "Failed to delete unit. It might have linked activities." };
   }
 }
 
@@ -231,7 +407,9 @@ export async function getProjectData(projectId: string) {
       data: { 
         name: project.name, 
         customer_name: project.customers.name, 
-        customer_id: project.customers.id 
+        customer_id: project.customers.id,
+        monitoring_focus: project.monitoring_focus,
+        enabled_unit_types: project.enabled_unit_types
       } 
     });
   } catch (error) {
@@ -417,6 +595,142 @@ export async function importUnitsExcel(projectId: string, base64Data: string) {
   }
 }
 
+// 6.5. SYNC MAINTENANCE HISTORY FROM EXCEL
+export async function importMaintenanceHistoryExcel(formData: FormData) {
+  const session = await getSession();
+  if (!session || !session.isInternal) return { error: "Unauthorized access" };
+
+  try {
+    const projectId = formData.get("projectId") as string;
+    const file = formData.get("file") as File;
+    
+    if (!file || !projectId) return { error: "Missing file or project ID" };
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const workbook = xlsx.read(buffer, { type: 'buffer' });
+    
+    let totalImported = 0;
+    let totalSkipped = 0;
+    const errors: string[] = [];
+
+    // Helper: Normalize strings for matching
+    const norm = (s: string) => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    // Helper: robust mapping
+    const getVal = (row: any, ...keys: string[]): string => {
+      const normalizedKeys = keys.map(norm);
+      const rowKeys = Object.keys(row);
+      for (const k of rowKeys) {
+        if (normalizedKeys.includes(norm(k))) return String(row[k] || "").trim();
+      }
+      return "";
+    };
+
+    const projectBigInt = BigInt(projectId);
+
+    // Process all sheets that look like FCU or AHU
+    for (const sheetName of workbook.SheetNames) {
+      const isFCU = sheetName.toUpperCase().includes('FCU');
+      const isAHU = sheetName.toUpperCase().includes('AHU') || sheetName.toUpperCase().includes('DUCT');
+      
+      if (!isFCU && !isAHU) continue;
+
+      const sheet = workbook.Sheets[sheetName];
+      const rawData = xlsx.utils.sheet_to_json(sheet, { defval: "" });
+
+      for (let i = 0; i < rawData.length; i++) {
+        const row = rawData[i] as any;
+        
+        try {
+          // Identify Unit
+          const tag = getVal(row, "Tag Number", "Unit Tag", "Asset Identity", "No."); // "No." is sometimes used as serial or index in their sheet
+          const tenant = getVal(row, "Tenant / Area", "Tenant", "Area", "Room");
+          const model = getVal(row, "Model", "Type");
+          const brand = getVal(row, "Brand", "Merk");
+          const dateStr = getVal(row, "Tanggal", "Date", "Service Date");
+          const finding = getVal(row, "Finding", "Catatan", "Masalah", "Category Finding");
+          const recommendation = getVal(row, "Rekomendasi", "Recommendation", "Advice");
+
+          if (!finding && !recommendation) continue; // Skip truly empty rows
+
+          // Try to find the unit in our database
+          let unit = await (prisma.units as any).findFirst({
+            where: {
+              project_ref_id: projectBigInt,
+              OR: [
+                { tag_number: tag },
+                { room_tenant: tenant, model: model },
+                { room_tenant: tenant, brand: brand }
+              ]
+            }
+          });
+
+          if (!unit) {
+            // Fallback: search by tenant only if unique enough
+            const unitsByTenant = await (prisma.units as any).findMany({
+               where: { project_ref_id: projectBigInt, room_tenant: tenant }
+            });
+            if (unitsByTenant.length === 1) unit = unitsByTenant[0];
+          }
+
+          if (!unit) {
+            totalSkipped++;
+            errors.push(`${sheetName} Row ${i+2}: Unit "${tenant} ${model}" not found.`);
+            continue;
+          }
+
+          // Parse Date
+          let serviceDate = new Date();
+          if (dateStr) {
+            // Excel dates can be numbers or strings
+            if (!isNaN(Number(dateStr))) {
+               serviceDate = xlsx.utils.format_cell({ v: dateStr, t: 'd' }) as unknown as Date;
+            } else {
+               const parsed = new Date(dateStr);
+               if (!isNaN(parsed.getTime())) serviceDate = parsed;
+            }
+          }
+
+          // Create Service Activity (Report)
+          await (prisma.service_activities as any).create({
+            data: {
+              unit_id: unit.id,
+              type: "Preventive", // Default to Preventive for historical logs
+              service_date: serviceDate,
+              status: "Final_Approved",
+              inspector_name: "Imported from Spreadsheet",
+              engineer_note: finding || "Routine maintenance.",
+              technical_advice: recommendation || "-",
+              unit_tag: unit.tag_number,
+              location: unit.location || tenant,
+              technical_json: JSON.stringify({
+                 import_source: "Excel Sync",
+                 original_row: i + 2,
+                 sheet: sheetName
+              })
+            }
+          });
+
+          totalImported++;
+        } catch (err: any) {
+          totalSkipped++;
+          errors.push(`${sheetName} Row ${i+2}: ${err.message}`);
+        }
+      }
+    }
+
+    return { 
+      success: true, 
+      imported: totalImported, 
+      skipped: totalSkipped, 
+      errors: errors.slice(0, 5) 
+    };
+  } catch (error: any) {
+    console.error("HISTORY SYNC ERROR:", error);
+    return { error: `Sync failed: ${error.message}` };
+  }
+}
+
 // 7. GET UNIT HISTORY (Unified)
 export async function getUnitHistory(unitId: number | string) {
   noStore();
@@ -435,6 +749,11 @@ export async function getUnitHistory(unitId: number | string) {
     const quickActs = await (prisma.activities as any).findMany({
       where: { unit_id: id, deleted_at: null },
       orderBy: { service_date: 'desc' }
+    });
+
+    const cmActs = await (prisma.corrective_maintenances as any).findMany({
+      where: { unit_id: id },
+      orderBy: { created_at: 'desc' }
     });
 
     // Merge and sort
@@ -464,6 +783,18 @@ export async function getUnitHistory(unitId: number | string) {
         note: a.engineer_note,
         pdf: null,
         isFormal: false
+      })),
+      ...cmActs.map((a: any) => ({
+        ...a,
+        id: `cm-${a.id}`,
+        type: "Corrective_Maintenance",
+        date: a.created_at,
+        engineer: a.tech_name,
+        note: a.issue_description,
+        pdf: a.report_pdf,
+        isFormal: true,
+        finding: a.finding,
+        technical_json: a.finding // Maps to existing UI expectations
       }))
     ].sort((a, b) => {
       const timeA = a.date ? new Date(a.date).getTime() : 0;
@@ -485,13 +816,21 @@ import { sendPushNotification } from "@/lib/push";
  */
 export async function updateUnitStatus(unitId: string | number, status: string) {
   try {
-    const id = typeof unitId === 'string' ? BigInt(unitId) : BigInt(unitId);
+    const id = typeof unitId === 'string' ? parseInt(unitId) : Number(unitId);
     
     const unit = await (prisma.units as any).update({
       where: { id },
       data: { status },
       include: { projects: true }
     });
+
+    // TRIGGER REAL-TIME NOTIFICATION
+    await notifyInternalStaff(
+      `Unit ${status} Alert`,
+      `Unit ${unit.tag_number} status changed to ${status.toUpperCase()} at ${unit.projects?.name}`,
+      ['Problem', 'Critical'].includes(status) ? "error" : "warning",
+      `/w/${unit.projects.id}/dashboard/units`
+    );
 
     // TRIGGER PUSH NOTIFICATION (Real-time Phase 2)
     if (['Problem', 'Critical', 'Warning'].includes(status)) {
@@ -521,6 +860,7 @@ export async function updateUnitStatus(unitId: string | number, status: string) 
     }
 
     revalidatePath("/dashboard");
+    revalidatePath("/admin/settings");
     return serializePrisma({ success: true, data: unit });
   } catch (error) {
     console.error("Update status error:", error);
@@ -739,6 +1079,17 @@ export async function approveServiceActivity(activityId: number, approverName: s
       where: { id: activityId },
       data: data
     });
+    
+    const session = await getSession();
+    if (session?.userId) {
+      await recordAuditLog({
+        userId: parseInt(session.userId),
+        action: tier === 'engineer' ? "DIGITAL_SIGN_ENGINEER" : "DIGITAL_SIGN_CUSTOMER",
+        targetType: "ServiceActivity",
+        targetId: activityId.toString(),
+        details: `Digital Signature by ${approverName} (${tier})`
+      });
+    }
 
     revalidatePath("/dashboard");
     revalidatePath("/passport");
@@ -791,14 +1142,44 @@ export async function updateActivityReportUrls(activityId: number, reportUrl: st
 }
 
 /**
+ * 16.5 REQUEST DELETION (For External Users)
+ */
+export async function requestDeletion(targetId: string | number, type: string, reason: string = "") {
+  const session = await getSession();
+  if (!session) return { error: "Not authenticated" };
+
+  try {
+    // 1. Record Audit Log
+    await recordAuditLog({
+      userId: parseInt(session.userId),
+      action: "DELETION_REQUESTED",
+      targetType: type,
+      targetId: targetId.toString(),
+      details: `User requested deletion of ${type} (ID: ${targetId}). Reason: ${reason}`
+    });
+
+    // 2. Notify Internal Staff
+    await notifyInternalStaff(
+      "Deletion Requested",
+      `${session.name} meminta penghapusan ${type} (ID: ${targetId}).`,
+      "warning",
+      "/admin/audit-logs" // Or a specific review page if we build one
+    );
+
+    return { success: true };
+  } catch (error) {
+    console.error("Deletion request error:", error);
+    return { error: "Failed to submit deletion request" };
+  }
+}
+
+/**
  * 16. SOFT DELETE ACTIVITY (7-Day Retention)
  */
 export async function softDeleteActivity(id: number | string, type: 'formal' | 'quick') {
   const session = await getSession();
-  const isAdmin = session?.roles?.some(r => /admin|super/i.test(r)) || false;
-  
-  if (!session || !isAdmin) {
-     return { error: "Unauthorized: Admin privileges required." };
+  if (!session || !session.isInternal) {
+     return { error: "Unauthorized: Deletion requires internal staff privileges." };
   }
 
   try {
@@ -814,6 +1195,13 @@ export async function softDeleteActivity(id: number | string, type: 'formal' | '
       where: { id: numericId },
       data: { deleted_at: new Date() }
     });
+
+    await notifyInternalStaff(
+      "Report Removed",
+      `${session.name} deleted a ${type} report (ID: ${numericId}) from the system.`,
+      "warning",
+      "/dashboard/reports"
+    );
 
     revalidatePath("/dashboard");
     revalidatePath("/passport");
@@ -933,8 +1321,8 @@ export async function getActivityDetailForReport(id: string | number, isFormal: 
         data: {
           activity,
           unit: activity.units,
-          project: activity.units.projects,
-          customer: activity.units.projects.customers,
+          project: activity.units?.projects,
+          customer: activity.units?.projects?.customers,
           photos: activity.activity_photos || [],
           velocityPoints: activity.audit_velocity_points || []
         }
@@ -970,5 +1358,97 @@ export async function getActivityDetailForReport(id: string | number, isFormal: 
   } catch (error) {
     console.error("Fetch report detail error:", error);
     return { error: "Failed to fetch report data" };
+  }
+}
+
+/**
+ * Fetch Deep Data for Room Modal
+ * Includes: Supplying Units, Latest Logsheet Room Conditions
+ */
+export async function getRoomDeepData(roomId: number, projectId: string) {
+  try {
+    const roomUnit = await (prisma.units as any).findUnique({
+      where: { id: roomId }
+    });
+
+    if (!roomUnit) return { success: false, error: "Room not found" };
+
+    // 1. Find supplying units (units where room_tenant matches room's ID or Tag)
+    // We use the room's tag_number or name as the link
+    const roomIdentifier = roomUnit.room_tenant || roomUnit.tag_number;
+    
+    let supplyingUnits = [];
+    if (roomIdentifier) {
+      const unitsRaw = await (prisma.units as any).findMany({
+        where: {
+          project_ref_id: BigInt(projectId),
+          room_tenant: roomIdentifier,
+          id: { not: roomId } // Don't include the room record itself
+        },
+        include: {
+          service_activities: {
+            where: { type: 'Audit', deleted_at: null },
+            orderBy: { service_date: 'desc' },
+            take: 1
+          }
+        }
+      });
+      
+      supplyingUnits = unitsRaw.map((u: any) => {
+        const latestAudit = u.service_activities?.[0];
+        const health = internalCalculateHealth(u, latestAudit);
+        return {
+          id: u.id,
+          tag_number: u.tag_number,
+          unit_type: u.unit_type,
+          status: u.status,
+          health_score: health.score,
+          health_color: health.color,
+          capacity: u.capacity
+        };
+      });
+    }
+
+    // 2. Find latest logsheet entry for this room
+    // Search for templates in this project that mention this room
+    const template = await (prisma.logsheet_templates as any).findFirst({
+      where: {
+        project_id: BigInt(projectId),
+        OR: [
+          { room_name: roomUnit.room_tenant },
+          { name: { contains: roomUnit.room_tenant } }
+        ]
+      }
+    });
+
+    let conditions = { temp: null, humidity: null, pressure: null, updatedAt: null };
+    if (template) {
+      const latestEntry = await (prisma.logsheet_entries as any).findFirst({
+        where: { template_id: template.id },
+        orderBy: { log_date: 'desc' }
+      });
+
+      if (latestEntry && latestEntry.values_json) {
+        const values = JSON.parse(latestEntry.values_json);
+        // Mapping based on user's CRAC format
+        conditions.temp = values["Return Air Temp"] || values["Actual Temp"] || values["Temp"];
+        conditions.humidity = values["Return Air RH"] || values["Actual RH"] || values["RH"];
+        conditions.pressure = values["Differential Pressure"] || values["Static Pressure"] || values["DP"];
+        conditions.updatedAt = latestEntry.log_date;
+      }
+    }
+
+    return serializePrisma({
+      success: true,
+      data: {
+        room: roomUnit,
+        supplyingUnits,
+        conditions
+      }
+    });
+
+  } catch (error) {
+    console.error("Fetch room deep data error:", error);
+    return { success: false, error: "Failed to fetch room data" };
   }
 }

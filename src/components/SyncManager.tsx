@@ -118,7 +118,8 @@ export function SyncManager() {
         } else {
           const detail = res?.error || "Unknown server error (Check payload limit)";
           console.error(`Failed to sync ${item.type}:`, detail);
-          // Set error state so user can see something went wrong
+          // Show alert for critical failures so user knows why data isn't moving
+          alert(`Gagal Sinkronisasi ${item.type}: ${detail}`);
           setSyncStatus("error");
         }
       } catch (err: any) {

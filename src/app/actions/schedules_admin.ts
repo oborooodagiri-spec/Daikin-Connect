@@ -68,6 +68,7 @@ export async function updateAttendance(scheduleId: string, participants: any[]) 
     }
 
     revalidatePath(`/dashboard/schedules`);
+    revalidatePath(`/admin/attendance`);
     return { success: true };
   } catch (error) {
     console.error("Update attendance error:", error);
@@ -93,6 +94,7 @@ export async function updateMoM(scheduleId: string, content: string) {
 
     // Revalidate the dashboard and schedules path
     revalidatePath(`/dashboard`);
+    revalidatePath(`/dashboard/schedules`);
     return { success: true };
   } catch (error) {
     console.error("Update MoM error:", error);

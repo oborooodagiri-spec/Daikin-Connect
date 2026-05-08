@@ -5,6 +5,8 @@ import { serializePrisma } from "@/lib/serialize";
 import { Decimal } from "@prisma/client/runtime/library";
 import { ensureScheduleForActivity } from "./schedules";
 import { notifyProjectStakeholders } from "@/lib/push";
+import { getSession } from "./auth";
+import { recordAuditLog } from "@/lib/security";
 
 export async function createAuditActivity(data: any) {
   try {
@@ -132,6 +134,17 @@ export async function createAuditActivity(data: any) {
       `/dashboard/units/${unit_id}`
     );
 
+    const session = await getSession();
+    if (session?.userId) {
+      await recordAuditLog({
+        userId: parseInt(session.userId),
+        action: "REPORT_SUBMIT",
+        targetType: "Audit",
+        targetId: newActivity.id.toString(),
+        details: `Submitted Audit for ${unit_tag}`
+      });
+    }
+
     return serializePrisma({ success: true, id: newActivity.id });
   } catch (error: any) {
     console.error("Audit DB Save Error:", error);
@@ -234,6 +247,17 @@ export async function updateAuditActivity(id: number | string, data: any) {
           photo_url: p.photo_url,
           description: p.description || "Audit Documentation"
         }))
+      });
+    }
+
+    const session = await getSession();
+    if (session?.userId) {
+      await recordAuditLog({
+        userId: parseInt(session.userId),
+        action: "REPORT_UPDATE",
+        targetType: "Audit",
+        targetId: auditId.toString(),
+        details: `Updated Audit for ${unit_tag}`
       });
     }
 

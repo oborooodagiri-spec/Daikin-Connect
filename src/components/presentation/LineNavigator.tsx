@@ -2,6 +2,7 @@
 
 import React, { useMemo } from "react";
 import { motion } from "framer-motion";
+import { EplLogo } from "./EplLogo";
 
 interface LineNavigatorProps {
   isMoving: boolean;

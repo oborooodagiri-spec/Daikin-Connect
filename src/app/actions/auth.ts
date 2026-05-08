@@ -28,6 +28,34 @@ const transportConfig = {
 
 const transporter = nodemailer.createTransport(transportConfig);
 
+async function verifyTurnstile(token: string) {
+  const secretKey = process.env.TURNSTILE_SECRET_KEY;
+  
+  // Auto-pass in development if using testing secret or if we want to facilitate local testing
+  if (process.env.NODE_ENV === 'development') {
+    console.log("Development mode: skipping or using testing Turnstile verification");
+    return true;
+  }
+
+  if (!secretKey) {
+    console.warn("TURNSTILE_SECRET_KEY not set, skipping verification");
+    return true;
+  }
+
+  try {
+    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ secret: secretKey, response: token }),
+    });
+    const outcome = await res.json();
+    return outcome.success;
+  } catch (err) {
+    console.error("Turnstile verification error:", err);
+    return false;
+  }
+}
+
 export async function register(formData: FormData) {
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
@@ -76,8 +104,17 @@ export async function login(formData: FormData) {
   const is2fVerification = formData.get("is2fVerification") === "true";
   const trustDevice = formData.get("trustDevice") === "true";
 
+  const cfToken = formData.get("cf-turnstile-response") as string;
+
   if (!email || (!password && !otpCode)) {
     return { error: "Required fields missing" };
+  }
+
+  // Verify Turnstile on initial login (not needed for 2FA step which already has session)
+  if (!is2fVerification && !otpCode) {
+    if (!cfToken) return { error: "Security check required" };
+    const isHuman = await verifyTurnstile(cfToken);
+    if (!isHuman) return { error: "Security check failed. Please refresh." };
   }
 
   // 1. Check Rate Limit / Lockout
@@ -218,8 +255,8 @@ export async function login(formData: FormData) {
     console.error("Redirect check error:", e);
   }
 
-  // All users now go through the /dashboard dispatcher which handles workspace routing
-  redirect("/dashboard");
+  // All users now go through the /home Personal Hub
+  redirect("/home");
 }
 
 // Security: Trusted Device Logic (30 days)
@@ -258,6 +295,10 @@ export async function isTrustedDevice(email: string) {
 }
 
 export async function logout() {
+  const session = await getSession();
+  if (session?.userId) {
+    await recordAuditLog({ userId: parseInt(session.userId), action: "LOGOUT_WEB" });
+  }
   const cookieStore = await cookies();
   cookieStore.delete("session");
   redirect("/");

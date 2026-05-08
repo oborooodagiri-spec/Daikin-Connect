@@ -5,6 +5,7 @@ import { ClipboardCheck, Wrench, AlertTriangle, Clock, MapPin } from "lucide-rea
 
 interface Activity {
   id: string;
+  unit_id: string;
   type: string;
   engineer: string;
   unit_tag: string;
@@ -17,6 +18,8 @@ const TYPE_STYLES: Record<string, { icon: any; color: string; bg: string }> = {
   Audit: { icon: ClipboardCheck, color: "text-emerald-600", bg: "bg-emerald-50" },
   Preventive: { icon: Wrench, color: "text-indigo-600", bg: "bg-indigo-50" },
   Corrective: { icon: AlertTriangle, color: "text-rose-600", bg: "bg-rose-50" },
+  Corrective_Maintenance: { icon: Wrench, color: "text-orange-600", bg: "bg-orange-50" },
+  Complaint: { icon: AlertTriangle, color: "text-amber-600", bg: "bg-amber-50" },
 };
 
 export default function ActivityFeed({ 
@@ -24,7 +27,7 @@ export default function ActivityFeed({
   onItemClick 
 }: { 
   activities: Activity[];
-  onItemClick?: (unitTag: string) => void;
+  onItemClick?: (e: React.MouseEvent, unitId: string) => void;
 }) {
   if (!activities || activities.length === 0) {
     return (
@@ -44,7 +47,7 @@ export default function ActivityFeed({
         return (
           <div 
             key={act.id} 
-            onClick={() => onItemClick?.(act.unit_tag)}
+            onClick={(e) => { e.preventDefault(); onItemClick?.(e, act.unit_id); }}
             className="flex gap-4 group cursor-pointer hover:bg-slate-50 p-2 rounded-2xl transition-all"
           >
             <div className={`w-12 h-12 rounded-2xl shrink-0 flex items-center justify-center ${style.bg} border border-slate-100`}>
@@ -53,9 +56,9 @@ export default function ActivityFeed({
             <div className="flex-1 min-w-0">
               <div className="flex justify-between items-start mb-0.5">
                 <p className="text-[11px] font-black text-slate-800 tracking-tight leading-none">
-                  {act.engineer} <span className="text-slate-400 font-bold uppercase text-[9px]">Submitted a {act.type} Report</span>
+                  {act.engineer} <span className="text-slate-400 font-bold uppercase text-[9px]">Submitted a {act.type || 'Service'} Report</span>
                 </p>
-                <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter whitespace-nowrap">
+                <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter whitespace-nowrap ml-4">
                   {new Date(act.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
                 </span>
               </div>

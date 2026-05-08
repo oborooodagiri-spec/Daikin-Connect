@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { getCalendarSchedules } from "@/app/actions/schedules";
+import { getCalendarSchedules, getIndonesianHolidays } from "@/app/actions/schedules";
 import { 
   Calendar as CalendarIcon, 
   ChevronLeft, 
@@ -40,6 +40,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import ScheduleInputForm from "./ScheduleInputForm";
 import QuickInputModal from "./QuickInputModal";
 
+// Helper to handle both Date objects and ISO strings
+const safeParseDate = (date: any) => {
+  if (!date) return new Date();
+  if (date instanceof Date) return date;
+  if (typeof date === 'string') return parseISO(date);
+  return new Date(date);
+};
+
 export default function ScheduleCalendarWidget({ projectId, isInternal = true }: { projectId?: string; isInternal?: boolean }) {
   const router = useRouter();
   const params = useParams();
@@ -51,6 +59,7 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
   const [isInputModalOpen, setIsInputModalOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [passedUnit, setPassedUnit] = useState<any | null>(null);
+  const [holidays, setHolidays] = useState<any[]>([]);
 
   const fetchSchedules = async () => {
     setLoading(true);
@@ -70,7 +79,15 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
 
   useEffect(() => {
     fetchSchedules();
+    fetchHolidays();
   }, [currentMonth, projectId]);
+
+  const fetchHolidays = async () => {
+    const res = await getIndonesianHolidays(currentMonth.getFullYear());
+    if (res.success) {
+      setHolidays(res.data);
+    }
+  };
 
   const days = useMemo(() => {
     const start = startOfWeek(startOfMonth(currentMonth));
@@ -82,12 +99,21 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
     const map: Record<string, any[]> = {};
     schedules.forEach(s => {
       if (!s.start_at) return;
-      const dateKey = format(parseISO(s.start_at), "yyyy-MM-dd");
+      const dateKey = format(safeParseDate(s.start_at), "yyyy-MM-dd");
       if (!map[dateKey]) map[dateKey] = [];
       map[dateKey].push(s);
     });
     return map;
   }, [schedules]);
+
+  const holidaysByDay = useMemo(() => {
+    const map: Record<string, any> = {};
+    holidays.forEach(h => {
+      const dateKey = format(safeParseDate(h.tanggal), "yyyy-MM-dd");
+      map[dateKey] = h.keterangan;
+    });
+    return map;
+  }, [holidays]);
 
   const selectedDaySchedules = useMemo(() => {
     const key = format(selectedDate, "yyyy-MM-dd");
@@ -171,7 +197,7 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
                     <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Time & Date</p>
                     <div className="flex items-center gap-2 text-slate-700 font-bold text-xs uppercase">
                       <Clock size={14} className="text-[#00a1e4]" />
-                      <span>{format(parseISO(selectedSchedule.start_at), "EEEE, dd MMM HH:mm")}</span>
+                      <span>{format(safeParseDate(selectedSchedule.start_at), "EEEE, dd MMM HH:mm")}</span>
                     </div>
                   </div>
                   <div className="space-y-1">
@@ -265,20 +291,29 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
               const isSelected = isSameDay(day, selectedDate);
               const isCurrentMonth = isSameMonth(day, currentMonth);
               const daySchedules = schedulesByDay[dateKey] || [];
+              const holidayName = holidaysByDay[dateKey];
+              const isSunday = day.getDay() === 0;
 
               return (
                 <div 
                   key={i}
                   onClick={() => handleDayClick(day)}
+                  title={holidayName}
                   className={`relative p-2 rounded-2xl border transition-all cursor-pointer flex flex-col items-center justify-center min-h-[60px] group
                     ${isSelected ? 'bg-[#003366] border-[#003366] shadow-lg shadow-blue-900/10' : 
                       isCurrentMonth ? 'bg-white border-transparent hover:border-blue-200 hover:bg-blue-50/30' : 
                       'bg-slate-50/30 border-transparent opacity-20 grayscale cursor-not-allowed group-hover:opacity-100 transition-opacity'}
                   `}
                 >
-                  <span className={`text-xs font-black mb-1 ${isSelected ? 'text-white' : isCurrentMonth ? 'text-[#003366]' : 'text-slate-400'}`}>
+                  <span className={`text-xs font-black mb-1 ${isSelected ? 'text-white' : (holidayName || isSunday) ? 'text-rose-500' : isCurrentMonth ? 'text-[#003366]' : 'text-slate-400'}`}>
                     {format(day, "d")}
                   </span>
+                  
+                  {holidayName && !isSelected && (
+                    <div className="absolute top-1 left-1/2 -translate-x-1/2 flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                       <span className="bg-rose-500 text-[6px] text-white px-1 py-0.5 rounded-sm whitespace-nowrap font-black uppercase">{holidayName.substring(0, 8)}..</span>
+                    </div>
+                  )}
                   
                   <div className="flex gap-1">
                     {daySchedules.slice(0, 3).map((s, idx) => (
@@ -380,7 +415,7 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
                                         <div className="flex items-center gap-4">
                                             <div className="flex items-center gap-1">
                                                 <Clock size={8} className="text-slate-400" />
-                                                <span className="text-[8px] font-black text-slate-400">{format(parseISO(s.start_at), "HH:mm")}</span>
+                                                <span className="text-[8px] font-black text-slate-400">{format(safeParseDate(s.start_at), "HH:mm")}</span>
                                             </div>
                                             <div className="flex items-center gap-1">
                                                 <MapPin size={8} className="text-slate-400" />

@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
 import { revalidatePath } from "next/cache";
+import { serializePrisma } from "@/lib/serialize";
 
 async function checkAdmin() {
   const session = await getSession();
@@ -36,7 +37,7 @@ export async function getAllUsers() {
       attendance_enabled: u.attendance_enabled
     }));
 
-    return { success: true, data: formattedUsers };
+    return serializePrisma({ success: true, data: formattedUsers });
   } catch (error: any) {
     return { error: error.message };
   }
@@ -46,7 +47,7 @@ export async function getAllRoles() {
   if (!await checkAdmin()) return { error: "Unauthorized" };
   try {
     const roles = await prisma.roles.findMany();
-    return { success: true, data: roles };
+    return serializePrisma({ success: true, data: roles });
   } catch (error: any) {
     return { error: error.message };
   }
@@ -78,7 +79,7 @@ export async function toggleUserStatus(userId: number, currentStatus: boolean) {
       where: { id: userId },
       data: { is_active: !currentStatus }
     });
-    revalidatePath("/dashboard/users");
+    revalidatePath("/admin/users");
     return { success: true };
   } catch (error: any) {
     return { error: error.message };
@@ -92,7 +93,7 @@ export async function getAllAvailableProjects() {
       where: { status: 'active' },
       select: { id: true, name: true, code: true }
     });
-    return { success: true, data: projects };
+    return serializePrisma({ success: true, data: projects });
   } catch (error: any) {
     return { error: error.message };
   }
@@ -105,7 +106,7 @@ export async function getUserProjectAccess(userId: number) {
       where: { user_id: userId },
       select: { project_id: true }
     });
-    return { success: true, data: access.map(a => a.project_id) };
+    return serializePrisma({ success: true, data: access.map(a => a.project_id) });
   } catch (error: any) {
     return { error: error.message };
   }
@@ -126,7 +127,7 @@ export async function updateUserProjectAccess(userId: number, projectIds: string
       })
     ]);
     
-    revalidatePath("/dashboard/users");
+    revalidatePath("/admin/users");
     return { success: true };
   } catch (error: any) {
     return { error: error.message };
@@ -150,7 +151,7 @@ export async function updateUserRole(userId: number, roleId: number) {
       }
     });
 
-    revalidatePath("/dashboard/users");
+    revalidatePath("/admin/users");
     return { success: true };
   } catch (error: any) {
     return { error: error.message };
@@ -164,7 +165,7 @@ export async function deleteUser(userId: number) {
     await prisma.users.delete({
       where: { id: userId }
     });
-    revalidatePath("/dashboard/users");
+    revalidatePath("/admin/users");
     return { success: true };
   } catch (error: any) {
     return { error: error.message };
@@ -179,7 +180,7 @@ export async function toggleUserAttendance(userId: number, currentStatus: boolea
       where: { id: userId },
       data: { attendance_enabled: !currentStatus }
     });
-    revalidatePath("/dashboard/users");
+    revalidatePath("/admin/users");
     return { success: true };
   } catch (error: any) {
     return { error: error.message };

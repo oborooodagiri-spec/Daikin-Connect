@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { serializePrisma } from "@/lib/serialize";
+import { notifyProjectStakeholders } from "@/lib/push";
 
 /**
  * Check if a log already exists for today for a specific unit
@@ -124,6 +125,14 @@ export async function submitDailyLog(unitId: number, data: any) {
     });
 
     revalidatePath("/dashboard");
+    
+    // TRIGGER NOTIFICATION
+    await notifyProjectStakeholders(
+      unitId,
+      `📋 Daily Log: ${data.inspectorName}`,
+      `New operational logsheet submitted for Unit #${unitId}.`,
+      `/dashboard/units/${unitId}`
+    );
     return { success: true };
   } catch (error) {
     console.error("Submit daily log error details:", error);

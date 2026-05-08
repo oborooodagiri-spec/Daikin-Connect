@@ -8,6 +8,8 @@ import { getPreventiveSections } from "@/components/PreventivePDFTemplate";
 import { getCorrectiveSections } from "@/components/CorrectivePDFTemplate";
 import { getBeritaAcaraSections } from "@/components/BeritaAcaraPDFTemplate";
 import { getDailyLogSections } from "@/components/DailyLogPDFTemplate";
+import { getFCUPreventiveSections } from "@/components/FCUPreventivePDFTemplate";
+import { getAHUPreventiveSections } from "@/components/AHUPreventivePDFTemplate";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas-pro";
 import { format } from "date-fns";
@@ -16,6 +18,7 @@ import {
   CheckCircle2, AlertCircle, Printer, ShieldCheck
 } from "lucide-react";
 import { approveServiceActivity, updateActivityReportUrls, getActivityDetailForReport } from "@/app/actions/units";
+import { logUserActivity } from "@/app/actions/user_security";
 import { getSession } from "@/app/actions/auth";
 import { translateReportStringsAction } from "@/app/actions/translate";
 import { Language, t } from "@/lib/i18n";
@@ -186,6 +189,9 @@ export default function ReportHubPage() {
       
       pdf.save(fileName);
       document.body.removeChild(sandbox);
+
+      // Log activity
+      await logUserActivity("REPORT_DOWNLOAD", `Downloaded ${type} report for ${data.unit?.tag_number || 'Unknown'}`);
     } catch (err) {
       console.error("Download error:", err);
       alert("Failed to generate PDF. Please try again.");
@@ -456,7 +462,8 @@ export default function ReportHubPage() {
   // Determine Internal Status
   const isInternal = session?.isInternal;
   const userRoles = session?.roles || [];
-  const isEngineer = userRoles.some((r: string) => r.toLowerCase().includes("engineer") || r.toLowerCase().includes("admin") || r.toLowerCase().includes("super"));
+  const isEngineer = userRoles.some((r: string) => r.toLowerCase().includes("engineer") || r.toLowerCase().includes("admin") || r.toLowerCase().includes("super") || r.toLowerCase().includes("internal"));
+  const isCustomer = userRoles.some((r: string) => r.toLowerCase().includes("customer"));
 
   if (loading) {
     return (
@@ -504,20 +511,30 @@ export default function ReportHubPage() {
     customerApproverName: data.activity.customer_approver_name,
     engineerSignerName: data.activity.engineer_signer_name,
     engineerName: data.activity.inspector_name,
-    lang: activeLang
+    lang: activeLang,
+    isBulkSync: activityData?.isBulkSync
   };
 
   if (type.toLowerCase() === 'audit') {
-    reportTitle = t("FORM PENGUKURAN (AUDIT)", activeLang);
+    reportTitle = activityData.reportTitle || t("FORM PENGUKURAN (AUDIT)", activeLang);
     sections = getAuditSections({...activityData, ...commonApproval}, data.unit);
   } else if (type.toLowerCase() === 'preventive' || type.toLowerCase() === 'pm') {
-    reportTitle = activeLang === 'id' ? "PREVENTIVE MAINTENANCE REPORT" : t("Maintenance Scope of Work", activeLang);
-    const tj = activityData.technical_json || {};
-    sections = getPreventiveSections({...tj, ...commonApproval}, data.unit, data.activity.inspector_name, data.customer?.name);
+    const isFCU = data.unit?.unit_type?.toUpperCase() === 'FCU';
+    const isAHU = data.unit?.unit_type?.toUpperCase() === 'AHU';
+    
+    if (isAHU) {
+      reportTitle = activityData.reportTitle || "PREVENTIVE MAINTENANCE AHU";
+      sections = getAHUPreventiveSections({...activityData, ...commonApproval}, data.unit, data.activity.inspector_name, data.customer?.name, activeLang);
+    } else if (isFCU) {
+      reportTitle = activityData.reportTitle || "PREVENTIVE MAINTENANCE FCU";
+      sections = getFCUPreventiveSections({...activityData, ...commonApproval}, data.unit, data.activity.inspector_name, data.customer?.name, activeLang);
+    } else {
+      reportTitle = activityData.reportTitle || "PREVENTIVE MAINTENANCE SPLIT DUCT";
+      sections = getPreventiveSections({...activityData, ...commonApproval}, data.unit, data.activity.inspector_name, data.customer?.name, activeLang);
+    }
   } else if (type.toLowerCase() === 'corrective') {
-    reportTitle = activeLang === 'id' ? "CORRECTIVE MAINTENANCE REPORT" : t("Technical Advice & Summary", activeLang);
-    const tj = activityData.technical_json || {};
-    sections = getCorrectiveSections({...tj, ...commonApproval}, data.unit);
+    reportTitle = activityData.reportTitle || (activityData.isComplaint ? "COMPLAINT REPORT" : "CORRECTIVE MAINTENANCE REPORT");
+    sections = getCorrectiveSections({...activityData, ...commonApproval}, data.unit);
   } else if (type.toLowerCase() === 'ba' || type.toLowerCase() === 'beritaacara') {
     reportTitle = t("BERITA ACARA PEKERJAAN", activeLang);
     sections = getBeritaAcaraSections(data.activity, data.unit, data.activity.inspector_name, {
@@ -525,38 +542,49 @@ export default function ReportHubPage() {
     });
   } else if (type.toLowerCase() === 'dailylog') {
     reportTitle = t("DAILY OPERATIONAL LOGSHEET", activeLang);
-    sections = getDailyLogSections(data.activity, data.unit, data.activity.inspector_name, data.customer?.name, activeLang);
+    sections = getDailyLogSections(data.activity, data.unit, data.activity.inspector_name, data.customer?.name, activeLang, commonApproval);
   }
 
   // Separate technical content from photos for smart partitioning
-  const techSections = sections.filter((s: any) => !(s as any).key?.startsWith('photos-'));
-  const photoSections = sections.filter((s: any) => (s as any).key?.startsWith('photos-'));
+  const techSections = sections.filter((s: any) => s && typeof s === 'object' && !s.key?.startsWith('photos-'));
+  const photoSections = sections.filter((s: any) => s && typeof s === 'object' && s.key?.startsWith('photos-'));
 
   // SMART PAGINATION ENGINE: Dynamic Height Scaling
   const pages: React.ReactNode[][] = [];
-  const MAX_PAGE_HEIGHT = 820; // Safe height in px for A4 (approx 217mm)
+  const MAX_PAGE_HEIGHT = 760; // Safe height in px for A4 to avoid footer overlap
 
   if (sectionHeights.length > 0 && techSections.length === sectionHeights.length) {
     let currentPage: React.ReactNode[] = [];
     let currentHeight = 0;
 
     techSections.forEach((section, idx) => {
-      const height = sectionHeights[idx] || 100;
-      
-      if (currentHeight + height > MAX_PAGE_HEIGHT && currentPage.length > 0) {
+      const sectionHeight = sectionHeights[idx] || 100;
+      const forceBreak = (section as any).key?.includes('force-break');
+
+      if ((currentHeight + sectionHeight > MAX_PAGE_HEIGHT && currentHeight > 0) || forceBreak) {
         pages.push(currentPage);
         currentPage = [section];
-        currentHeight = height;
+        currentHeight = sectionHeight;
       } else {
         currentPage.push(section);
-        currentHeight += height;
+        currentHeight += sectionHeight;
       }
     });
     
     if (currentPage.length > 0) pages.push(currentPage);
   } else {
-    // Fallback if measurement not yet ready (initial render)
-    pages.push(techSections);
+    // Fallback if measurement not yet ready (initial render) - Improved to handle force-break
+    let currentPage: React.ReactNode[] = [];
+    techSections.forEach((section) => {
+      const forceBreak = (section as any).key?.includes('force-break');
+      if (forceBreak && currentPage.length > 0) {
+        pages.push(currentPage);
+        currentPage = [section];
+      } else {
+        currentPage.push(section);
+      }
+    });
+    if (currentPage.length > 0) pages.push(currentPage);
   }
 
   // Final Pages: Documentation Photos (Each chunk gets its own page as Annex)
@@ -665,7 +693,7 @@ export default function ReportHubPage() {
               <span className="text-xs">{data.activity.customer_approver_name}</span>
             </div>
           </div>
-        ) : !isInternal && isReviewedLocal ? (
+        ) : isCustomer && isReviewedLocal ? (
           <button 
             onClick={() => handleSign('customer')}
             disabled={approving}

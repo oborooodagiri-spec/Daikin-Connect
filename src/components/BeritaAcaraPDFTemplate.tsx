@@ -130,6 +130,7 @@ export const getBeritaAcaraSections = (data: any, unit: any, engineerName: strin
         reviewedDate={reviewedAt}
         witnessedDate={approvedAt}
         lang={lang}
+        isBulkSync={options.isBulkSync}
       />
     </div>
   ];

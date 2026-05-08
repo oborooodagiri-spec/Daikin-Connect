@@ -15,25 +15,61 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { t, Language } from "@/lib/i18n";
 
-// Row definitions matching the physical form exactly
-const SCOPE_ROWS = [
-  { key: "power_supply", label: "Power Supply", type: "measure" },
-  { key: "ampere_motor", label: "Ampere Motor", type: "measure" },
-  { key: "pressure_inlet", label: "Pressure Inlet Water", type: "measure" },
-  { key: "pressure_outlet", label: "Pressure Outlet Water", type: "measure" },
-  { key: "temp_inlet", label: "Temperature Inlet Water", type: "measure" },
-  { key: "temp_outlet", label: "Temperature Outlet Water", type: "measure" },
-  { key: "return_air_temp", label: "Return Air Temperature", type: "measure" },
-  { key: "supply_air_temp", label: "Supply Air Temperature", type: "measure" },
-  { key: "coil_temp", label: "Coil Temperature", type: "measure" },
-  { key: "air_flow_rate", label: "Air Flow Rate", type: "measure" },
-  { key: "clean_air_filter", label: "Cleaning or Replace Air Filter", type: "action" },
-  { key: "clean_coil", label: "Cleaning Coil AHU", type: "action" },
-  { key: "clean_drainage", label: "Cleaning Drainage", type: "action" },
-  { key: "clean_body", label: "Cleaning Body Unit", type: "action" },
-  { key: "check_vbelt", label: "Check V-Belt and Adjust Belt Tension", type: "action" },
-  { key: "check_bearing", label: "Check Bearing Motor and Blower", type: "action" },
-];
+// Optimized Row Definitions by Unit Type
+const getScopeRows = (unitType: string) => {
+  const type = (unitType || "").toUpperCase();
+
+  if (type.includes("AHU")) {
+    return [
+      { key: "fan_rpm", label: "Fan RPM", type: "measure" },
+      { key: "static_pressure", label: "Static Pressure (Pa)", type: "measure" },
+      { key: "filter_dp", label: "Filter dP (Pa)", type: "measure" },
+      { key: "return_air_temp", label: "Return Air Temperature", type: "measure" },
+      { key: "supply_air_temp", label: "Supply Air Temperature", type: "measure" },
+      { key: "enthalpy_in", label: "Enthalpy In (kJ/kg)", type: "measure" },
+      { key: "enthalpy_out", label: "Enthalpy Out (kJ/kg)", type: "measure" },
+      { key: "clean_air_filter", label: "Cleaning or Replace Air Filter", type: "action" },
+      { key: "clean_coil", label: "Cleaning Coil AHU", type: "action" },
+      { key: "clean_drainage", label: "Cleaning Drainage", type: "action" },
+      { key: "clean_body", label: "Cleaning Body Unit", type: "action" },
+      { key: "check_vbelt", label: "Check V-Belt and Adjust Tension", type: "action" },
+      { key: "check_bearing", label: "Check Bearing Motor/Blower", type: "action" },
+    ];
+  }
+
+  if (type.includes("FCU")) {
+    return [
+      { key: "ampere_nameplate", label: "Ampere Nameplate", type: "measure" },
+      { key: "ampere_r", label: "Ampere Current (A)", type: "measure" },
+      { key: "return_air_temp", label: "Return Air Temperature", type: "measure" },
+      { key: "supply_air_temp", label: "Supply Air Temperature", type: "measure" },
+      { key: "room_temp", label: "Room Temperature", type: "measure" },
+      { key: "air_flow_rate", label: "Air Flow Rate (m/s)", type: "measure" },
+      { key: "diffuser_count", label: "Number of Diffusers", type: "measure" },
+      { key: "air_volume", label: "Air Volume (CFM)", type: "measure" },
+      { key: "clean_air_filter", label: "Cleaning or Replace Air Filter", type: "action" },
+      { key: "clean_coil", label: "Cleaning Coil FCU", type: "action" },
+      { key: "clean_drainage", label: "Cleaning Drainage", type: "action" },
+      { key: "clean_body", label: "Cleaning Body Unit", type: "action" },
+    ];
+  }
+
+  // DEFAULT (AC Split / VRV)
+  return [
+    { key: "ampere_nameplate", label: "Ampere Nameplate", type: "measure" },
+    { key: "ampere_r", label: "Ampere Phase R", type: "measure" },
+    { key: "ampere_s", label: "Ampere Phase S", type: "measure" },
+    { key: "ampere_t", label: "Ampere Phase T", type: "measure" },
+    { key: "return_air_temp", label: "Return Air Temperature", type: "measure" },
+    { key: "supply_air_temp", label: "Supply Air Temperature", type: "measure" },
+    { key: "room_temp", label: "Room Temperature", type: "measure" },
+    { key: "air_flow_rate", label: "Air Flow Rate (m/s)", type: "measure" },
+    { key: "clean_air_filter", label: "Cleaning Air Filter", type: "action" },
+    { key: "clean_coil", label: "Cleaning Coil Indoor/Outdoor", type: "action" },
+    { key: "clean_drainage", label: "Cleaning Drainage", type: "action" },
+    { key: "clean_body", label: "Cleaning Body Unit", type: "action" },
+  ];
+};
 
 const PARTS_ROWS = [
   { key: "vbelt_type", label: "Vbelt Type / Quantity" },
@@ -82,6 +118,8 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
     location: unit.building_floor || "",
     team_opt: ""
   });
+
+  const SCOPE_ROWS = getScopeRows(unit.unit_type);
 
   // Scope of Work rows
   const [scope, setScope] = useState<Record<string, { before: string; after: string; remarks: string; done: string }>>(() => {
@@ -148,7 +186,8 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
       const updatedRow = { ...prev[key], [field]: val };
       
       // AUTO-CALCULATION FOR MARGIN (MEASURE TYPE)
-      const rowDef = SCOPE_ROWS.find(r => r.key === key);
+      const currentRows = getScopeRows(unit.unit_type);
+      const rowDef = currentRows.find(r => r.key === key);
       if (rowDef?.type === 'measure' && (field === 'before' || field === 'after')) {
         const b = parseFloat(updatedRow.before);
         const a = parseFloat(updatedRow.after);
@@ -540,7 +579,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
       {/* HEADER */}
       <div className="bg-[#003366] text-white p-6 rounded-b-[2rem] shadow-lg mb-6 pt-12 sticky top-0 z-40">
         <h1 className="text-xl font-black tracking-tight flex items-center gap-2">
-          <Wrench size={22} /> {lang === 'ja' ? 'メンテナンスチェックシート' : 'Maintenance Checksheet'} FCU/AHU
+          <Wrench size={22} /> {lang === 'ja' ? 'メンテナンスチェックシート' : 'Maintenance Checksheet'} {unit.unit_type}
         </h1>
         <div className="flex justify-between items-center mt-3">
           <p className="text-sm font-medium opacity-80 flex items-center gap-1"><MapPin size={14} /> {unit.area}</p>
@@ -562,7 +601,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
                 <div className="space-y-4">
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">{t("Service Engineer Name", lang)}*</label>
-                    <input type="text" value={engineerName} onChange={e => updateEngineerName(e.target.value)} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:ring-2 focus:ring-[#00a1e4]" placeholder={lang === 'ja' ? 'フルネームを入力' : "Masukkan Nama Lengkap"} />
+                    <input type="text" value={engineerName} onChange={e => updateEngineerName(e.target.value)} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:ring-2 focus:ring-[#00a1e4]" />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
@@ -581,12 +620,12 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
                     </div>
                     <div>
                       <label className="text-[10px] font-bold text-slate-500 uppercase">Nominal Capacity</label>
-                      <input type="text" value={header.nominal_capacity} onChange={e => setHeader({ ...header, nominal_capacity: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder="e.g. 11 kW" />
+                      <input type="text" value={header.nominal_capacity} onChange={e => setHeader({ ...header, nominal_capacity: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" />
                     </div>
                   </div>
                   <div>
                     <label className="text-[10px] font-bold text-slate-500 uppercase">Team OPT</label>
-                    <input type="text" value={header.team_opt} onChange={e => setHeader({ ...header, team_opt: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder="Nama Tim / Personel" />
+                    <input type="text" value={header.team_opt} onChange={e => setHeader({ ...header, team_opt: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" />
                   </div>
 
                   <div className="pt-4 border-t border-slate-100">
@@ -653,15 +692,15 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
                     <div className="grid grid-cols-3 gap-2">
                       <div>
                         <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Before</p>
-                        <input type="text" value={scope[row.key].before} onChange={e => updateScope(row.key, "before", e.target.value)} className="w-full p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-xs font-bold text-center focus:ring-amber-400" placeholder="-" />
+                        <input type="text" value={scope[row.key].before} onChange={e => updateScope(row.key, "before", e.target.value)} className="w-full p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-xs font-bold text-center focus:ring-amber-400" />
                       </div>
                       <div>
                         <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">After</p>
-                        <input type="text" value={scope[row.key].after} onChange={e => updateScope(row.key, "after", e.target.value)} className="w-full p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs font-bold text-center focus:ring-emerald-400" placeholder="-" />
+                        <input type="text" value={scope[row.key].after} onChange={e => updateScope(row.key, "after", e.target.value)} className="w-full p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs font-bold text-center focus:ring-emerald-400" />
                       </div>
                       <div>
                         <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Margin / Result</p>
-                        <input type="text" value={scope[row.key].remarks} onChange={e => updateScope(row.key, "remarks", e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-center" placeholder="Δ Margin" />
+                        <input type="text" value={scope[row.key].remarks} onChange={e => updateScope(row.key, "remarks", e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-center" />
                       </div>
                     </div>
                   </div>
@@ -690,7 +729,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
                         <option value="Not Done">❌ Not Done</option>
                         <option value="Replaced">🔄 Replaced</option>
                       </select>
-                      <input type="text" placeholder="Finding / Temuan" value={scope[row.key].remarks} onChange={e => updateScope(row.key, "remarks", e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold" />
+                      <input type="text" value={scope[row.key].remarks} onChange={e => updateScope(row.key, "remarks", e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold" />
                     </div>
                   </div>
                 ))}
@@ -701,7 +740,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
                 {PARTS_ROWS.map((row) => (
                   <div key={row.key} className="mb-3">
                     <label className="text-xs font-bold text-slate-500 uppercase">{row.label}</label>
-                    <input type="text" value={parts[row.key]} onChange={e => setParts({ ...parts, [row.key]: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder="e.g. SPB 1375 x2 / N/A" />
+                    <input type="text" value={parts[row.key]} onChange={e => setParts({ ...parts, [row.key]: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" />
                   </div>
                 ))}
               </div>
@@ -713,7 +752,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
             <motion.div key="s4" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} className="space-y-5">
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
                 <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">{t("Technical Advice", lang)}</h2>
-                <textarea rows={4} placeholder={lang === 'ja' ? '技術的なアドバイスやサービスメモを入力...' : (lang === 'en' ? 'Enter technical advice or service notes...' : "Masukkan saran teknis atau catatan servis...")} value={technicalAdvice} onChange={e => setTechnicalAdvice(e.target.value)} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" />
+                <textarea rows={4} value={technicalAdvice} onChange={e => setTechnicalAdvice(e.target.value)} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" />
               </div>
 
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
@@ -721,7 +760,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase">{lang === 'ja' ? '顧客名' : 'Nama Customer'}</label>
-                    <input type="text" value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" placeholder={lang === 'ja' ? '代表者名' : "Nama perwakilan"} />
+                    <input type="text" value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" />
                   </div>
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase">{lang === 'ja' ? '署名日' : 'Tanggal TTD'}</label>

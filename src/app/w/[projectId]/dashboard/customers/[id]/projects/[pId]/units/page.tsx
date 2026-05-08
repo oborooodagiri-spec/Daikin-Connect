@@ -18,6 +18,7 @@ import QRCode from "react-qr-code";
 import { motion, AnimatePresence } from "framer-motion";
 import UnitHistoryTimeline from "@/components/UnitHistoryTimeline";
 import UnitDetailModal from "@/components/UnitDetailModal";
+import RoomDetailModal from "@/components/RoomDetailModal";
 import QuickInputModal from "@/components/dashboard/QuickInputModal";
 import Portal from "@/components/Portal";
 
@@ -123,6 +124,17 @@ export default function UnitsPage() {
     return Array.from(set).sort();
   }, [units]);
 
+  const availableRooms = useMemo(() => {
+    // Rooms are units that are likely marked as 'Room' or the primary identifier in ROOM mode
+    // We'll take everything that has a room_tenant name or is a 'Room' type
+    const names = new Set(units
+      .filter(u => u.unit_type?.toLowerCase().includes('room') || u.unit_type?.toLowerCase().includes('ruangan'))
+      .map(u => u.room_tenant || u.tag_number)
+      .filter(Boolean)
+    );
+    return Array.from(names).sort();
+  }, [units]);
+
   // Filtering Logic
   const filteredUnits = useMemo(() => {
     const list = units.filter(unit => {
@@ -181,11 +193,12 @@ export default function UnitsPage() {
   const unitsInProgress = useMemo(() => units.filter(u => ["On_Progress","Pending"].includes(u.status)), [units]);
 
   const openModal = (unit?: any) => {
+    const enabledTypes = projectData?.enabled_unit_types?.split(",") || ["Chiller"];
     if (unit) {
       setModalMode("edit");
       setEditId(unit.id);
       setFormData({
-        unit_type: unit.unit_type || "VRV",
+        unit_type: unit.unit_type || enabledTypes[0],
         brand: unit.brand || "Daikin",
         model: unit.model || "",
         capacity: unit.capacity || "",
@@ -201,7 +214,7 @@ export default function UnitsPage() {
       setModalMode("create");
       setEditId(null);
       setFormData({
-        unit_type: "VRV", brand: "Daikin", model: "", 
+        unit_type: enabledTypes[0], brand: "Daikin", model: "", 
         capacity: "0", yoi: new Date().getFullYear().toString(),
         serial_number: "", tag_number: "", area: "",
         building_floor: "", room_tenant: "", status: "Normal"
@@ -446,7 +459,9 @@ export default function UnitsPage() {
               <ArrowLeft size={16} /> Back to Projects
             </button>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl md:text-4xl font-black tracking-tight text-[#003366]">Unit Command</h1>
+              <h1 className="text-2xl md:text-4xl font-black tracking-tight text-[#003366]">
+                {projectData?.monitoring_focus === 'ROOM' ? 'Room' : 'Unit'} Command
+              </h1>
               <span className="hidden sm:inline-block px-3 py-1 bg-slate-200 text-slate-500 text-xs font-black uppercase tracking-widest rounded-lg">Assets</span>
             </div>
             <p className="text-sm font-bold text-slate-500 mt-2 flex items-center gap-2">
@@ -459,7 +474,7 @@ export default function UnitsPage() {
               <Database size={20}/> Quick Service Input
             </button>
             <button onClick={() => openModal()} className="w-full md:w-auto px-6 md:px-8 py-3 md:py-4 rounded-2xl bg-[#00a1e4] text-white font-black shadow-xl shadow-blue-200 hover:bg-[#008cc6] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 uppercase text-xs md:text-sm tracking-widest">
-              <Plus size={20} className="shrink-0" /> Add Unit Record
+              <Plus size={20} className="shrink-0" /> Add {projectData?.monitoring_focus === 'ROOM' ? 'Room' : 'Unit'} Record
             </button>
           </div>
         </div>
@@ -478,7 +493,7 @@ export default function UnitsPage() {
             ))
           ) : (
             [
-              { title: "Total Units", val: metrics.total, icon: Archive, color: "text-[#00a1e4]", bg: "bg-blue-50" },
+              { title: `Total ${projectData?.monitoring_focus === 'ROOM' ? 'Rooms' : 'Units'}`, val: metrics.total, icon: Archive, color: "text-[#00a1e4]", bg: "bg-blue-50" },
               { title: "Normal Status", val: metrics.normal, icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-50" },
               { title: "Reported Problem", val: metrics.problem, icon: ShieldAlert, color: "text-rose-500", bg: "bg-rose-50", animate: metrics.problem > 0 ? "animate-pulse" : "" },
               { title: "In Repair (Pending)", val: metrics.pending, icon: Hammer, color: "text-indigo-500", bg: "bg-indigo-50" },
@@ -501,7 +516,7 @@ export default function UnitsPage() {
           <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col max-h-[300px]">
              <div className="p-4 bg-rose-50 border-b border-rose-100 flex justify-between items-center">
               <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-rose-700 flex items-center gap-2">
-                <AlertTriangle size={14} className="animate-pulse" /> Units with Problems
+                <AlertTriangle size={14} className="animate-pulse" /> {projectData?.monitoring_focus === 'ROOM' ? 'Rooms' : 'Units'} with Problems
               </h3>
               <span className="px-2 py-0.5 bg-rose-200 text-rose-800 text-[10px] font-black rounded-lg">{unitsProblem.length}</span>
             </div>
@@ -553,7 +568,7 @@ export default function UnitsPage() {
             <div className="relative group">
               <Search className={`absolute left-5 top-1/2 -translate-y-1/2 transition-all w-5 h-5 ${searchTerm ? "text-[#00a1e4]" : "text-slate-400"}`} />
               <input 
-                type="text" placeholder="Search assets..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+                type="text" placeholder={`Search ${projectData?.monitoring_focus === 'ROOM' ? 'rooms' : 'assets'}...`} value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
                 className="w-full h-12 md:h-14 pl-14 pr-6 bg-white border-2 border-slate-100 rounded-2xl text-sm md:text-base font-bold text-[#003366] placeholder:text-slate-300 focus:outline-none focus:border-[#00a1e4] focus:ring-4 focus:ring-[#00a1e4]/10 transition-all"
               />
             </div>
@@ -627,7 +642,7 @@ export default function UnitsPage() {
                           <div className="flex items-center gap-3">
                             <div className={`w-2 h-8 md:w-2.5 md:h-12 rounded-full shrink-0 ${u.status === 'Problem' || u.status === 'Critical' ? 'bg-rose-500' : 'bg-emerald-500'}`}></div>
                             <div className="min-w-0">
-                               <p className="text-sm md:text-lg font-black text-[#003366] tracking-tighter truncate leading-tight">{u.room_tenant || "Unnamed Room"}</p>
+                               <p className="text-sm md:text-lg font-black text-[#003366] tracking-tighter truncate leading-tight">{u.room_tenant || (projectData?.monitoring_focus === 'ROOM' ? 'Unnamed Room' : 'Unnamed Asset')}</p>
                                <p className="text-[10px] md:text-sm font-black text-[#00a1e4] uppercase tracking-widest">{u.tag_number || "NO-TAG"}</p>
                                <p className="text-[9px] font-mono font-medium text-slate-400 truncate">S/N: {u.serial_number || "---"}</p>
                             </div>
@@ -694,14 +709,22 @@ export default function UnitsPage() {
         </div>
       </div>
 
-      <UnitDetailModal 
-        isOpen={isDetailOpen} onClose={() => setIsDetailOpen(false)}
-        unit={selectedUnit} history={unitHistory} historyLoading={historyLoading}
-        isStatusUpdating={isStatusUpdating} onStatusUpdate={handleStatusUpdate}
-        onPrintQR={openPrintQR} onEdit={openModal}
-        customerId={customerId} projectId={targetProjectId} session={session}
-        onRefresh={fetchData}
-      />
+      {projectData?.monitoring_focus === 'ROOM' ? (
+        <RoomDetailModal 
+          isOpen={isDetailOpen} onClose={() => setIsDetailOpen(false)}
+          unit={selectedUnit} projectId={targetProjectId || ""} session={session}
+          onRefresh={fetchData}
+        />
+      ) : (
+        <UnitDetailModal 
+          isOpen={isDetailOpen} onClose={() => setIsDetailOpen(false)}
+          unit={selectedUnit} history={unitHistory} historyLoading={historyLoading}
+          isStatusUpdating={isStatusUpdating} onStatusUpdate={handleStatusUpdate}
+          onPrintQR={openPrintQR} onEdit={openModal}
+          customerId={customerId} projectId={targetProjectId} session={session}
+          onRefresh={fetchData}
+        />
+      )}
 
       <QuickInputModal 
         isOpen={isQuickInputOpen} onClose={() => setIsQuickInputOpen(false)}
@@ -714,10 +737,40 @@ export default function UnitsPage() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={closeModal} />
             <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white rounded-[2rem] shadow-2xl relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8">
                <div className="flex justify-between items-start mb-8">
-                  <h2 className="text-2xl font-black text-[#003366]">{modalMode === "create" ? "Add New Unit" : "Edit Unit Data"}</h2>
+                  <h2 className="text-2xl font-black text-[#003366]">{modalMode === "create" ? `Add New ${projectData?.monitoring_focus === 'ROOM' ? 'Room' : 'Unit'}` : `Edit ${projectData?.monitoring_focus === 'ROOM' ? 'Room' : 'Unit'} Data`}</h2>
                   <button onClick={closeModal} className="p-2 bg-slate-100 rounded-full"><X size={20}/></button>
                </div>
                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Type</label>
+                      <select 
+                        value={formData.unit_type} 
+                        onChange={e => setFormData({...formData, unit_type: e.target.value})} 
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]"
+                      >
+                         {(projectData?.enabled_unit_types || "Chiller").split(",").map((t: string) => (
+                           <option key={t} value={t}>{t}</option>
+                         ))}
+                      </select>
+                    </div>
+                    <div className="space-y-1 md:col-span-1">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</label>
+                      <select 
+                        value={formData.status} 
+                        onChange={e => setFormData({...formData, status: e.target.value})} 
+                        className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]"
+                      >
+                         <option value="Normal">Normal</option>
+                         <option value="Problem">Problem</option>
+                         <option value="Critical">Critical</option>
+                         <option value="Warning">Warning</option>
+                         <option value="Pending">Pending</option>
+                         <option value="On_Progress">On Progress</option>
+                      </select>
+                    </div>
+                  </div>
+
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tag Number</label>
@@ -753,7 +806,31 @@ export default function UnitsPage() {
                     </div>
                     <div className="space-y-1">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Room / Tenant</label>
-                      <input type="text" value={formData.room_tenant} onChange={e => setFormData({...formData, room_tenant: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]" />
+                      {projectData?.monitoring_focus === 'ROOM' && availableRooms.length > 0 && !formData.unit_type?.toLowerCase().includes('room') ? (
+                        <select 
+                          value={formData.room_tenant} 
+                          onChange={e => setFormData({...formData, room_tenant: e.target.value})}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]"
+                        >
+                          <option value="">Select Room...</option>
+                          {availableRooms.map(r => (
+                            <option key={r} value={r}>{r}</option>
+                          ))}
+                          <option value="custom">+ Type Manually...</option>
+                        </select>
+                      ) : (
+                        <input 
+                          type="text" 
+                          list="room-options"
+                          value={formData.room_tenant} 
+                          onChange={e => setFormData({...formData, room_tenant: e.target.value})} 
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]" 
+                          placeholder="e.g. Server Room A"
+                        />
+                      )}
+                      <datalist id="room-options">
+                        {availableRooms.map(r => <option key={r} value={r} />)}
+                      </datalist>
                     </div>
                   </div>
                   <button type="submit" className="w-full py-4 bg-[#00a1e4] text-white font-black rounded-2xl shadow-lg shadow-blue-200 hover:bg-[#008cc6] transition-all flex items-center justify-center gap-2">

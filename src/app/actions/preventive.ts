@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { serializePrisma } from "@/lib/serialize";
 import { ensureScheduleForActivity } from "./schedules";
 import { notifyProjectStakeholders } from "@/lib/push";
+import { getSession } from "./auth";
+import { recordAuditLog } from "@/lib/security";
 
 export async function createPreventiveActivity(data: any) {
   try {
@@ -63,6 +65,17 @@ export async function createPreventiveActivity(data: any) {
       `/dashboard/units/${unit_id}`
     );
 
+    const session = await getSession();
+    if (session?.userId) {
+      await recordAuditLog({
+        userId: parseInt(session.userId),
+        action: "REPORT_SUBMIT",
+        targetType: "Preventive",
+        targetId: newActivity.id.toString(),
+        details: `Submitted PM Report for ${data.unit_tag}`
+      });
+    }
+
     return serializePrisma({ success: true, id: newActivity.id });
   } catch (error: any) {
     console.error("Preventive DB Save Error:", error);
@@ -102,6 +115,17 @@ export async function updatePreventiveActivity(id: number, data: any) {
           photo_url: p.photo_url,
           description: p.description || "Preventive Documentation"
         }))
+      });
+    }
+
+    const session = await getSession();
+    if (session?.userId) {
+      await recordAuditLog({
+        userId: parseInt(session.userId),
+        action: "REPORT_UPDATE",
+        targetType: "Preventive",
+        targetId: id.toString(),
+        details: `Updated PM Report`
       });
     }
 

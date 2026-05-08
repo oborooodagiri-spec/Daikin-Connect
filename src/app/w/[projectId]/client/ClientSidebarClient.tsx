@@ -2,18 +2,16 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname, useParams } from "next/navigation";
+import { usePathname, useParams, useRouter } from "next/navigation";
 import { 
   LayoutDashboard, 
   LogOut, 
   ChevronRight,
   Package,
-  Calendar,
   FileText,
   Menu,
   X,
-  Settings,
-  ShieldCheck
+  Home
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { t, Language } from "@/lib/i18n";
@@ -28,6 +26,7 @@ export default function ClientSidebarClient({
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const params = useParams();
+  const router = useRouter();
   const projectId = params?.projectId as string || "empty";
 
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -41,45 +40,21 @@ export default function ClientSidebarClient({
   const menuItems = [
     { 
       href: `/w/${projectId}/client/dashboard`, 
-      label: t("Overview", lang), 
+      label: t("Info", lang), 
       icon: LayoutDashboard,
-      show: true 
+      match: "/client/dashboard"
     },
     { 
       href: `/w/${projectId}/client/inventory`, 
       label: t("My Assets", lang), 
       icon: Package,
-      show: true 
-    },
-    { 
-      href: `/w/${projectId}/client/schedules`, 
-      label: t("Work Plan", lang), 
-      icon: Calendar,
-      show: true 
+      match: "/client/inventory"
     },
     { 
       href: `/w/${projectId}/client/reports`, 
       label: t("Reports", lang), 
       icon: FileText,
-      show: true 
-    },
-    { 
-      href: `/w/${projectId}/dashboard/profile`, 
-      label: t("Profile & Security", lang), 
-      icon: ShieldCheck,
-      show: true 
-    },
-    {
-      href: `/w/${projectId}/dashboard/attendance`,
-      label: t("Live Attendance", lang),
-      icon: Calendar,
-      show: session?.attendance_enabled
-    },
-    { 
-      href: `/w/${projectId}/client/settings`, 
-      label: t("Settings", lang), 
-      icon: Settings,
-      show: true 
+      match: "/client/reports"
     },
   ];
 
@@ -88,7 +63,7 @@ export default function ClientSidebarClient({
       {/* Mobile Toggle Button */}
       <button 
         onClick={toggleSidebar}
-        className="fixed top-4 left-4 z-[100] p-2 bg-[#003366] text-white rounded-xl shadow-lg md:hidden hover:scale-110 active:scale-95 transition-all"
+        className="fixed top-4 left-4 z-[100] p-2.5 bg-[#323338] text-white rounded-xl shadow-lg md:hidden hover:scale-110 active:scale-95 transition-all"
       >
         {isOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
@@ -108,27 +83,27 @@ export default function ClientSidebarClient({
 
       {/* Sidebar Content */}
       <aside className={`
-        fixed inset-y-0 left-0 z-[95] w-72 bg-[#003366] text-white flex flex-col shadow-2xl transition-transform duration-500 ease-out
+        fixed inset-y-0 left-0 z-[95] w-72 bg-[#292f4c] text-white flex flex-col shadow-2xl transition-transform duration-500 ease-out
         ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0
       `}>
-        <div className="p-8 border-b border-white/10 flex flex-col items-center shrink-0">
+        <div className="p-8 border-b border-white/5 flex flex-col items-center shrink-0">
           <div className="relative h-10 w-48 mb-6">
             <img src="/logo_epl_connect_1.png" className="h-10 brightness-0 invert" alt="EPL Connect" />
           </div>
-          <div className="text-center">
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-300 opacity-60">
+          <div className="text-center space-y-2">
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-300/50">
               {isVendor ? t("PARTNER PORTAL", lang) : t("CLIENT PORTAL", lang)}
             </p>
-            <p className="text-sm font-bold mt-1 text-white truncate max-w-[200px]">{session?.name}</p>
-            <span className="text-[10px] px-2 py-0.5 bg-blue-500/30 text-blue-200 rounded-full border border-blue-400/20 mt-2 inline-block font-black uppercase tracking-widest">
+            <p className="text-sm font-bold text-white truncate max-w-[200px]">{session?.name}</p>
+            <span className="text-[10px] px-3 py-1 bg-[#0073ea]/20 text-[#579bfc] rounded-full border border-[#0073ea]/20 inline-block font-black uppercase tracking-widest">
               {isVendor ? t("Service Partner", lang) : t("Project Partner", lang)}
             </span>
           </div>
         </div>
 
-        <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto custom-scrollbar">
-          {menuItems.filter(item => item.show !== false).map((item, idx) => {
-            const isActive = pathname === item.href;
+        <nav className="flex-1 px-4 py-8 space-y-1.5 overflow-y-auto custom-scrollbar">
+          {menuItems.map((item, idx) => {
+            const isActive = pathname.includes(item.match);
             return (
               <Link 
                 key={idx}
@@ -136,29 +111,36 @@ export default function ClientSidebarClient({
                 onClick={() => setIsOpen(false)}
                 className={`flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 group ${
                   isActive 
-                    ? "bg-white/15 text-white shadow-lg shadow-black/10" 
-                    : "text-blue-100/70 hover:bg-white/10 hover:text-white"
+                    ? "bg-[#0073ea] text-white shadow-lg shadow-blue-500/20" 
+                    : "text-white/50 hover:bg-white/5 hover:text-white"
                 }`}
               >
-                <item.icon className={`w-5 h-5 transition-colors ${isActive ? "text-blue-300" : "text-blue-300/60 group-hover:text-white"}`} />
-                <span className="text-sm font-bold tracking-wide">{item.label}</span>
+                <item.icon className={`w-5 h-5 transition-colors ${isActive ? "text-white" : "text-white/30 group-hover:text-white"}`} />
+                <span className="text-xs font-bold tracking-wide uppercase">{item.label}</span>
                 <ChevronRight className={`w-4 h-4 ml-auto transition-all ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0"}`} />
               </Link>
             );
           })}
         </nav>
 
-        <div className="p-4 mt-auto border-t border-white/5">
+        <div className="p-4 space-y-2 border-t border-white/5">
+          <button 
+            onClick={() => { router.push('/home'); setIsOpen(false); }}
+            className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all group"
+          >
+            <Home className="w-4 h-4" />
+            <span className="text-[11px] font-black uppercase tracking-widest">Home</span>
+          </button>
           <button 
             onClick={() => { 
                 localStorage.removeItem("daikin_last_project");
               logout(); 
               setIsOpen(false); 
             }}
-            className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white transition-all duration-500 group"
+            className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl bg-[#e44258]/10 hover:bg-[#e44258] text-[#e44258] hover:text-white transition-all duration-500 group"
           >
-            <LogOut className="w-5 h-5 transition-transform group-hover:scale-110" />
-            <span className="text-sm font-black uppercase tracking-widest">{t("Exit Portal", lang)}</span>
+            <LogOut className="w-4 h-4 transition-transform group-hover:scale-110" />
+            <span className="text-[11px] font-black uppercase tracking-widest">{t("Exit Portal", lang)}</span>
           </button>
         </div>
       </aside>

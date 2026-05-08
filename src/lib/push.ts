@@ -139,3 +139,38 @@ export async function notifyThreadParticipants(scheduleId: string | number, send
         console.warn("[PUSH_NOTIF] Chat notification failed:", err);
     }
 }
+
+/**
+ * INTERNAL NOTIFICATION (Unit Edit Requests)
+ * Notify: Admin & Engineer roles.
+ */
+export async function notifyInternalForUnitEdit(unitId: number, requesterName: string) {
+  try {
+    const internalUsers = await prisma.users.findMany({
+      where: {
+        user_roles: {
+          some: {
+            roles: {
+              role_name: { 
+                in: ["Admin", "Administrator", "Super Admin", "Engineer", "Internal"] 
+              }
+            }
+          }
+        }
+      },
+      select: { id: true }
+    });
+
+    const recipientIds = internalUsers.map(u => u.id);
+    if (recipientIds.length > 0) {
+      await sendPushNotification(
+        recipientIds, 
+        "Unit Edit Request", 
+        `${requesterName} requested to update unit info. Validation required.`,
+        `/dashboard/unit-requests`
+      );
+    }
+  } catch (error) {
+    console.warn("[PUSH_NOTIF] Internal notification failed:", error);
+  }
+}

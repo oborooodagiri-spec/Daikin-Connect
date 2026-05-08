@@ -11,6 +11,13 @@ import {
   Clock, User as UserIcon, Trash2, MapPin 
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+
+const safeParseDate = (date: any) => {
+  if (!date) return new Date();
+  if (date instanceof Date) return date;
+  if (typeof date === 'string') return parseISO(date);
+  return new Date(date);
+};
 import { getProjectSchedules } from "@/app/actions/project_targets";
 import { deleteSchedule } from "@/app/actions/schedules";
 import ScheduleInputForm from "./dashboard/ScheduleInputForm";
@@ -112,7 +119,7 @@ export default function ScheduleCalendarModal({ projectId, projectName, isOpen, 
                 ))}
                 
                 {days.map(day => {
-                  const daySchedules = schedules.filter(s => isSameDay(parseISO(s.start_at.toString()), day));
+                  const daySchedules = schedules.filter(s => isSameDay(safeParseDate(s.start_at), day));
                   const isCurToday = isToday(day);
                   const isSelected = isSameDay(day, selectedDate);
 
@@ -171,15 +178,15 @@ export default function ScheduleCalendarModal({ projectId, projectName, isOpen, 
                             <div className="space-y-4 opacity-50">
                                {[1, 2, 3].map(i => <div key={i} className="h-24 bg-white border border-slate-100 rounded-2xl animate-pulse" />)}
                             </div>
-                          ) : schedules.filter(s => isSameDay(parseISO(s.start_at.toString()), selectedDate)).length > 0 ? (
-                            schedules.filter(s => isSameDay(parseISO(s.start_at.toString()), selectedDate)).map(s => (
+                          ) : schedules.filter(s => isSameDay(safeParseDate(s.start_at), selectedDate)).length > 0 ? (
+                            schedules.filter(s => isSameDay(safeParseDate(s.start_at), selectedDate)).map(s => (
                               <div key={s.id} className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm relative group overflow-hidden">
                                  <div className={`absolute top-0 left-0 w-1.5 h-full ${s.type === 'Preventive' ? 'bg-indigo-500' : s.type === 'Corrective' ? 'bg-rose-500' : 'bg-amber-500'}`} />
                                  <div className="flex justify-between items-start">
                                    <div className="text-left">
                                      <p className="text-sm font-black text-slate-800 leading-tight mb-1 uppercase italic tracking-tight">{s.title}</p>
                                      <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400">
-                                       <Clock size={12} /> {format(parseISO(s.start_at.toString()), "HH:mm")} - {format(parseISO(s.end_at.toString()), "HH:mm")}
+                                       <Clock size={12} /> {format(safeParseDate(s.start_at), "HH:mm")} - {format(safeParseDate(s.end_at), "HH:mm")}
                                      </div>
                                    </div>
                                    <button onClick={() => handleDelete(s.id)} className="p-1.5 text-rose-300 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all">
