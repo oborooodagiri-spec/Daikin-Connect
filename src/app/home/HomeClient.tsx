@@ -201,7 +201,7 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
         </motion.section>
 
         {/* Admin Section - Only for Authorized Roles */}
-        {profile.roles.some(r => ["admin", "super", "management", "sales engineer", "ste"].includes(String(r).toLowerCase())) && (
+        {profile.isAdmin && (
           <motion.section 
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
