@@ -19,6 +19,7 @@ import { t, Language } from "@/lib/i18n";
 const getScopeRows = (unitType: string) => {
   const type = (unitType || "").toUpperCase();
 
+  // 1. AHU (Air Handling Unit)
   if (type.includes("AHU")) {
     return [
       { key: "fan_rpm", label: "Fan RPM", type: "measure" },
@@ -37,6 +38,7 @@ const getScopeRows = (unitType: string) => {
     ];
   }
 
+  // 2. FCU (Fan Coil Unit)
   if (type.includes("FCU")) {
     return [
       { key: "ampere_nameplate", label: "Ampere Nameplate", type: "measure" },
@@ -54,12 +56,63 @@ const getScopeRows = (unitType: string) => {
     ];
   }
 
-  // DEFAULT (AC Split / VRV)
+  // 3. CHILLER / WCP
+  if (type.includes("CHILL") || type.includes("WCP")) {
+    const rows = [
+      { key: "voltage_rs", label: "Voltage RS", type: "measure", category: "A. Voltage" },
+      { key: "voltage_rt", label: "Voltage RT", type: "measure", category: "A. Voltage" },
+      { key: "voltage_st", label: "Voltage ST", type: "measure", category: "A. Voltage" },
+    ];
+
+    // Circuits 1-5
+    for (let i = 1; i <= 5; i++) {
+      rows.push({ key: `circuit_${i}_amp_r`, label: `Circuit ${i} - Amp R`, type: "measure", category: "B. Check Running" });
+      rows.push({ key: `circuit_${i}_amp_s`, label: `Circuit ${i} - Amp S`, type: "measure", category: "B. Check Running" });
+      rows.push({ key: `circuit_${i}_amp_t`, label: `Circuit ${i} - Amp T`, type: "measure", category: "B. Check Running" });
+      rows.push({ key: `circuit_${i}_pressure_lp`, label: `Circuit ${i} - LP (PSI)`, type: "measure", category: "B. Check Running" });
+      rows.push({ key: `circuit_${i}_pressure_hp`, label: `Circuit ${i} - HP (PSI)`, type: "measure", category: "B. Check Running" });
+    }
+
+    rows.push(
+      { key: "fan_unit_r", label: "Fan Unit - Amp R", type: "measure", category: "C. Fan Unit Amp" },
+      { key: "fan_unit_s", label: "Fan Unit - Amp S", type: "measure", category: "C. Fan Unit Amp" },
+      { key: "fan_unit_t", label: "Fan Unit - Amp T", type: "measure", category: "C. Fan Unit Amp" },
+      { key: "water_inlet_temp", label: "Water INLET Temp (°C)", type: "measure", category: "D. Water Parameters" },
+      { key: "water_outlet_temp", label: "Water OUTLET Temp (°C)", type: "measure", category: "D. Water Parameters" },
+      { key: "water_delta_t", label: "Water Delta T (°C)", type: "measure", category: "D. Water Parameters" },
+      { key: "water_inlet_pressure", label: "Water INLET Pressure (bar)", type: "measure", category: "D. Water Parameters" },
+      { key: "water_outlet_pressure", label: "Water OUTLET Pressure (bar)", type: "measure", category: "D. Water Parameters" },
+      { key: "water_delta_p", label: "Water Delta P (bar)", type: "measure", category: "D. Water Parameters" },
+      { key: "setting_temp_ewt", label: "Setting Temp EWT (°C)", type: "measure", category: "E. Setting" },
+      { key: "clean_condenser", label: "Clean Condenser Coils", type: "action", category: "Maintenance Checklist" },
+      { key: "check_leak", label: "Check Oil & Refrigerant Leaks", type: "action", category: "Maintenance Checklist" },
+      { key: "check_control", label: "Check Control Panel", type: "action", category: "Maintenance Checklist" }
+    );
+    return rows;
+  }
+
+  // 4. SPLIT DUCT (Often 3-Phase)
+  if (type.includes("SPLIT DUCT") || type.includes("DUCTED")) {
+    return [
+      { key: "ampere_nameplate", label: "Ampere Nameplate", type: "measure" },
+      { key: "ampere_r", label: "Ampere Phase R", type: "measure" },
+      { key: "ampere_s", label: "Ampere Phase S", type: "measure" },
+      { key: "ampere_t", label: "Ampere Phase T", type: "measure" },
+      { key: "return_air_temp", label: "Return Air Temperature", type: "measure" },
+      { key: "supply_air_temp", label: "Supply Air Temperature", type: "measure" },
+      { key: "room_temp", label: "Room Temperature", type: "measure" },
+      { key: "air_flow_rate", label: "Air Flow Rate (m/s)", type: "measure" },
+      { key: "clean_air_filter", label: "Cleaning Air Filter", type: "action" },
+      { key: "clean_coil", label: "Cleaning Coil Indoor/Outdoor", type: "action" },
+      { key: "clean_drainage", label: "Cleaning Drainage", type: "action" },
+      { key: "clean_body", label: "Cleaning Body Unit", type: "action" },
+    ];
+  }
+
+  // 5. SPLIT WALL / VRV / OTHERS (Default - 1 Phase or Generic)
   return [
     { key: "ampere_nameplate", label: "Ampere Nameplate", type: "measure" },
-    { key: "ampere_r", label: "Ampere Phase R", type: "measure" },
-    { key: "ampere_s", label: "Ampere Phase S", type: "measure" },
-    { key: "ampere_t", label: "Ampere Phase T", type: "measure" },
+    { key: "ampere_r", label: "Ampere Current (A)", type: "measure" },
     { key: "return_air_temp", label: "Return Air Temperature", type: "measure" },
     { key: "supply_air_temp", label: "Supply Air Temperature", type: "measure" },
     { key: "room_temp", label: "Room Temperature", type: "measure" },
@@ -179,6 +232,44 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
       preview: p.photo_url
     })) || []
   );
+
+  // Handle Auto-Calculations for Chiller (Delta T, Delta P)
+  React.useEffect(() => {
+    const isChiller = unit.unit_type?.toUpperCase().includes("CHILL") || unit.unit_type?.toUpperCase().includes("WCP");
+    if (!isChiller) return;
+
+    const calculateDelta = (inletKey: string, outletKey: string, deltaKey: string) => {
+      const inBefore = parseFloat(scope[inletKey]?.before || "0");
+      const outBefore = parseFloat(scope[outletKey]?.before || "0");
+      const inAfter = parseFloat(scope[inletKey]?.after || "0");
+      const outAfter = parseFloat(scope[outletKey]?.after || "0");
+      
+      let newBefore = scope[deltaKey]?.before || "";
+      let newAfter = scope[deltaKey]?.after || "";
+
+      if (!isNaN(inBefore) && !isNaN(outBefore) && inBefore !== 0 && outBefore !== 0) {
+        newBefore = Math.abs(inBefore - outBefore).toFixed(2);
+      }
+      if (!isNaN(inAfter) && !isNaN(outAfter) && inAfter !== 0 && outAfter !== 0) {
+        newAfter = Math.abs(inAfter - outAfter).toFixed(2);
+      }
+
+      if (scope[deltaKey]?.before !== newBefore || scope[deltaKey]?.after !== newAfter) {
+        setScope(prev => ({
+          ...prev,
+          [deltaKey]: { ...prev[deltaKey], before: newBefore, after: newAfter, remarks: "Auto-calculated" }
+        }));
+      }
+    };
+
+    calculateDelta("water_inlet_temp", "water_outlet_temp", "water_delta_t");
+    calculateDelta("water_inlet_pressure", "water_outlet_pressure", "water_delta_p");
+  }, [
+    scope.water_inlet_temp?.after, scope.water_inlet_temp?.before,
+    scope.water_outlet_temp?.after, scope.water_outlet_temp?.before,
+    scope.water_inlet_pressure?.after, scope.water_inlet_pressure?.before,
+    scope.water_outlet_pressure?.after, scope.water_outlet_pressure?.before
+  ]);
 
   // Helpers
   const updateScope = (key: string, field: string, val: string) => {
@@ -520,7 +611,11 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
 
       // 4. Save to DB
       const dbPayload = {
-        ...finalRenderData,
+        unit_id: unit.id,
+        inspector_name: engineerName,
+        engineer_note: technicalAdvice,
+        unit_tag: unit.tag_number || header.unit_number,
+        location: unit.location || header.location,
         technical_json: JSON.stringify(finalRenderData, (_, v) => typeof v === 'bigint' ? v.toString() : v), 
         pdf_report_url: pdfUrl,
         berita_acara_pdf_url: baUrl,
@@ -685,23 +780,61 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
                   <div className="text-[10px] bg-blue-100 text-blue-800 px-2 py-1 rounded font-bold uppercase">{lang === 'ja' ? '測定' : 'Measurement'}</div>
                 </div>
 
-                {/* Measurement rows */}
-                {SCOPE_ROWS.filter(r => r.type === "measure").map((row) => (
-                  <div key={row.key} className="mb-4 pb-3 border-b border-slate-100 last:border-0">
-                    <label className="text-xs font-black text-slate-700 mb-2 block">{t(row.label, lang)}</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      <div>
-                        <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Before</p>
-                        <input type="text" value={scope[row.key].before} onChange={e => updateScope(row.key, "before", e.target.value)} className="w-full p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-xs font-bold text-center focus:ring-amber-400" />
-                      </div>
-                      <div>
-                        <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">After</p>
-                        <input type="text" value={scope[row.key].after} onChange={e => updateScope(row.key, "after", e.target.value)} className="w-full p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs font-bold text-center focus:ring-emerald-400" />
-                      </div>
-                      <div>
-                        <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Margin / Result</p>
-                        <input type="text" value={scope[row.key].remarks} onChange={e => updateScope(row.key, "remarks", e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-center" />
-                      </div>
+                {/* Measurement rows with Categorization support */}
+                {Object.entries(
+                  SCOPE_ROWS.filter(r => r.type === "measure").reduce((acc: any, row) => {
+                    const cat = row.category || "General";
+                    if (!acc[cat]) acc[cat] = [];
+                    acc[cat].push(row);
+                    return acc;
+                  }, {})
+                ).map(([category, rows]: [string, any]) => (
+                  <div key={category} className="mb-6">
+                    {category !== "General" && (
+                      <h3 className="text-[10px] font-black uppercase text-blue-500 tracking-widest mb-3 bg-blue-50 p-2 rounded-lg border border-blue-100">
+                        {category}
+                      </h3>
+                    )}
+                    <div className="space-y-4">
+                      {rows.map((row: any) => {
+                        const isCalculated = row.key === 'water_delta_t' || row.key === 'water_delta_p';
+                        return (
+                          <div key={row.key} className="pb-3 border-b border-slate-100 last:border-0">
+                            <label className="text-xs font-black text-slate-700 mb-2 block">{t(row.label, lang)} {isCalculated && <span className="text-[10px] text-blue-500 ml-1">(AUTO)</span>}</label>
+                            <div className="grid grid-cols-3 gap-2">
+                              <div>
+                                <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Before</p>
+                                <input 
+                                  type="text" 
+                                  value={scope[row.key].before} 
+                                  onChange={e => !isCalculated && updateScope(row.key, "before", e.target.value)} 
+                                  readOnly={isCalculated}
+                                  className={`w-full p-2.5 border rounded-lg text-xs font-bold text-center ${isCalculated ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-amber-50 border-amber-200 focus:ring-amber-400'}`} 
+                                />
+                              </div>
+                              <div>
+                                <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">After</p>
+                                <input 
+                                  type="text" 
+                                  value={scope[row.key].after} 
+                                  onChange={e => !isCalculated && updateScope(row.key, "after", e.target.value)} 
+                                  readOnly={isCalculated}
+                                  className={`w-full p-2.5 border rounded-lg text-xs font-bold text-center ${isCalculated ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-emerald-50 border-emerald-200 focus:ring-emerald-400'}`} 
+                                />
+                              </div>
+                              <div>
+                                <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">{isCalculated ? 'Type' : 'Margin / Result'}</p>
+                                <input 
+                                  type="text" 
+                                  value={isCalculated ? 'CALC' : scope[row.key].remarks} 
+                                  readOnly 
+                                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-center text-slate-400" 
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 ))}
@@ -718,32 +851,53 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
                   <div className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-1 rounded font-bold uppercase">{lang === 'ja' ? 'チェックリスト' : 'Checklist'}</div>
                 </div>
 
-                {SCOPE_ROWS.filter(r => r.type === "action").map((row) => (
-                  <div key={row.key} className="mb-4 pb-3 border-b border-slate-100 last:border-0">
-                    <label className="text-xs font-black text-slate-700 mb-2 block">{t(row.label, lang)}</label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <select value={scope[row.key].done} onChange={e => updateScope(row.key, "done", e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold focus:ring-[#00a1e4]">
-                        <option value="">-- Pilih --</option>
-                        <option value="Done">✅ Done</option>
-                        <option value="N/A">⬜ N/A</option>
-                        <option value="Not Done">❌ Not Done</option>
-                        <option value="Replaced">🔄 Replaced</option>
-                      </select>
-                      <input type="text" value={scope[row.key].remarks} onChange={e => updateScope(row.key, "remarks", e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold" />
+                {/* Action Items with Categorization support */}
+                {Object.entries(
+                  SCOPE_ROWS.filter(r => r.type === "action").reduce((acc: any, row) => {
+                    const cat = row.category || "General";
+                    if (!acc[cat]) acc[cat] = [];
+                    acc[cat].push(row);
+                    return acc;
+                  }, {})
+                ).map(([category, rows]: [string, any]) => (
+                  <div key={category} className="mb-6">
+                    {category !== "General" && (
+                      <h3 className="text-[10px] font-black uppercase text-emerald-600 tracking-widest mb-3 bg-emerald-50 p-2 rounded-lg border border-emerald-100">
+                        {category}
+                      </h3>
+                    )}
+                    <div className="space-y-4">
+                      {rows.map((row: any) => (
+                        <div key={row.key} className="pb-3 border-b border-slate-100 last:border-0">
+                          <label className="text-xs font-black text-slate-700 mb-2 block">{t(row.label, lang)}</label>
+                          <div className="grid grid-cols-2 gap-2">
+                            <select value={scope[row.key].done} onChange={e => updateScope(row.key, "done", e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold focus:ring-[#00a1e4]">
+                              <option value="">-- Pilih --</option>
+                              <option value="Done">✅ Done</option>
+                              <option value="N/A">⬜ N/A</option>
+                              <option value="Not Done">❌ Not Done</option>
+                              <option value="Replaced">🔄 Replaced</option>
+                            </select>
+                            <input type="text" value={scope[row.key].remarks} onChange={e => updateScope(row.key, "remarks", e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold" />
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
-                <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">{t("Parts & Components", lang)}</h2>
-                {PARTS_ROWS.map((row) => (
-                  <div key={row.key} className="mb-3">
-                    <label className="text-xs font-bold text-slate-500 uppercase">{row.label}</label>
-                    <input type="text" value={parts[row.key]} onChange={e => setParts({ ...parts, [row.key]: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" />
-                  </div>
-                ))}
-              </div>
+              {!unit.unit_type?.toUpperCase().includes("CHILL") && !unit.unit_type?.toUpperCase().includes("WCP") && (
+                <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
+                  <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">{t("Parts & Components", lang)}</h2>
+                  {PARTS_ROWS.map((row) => (
+                    <div key={row.key} className="mb-3">
+                      <label className="text-xs font-bold text-slate-500 uppercase">{row.label}</label>
+                      <input type="text" value={parts[row.key]} onChange={e => setParts({ ...parts, [row.key]: e.target.value })} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" />
+                    </div>
+                  ))}
+                </div>
+              )}
             </motion.div>
           )}
 

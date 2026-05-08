@@ -2,26 +2,8 @@ import React from "react";
 import { ReportSignatureFooter } from "./ReportSignatureFooter";
 import { t, Language } from "@/lib/i18n";
 
-export const getFCUPreventiveSections = (data: any, unit: any, engineerName?: string, customerName?: string, lang: Language = 'id') => {
-  const { header, scope, parts, technicalAdvice, activity_photos } = data || {};
-  
-  const ELECTRICAL_PHASES = [
-    { key_r: "ampere_r", key_s: "ampere_s", key_t: "ampere_t", label: "Ampere (A)" }
-  ];
-
-  const THERMAL_ROWS = [
-    { key: "diff_temp", label: "Diff. Temp (oC)" },
-    { key: "room_temp", label: "Room Temp (oC)" },
-    { key: "air_flow", label: "Air Flow (Ft/M)" },
-  ];
-
-  const CHECKLIST_ROWS = [
-    { key: "clean_air_filter", label: t("Filter Cleaning/Replacement", lang) },
-    { key: "clean_coil", label: "Cleaning Coil" },
-    { key: "clean_drainage", label: t("Condensate Drain Cleaning", lang) },
-    { key: "clean_body", label: t("Unit Cabinet Cleaning", lang) },
-    { key: "check_motor", label: "Check Motor Fan & Bearing" },
-  ];
+export const getChillerPreventiveSections = (data: any, unit: any, engineerName?: string, customerName?: string, lang: Language = 'id') => {
+  const { header, scope, technicalAdvice, activity_photos } = data || {};
   
   const chunkArray = (arr: any[], size: number) => {
     if (!arr) return [];
@@ -32,112 +14,126 @@ export const getFCUPreventiveSections = (data: any, unit: any, engineerName?: st
 
   const photoChunks = chunkArray(activity_photos, 6);
 
-  const renderElectricalTable = () => {
-    const sR = scope?.["ampere_r"] || scope?.["ampere_motor"] || {};
-    const sS = scope?.["ampere_s"] || {};
-    const sT = scope?.["ampere_t"] || {};
-    const np = scope?.["ampere_nameplate"]?.before || "-";
+  const renderOperatingCondition = () => {
+    const v = scope?.voltage || {};
+    const fan = scope?.fan_unit || {};
+    const water = scope?.water || {};
 
     return (
-      <div key="electrical" style={{ marginBottom: "5mm" }}>
-        <div style={categoryHeader}>PERFORMA ELEKTRIKAL</div>
-        <table style={mainTableStyle}>
-          <thead>
-            <tr style={tableHeaderRow}>
-              <th rowSpan={2} style={{ ...thStyle, width: "15%" }}>PHASE</th>
-              <th rowSpan={2} style={{ ...thStyle, width: "15%" }}>NAME PLATE</th>
-              <th colSpan={3} style={{ ...thStyle, width: "70%" }}>AMPERE (A)</th>
-            </tr>
-            <tr style={tableHeaderRow}>
-              <th style={thStyle}>{t("Before", lang)}</th>
-              <th style={thStyle}>{t("After", lang)}</th>
-              <th style={thStyle}>MARGIN</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr style={{ height: "7mm" }}>
-              <td style={{ ...tdStyle, textAlign: "center", fontWeight: 900 }}>R</td>
-              <td style={{ ...tdStyle, textAlign: "center" }} rowSpan={3}>{np}</td>
-              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{sR.before || "-"}</td>
-              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{sR.after || "-"}</td>
-              <td style={{ ...tdStyle, textAlign: "center" }}>{sR.remarks || "-"}</td>
-            </tr>
-            <tr style={{ height: "7mm" }}>
-              <td style={{ ...tdStyle, textAlign: "center", fontWeight: 900 }}>S</td>
-              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{sS.before || "-"}</td>
-              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{sS.after || "-"}</td>
-              <td style={{ ...tdStyle, textAlign: "center" }}>{sS.remarks || "-"}</td>
-            </tr>
-            <tr style={{ height: "7mm" }}>
-              <td style={{ ...tdStyle, textAlign: "center", fontWeight: 900 }}>T</td>
-              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{sT.before || "-"}</td>
-              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{sT.after || "-"}</td>
-              <td style={{ ...tdStyle, textAlign: "center" }}>{sT.remarks || "-"}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    );
-  };
+      <div key="operating-condition" style={{ marginBottom: "5mm" }}>
+        <div style={categoryHeader}>OPERATING CONDITION</div>
+        
+        {/* Voltage Section */}
+        <div style={{ marginBottom: "3mm" }}>
+          <div style={subHeaderStyle}>A. VOLTAGE</div>
+          <table style={mainTableStyle}>
+            <tbody>
+              <tr>
+                <td style={{ ...tdStyle, width: "10%", fontWeight: 700 }}>RS</td>
+                <td style={{ ...tdStyle, width: "23%", textAlign: "center", color: "#003366", fontWeight: 800 }}>{v.rs || "-"}</td>
+                <td style={{ ...tdStyle, width: "10%", fontWeight: 700 }}>RT</td>
+                <td style={{ ...tdStyle, width: "23%", textAlign: "center", color: "#003366", fontWeight: 800 }}>{v.rt || "-"}</td>
+                <td style={{ ...tdStyle, width: "10%", fontWeight: 700 }}>ST</td>
+                <td style={{ ...tdStyle, width: "24%", textAlign: "center", color: "#003366", fontWeight: 800 }}>{v.st || "-"}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-  const renderThermalTable = () => {
-    return (
-      <div key="thermal" style={{ marginBottom: "5mm" }}>
-        <div style={categoryHeader}>PERFORMA TERMAL & UDARA</div>
-        <table style={mainTableStyle}>
-          <thead>
-            <tr style={tableHeaderRow}>
-              <th style={{ ...thStyle, width: "40%", textAlign: "left", paddingLeft: "4mm" }}>PARAMETER</th>
-              <th style={{ ...thStyle, width: "20%" }}>{t("Before", lang)}</th>
-              <th style={{ ...thStyle, width: "20%" }}>{t("After", lang)}</th>
-              <th style={{ ...thStyle, width: "20%" }}>MARGIN</th>
-            </tr>
-          </thead>
-          <tbody>
-            {THERMAL_ROWS.map((row) => {
-              const s = scope?.[row.key] || {};
-              return (
-                <tr key={row.key} style={{ height: "7mm" }}>
-                  <td style={{ ...tdStyle, textAlign: "left", paddingLeft: "4mm" }}>{row.label}</td>
-                  <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{s.before || "-"}</td>
-                  <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{s.after || "-"}</td>
-                  <td style={{ ...tdStyle, textAlign: "center" }}>{s.remarks || "-"}</td>
+        {/* Check Running Section */}
+        <div style={{ marginBottom: "3mm" }}>
+          <div style={subHeaderStyle}>B. CHECK RUNNING</div>
+          <table style={mainTableStyle}>
+            <thead>
+              <tr style={tableHeaderRow}>
+                <th style={{ ...thStyle, width: "15%" }}>CIRCUIT</th>
+                <th style={{ ...thStyle, width: "45%" }}>AMPERE (R / S / T)</th>
+                <th style={{ ...thStyle, width: "20%" }}>LP (PSI)</th>
+                <th style={{ ...thStyle, width: "20%" }}>HP (PSI)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[1, 2, 3, 4, 5].map((num) => {
+                const c = scope?.circuits?.[num - 1] || {};
+                return (
+                  <tr key={num} style={{ height: "8mm" }}>
+                    <td style={{ ...tdStyle, textAlign: "center", fontWeight: 700 }}>Circuit {num}</td>
+                    <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>
+                      {c.amp_r || "-" } / {c.amp_s || "-" } / {c.amp_t || "-" }
+                    </td>
+                    <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{c.pressure_lp || "-"}</td>
+                    <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{c.pressure_hp || "-"}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Other Parameters Section */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5mm" }}>
+          <div>
+            <div style={subHeaderStyle}>C. CHECK RUNNING AMP FAN UNIT</div>
+            <table style={mainTableStyle}>
+              <tbody>
+                <tr>
+                  <td style={{ ...tdStyle, width: "15%", fontWeight: 700 }}>R</td>
+                  <td style={{ ...tdStyle, width: "15%", fontWeight: 700 }}>S</td>
+                  <td style={{ ...tdStyle, width: "15%", fontWeight: 700 }}>T</td>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                <tr>
+                  <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{fan.r || "-"}</td>
+                  <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{fan.s || "-"}</td>
+                  <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{fan.t || "-"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div style={subHeaderStyle}>WATER & SETTING</div>
+            <table style={mainTableStyle}>
+              <tbody>
+                <tr>
+                  <td style={{ ...tdStyle, fontSize: "7pt" }}>Water INLET Temp</td>
+                  <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{water.inlet_temp || "-"} °C</td>
+                  <td style={{ ...tdStyle, fontSize: "7pt" }}>Water OUTLET Temp</td>
+                  <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{water.outlet_temp || "-"} °C</td>
+                </tr>
+                <tr>
+                  <td style={{ ...tdStyle, fontSize: "7pt", fontWeight: 900, color: "#2563eb" }}>DELTA T (In - Out)</td>
+                  <td colSpan={3} style={{ ...tdStyle, textAlign: "center", color: "#2563eb", fontWeight: 900, fontSize: "10pt" }}>{water.delta_t || "-"} °C</td>
+                </tr>
+                <tr>
+                  <td style={{ ...tdStyle, fontSize: "7pt" }}>Pressure Water INLET</td>
+                  <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{water.inlet_pressure || "-"} bar</td>
+                  <td style={{ ...tdStyle, fontSize: "7pt" }}>Pressure Water OUTLET</td>
+                  <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{water.outlet_pressure || "-"} bar</td>
+                </tr>
+                <tr>
+                  <td style={{ ...tdStyle, fontSize: "7pt", fontWeight: 900, color: "#2563eb" }}>DELTA P (In - Out)</td>
+                  <td colSpan={3} style={{ ...tdStyle, textAlign: "center", color: "#2563eb", fontWeight: 900, fontSize: "10pt" }}>{water.delta_p || "-"} bar</td>
+                </tr>
+                <tr>
+                  <td colSpan={2} style={{ ...tdStyle, fontWeight: 700 }}>Setting Temp EWT</td>
+                  <td colSpan={2} style={{ ...tdStyle, textAlign: "center", color: "#16a34a", fontWeight: 900, fontSize: "10pt" }}>{scope?.setting_temp_ewt || "-"} °C</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     );
   };
 
-  const renderSummaryTable = () => {
-    const dCount = scope?.["diffuser_count"]?.before || "-";
-    const avActual = scope?.["air_volume_actual"]?.before || "-";
-    const avNP = scope?.["air_volume_nameplate"]?.before || "-";
-    const perf = scope?.["performa_score"]?.before || "-";
-
-    return (
-      <div key="summary" style={{ marginBottom: "5mm" }}>
-        <div style={categoryHeader}>RINGKASAN PERFORMA UNIT</div>
-        <table style={mainTableStyle}>
-          <thead>
-            <tr style={tableHeaderRow}>
-              <th style={thStyle}>JUMLAH DIFFUSER</th>
-              <th colSpan={2} style={thStyle}>AIR VOLUME (CFM)</th>
-              <th style={thStyle}>PERFORMANCE (%)</th>
-            </tr>
-            <tr style={tableHeaderRow}>
-              <th style={{ ...thStyle, backgroundColor: "white" }}>{dCount}</th>
-              <th style={thSubStyle}>ACTUAL: {avActual}</th>
-              <th style={thSubStyle}>NAME PLATE: {avNP}</th>
-              <th style={{ ...thStyle, backgroundColor: "white", color: "#16a34a" }}>{perf}</th>
-            </tr>
-          </thead>
-        </table>
-      </div>
-    );
-  };
+  const CHECKLIST_ROWS = [
+    { key: "check_leak", label: "Check Oil & Refrigerant Leaks" },
+    { key: "check_vibration", label: "Check Compressor Vibration & Noise" },
+    { key: "check_oil_level", label: "Check Oil Level & Color" },
+    { key: "check_refrigerant", label: "Check Refrigerant Charge (Sight Glass)" },
+    { key: "clean_condenser", label: "Clean Condenser Coils / Tubes" },
+    { key: "check_strainer", label: "Check Water Strainer" },
+    { key: "check_control", label: "Check Control Panel & Safety Devices" },
+  ];
 
   const renderChecklistTable = (key: string, title: string, rows: any[]) => {
     return (
@@ -155,7 +151,7 @@ export const getFCUPreventiveSections = (data: any, unit: any, engineerName?: st
               const s = scope?.[row.key] || {};
               const isDone = s.done?.toLowerCase().includes("done") || s.done?.toLowerCase().includes("selesai") || s.before?.toLowerCase().includes("done");
               return (
-                <tr key={row.key} style={{ height: "7mm" }}>
+                <tr style={{ height: "7mm" }}>
                   <td style={{ ...tdStyle, textAlign: "left", paddingLeft: "4mm" }}>{row.label}</td>
                   <td style={{ ...tdStyle, textAlign: "center" }}>
                      <span style={{ 
@@ -170,7 +166,7 @@ export const getFCUPreventiveSections = (data: any, unit: any, engineerName?: st
                         fontWeight: 900,
                         border: `1px solid ${isDone ? "#bbf7d0" : "#fecaca"}`
                      }}>
-                        {isDone ? "DONE" : (s.done || s.before || "-")}
+                        {isDone ? "DONE" : (s.done || s.before || "N/A")}
                      </span>
                   </td>
                 </tr>
@@ -189,7 +185,7 @@ export const getFCUPreventiveSections = (data: any, unit: any, engineerName?: st
           <tbody>
             <tr>
               <td style={cellLabel}>{t("Category", lang)}</td>
-              <td style={cellVal}>FCU</td>
+              <td style={cellVal}>CHILLER (WCP & SMALL)</td>
               <td style={cellLabel}>{t("Brand", lang)}</td>
               <td style={cellVal}>{header?.brand || unit?.brand || "-"}</td>
               <td style={cellLabel}>{t("Date of Service", lang)}</td>
@@ -216,8 +212,8 @@ export const getFCUPreventiveSections = (data: any, unit: any, engineerName?: st
               <td style={cellVal}>{header?.tenant || "-"}</td>
               <td style={cellLabel}>{t("Unit Tag Number", lang)}</td>
               <td style={cellVal}>{header?.unit_number || unit?.tag_number || "-"}</td>
-              <td style={cellLabel}>{t("Capacity", lang)} (PK)</td>
-              <td style={cellVal}>{header?.capacity_pk || "-"}</td>
+              <td style={cellLabel}>{t("Capacity", lang)}</td>
+              <td style={cellVal}>{header?.nominal_capacity || "-"}</td>
             </tr>
             <tr>
                <td style={cellLabel}>{t("Service Team", lang)}</td>
@@ -227,21 +223,21 @@ export const getFCUPreventiveSections = (data: any, unit: any, engineerName?: st
         </table>
     </div>,
 
-    renderElectricalTable(),
-    renderThermalTable(),
-    renderSummaryTable(),
-    renderChecklistTable("checklist", "MAINTENANCE CHECKLIST", CHECKLIST_ROWS),
+    renderOperatingCondition(),
+    renderChecklistTable("chiller-checklist", "MAINTENANCE CHECKLIST", CHECKLIST_ROWS),
 
     // FINDINGS & RECOMMENDATIONS
-    (scope?.finding || scope?.recommendation) ? (
+    (scope?.finding || scope?.recommendation || technicalAdvice) ? (
       <div key="findings-section" style={{ marginBottom: "5mm" }}>
         <div style={categoryHeader}>{t("Findings & Recommendations", lang)}</div>
         <table style={mainTableStyle}>
           <tbody>
-            {scope?.finding && (
+            {(scope?.finding || technicalAdvice) && (
               <tr>
                 <td style={{ ...cellLabelSmall, width: "30%" }}>{t("Finding", lang)}</td>
-                <td style={{ ...cellValSmall, width: "70%", whiteSpace: "pre-wrap" }}>{typeof scope.finding === 'string' ? scope.finding : scope.finding.before}</td>
+                <td style={{ ...cellValSmall, width: "70%", whiteSpace: "pre-wrap" }}>
+                  {technicalAdvice && technicalAdvice !== "-" ? technicalAdvice : (typeof scope?.finding === 'string' ? scope.finding : scope?.finding?.before || "-")}
+                </td>
               </tr>
             )}
             {scope?.recommendation && (
@@ -254,13 +250,6 @@ export const getFCUPreventiveSections = (data: any, unit: any, engineerName?: st
         </table>
       </div>
     ) : null,
-
-    <div key="advice" style={{ marginBottom: "6mm" }}>
-      <div style={categoryHeader}>{t("Technical Advice & Summary", lang)}</div>
-      <div style={adviceBoxStyle}>
-        {technicalAdvice || "-"}
-      </div>
-    </div>,
 
     <div key="sign-force-break" style={{ marginTop: "5mm", minHeight: "180px" }}>
        <ReportSignatureFooter 
@@ -311,6 +300,7 @@ export const getFCUPreventiveSections = (data: any, unit: any, engineerName?: st
   ].filter(Boolean);
 };
 
+const subHeaderStyle: React.CSSProperties = { fontSize: "8pt", fontWeight: 900, color: "#475569", marginBottom: "1.5mm", textTransform: "uppercase" };
 const mainTableStyle: React.CSSProperties = { width: "100%", borderCollapse: "collapse", marginBottom: "4mm", tableLayout: "fixed" };
 const cellLabel: React.CSSProperties = { width: "18%", backgroundColor: "#f8fafc", border: "1px solid #e2e8f0", paddingTop: "1.5mm", paddingBottom: "1.5mm", paddingLeft: "2mm", paddingRight: "2mm", fontSize: "7pt", fontWeight: 700, color: "#475569", textTransform: "uppercase" };
 const cellVal: React.CSSProperties = { width: "15%", border: "1px solid #e2e8f0", paddingTop: "1.5mm", paddingBottom: "1.5mm", paddingLeft: "2mm", paddingRight: "2mm", fontSize: "8pt", fontWeight: 700, color: "#0f172a" };
@@ -319,9 +309,7 @@ const cellValSmall: React.CSSProperties = { border: "1px solid #e2e8f0", padding
 const categoryHeader: React.CSSProperties = { backgroundColor: "#f1f5f9", paddingTop: "2mm", paddingBottom: "2mm", paddingLeft: "4mm", paddingRight: "4mm", fontSize: "9pt", fontWeight: 900, color: "#003366", borderLeft: "4px solid #00a1e4", marginBottom: "2mm", textTransform: "uppercase", letterSpacing: "0.5px" };
 const tableHeaderRow: React.CSSProperties = { backgroundColor: "#f8fafc" };
 const thStyle: React.CSSProperties = { border: "1px solid #e2e8f0", paddingTop: "2mm", paddingBottom: "2mm", paddingLeft: "2mm", paddingRight: "2mm", fontSize: "7.5pt", fontWeight: 900, color: "#475569", textTransform: "uppercase", textAlign: "center" };
-const thSubStyle: React.CSSProperties = { border: "1px solid #e2e8f0", paddingTop: "1.5mm", paddingBottom: "1.5mm", paddingLeft: "1.5mm", paddingRight: "1.5mm", fontSize: "6.5pt", fontWeight: 700, color: "#64748b", textTransform: "uppercase", textAlign: "center", backgroundColor: "white" };
 const tdStyle: React.CSSProperties = { border: "1px solid #e2e8f0", paddingTop: "1.5mm", paddingBottom: "1.5mm", paddingLeft: "2mm", paddingRight: "2mm", fontSize: "8.5pt" };
-const adviceBoxStyle: React.CSSProperties = { border: "1px solid #e2e8f0", borderRadius: "1mm", paddingTop: "4mm", paddingBottom: "4mm", paddingLeft: "4mm", paddingRight: "4mm", minHeight: "20mm", fontSize: "9pt", color: "#1e293b", lineHeight: "1.5", backgroundColor: "#fcfcfc" };
 const photoWrapperStyle: React.CSSProperties = { border: "1px solid #e2e8f0", paddingTop: "1mm", paddingBottom: "1mm", paddingLeft: "1mm", paddingRight: "1mm", borderRadius: "1.5mm", backgroundColor: "white", position: "relative" };
 const photoImgStyle: React.CSSProperties = { width: "100%", height: "45mm", objectFit: "cover", borderRadius: "1mm" };
 const photoCaptionStyle: React.CSSProperties = { fontSize: "6.5pt", marginTop: "1.5mm", textAlign: "center", color: "#64748b", fontWeight: 600 };

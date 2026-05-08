@@ -10,6 +10,7 @@ import { getBeritaAcaraSections } from "@/components/BeritaAcaraPDFTemplate";
 import { getDailyLogSections } from "@/components/DailyLogPDFTemplate";
 import { getFCUPreventiveSections } from "@/components/FCUPreventivePDFTemplate";
 import { getAHUPreventiveSections } from "@/components/AHUPreventivePDFTemplate";
+import { getChillerPreventiveSections } from "@/components/ChillerPreventivePDFTemplate";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas-pro";
 import { format } from "date-fns";
@@ -519,8 +520,10 @@ export default function ReportHubPage() {
     reportTitle = activityData.reportTitle || t("FORM PENGUKURAN (AUDIT)", activeLang);
     sections = getAuditSections({...activityData, ...commonApproval}, data.unit);
   } else if (type.toLowerCase() === 'preventive' || type.toLowerCase() === 'pm') {
-    const isFCU = data.unit?.unit_type?.toUpperCase() === 'FCU';
-    const isAHU = data.unit?.unit_type?.toUpperCase() === 'AHU';
+    const uType = (data.unit?.unit_type || "").toUpperCase().trim();
+    const isFCU = uType === 'FCU';
+    const isAHU = uType === 'AHU' || uType.includes('AHU');
+    const isChiller = uType.includes('CHILL') || uType.includes('WCP');
     
     if (isAHU) {
       reportTitle = activityData.reportTitle || "PREVENTIVE MAINTENANCE AHU";
@@ -528,6 +531,9 @@ export default function ReportHubPage() {
     } else if (isFCU) {
       reportTitle = activityData.reportTitle || "PREVENTIVE MAINTENANCE FCU";
       sections = getFCUPreventiveSections({...activityData, ...commonApproval}, data.unit, data.activity.inspector_name, data.customer?.name, activeLang);
+    } else if (isChiller) {
+      reportTitle = activityData.reportTitle || "PREVENTIVE MAINTENANCE CHILLER";
+      sections = getChillerPreventiveSections({...activityData, ...commonApproval}, data.unit, data.activity.inspector_name, data.customer?.name, activeLang);
     } else {
       reportTitle = activityData.reportTitle || "PREVENTIVE MAINTENANCE SPLIT DUCT";
       sections = getPreventiveSections({...activityData, ...commonApproval}, data.unit, data.activity.inspector_name, data.customer?.name, activeLang);

@@ -51,12 +51,14 @@ export const getPreventiveSections = (data: any, unit: any, engineerName?: strin
         { key: "diffuser_count", label: "Number of Diffusers" },
         { key: "air_volume", label: "Air Volume (CFM)" }
     );
-  } else {
-    // Split / VRV
+  } else if (unitType.includes("SPLIT DUCT") || unitType.includes("DUCTED")) {
     ELECTRICAL_ROWS.push(
         { key: "ampere_s", label: "Compressor Current - Phase S (A)" },
         { key: "ampere_t", label: "Compressor Current - Phase T (A)" }
     );
+  } else {
+    // Split Wall / VRV (Generic)
+    // Only show Phase R / Single Phase
   }
 
   const WATER_SIDE_ROWS = [
@@ -240,13 +242,13 @@ export const getPreventiveSections = (data: any, unit: any, engineerName?: strin
             {scope?.finding && (
               <tr>
                 <td style={{ ...cellLabelSmall, width: "30%" }}>{t("Finding", lang)}</td>
-                <td style={{ ...cellValSmall, width: "70%", whiteSpace: "pre-wrap" }}>{scope.finding.before}</td>
+                <td style={{ ...cellValSmall, width: "70%", whiteSpace: "pre-wrap" }}>{typeof scope.finding === 'string' ? scope.finding : scope.finding.before}</td>
               </tr>
             )}
             {scope?.recommendation && (
               <tr>
                 <td style={{ ...cellLabelSmall, width: "30%" }}>{t("Recommendation", lang)}</td>
-                <td style={{ ...cellValSmall, width: "70%", whiteSpace: "pre-wrap" }}>{scope.recommendation.before}</td>
+                <td style={{ ...cellValSmall, width: "70%", whiteSpace: "pre-wrap" }}>{typeof scope.recommendation === 'string' ? scope.recommendation : scope.recommendation.before}</td>
               </tr>
             )}
           </tbody>

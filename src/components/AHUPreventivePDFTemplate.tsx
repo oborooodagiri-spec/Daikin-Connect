@@ -209,13 +209,13 @@ export const getAHUPreventiveSections = (data: any, unit: any, engineerName?: st
             {scope?.finding && (
               <tr>
                 <td style={{ ...cellLabel, width: "30%" }}>{t("Finding", lang)}</td>
-                <td style={{ ...cellVal, width: "70%", whiteSpace: "pre-wrap" }}>{scope.finding.before}</td>
+                <td style={{ ...cellVal, width: "70%", whiteSpace: "pre-wrap" }}>{typeof scope.finding === 'string' ? scope.finding : scope.finding.before}</td>
               </tr>
             )}
             {scope?.recommendation && (
               <tr>
                 <td style={{ ...cellLabel, width: "30%" }}>{t("Recommendation", lang)}</td>
-                <td style={{ ...cellVal, width: "70%", whiteSpace: "pre-wrap" }}>{scope.recommendation.before}</td>
+                <td style={{ ...cellVal, width: "70%", whiteSpace: "pre-wrap" }}>{typeof scope.recommendation === 'string' ? scope.recommendation : scope.recommendation.before}</td>
               </tr>
             )}
           </tbody>

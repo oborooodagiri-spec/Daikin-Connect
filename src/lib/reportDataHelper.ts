@@ -127,6 +127,43 @@ export const processReportData = (report: any) => {
       { label: "Cleaning body", key: "clean_body" },
       { label: "V-Belt", key: "check_vbelt" },
       { label: "Bearing", key: "check_bearing" },
+      // Chiller Specific
+      { label: "Voltage RS", key: "voltage_rs" },
+      { label: "Voltage RT", key: "voltage_rt" },
+      { label: "Voltage ST", key: "voltage_st" },
+      { label: "Circuit 1 - Amp R", key: "circuit_1_amp_r" },
+      { label: "Circuit 1 - Amp S", key: "circuit_1_amp_s" },
+      { label: "Circuit 1 - Amp T", key: "circuit_1_amp_t" },
+      { label: "Circuit 1 - LP", key: "circuit_1_pressure_lp" },
+      { label: "Circuit 1 - HP", key: "circuit_1_pressure_hp" },
+      { label: "Circuit 2 - Amp R", key: "circuit_2_amp_r" },
+      { label: "Circuit 2 - Amp S", key: "circuit_2_amp_s" },
+      { label: "Circuit 2 - Amp T", key: "circuit_2_amp_t" },
+      { label: "Circuit 2 - LP", key: "circuit_2_pressure_lp" },
+      { label: "Circuit 2 - HP", key: "circuit_2_pressure_hp" },
+      { label: "Circuit 3 - Amp R", key: "circuit_3_amp_r" },
+      { label: "Circuit 3 - Amp S", key: "circuit_3_amp_s" },
+      { label: "Circuit 3 - Amp T", key: "circuit_3_amp_t" },
+      { label: "Circuit 3 - LP", key: "circuit_3_pressure_lp" },
+      { label: "Circuit 3 - HP", key: "circuit_3_pressure_hp" },
+      { label: "Circuit 4 - Amp R", key: "circuit_4_amp_r" },
+      { label: "Circuit 4 - Amp S", key: "circuit_4_amp_s" },
+      { label: "Circuit 4 - Amp T", key: "circuit_4_amp_t" },
+      { label: "Circuit 4 - LP", key: "circuit_4_pressure_lp" },
+      { label: "Circuit 4 - HP", key: "circuit_4_pressure_hp" },
+      { label: "Circuit 5 - Amp R", key: "circuit_5_amp_r" },
+      { label: "Circuit 5 - Amp S", key: "circuit_5_amp_s" },
+      { label: "Circuit 5 - Amp T", key: "circuit_5_amp_t" },
+      { label: "Circuit 5 - LP", key: "circuit_5_pressure_lp" },
+      { label: "Circuit 5 - HP", key: "circuit_5_pressure_hp" },
+      { label: "Fan Indoor R", key: "fan_indoor_r" },
+      { label: "Fan Indoor S", key: "fan_indoor_s" },
+      { label: "Fan Indoor T", key: "fan_indoor_t" },
+      { label: "Water Inlet Temp", key: "water_inlet_temp" },
+      { label: "Water Outlet Temp", key: "water_outlet_temp" },
+      { label: "Water Inlet Pressure", key: "water_inlet_pressure" },
+      { label: "Water Outlet Pressure", key: "water_outlet_pressure" },
+      { label: "Setting Temp EWT", key: "setting_temp_ewt" },
     ];
 
     const scope: any = {};
@@ -209,6 +246,45 @@ export const processReportData = (report: any) => {
       if (p.air_volume_nameplate) scope["air_volume_nameplate"] = { before: p.air_volume_nameplate, after: p.air_volume_nameplate, remarks: "" };
       if (p.performa_cfm) scope["performa_cfm"] = { before: p.performa_cfm, after: p.performa_cfm, remarks: "" };
       if (p.performa_score) scope["performa_score"] = { before: p.performa_score + "%", after: p.performa_score + "%", remarks: "" };
+    }
+    
+    // 3. Post-Process Chiller Structure
+    const uType = (report.units?.unit_type || "").toUpperCase().trim();
+    const isChiller = uType.includes('CHILL') || uType.includes('WCP');
+    if (isChiller) {
+      scope.voltage = {
+        rs: scope.voltage_rs?.after || scope.voltage_rs?.before || "-",
+        rt: scope.voltage_rt?.after || scope.voltage_rt?.before || "-",
+        st: scope.voltage_st?.after || scope.voltage_st?.before || "-"
+      };
+      scope.fan_unit = {
+        r: scope.fan_unit_r?.after || scope.fan_unit_r?.before || "-",
+        s: scope.fan_unit_s?.after || scope.fan_unit_s?.before || "-",
+        t: scope.fan_unit_t?.after || scope.fan_unit_t?.before || "-"
+      };
+      scope.water = {
+        inlet_temp: scope.water_inlet_temp?.after || scope.water_inlet_temp?.before || "-",
+        outlet_temp: scope.water_outlet_temp?.after || scope.water_outlet_temp?.before || "-",
+        delta_t: scope.water_delta_t?.after || scope.water_delta_t?.before || "-",
+        inlet_pressure: scope.water_inlet_pressure?.after || scope.water_inlet_pressure?.before || "-",
+        outlet_pressure: scope.water_outlet_pressure?.after || scope.water_outlet_pressure?.before || "-",
+        delta_p: scope.water_delta_p?.after || scope.water_delta_p?.before || "-"
+      };
+      scope.setting_temp_ewt = scope.setting_temp_ewt?.after || scope.setting_temp_ewt?.before || "-";
+      
+      // Circuits (Handle mapping from technical_json directly if possible, or flattened keys)
+      if (t.circuits) {
+        scope.circuits = t.circuits;
+      } else {
+        // Fallback or mapped from spreadsheet keys if any
+        scope.circuits = [1, 2, 3, 4, 5].map(i => ({
+          amp_r: scope[`circuit_${i}_amp_r`]?.before || scope[`circuit_${i}_amp_r`]?.after || "-",
+          amp_s: scope[`circuit_${i}_amp_s`]?.before || scope[`circuit_${i}_amp_s`]?.after || "-",
+          amp_t: scope[`circuit_${i}_amp_t`]?.before || scope[`circuit_${i}_amp_t`]?.after || "-",
+          lp: scope[`circuit_${i}_pressure_lp`]?.before || scope[`circuit_${i}_pressure_lp`]?.after || "-",
+          hp: scope[`circuit_${i}_pressure_hp`]?.before || scope[`circuit_${i}_pressure_hp`]?.after || "-"
+        }));
+      }
     }
 
     // 4. Capture Phase Amperes if they exist in root (Fallback for direct DB fields)

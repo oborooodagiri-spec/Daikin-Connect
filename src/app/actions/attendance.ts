@@ -19,6 +19,11 @@ export async function getActiveAttendance(projectId: string) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    const user = await prisma.users.findUnique({
+      where: { id: parseInt(session.userId) },
+      select: { face_reference_url: true }
+    });
+
     const activeRecord = await (prisma as any).vendor_attendance.findFirst({
       where: {
         user_id: parseInt(session.userId),
@@ -49,11 +54,96 @@ export async function getActiveAttendance(projectId: string) {
   }
 }
 
+export async function getAttendanceHistory(month?: number, year?: number) {
+  unstable_noStore();
+  try {
+    const session = await getSession();
+    if (!session) return { error: "Unauthorized" };
+
+    const now = new Date();
+    const targetMonth = month !== undefined ? month : now.getMonth();
+    const targetYear = year !== undefined ? year : now.getFullYear();
+
+    const startDate = new Date(targetYear, targetMonth, 1);
+    const endDate = new Date(targetYear, targetMonth + 1, 0, 23, 59, 59);
+
+    const records = await (prisma as any).vendor_attendance.findMany({
+      where: {
+        user_id: parseInt(session.userId),
+        check_in_time: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      include: {
+        projects: {
+          select: { name: true }
+        }
+      },
+      orderBy: {
+        check_in_time: "desc",
+      },
+    });
+
+    return serializePrisma({ success: true, data: records });
+  } catch (error) {
+    console.error("fetch attendance history err", error);
+    return { error: "Failed to fetch attendance history." };
+  }
+}
+
+export async function getAttendanceStats(month?: number, year?: number) {
+  unstable_noStore();
+  try {
+    const session = await getSession();
+    if (!session) return { error: "Unauthorized" };
+
+    const now = new Date();
+    const targetMonth = month !== undefined ? month : now.getMonth();
+    const targetYear = year !== undefined ? year : now.getFullYear();
+
+    const startDate = new Date(targetYear, targetMonth, 1);
+    const endDate = new Date(targetYear, targetMonth + 1, 0, 23, 59, 59);
+
+    const records = await (prisma as any).vendor_attendance.findMany({
+      where: {
+        user_id: parseInt(session.userId),
+        check_in_time: {
+          gte: startDate,
+          lte: endDate,
+        },
+      }
+    });
+
+    // Simple mock stats for now as we don't have shift schedule comparison logic fully here yet
+    // In real app, we'd compare check_in_time with scheduled start_at
+    const stats = {
+      absent: 0,
+      late: records.filter((r: any) => {
+        const checkIn = new Date(r.check_in_time);
+        return checkIn.getHours() > 8 || (checkIn.getHours() === 8 && checkIn.getMinutes() > 30);
+      }).length,
+      earlyOut: records.filter((r: any) => {
+        if (!r.check_out_time) return false;
+        const checkOut = new Date(r.check_out_time);
+        return checkOut.getHours() < 17 || (checkOut.getHours() === 17 && checkOut.getMinutes() < 30);
+      }).length,
+      noClockIn: 0,
+      noClockOut: records.filter((r: any) => !r.check_out_time).length
+    };
+
+    return { success: true, data: stats };
+  } catch (error) {
+    return { error: "Failed to fetch stats" };
+  }
+}
+
 export async function submitCheckIn(data: {
   projectId: string;
   lat: number;
   long: number;
   photoUrl: string;
+  notes?: string;
 }) {
   try {
     const session = await getSession();
@@ -107,12 +197,26 @@ export async function submitCheckIn(data: {
         check_in_lat: data.lat,
         check_in_long: data.long,
         check_in_photo: data.photoUrl,
+        check_in_notes: data.notes,
       },
     });
 
-    revalidatePath("/dashboard");
+    // --- SMART BRIDGE INTEGRATION ---
+    try {
+      await syncAttendanceWithSchedule({
+        userId: parseInt(session.userId),
+        projectId: data.projectId,
+        action: "IN",
+        photoUrl: data.photoUrl,
+        notes: data.notes
+      });
+    } catch (e) {
+      console.warn("Schedule sync failed:", e);
+    }
+    // ---------------------------------
+
+    revalidatePath("/home/attendance");
     revalidatePath("/admin/attendance");
-    revalidatePath("/(dashboard)");
     
     return { success: true, id: Number(record.id) };
   } catch (err) {
@@ -126,6 +230,7 @@ export async function submitCheckOut(data: {
   lat: number;
   long: number;
   photoUrl: string;
+  notes?: string;
 }) {
   try {
     const session = await getSession();
@@ -138,12 +243,26 @@ export async function submitCheckOut(data: {
         check_out_lat: data.lat,
         check_out_long: data.long,
         check_out_photo: data.photoUrl,
+        check_out_notes: data.notes,
       },
     });
 
-    revalidatePath("/dashboard");
-    revalidatePath("/client/dashboard");
-    revalidatePath("/(dashboard)"); // Revalidate groups
+    // --- SMART BRIDGE INTEGRATION ---
+    try {
+      await syncAttendanceWithSchedule({
+        userId: parseInt(session.userId),
+        projectId: record.project_id.toString(),
+        action: "OUT",
+        photoUrl: data.photoUrl,
+        notes: data.notes
+      });
+    } catch (e) {
+      console.warn("Schedule sync failed:", e);
+    }
+    // ---------------------------------
+
+    revalidatePath("/home/attendance");
+    revalidatePath("/admin/attendance");
 
     return { success: true, id: Number(record.id) };
   } catch (err) {
@@ -293,4 +412,79 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * c;
 }
 
+/**
+ * SMART BRIDGE: Synchronize Attendance with Operational Schedules
+ */
+async function syncAttendanceWithSchedule({ 
+  userId, projectId, action, photoUrl, notes 
+}: { 
+  userId: number; projectId: string; action: "IN" | "OUT"; photoUrl: string; notes?: string;
+}) {
+  const startOfDay = new Date();
+  startOfDay.setHours(0,0,0,0);
+  const endOfDay = new Date();
+  endOfDay.setHours(23,59,59,999);
 
+  // 1. Get User Profile
+  const user = await prisma.users.findUnique({
+    where: { id: userId },
+    select: { name: true, roles: { select: { role_name: true } } }
+  });
+  if (!user) return;
+
+  // 2. Find Relevant Schedule for Lanud/Project today
+  // Types: DailyLog or Preventive usually represent operational duty
+  const relevantSchedule = await prisma.schedules.findFirst({
+    where: {
+      project_id: BigInt(projectId),
+      assignee_id: userId,
+      start_at: { gte: startOfDay, lte: endOfDay },
+      status: { in: ["Planned", "InProgress"] }
+    },
+    orderBy: { start_at: 'asc' }
+  });
+
+  if (relevantSchedule) {
+    // Update Schedule Status
+    await prisma.schedules.update({
+      where: { id: relevantSchedule.id },
+      data: { 
+        status: action === "IN" ? "InProgress" : "Completed",
+        description: (relevantSchedule.description || "") + 
+          `\n[Auto ${action}]: ${user.name} at ${new Date().toLocaleTimeString()} - Notes: ${notes || '-'}`
+      }
+    });
+
+    // Mark Presence
+    if (action === "IN") {
+      await (prisma as any).schedule_attendance.create({
+        data: {
+          schedule_id: relevantSchedule.id,
+          name: user.name,
+          role: (user.roles as any)?.role_name || "Technical Team",
+          is_present: true,
+          signature: photoUrl // Store biometric proof in signature field for now
+        }
+      });
+    }
+  } else if (action === "IN") {
+    // If NO schedule exists but we are at a critical site like LANUD, auto-create a DailyLog
+    // LANUD Rusmin Nuryadin ID is 4 (identified from scratch script)
+    if (projectId === "4") {
+      await prisma.schedules.create({
+        data: {
+          project_id: BigInt(projectId),
+          assignee_id: userId,
+          title: `Daily Duty: ${user.name} (Auto-Generated)`,
+          description: `Automatic attendance record. Clock-in at ${new Date().toLocaleTimeString()}.`,
+          start_at: new Date(),
+          end_at: new Date(new Date().getTime() + 8 * 3600000), // Default 8h shift
+          type: "DailyLog",
+          status: "InProgress"
+        }
+      });
+    }
+  }
+
+  revalidatePath("/dashboard/schedules");
+}
