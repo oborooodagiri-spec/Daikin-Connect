@@ -56,33 +56,11 @@ export default function RootLayout({
         <SyncManager />
         <UpdatePrompt />
         <Script 
-          src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" 
-          strategy="beforeInteractive" 
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js" 
+          strategy="afterInteractive" 
+          async 
+          defer
         />
-        <Script id="turnstile-init" strategy="afterInteractive">
-          {`
-            console.log("Turnstile Init Script Running");
-            window.renderTurnstile = () => {
-              if (window.turnstile) {
-                const elements = document.querySelectorAll('.cf-turnstile:not([data-rendered])');
-                elements.forEach(el => {
-                  const sitekey = el.getAttribute('data-sitekey');
-                  console.log("Found turnstile element, rendering with key:", sitekey);
-                  try {
-                    window.turnstile.render(el, {
-                      sitekey: sitekey,
-                      theme: 'light',
-                    });
-                    el.setAttribute('data-rendered', 'true');
-                  } catch(e) { console.error("Turnstile render error:", e); }
-                });
-              } else {
-                console.warn("window.turnstile not found yet...");
-              }
-            };
-            setInterval(window.renderTurnstile, 1000);
-          `}
-        </Script>
       </body>
     </html>
   );

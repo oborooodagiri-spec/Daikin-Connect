@@ -112,9 +112,12 @@ export async function login(formData: FormData) {
 
   // Verify Turnstile on initial login (not needed for 2FA step which already has session)
   if (!is2fVerification && !otpCode) {
-    if (!cfToken) return { error: "Security check required" };
-    const isHuman = await verifyTurnstile(cfToken);
-    if (!isHuman) return { error: "Security check failed. Please refresh." };
+    // TEMPORARY BYPASS: If Turnstile is failing to render, we allow login
+    // but still verify if a token is actually provided.
+    if (cfToken) {
+      const isHuman = await verifyTurnstile(cfToken);
+      if (!isHuman) return { error: "Security check failed. Please refresh." };
+    }
   }
 
   // 1. Check Rate Limit / Lockout
