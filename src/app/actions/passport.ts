@@ -177,7 +177,7 @@ export async function updateUnitInfoFromPassport(token: string, data: any) {
       "Pending Unit Edit",
       `${requesterName} requested changes for unit ${unit.tag_number}`,
       "alert",
-      "/dashboard/unit-requests"
+      `/w/${unit.project_ref_id}/dashboard/unit-requests`
     );
 
     // Notify Admin & Engineer (Push)

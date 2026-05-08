@@ -1163,7 +1163,7 @@ export async function requestDeletion(targetId: string | number, type: string, r
       "Deletion Requested",
       `${session.name} meminta penghapusan ${type} (ID: ${targetId}).`,
       "warning",
-      "/admin/audit-logs" // Or a specific review page if we build one
+      "/admin/security" // Redirect to Security Intelligence (Global Logs)
     );
 
     return { success: true };
@@ -1200,7 +1200,7 @@ export async function softDeleteActivity(id: number | string, type: 'formal' | '
       "Report Removed",
       `${session.name} deleted a ${type} report (ID: ${numericId}) from the system.`,
       "warning",
-      "/dashboard/reports"
+      "/admin/security"
     );
 
     revalidatePath("/dashboard");
