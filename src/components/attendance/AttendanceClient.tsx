@@ -10,7 +10,7 @@ import { getActiveAttendance, submitCheckIn, submitCheckOut, verifyFaceMatch } f
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { ShieldCheck, ShieldAlert, Fingerprint } from "lucide-react";
-import { revalidatePath } from "next/cache";
+
 
 export default function AttendanceClient({ projectId }: { projectId: string }) {
   const [activeRecord, setActiveRecord] = useState<any>(null);
