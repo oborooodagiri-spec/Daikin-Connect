@@ -287,9 +287,13 @@ export default function LoginPage() {
 
       <TwoFactorModal 
         isOpen={show2fModal}
-        onClose={() => setShow2fModal(false)}
+        onClose={() => {
+          setShow2fModal(false);
+          setError(null);
+        }}
         email={tempEmail}
         isLoading={isLoading}
+        error={error}
         onVerify={async (otp, trustDevice) => {
           setIsLoading(true);
           setError(null);

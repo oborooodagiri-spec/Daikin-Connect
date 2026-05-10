@@ -11,9 +11,10 @@ interface TwoFactorModalProps {
   email: string;
   onVerify: (code: string, trustDevice: boolean) => void;
   isLoading: boolean;
+  error?: string | null;
 }
 
-export default function TwoFactorModal({ isOpen, onClose, email, onVerify, isLoading }: TwoFactorModalProps) {
+export default function TwoFactorModal({ isOpen, onClose, email, onVerify, isLoading, error }: TwoFactorModalProps) {
   const [otpValue, setOtpValue] = useState("");
   const [trustDevice, setTrustDevice] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -97,6 +98,20 @@ export default function TwoFactorModal({ isOpen, onClose, email, onVerify, isLoa
                   </p>
                 </div>
               </div>
+
+              <AnimatePresence mode="popLayout">
+                {error && (
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="bg-rose-50 border border-rose-100 text-rose-600 px-5 py-3 rounded-2xl text-[11px] font-bold flex items-center gap-3 shadow-sm"
+                  >
+                    <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shrink-0" />
+                    <p>{error}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* OTP Input Section */}
               <div className="relative group">
