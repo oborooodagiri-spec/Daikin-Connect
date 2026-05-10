@@ -124,9 +124,10 @@ export default function SyncCenterClient() {
                 <label className="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">
                   <LayoutDashboard size={14} /> Tipe Sinkronisasi
                 </label>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
                    {[
                      { id: 'fcu', label: 'Preventive FCU' },
+                     { id: 'complaint_fcu', label: 'Complaint FCU' },
                      { id: 'split', label: 'Preventive Split' },
                      { id: 'ahu', label: 'Preventive AHU' },
                      { id: 'audit', label: 'Audit AHU' },

@@ -143,7 +143,7 @@ export async function bulkSyncExcelAction(formData: FormData) {
         if (!isNaN(parsed.getTime())) activityDate = parsed;
       }
 
-      const syncTypeNormalized = syncType === 'audit' ? 'Audit' : syncType === 'corrective' ? 'Corrective' : 'Preventive';
+      const syncTypeNormalized = (syncType === 'audit') ? 'Audit' : (syncType === 'corrective' || syncType === 'complaint_fcu') ? 'Corrective' : 'Preventive';
 
       // Check for existing
       let activity = await prisma.service_activities.findFirst({
