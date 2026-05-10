@@ -1,6 +1,6 @@
 "use server";
 
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import * as ExcelJS from "exceljs";
 import { revalidatePath } from "next/cache";
 import { getSession } from "./auth";
