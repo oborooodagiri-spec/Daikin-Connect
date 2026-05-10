@@ -7,7 +7,7 @@ import {
   User, Mail, Phone, Building2, Shield, ChevronRight,
   Camera, X, Check, Search, LogOut, Settings, Clock,
   FileText, Calendar, Upload, Download, Activity, Edit3,
-  LayoutDashboard, ExternalLink, Database, Users, Briefcase
+  LayoutDashboard, ExternalLink, Database, Users, Briefcase, Zap
 } from "lucide-react";
 import StaticLogo from "@/components/ui/StaticLogo";
 import { updateProfile, saveAvatarUrl } from "@/app/actions/profile";
@@ -210,7 +210,7 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
           >
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
               <div style={{ padding: "6px 12px", background: "#323338", color: "#fff", borderRadius: 8, fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                Admin Console
+                Menu Admin
               </div>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
@@ -226,7 +226,24 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
                       <Database size={22} />
                    </div>
                    <div>
-                      <h3 style={adminCardTitle}>Database</h3>
+                      <h3 style={adminCardTitle}>Database Assets</h3>
+                   </div>
+                </div>
+              </motion.div>
+
+              <motion.div 
+                whileHover={{ y: -4 }}
+                onClick={() => router.push("/admin/sync")}
+                style={adminCardStyle}
+                onMouseEnter={e => handleCardHover(e, true)}
+                onMouseLeave={e => handleCardHover(e, false)}
+              >
+                <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+                   <div style={{ ...adminIconBox, background: "linear-gradient(135deg, #00c875 0%, #00e68a 100%)" }}>
+                      <Zap size={22} />
+                   </div>
+                   <div>
+                      <h3 style={adminCardTitle}>Data Synchronization</h3>
                    </div>
                 </div>
               </motion.div>
