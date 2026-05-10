@@ -62,25 +62,50 @@ export async function bulkSyncExcelAction(formData: FormData) {
   let skippedRows = 0;
   let totalRows = worksheet.rowCount - 1; // excluding header
 
-  // Identify Headers
-  const headerRow = worksheet.getRow(1);
-  const colMap: Record<string, number> = {};
-  headerRow.eachCell((cell, colNumber) => {
-    const val = String(cell.value || "").toLowerCase().trim();
-    colMap[val] = colNumber;
-  });
+  // Identify Headers (Scan first 10 rows for the best header candidate)
+  let headerRowIndex = 1;
+  let maxMatches = -1;
+  let bestColMap: Record<string, number> = {};
 
-  console.log(`[BULK_SYNC] Detected columns:`, Object.keys(colMap));
+  const targetKeywords = ["tenant", "room", "tag", "date", "tanggal", "model", "unit"];
+
+  for (let r = 1; r <= Math.min(10, worksheet.rowCount); r++) {
+    const row = worksheet.getRow(r);
+    const currentMap: Record<string, number> = {};
+    let matches = 0;
+    
+    row.eachCell((cell, colNumber) => {
+      const val = String(cell.value || "").toLowerCase().trim();
+      if (val) {
+        currentMap[val] = colNumber;
+        if (targetKeywords.some(k => val.includes(k))) matches++;
+      }
+    });
+
+    if (matches > maxMatches) {
+      maxMatches = matches;
+      headerRowIndex = r;
+      bestColMap = currentMap;
+    }
+  }
+
+  const colMap = bestColMap;
+  const headerRow = worksheet.getRow(headerRowIndex);
+  console.log(`[BULK_SYNC] Headers found on row ${headerRowIndex}:`, Object.keys(colMap));
 
   // Common Mappings
   const getCol = (names: string[]) => {
     for (const name of names) {
-      if (colMap[name.toLowerCase()]) return colMap[name.toLowerCase()];
+      const lowerName = name.toLowerCase();
+      // Try exact match or contains
+      for (const [key, idx] of Object.entries(colMap)) {
+        if (key === lowerName || key === name || key.includes(lowerName)) return idx;
+      }
     }
     return -1;
   };
 
-  const tenantCol = getCol(["Tenant", "Room/Tenant", "ROOM/TENANT", "NAMA UNIT", "NAMA TENANT", "CUSTOMER"]);
+  const tenantCol = getCol(["Tenant / Area", "Tenant", "Room/Tenant", "ROOM/TENANT", "NAMA UNIT", "NAMA TENANT", "CUSTOMER"]);
   const dateCol = getCol(["Date", "Service Date", "DATE", "TANGGAL", "TANGGAL SERVICE"]);
   const modelCol = getCol(["Model", "MODEL", "TYPE", "TIPE"]);
   const floorCol = getCol(["Floor", "Building/Floor", "FLOOR", "LANTAI", "BLDG/FLOOR"]);
@@ -99,14 +124,21 @@ export async function bulkSyncExcelAction(formData: FormData) {
     if (colIndex === -1) return "";
     const cell = row.getCell(colIndex);
     if (!cell || cell.value === null || cell.value === undefined) return "";
-    if (typeof cell.value === 'object' && 'richText' in (cell.value as any)) {
-      return (cell.value as any).richText.map((rt: any) => rt.text).join("");
+    
+    // Handle specific value types
+    if (typeof cell.value === 'object') {
+      if ('richText' in (cell.value as any)) {
+        return (cell.value as any).richText.map((rt: any) => rt.text).join("");
+      }
+      if ('result' in (cell.value as any)) {
+        return String((cell.value as any).result).trim();
+      }
     }
     return String(cell.value).trim();
   };
 
-  // Process Rows (Starting from Row 2)
-  for (let i = 2; i <= worksheet.rowCount; i++) {
+  // Process Rows (Starting from row AFTER header)
+  for (let i = headerRowIndex + 1; i <= worksheet.rowCount; i++) {
     const row = worksheet.getRow(i);
     try {
       const tenant = getCellValue(row, tenantCol);
@@ -125,9 +157,9 @@ export async function bulkSyncExcelAction(formData: FormData) {
         where: {
           project_ref_id: BigInt(projectId),
           OR: [
-            { tag_number: tag || undefined },
+            { tag_number: { equals: tag || undefined } },
             { room_tenant: { contains: tenant || undefined } }
-          ].filter(cond => cond.tag_number !== undefined || (cond.room_tenant as any)?.contains !== undefined)
+          ].filter(cond => (cond as any).tag_number?.equals !== undefined || (cond.room_tenant as any)?.contains !== undefined)
         }
       });
 
