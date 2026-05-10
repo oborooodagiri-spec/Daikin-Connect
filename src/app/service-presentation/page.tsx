@@ -37,7 +37,7 @@ export default function ServicePresentationPage() {
         <div className="flex items-center gap-4">
           <img src="/daikin_logo.png" className="h-5 brightness-0 invert" alt="Daikin" />
           <div className="w-[1px] h-6 bg-white/20"></div>
-          <span className="text-[9px] font-black uppercase tracking-[0.4em] text-[#00a1e4]">Service Asset Management</span>
+          <span className="text-[9px] font-black uppercase tracking-[0.4em] text-[#00a1e4]">Value Engineering Services</span>
         </div>
         <Link href="/" className="px-6 py-2 bg-white/5 hover:bg-[#00a1e4] text-white border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest transition-all">
           Masuk ke System
@@ -52,8 +52,8 @@ export default function ServicePresentationPage() {
            </motion.div>
            
            <h1 className="text-4xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-10 uppercase">
-             SMART SERVICE CONTRACT<br />
-             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#00a1e4] to-blue-600">& ASSET MANAGEMENT</span>
+             VALUE ENGINEERING<br />
+             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#00a1e4] to-blue-600">SERVICES +</span>
            </h1>
            
            <p className="text-lg md:text-xl text-slate-400 font-bold max-w-2xl mx-auto leading-relaxed mb-12">
