@@ -8,8 +8,16 @@ export async function GET(
 ) {
   try {
     const { path: pathSegments } = await params;
-    const filePath = pathSegments.join("/");
-    const absolutePath = path.join(process.cwd(), "public", "uploads", filePath);
+    
+    // Clean up path segments to remove redundant 'uploads' or 'api' or 'assets'
+    const cleanSegments = pathSegments.filter(s => 
+      s.toLowerCase() !== "uploads" && 
+      s.toLowerCase() !== "api" && 
+      s.toLowerCase() !== "assets"
+    );
+
+    const filePath = cleanSegments.join("/");
+    const absolutePath = path.join(process.cwd(), "public", "uploads", ...cleanSegments);
 
     // Security check: ensure the path is within the uploads directory
     const resolvedPath = path.resolve(absolutePath);

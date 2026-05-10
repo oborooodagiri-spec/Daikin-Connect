@@ -36,17 +36,28 @@ export const processReportData = (report: any) => {
   const rawPhotos = report.activity_photos || [];
   const photos = rawPhotos.map((p: any) => {
     let url = p.photo_url || "";
-    if (url && !url.startsWith('http') && !url.startsWith('/')) {
+    
+    if (url && !url.startsWith('http')) {
+      // 1. Clean up redundant prefixes if they exist
+      url = url.replace(/^\/api\/assets\//, '');
+      url = url.replace(/^\/uploads\//, '');
+      
+      // 2. Extract folder and filename
+      let parts = url.split('/').filter(Boolean);
+      let filename = parts[parts.length - 1] || "";
+      
+      // 3. Determine target folder
       let folder = (report.type || "misc").toLowerCase();
-      // Enforce standardized folders matching SyncManager & FormClients
       if (folder === "audit") folder = "audit";
       else if (folder === "preventive" || folder === "pm") folder = "preventive";
       else if (folder === "corrective") folder = "corrective";
       else if (folder === "ba" || folder === "berita_acara") folder = "berita-acara";
       else if (p.media_type === "video") folder = "videos";
+      else if (parts.length > 1) folder = parts[0]; // keep original folder if present
       else folder = "photos";
-      
-      url = `/api/assets/${folder}/${url}`;
+
+      // 4. Force through Asset Proxy
+      url = `/api/assets/${folder}/${filename}`;
     }
     return { ...p, photo_url: url };
   });
