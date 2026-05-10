@@ -67,16 +67,37 @@ export async function GET(
     }
 
     const fileBuffer = fs.readFileSync(targetPath);
-    const finalExt = path.extname(targetPath).toLowerCase();
+    let finalExt = path.extname(targetPath).toLowerCase();
     const finalFileName = path.basename(targetPath);
     
     let contentType = "application/octet-stream";
-    if (finalExt === ".jpg" || finalExt === ".jpeg") contentType = "image/jpeg";
-    else if (finalExt === ".png") contentType = "image/png";
-    else if (finalExt === ".gif") contentType = "image/gif";
-    else if (finalExt === ".webp") contentType = "image/webp";
-    else if (finalExt === ".pdf") contentType = "application/pdf";
-    else if (finalExt === ".svg") contentType = "image/svg+xml";
+    
+    // Sniff content type from buffer if extension is missing or generic
+    if (!finalExt || finalExt === "" || finalExt === ".blob") {
+      // Magic numbers check
+      if (fileBuffer.length > 4) {
+        const hex = fileBuffer.slice(0, 4).toString('hex').toUpperCase();
+        if (hex.startsWith("FFD8FF")) contentType = "image/jpeg";
+        else if (hex === "89504E47") contentType = "image/png";
+        else if (hex === "47494638") contentType = "image/gif";
+        else if (fileBuffer.slice(0, 12).toString().includes("RIFF") && fileBuffer.slice(0, 12).toString().includes("WEBP")) contentType = "image/webp";
+        else if (fileBuffer.slice(0, 4).toString() === "%PDF") contentType = "application/pdf";
+      }
+      
+      // Fallback: if it's in a photos or preventive directory and still unknown, assume image/jpeg
+      if (contentType === "application/octet-stream") {
+        if (targetPath.includes("photos") || targetPath.includes("preventive") || targetPath.includes("corrective") || targetPath.includes("-blob")) {
+          contentType = "image/jpeg";
+        }
+      }
+    } else {
+      if (finalExt === ".jpg" || finalExt === ".jpeg") contentType = "image/jpeg";
+      else if (finalExt === ".png") contentType = "image/png";
+      else if (finalExt === ".gif") contentType = "image/gif";
+      else if (finalExt === ".webp") contentType = "image/webp";
+      else if (finalExt === ".pdf") contentType = "application/pdf";
+      else if (finalExt === ".svg") contentType = "image/svg+xml";
+    }
 
     return new NextResponse(fileBuffer, {
       headers: {
@@ -85,6 +106,7 @@ export async function GET(
         "Cache-Control": "public, max-age=31536000, immutable",
         "X-Asset-Resolved": "true",
         "X-Asset-Path": targetPath.includes("uploads") ? targetPath.split("uploads")[1] : targetPath,
+        "X-Content-Type-Source": finalExt ? "extension" : "buffer-sniffing"
       },
     });
   } catch (error) {
