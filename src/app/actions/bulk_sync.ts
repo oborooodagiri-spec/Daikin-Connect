@@ -59,14 +59,18 @@ export async function bulkSyncExcelAction(formData: FormData) {
   let activitiesSynced = 0;
   let photosSynced = 0;
   let errors = 0;
+  let skippedRows = 0;
+  let totalRows = worksheet.rowCount - 1; // excluding header
 
   // Identify Headers
   const headerRow = worksheet.getRow(1);
   const colMap: Record<string, number> = {};
   headerRow.eachCell((cell, colNumber) => {
-    const val = String(cell.value || "").toLowerCase();
+    const val = String(cell.value || "").toLowerCase().trim();
     colMap[val] = colNumber;
   });
+
+  console.log(`[BULK_SYNC] Detected columns:`, Object.keys(colMap));
 
   // Common Mappings
   const getCol = (names: string[]) => {
@@ -76,11 +80,11 @@ export async function bulkSyncExcelAction(formData: FormData) {
     return -1;
   };
 
-  const tenantCol = getCol(["Tenant", "Room/Tenant", "ROOM/TENANT", "NAMA UNIT"]);
-  const dateCol = getCol(["Date", "Service Date", "DATE", "TANGGAL"]);
-  const modelCol = getCol(["Model", "MODEL", "TYPE"]);
-  const floorCol = getCol(["Floor", "Building/Floor", "FLOOR", "LANTAI"]);
-  const tagCol = getCol(["Tag", "Tag Number", "TAG NUMBER", "ID"]);
+  const tenantCol = getCol(["Tenant", "Room/Tenant", "ROOM/TENANT", "NAMA UNIT", "NAMA TENANT", "CUSTOMER"]);
+  const dateCol = getCol(["Date", "Service Date", "DATE", "TANGGAL", "TANGGAL SERVICE"]);
+  const modelCol = getCol(["Model", "MODEL", "TYPE", "TIPE"]);
+  const floorCol = getCol(["Floor", "Building/Floor", "FLOOR", "LANTAI", "BLDG/FLOOR"]);
+  const tagCol = getCol(["Tag", "Tag Number", "TAG NUMBER", "ID", "TAG"]);
 
   // Photo columns (common names)
   const photoCols: number[] = [];
@@ -91,17 +95,30 @@ export async function bulkSyncExcelAction(formData: FormData) {
     }
   });
 
+  const getCellValue = (row: ExcelJS.Row, colIndex: number) => {
+    if (colIndex === -1) return "";
+    const cell = row.getCell(colIndex);
+    if (!cell || cell.value === null || cell.value === undefined) return "";
+    if (typeof cell.value === 'object' && 'richText' in (cell.value as any)) {
+      return (cell.value as any).richText.map((rt: any) => rt.text).join("");
+    }
+    return String(cell.value).trim();
+  };
+
   // Process Rows (Starting from Row 2)
   for (let i = 2; i <= worksheet.rowCount; i++) {
     const row = worksheet.getRow(i);
     try {
-      const tenant = tenantCol !== -1 ? String(row.getCell(tenantCol).value || "") : "";
+      const tenant = getCellValue(row, tenantCol);
       const dateVal = dateCol !== -1 ? row.getCell(dateCol).value : null;
-      const model = modelCol !== -1 ? String(row.getCell(modelCol).value || "") : "";
-      const floor = floorCol !== -1 ? String(row.getCell(floorCol).value || "") : "";
-      const tag = tagCol !== -1 ? String(row.getCell(tagCol).value || "") : "";
+      const model = getCellValue(row, modelCol);
+      const floor = getCellValue(row, floorCol);
+      const tag = getCellValue(row, tagCol);
 
-      if (!tenant && !tag) continue;
+      if (!tenant && !tag) {
+        skippedRows++;
+        continue;
+      }
 
       // 1. Find Unit
       let unit = await prisma.units.findFirst({
@@ -109,21 +126,21 @@ export async function bulkSyncExcelAction(formData: FormData) {
           project_ref_id: BigInt(projectId),
           OR: [
             { tag_number: tag || undefined },
-            { room_tenant: { contains: tenant } }
-          ]
+            { room_tenant: { contains: tenant || undefined } }
+          ].filter(cond => cond.tag_number !== undefined || (cond.room_tenant as any)?.contains !== undefined)
         }
       });
 
       // 2. Auto-Create if missing
-      if (!unit && options.autoCreateUnits && tenant) {
+      if (!unit && options.autoCreateUnits && (tenant || tag)) {
         unit = await prisma.units.create({
           data: {
             project_ref_id: BigInt(projectId),
             customer_name: "Auto-Synced",
-            room_tenant: tenant,
+            room_tenant: tenant || "N/A",
             building_floor: floor || "N/A",
             tag_number: tag || `SYNC-${Date.now()}-${i}`,
-            unit_type: syncType.toUpperCase(),
+            unit_type: syncType.toUpperCase().replace('PREVENTIVE_', ''),
             brand: "Daikin",
             model: model || "N/A",
             status: "Normal",
@@ -133,13 +150,21 @@ export async function bulkSyncExcelAction(formData: FormData) {
         unitsCreated++;
       }
 
-      if (!unit) continue;
+      if (!unit) {
+        skippedRows++;
+        continue;
+      }
 
       // 3. Process Activity
       let activityDate = new Date();
       if (dateVal instanceof Date) activityDate = dateVal;
       else if (typeof dateVal === 'string') {
         const parsed = new Date(dateVal);
+        if (!isNaN(parsed.getTime())) activityDate = parsed;
+      } else if (typeof dateVal === 'number') {
+        // Handle Excel date numbers if needed, but ExcelJS usually converts them to Date objects
+        // However, if it's a serial number:
+        const parsed = new Date((dateVal - 25569) * 86400 * 1000);
         if (!isNaN(parsed.getTime())) activityDate = parsed;
       }
 
@@ -162,7 +187,8 @@ export async function bulkSyncExcelAction(formData: FormData) {
         const technicalData: any = {};
         headerRow.eachCell((cell, colNumber) => {
           const key = String(cell.value || `col_${colNumber}`);
-          technicalData[key] = row.getCell(colNumber).value;
+          const val = row.getCell(colNumber).value;
+          technicalData[key] = val;
         });
 
         if (activity) {
@@ -180,7 +206,7 @@ export async function bulkSyncExcelAction(formData: FormData) {
               type: syncTypeNormalized,
               service_date: activityDate,
               inspector_name: "Sync Center Admin",
-              engineer_note: "Imported via Sync Center (ExcelJS)",
+              engineer_note: `Imported via Sync Center (${syncType})`,
               technical_json: JSON.stringify(technicalData),
               status: "Completed"
             }
@@ -216,6 +242,9 @@ export async function bulkSyncExcelAction(formData: FormData) {
             }
           }
         }
+      } else {
+        // Skipped because already exists and overwrite is false
+        skippedRows++;
       }
 
     } catch (err) {
@@ -227,7 +256,7 @@ export async function bulkSyncExcelAction(formData: FormData) {
   revalidatePath("/dashboard");
   return { 
     success: true, 
-    message: `Sync complete: ${unitsCreated} units created, ${activitiesSynced} activities processed, ${photosSynced} photos extracted.`,
+    message: `Sync complete: ${totalRows} rows total. ${activitiesSynced} activities processed, ${unitsCreated} units created, ${skippedRows} rows skipped, ${photosSynced} photos extracted.`,
     errorCount: errors
   };
 }
