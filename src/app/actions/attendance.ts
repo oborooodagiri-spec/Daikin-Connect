@@ -44,13 +44,14 @@ export async function getActiveAttendance(projectId: string) {
 
     // Convert BigInt for JSON serialization
     return serializePrisma({
+      success: true,
       data: activeRecord,
       hasFace: !!user?.face_reference_url,
       projectLocation: project ? { lat: Number(project.latitude), long: Number(project.longitude), radius: project.radius_meters } : null
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching attendance:", error);
-    return { error: "Failed to fetch attendance record" };
+    return { success: false, error: error?.message || "Failed to fetch attendance record" };
   }
 }
 
@@ -210,8 +211,8 @@ export async function submitCheckIn(data: {
         photoUrl: data.photoUrl,
         notes: data.notes
       });
-    } catch (e) {
-      console.warn("Schedule sync failed:", e);
+    } catch (e: any) {
+      console.warn("[SYNC_ERR] Schedule sync failed:", e.message);
     }
     // ---------------------------------
 
@@ -256,8 +257,8 @@ export async function submitCheckOut(data: {
         photoUrl: data.photoUrl,
         notes: data.notes
       });
-    } catch (e) {
-      console.warn("Schedule sync failed:", e);
+    } catch (e: any) {
+      console.warn("[SYNC_ERR] Schedule checkout sync failed:", e.message);
     }
     // ---------------------------------
 
@@ -420,71 +421,78 @@ async function syncAttendanceWithSchedule({
 }: { 
   userId: number; projectId: string; action: "IN" | "OUT"; photoUrl: string; notes?: string;
 }) {
-  const startOfDay = new Date();
-  startOfDay.setHours(0,0,0,0);
-  const endOfDay = new Date();
-  endOfDay.setHours(23,59,59,999);
+  try {
+    const startOfDay = new Date();
+    startOfDay.setHours(0,0,0,0);
+    const endOfDay = new Date();
+    endOfDay.setHours(23,59,59,999);
 
-  // 1. Get User Profile
-  const user = await prisma.users.findUnique({
-    where: { id: userId },
-    select: { name: true, roles: { select: { role_name: true } } }
-  });
-  if (!user) return;
+    // 1. Get User Profile
+    const user = await prisma.users.findUnique({
+      where: { id: userId },
+      select: { name: true, roles: { select: { role_name: true } } }
+    });
+    if (!user) return;
 
-  // 2. Find Relevant Schedule for Lanud/Project today
-  // Types: DailyLog or Preventive usually represent operational duty
-  const relevantSchedule = await prisma.schedules.findFirst({
-    where: {
-      project_id: BigInt(projectId),
-      assignee_id: userId,
-      start_at: { gte: startOfDay, lte: endOfDay },
-      status: { in: ["Planned", "InProgress"] }
-    },
-    orderBy: { start_at: 'asc' }
-  });
-
-  if (relevantSchedule) {
-    // Update Schedule Status
-    await prisma.schedules.update({
-      where: { id: relevantSchedule.id },
-      data: { 
-        status: action === "IN" ? "InProgress" : "Completed",
-        description: (relevantSchedule.description || "") + 
-          `\n[Auto ${action}]: ${user.name} at ${new Date().toLocaleTimeString()} - Notes: ${notes || '-'}`
-      }
+    // 2. Find Relevant Schedule for Lanud/Project today
+    // Types: DailyLog or Preventive usually represent operational duty
+    const relevantSchedule = await prisma.schedules.findFirst({
+      where: {
+        project_id: BigInt(projectId),
+        assignee_id: userId,
+        start_at: { gte: startOfDay, lte: endOfDay },
+        status: { in: ["Planned", "InProgress"] }
+      },
+      orderBy: { start_at: 'asc' }
     });
 
-    // Mark Presence
-    if (action === "IN") {
-      await (prisma as any).schedule_attendance.create({
-        data: {
-          schedule_id: relevantSchedule.id,
-          name: user.name,
-          role: (user.roles as any)?.role_name || "Technical Team",
-          is_present: true,
-          signature: photoUrl // Store biometric proof in signature field for now
+    if (relevantSchedule) {
+      // Update Schedule Status
+      await prisma.schedules.update({
+        where: { id: relevantSchedule.id },
+        data: { 
+          status: action === "IN" ? "InProgress" : "Completed",
+          description: (relevantSchedule.description || "") + 
+            `\n[Auto ${action}]: ${user.name} at ${new Date().toLocaleTimeString()} - Notes: ${notes || '-'}`
         }
       });
-    }
-  } else if (action === "IN") {
-    // If NO schedule exists but we are at a critical site like LANUD, auto-create a DailyLog
-    // LANUD Rusmin Nuryadin ID is 4 (identified from scratch script)
-    if (projectId === "4") {
-      await prisma.schedules.create({
-        data: {
-          project_id: BigInt(projectId),
-          assignee_id: userId,
-          title: `Daily Duty: ${user.name} (Auto-Generated)`,
-          description: `Automatic attendance record. Clock-in at ${new Date().toLocaleTimeString()}.`,
-          start_at: new Date(),
-          end_at: new Date(new Date().getTime() + 8 * 3600000), // Default 8h shift
-          type: "DailyLog",
-          status: "InProgress"
-        }
-      });
-    }
-  }
 
-  revalidatePath("/dashboard/schedules");
+      // Mark Presence
+      if (action === "IN") {
+        await (prisma as any).schedule_attendance.create({
+          data: {
+            schedule_id: relevantSchedule.id,
+            name: user.name,
+            role: (user.roles as any)?.role_name || "Technical Team",
+            is_present: true,
+            signature: photoUrl // Store biometric proof in signature field for now
+          }
+        });
+      }
+    } else if (action === "IN") {
+      // If NO schedule exists but we are at a critical site like LANUD, auto-create a DailyLog
+      // LANUD Rusmin Nuryadin ID is 4 (identified from scratch script)
+      if (projectId === "4") {
+        await prisma.schedules.create({
+          data: {
+            project_id: BigInt(projectId),
+            assignee_id: userId,
+            title: `Daily Duty: ${user.name} (Auto-Generated)`,
+            description: `Automatic attendance record. Clock-in at ${new Date().toLocaleTimeString()}.`,
+            start_at: new Date(),
+            end_at: new Date(new Date().getTime() + 8 * 3600000), // Default 8h shift
+            type: "DailyLog",
+            status: "InProgress"
+          }
+        });
+      }
+    }
+  } catch (err: any) {
+    console.error("[CRITICAL] syncAttendanceWithSchedule error:", err.message);
+  } finally {
+    try {
+       revalidatePath("/admin/schedule");
+       if (projectId) revalidatePath(`/w/${projectId}/dashboard/attendance-records`);
+    } catch (e) {}
+  }
 }
