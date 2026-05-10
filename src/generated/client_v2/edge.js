@@ -1187,7 +1187,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\D22AGRI-EPL\\Desktop\\daikin-connect-clean\\src\\generated\\client_v2",
+      "value": "/root/Daikin-Connect/src/generated/client_v2",
       "fromEnvVar": null
     },
     "config": {
@@ -1196,12 +1196,12 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "windows",
+        "value": "debian-openssl-3.0.x",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\D22AGRI-EPL\\Desktop\\daikin-connect-clean\\prisma\\schema.prisma",
+    "sourceFilePath": "/root/Daikin-Connect/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -1215,6 +1215,7 @@ const config = {
     "db"
   ],
   "activeProvider": "mysql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {

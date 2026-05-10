@@ -739,6 +739,8 @@ model vendor_attendance {
   check_out_long  Decimal?  @db.Decimal(11, 8)
   check_in_photo  String?   @db.VarChar(255)
   check_out_photo String?   @db.VarChar(255)
+  check_in_notes  String?   @db.Text
+  check_out_notes String?   @db.Text
   projects        projects  @relation(fields: [project_id], references: [id], onDelete: Cascade)
   users           users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 

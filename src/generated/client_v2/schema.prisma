@@ -55,6 +55,10 @@ model projects {
   enabled_unit_types String @default("Chiller") @db.Text
   monitoring_focus   String @default("UNIT") @db.VarChar(50)
 
+  latitude      Decimal? @db.Decimal(10, 8)
+  longitude     Decimal? @db.Decimal(11, 8)
+  radius_meters Int      @default(100)
+
   @@unique([customer_id, name], map: "uq_project_per_customer")
   @@index([customer_id], map: "idx_projects_customer")
 }
