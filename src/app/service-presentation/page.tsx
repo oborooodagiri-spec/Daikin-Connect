@@ -57,7 +57,7 @@ export default function ServicePresentationPage() {
            </h1>
            
            <p className="text-lg md:text-xl text-slate-400 font-bold max-w-2xl mx-auto leading-relaxed mb-12">
-             Meninggalkan model perawatan tradisional menuju pengelolaan aset berbasis data yang komprehensif, transparan, dan terintegrasi.
+             Meninggalkan maintenance tradisional menuju pengelolaan aset berbasis data yang komprehensif, transparan, dan terintegrasi.
            </p>
 
            <div className="flex justify-center gap-6">
