@@ -1,5 +1,6 @@
 import { ReportSignatureFooter } from "./ReportSignatureFooter";
 import { t, Language } from "@/lib/i18n";
+import { getPhotoUrl } from "@/lib/photo_utils";
 
 export const getCorrectiveSections = (data: any, unit: any, lang: Language = 'id') => {
   const { personnel, pic, analysis, engineerNote, activity_photos } = data || {};
@@ -122,7 +123,7 @@ export const getCorrectiveSections = (data: any, unit: any, lang: Language = 'id
              const isAfter = p.category?.toLowerCase().includes('after') || p.label?.toLowerCase().includes('after');
              return (
                <div key={i} style={{ border: "1px solid #ddd", padding: "1mm", borderRadius: "1mm", position: "relative" }}>
-                 <img src={p.photo_url} style={{ width: "100%", height: "40mm", objectFit: "cover", borderRadius: "0.5mm" }} />
+                 <img src={getPhotoUrl(p.photo_url)} style={{ width: "100%", height: "40mm", objectFit: "cover", borderRadius: "0.5mm" }} />
                  {(isBefore || isAfter) && (
                    <div style={{ position: "absolute", top: "2mm", left: "2mm", backgroundColor: isBefore ? "#dc2626" : "#059669", color: "white", fontSize: "6pt", fontWeight: 900, padding: "1px 4px", borderRadius: "0.5mm" }}>
                      {isBefore ? "BEFORE" : "AFTER"}
@@ -165,7 +166,7 @@ export const getCorrectiveSections = (data: any, unit: any, lang: Language = 'id
               
               return (
                 <div key={i} style={{ border: "1px solid #ddd", padding: "1mm", borderRadius: "1mm", position: "relative" }}>
-                  <img src={p.photo_url} style={{ width: "100%", height: "48mm", objectFit: "cover", borderRadius: "0.5mm" }} />
+                  <img src={getPhotoUrl(p.photo_url)} style={{ width: "100%", height: "48mm", objectFit: "cover", borderRadius: "0.5mm" }} />
                   {(isBefore || isAfter) && (
                     <div style={{ position: "absolute", top: "2mm", left: "2mm", backgroundColor: isBefore ? "#dc2626" : "#059669", color: "white", fontSize: "6pt", fontWeight: 900, padding: "1px 4px", borderRadius: "0.5mm" }}>
                       {isBefore ? "BEFORE" : "AFTER"}

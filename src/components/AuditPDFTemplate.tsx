@@ -1,5 +1,6 @@
 import { ReportSignatureFooter } from './ReportSignatureFooter';
 import { t, Language } from '@/lib/i18n';
+import { getPhotoUrl } from "@/lib/photo_utils";
 
 export const getAuditSections = (data: any, unit: any, lang: Language = 'id') => {
   const techData = data.t || data.technical_json || {};
@@ -320,7 +321,7 @@ export const getAuditSections = (data: any, unit: any, lang: Language = 'id') =>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "repeat(3, 1fr)", gap: "3mm" }}>
           {chunk.map((p: any, i: number) => (
             <div key={i} style={{ border: "1px solid #ddd", padding: "1.5mm", borderRadius: "1.5mm" }}>
-              <img src={p.photo_url} alt={`Audit ${i}`} style={{ width: "100%", height: "55mm", objectFit: "cover", borderRadius: "1mm" }} />
+              <img src={getPhotoUrl(p.photo_url)} alt={`Audit ${i}`} style={{ width: "100%", height: "55mm", objectFit: "cover", borderRadius: "1mm" }} />
               <p style={{ fontSize: "7pt", margin: "1mm 0 0 0", textAlign: "center", color: "#666", fontWeight: 700 }}>
                 Photo {chunkIdx * 6 + i + 1}
               </p>

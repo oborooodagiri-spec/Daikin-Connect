@@ -29,6 +29,11 @@ export type permissions = $Result.DefaultSelection<Prisma.$permissionsPayload>
  */
 export type projects = $Result.DefaultSelection<Prisma.$projectsPayload>
 /**
+ * Model knowledge_resources
+ * 
+ */
+export type knowledge_resources = $Result.DefaultSelection<Prisma.$knowledge_resourcesPayload>
+/**
  * Model refresh_tokens
  * 
  */
@@ -189,10 +194,20 @@ export type schedule_targets = $Result.DefaultSelection<Prisma.$schedule_targets
  */
 export type complaints = $Result.DefaultSelection<Prisma.$complaintsPayload>
 /**
+ * Model unit_edit_requests
+ * 
+ */
+export type unit_edit_requests = $Result.DefaultSelection<Prisma.$unit_edit_requestsPayload>
+/**
  * Model user_push_tokens
  * 
  */
 export type user_push_tokens = $Result.DefaultSelection<Prisma.$user_push_tokensPayload>
+/**
+ * Model notifications
+ * 
+ */
+export type notifications = $Result.DefaultSelection<Prisma.$notificationsPayload>
 /**
  * Model daily_ops_logs
  * 
@@ -203,6 +218,26 @@ export type daily_ops_logs = $Result.DefaultSelection<Prisma.$daily_ops_logsPayl
  * 
  */
 export type vendor_attendance = $Result.DefaultSelection<Prisma.$vendor_attendancePayload>
+/**
+ * Model project_intelligence
+ * 
+ */
+export type project_intelligence = $Result.DefaultSelection<Prisma.$project_intelligencePayload>
+/**
+ * Model project_issues
+ * 
+ */
+export type project_issues = $Result.DefaultSelection<Prisma.$project_issuesPayload>
+/**
+ * Model logsheet_templates
+ * 
+ */
+export type logsheet_templates = $Result.DefaultSelection<Prisma.$logsheet_templatesPayload>
+/**
+ * Model logsheet_entries
+ * 
+ */
+export type logsheet_entries = $Result.DefaultSelection<Prisma.$logsheet_entriesPayload>
 
 /**
  * Enums
@@ -367,6 +402,16 @@ export const ScheduleStatus: {
 
 export type ScheduleStatus = (typeof ScheduleStatus)[keyof typeof ScheduleStatus]
 
+
+export const LogsheetType: {
+  Chiller: 'Chiller',
+  AHU: 'AHU',
+  FCU: 'FCU',
+  CRAC: 'CRAC'
+};
+
+export type LogsheetType = (typeof LogsheetType)[keyof typeof LogsheetType]
+
 }
 
 export type projects_status = $Enums.projects_status
@@ -436,6 +481,10 @@ export const ScheduleType: typeof $Enums.ScheduleType
 export type ScheduleStatus = $Enums.ScheduleStatus
 
 export const ScheduleStatus: typeof $Enums.ScheduleStatus
+
+export type LogsheetType = $Enums.LogsheetType
+
+export const LogsheetType: typeof $Enums.LogsheetType
 
 /**
  * ##  Prisma Client ʲˢ
@@ -591,6 +640,16 @@ export class PrismaClient<
     * ```
     */
   get projects(): Prisma.projectsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.knowledge_resources`: Exposes CRUD operations for the **knowledge_resources** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Knowledge_resources
+    * const knowledge_resources = await prisma.knowledge_resources.findMany()
+    * ```
+    */
+  get knowledge_resources(): Prisma.knowledge_resourcesDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.refresh_tokens`: Exposes CRUD operations for the **refresh_tokens** model.
@@ -913,6 +972,16 @@ export class PrismaClient<
   get complaints(): Prisma.complaintsDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.unit_edit_requests`: Exposes CRUD operations for the **unit_edit_requests** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Unit_edit_requests
+    * const unit_edit_requests = await prisma.unit_edit_requests.findMany()
+    * ```
+    */
+  get unit_edit_requests(): Prisma.unit_edit_requestsDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.user_push_tokens`: Exposes CRUD operations for the **user_push_tokens** model.
     * Example usage:
     * ```ts
@@ -921,6 +990,16 @@ export class PrismaClient<
     * ```
     */
   get user_push_tokens(): Prisma.user_push_tokensDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.notifications`: Exposes CRUD operations for the **notifications** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Notifications
+    * const notifications = await prisma.notifications.findMany()
+    * ```
+    */
+  get notifications(): Prisma.notificationsDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.daily_ops_logs`: Exposes CRUD operations for the **daily_ops_logs** model.
@@ -941,6 +1020,46 @@ export class PrismaClient<
     * ```
     */
   get vendor_attendance(): Prisma.vendor_attendanceDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.project_intelligence`: Exposes CRUD operations for the **project_intelligence** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Project_intelligences
+    * const project_intelligences = await prisma.project_intelligence.findMany()
+    * ```
+    */
+  get project_intelligence(): Prisma.project_intelligenceDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.project_issues`: Exposes CRUD operations for the **project_issues** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Project_issues
+    * const project_issues = await prisma.project_issues.findMany()
+    * ```
+    */
+  get project_issues(): Prisma.project_issuesDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.logsheet_templates`: Exposes CRUD operations for the **logsheet_templates** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Logsheet_templates
+    * const logsheet_templates = await prisma.logsheet_templates.findMany()
+    * ```
+    */
+  get logsheet_templates(): Prisma.logsheet_templatesDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.logsheet_entries`: Exposes CRUD operations for the **logsheet_entries** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Logsheet_entries
+    * const logsheet_entries = await prisma.logsheet_entries.findMany()
+    * ```
+    */
+  get logsheet_entries(): Prisma.logsheet_entriesDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1384,6 +1503,7 @@ export namespace Prisma {
     customers: 'customers',
     permissions: 'permissions',
     projects: 'projects',
+    knowledge_resources: 'knowledge_resources',
     refresh_tokens: 'refresh_tokens',
     role_permissions: 'role_permissions',
     roles: 'roles',
@@ -1416,9 +1536,15 @@ export namespace Prisma {
     schedule_messages: 'schedule_messages',
     schedule_targets: 'schedule_targets',
     complaints: 'complaints',
+    unit_edit_requests: 'unit_edit_requests',
     user_push_tokens: 'user_push_tokens',
+    notifications: 'notifications',
     daily_ops_logs: 'daily_ops_logs',
-    vendor_attendance: 'vendor_attendance'
+    vendor_attendance: 'vendor_attendance',
+    project_intelligence: 'project_intelligence',
+    project_issues: 'project_issues',
+    logsheet_templates: 'logsheet_templates',
+    logsheet_entries: 'logsheet_entries'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1434,7 +1560,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "customers" | "permissions" | "projects" | "refresh_tokens" | "role_permissions" | "roles" | "units" | "user_project_access" | "user_roles" | "user_unit_access" | "users" | "audit_logs" | "password_reset_tokens" | "activities" | "activity_photos" | "ahu_audits" | "audit_tickets" | "audit_velocity_points" | "audits" | "contracts" | "corrective" | "corrective_maintenances" | "maintenance_contracts" | "service_activities" | "service_logs" | "service_photos" | "sites" | "tickets" | "unit_comments" | "schedules" | "schedule_attendance" | "schedule_mom" | "schedule_messages" | "schedule_targets" | "complaints" | "user_push_tokens" | "daily_ops_logs" | "vendor_attendance"
+      modelProps: "customers" | "permissions" | "projects" | "knowledge_resources" | "refresh_tokens" | "role_permissions" | "roles" | "units" | "user_project_access" | "user_roles" | "user_unit_access" | "users" | "audit_logs" | "password_reset_tokens" | "activities" | "activity_photos" | "ahu_audits" | "audit_tickets" | "audit_velocity_points" | "audits" | "contracts" | "corrective" | "corrective_maintenances" | "maintenance_contracts" | "service_activities" | "service_logs" | "service_photos" | "sites" | "tickets" | "unit_comments" | "schedules" | "schedule_attendance" | "schedule_mom" | "schedule_messages" | "schedule_targets" | "complaints" | "unit_edit_requests" | "user_push_tokens" | "notifications" | "daily_ops_logs" | "vendor_attendance" | "project_intelligence" | "project_issues" | "logsheet_templates" | "logsheet_entries"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1633,6 +1759,72 @@ export namespace Prisma {
           count: {
             args: Prisma.projectsCountArgs<ExtArgs>
             result: $Utils.Optional<ProjectsCountAggregateOutputType> | number
+          }
+        }
+      }
+      knowledge_resources: {
+        payload: Prisma.$knowledge_resourcesPayload<ExtArgs>
+        fields: Prisma.knowledge_resourcesFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.knowledge_resourcesFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$knowledge_resourcesPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.knowledge_resourcesFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$knowledge_resourcesPayload>
+          }
+          findFirst: {
+            args: Prisma.knowledge_resourcesFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$knowledge_resourcesPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.knowledge_resourcesFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$knowledge_resourcesPayload>
+          }
+          findMany: {
+            args: Prisma.knowledge_resourcesFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$knowledge_resourcesPayload>[]
+          }
+          create: {
+            args: Prisma.knowledge_resourcesCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$knowledge_resourcesPayload>
+          }
+          createMany: {
+            args: Prisma.knowledge_resourcesCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.knowledge_resourcesDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$knowledge_resourcesPayload>
+          }
+          update: {
+            args: Prisma.knowledge_resourcesUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$knowledge_resourcesPayload>
+          }
+          deleteMany: {
+            args: Prisma.knowledge_resourcesDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.knowledge_resourcesUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.knowledge_resourcesUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$knowledge_resourcesPayload>
+          }
+          aggregate: {
+            args: Prisma.Knowledge_resourcesAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateKnowledge_resources>
+          }
+          groupBy: {
+            args: Prisma.knowledge_resourcesGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Knowledge_resourcesGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.knowledge_resourcesCountArgs<ExtArgs>
+            result: $Utils.Optional<Knowledge_resourcesCountAggregateOutputType> | number
           }
         }
       }
@@ -3748,6 +3940,72 @@ export namespace Prisma {
           }
         }
       }
+      unit_edit_requests: {
+        payload: Prisma.$unit_edit_requestsPayload<ExtArgs>
+        fields: Prisma.unit_edit_requestsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.unit_edit_requestsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$unit_edit_requestsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.unit_edit_requestsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$unit_edit_requestsPayload>
+          }
+          findFirst: {
+            args: Prisma.unit_edit_requestsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$unit_edit_requestsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.unit_edit_requestsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$unit_edit_requestsPayload>
+          }
+          findMany: {
+            args: Prisma.unit_edit_requestsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$unit_edit_requestsPayload>[]
+          }
+          create: {
+            args: Prisma.unit_edit_requestsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$unit_edit_requestsPayload>
+          }
+          createMany: {
+            args: Prisma.unit_edit_requestsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.unit_edit_requestsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$unit_edit_requestsPayload>
+          }
+          update: {
+            args: Prisma.unit_edit_requestsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$unit_edit_requestsPayload>
+          }
+          deleteMany: {
+            args: Prisma.unit_edit_requestsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.unit_edit_requestsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.unit_edit_requestsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$unit_edit_requestsPayload>
+          }
+          aggregate: {
+            args: Prisma.Unit_edit_requestsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUnit_edit_requests>
+          }
+          groupBy: {
+            args: Prisma.unit_edit_requestsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Unit_edit_requestsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.unit_edit_requestsCountArgs<ExtArgs>
+            result: $Utils.Optional<Unit_edit_requestsCountAggregateOutputType> | number
+          }
+        }
+      }
       user_push_tokens: {
         payload: Prisma.$user_push_tokensPayload<ExtArgs>
         fields: Prisma.user_push_tokensFieldRefs
@@ -3811,6 +4069,72 @@ export namespace Prisma {
           count: {
             args: Prisma.user_push_tokensCountArgs<ExtArgs>
             result: $Utils.Optional<User_push_tokensCountAggregateOutputType> | number
+          }
+        }
+      }
+      notifications: {
+        payload: Prisma.$notificationsPayload<ExtArgs>
+        fields: Prisma.notificationsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.notificationsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$notificationsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.notificationsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$notificationsPayload>
+          }
+          findFirst: {
+            args: Prisma.notificationsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$notificationsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.notificationsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$notificationsPayload>
+          }
+          findMany: {
+            args: Prisma.notificationsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$notificationsPayload>[]
+          }
+          create: {
+            args: Prisma.notificationsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$notificationsPayload>
+          }
+          createMany: {
+            args: Prisma.notificationsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.notificationsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$notificationsPayload>
+          }
+          update: {
+            args: Prisma.notificationsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$notificationsPayload>
+          }
+          deleteMany: {
+            args: Prisma.notificationsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.notificationsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.notificationsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$notificationsPayload>
+          }
+          aggregate: {
+            args: Prisma.NotificationsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNotifications>
+          }
+          groupBy: {
+            args: Prisma.notificationsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NotificationsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.notificationsCountArgs<ExtArgs>
+            result: $Utils.Optional<NotificationsCountAggregateOutputType> | number
           }
         }
       }
@@ -3946,6 +4270,270 @@ export namespace Prisma {
           }
         }
       }
+      project_intelligence: {
+        payload: Prisma.$project_intelligencePayload<ExtArgs>
+        fields: Prisma.project_intelligenceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.project_intelligenceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$project_intelligencePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.project_intelligenceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$project_intelligencePayload>
+          }
+          findFirst: {
+            args: Prisma.project_intelligenceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$project_intelligencePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.project_intelligenceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$project_intelligencePayload>
+          }
+          findMany: {
+            args: Prisma.project_intelligenceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$project_intelligencePayload>[]
+          }
+          create: {
+            args: Prisma.project_intelligenceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$project_intelligencePayload>
+          }
+          createMany: {
+            args: Prisma.project_intelligenceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.project_intelligenceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$project_intelligencePayload>
+          }
+          update: {
+            args: Prisma.project_intelligenceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$project_intelligencePayload>
+          }
+          deleteMany: {
+            args: Prisma.project_intelligenceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.project_intelligenceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.project_intelligenceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$project_intelligencePayload>
+          }
+          aggregate: {
+            args: Prisma.Project_intelligenceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateProject_intelligence>
+          }
+          groupBy: {
+            args: Prisma.project_intelligenceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Project_intelligenceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.project_intelligenceCountArgs<ExtArgs>
+            result: $Utils.Optional<Project_intelligenceCountAggregateOutputType> | number
+          }
+        }
+      }
+      project_issues: {
+        payload: Prisma.$project_issuesPayload<ExtArgs>
+        fields: Prisma.project_issuesFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.project_issuesFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$project_issuesPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.project_issuesFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$project_issuesPayload>
+          }
+          findFirst: {
+            args: Prisma.project_issuesFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$project_issuesPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.project_issuesFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$project_issuesPayload>
+          }
+          findMany: {
+            args: Prisma.project_issuesFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$project_issuesPayload>[]
+          }
+          create: {
+            args: Prisma.project_issuesCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$project_issuesPayload>
+          }
+          createMany: {
+            args: Prisma.project_issuesCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.project_issuesDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$project_issuesPayload>
+          }
+          update: {
+            args: Prisma.project_issuesUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$project_issuesPayload>
+          }
+          deleteMany: {
+            args: Prisma.project_issuesDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.project_issuesUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.project_issuesUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$project_issuesPayload>
+          }
+          aggregate: {
+            args: Prisma.Project_issuesAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateProject_issues>
+          }
+          groupBy: {
+            args: Prisma.project_issuesGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Project_issuesGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.project_issuesCountArgs<ExtArgs>
+            result: $Utils.Optional<Project_issuesCountAggregateOutputType> | number
+          }
+        }
+      }
+      logsheet_templates: {
+        payload: Prisma.$logsheet_templatesPayload<ExtArgs>
+        fields: Prisma.logsheet_templatesFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.logsheet_templatesFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$logsheet_templatesPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.logsheet_templatesFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$logsheet_templatesPayload>
+          }
+          findFirst: {
+            args: Prisma.logsheet_templatesFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$logsheet_templatesPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.logsheet_templatesFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$logsheet_templatesPayload>
+          }
+          findMany: {
+            args: Prisma.logsheet_templatesFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$logsheet_templatesPayload>[]
+          }
+          create: {
+            args: Prisma.logsheet_templatesCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$logsheet_templatesPayload>
+          }
+          createMany: {
+            args: Prisma.logsheet_templatesCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.logsheet_templatesDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$logsheet_templatesPayload>
+          }
+          update: {
+            args: Prisma.logsheet_templatesUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$logsheet_templatesPayload>
+          }
+          deleteMany: {
+            args: Prisma.logsheet_templatesDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.logsheet_templatesUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.logsheet_templatesUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$logsheet_templatesPayload>
+          }
+          aggregate: {
+            args: Prisma.Logsheet_templatesAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateLogsheet_templates>
+          }
+          groupBy: {
+            args: Prisma.logsheet_templatesGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Logsheet_templatesGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.logsheet_templatesCountArgs<ExtArgs>
+            result: $Utils.Optional<Logsheet_templatesCountAggregateOutputType> | number
+          }
+        }
+      }
+      logsheet_entries: {
+        payload: Prisma.$logsheet_entriesPayload<ExtArgs>
+        fields: Prisma.logsheet_entriesFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.logsheet_entriesFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$logsheet_entriesPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.logsheet_entriesFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$logsheet_entriesPayload>
+          }
+          findFirst: {
+            args: Prisma.logsheet_entriesFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$logsheet_entriesPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.logsheet_entriesFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$logsheet_entriesPayload>
+          }
+          findMany: {
+            args: Prisma.logsheet_entriesFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$logsheet_entriesPayload>[]
+          }
+          create: {
+            args: Prisma.logsheet_entriesCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$logsheet_entriesPayload>
+          }
+          createMany: {
+            args: Prisma.logsheet_entriesCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.logsheet_entriesDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$logsheet_entriesPayload>
+          }
+          update: {
+            args: Prisma.logsheet_entriesUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$logsheet_entriesPayload>
+          }
+          deleteMany: {
+            args: Prisma.logsheet_entriesDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.logsheet_entriesUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.logsheet_entriesUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$logsheet_entriesPayload>
+          }
+          aggregate: {
+            args: Prisma.Logsheet_entriesAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateLogsheet_entries>
+          }
+          groupBy: {
+            args: Prisma.logsheet_entriesGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Logsheet_entriesGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.logsheet_entriesCountArgs<ExtArgs>
+            result: $Utils.Optional<Logsheet_entriesCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -4033,6 +4621,7 @@ export namespace Prisma {
     customers?: customersOmit
     permissions?: permissionsOmit
     projects?: projectsOmit
+    knowledge_resources?: knowledge_resourcesOmit
     refresh_tokens?: refresh_tokensOmit
     role_permissions?: role_permissionsOmit
     roles?: rolesOmit
@@ -4065,9 +4654,15 @@ export namespace Prisma {
     schedule_messages?: schedule_messagesOmit
     schedule_targets?: schedule_targetsOmit
     complaints?: complaintsOmit
+    unit_edit_requests?: unit_edit_requestsOmit
     user_push_tokens?: user_push_tokensOmit
+    notifications?: notificationsOmit
     daily_ops_logs?: daily_ops_logsOmit
     vendor_attendance?: vendor_attendanceOmit
+    project_intelligence?: project_intelligenceOmit
+    project_issues?: project_issuesOmit
+    logsheet_templates?: logsheet_templatesOmit
+    logsheet_entries?: logsheet_entriesOmit
   }
 
   /* Types for Logging */
@@ -4251,19 +4846,25 @@ export namespace Prisma {
    */
 
   export type ProjectsCountOutputType = {
+    logsheet_templates: number
+    project_issues: number
     schedule_targets: number
     schedules: number
     units: number
     user_project_access: number
     vendor_attendance: number
+    knowledge_resources: number
   }
 
   export type ProjectsCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    logsheet_templates?: boolean | ProjectsCountOutputTypeCountLogsheet_templatesArgs
+    project_issues?: boolean | ProjectsCountOutputTypeCountProject_issuesArgs
     schedule_targets?: boolean | ProjectsCountOutputTypeCountSchedule_targetsArgs
     schedules?: boolean | ProjectsCountOutputTypeCountSchedulesArgs
     units?: boolean | ProjectsCountOutputTypeCountUnitsArgs
     user_project_access?: boolean | ProjectsCountOutputTypeCountUser_project_accessArgs
     vendor_attendance?: boolean | ProjectsCountOutputTypeCountVendor_attendanceArgs
+    knowledge_resources?: boolean | ProjectsCountOutputTypeCountKnowledge_resourcesArgs
   }
 
   // Custom InputTypes
@@ -4275,6 +4876,20 @@ export namespace Prisma {
      * Select specific fields to fetch from the ProjectsCountOutputType
      */
     select?: ProjectsCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ProjectsCountOutputType without action
+   */
+  export type ProjectsCountOutputTypeCountLogsheet_templatesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: logsheet_templatesWhereInput
+  }
+
+  /**
+   * ProjectsCountOutputType without action
+   */
+  export type ProjectsCountOutputTypeCountProject_issuesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: project_issuesWhereInput
   }
 
   /**
@@ -4310,6 +4925,13 @@ export namespace Prisma {
    */
   export type ProjectsCountOutputTypeCountVendor_attendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: vendor_attendanceWhereInput
+  }
+
+  /**
+   * ProjectsCountOutputType without action
+   */
+  export type ProjectsCountOutputTypeCountKnowledge_resourcesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: knowledge_resourcesWhereInput
   }
 
 
@@ -4378,6 +5000,7 @@ export namespace Prisma {
     service_logs: number
     tickets: number
     unit_comments: number
+    unit_edit_requests: number
     user_unit_access: number
   }
 
@@ -4393,6 +5016,7 @@ export namespace Prisma {
     service_logs?: boolean | UnitsCountOutputTypeCountService_logsArgs
     tickets?: boolean | UnitsCountOutputTypeCountTicketsArgs
     unit_comments?: boolean | UnitsCountOutputTypeCountUnit_commentsArgs
+    unit_edit_requests?: boolean | UnitsCountOutputTypeCountUnit_edit_requestsArgs
     user_unit_access?: boolean | UnitsCountOutputTypeCountUser_unit_accessArgs
   }
 
@@ -4487,6 +5111,13 @@ export namespace Prisma {
   /**
    * UnitsCountOutputType without action
    */
+  export type UnitsCountOutputTypeCountUnit_edit_requestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: unit_edit_requestsWhereInput
+  }
+
+  /**
+   * UnitsCountOutputType without action
+   */
   export type UnitsCountOutputTypeCountUser_unit_accessArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: user_unit_accessWhereInput
   }
@@ -4497,6 +5128,8 @@ export namespace Prisma {
    */
 
   export type UsersCountOutputType = {
+    audit_logs: number
+    intelligence_updates: number
     refresh_tokens: number
     schedule_messages: number
     schedule_targets: number
@@ -4506,11 +5139,15 @@ export namespace Prisma {
     user_push_tokens: number
     user_roles: number
     user_unit_access: number
-    audit_logs: number
+    unit_edit_requests: number
+    processed_requests: number
+    notifications: number
     vendor_attendance: number
   }
 
   export type UsersCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    audit_logs?: boolean | UsersCountOutputTypeCountAudit_logsArgs
+    intelligence_updates?: boolean | UsersCountOutputTypeCountIntelligence_updatesArgs
     refresh_tokens?: boolean | UsersCountOutputTypeCountRefresh_tokensArgs
     schedule_messages?: boolean | UsersCountOutputTypeCountSchedule_messagesArgs
     schedule_targets?: boolean | UsersCountOutputTypeCountSchedule_targetsArgs
@@ -4520,7 +5157,9 @@ export namespace Prisma {
     user_push_tokens?: boolean | UsersCountOutputTypeCountUser_push_tokensArgs
     user_roles?: boolean | UsersCountOutputTypeCountUser_rolesArgs
     user_unit_access?: boolean | UsersCountOutputTypeCountUser_unit_accessArgs
-    audit_logs?: boolean | UsersCountOutputTypeCountAudit_logsArgs
+    unit_edit_requests?: boolean | UsersCountOutputTypeCountUnit_edit_requestsArgs
+    processed_requests?: boolean | UsersCountOutputTypeCountProcessed_requestsArgs
+    notifications?: boolean | UsersCountOutputTypeCountNotificationsArgs
     vendor_attendance?: boolean | UsersCountOutputTypeCountVendor_attendanceArgs
   }
 
@@ -4533,6 +5172,20 @@ export namespace Prisma {
      * Select specific fields to fetch from the UsersCountOutputType
      */
     select?: UsersCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * UsersCountOutputType without action
+   */
+  export type UsersCountOutputTypeCountAudit_logsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: audit_logsWhereInput
+  }
+
+  /**
+   * UsersCountOutputType without action
+   */
+  export type UsersCountOutputTypeCountIntelligence_updatesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: project_intelligenceWhereInput
   }
 
   /**
@@ -4601,8 +5254,22 @@ export namespace Prisma {
   /**
    * UsersCountOutputType without action
    */
-  export type UsersCountOutputTypeCountAudit_logsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: audit_logsWhereInput
+  export type UsersCountOutputTypeCountUnit_edit_requestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: unit_edit_requestsWhereInput
+  }
+
+  /**
+   * UsersCountOutputType without action
+   */
+  export type UsersCountOutputTypeCountProcessed_requestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: unit_edit_requestsWhereInput
+  }
+
+  /**
+   * UsersCountOutputType without action
+   */
+  export type UsersCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: notificationsWhereInput
   }
 
   /**
@@ -4699,6 +5366,37 @@ export namespace Prisma {
    */
   export type SchedulesCountOutputTypeCountSchedule_momArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: schedule_momWhereInput
+  }
+
+
+  /**
+   * Count Type Logsheet_templatesCountOutputType
+   */
+
+  export type Logsheet_templatesCountOutputType = {
+    entries: number
+  }
+
+  export type Logsheet_templatesCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    entries?: boolean | Logsheet_templatesCountOutputTypeCountEntriesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * Logsheet_templatesCountOutputType without action
+   */
+  export type Logsheet_templatesCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Logsheet_templatesCountOutputType
+     */
+    select?: Logsheet_templatesCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * Logsheet_templatesCountOutputType without action
+   */
+  export type Logsheet_templatesCountOutputTypeCountEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: logsheet_entriesWhereInput
   }
 
 
@@ -6818,6 +7516,8 @@ export namespace Prisma {
     latitude: Decimal | null
     longitude: Decimal | null
     radius_meters: number | null
+    enabled_unit_types: string | null
+    monitoring_focus: string | null
   }
 
   export type ProjectsMaxAggregateOutputType = {
@@ -6831,6 +7531,8 @@ export namespace Prisma {
     latitude: Decimal | null
     longitude: Decimal | null
     radius_meters: number | null
+    enabled_unit_types: string | null
+    monitoring_focus: string | null
   }
 
   export type ProjectsCountAggregateOutputType = {
@@ -6844,6 +7546,8 @@ export namespace Prisma {
     latitude: number
     longitude: number
     radius_meters: number
+    enabled_unit_types: number
+    monitoring_focus: number
     _all: number
   }
 
@@ -6875,6 +7579,8 @@ export namespace Prisma {
     latitude?: true
     longitude?: true
     radius_meters?: true
+    enabled_unit_types?: true
+    monitoring_focus?: true
   }
 
   export type ProjectsMaxAggregateInputType = {
@@ -6888,6 +7594,8 @@ export namespace Prisma {
     latitude?: true
     longitude?: true
     radius_meters?: true
+    enabled_unit_types?: true
+    monitoring_focus?: true
   }
 
   export type ProjectsCountAggregateInputType = {
@@ -6901,6 +7609,8 @@ export namespace Prisma {
     latitude?: true
     longitude?: true
     radius_meters?: true
+    enabled_unit_types?: true
+    monitoring_focus?: true
     _all?: true
   }
 
@@ -7001,6 +7711,8 @@ export namespace Prisma {
     latitude: Decimal | null
     longitude: Decimal | null
     radius_meters: number
+    enabled_unit_types: string
+    monitoring_focus: string
     _count: ProjectsCountAggregateOutputType | null
     _avg: ProjectsAvgAggregateOutputType | null
     _sum: ProjectsSumAggregateOutputType | null
@@ -7033,12 +7745,18 @@ export namespace Prisma {
     latitude?: boolean
     longitude?: boolean
     radius_meters?: boolean
+    enabled_unit_types?: boolean
+    monitoring_focus?: boolean
+    logsheet_templates?: boolean | projects$logsheet_templatesArgs<ExtArgs>
+    project_intelligence?: boolean | projects$project_intelligenceArgs<ExtArgs>
+    project_issues?: boolean | projects$project_issuesArgs<ExtArgs>
     customers?: boolean | customersDefaultArgs<ExtArgs>
     schedule_targets?: boolean | projects$schedule_targetsArgs<ExtArgs>
     schedules?: boolean | projects$schedulesArgs<ExtArgs>
     units?: boolean | projects$unitsArgs<ExtArgs>
     user_project_access?: boolean | projects$user_project_accessArgs<ExtArgs>
     vendor_attendance?: boolean | projects$vendor_attendanceArgs<ExtArgs>
+    knowledge_resources?: boolean | projects$knowledge_resourcesArgs<ExtArgs>
     _count?: boolean | ProjectsCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["projects"]>
 
@@ -7055,28 +7773,38 @@ export namespace Prisma {
     latitude?: boolean
     longitude?: boolean
     radius_meters?: boolean
+    enabled_unit_types?: boolean
+    monitoring_focus?: boolean
   }
 
-  export type projectsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customer_id" | "name" | "code" | "status" | "created_at" | "enabled_forms" | "latitude" | "longitude" | "radius_meters", ExtArgs["result"]["projects"]>
+  export type projectsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customer_id" | "name" | "code" | "status" | "created_at" | "enabled_forms" | "latitude" | "longitude" | "radius_meters" | "enabled_unit_types" | "monitoring_focus", ExtArgs["result"]["projects"]>
   export type projectsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    logsheet_templates?: boolean | projects$logsheet_templatesArgs<ExtArgs>
+    project_intelligence?: boolean | projects$project_intelligenceArgs<ExtArgs>
+    project_issues?: boolean | projects$project_issuesArgs<ExtArgs>
     customers?: boolean | customersDefaultArgs<ExtArgs>
     schedule_targets?: boolean | projects$schedule_targetsArgs<ExtArgs>
     schedules?: boolean | projects$schedulesArgs<ExtArgs>
     units?: boolean | projects$unitsArgs<ExtArgs>
     user_project_access?: boolean | projects$user_project_accessArgs<ExtArgs>
     vendor_attendance?: boolean | projects$vendor_attendanceArgs<ExtArgs>
+    knowledge_resources?: boolean | projects$knowledge_resourcesArgs<ExtArgs>
     _count?: boolean | ProjectsCountOutputTypeDefaultArgs<ExtArgs>
   }
 
   export type $projectsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "projects"
     objects: {
+      logsheet_templates: Prisma.$logsheet_templatesPayload<ExtArgs>[]
+      project_intelligence: Prisma.$project_intelligencePayload<ExtArgs> | null
+      project_issues: Prisma.$project_issuesPayload<ExtArgs>[]
       customers: Prisma.$customersPayload<ExtArgs>
       schedule_targets: Prisma.$schedule_targetsPayload<ExtArgs>[]
       schedules: Prisma.$schedulesPayload<ExtArgs>[]
       units: Prisma.$unitsPayload<ExtArgs>[]
       user_project_access: Prisma.$user_project_accessPayload<ExtArgs>[]
       vendor_attendance: Prisma.$vendor_attendancePayload<ExtArgs>[]
+      knowledge_resources: Prisma.$knowledge_resourcesPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: bigint
@@ -7089,6 +7817,8 @@ export namespace Prisma {
       latitude: Prisma.Decimal | null
       longitude: Prisma.Decimal | null
       radius_meters: number
+      enabled_unit_types: string
+      monitoring_focus: string
     }, ExtArgs["result"]["projects"]>
     composites: {}
   }
@@ -7429,12 +8159,16 @@ export namespace Prisma {
    */
   export interface Prisma__projectsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    logsheet_templates<T extends projects$logsheet_templatesArgs<ExtArgs> = {}>(args?: Subset<T, projects$logsheet_templatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$logsheet_templatesPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    project_intelligence<T extends projects$project_intelligenceArgs<ExtArgs> = {}>(args?: Subset<T, projects$project_intelligenceArgs<ExtArgs>>): Prisma__project_intelligenceClient<$Result.GetResult<Prisma.$project_intelligencePayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
+    project_issues<T extends projects$project_issuesArgs<ExtArgs> = {}>(args?: Subset<T, projects$project_issuesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$project_issuesPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     customers<T extends customersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, customersDefaultArgs<ExtArgs>>): Prisma__customersClient<$Result.GetResult<Prisma.$customersPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
     schedule_targets<T extends projects$schedule_targetsArgs<ExtArgs> = {}>(args?: Subset<T, projects$schedule_targetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$schedule_targetsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     schedules<T extends projects$schedulesArgs<ExtArgs> = {}>(args?: Subset<T, projects$schedulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$schedulesPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     units<T extends projects$unitsArgs<ExtArgs> = {}>(args?: Subset<T, projects$unitsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$unitsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     user_project_access<T extends projects$user_project_accessArgs<ExtArgs> = {}>(args?: Subset<T, projects$user_project_accessArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$user_project_accessPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     vendor_attendance<T extends projects$vendor_attendanceArgs<ExtArgs> = {}>(args?: Subset<T, projects$vendor_attendanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$vendor_attendancePayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    knowledge_resources<T extends projects$knowledge_resourcesArgs<ExtArgs> = {}>(args?: Subset<T, projects$knowledge_resourcesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$knowledge_resourcesPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7474,6 +8208,8 @@ export namespace Prisma {
     readonly latitude: FieldRef<"projects", 'Decimal'>
     readonly longitude: FieldRef<"projects", 'Decimal'>
     readonly radius_meters: FieldRef<"projects", 'Int'>
+    readonly enabled_unit_types: FieldRef<"projects", 'String'>
+    readonly monitoring_focus: FieldRef<"projects", 'String'>
   }
     
 
@@ -7817,6 +8553,73 @@ export namespace Prisma {
   }
 
   /**
+   * projects.logsheet_templates
+   */
+  export type projects$logsheet_templatesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_templates
+     */
+    select?: logsheet_templatesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_templates
+     */
+    omit?: logsheet_templatesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_templatesInclude<ExtArgs> | null
+    where?: logsheet_templatesWhereInput
+    orderBy?: logsheet_templatesOrderByWithRelationInput | logsheet_templatesOrderByWithRelationInput[]
+    cursor?: logsheet_templatesWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Logsheet_templatesScalarFieldEnum | Logsheet_templatesScalarFieldEnum[]
+  }
+
+  /**
+   * projects.project_intelligence
+   */
+  export type projects$project_intelligenceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_intelligence
+     */
+    select?: project_intelligenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_intelligence
+     */
+    omit?: project_intelligenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_intelligenceInclude<ExtArgs> | null
+    where?: project_intelligenceWhereInput
+  }
+
+  /**
+   * projects.project_issues
+   */
+  export type projects$project_issuesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_issues
+     */
+    select?: project_issuesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_issues
+     */
+    omit?: project_issuesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_issuesInclude<ExtArgs> | null
+    where?: project_issuesWhereInput
+    orderBy?: project_issuesOrderByWithRelationInput | project_issuesOrderByWithRelationInput[]
+    cursor?: project_issuesWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Project_issuesScalarFieldEnum | Project_issuesScalarFieldEnum[]
+  }
+
+  /**
    * projects.schedule_targets
    */
   export type projects$schedule_targetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7937,6 +8740,30 @@ export namespace Prisma {
   }
 
   /**
+   * projects.knowledge_resources
+   */
+  export type projects$knowledge_resourcesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the knowledge_resources
+     */
+    select?: knowledge_resourcesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the knowledge_resources
+     */
+    omit?: knowledge_resourcesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: knowledge_resourcesInclude<ExtArgs> | null
+    where?: knowledge_resourcesWhereInput
+    orderBy?: knowledge_resourcesOrderByWithRelationInput | knowledge_resourcesOrderByWithRelationInput[]
+    cursor?: knowledge_resourcesWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Knowledge_resourcesScalarFieldEnum | Knowledge_resourcesScalarFieldEnum[]
+  }
+
+  /**
    * projects without action
    */
   export type projectsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7952,6 +8779,1076 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: projectsInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model knowledge_resources
+   */
+
+  export type AggregateKnowledge_resources = {
+    _count: Knowledge_resourcesCountAggregateOutputType | null
+    _avg: Knowledge_resourcesAvgAggregateOutputType | null
+    _sum: Knowledge_resourcesSumAggregateOutputType | null
+    _min: Knowledge_resourcesMinAggregateOutputType | null
+    _max: Knowledge_resourcesMaxAggregateOutputType | null
+  }
+
+  export type Knowledge_resourcesAvgAggregateOutputType = {
+    project_id: number | null
+  }
+
+  export type Knowledge_resourcesSumAggregateOutputType = {
+    project_id: bigint | null
+  }
+
+  export type Knowledge_resourcesMinAggregateOutputType = {
+    id: string | null
+    title: string | null
+    category: string | null
+    type: string | null
+    file_url: string | null
+    href: string | null
+    thumbnail: string | null
+    size: string | null
+    tags: string | null
+    visibility: string | null
+    project_id: bigint | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type Knowledge_resourcesMaxAggregateOutputType = {
+    id: string | null
+    title: string | null
+    category: string | null
+    type: string | null
+    file_url: string | null
+    href: string | null
+    thumbnail: string | null
+    size: string | null
+    tags: string | null
+    visibility: string | null
+    project_id: bigint | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type Knowledge_resourcesCountAggregateOutputType = {
+    id: number
+    title: number
+    category: number
+    type: number
+    file_url: number
+    href: number
+    thumbnail: number
+    size: number
+    tags: number
+    visibility: number
+    project_id: number
+    created_at: number
+    updated_at: number
+    _all: number
+  }
+
+
+  export type Knowledge_resourcesAvgAggregateInputType = {
+    project_id?: true
+  }
+
+  export type Knowledge_resourcesSumAggregateInputType = {
+    project_id?: true
+  }
+
+  export type Knowledge_resourcesMinAggregateInputType = {
+    id?: true
+    title?: true
+    category?: true
+    type?: true
+    file_url?: true
+    href?: true
+    thumbnail?: true
+    size?: true
+    tags?: true
+    visibility?: true
+    project_id?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type Knowledge_resourcesMaxAggregateInputType = {
+    id?: true
+    title?: true
+    category?: true
+    type?: true
+    file_url?: true
+    href?: true
+    thumbnail?: true
+    size?: true
+    tags?: true
+    visibility?: true
+    project_id?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type Knowledge_resourcesCountAggregateInputType = {
+    id?: true
+    title?: true
+    category?: true
+    type?: true
+    file_url?: true
+    href?: true
+    thumbnail?: true
+    size?: true
+    tags?: true
+    visibility?: true
+    project_id?: true
+    created_at?: true
+    updated_at?: true
+    _all?: true
+  }
+
+  export type Knowledge_resourcesAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which knowledge_resources to aggregate.
+     */
+    where?: knowledge_resourcesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of knowledge_resources to fetch.
+     */
+    orderBy?: knowledge_resourcesOrderByWithRelationInput | knowledge_resourcesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: knowledge_resourcesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` knowledge_resources from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` knowledge_resources.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned knowledge_resources
+    **/
+    _count?: true | Knowledge_resourcesCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Knowledge_resourcesAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Knowledge_resourcesSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Knowledge_resourcesMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Knowledge_resourcesMaxAggregateInputType
+  }
+
+  export type GetKnowledge_resourcesAggregateType<T extends Knowledge_resourcesAggregateArgs> = {
+        [P in keyof T & keyof AggregateKnowledge_resources]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateKnowledge_resources[P]>
+      : GetScalarType<T[P], AggregateKnowledge_resources[P]>
+  }
+
+
+
+
+  export type knowledge_resourcesGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: knowledge_resourcesWhereInput
+    orderBy?: knowledge_resourcesOrderByWithAggregationInput | knowledge_resourcesOrderByWithAggregationInput[]
+    by: Knowledge_resourcesScalarFieldEnum[] | Knowledge_resourcesScalarFieldEnum
+    having?: knowledge_resourcesScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Knowledge_resourcesCountAggregateInputType | true
+    _avg?: Knowledge_resourcesAvgAggregateInputType
+    _sum?: Knowledge_resourcesSumAggregateInputType
+    _min?: Knowledge_resourcesMinAggregateInputType
+    _max?: Knowledge_resourcesMaxAggregateInputType
+  }
+
+  export type Knowledge_resourcesGroupByOutputType = {
+    id: string
+    title: string
+    category: string
+    type: string
+    file_url: string | null
+    href: string | null
+    thumbnail: string | null
+    size: string | null
+    tags: string | null
+    visibility: string
+    project_id: bigint | null
+    created_at: Date
+    updated_at: Date
+    _count: Knowledge_resourcesCountAggregateOutputType | null
+    _avg: Knowledge_resourcesAvgAggregateOutputType | null
+    _sum: Knowledge_resourcesSumAggregateOutputType | null
+    _min: Knowledge_resourcesMinAggregateOutputType | null
+    _max: Knowledge_resourcesMaxAggregateOutputType | null
+  }
+
+  type GetKnowledge_resourcesGroupByPayload<T extends knowledge_resourcesGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Knowledge_resourcesGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Knowledge_resourcesGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Knowledge_resourcesGroupByOutputType[P]>
+            : GetScalarType<T[P], Knowledge_resourcesGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type knowledge_resourcesSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    category?: boolean
+    type?: boolean
+    file_url?: boolean
+    href?: boolean
+    thumbnail?: boolean
+    size?: boolean
+    tags?: boolean
+    visibility?: boolean
+    project_id?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    projects?: boolean | knowledge_resources$projectsArgs<ExtArgs>
+  }, ExtArgs["result"]["knowledge_resources"]>
+
+
+
+  export type knowledge_resourcesSelectScalar = {
+    id?: boolean
+    title?: boolean
+    category?: boolean
+    type?: boolean
+    file_url?: boolean
+    href?: boolean
+    thumbnail?: boolean
+    size?: boolean
+    tags?: boolean
+    visibility?: boolean
+    project_id?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }
+
+  export type knowledge_resourcesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "category" | "type" | "file_url" | "href" | "thumbnail" | "size" | "tags" | "visibility" | "project_id" | "created_at" | "updated_at", ExtArgs["result"]["knowledge_resources"]>
+  export type knowledge_resourcesInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    projects?: boolean | knowledge_resources$projectsArgs<ExtArgs>
+  }
+
+  export type $knowledge_resourcesPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "knowledge_resources"
+    objects: {
+      projects: Prisma.$projectsPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      title: string
+      category: string
+      type: string
+      file_url: string | null
+      href: string | null
+      thumbnail: string | null
+      size: string | null
+      tags: string | null
+      visibility: string
+      project_id: bigint | null
+      created_at: Date
+      updated_at: Date
+    }, ExtArgs["result"]["knowledge_resources"]>
+    composites: {}
+  }
+
+  type knowledge_resourcesGetPayload<S extends boolean | null | undefined | knowledge_resourcesDefaultArgs> = $Result.GetResult<Prisma.$knowledge_resourcesPayload, S>
+
+  type knowledge_resourcesCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<knowledge_resourcesFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Knowledge_resourcesCountAggregateInputType | true
+    }
+
+  export interface knowledge_resourcesDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['knowledge_resources'], meta: { name: 'knowledge_resources' } }
+    /**
+     * Find zero or one Knowledge_resources that matches the filter.
+     * @param {knowledge_resourcesFindUniqueArgs} args - Arguments to find a Knowledge_resources
+     * @example
+     * // Get one Knowledge_resources
+     * const knowledge_resources = await prisma.knowledge_resources.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends knowledge_resourcesFindUniqueArgs>(args: SelectSubset<T, knowledge_resourcesFindUniqueArgs<ExtArgs>>): Prisma__knowledge_resourcesClient<$Result.GetResult<Prisma.$knowledge_resourcesPayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one Knowledge_resources that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {knowledge_resourcesFindUniqueOrThrowArgs} args - Arguments to find a Knowledge_resources
+     * @example
+     * // Get one Knowledge_resources
+     * const knowledge_resources = await prisma.knowledge_resources.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends knowledge_resourcesFindUniqueOrThrowArgs>(args: SelectSubset<T, knowledge_resourcesFindUniqueOrThrowArgs<ExtArgs>>): Prisma__knowledge_resourcesClient<$Result.GetResult<Prisma.$knowledge_resourcesPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Knowledge_resources that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {knowledge_resourcesFindFirstArgs} args - Arguments to find a Knowledge_resources
+     * @example
+     * // Get one Knowledge_resources
+     * const knowledge_resources = await prisma.knowledge_resources.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends knowledge_resourcesFindFirstArgs>(args?: SelectSubset<T, knowledge_resourcesFindFirstArgs<ExtArgs>>): Prisma__knowledge_resourcesClient<$Result.GetResult<Prisma.$knowledge_resourcesPayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Knowledge_resources that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {knowledge_resourcesFindFirstOrThrowArgs} args - Arguments to find a Knowledge_resources
+     * @example
+     * // Get one Knowledge_resources
+     * const knowledge_resources = await prisma.knowledge_resources.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends knowledge_resourcesFindFirstOrThrowArgs>(args?: SelectSubset<T, knowledge_resourcesFindFirstOrThrowArgs<ExtArgs>>): Prisma__knowledge_resourcesClient<$Result.GetResult<Prisma.$knowledge_resourcesPayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more Knowledge_resources that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {knowledge_resourcesFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Knowledge_resources
+     * const knowledge_resources = await prisma.knowledge_resources.findMany()
+     * 
+     * // Get first 10 Knowledge_resources
+     * const knowledge_resources = await prisma.knowledge_resources.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const knowledge_resourcesWithIdOnly = await prisma.knowledge_resources.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends knowledge_resourcesFindManyArgs>(args?: SelectSubset<T, knowledge_resourcesFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$knowledge_resourcesPayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a Knowledge_resources.
+     * @param {knowledge_resourcesCreateArgs} args - Arguments to create a Knowledge_resources.
+     * @example
+     * // Create one Knowledge_resources
+     * const Knowledge_resources = await prisma.knowledge_resources.create({
+     *   data: {
+     *     // ... data to create a Knowledge_resources
+     *   }
+     * })
+     * 
+     */
+    create<T extends knowledge_resourcesCreateArgs>(args: SelectSubset<T, knowledge_resourcesCreateArgs<ExtArgs>>): Prisma__knowledge_resourcesClient<$Result.GetResult<Prisma.$knowledge_resourcesPayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many Knowledge_resources.
+     * @param {knowledge_resourcesCreateManyArgs} args - Arguments to create many Knowledge_resources.
+     * @example
+     * // Create many Knowledge_resources
+     * const knowledge_resources = await prisma.knowledge_resources.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends knowledge_resourcesCreateManyArgs>(args?: SelectSubset<T, knowledge_resourcesCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Knowledge_resources.
+     * @param {knowledge_resourcesDeleteArgs} args - Arguments to delete one Knowledge_resources.
+     * @example
+     * // Delete one Knowledge_resources
+     * const Knowledge_resources = await prisma.knowledge_resources.delete({
+     *   where: {
+     *     // ... filter to delete one Knowledge_resources
+     *   }
+     * })
+     * 
+     */
+    delete<T extends knowledge_resourcesDeleteArgs>(args: SelectSubset<T, knowledge_resourcesDeleteArgs<ExtArgs>>): Prisma__knowledge_resourcesClient<$Result.GetResult<Prisma.$knowledge_resourcesPayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one Knowledge_resources.
+     * @param {knowledge_resourcesUpdateArgs} args - Arguments to update one Knowledge_resources.
+     * @example
+     * // Update one Knowledge_resources
+     * const knowledge_resources = await prisma.knowledge_resources.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends knowledge_resourcesUpdateArgs>(args: SelectSubset<T, knowledge_resourcesUpdateArgs<ExtArgs>>): Prisma__knowledge_resourcesClient<$Result.GetResult<Prisma.$knowledge_resourcesPayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more Knowledge_resources.
+     * @param {knowledge_resourcesDeleteManyArgs} args - Arguments to filter Knowledge_resources to delete.
+     * @example
+     * // Delete a few Knowledge_resources
+     * const { count } = await prisma.knowledge_resources.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends knowledge_resourcesDeleteManyArgs>(args?: SelectSubset<T, knowledge_resourcesDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Knowledge_resources.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {knowledge_resourcesUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Knowledge_resources
+     * const knowledge_resources = await prisma.knowledge_resources.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends knowledge_resourcesUpdateManyArgs>(args: SelectSubset<T, knowledge_resourcesUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Knowledge_resources.
+     * @param {knowledge_resourcesUpsertArgs} args - Arguments to update or create a Knowledge_resources.
+     * @example
+     * // Update or create a Knowledge_resources
+     * const knowledge_resources = await prisma.knowledge_resources.upsert({
+     *   create: {
+     *     // ... data to create a Knowledge_resources
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Knowledge_resources we want to update
+     *   }
+     * })
+     */
+    upsert<T extends knowledge_resourcesUpsertArgs>(args: SelectSubset<T, knowledge_resourcesUpsertArgs<ExtArgs>>): Prisma__knowledge_resourcesClient<$Result.GetResult<Prisma.$knowledge_resourcesPayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of Knowledge_resources.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {knowledge_resourcesCountArgs} args - Arguments to filter Knowledge_resources to count.
+     * @example
+     * // Count the number of Knowledge_resources
+     * const count = await prisma.knowledge_resources.count({
+     *   where: {
+     *     // ... the filter for the Knowledge_resources we want to count
+     *   }
+     * })
+    **/
+    count<T extends knowledge_resourcesCountArgs>(
+      args?: Subset<T, knowledge_resourcesCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Knowledge_resourcesCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Knowledge_resources.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Knowledge_resourcesAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Knowledge_resourcesAggregateArgs>(args: Subset<T, Knowledge_resourcesAggregateArgs>): Prisma.PrismaPromise<GetKnowledge_resourcesAggregateType<T>>
+
+    /**
+     * Group by Knowledge_resources.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {knowledge_resourcesGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends knowledge_resourcesGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: knowledge_resourcesGroupByArgs['orderBy'] }
+        : { orderBy?: knowledge_resourcesGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, knowledge_resourcesGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetKnowledge_resourcesGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the knowledge_resources model
+   */
+  readonly fields: knowledge_resourcesFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for knowledge_resources.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__knowledge_resourcesClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    projects<T extends knowledge_resources$projectsArgs<ExtArgs> = {}>(args?: Subset<T, knowledge_resources$projectsArgs<ExtArgs>>): Prisma__projectsClient<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the knowledge_resources model
+   */ 
+  interface knowledge_resourcesFieldRefs {
+    readonly id: FieldRef<"knowledge_resources", 'String'>
+    readonly title: FieldRef<"knowledge_resources", 'String'>
+    readonly category: FieldRef<"knowledge_resources", 'String'>
+    readonly type: FieldRef<"knowledge_resources", 'String'>
+    readonly file_url: FieldRef<"knowledge_resources", 'String'>
+    readonly href: FieldRef<"knowledge_resources", 'String'>
+    readonly thumbnail: FieldRef<"knowledge_resources", 'String'>
+    readonly size: FieldRef<"knowledge_resources", 'String'>
+    readonly tags: FieldRef<"knowledge_resources", 'String'>
+    readonly visibility: FieldRef<"knowledge_resources", 'String'>
+    readonly project_id: FieldRef<"knowledge_resources", 'BigInt'>
+    readonly created_at: FieldRef<"knowledge_resources", 'DateTime'>
+    readonly updated_at: FieldRef<"knowledge_resources", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * knowledge_resources findUnique
+   */
+  export type knowledge_resourcesFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the knowledge_resources
+     */
+    select?: knowledge_resourcesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the knowledge_resources
+     */
+    omit?: knowledge_resourcesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: knowledge_resourcesInclude<ExtArgs> | null
+    /**
+     * Filter, which knowledge_resources to fetch.
+     */
+    where: knowledge_resourcesWhereUniqueInput
+  }
+
+  /**
+   * knowledge_resources findUniqueOrThrow
+   */
+  export type knowledge_resourcesFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the knowledge_resources
+     */
+    select?: knowledge_resourcesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the knowledge_resources
+     */
+    omit?: knowledge_resourcesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: knowledge_resourcesInclude<ExtArgs> | null
+    /**
+     * Filter, which knowledge_resources to fetch.
+     */
+    where: knowledge_resourcesWhereUniqueInput
+  }
+
+  /**
+   * knowledge_resources findFirst
+   */
+  export type knowledge_resourcesFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the knowledge_resources
+     */
+    select?: knowledge_resourcesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the knowledge_resources
+     */
+    omit?: knowledge_resourcesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: knowledge_resourcesInclude<ExtArgs> | null
+    /**
+     * Filter, which knowledge_resources to fetch.
+     */
+    where?: knowledge_resourcesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of knowledge_resources to fetch.
+     */
+    orderBy?: knowledge_resourcesOrderByWithRelationInput | knowledge_resourcesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for knowledge_resources.
+     */
+    cursor?: knowledge_resourcesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` knowledge_resources from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` knowledge_resources.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of knowledge_resources.
+     */
+    distinct?: Knowledge_resourcesScalarFieldEnum | Knowledge_resourcesScalarFieldEnum[]
+  }
+
+  /**
+   * knowledge_resources findFirstOrThrow
+   */
+  export type knowledge_resourcesFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the knowledge_resources
+     */
+    select?: knowledge_resourcesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the knowledge_resources
+     */
+    omit?: knowledge_resourcesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: knowledge_resourcesInclude<ExtArgs> | null
+    /**
+     * Filter, which knowledge_resources to fetch.
+     */
+    where?: knowledge_resourcesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of knowledge_resources to fetch.
+     */
+    orderBy?: knowledge_resourcesOrderByWithRelationInput | knowledge_resourcesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for knowledge_resources.
+     */
+    cursor?: knowledge_resourcesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` knowledge_resources from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` knowledge_resources.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of knowledge_resources.
+     */
+    distinct?: Knowledge_resourcesScalarFieldEnum | Knowledge_resourcesScalarFieldEnum[]
+  }
+
+  /**
+   * knowledge_resources findMany
+   */
+  export type knowledge_resourcesFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the knowledge_resources
+     */
+    select?: knowledge_resourcesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the knowledge_resources
+     */
+    omit?: knowledge_resourcesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: knowledge_resourcesInclude<ExtArgs> | null
+    /**
+     * Filter, which knowledge_resources to fetch.
+     */
+    where?: knowledge_resourcesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of knowledge_resources to fetch.
+     */
+    orderBy?: knowledge_resourcesOrderByWithRelationInput | knowledge_resourcesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing knowledge_resources.
+     */
+    cursor?: knowledge_resourcesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` knowledge_resources from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` knowledge_resources.
+     */
+    skip?: number
+    distinct?: Knowledge_resourcesScalarFieldEnum | Knowledge_resourcesScalarFieldEnum[]
+  }
+
+  /**
+   * knowledge_resources create
+   */
+  export type knowledge_resourcesCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the knowledge_resources
+     */
+    select?: knowledge_resourcesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the knowledge_resources
+     */
+    omit?: knowledge_resourcesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: knowledge_resourcesInclude<ExtArgs> | null
+    /**
+     * The data needed to create a knowledge_resources.
+     */
+    data: XOR<knowledge_resourcesCreateInput, knowledge_resourcesUncheckedCreateInput>
+  }
+
+  /**
+   * knowledge_resources createMany
+   */
+  export type knowledge_resourcesCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many knowledge_resources.
+     */
+    data: knowledge_resourcesCreateManyInput | knowledge_resourcesCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * knowledge_resources update
+   */
+  export type knowledge_resourcesUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the knowledge_resources
+     */
+    select?: knowledge_resourcesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the knowledge_resources
+     */
+    omit?: knowledge_resourcesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: knowledge_resourcesInclude<ExtArgs> | null
+    /**
+     * The data needed to update a knowledge_resources.
+     */
+    data: XOR<knowledge_resourcesUpdateInput, knowledge_resourcesUncheckedUpdateInput>
+    /**
+     * Choose, which knowledge_resources to update.
+     */
+    where: knowledge_resourcesWhereUniqueInput
+  }
+
+  /**
+   * knowledge_resources updateMany
+   */
+  export type knowledge_resourcesUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update knowledge_resources.
+     */
+    data: XOR<knowledge_resourcesUpdateManyMutationInput, knowledge_resourcesUncheckedUpdateManyInput>
+    /**
+     * Filter which knowledge_resources to update
+     */
+    where?: knowledge_resourcesWhereInput
+    /**
+     * Limit how many knowledge_resources to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * knowledge_resources upsert
+   */
+  export type knowledge_resourcesUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the knowledge_resources
+     */
+    select?: knowledge_resourcesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the knowledge_resources
+     */
+    omit?: knowledge_resourcesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: knowledge_resourcesInclude<ExtArgs> | null
+    /**
+     * The filter to search for the knowledge_resources to update in case it exists.
+     */
+    where: knowledge_resourcesWhereUniqueInput
+    /**
+     * In case the knowledge_resources found by the `where` argument doesn't exist, create a new knowledge_resources with this data.
+     */
+    create: XOR<knowledge_resourcesCreateInput, knowledge_resourcesUncheckedCreateInput>
+    /**
+     * In case the knowledge_resources was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<knowledge_resourcesUpdateInput, knowledge_resourcesUncheckedUpdateInput>
+  }
+
+  /**
+   * knowledge_resources delete
+   */
+  export type knowledge_resourcesDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the knowledge_resources
+     */
+    select?: knowledge_resourcesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the knowledge_resources
+     */
+    omit?: knowledge_resourcesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: knowledge_resourcesInclude<ExtArgs> | null
+    /**
+     * Filter which knowledge_resources to delete.
+     */
+    where: knowledge_resourcesWhereUniqueInput
+  }
+
+  /**
+   * knowledge_resources deleteMany
+   */
+  export type knowledge_resourcesDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which knowledge_resources to delete
+     */
+    where?: knowledge_resourcesWhereInput
+    /**
+     * Limit how many knowledge_resources to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * knowledge_resources.projects
+   */
+  export type knowledge_resources$projectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the projects
+     */
+    select?: projectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the projects
+     */
+    omit?: projectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: projectsInclude<ExtArgs> | null
+    where?: projectsWhereInput
+  }
+
+  /**
+   * knowledge_resources without action
+   */
+  export type knowledge_resourcesDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the knowledge_resources
+     */
+    select?: knowledge_resourcesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the knowledge_resources
+     */
+    omit?: knowledge_resourcesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: knowledge_resourcesInclude<ExtArgs> | null
   }
 
 
@@ -11248,6 +13145,7 @@ export namespace Prisma {
     service_logs?: boolean | units$service_logsArgs<ExtArgs>
     tickets?: boolean | units$ticketsArgs<ExtArgs>
     unit_comments?: boolean | units$unit_commentsArgs<ExtArgs>
+    unit_edit_requests?: boolean | units$unit_edit_requestsArgs<ExtArgs>
     projects?: boolean | units$projectsArgs<ExtArgs>
     user_unit_access?: boolean | units$user_unit_accessArgs<ExtArgs>
     _count?: boolean | UnitsCountOutputTypeDefaultArgs<ExtArgs>
@@ -11294,6 +13192,7 @@ export namespace Prisma {
     service_logs?: boolean | units$service_logsArgs<ExtArgs>
     tickets?: boolean | units$ticketsArgs<ExtArgs>
     unit_comments?: boolean | units$unit_commentsArgs<ExtArgs>
+    unit_edit_requests?: boolean | units$unit_edit_requestsArgs<ExtArgs>
     projects?: boolean | units$projectsArgs<ExtArgs>
     user_unit_access?: boolean | units$user_unit_accessArgs<ExtArgs>
     _count?: boolean | UnitsCountOutputTypeDefaultArgs<ExtArgs>
@@ -11313,6 +13212,7 @@ export namespace Prisma {
       service_logs: Prisma.$service_logsPayload<ExtArgs>[]
       tickets: Prisma.$ticketsPayload<ExtArgs>[]
       unit_comments: Prisma.$unit_commentsPayload<ExtArgs>[]
+      unit_edit_requests: Prisma.$unit_edit_requestsPayload<ExtArgs>[]
       projects: Prisma.$projectsPayload<ExtArgs> | null
       user_unit_access: Prisma.$user_unit_accessPayload<ExtArgs>[]
     }
@@ -11691,6 +13591,7 @@ export namespace Prisma {
     service_logs<T extends units$service_logsArgs<ExtArgs> = {}>(args?: Subset<T, units$service_logsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$service_logsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     tickets<T extends units$ticketsArgs<ExtArgs> = {}>(args?: Subset<T, units$ticketsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ticketsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     unit_comments<T extends units$unit_commentsArgs<ExtArgs> = {}>(args?: Subset<T, units$unit_commentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$unit_commentsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    unit_edit_requests<T extends units$unit_edit_requestsArgs<ExtArgs> = {}>(args?: Subset<T, units$unit_edit_requestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$unit_edit_requestsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     projects<T extends units$projectsArgs<ExtArgs> = {}>(args?: Subset<T, units$projectsArgs<ExtArgs>>): Prisma__projectsClient<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
     user_unit_access<T extends units$user_unit_accessArgs<ExtArgs> = {}>(args?: Subset<T, units$user_unit_accessArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$user_unit_accessPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     /**
@@ -12349,6 +14250,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: Unit_commentsScalarFieldEnum | Unit_commentsScalarFieldEnum[]
+  }
+
+  /**
+   * units.unit_edit_requests
+   */
+  export type units$unit_edit_requestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_edit_requests
+     */
+    select?: unit_edit_requestsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_edit_requests
+     */
+    omit?: unit_edit_requestsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: unit_edit_requestsInclude<ExtArgs> | null
+    where?: unit_edit_requestsWhereInput
+    orderBy?: unit_edit_requestsOrderByWithRelationInput | unit_edit_requestsOrderByWithRelationInput[]
+    cursor?: unit_edit_requestsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Unit_edit_requestsScalarFieldEnum | Unit_edit_requestsScalarFieldEnum[]
   }
 
   /**
@@ -15260,15 +17185,17 @@ export namespace Prisma {
     phone: string | null
     is_active: boolean | null
     company_name: string | null
-    two_factor_enabled: boolean | null
-    two_factor_secret: string | null
-    otp_code: string | null
-    otp_expiry: Date | null
     failed_login_attempts: number | null
     locked_until: Date | null
+    otp_code: string | null
+    otp_expiry: Date | null
+    two_factor_enabled: boolean | null
+    two_factor_secret: string | null
     attendance_enabled: boolean | null
     face_reference_url: string | null
     face_verification_enabled: boolean | null
+    avatar_url: string | null
+    bio: string | null
   }
 
   export type UsersMaxAggregateOutputType = {
@@ -15280,15 +17207,17 @@ export namespace Prisma {
     phone: string | null
     is_active: boolean | null
     company_name: string | null
-    two_factor_enabled: boolean | null
-    two_factor_secret: string | null
-    otp_code: string | null
-    otp_expiry: Date | null
     failed_login_attempts: number | null
     locked_until: Date | null
+    otp_code: string | null
+    otp_expiry: Date | null
+    two_factor_enabled: boolean | null
+    two_factor_secret: string | null
     attendance_enabled: boolean | null
     face_reference_url: string | null
     face_verification_enabled: boolean | null
+    avatar_url: string | null
+    bio: string | null
   }
 
   export type UsersCountAggregateOutputType = {
@@ -15300,15 +17229,17 @@ export namespace Prisma {
     phone: number
     is_active: number
     company_name: number
-    two_factor_enabled: number
-    two_factor_secret: number
-    otp_code: number
-    otp_expiry: number
     failed_login_attempts: number
     locked_until: number
+    otp_code: number
+    otp_expiry: number
+    two_factor_enabled: number
+    two_factor_secret: number
     attendance_enabled: number
     face_reference_url: number
     face_verification_enabled: number
+    avatar_url: number
+    bio: number
     _all: number
   }
 
@@ -15334,15 +17265,17 @@ export namespace Prisma {
     phone?: true
     is_active?: true
     company_name?: true
-    two_factor_enabled?: true
-    two_factor_secret?: true
-    otp_code?: true
-    otp_expiry?: true
     failed_login_attempts?: true
     locked_until?: true
+    otp_code?: true
+    otp_expiry?: true
+    two_factor_enabled?: true
+    two_factor_secret?: true
     attendance_enabled?: true
     face_reference_url?: true
     face_verification_enabled?: true
+    avatar_url?: true
+    bio?: true
   }
 
   export type UsersMaxAggregateInputType = {
@@ -15354,15 +17287,17 @@ export namespace Prisma {
     phone?: true
     is_active?: true
     company_name?: true
-    two_factor_enabled?: true
-    two_factor_secret?: true
-    otp_code?: true
-    otp_expiry?: true
     failed_login_attempts?: true
     locked_until?: true
+    otp_code?: true
+    otp_expiry?: true
+    two_factor_enabled?: true
+    two_factor_secret?: true
     attendance_enabled?: true
     face_reference_url?: true
     face_verification_enabled?: true
+    avatar_url?: true
+    bio?: true
   }
 
   export type UsersCountAggregateInputType = {
@@ -15374,15 +17309,17 @@ export namespace Prisma {
     phone?: true
     is_active?: true
     company_name?: true
-    two_factor_enabled?: true
-    two_factor_secret?: true
-    otp_code?: true
-    otp_expiry?: true
     failed_login_attempts?: true
     locked_until?: true
+    otp_code?: true
+    otp_expiry?: true
+    two_factor_enabled?: true
+    two_factor_secret?: true
     attendance_enabled?: true
     face_reference_url?: true
     face_verification_enabled?: true
+    avatar_url?: true
+    bio?: true
     _all?: true
   }
 
@@ -15481,15 +17418,17 @@ export namespace Prisma {
     phone: string | null
     is_active: boolean
     company_name: string | null
-    two_factor_enabled: boolean
-    two_factor_secret: string | null
-    otp_code: string | null
-    otp_expiry: Date | null
     failed_login_attempts: number
     locked_until: Date | null
+    otp_code: string | null
+    otp_expiry: Date | null
+    two_factor_enabled: boolean
+    two_factor_secret: string | null
     attendance_enabled: boolean
     face_reference_url: string | null
     face_verification_enabled: boolean
+    avatar_url: string | null
+    bio: string | null
     _count: UsersCountAggregateOutputType | null
     _avg: UsersAvgAggregateOutputType | null
     _sum: UsersSumAggregateOutputType | null
@@ -15520,15 +17459,19 @@ export namespace Prisma {
     phone?: boolean
     is_active?: boolean
     company_name?: boolean
-    two_factor_enabled?: boolean
-    two_factor_secret?: boolean
-    otp_code?: boolean
-    otp_expiry?: boolean
     failed_login_attempts?: boolean
     locked_until?: boolean
+    otp_code?: boolean
+    otp_expiry?: boolean
+    two_factor_enabled?: boolean
+    two_factor_secret?: boolean
     attendance_enabled?: boolean
     face_reference_url?: boolean
     face_verification_enabled?: boolean
+    avatar_url?: boolean
+    bio?: boolean
+    audit_logs?: boolean | users$audit_logsArgs<ExtArgs>
+    intelligence_updates?: boolean | users$intelligence_updatesArgs<ExtArgs>
     refresh_tokens?: boolean | users$refresh_tokensArgs<ExtArgs>
     schedule_messages?: boolean | users$schedule_messagesArgs<ExtArgs>
     schedule_targets?: boolean | users$schedule_targetsArgs<ExtArgs>
@@ -15538,7 +17481,9 @@ export namespace Prisma {
     user_push_tokens?: boolean | users$user_push_tokensArgs<ExtArgs>
     user_roles?: boolean | users$user_rolesArgs<ExtArgs>
     user_unit_access?: boolean | users$user_unit_accessArgs<ExtArgs>
-    audit_logs?: boolean | users$audit_logsArgs<ExtArgs>
+    unit_edit_requests?: boolean | users$unit_edit_requestsArgs<ExtArgs>
+    processed_requests?: boolean | users$processed_requestsArgs<ExtArgs>
+    notifications?: boolean | users$notificationsArgs<ExtArgs>
     roles?: boolean | users$rolesArgs<ExtArgs>
     vendor_attendance?: boolean | users$vendor_attendanceArgs<ExtArgs>
     _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
@@ -15555,19 +17500,23 @@ export namespace Prisma {
     phone?: boolean
     is_active?: boolean
     company_name?: boolean
-    two_factor_enabled?: boolean
-    two_factor_secret?: boolean
-    otp_code?: boolean
-    otp_expiry?: boolean
     failed_login_attempts?: boolean
     locked_until?: boolean
+    otp_code?: boolean
+    otp_expiry?: boolean
+    two_factor_enabled?: boolean
+    two_factor_secret?: boolean
     attendance_enabled?: boolean
     face_reference_url?: boolean
     face_verification_enabled?: boolean
+    avatar_url?: boolean
+    bio?: boolean
   }
 
-  export type usersOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "role_id" | "name" | "email" | "password" | "phone" | "is_active" | "company_name" | "two_factor_enabled" | "two_factor_secret" | "otp_code" | "otp_expiry" | "failed_login_attempts" | "locked_until" | "attendance_enabled" | "face_reference_url" | "face_verification_enabled", ExtArgs["result"]["users"]>
+  export type usersOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "role_id" | "name" | "email" | "password" | "phone" | "is_active" | "company_name" | "failed_login_attempts" | "locked_until" | "otp_code" | "otp_expiry" | "two_factor_enabled" | "two_factor_secret" | "attendance_enabled" | "face_reference_url" | "face_verification_enabled" | "avatar_url" | "bio", ExtArgs["result"]["users"]>
   export type usersInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    audit_logs?: boolean | users$audit_logsArgs<ExtArgs>
+    intelligence_updates?: boolean | users$intelligence_updatesArgs<ExtArgs>
     refresh_tokens?: boolean | users$refresh_tokensArgs<ExtArgs>
     schedule_messages?: boolean | users$schedule_messagesArgs<ExtArgs>
     schedule_targets?: boolean | users$schedule_targetsArgs<ExtArgs>
@@ -15577,7 +17526,9 @@ export namespace Prisma {
     user_push_tokens?: boolean | users$user_push_tokensArgs<ExtArgs>
     user_roles?: boolean | users$user_rolesArgs<ExtArgs>
     user_unit_access?: boolean | users$user_unit_accessArgs<ExtArgs>
-    audit_logs?: boolean | users$audit_logsArgs<ExtArgs>
+    unit_edit_requests?: boolean | users$unit_edit_requestsArgs<ExtArgs>
+    processed_requests?: boolean | users$processed_requestsArgs<ExtArgs>
+    notifications?: boolean | users$notificationsArgs<ExtArgs>
     roles?: boolean | users$rolesArgs<ExtArgs>
     vendor_attendance?: boolean | users$vendor_attendanceArgs<ExtArgs>
     _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
@@ -15586,6 +17537,8 @@ export namespace Prisma {
   export type $usersPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "users"
     objects: {
+      audit_logs: Prisma.$audit_logsPayload<ExtArgs>[]
+      intelligence_updates: Prisma.$project_intelligencePayload<ExtArgs>[]
       refresh_tokens: Prisma.$refresh_tokensPayload<ExtArgs>[]
       schedule_messages: Prisma.$schedule_messagesPayload<ExtArgs>[]
       schedule_targets: Prisma.$schedule_targetsPayload<ExtArgs>[]
@@ -15595,7 +17548,9 @@ export namespace Prisma {
       user_push_tokens: Prisma.$user_push_tokensPayload<ExtArgs>[]
       user_roles: Prisma.$user_rolesPayload<ExtArgs>[]
       user_unit_access: Prisma.$user_unit_accessPayload<ExtArgs>[]
-      audit_logs: Prisma.$audit_logsPayload<ExtArgs>[]
+      unit_edit_requests: Prisma.$unit_edit_requestsPayload<ExtArgs>[]
+      processed_requests: Prisma.$unit_edit_requestsPayload<ExtArgs>[]
+      notifications: Prisma.$notificationsPayload<ExtArgs>[]
       roles: Prisma.$rolesPayload<ExtArgs> | null
       vendor_attendance: Prisma.$vendor_attendancePayload<ExtArgs>[]
     }
@@ -15608,15 +17563,17 @@ export namespace Prisma {
       phone: string | null
       is_active: boolean
       company_name: string | null
-      two_factor_enabled: boolean
-      two_factor_secret: string | null
-      otp_code: string | null
-      otp_expiry: Date | null
       failed_login_attempts: number
       locked_until: Date | null
+      otp_code: string | null
+      otp_expiry: Date | null
+      two_factor_enabled: boolean
+      two_factor_secret: string | null
       attendance_enabled: boolean
       face_reference_url: string | null
       face_verification_enabled: boolean
+      avatar_url: string | null
+      bio: string | null
     }, ExtArgs["result"]["users"]>
     composites: {}
   }
@@ -15957,6 +17914,8 @@ export namespace Prisma {
    */
   export interface Prisma__usersClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    audit_logs<T extends users$audit_logsArgs<ExtArgs> = {}>(args?: Subset<T, users$audit_logsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$audit_logsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    intelligence_updates<T extends users$intelligence_updatesArgs<ExtArgs> = {}>(args?: Subset<T, users$intelligence_updatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$project_intelligencePayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     refresh_tokens<T extends users$refresh_tokensArgs<ExtArgs> = {}>(args?: Subset<T, users$refresh_tokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$refresh_tokensPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     schedule_messages<T extends users$schedule_messagesArgs<ExtArgs> = {}>(args?: Subset<T, users$schedule_messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$schedule_messagesPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     schedule_targets<T extends users$schedule_targetsArgs<ExtArgs> = {}>(args?: Subset<T, users$schedule_targetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$schedule_targetsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
@@ -15966,7 +17925,9 @@ export namespace Prisma {
     user_push_tokens<T extends users$user_push_tokensArgs<ExtArgs> = {}>(args?: Subset<T, users$user_push_tokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$user_push_tokensPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     user_roles<T extends users$user_rolesArgs<ExtArgs> = {}>(args?: Subset<T, users$user_rolesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$user_rolesPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     user_unit_access<T extends users$user_unit_accessArgs<ExtArgs> = {}>(args?: Subset<T, users$user_unit_accessArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$user_unit_accessPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
-    audit_logs<T extends users$audit_logsArgs<ExtArgs> = {}>(args?: Subset<T, users$audit_logsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$audit_logsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    unit_edit_requests<T extends users$unit_edit_requestsArgs<ExtArgs> = {}>(args?: Subset<T, users$unit_edit_requestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$unit_edit_requestsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    processed_requests<T extends users$processed_requestsArgs<ExtArgs> = {}>(args?: Subset<T, users$processed_requestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$unit_edit_requestsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    notifications<T extends users$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, users$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$notificationsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     roles<T extends users$rolesArgs<ExtArgs> = {}>(args?: Subset<T, users$rolesArgs<ExtArgs>>): Prisma__rolesClient<$Result.GetResult<Prisma.$rolesPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
     vendor_attendance<T extends users$vendor_attendanceArgs<ExtArgs> = {}>(args?: Subset<T, users$vendor_attendanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$vendor_attendancePayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     /**
@@ -16006,15 +17967,17 @@ export namespace Prisma {
     readonly phone: FieldRef<"users", 'String'>
     readonly is_active: FieldRef<"users", 'Boolean'>
     readonly company_name: FieldRef<"users", 'String'>
-    readonly two_factor_enabled: FieldRef<"users", 'Boolean'>
-    readonly two_factor_secret: FieldRef<"users", 'String'>
-    readonly otp_code: FieldRef<"users", 'String'>
-    readonly otp_expiry: FieldRef<"users", 'DateTime'>
     readonly failed_login_attempts: FieldRef<"users", 'Int'>
     readonly locked_until: FieldRef<"users", 'DateTime'>
+    readonly otp_code: FieldRef<"users", 'String'>
+    readonly otp_expiry: FieldRef<"users", 'DateTime'>
+    readonly two_factor_enabled: FieldRef<"users", 'Boolean'>
+    readonly two_factor_secret: FieldRef<"users", 'String'>
     readonly attendance_enabled: FieldRef<"users", 'Boolean'>
     readonly face_reference_url: FieldRef<"users", 'String'>
     readonly face_verification_enabled: FieldRef<"users", 'Boolean'>
+    readonly avatar_url: FieldRef<"users", 'String'>
+    readonly bio: FieldRef<"users", 'String'>
   }
     
 
@@ -16358,6 +18321,54 @@ export namespace Prisma {
   }
 
   /**
+   * users.audit_logs
+   */
+  export type users$audit_logsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the audit_logs
+     */
+    select?: audit_logsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the audit_logs
+     */
+    omit?: audit_logsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: audit_logsInclude<ExtArgs> | null
+    where?: audit_logsWhereInput
+    orderBy?: audit_logsOrderByWithRelationInput | audit_logsOrderByWithRelationInput[]
+    cursor?: audit_logsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Audit_logsScalarFieldEnum | Audit_logsScalarFieldEnum[]
+  }
+
+  /**
+   * users.intelligence_updates
+   */
+  export type users$intelligence_updatesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_intelligence
+     */
+    select?: project_intelligenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_intelligence
+     */
+    omit?: project_intelligenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_intelligenceInclude<ExtArgs> | null
+    where?: project_intelligenceWhereInput
+    orderBy?: project_intelligenceOrderByWithRelationInput | project_intelligenceOrderByWithRelationInput[]
+    cursor?: project_intelligenceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Project_intelligenceScalarFieldEnum | Project_intelligenceScalarFieldEnum[]
+  }
+
+  /**
    * users.refresh_tokens
    */
   export type users$refresh_tokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -16574,27 +18585,75 @@ export namespace Prisma {
   }
 
   /**
-   * users.audit_logs
+   * users.unit_edit_requests
    */
-  export type users$audit_logsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type users$unit_edit_requestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the audit_logs
+     * Select specific fields to fetch from the unit_edit_requests
      */
-    select?: audit_logsSelect<ExtArgs> | null
+    select?: unit_edit_requestsSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the audit_logs
+     * Omit specific fields from the unit_edit_requests
      */
-    omit?: audit_logsOmit<ExtArgs> | null
+    omit?: unit_edit_requestsOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: audit_logsInclude<ExtArgs> | null
-    where?: audit_logsWhereInput
-    orderBy?: audit_logsOrderByWithRelationInput | audit_logsOrderByWithRelationInput[]
-    cursor?: audit_logsWhereUniqueInput
+    include?: unit_edit_requestsInclude<ExtArgs> | null
+    where?: unit_edit_requestsWhereInput
+    orderBy?: unit_edit_requestsOrderByWithRelationInput | unit_edit_requestsOrderByWithRelationInput[]
+    cursor?: unit_edit_requestsWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: Audit_logsScalarFieldEnum | Audit_logsScalarFieldEnum[]
+    distinct?: Unit_edit_requestsScalarFieldEnum | Unit_edit_requestsScalarFieldEnum[]
+  }
+
+  /**
+   * users.processed_requests
+   */
+  export type users$processed_requestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_edit_requests
+     */
+    select?: unit_edit_requestsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_edit_requests
+     */
+    omit?: unit_edit_requestsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: unit_edit_requestsInclude<ExtArgs> | null
+    where?: unit_edit_requestsWhereInput
+    orderBy?: unit_edit_requestsOrderByWithRelationInput | unit_edit_requestsOrderByWithRelationInput[]
+    cursor?: unit_edit_requestsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Unit_edit_requestsScalarFieldEnum | Unit_edit_requestsScalarFieldEnum[]
+  }
+
+  /**
+   * users.notifications
+   */
+  export type users$notificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notifications
+     */
+    select?: notificationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notifications
+     */
+    omit?: notificationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: notificationsInclude<ExtArgs> | null
+    where?: notificationsWhereInput
+    orderBy?: notificationsOrderByWithRelationInput | notificationsOrderByWithRelationInput[]
+    cursor?: notificationsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NotificationsScalarFieldEnum | NotificationsScalarFieldEnum[]
   }
 
   /**
@@ -27237,6 +29296,7 @@ export namespace Prisma {
     finding: string | null
     advise: string | null
     report_pdf: string | null
+    technical_json: string | null
   }
 
   export type Corrective_maintenancesMaxAggregateOutputType = {
@@ -27250,6 +29310,7 @@ export namespace Prisma {
     finding: string | null
     advise: string | null
     report_pdf: string | null
+    technical_json: string | null
   }
 
   export type Corrective_maintenancesCountAggregateOutputType = {
@@ -27263,6 +29324,7 @@ export namespace Prisma {
     finding: number
     advise: number
     report_pdf: number
+    technical_json: number
     _all: number
   }
 
@@ -27288,6 +29350,7 @@ export namespace Prisma {
     finding?: true
     advise?: true
     report_pdf?: true
+    technical_json?: true
   }
 
   export type Corrective_maintenancesMaxAggregateInputType = {
@@ -27301,6 +29364,7 @@ export namespace Prisma {
     finding?: true
     advise?: true
     report_pdf?: true
+    technical_json?: true
   }
 
   export type Corrective_maintenancesCountAggregateInputType = {
@@ -27314,6 +29378,7 @@ export namespace Prisma {
     finding?: true
     advise?: true
     report_pdf?: true
+    technical_json?: true
     _all?: true
   }
 
@@ -27414,6 +29479,7 @@ export namespace Prisma {
     finding: string | null
     advise: string | null
     report_pdf: string | null
+    technical_json: string | null
     _count: Corrective_maintenancesCountAggregateOutputType | null
     _avg: Corrective_maintenancesAvgAggregateOutputType | null
     _sum: Corrective_maintenancesSumAggregateOutputType | null
@@ -27446,6 +29512,7 @@ export namespace Prisma {
     finding?: boolean
     advise?: boolean
     report_pdf?: boolean
+    technical_json?: boolean
   }, ExtArgs["result"]["corrective_maintenances"]>
 
 
@@ -27461,9 +29528,10 @@ export namespace Prisma {
     finding?: boolean
     advise?: boolean
     report_pdf?: boolean
+    technical_json?: boolean
   }
 
-  export type corrective_maintenancesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "unit_id" | "tech_name" | "issue_description" | "created_at" | "inspector_name" | "repair_date" | "finding" | "advise" | "report_pdf", ExtArgs["result"]["corrective_maintenances"]>
+  export type corrective_maintenancesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "unit_id" | "tech_name" | "issue_description" | "created_at" | "inspector_name" | "repair_date" | "finding" | "advise" | "report_pdf" | "technical_json", ExtArgs["result"]["corrective_maintenances"]>
 
   export type $corrective_maintenancesPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "corrective_maintenances"
@@ -27479,6 +29547,7 @@ export namespace Prisma {
       finding: string | null
       advise: string | null
       report_pdf: string | null
+      technical_json: string | null
     }, ExtArgs["result"]["corrective_maintenances"]>
     composites: {}
   }
@@ -27858,6 +29927,7 @@ export namespace Prisma {
     readonly finding: FieldRef<"corrective_maintenances", 'String'>
     readonly advise: FieldRef<"corrective_maintenances", 'String'>
     readonly report_pdf: FieldRef<"corrective_maintenances", 'String'>
+    readonly technical_json: FieldRef<"corrective_maintenances", 'String'>
   }
     
 
@@ -41919,6 +43989,1082 @@ export namespace Prisma {
 
 
   /**
+   * Model unit_edit_requests
+   */
+
+  export type AggregateUnit_edit_requests = {
+    _count: Unit_edit_requestsCountAggregateOutputType | null
+    _avg: Unit_edit_requestsAvgAggregateOutputType | null
+    _sum: Unit_edit_requestsSumAggregateOutputType | null
+    _min: Unit_edit_requestsMinAggregateOutputType | null
+    _max: Unit_edit_requestsMaxAggregateOutputType | null
+  }
+
+  export type Unit_edit_requestsAvgAggregateOutputType = {
+    id: number | null
+    unit_id: number | null
+    requested_by: number | null
+    processed_by: number | null
+  }
+
+  export type Unit_edit_requestsSumAggregateOutputType = {
+    id: number | null
+    unit_id: number | null
+    requested_by: number | null
+    processed_by: number | null
+  }
+
+  export type Unit_edit_requestsMinAggregateOutputType = {
+    id: number | null
+    unit_id: number | null
+    requested_by: number | null
+    reporter_name: string | null
+    details_json: string | null
+    status: string | null
+    requested_at: Date | null
+    processed_by: number | null
+    processed_at: Date | null
+    admin_note: string | null
+  }
+
+  export type Unit_edit_requestsMaxAggregateOutputType = {
+    id: number | null
+    unit_id: number | null
+    requested_by: number | null
+    reporter_name: string | null
+    details_json: string | null
+    status: string | null
+    requested_at: Date | null
+    processed_by: number | null
+    processed_at: Date | null
+    admin_note: string | null
+  }
+
+  export type Unit_edit_requestsCountAggregateOutputType = {
+    id: number
+    unit_id: number
+    requested_by: number
+    reporter_name: number
+    details_json: number
+    status: number
+    requested_at: number
+    processed_by: number
+    processed_at: number
+    admin_note: number
+    _all: number
+  }
+
+
+  export type Unit_edit_requestsAvgAggregateInputType = {
+    id?: true
+    unit_id?: true
+    requested_by?: true
+    processed_by?: true
+  }
+
+  export type Unit_edit_requestsSumAggregateInputType = {
+    id?: true
+    unit_id?: true
+    requested_by?: true
+    processed_by?: true
+  }
+
+  export type Unit_edit_requestsMinAggregateInputType = {
+    id?: true
+    unit_id?: true
+    requested_by?: true
+    reporter_name?: true
+    details_json?: true
+    status?: true
+    requested_at?: true
+    processed_by?: true
+    processed_at?: true
+    admin_note?: true
+  }
+
+  export type Unit_edit_requestsMaxAggregateInputType = {
+    id?: true
+    unit_id?: true
+    requested_by?: true
+    reporter_name?: true
+    details_json?: true
+    status?: true
+    requested_at?: true
+    processed_by?: true
+    processed_at?: true
+    admin_note?: true
+  }
+
+  export type Unit_edit_requestsCountAggregateInputType = {
+    id?: true
+    unit_id?: true
+    requested_by?: true
+    reporter_name?: true
+    details_json?: true
+    status?: true
+    requested_at?: true
+    processed_by?: true
+    processed_at?: true
+    admin_note?: true
+    _all?: true
+  }
+
+  export type Unit_edit_requestsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which unit_edit_requests to aggregate.
+     */
+    where?: unit_edit_requestsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of unit_edit_requests to fetch.
+     */
+    orderBy?: unit_edit_requestsOrderByWithRelationInput | unit_edit_requestsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: unit_edit_requestsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` unit_edit_requests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` unit_edit_requests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned unit_edit_requests
+    **/
+    _count?: true | Unit_edit_requestsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Unit_edit_requestsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Unit_edit_requestsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Unit_edit_requestsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Unit_edit_requestsMaxAggregateInputType
+  }
+
+  export type GetUnit_edit_requestsAggregateType<T extends Unit_edit_requestsAggregateArgs> = {
+        [P in keyof T & keyof AggregateUnit_edit_requests]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUnit_edit_requests[P]>
+      : GetScalarType<T[P], AggregateUnit_edit_requests[P]>
+  }
+
+
+
+
+  export type unit_edit_requestsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: unit_edit_requestsWhereInput
+    orderBy?: unit_edit_requestsOrderByWithAggregationInput | unit_edit_requestsOrderByWithAggregationInput[]
+    by: Unit_edit_requestsScalarFieldEnum[] | Unit_edit_requestsScalarFieldEnum
+    having?: unit_edit_requestsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Unit_edit_requestsCountAggregateInputType | true
+    _avg?: Unit_edit_requestsAvgAggregateInputType
+    _sum?: Unit_edit_requestsSumAggregateInputType
+    _min?: Unit_edit_requestsMinAggregateInputType
+    _max?: Unit_edit_requestsMaxAggregateInputType
+  }
+
+  export type Unit_edit_requestsGroupByOutputType = {
+    id: number
+    unit_id: number
+    requested_by: number | null
+    reporter_name: string | null
+    details_json: string
+    status: string
+    requested_at: Date
+    processed_by: number | null
+    processed_at: Date | null
+    admin_note: string | null
+    _count: Unit_edit_requestsCountAggregateOutputType | null
+    _avg: Unit_edit_requestsAvgAggregateOutputType | null
+    _sum: Unit_edit_requestsSumAggregateOutputType | null
+    _min: Unit_edit_requestsMinAggregateOutputType | null
+    _max: Unit_edit_requestsMaxAggregateOutputType | null
+  }
+
+  type GetUnit_edit_requestsGroupByPayload<T extends unit_edit_requestsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Unit_edit_requestsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Unit_edit_requestsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Unit_edit_requestsGroupByOutputType[P]>
+            : GetScalarType<T[P], Unit_edit_requestsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type unit_edit_requestsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    unit_id?: boolean
+    requested_by?: boolean
+    reporter_name?: boolean
+    details_json?: boolean
+    status?: boolean
+    requested_at?: boolean
+    processed_by?: boolean
+    processed_at?: boolean
+    admin_note?: boolean
+    units?: boolean | unitsDefaultArgs<ExtArgs>
+    users?: boolean | unit_edit_requests$usersArgs<ExtArgs>
+    processor?: boolean | unit_edit_requests$processorArgs<ExtArgs>
+  }, ExtArgs["result"]["unit_edit_requests"]>
+
+
+
+  export type unit_edit_requestsSelectScalar = {
+    id?: boolean
+    unit_id?: boolean
+    requested_by?: boolean
+    reporter_name?: boolean
+    details_json?: boolean
+    status?: boolean
+    requested_at?: boolean
+    processed_by?: boolean
+    processed_at?: boolean
+    admin_note?: boolean
+  }
+
+  export type unit_edit_requestsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "unit_id" | "requested_by" | "reporter_name" | "details_json" | "status" | "requested_at" | "processed_by" | "processed_at" | "admin_note", ExtArgs["result"]["unit_edit_requests"]>
+  export type unit_edit_requestsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    units?: boolean | unitsDefaultArgs<ExtArgs>
+    users?: boolean | unit_edit_requests$usersArgs<ExtArgs>
+    processor?: boolean | unit_edit_requests$processorArgs<ExtArgs>
+  }
+
+  export type $unit_edit_requestsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "unit_edit_requests"
+    objects: {
+      units: Prisma.$unitsPayload<ExtArgs>
+      users: Prisma.$usersPayload<ExtArgs> | null
+      processor: Prisma.$usersPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      unit_id: number
+      requested_by: number | null
+      reporter_name: string | null
+      details_json: string
+      status: string
+      requested_at: Date
+      processed_by: number | null
+      processed_at: Date | null
+      admin_note: string | null
+    }, ExtArgs["result"]["unit_edit_requests"]>
+    composites: {}
+  }
+
+  type unit_edit_requestsGetPayload<S extends boolean | null | undefined | unit_edit_requestsDefaultArgs> = $Result.GetResult<Prisma.$unit_edit_requestsPayload, S>
+
+  type unit_edit_requestsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<unit_edit_requestsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Unit_edit_requestsCountAggregateInputType | true
+    }
+
+  export interface unit_edit_requestsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['unit_edit_requests'], meta: { name: 'unit_edit_requests' } }
+    /**
+     * Find zero or one Unit_edit_requests that matches the filter.
+     * @param {unit_edit_requestsFindUniqueArgs} args - Arguments to find a Unit_edit_requests
+     * @example
+     * // Get one Unit_edit_requests
+     * const unit_edit_requests = await prisma.unit_edit_requests.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends unit_edit_requestsFindUniqueArgs>(args: SelectSubset<T, unit_edit_requestsFindUniqueArgs<ExtArgs>>): Prisma__unit_edit_requestsClient<$Result.GetResult<Prisma.$unit_edit_requestsPayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one Unit_edit_requests that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {unit_edit_requestsFindUniqueOrThrowArgs} args - Arguments to find a Unit_edit_requests
+     * @example
+     * // Get one Unit_edit_requests
+     * const unit_edit_requests = await prisma.unit_edit_requests.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends unit_edit_requestsFindUniqueOrThrowArgs>(args: SelectSubset<T, unit_edit_requestsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__unit_edit_requestsClient<$Result.GetResult<Prisma.$unit_edit_requestsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Unit_edit_requests that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {unit_edit_requestsFindFirstArgs} args - Arguments to find a Unit_edit_requests
+     * @example
+     * // Get one Unit_edit_requests
+     * const unit_edit_requests = await prisma.unit_edit_requests.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends unit_edit_requestsFindFirstArgs>(args?: SelectSubset<T, unit_edit_requestsFindFirstArgs<ExtArgs>>): Prisma__unit_edit_requestsClient<$Result.GetResult<Prisma.$unit_edit_requestsPayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Unit_edit_requests that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {unit_edit_requestsFindFirstOrThrowArgs} args - Arguments to find a Unit_edit_requests
+     * @example
+     * // Get one Unit_edit_requests
+     * const unit_edit_requests = await prisma.unit_edit_requests.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends unit_edit_requestsFindFirstOrThrowArgs>(args?: SelectSubset<T, unit_edit_requestsFindFirstOrThrowArgs<ExtArgs>>): Prisma__unit_edit_requestsClient<$Result.GetResult<Prisma.$unit_edit_requestsPayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more Unit_edit_requests that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {unit_edit_requestsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Unit_edit_requests
+     * const unit_edit_requests = await prisma.unit_edit_requests.findMany()
+     * 
+     * // Get first 10 Unit_edit_requests
+     * const unit_edit_requests = await prisma.unit_edit_requests.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const unit_edit_requestsWithIdOnly = await prisma.unit_edit_requests.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends unit_edit_requestsFindManyArgs>(args?: SelectSubset<T, unit_edit_requestsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$unit_edit_requestsPayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a Unit_edit_requests.
+     * @param {unit_edit_requestsCreateArgs} args - Arguments to create a Unit_edit_requests.
+     * @example
+     * // Create one Unit_edit_requests
+     * const Unit_edit_requests = await prisma.unit_edit_requests.create({
+     *   data: {
+     *     // ... data to create a Unit_edit_requests
+     *   }
+     * })
+     * 
+     */
+    create<T extends unit_edit_requestsCreateArgs>(args: SelectSubset<T, unit_edit_requestsCreateArgs<ExtArgs>>): Prisma__unit_edit_requestsClient<$Result.GetResult<Prisma.$unit_edit_requestsPayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many Unit_edit_requests.
+     * @param {unit_edit_requestsCreateManyArgs} args - Arguments to create many Unit_edit_requests.
+     * @example
+     * // Create many Unit_edit_requests
+     * const unit_edit_requests = await prisma.unit_edit_requests.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends unit_edit_requestsCreateManyArgs>(args?: SelectSubset<T, unit_edit_requestsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Unit_edit_requests.
+     * @param {unit_edit_requestsDeleteArgs} args - Arguments to delete one Unit_edit_requests.
+     * @example
+     * // Delete one Unit_edit_requests
+     * const Unit_edit_requests = await prisma.unit_edit_requests.delete({
+     *   where: {
+     *     // ... filter to delete one Unit_edit_requests
+     *   }
+     * })
+     * 
+     */
+    delete<T extends unit_edit_requestsDeleteArgs>(args: SelectSubset<T, unit_edit_requestsDeleteArgs<ExtArgs>>): Prisma__unit_edit_requestsClient<$Result.GetResult<Prisma.$unit_edit_requestsPayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one Unit_edit_requests.
+     * @param {unit_edit_requestsUpdateArgs} args - Arguments to update one Unit_edit_requests.
+     * @example
+     * // Update one Unit_edit_requests
+     * const unit_edit_requests = await prisma.unit_edit_requests.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends unit_edit_requestsUpdateArgs>(args: SelectSubset<T, unit_edit_requestsUpdateArgs<ExtArgs>>): Prisma__unit_edit_requestsClient<$Result.GetResult<Prisma.$unit_edit_requestsPayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more Unit_edit_requests.
+     * @param {unit_edit_requestsDeleteManyArgs} args - Arguments to filter Unit_edit_requests to delete.
+     * @example
+     * // Delete a few Unit_edit_requests
+     * const { count } = await prisma.unit_edit_requests.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends unit_edit_requestsDeleteManyArgs>(args?: SelectSubset<T, unit_edit_requestsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Unit_edit_requests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {unit_edit_requestsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Unit_edit_requests
+     * const unit_edit_requests = await prisma.unit_edit_requests.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends unit_edit_requestsUpdateManyArgs>(args: SelectSubset<T, unit_edit_requestsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Unit_edit_requests.
+     * @param {unit_edit_requestsUpsertArgs} args - Arguments to update or create a Unit_edit_requests.
+     * @example
+     * // Update or create a Unit_edit_requests
+     * const unit_edit_requests = await prisma.unit_edit_requests.upsert({
+     *   create: {
+     *     // ... data to create a Unit_edit_requests
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Unit_edit_requests we want to update
+     *   }
+     * })
+     */
+    upsert<T extends unit_edit_requestsUpsertArgs>(args: SelectSubset<T, unit_edit_requestsUpsertArgs<ExtArgs>>): Prisma__unit_edit_requestsClient<$Result.GetResult<Prisma.$unit_edit_requestsPayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of Unit_edit_requests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {unit_edit_requestsCountArgs} args - Arguments to filter Unit_edit_requests to count.
+     * @example
+     * // Count the number of Unit_edit_requests
+     * const count = await prisma.unit_edit_requests.count({
+     *   where: {
+     *     // ... the filter for the Unit_edit_requests we want to count
+     *   }
+     * })
+    **/
+    count<T extends unit_edit_requestsCountArgs>(
+      args?: Subset<T, unit_edit_requestsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Unit_edit_requestsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Unit_edit_requests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Unit_edit_requestsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Unit_edit_requestsAggregateArgs>(args: Subset<T, Unit_edit_requestsAggregateArgs>): Prisma.PrismaPromise<GetUnit_edit_requestsAggregateType<T>>
+
+    /**
+     * Group by Unit_edit_requests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {unit_edit_requestsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends unit_edit_requestsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: unit_edit_requestsGroupByArgs['orderBy'] }
+        : { orderBy?: unit_edit_requestsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, unit_edit_requestsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUnit_edit_requestsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the unit_edit_requests model
+   */
+  readonly fields: unit_edit_requestsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for unit_edit_requests.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__unit_edit_requestsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    units<T extends unitsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, unitsDefaultArgs<ExtArgs>>): Prisma__unitsClient<$Result.GetResult<Prisma.$unitsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    users<T extends unit_edit_requests$usersArgs<ExtArgs> = {}>(args?: Subset<T, unit_edit_requests$usersArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
+    processor<T extends unit_edit_requests$processorArgs<ExtArgs> = {}>(args?: Subset<T, unit_edit_requests$processorArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the unit_edit_requests model
+   */ 
+  interface unit_edit_requestsFieldRefs {
+    readonly id: FieldRef<"unit_edit_requests", 'Int'>
+    readonly unit_id: FieldRef<"unit_edit_requests", 'Int'>
+    readonly requested_by: FieldRef<"unit_edit_requests", 'Int'>
+    readonly reporter_name: FieldRef<"unit_edit_requests", 'String'>
+    readonly details_json: FieldRef<"unit_edit_requests", 'String'>
+    readonly status: FieldRef<"unit_edit_requests", 'String'>
+    readonly requested_at: FieldRef<"unit_edit_requests", 'DateTime'>
+    readonly processed_by: FieldRef<"unit_edit_requests", 'Int'>
+    readonly processed_at: FieldRef<"unit_edit_requests", 'DateTime'>
+    readonly admin_note: FieldRef<"unit_edit_requests", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * unit_edit_requests findUnique
+   */
+  export type unit_edit_requestsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_edit_requests
+     */
+    select?: unit_edit_requestsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_edit_requests
+     */
+    omit?: unit_edit_requestsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: unit_edit_requestsInclude<ExtArgs> | null
+    /**
+     * Filter, which unit_edit_requests to fetch.
+     */
+    where: unit_edit_requestsWhereUniqueInput
+  }
+
+  /**
+   * unit_edit_requests findUniqueOrThrow
+   */
+  export type unit_edit_requestsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_edit_requests
+     */
+    select?: unit_edit_requestsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_edit_requests
+     */
+    omit?: unit_edit_requestsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: unit_edit_requestsInclude<ExtArgs> | null
+    /**
+     * Filter, which unit_edit_requests to fetch.
+     */
+    where: unit_edit_requestsWhereUniqueInput
+  }
+
+  /**
+   * unit_edit_requests findFirst
+   */
+  export type unit_edit_requestsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_edit_requests
+     */
+    select?: unit_edit_requestsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_edit_requests
+     */
+    omit?: unit_edit_requestsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: unit_edit_requestsInclude<ExtArgs> | null
+    /**
+     * Filter, which unit_edit_requests to fetch.
+     */
+    where?: unit_edit_requestsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of unit_edit_requests to fetch.
+     */
+    orderBy?: unit_edit_requestsOrderByWithRelationInput | unit_edit_requestsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for unit_edit_requests.
+     */
+    cursor?: unit_edit_requestsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` unit_edit_requests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` unit_edit_requests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of unit_edit_requests.
+     */
+    distinct?: Unit_edit_requestsScalarFieldEnum | Unit_edit_requestsScalarFieldEnum[]
+  }
+
+  /**
+   * unit_edit_requests findFirstOrThrow
+   */
+  export type unit_edit_requestsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_edit_requests
+     */
+    select?: unit_edit_requestsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_edit_requests
+     */
+    omit?: unit_edit_requestsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: unit_edit_requestsInclude<ExtArgs> | null
+    /**
+     * Filter, which unit_edit_requests to fetch.
+     */
+    where?: unit_edit_requestsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of unit_edit_requests to fetch.
+     */
+    orderBy?: unit_edit_requestsOrderByWithRelationInput | unit_edit_requestsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for unit_edit_requests.
+     */
+    cursor?: unit_edit_requestsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` unit_edit_requests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` unit_edit_requests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of unit_edit_requests.
+     */
+    distinct?: Unit_edit_requestsScalarFieldEnum | Unit_edit_requestsScalarFieldEnum[]
+  }
+
+  /**
+   * unit_edit_requests findMany
+   */
+  export type unit_edit_requestsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_edit_requests
+     */
+    select?: unit_edit_requestsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_edit_requests
+     */
+    omit?: unit_edit_requestsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: unit_edit_requestsInclude<ExtArgs> | null
+    /**
+     * Filter, which unit_edit_requests to fetch.
+     */
+    where?: unit_edit_requestsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of unit_edit_requests to fetch.
+     */
+    orderBy?: unit_edit_requestsOrderByWithRelationInput | unit_edit_requestsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing unit_edit_requests.
+     */
+    cursor?: unit_edit_requestsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` unit_edit_requests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` unit_edit_requests.
+     */
+    skip?: number
+    distinct?: Unit_edit_requestsScalarFieldEnum | Unit_edit_requestsScalarFieldEnum[]
+  }
+
+  /**
+   * unit_edit_requests create
+   */
+  export type unit_edit_requestsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_edit_requests
+     */
+    select?: unit_edit_requestsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_edit_requests
+     */
+    omit?: unit_edit_requestsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: unit_edit_requestsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a unit_edit_requests.
+     */
+    data: XOR<unit_edit_requestsCreateInput, unit_edit_requestsUncheckedCreateInput>
+  }
+
+  /**
+   * unit_edit_requests createMany
+   */
+  export type unit_edit_requestsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many unit_edit_requests.
+     */
+    data: unit_edit_requestsCreateManyInput | unit_edit_requestsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * unit_edit_requests update
+   */
+  export type unit_edit_requestsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_edit_requests
+     */
+    select?: unit_edit_requestsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_edit_requests
+     */
+    omit?: unit_edit_requestsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: unit_edit_requestsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a unit_edit_requests.
+     */
+    data: XOR<unit_edit_requestsUpdateInput, unit_edit_requestsUncheckedUpdateInput>
+    /**
+     * Choose, which unit_edit_requests to update.
+     */
+    where: unit_edit_requestsWhereUniqueInput
+  }
+
+  /**
+   * unit_edit_requests updateMany
+   */
+  export type unit_edit_requestsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update unit_edit_requests.
+     */
+    data: XOR<unit_edit_requestsUpdateManyMutationInput, unit_edit_requestsUncheckedUpdateManyInput>
+    /**
+     * Filter which unit_edit_requests to update
+     */
+    where?: unit_edit_requestsWhereInput
+    /**
+     * Limit how many unit_edit_requests to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * unit_edit_requests upsert
+   */
+  export type unit_edit_requestsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_edit_requests
+     */
+    select?: unit_edit_requestsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_edit_requests
+     */
+    omit?: unit_edit_requestsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: unit_edit_requestsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the unit_edit_requests to update in case it exists.
+     */
+    where: unit_edit_requestsWhereUniqueInput
+    /**
+     * In case the unit_edit_requests found by the `where` argument doesn't exist, create a new unit_edit_requests with this data.
+     */
+    create: XOR<unit_edit_requestsCreateInput, unit_edit_requestsUncheckedCreateInput>
+    /**
+     * In case the unit_edit_requests was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<unit_edit_requestsUpdateInput, unit_edit_requestsUncheckedUpdateInput>
+  }
+
+  /**
+   * unit_edit_requests delete
+   */
+  export type unit_edit_requestsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_edit_requests
+     */
+    select?: unit_edit_requestsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_edit_requests
+     */
+    omit?: unit_edit_requestsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: unit_edit_requestsInclude<ExtArgs> | null
+    /**
+     * Filter which unit_edit_requests to delete.
+     */
+    where: unit_edit_requestsWhereUniqueInput
+  }
+
+  /**
+   * unit_edit_requests deleteMany
+   */
+  export type unit_edit_requestsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which unit_edit_requests to delete
+     */
+    where?: unit_edit_requestsWhereInput
+    /**
+     * Limit how many unit_edit_requests to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * unit_edit_requests.users
+   */
+  export type unit_edit_requests$usersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the users
+     */
+    select?: usersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the users
+     */
+    omit?: usersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: usersInclude<ExtArgs> | null
+    where?: usersWhereInput
+  }
+
+  /**
+   * unit_edit_requests.processor
+   */
+  export type unit_edit_requests$processorArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the users
+     */
+    select?: usersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the users
+     */
+    omit?: usersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: usersInclude<ExtArgs> | null
+    where?: usersWhereInput
+  }
+
+  /**
+   * unit_edit_requests without action
+   */
+  export type unit_edit_requestsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_edit_requests
+     */
+    select?: unit_edit_requestsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_edit_requests
+     */
+    omit?: unit_edit_requestsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: unit_edit_requestsInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model user_push_tokens
    */
 
@@ -42882,6 +46028,1006 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: user_push_tokensInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model notifications
+   */
+
+  export type AggregateNotifications = {
+    _count: NotificationsCountAggregateOutputType | null
+    _avg: NotificationsAvgAggregateOutputType | null
+    _sum: NotificationsSumAggregateOutputType | null
+    _min: NotificationsMinAggregateOutputType | null
+    _max: NotificationsMaxAggregateOutputType | null
+  }
+
+  export type NotificationsAvgAggregateOutputType = {
+    id: number | null
+    user_id: number | null
+  }
+
+  export type NotificationsSumAggregateOutputType = {
+    id: number | null
+    user_id: number | null
+  }
+
+  export type NotificationsMinAggregateOutputType = {
+    id: number | null
+    user_id: number | null
+    title: string | null
+    message: string | null
+    type: string | null
+    link: string | null
+    is_read: boolean | null
+    created_at: Date | null
+  }
+
+  export type NotificationsMaxAggregateOutputType = {
+    id: number | null
+    user_id: number | null
+    title: string | null
+    message: string | null
+    type: string | null
+    link: string | null
+    is_read: boolean | null
+    created_at: Date | null
+  }
+
+  export type NotificationsCountAggregateOutputType = {
+    id: number
+    user_id: number
+    title: number
+    message: number
+    type: number
+    link: number
+    is_read: number
+    created_at: number
+    _all: number
+  }
+
+
+  export type NotificationsAvgAggregateInputType = {
+    id?: true
+    user_id?: true
+  }
+
+  export type NotificationsSumAggregateInputType = {
+    id?: true
+    user_id?: true
+  }
+
+  export type NotificationsMinAggregateInputType = {
+    id?: true
+    user_id?: true
+    title?: true
+    message?: true
+    type?: true
+    link?: true
+    is_read?: true
+    created_at?: true
+  }
+
+  export type NotificationsMaxAggregateInputType = {
+    id?: true
+    user_id?: true
+    title?: true
+    message?: true
+    type?: true
+    link?: true
+    is_read?: true
+    created_at?: true
+  }
+
+  export type NotificationsCountAggregateInputType = {
+    id?: true
+    user_id?: true
+    title?: true
+    message?: true
+    type?: true
+    link?: true
+    is_read?: true
+    created_at?: true
+    _all?: true
+  }
+
+  export type NotificationsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which notifications to aggregate.
+     */
+    where?: notificationsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of notifications to fetch.
+     */
+    orderBy?: notificationsOrderByWithRelationInput | notificationsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: notificationsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned notifications
+    **/
+    _count?: true | NotificationsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: NotificationsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: NotificationsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NotificationsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NotificationsMaxAggregateInputType
+  }
+
+  export type GetNotificationsAggregateType<T extends NotificationsAggregateArgs> = {
+        [P in keyof T & keyof AggregateNotifications]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNotifications[P]>
+      : GetScalarType<T[P], AggregateNotifications[P]>
+  }
+
+
+
+
+  export type notificationsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: notificationsWhereInput
+    orderBy?: notificationsOrderByWithAggregationInput | notificationsOrderByWithAggregationInput[]
+    by: NotificationsScalarFieldEnum[] | NotificationsScalarFieldEnum
+    having?: notificationsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NotificationsCountAggregateInputType | true
+    _avg?: NotificationsAvgAggregateInputType
+    _sum?: NotificationsSumAggregateInputType
+    _min?: NotificationsMinAggregateInputType
+    _max?: NotificationsMaxAggregateInputType
+  }
+
+  export type NotificationsGroupByOutputType = {
+    id: number
+    user_id: number
+    title: string
+    message: string
+    type: string
+    link: string | null
+    is_read: boolean
+    created_at: Date
+    _count: NotificationsCountAggregateOutputType | null
+    _avg: NotificationsAvgAggregateOutputType | null
+    _sum: NotificationsSumAggregateOutputType | null
+    _min: NotificationsMinAggregateOutputType | null
+    _max: NotificationsMaxAggregateOutputType | null
+  }
+
+  type GetNotificationsGroupByPayload<T extends notificationsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NotificationsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NotificationsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NotificationsGroupByOutputType[P]>
+            : GetScalarType<T[P], NotificationsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type notificationsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    user_id?: boolean
+    title?: boolean
+    message?: boolean
+    type?: boolean
+    link?: boolean
+    is_read?: boolean
+    created_at?: boolean
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notifications"]>
+
+
+
+  export type notificationsSelectScalar = {
+    id?: boolean
+    user_id?: boolean
+    title?: boolean
+    message?: boolean
+    type?: boolean
+    link?: boolean
+    is_read?: boolean
+    created_at?: boolean
+  }
+
+  export type notificationsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "user_id" | "title" | "message" | "type" | "link" | "is_read" | "created_at", ExtArgs["result"]["notifications"]>
+  export type notificationsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }
+
+  export type $notificationsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "notifications"
+    objects: {
+      users: Prisma.$usersPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      user_id: number
+      title: string
+      message: string
+      type: string
+      link: string | null
+      is_read: boolean
+      created_at: Date
+    }, ExtArgs["result"]["notifications"]>
+    composites: {}
+  }
+
+  type notificationsGetPayload<S extends boolean | null | undefined | notificationsDefaultArgs> = $Result.GetResult<Prisma.$notificationsPayload, S>
+
+  type notificationsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<notificationsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NotificationsCountAggregateInputType | true
+    }
+
+  export interface notificationsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['notifications'], meta: { name: 'notifications' } }
+    /**
+     * Find zero or one Notifications that matches the filter.
+     * @param {notificationsFindUniqueArgs} args - Arguments to find a Notifications
+     * @example
+     * // Get one Notifications
+     * const notifications = await prisma.notifications.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends notificationsFindUniqueArgs>(args: SelectSubset<T, notificationsFindUniqueArgs<ExtArgs>>): Prisma__notificationsClient<$Result.GetResult<Prisma.$notificationsPayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one Notifications that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {notificationsFindUniqueOrThrowArgs} args - Arguments to find a Notifications
+     * @example
+     * // Get one Notifications
+     * const notifications = await prisma.notifications.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends notificationsFindUniqueOrThrowArgs>(args: SelectSubset<T, notificationsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__notificationsClient<$Result.GetResult<Prisma.$notificationsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Notifications that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {notificationsFindFirstArgs} args - Arguments to find a Notifications
+     * @example
+     * // Get one Notifications
+     * const notifications = await prisma.notifications.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends notificationsFindFirstArgs>(args?: SelectSubset<T, notificationsFindFirstArgs<ExtArgs>>): Prisma__notificationsClient<$Result.GetResult<Prisma.$notificationsPayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Notifications that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {notificationsFindFirstOrThrowArgs} args - Arguments to find a Notifications
+     * @example
+     * // Get one Notifications
+     * const notifications = await prisma.notifications.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends notificationsFindFirstOrThrowArgs>(args?: SelectSubset<T, notificationsFindFirstOrThrowArgs<ExtArgs>>): Prisma__notificationsClient<$Result.GetResult<Prisma.$notificationsPayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more Notifications that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {notificationsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Notifications
+     * const notifications = await prisma.notifications.findMany()
+     * 
+     * // Get first 10 Notifications
+     * const notifications = await prisma.notifications.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const notificationsWithIdOnly = await prisma.notifications.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends notificationsFindManyArgs>(args?: SelectSubset<T, notificationsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$notificationsPayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a Notifications.
+     * @param {notificationsCreateArgs} args - Arguments to create a Notifications.
+     * @example
+     * // Create one Notifications
+     * const Notifications = await prisma.notifications.create({
+     *   data: {
+     *     // ... data to create a Notifications
+     *   }
+     * })
+     * 
+     */
+    create<T extends notificationsCreateArgs>(args: SelectSubset<T, notificationsCreateArgs<ExtArgs>>): Prisma__notificationsClient<$Result.GetResult<Prisma.$notificationsPayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many Notifications.
+     * @param {notificationsCreateManyArgs} args - Arguments to create many Notifications.
+     * @example
+     * // Create many Notifications
+     * const notifications = await prisma.notifications.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends notificationsCreateManyArgs>(args?: SelectSubset<T, notificationsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Notifications.
+     * @param {notificationsDeleteArgs} args - Arguments to delete one Notifications.
+     * @example
+     * // Delete one Notifications
+     * const Notifications = await prisma.notifications.delete({
+     *   where: {
+     *     // ... filter to delete one Notifications
+     *   }
+     * })
+     * 
+     */
+    delete<T extends notificationsDeleteArgs>(args: SelectSubset<T, notificationsDeleteArgs<ExtArgs>>): Prisma__notificationsClient<$Result.GetResult<Prisma.$notificationsPayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one Notifications.
+     * @param {notificationsUpdateArgs} args - Arguments to update one Notifications.
+     * @example
+     * // Update one Notifications
+     * const notifications = await prisma.notifications.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends notificationsUpdateArgs>(args: SelectSubset<T, notificationsUpdateArgs<ExtArgs>>): Prisma__notificationsClient<$Result.GetResult<Prisma.$notificationsPayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more Notifications.
+     * @param {notificationsDeleteManyArgs} args - Arguments to filter Notifications to delete.
+     * @example
+     * // Delete a few Notifications
+     * const { count } = await prisma.notifications.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends notificationsDeleteManyArgs>(args?: SelectSubset<T, notificationsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Notifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {notificationsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Notifications
+     * const notifications = await prisma.notifications.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends notificationsUpdateManyArgs>(args: SelectSubset<T, notificationsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Notifications.
+     * @param {notificationsUpsertArgs} args - Arguments to update or create a Notifications.
+     * @example
+     * // Update or create a Notifications
+     * const notifications = await prisma.notifications.upsert({
+     *   create: {
+     *     // ... data to create a Notifications
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Notifications we want to update
+     *   }
+     * })
+     */
+    upsert<T extends notificationsUpsertArgs>(args: SelectSubset<T, notificationsUpsertArgs<ExtArgs>>): Prisma__notificationsClient<$Result.GetResult<Prisma.$notificationsPayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of Notifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {notificationsCountArgs} args - Arguments to filter Notifications to count.
+     * @example
+     * // Count the number of Notifications
+     * const count = await prisma.notifications.count({
+     *   where: {
+     *     // ... the filter for the Notifications we want to count
+     *   }
+     * })
+    **/
+    count<T extends notificationsCountArgs>(
+      args?: Subset<T, notificationsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NotificationsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Notifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NotificationsAggregateArgs>(args: Subset<T, NotificationsAggregateArgs>): Prisma.PrismaPromise<GetNotificationsAggregateType<T>>
+
+    /**
+     * Group by Notifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {notificationsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends notificationsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: notificationsGroupByArgs['orderBy'] }
+        : { orderBy?: notificationsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, notificationsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the notifications model
+   */
+  readonly fields: notificationsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for notifications.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__notificationsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    users<T extends usersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, usersDefaultArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the notifications model
+   */ 
+  interface notificationsFieldRefs {
+    readonly id: FieldRef<"notifications", 'Int'>
+    readonly user_id: FieldRef<"notifications", 'Int'>
+    readonly title: FieldRef<"notifications", 'String'>
+    readonly message: FieldRef<"notifications", 'String'>
+    readonly type: FieldRef<"notifications", 'String'>
+    readonly link: FieldRef<"notifications", 'String'>
+    readonly is_read: FieldRef<"notifications", 'Boolean'>
+    readonly created_at: FieldRef<"notifications", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * notifications findUnique
+   */
+  export type notificationsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notifications
+     */
+    select?: notificationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notifications
+     */
+    omit?: notificationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: notificationsInclude<ExtArgs> | null
+    /**
+     * Filter, which notifications to fetch.
+     */
+    where: notificationsWhereUniqueInput
+  }
+
+  /**
+   * notifications findUniqueOrThrow
+   */
+  export type notificationsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notifications
+     */
+    select?: notificationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notifications
+     */
+    omit?: notificationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: notificationsInclude<ExtArgs> | null
+    /**
+     * Filter, which notifications to fetch.
+     */
+    where: notificationsWhereUniqueInput
+  }
+
+  /**
+   * notifications findFirst
+   */
+  export type notificationsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notifications
+     */
+    select?: notificationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notifications
+     */
+    omit?: notificationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: notificationsInclude<ExtArgs> | null
+    /**
+     * Filter, which notifications to fetch.
+     */
+    where?: notificationsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of notifications to fetch.
+     */
+    orderBy?: notificationsOrderByWithRelationInput | notificationsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for notifications.
+     */
+    cursor?: notificationsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of notifications.
+     */
+    distinct?: NotificationsScalarFieldEnum | NotificationsScalarFieldEnum[]
+  }
+
+  /**
+   * notifications findFirstOrThrow
+   */
+  export type notificationsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notifications
+     */
+    select?: notificationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notifications
+     */
+    omit?: notificationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: notificationsInclude<ExtArgs> | null
+    /**
+     * Filter, which notifications to fetch.
+     */
+    where?: notificationsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of notifications to fetch.
+     */
+    orderBy?: notificationsOrderByWithRelationInput | notificationsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for notifications.
+     */
+    cursor?: notificationsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of notifications.
+     */
+    distinct?: NotificationsScalarFieldEnum | NotificationsScalarFieldEnum[]
+  }
+
+  /**
+   * notifications findMany
+   */
+  export type notificationsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notifications
+     */
+    select?: notificationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notifications
+     */
+    omit?: notificationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: notificationsInclude<ExtArgs> | null
+    /**
+     * Filter, which notifications to fetch.
+     */
+    where?: notificationsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of notifications to fetch.
+     */
+    orderBy?: notificationsOrderByWithRelationInput | notificationsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing notifications.
+     */
+    cursor?: notificationsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` notifications.
+     */
+    skip?: number
+    distinct?: NotificationsScalarFieldEnum | NotificationsScalarFieldEnum[]
+  }
+
+  /**
+   * notifications create
+   */
+  export type notificationsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notifications
+     */
+    select?: notificationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notifications
+     */
+    omit?: notificationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: notificationsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a notifications.
+     */
+    data: XOR<notificationsCreateInput, notificationsUncheckedCreateInput>
+  }
+
+  /**
+   * notifications createMany
+   */
+  export type notificationsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many notifications.
+     */
+    data: notificationsCreateManyInput | notificationsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * notifications update
+   */
+  export type notificationsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notifications
+     */
+    select?: notificationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notifications
+     */
+    omit?: notificationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: notificationsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a notifications.
+     */
+    data: XOR<notificationsUpdateInput, notificationsUncheckedUpdateInput>
+    /**
+     * Choose, which notifications to update.
+     */
+    where: notificationsWhereUniqueInput
+  }
+
+  /**
+   * notifications updateMany
+   */
+  export type notificationsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update notifications.
+     */
+    data: XOR<notificationsUpdateManyMutationInput, notificationsUncheckedUpdateManyInput>
+    /**
+     * Filter which notifications to update
+     */
+    where?: notificationsWhereInput
+    /**
+     * Limit how many notifications to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * notifications upsert
+   */
+  export type notificationsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notifications
+     */
+    select?: notificationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notifications
+     */
+    omit?: notificationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: notificationsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the notifications to update in case it exists.
+     */
+    where: notificationsWhereUniqueInput
+    /**
+     * In case the notifications found by the `where` argument doesn't exist, create a new notifications with this data.
+     */
+    create: XOR<notificationsCreateInput, notificationsUncheckedCreateInput>
+    /**
+     * In case the notifications was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<notificationsUpdateInput, notificationsUncheckedUpdateInput>
+  }
+
+  /**
+   * notifications delete
+   */
+  export type notificationsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notifications
+     */
+    select?: notificationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notifications
+     */
+    omit?: notificationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: notificationsInclude<ExtArgs> | null
+    /**
+     * Filter which notifications to delete.
+     */
+    where: notificationsWhereUniqueInput
+  }
+
+  /**
+   * notifications deleteMany
+   */
+  export type notificationsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which notifications to delete
+     */
+    where?: notificationsWhereInput
+    /**
+     * Limit how many notifications to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * notifications without action
+   */
+  export type notificationsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notifications
+     */
+    select?: notificationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notifications
+     */
+    omit?: notificationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: notificationsInclude<ExtArgs> | null
   }
 
 
@@ -44630,8 +48776,8 @@ export namespace Prisma {
     check_out_long?: boolean
     check_in_photo?: boolean
     check_out_photo?: boolean
-    users?: boolean | usersDefaultArgs<ExtArgs>
     projects?: boolean | projectsDefaultArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["vendor_attendance"]>
 
 
@@ -44652,15 +48798,15 @@ export namespace Prisma {
 
   export type vendor_attendanceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "user_id" | "project_id" | "check_in_time" | "check_out_time" | "check_in_lat" | "check_in_long" | "check_out_lat" | "check_out_long" | "check_in_photo" | "check_out_photo", ExtArgs["result"]["vendor_attendance"]>
   export type vendor_attendanceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    users?: boolean | usersDefaultArgs<ExtArgs>
     projects?: boolean | projectsDefaultArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
   }
 
   export type $vendor_attendancePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "vendor_attendance"
     objects: {
-      users: Prisma.$usersPayload<ExtArgs>
       projects: Prisma.$projectsPayload<ExtArgs>
+      users: Prisma.$usersPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -45014,8 +49160,8 @@ export namespace Prisma {
    */
   export interface Prisma__vendor_attendanceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    users<T extends usersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, usersDefaultArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
     projects<T extends projectsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, projectsDefaultArgs<ExtArgs>>): Prisma__projectsClient<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    users<T extends usersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, usersDefaultArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -45418,6 +49564,4162 @@ export namespace Prisma {
 
 
   /**
+   * Model project_intelligence
+   */
+
+  export type AggregateProject_intelligence = {
+    _count: Project_intelligenceCountAggregateOutputType | null
+    _avg: Project_intelligenceAvgAggregateOutputType | null
+    _sum: Project_intelligenceSumAggregateOutputType | null
+    _min: Project_intelligenceMinAggregateOutputType | null
+    _max: Project_intelligenceMaxAggregateOutputType | null
+  }
+
+  export type Project_intelligenceAvgAggregateOutputType = {
+    id: number | null
+    project_id: number | null
+    updated_by_id: number | null
+  }
+
+  export type Project_intelligenceSumAggregateOutputType = {
+    id: bigint | null
+    project_id: bigint | null
+    updated_by_id: number | null
+  }
+
+  export type Project_intelligenceMinAggregateOutputType = {
+    id: bigint | null
+    project_id: bigint | null
+    strategic_status: string | null
+    health_score: string | null
+    bottlenecks: string | null
+    stakeholders: string | null
+    impact_level: string | null
+    action_status: string | null
+    last_update_note: string | null
+    updated_at: Date | null
+    updated_by_id: number | null
+  }
+
+  export type Project_intelligenceMaxAggregateOutputType = {
+    id: bigint | null
+    project_id: bigint | null
+    strategic_status: string | null
+    health_score: string | null
+    bottlenecks: string | null
+    stakeholders: string | null
+    impact_level: string | null
+    action_status: string | null
+    last_update_note: string | null
+    updated_at: Date | null
+    updated_by_id: number | null
+  }
+
+  export type Project_intelligenceCountAggregateOutputType = {
+    id: number
+    project_id: number
+    strategic_status: number
+    health_score: number
+    bottlenecks: number
+    stakeholders: number
+    impact_level: number
+    action_status: number
+    last_update_note: number
+    updated_at: number
+    updated_by_id: number
+    _all: number
+  }
+
+
+  export type Project_intelligenceAvgAggregateInputType = {
+    id?: true
+    project_id?: true
+    updated_by_id?: true
+  }
+
+  export type Project_intelligenceSumAggregateInputType = {
+    id?: true
+    project_id?: true
+    updated_by_id?: true
+  }
+
+  export type Project_intelligenceMinAggregateInputType = {
+    id?: true
+    project_id?: true
+    strategic_status?: true
+    health_score?: true
+    bottlenecks?: true
+    stakeholders?: true
+    impact_level?: true
+    action_status?: true
+    last_update_note?: true
+    updated_at?: true
+    updated_by_id?: true
+  }
+
+  export type Project_intelligenceMaxAggregateInputType = {
+    id?: true
+    project_id?: true
+    strategic_status?: true
+    health_score?: true
+    bottlenecks?: true
+    stakeholders?: true
+    impact_level?: true
+    action_status?: true
+    last_update_note?: true
+    updated_at?: true
+    updated_by_id?: true
+  }
+
+  export type Project_intelligenceCountAggregateInputType = {
+    id?: true
+    project_id?: true
+    strategic_status?: true
+    health_score?: true
+    bottlenecks?: true
+    stakeholders?: true
+    impact_level?: true
+    action_status?: true
+    last_update_note?: true
+    updated_at?: true
+    updated_by_id?: true
+    _all?: true
+  }
+
+  export type Project_intelligenceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which project_intelligence to aggregate.
+     */
+    where?: project_intelligenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of project_intelligences to fetch.
+     */
+    orderBy?: project_intelligenceOrderByWithRelationInput | project_intelligenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: project_intelligenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` project_intelligences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` project_intelligences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned project_intelligences
+    **/
+    _count?: true | Project_intelligenceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Project_intelligenceAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Project_intelligenceSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Project_intelligenceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Project_intelligenceMaxAggregateInputType
+  }
+
+  export type GetProject_intelligenceAggregateType<T extends Project_intelligenceAggregateArgs> = {
+        [P in keyof T & keyof AggregateProject_intelligence]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateProject_intelligence[P]>
+      : GetScalarType<T[P], AggregateProject_intelligence[P]>
+  }
+
+
+
+
+  export type project_intelligenceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: project_intelligenceWhereInput
+    orderBy?: project_intelligenceOrderByWithAggregationInput | project_intelligenceOrderByWithAggregationInput[]
+    by: Project_intelligenceScalarFieldEnum[] | Project_intelligenceScalarFieldEnum
+    having?: project_intelligenceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Project_intelligenceCountAggregateInputType | true
+    _avg?: Project_intelligenceAvgAggregateInputType
+    _sum?: Project_intelligenceSumAggregateInputType
+    _min?: Project_intelligenceMinAggregateInputType
+    _max?: Project_intelligenceMaxAggregateInputType
+  }
+
+  export type Project_intelligenceGroupByOutputType = {
+    id: bigint
+    project_id: bigint
+    strategic_status: string
+    health_score: string
+    bottlenecks: string | null
+    stakeholders: string | null
+    impact_level: string
+    action_status: string
+    last_update_note: string | null
+    updated_at: Date
+    updated_by_id: number | null
+    _count: Project_intelligenceCountAggregateOutputType | null
+    _avg: Project_intelligenceAvgAggregateOutputType | null
+    _sum: Project_intelligenceSumAggregateOutputType | null
+    _min: Project_intelligenceMinAggregateOutputType | null
+    _max: Project_intelligenceMaxAggregateOutputType | null
+  }
+
+  type GetProject_intelligenceGroupByPayload<T extends project_intelligenceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Project_intelligenceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Project_intelligenceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Project_intelligenceGroupByOutputType[P]>
+            : GetScalarType<T[P], Project_intelligenceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type project_intelligenceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    project_id?: boolean
+    strategic_status?: boolean
+    health_score?: boolean
+    bottlenecks?: boolean
+    stakeholders?: boolean
+    impact_level?: boolean
+    action_status?: boolean
+    last_update_note?: boolean
+    updated_at?: boolean
+    updated_by_id?: boolean
+    projects?: boolean | projectsDefaultArgs<ExtArgs>
+    updated_by?: boolean | project_intelligence$updated_byArgs<ExtArgs>
+  }, ExtArgs["result"]["project_intelligence"]>
+
+
+
+  export type project_intelligenceSelectScalar = {
+    id?: boolean
+    project_id?: boolean
+    strategic_status?: boolean
+    health_score?: boolean
+    bottlenecks?: boolean
+    stakeholders?: boolean
+    impact_level?: boolean
+    action_status?: boolean
+    last_update_note?: boolean
+    updated_at?: boolean
+    updated_by_id?: boolean
+  }
+
+  export type project_intelligenceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "project_id" | "strategic_status" | "health_score" | "bottlenecks" | "stakeholders" | "impact_level" | "action_status" | "last_update_note" | "updated_at" | "updated_by_id", ExtArgs["result"]["project_intelligence"]>
+  export type project_intelligenceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    projects?: boolean | projectsDefaultArgs<ExtArgs>
+    updated_by?: boolean | project_intelligence$updated_byArgs<ExtArgs>
+  }
+
+  export type $project_intelligencePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "project_intelligence"
+    objects: {
+      projects: Prisma.$projectsPayload<ExtArgs>
+      updated_by: Prisma.$usersPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: bigint
+      project_id: bigint
+      strategic_status: string
+      health_score: string
+      bottlenecks: string | null
+      stakeholders: string | null
+      impact_level: string
+      action_status: string
+      last_update_note: string | null
+      updated_at: Date
+      updated_by_id: number | null
+    }, ExtArgs["result"]["project_intelligence"]>
+    composites: {}
+  }
+
+  type project_intelligenceGetPayload<S extends boolean | null | undefined | project_intelligenceDefaultArgs> = $Result.GetResult<Prisma.$project_intelligencePayload, S>
+
+  type project_intelligenceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<project_intelligenceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Project_intelligenceCountAggregateInputType | true
+    }
+
+  export interface project_intelligenceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['project_intelligence'], meta: { name: 'project_intelligence' } }
+    /**
+     * Find zero or one Project_intelligence that matches the filter.
+     * @param {project_intelligenceFindUniqueArgs} args - Arguments to find a Project_intelligence
+     * @example
+     * // Get one Project_intelligence
+     * const project_intelligence = await prisma.project_intelligence.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends project_intelligenceFindUniqueArgs>(args: SelectSubset<T, project_intelligenceFindUniqueArgs<ExtArgs>>): Prisma__project_intelligenceClient<$Result.GetResult<Prisma.$project_intelligencePayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one Project_intelligence that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {project_intelligenceFindUniqueOrThrowArgs} args - Arguments to find a Project_intelligence
+     * @example
+     * // Get one Project_intelligence
+     * const project_intelligence = await prisma.project_intelligence.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends project_intelligenceFindUniqueOrThrowArgs>(args: SelectSubset<T, project_intelligenceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__project_intelligenceClient<$Result.GetResult<Prisma.$project_intelligencePayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Project_intelligence that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {project_intelligenceFindFirstArgs} args - Arguments to find a Project_intelligence
+     * @example
+     * // Get one Project_intelligence
+     * const project_intelligence = await prisma.project_intelligence.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends project_intelligenceFindFirstArgs>(args?: SelectSubset<T, project_intelligenceFindFirstArgs<ExtArgs>>): Prisma__project_intelligenceClient<$Result.GetResult<Prisma.$project_intelligencePayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Project_intelligence that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {project_intelligenceFindFirstOrThrowArgs} args - Arguments to find a Project_intelligence
+     * @example
+     * // Get one Project_intelligence
+     * const project_intelligence = await prisma.project_intelligence.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends project_intelligenceFindFirstOrThrowArgs>(args?: SelectSubset<T, project_intelligenceFindFirstOrThrowArgs<ExtArgs>>): Prisma__project_intelligenceClient<$Result.GetResult<Prisma.$project_intelligencePayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more Project_intelligences that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {project_intelligenceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Project_intelligences
+     * const project_intelligences = await prisma.project_intelligence.findMany()
+     * 
+     * // Get first 10 Project_intelligences
+     * const project_intelligences = await prisma.project_intelligence.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const project_intelligenceWithIdOnly = await prisma.project_intelligence.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends project_intelligenceFindManyArgs>(args?: SelectSubset<T, project_intelligenceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$project_intelligencePayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a Project_intelligence.
+     * @param {project_intelligenceCreateArgs} args - Arguments to create a Project_intelligence.
+     * @example
+     * // Create one Project_intelligence
+     * const Project_intelligence = await prisma.project_intelligence.create({
+     *   data: {
+     *     // ... data to create a Project_intelligence
+     *   }
+     * })
+     * 
+     */
+    create<T extends project_intelligenceCreateArgs>(args: SelectSubset<T, project_intelligenceCreateArgs<ExtArgs>>): Prisma__project_intelligenceClient<$Result.GetResult<Prisma.$project_intelligencePayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many Project_intelligences.
+     * @param {project_intelligenceCreateManyArgs} args - Arguments to create many Project_intelligences.
+     * @example
+     * // Create many Project_intelligences
+     * const project_intelligence = await prisma.project_intelligence.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends project_intelligenceCreateManyArgs>(args?: SelectSubset<T, project_intelligenceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Project_intelligence.
+     * @param {project_intelligenceDeleteArgs} args - Arguments to delete one Project_intelligence.
+     * @example
+     * // Delete one Project_intelligence
+     * const Project_intelligence = await prisma.project_intelligence.delete({
+     *   where: {
+     *     // ... filter to delete one Project_intelligence
+     *   }
+     * })
+     * 
+     */
+    delete<T extends project_intelligenceDeleteArgs>(args: SelectSubset<T, project_intelligenceDeleteArgs<ExtArgs>>): Prisma__project_intelligenceClient<$Result.GetResult<Prisma.$project_intelligencePayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one Project_intelligence.
+     * @param {project_intelligenceUpdateArgs} args - Arguments to update one Project_intelligence.
+     * @example
+     * // Update one Project_intelligence
+     * const project_intelligence = await prisma.project_intelligence.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends project_intelligenceUpdateArgs>(args: SelectSubset<T, project_intelligenceUpdateArgs<ExtArgs>>): Prisma__project_intelligenceClient<$Result.GetResult<Prisma.$project_intelligencePayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more Project_intelligences.
+     * @param {project_intelligenceDeleteManyArgs} args - Arguments to filter Project_intelligences to delete.
+     * @example
+     * // Delete a few Project_intelligences
+     * const { count } = await prisma.project_intelligence.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends project_intelligenceDeleteManyArgs>(args?: SelectSubset<T, project_intelligenceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Project_intelligences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {project_intelligenceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Project_intelligences
+     * const project_intelligence = await prisma.project_intelligence.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends project_intelligenceUpdateManyArgs>(args: SelectSubset<T, project_intelligenceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Project_intelligence.
+     * @param {project_intelligenceUpsertArgs} args - Arguments to update or create a Project_intelligence.
+     * @example
+     * // Update or create a Project_intelligence
+     * const project_intelligence = await prisma.project_intelligence.upsert({
+     *   create: {
+     *     // ... data to create a Project_intelligence
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Project_intelligence we want to update
+     *   }
+     * })
+     */
+    upsert<T extends project_intelligenceUpsertArgs>(args: SelectSubset<T, project_intelligenceUpsertArgs<ExtArgs>>): Prisma__project_intelligenceClient<$Result.GetResult<Prisma.$project_intelligencePayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of Project_intelligences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {project_intelligenceCountArgs} args - Arguments to filter Project_intelligences to count.
+     * @example
+     * // Count the number of Project_intelligences
+     * const count = await prisma.project_intelligence.count({
+     *   where: {
+     *     // ... the filter for the Project_intelligences we want to count
+     *   }
+     * })
+    **/
+    count<T extends project_intelligenceCountArgs>(
+      args?: Subset<T, project_intelligenceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Project_intelligenceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Project_intelligence.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Project_intelligenceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Project_intelligenceAggregateArgs>(args: Subset<T, Project_intelligenceAggregateArgs>): Prisma.PrismaPromise<GetProject_intelligenceAggregateType<T>>
+
+    /**
+     * Group by Project_intelligence.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {project_intelligenceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends project_intelligenceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: project_intelligenceGroupByArgs['orderBy'] }
+        : { orderBy?: project_intelligenceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, project_intelligenceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProject_intelligenceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the project_intelligence model
+   */
+  readonly fields: project_intelligenceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for project_intelligence.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__project_intelligenceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    projects<T extends projectsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, projectsDefaultArgs<ExtArgs>>): Prisma__projectsClient<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    updated_by<T extends project_intelligence$updated_byArgs<ExtArgs> = {}>(args?: Subset<T, project_intelligence$updated_byArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the project_intelligence model
+   */ 
+  interface project_intelligenceFieldRefs {
+    readonly id: FieldRef<"project_intelligence", 'BigInt'>
+    readonly project_id: FieldRef<"project_intelligence", 'BigInt'>
+    readonly strategic_status: FieldRef<"project_intelligence", 'String'>
+    readonly health_score: FieldRef<"project_intelligence", 'String'>
+    readonly bottlenecks: FieldRef<"project_intelligence", 'String'>
+    readonly stakeholders: FieldRef<"project_intelligence", 'String'>
+    readonly impact_level: FieldRef<"project_intelligence", 'String'>
+    readonly action_status: FieldRef<"project_intelligence", 'String'>
+    readonly last_update_note: FieldRef<"project_intelligence", 'String'>
+    readonly updated_at: FieldRef<"project_intelligence", 'DateTime'>
+    readonly updated_by_id: FieldRef<"project_intelligence", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * project_intelligence findUnique
+   */
+  export type project_intelligenceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_intelligence
+     */
+    select?: project_intelligenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_intelligence
+     */
+    omit?: project_intelligenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_intelligenceInclude<ExtArgs> | null
+    /**
+     * Filter, which project_intelligence to fetch.
+     */
+    where: project_intelligenceWhereUniqueInput
+  }
+
+  /**
+   * project_intelligence findUniqueOrThrow
+   */
+  export type project_intelligenceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_intelligence
+     */
+    select?: project_intelligenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_intelligence
+     */
+    omit?: project_intelligenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_intelligenceInclude<ExtArgs> | null
+    /**
+     * Filter, which project_intelligence to fetch.
+     */
+    where: project_intelligenceWhereUniqueInput
+  }
+
+  /**
+   * project_intelligence findFirst
+   */
+  export type project_intelligenceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_intelligence
+     */
+    select?: project_intelligenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_intelligence
+     */
+    omit?: project_intelligenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_intelligenceInclude<ExtArgs> | null
+    /**
+     * Filter, which project_intelligence to fetch.
+     */
+    where?: project_intelligenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of project_intelligences to fetch.
+     */
+    orderBy?: project_intelligenceOrderByWithRelationInput | project_intelligenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for project_intelligences.
+     */
+    cursor?: project_intelligenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` project_intelligences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` project_intelligences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of project_intelligences.
+     */
+    distinct?: Project_intelligenceScalarFieldEnum | Project_intelligenceScalarFieldEnum[]
+  }
+
+  /**
+   * project_intelligence findFirstOrThrow
+   */
+  export type project_intelligenceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_intelligence
+     */
+    select?: project_intelligenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_intelligence
+     */
+    omit?: project_intelligenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_intelligenceInclude<ExtArgs> | null
+    /**
+     * Filter, which project_intelligence to fetch.
+     */
+    where?: project_intelligenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of project_intelligences to fetch.
+     */
+    orderBy?: project_intelligenceOrderByWithRelationInput | project_intelligenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for project_intelligences.
+     */
+    cursor?: project_intelligenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` project_intelligences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` project_intelligences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of project_intelligences.
+     */
+    distinct?: Project_intelligenceScalarFieldEnum | Project_intelligenceScalarFieldEnum[]
+  }
+
+  /**
+   * project_intelligence findMany
+   */
+  export type project_intelligenceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_intelligence
+     */
+    select?: project_intelligenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_intelligence
+     */
+    omit?: project_intelligenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_intelligenceInclude<ExtArgs> | null
+    /**
+     * Filter, which project_intelligences to fetch.
+     */
+    where?: project_intelligenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of project_intelligences to fetch.
+     */
+    orderBy?: project_intelligenceOrderByWithRelationInput | project_intelligenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing project_intelligences.
+     */
+    cursor?: project_intelligenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` project_intelligences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` project_intelligences.
+     */
+    skip?: number
+    distinct?: Project_intelligenceScalarFieldEnum | Project_intelligenceScalarFieldEnum[]
+  }
+
+  /**
+   * project_intelligence create
+   */
+  export type project_intelligenceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_intelligence
+     */
+    select?: project_intelligenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_intelligence
+     */
+    omit?: project_intelligenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_intelligenceInclude<ExtArgs> | null
+    /**
+     * The data needed to create a project_intelligence.
+     */
+    data: XOR<project_intelligenceCreateInput, project_intelligenceUncheckedCreateInput>
+  }
+
+  /**
+   * project_intelligence createMany
+   */
+  export type project_intelligenceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many project_intelligences.
+     */
+    data: project_intelligenceCreateManyInput | project_intelligenceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * project_intelligence update
+   */
+  export type project_intelligenceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_intelligence
+     */
+    select?: project_intelligenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_intelligence
+     */
+    omit?: project_intelligenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_intelligenceInclude<ExtArgs> | null
+    /**
+     * The data needed to update a project_intelligence.
+     */
+    data: XOR<project_intelligenceUpdateInput, project_intelligenceUncheckedUpdateInput>
+    /**
+     * Choose, which project_intelligence to update.
+     */
+    where: project_intelligenceWhereUniqueInput
+  }
+
+  /**
+   * project_intelligence updateMany
+   */
+  export type project_intelligenceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update project_intelligences.
+     */
+    data: XOR<project_intelligenceUpdateManyMutationInput, project_intelligenceUncheckedUpdateManyInput>
+    /**
+     * Filter which project_intelligences to update
+     */
+    where?: project_intelligenceWhereInput
+    /**
+     * Limit how many project_intelligences to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * project_intelligence upsert
+   */
+  export type project_intelligenceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_intelligence
+     */
+    select?: project_intelligenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_intelligence
+     */
+    omit?: project_intelligenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_intelligenceInclude<ExtArgs> | null
+    /**
+     * The filter to search for the project_intelligence to update in case it exists.
+     */
+    where: project_intelligenceWhereUniqueInput
+    /**
+     * In case the project_intelligence found by the `where` argument doesn't exist, create a new project_intelligence with this data.
+     */
+    create: XOR<project_intelligenceCreateInput, project_intelligenceUncheckedCreateInput>
+    /**
+     * In case the project_intelligence was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<project_intelligenceUpdateInput, project_intelligenceUncheckedUpdateInput>
+  }
+
+  /**
+   * project_intelligence delete
+   */
+  export type project_intelligenceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_intelligence
+     */
+    select?: project_intelligenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_intelligence
+     */
+    omit?: project_intelligenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_intelligenceInclude<ExtArgs> | null
+    /**
+     * Filter which project_intelligence to delete.
+     */
+    where: project_intelligenceWhereUniqueInput
+  }
+
+  /**
+   * project_intelligence deleteMany
+   */
+  export type project_intelligenceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which project_intelligences to delete
+     */
+    where?: project_intelligenceWhereInput
+    /**
+     * Limit how many project_intelligences to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * project_intelligence.updated_by
+   */
+  export type project_intelligence$updated_byArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the users
+     */
+    select?: usersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the users
+     */
+    omit?: usersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: usersInclude<ExtArgs> | null
+    where?: usersWhereInput
+  }
+
+  /**
+   * project_intelligence without action
+   */
+  export type project_intelligenceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_intelligence
+     */
+    select?: project_intelligenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_intelligence
+     */
+    omit?: project_intelligenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_intelligenceInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model project_issues
+   */
+
+  export type AggregateProject_issues = {
+    _count: Project_issuesCountAggregateOutputType | null
+    _avg: Project_issuesAvgAggregateOutputType | null
+    _sum: Project_issuesSumAggregateOutputType | null
+    _min: Project_issuesMinAggregateOutputType | null
+    _max: Project_issuesMaxAggregateOutputType | null
+  }
+
+  export type Project_issuesAvgAggregateOutputType = {
+    id: number | null
+    project_id: number | null
+  }
+
+  export type Project_issuesSumAggregateOutputType = {
+    id: bigint | null
+    project_id: bigint | null
+  }
+
+  export type Project_issuesMinAggregateOutputType = {
+    id: bigint | null
+    project_id: bigint | null
+    issue_text: string | null
+    solution_text: string | null
+    status: string | null
+    created_at: Date | null
+    updated_at: Date | null
+    action_status: string | null
+    outcome: string | null
+    roadmap_action: string | null
+    urgency: string | null
+  }
+
+  export type Project_issuesMaxAggregateOutputType = {
+    id: bigint | null
+    project_id: bigint | null
+    issue_text: string | null
+    solution_text: string | null
+    status: string | null
+    created_at: Date | null
+    updated_at: Date | null
+    action_status: string | null
+    outcome: string | null
+    roadmap_action: string | null
+    urgency: string | null
+  }
+
+  export type Project_issuesCountAggregateOutputType = {
+    id: number
+    project_id: number
+    issue_text: number
+    solution_text: number
+    status: number
+    created_at: number
+    updated_at: number
+    action_status: number
+    outcome: number
+    roadmap_action: number
+    urgency: number
+    _all: number
+  }
+
+
+  export type Project_issuesAvgAggregateInputType = {
+    id?: true
+    project_id?: true
+  }
+
+  export type Project_issuesSumAggregateInputType = {
+    id?: true
+    project_id?: true
+  }
+
+  export type Project_issuesMinAggregateInputType = {
+    id?: true
+    project_id?: true
+    issue_text?: true
+    solution_text?: true
+    status?: true
+    created_at?: true
+    updated_at?: true
+    action_status?: true
+    outcome?: true
+    roadmap_action?: true
+    urgency?: true
+  }
+
+  export type Project_issuesMaxAggregateInputType = {
+    id?: true
+    project_id?: true
+    issue_text?: true
+    solution_text?: true
+    status?: true
+    created_at?: true
+    updated_at?: true
+    action_status?: true
+    outcome?: true
+    roadmap_action?: true
+    urgency?: true
+  }
+
+  export type Project_issuesCountAggregateInputType = {
+    id?: true
+    project_id?: true
+    issue_text?: true
+    solution_text?: true
+    status?: true
+    created_at?: true
+    updated_at?: true
+    action_status?: true
+    outcome?: true
+    roadmap_action?: true
+    urgency?: true
+    _all?: true
+  }
+
+  export type Project_issuesAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which project_issues to aggregate.
+     */
+    where?: project_issuesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of project_issues to fetch.
+     */
+    orderBy?: project_issuesOrderByWithRelationInput | project_issuesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: project_issuesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` project_issues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` project_issues.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned project_issues
+    **/
+    _count?: true | Project_issuesCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Project_issuesAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Project_issuesSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Project_issuesMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Project_issuesMaxAggregateInputType
+  }
+
+  export type GetProject_issuesAggregateType<T extends Project_issuesAggregateArgs> = {
+        [P in keyof T & keyof AggregateProject_issues]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateProject_issues[P]>
+      : GetScalarType<T[P], AggregateProject_issues[P]>
+  }
+
+
+
+
+  export type project_issuesGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: project_issuesWhereInput
+    orderBy?: project_issuesOrderByWithAggregationInput | project_issuesOrderByWithAggregationInput[]
+    by: Project_issuesScalarFieldEnum[] | Project_issuesScalarFieldEnum
+    having?: project_issuesScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Project_issuesCountAggregateInputType | true
+    _avg?: Project_issuesAvgAggregateInputType
+    _sum?: Project_issuesSumAggregateInputType
+    _min?: Project_issuesMinAggregateInputType
+    _max?: Project_issuesMaxAggregateInputType
+  }
+
+  export type Project_issuesGroupByOutputType = {
+    id: bigint
+    project_id: bigint
+    issue_text: string
+    solution_text: string | null
+    status: string
+    created_at: Date | null
+    updated_at: Date | null
+    action_status: string | null
+    outcome: string | null
+    roadmap_action: string | null
+    urgency: string | null
+    _count: Project_issuesCountAggregateOutputType | null
+    _avg: Project_issuesAvgAggregateOutputType | null
+    _sum: Project_issuesSumAggregateOutputType | null
+    _min: Project_issuesMinAggregateOutputType | null
+    _max: Project_issuesMaxAggregateOutputType | null
+  }
+
+  type GetProject_issuesGroupByPayload<T extends project_issuesGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Project_issuesGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Project_issuesGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Project_issuesGroupByOutputType[P]>
+            : GetScalarType<T[P], Project_issuesGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type project_issuesSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    project_id?: boolean
+    issue_text?: boolean
+    solution_text?: boolean
+    status?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    action_status?: boolean
+    outcome?: boolean
+    roadmap_action?: boolean
+    urgency?: boolean
+    projects?: boolean | projectsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["project_issues"]>
+
+
+
+  export type project_issuesSelectScalar = {
+    id?: boolean
+    project_id?: boolean
+    issue_text?: boolean
+    solution_text?: boolean
+    status?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    action_status?: boolean
+    outcome?: boolean
+    roadmap_action?: boolean
+    urgency?: boolean
+  }
+
+  export type project_issuesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "project_id" | "issue_text" | "solution_text" | "status" | "created_at" | "updated_at" | "action_status" | "outcome" | "roadmap_action" | "urgency", ExtArgs["result"]["project_issues"]>
+  export type project_issuesInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    projects?: boolean | projectsDefaultArgs<ExtArgs>
+  }
+
+  export type $project_issuesPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "project_issues"
+    objects: {
+      projects: Prisma.$projectsPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: bigint
+      project_id: bigint
+      issue_text: string
+      solution_text: string | null
+      status: string
+      created_at: Date | null
+      updated_at: Date | null
+      action_status: string | null
+      outcome: string | null
+      roadmap_action: string | null
+      urgency: string | null
+    }, ExtArgs["result"]["project_issues"]>
+    composites: {}
+  }
+
+  type project_issuesGetPayload<S extends boolean | null | undefined | project_issuesDefaultArgs> = $Result.GetResult<Prisma.$project_issuesPayload, S>
+
+  type project_issuesCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<project_issuesFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Project_issuesCountAggregateInputType | true
+    }
+
+  export interface project_issuesDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['project_issues'], meta: { name: 'project_issues' } }
+    /**
+     * Find zero or one Project_issues that matches the filter.
+     * @param {project_issuesFindUniqueArgs} args - Arguments to find a Project_issues
+     * @example
+     * // Get one Project_issues
+     * const project_issues = await prisma.project_issues.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends project_issuesFindUniqueArgs>(args: SelectSubset<T, project_issuesFindUniqueArgs<ExtArgs>>): Prisma__project_issuesClient<$Result.GetResult<Prisma.$project_issuesPayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one Project_issues that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {project_issuesFindUniqueOrThrowArgs} args - Arguments to find a Project_issues
+     * @example
+     * // Get one Project_issues
+     * const project_issues = await prisma.project_issues.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends project_issuesFindUniqueOrThrowArgs>(args: SelectSubset<T, project_issuesFindUniqueOrThrowArgs<ExtArgs>>): Prisma__project_issuesClient<$Result.GetResult<Prisma.$project_issuesPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Project_issues that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {project_issuesFindFirstArgs} args - Arguments to find a Project_issues
+     * @example
+     * // Get one Project_issues
+     * const project_issues = await prisma.project_issues.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends project_issuesFindFirstArgs>(args?: SelectSubset<T, project_issuesFindFirstArgs<ExtArgs>>): Prisma__project_issuesClient<$Result.GetResult<Prisma.$project_issuesPayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Project_issues that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {project_issuesFindFirstOrThrowArgs} args - Arguments to find a Project_issues
+     * @example
+     * // Get one Project_issues
+     * const project_issues = await prisma.project_issues.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends project_issuesFindFirstOrThrowArgs>(args?: SelectSubset<T, project_issuesFindFirstOrThrowArgs<ExtArgs>>): Prisma__project_issuesClient<$Result.GetResult<Prisma.$project_issuesPayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more Project_issues that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {project_issuesFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Project_issues
+     * const project_issues = await prisma.project_issues.findMany()
+     * 
+     * // Get first 10 Project_issues
+     * const project_issues = await prisma.project_issues.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const project_issuesWithIdOnly = await prisma.project_issues.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends project_issuesFindManyArgs>(args?: SelectSubset<T, project_issuesFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$project_issuesPayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a Project_issues.
+     * @param {project_issuesCreateArgs} args - Arguments to create a Project_issues.
+     * @example
+     * // Create one Project_issues
+     * const Project_issues = await prisma.project_issues.create({
+     *   data: {
+     *     // ... data to create a Project_issues
+     *   }
+     * })
+     * 
+     */
+    create<T extends project_issuesCreateArgs>(args: SelectSubset<T, project_issuesCreateArgs<ExtArgs>>): Prisma__project_issuesClient<$Result.GetResult<Prisma.$project_issuesPayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many Project_issues.
+     * @param {project_issuesCreateManyArgs} args - Arguments to create many Project_issues.
+     * @example
+     * // Create many Project_issues
+     * const project_issues = await prisma.project_issues.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends project_issuesCreateManyArgs>(args?: SelectSubset<T, project_issuesCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Project_issues.
+     * @param {project_issuesDeleteArgs} args - Arguments to delete one Project_issues.
+     * @example
+     * // Delete one Project_issues
+     * const Project_issues = await prisma.project_issues.delete({
+     *   where: {
+     *     // ... filter to delete one Project_issues
+     *   }
+     * })
+     * 
+     */
+    delete<T extends project_issuesDeleteArgs>(args: SelectSubset<T, project_issuesDeleteArgs<ExtArgs>>): Prisma__project_issuesClient<$Result.GetResult<Prisma.$project_issuesPayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one Project_issues.
+     * @param {project_issuesUpdateArgs} args - Arguments to update one Project_issues.
+     * @example
+     * // Update one Project_issues
+     * const project_issues = await prisma.project_issues.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends project_issuesUpdateArgs>(args: SelectSubset<T, project_issuesUpdateArgs<ExtArgs>>): Prisma__project_issuesClient<$Result.GetResult<Prisma.$project_issuesPayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more Project_issues.
+     * @param {project_issuesDeleteManyArgs} args - Arguments to filter Project_issues to delete.
+     * @example
+     * // Delete a few Project_issues
+     * const { count } = await prisma.project_issues.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends project_issuesDeleteManyArgs>(args?: SelectSubset<T, project_issuesDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Project_issues.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {project_issuesUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Project_issues
+     * const project_issues = await prisma.project_issues.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends project_issuesUpdateManyArgs>(args: SelectSubset<T, project_issuesUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Project_issues.
+     * @param {project_issuesUpsertArgs} args - Arguments to update or create a Project_issues.
+     * @example
+     * // Update or create a Project_issues
+     * const project_issues = await prisma.project_issues.upsert({
+     *   create: {
+     *     // ... data to create a Project_issues
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Project_issues we want to update
+     *   }
+     * })
+     */
+    upsert<T extends project_issuesUpsertArgs>(args: SelectSubset<T, project_issuesUpsertArgs<ExtArgs>>): Prisma__project_issuesClient<$Result.GetResult<Prisma.$project_issuesPayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of Project_issues.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {project_issuesCountArgs} args - Arguments to filter Project_issues to count.
+     * @example
+     * // Count the number of Project_issues
+     * const count = await prisma.project_issues.count({
+     *   where: {
+     *     // ... the filter for the Project_issues we want to count
+     *   }
+     * })
+    **/
+    count<T extends project_issuesCountArgs>(
+      args?: Subset<T, project_issuesCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Project_issuesCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Project_issues.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Project_issuesAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Project_issuesAggregateArgs>(args: Subset<T, Project_issuesAggregateArgs>): Prisma.PrismaPromise<GetProject_issuesAggregateType<T>>
+
+    /**
+     * Group by Project_issues.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {project_issuesGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends project_issuesGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: project_issuesGroupByArgs['orderBy'] }
+        : { orderBy?: project_issuesGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, project_issuesGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProject_issuesGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the project_issues model
+   */
+  readonly fields: project_issuesFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for project_issues.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__project_issuesClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    projects<T extends projectsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, projectsDefaultArgs<ExtArgs>>): Prisma__projectsClient<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the project_issues model
+   */ 
+  interface project_issuesFieldRefs {
+    readonly id: FieldRef<"project_issues", 'BigInt'>
+    readonly project_id: FieldRef<"project_issues", 'BigInt'>
+    readonly issue_text: FieldRef<"project_issues", 'String'>
+    readonly solution_text: FieldRef<"project_issues", 'String'>
+    readonly status: FieldRef<"project_issues", 'String'>
+    readonly created_at: FieldRef<"project_issues", 'DateTime'>
+    readonly updated_at: FieldRef<"project_issues", 'DateTime'>
+    readonly action_status: FieldRef<"project_issues", 'String'>
+    readonly outcome: FieldRef<"project_issues", 'String'>
+    readonly roadmap_action: FieldRef<"project_issues", 'String'>
+    readonly urgency: FieldRef<"project_issues", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * project_issues findUnique
+   */
+  export type project_issuesFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_issues
+     */
+    select?: project_issuesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_issues
+     */
+    omit?: project_issuesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_issuesInclude<ExtArgs> | null
+    /**
+     * Filter, which project_issues to fetch.
+     */
+    where: project_issuesWhereUniqueInput
+  }
+
+  /**
+   * project_issues findUniqueOrThrow
+   */
+  export type project_issuesFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_issues
+     */
+    select?: project_issuesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_issues
+     */
+    omit?: project_issuesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_issuesInclude<ExtArgs> | null
+    /**
+     * Filter, which project_issues to fetch.
+     */
+    where: project_issuesWhereUniqueInput
+  }
+
+  /**
+   * project_issues findFirst
+   */
+  export type project_issuesFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_issues
+     */
+    select?: project_issuesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_issues
+     */
+    omit?: project_issuesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_issuesInclude<ExtArgs> | null
+    /**
+     * Filter, which project_issues to fetch.
+     */
+    where?: project_issuesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of project_issues to fetch.
+     */
+    orderBy?: project_issuesOrderByWithRelationInput | project_issuesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for project_issues.
+     */
+    cursor?: project_issuesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` project_issues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` project_issues.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of project_issues.
+     */
+    distinct?: Project_issuesScalarFieldEnum | Project_issuesScalarFieldEnum[]
+  }
+
+  /**
+   * project_issues findFirstOrThrow
+   */
+  export type project_issuesFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_issues
+     */
+    select?: project_issuesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_issues
+     */
+    omit?: project_issuesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_issuesInclude<ExtArgs> | null
+    /**
+     * Filter, which project_issues to fetch.
+     */
+    where?: project_issuesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of project_issues to fetch.
+     */
+    orderBy?: project_issuesOrderByWithRelationInput | project_issuesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for project_issues.
+     */
+    cursor?: project_issuesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` project_issues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` project_issues.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of project_issues.
+     */
+    distinct?: Project_issuesScalarFieldEnum | Project_issuesScalarFieldEnum[]
+  }
+
+  /**
+   * project_issues findMany
+   */
+  export type project_issuesFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_issues
+     */
+    select?: project_issuesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_issues
+     */
+    omit?: project_issuesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_issuesInclude<ExtArgs> | null
+    /**
+     * Filter, which project_issues to fetch.
+     */
+    where?: project_issuesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of project_issues to fetch.
+     */
+    orderBy?: project_issuesOrderByWithRelationInput | project_issuesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing project_issues.
+     */
+    cursor?: project_issuesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` project_issues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` project_issues.
+     */
+    skip?: number
+    distinct?: Project_issuesScalarFieldEnum | Project_issuesScalarFieldEnum[]
+  }
+
+  /**
+   * project_issues create
+   */
+  export type project_issuesCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_issues
+     */
+    select?: project_issuesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_issues
+     */
+    omit?: project_issuesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_issuesInclude<ExtArgs> | null
+    /**
+     * The data needed to create a project_issues.
+     */
+    data: XOR<project_issuesCreateInput, project_issuesUncheckedCreateInput>
+  }
+
+  /**
+   * project_issues createMany
+   */
+  export type project_issuesCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many project_issues.
+     */
+    data: project_issuesCreateManyInput | project_issuesCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * project_issues update
+   */
+  export type project_issuesUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_issues
+     */
+    select?: project_issuesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_issues
+     */
+    omit?: project_issuesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_issuesInclude<ExtArgs> | null
+    /**
+     * The data needed to update a project_issues.
+     */
+    data: XOR<project_issuesUpdateInput, project_issuesUncheckedUpdateInput>
+    /**
+     * Choose, which project_issues to update.
+     */
+    where: project_issuesWhereUniqueInput
+  }
+
+  /**
+   * project_issues updateMany
+   */
+  export type project_issuesUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update project_issues.
+     */
+    data: XOR<project_issuesUpdateManyMutationInput, project_issuesUncheckedUpdateManyInput>
+    /**
+     * Filter which project_issues to update
+     */
+    where?: project_issuesWhereInput
+    /**
+     * Limit how many project_issues to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * project_issues upsert
+   */
+  export type project_issuesUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_issues
+     */
+    select?: project_issuesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_issues
+     */
+    omit?: project_issuesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_issuesInclude<ExtArgs> | null
+    /**
+     * The filter to search for the project_issues to update in case it exists.
+     */
+    where: project_issuesWhereUniqueInput
+    /**
+     * In case the project_issues found by the `where` argument doesn't exist, create a new project_issues with this data.
+     */
+    create: XOR<project_issuesCreateInput, project_issuesUncheckedCreateInput>
+    /**
+     * In case the project_issues was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<project_issuesUpdateInput, project_issuesUncheckedUpdateInput>
+  }
+
+  /**
+   * project_issues delete
+   */
+  export type project_issuesDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_issues
+     */
+    select?: project_issuesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_issues
+     */
+    omit?: project_issuesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_issuesInclude<ExtArgs> | null
+    /**
+     * Filter which project_issues to delete.
+     */
+    where: project_issuesWhereUniqueInput
+  }
+
+  /**
+   * project_issues deleteMany
+   */
+  export type project_issuesDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which project_issues to delete
+     */
+    where?: project_issuesWhereInput
+    /**
+     * Limit how many project_issues to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * project_issues without action
+   */
+  export type project_issuesDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the project_issues
+     */
+    select?: project_issuesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the project_issues
+     */
+    omit?: project_issuesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: project_issuesInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model logsheet_templates
+   */
+
+  export type AggregateLogsheet_templates = {
+    _count: Logsheet_templatesCountAggregateOutputType | null
+    _avg: Logsheet_templatesAvgAggregateOutputType | null
+    _sum: Logsheet_templatesSumAggregateOutputType | null
+    _min: Logsheet_templatesMinAggregateOutputType | null
+    _max: Logsheet_templatesMaxAggregateOutputType | null
+  }
+
+  export type Logsheet_templatesAvgAggregateOutputType = {
+    id: number | null
+    project_id: number | null
+  }
+
+  export type Logsheet_templatesSumAggregateOutputType = {
+    id: number | null
+    project_id: bigint | null
+  }
+
+  export type Logsheet_templatesMinAggregateOutputType = {
+    id: number | null
+    project_id: bigint | null
+    name: string | null
+    type: $Enums.LogsheetType | null
+    system_name: string | null
+    room_name: string | null
+    parameters_json: string | null
+    design_json: string | null
+    time_slots: string | null
+    is_active: boolean | null
+    created_at: Date | null
+  }
+
+  export type Logsheet_templatesMaxAggregateOutputType = {
+    id: number | null
+    project_id: bigint | null
+    name: string | null
+    type: $Enums.LogsheetType | null
+    system_name: string | null
+    room_name: string | null
+    parameters_json: string | null
+    design_json: string | null
+    time_slots: string | null
+    is_active: boolean | null
+    created_at: Date | null
+  }
+
+  export type Logsheet_templatesCountAggregateOutputType = {
+    id: number
+    project_id: number
+    name: number
+    type: number
+    system_name: number
+    room_name: number
+    parameters_json: number
+    design_json: number
+    time_slots: number
+    is_active: number
+    created_at: number
+    _all: number
+  }
+
+
+  export type Logsheet_templatesAvgAggregateInputType = {
+    id?: true
+    project_id?: true
+  }
+
+  export type Logsheet_templatesSumAggregateInputType = {
+    id?: true
+    project_id?: true
+  }
+
+  export type Logsheet_templatesMinAggregateInputType = {
+    id?: true
+    project_id?: true
+    name?: true
+    type?: true
+    system_name?: true
+    room_name?: true
+    parameters_json?: true
+    design_json?: true
+    time_slots?: true
+    is_active?: true
+    created_at?: true
+  }
+
+  export type Logsheet_templatesMaxAggregateInputType = {
+    id?: true
+    project_id?: true
+    name?: true
+    type?: true
+    system_name?: true
+    room_name?: true
+    parameters_json?: true
+    design_json?: true
+    time_slots?: true
+    is_active?: true
+    created_at?: true
+  }
+
+  export type Logsheet_templatesCountAggregateInputType = {
+    id?: true
+    project_id?: true
+    name?: true
+    type?: true
+    system_name?: true
+    room_name?: true
+    parameters_json?: true
+    design_json?: true
+    time_slots?: true
+    is_active?: true
+    created_at?: true
+    _all?: true
+  }
+
+  export type Logsheet_templatesAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which logsheet_templates to aggregate.
+     */
+    where?: logsheet_templatesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of logsheet_templates to fetch.
+     */
+    orderBy?: logsheet_templatesOrderByWithRelationInput | logsheet_templatesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: logsheet_templatesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` logsheet_templates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` logsheet_templates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned logsheet_templates
+    **/
+    _count?: true | Logsheet_templatesCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Logsheet_templatesAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Logsheet_templatesSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Logsheet_templatesMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Logsheet_templatesMaxAggregateInputType
+  }
+
+  export type GetLogsheet_templatesAggregateType<T extends Logsheet_templatesAggregateArgs> = {
+        [P in keyof T & keyof AggregateLogsheet_templates]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateLogsheet_templates[P]>
+      : GetScalarType<T[P], AggregateLogsheet_templates[P]>
+  }
+
+
+
+
+  export type logsheet_templatesGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: logsheet_templatesWhereInput
+    orderBy?: logsheet_templatesOrderByWithAggregationInput | logsheet_templatesOrderByWithAggregationInput[]
+    by: Logsheet_templatesScalarFieldEnum[] | Logsheet_templatesScalarFieldEnum
+    having?: logsheet_templatesScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Logsheet_templatesCountAggregateInputType | true
+    _avg?: Logsheet_templatesAvgAggregateInputType
+    _sum?: Logsheet_templatesSumAggregateInputType
+    _min?: Logsheet_templatesMinAggregateInputType
+    _max?: Logsheet_templatesMaxAggregateInputType
+  }
+
+  export type Logsheet_templatesGroupByOutputType = {
+    id: number
+    project_id: bigint
+    name: string
+    type: $Enums.LogsheetType
+    system_name: string | null
+    room_name: string | null
+    parameters_json: string
+    design_json: string | null
+    time_slots: string | null
+    is_active: boolean
+    created_at: Date
+    _count: Logsheet_templatesCountAggregateOutputType | null
+    _avg: Logsheet_templatesAvgAggregateOutputType | null
+    _sum: Logsheet_templatesSumAggregateOutputType | null
+    _min: Logsheet_templatesMinAggregateOutputType | null
+    _max: Logsheet_templatesMaxAggregateOutputType | null
+  }
+
+  type GetLogsheet_templatesGroupByPayload<T extends logsheet_templatesGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Logsheet_templatesGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Logsheet_templatesGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Logsheet_templatesGroupByOutputType[P]>
+            : GetScalarType<T[P], Logsheet_templatesGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type logsheet_templatesSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    project_id?: boolean
+    name?: boolean
+    type?: boolean
+    system_name?: boolean
+    room_name?: boolean
+    parameters_json?: boolean
+    design_json?: boolean
+    time_slots?: boolean
+    is_active?: boolean
+    created_at?: boolean
+    entries?: boolean | logsheet_templates$entriesArgs<ExtArgs>
+    projects?: boolean | projectsDefaultArgs<ExtArgs>
+    _count?: boolean | Logsheet_templatesCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["logsheet_templates"]>
+
+
+
+  export type logsheet_templatesSelectScalar = {
+    id?: boolean
+    project_id?: boolean
+    name?: boolean
+    type?: boolean
+    system_name?: boolean
+    room_name?: boolean
+    parameters_json?: boolean
+    design_json?: boolean
+    time_slots?: boolean
+    is_active?: boolean
+    created_at?: boolean
+  }
+
+  export type logsheet_templatesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "project_id" | "name" | "type" | "system_name" | "room_name" | "parameters_json" | "design_json" | "time_slots" | "is_active" | "created_at", ExtArgs["result"]["logsheet_templates"]>
+  export type logsheet_templatesInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    entries?: boolean | logsheet_templates$entriesArgs<ExtArgs>
+    projects?: boolean | projectsDefaultArgs<ExtArgs>
+    _count?: boolean | Logsheet_templatesCountOutputTypeDefaultArgs<ExtArgs>
+  }
+
+  export type $logsheet_templatesPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "logsheet_templates"
+    objects: {
+      entries: Prisma.$logsheet_entriesPayload<ExtArgs>[]
+      projects: Prisma.$projectsPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      project_id: bigint
+      name: string
+      type: $Enums.LogsheetType
+      system_name: string | null
+      room_name: string | null
+      parameters_json: string
+      design_json: string | null
+      time_slots: string | null
+      is_active: boolean
+      created_at: Date
+    }, ExtArgs["result"]["logsheet_templates"]>
+    composites: {}
+  }
+
+  type logsheet_templatesGetPayload<S extends boolean | null | undefined | logsheet_templatesDefaultArgs> = $Result.GetResult<Prisma.$logsheet_templatesPayload, S>
+
+  type logsheet_templatesCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<logsheet_templatesFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Logsheet_templatesCountAggregateInputType | true
+    }
+
+  export interface logsheet_templatesDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['logsheet_templates'], meta: { name: 'logsheet_templates' } }
+    /**
+     * Find zero or one Logsheet_templates that matches the filter.
+     * @param {logsheet_templatesFindUniqueArgs} args - Arguments to find a Logsheet_templates
+     * @example
+     * // Get one Logsheet_templates
+     * const logsheet_templates = await prisma.logsheet_templates.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends logsheet_templatesFindUniqueArgs>(args: SelectSubset<T, logsheet_templatesFindUniqueArgs<ExtArgs>>): Prisma__logsheet_templatesClient<$Result.GetResult<Prisma.$logsheet_templatesPayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one Logsheet_templates that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {logsheet_templatesFindUniqueOrThrowArgs} args - Arguments to find a Logsheet_templates
+     * @example
+     * // Get one Logsheet_templates
+     * const logsheet_templates = await prisma.logsheet_templates.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends logsheet_templatesFindUniqueOrThrowArgs>(args: SelectSubset<T, logsheet_templatesFindUniqueOrThrowArgs<ExtArgs>>): Prisma__logsheet_templatesClient<$Result.GetResult<Prisma.$logsheet_templatesPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Logsheet_templates that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {logsheet_templatesFindFirstArgs} args - Arguments to find a Logsheet_templates
+     * @example
+     * // Get one Logsheet_templates
+     * const logsheet_templates = await prisma.logsheet_templates.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends logsheet_templatesFindFirstArgs>(args?: SelectSubset<T, logsheet_templatesFindFirstArgs<ExtArgs>>): Prisma__logsheet_templatesClient<$Result.GetResult<Prisma.$logsheet_templatesPayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Logsheet_templates that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {logsheet_templatesFindFirstOrThrowArgs} args - Arguments to find a Logsheet_templates
+     * @example
+     * // Get one Logsheet_templates
+     * const logsheet_templates = await prisma.logsheet_templates.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends logsheet_templatesFindFirstOrThrowArgs>(args?: SelectSubset<T, logsheet_templatesFindFirstOrThrowArgs<ExtArgs>>): Prisma__logsheet_templatesClient<$Result.GetResult<Prisma.$logsheet_templatesPayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more Logsheet_templates that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {logsheet_templatesFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Logsheet_templates
+     * const logsheet_templates = await prisma.logsheet_templates.findMany()
+     * 
+     * // Get first 10 Logsheet_templates
+     * const logsheet_templates = await prisma.logsheet_templates.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const logsheet_templatesWithIdOnly = await prisma.logsheet_templates.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends logsheet_templatesFindManyArgs>(args?: SelectSubset<T, logsheet_templatesFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$logsheet_templatesPayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a Logsheet_templates.
+     * @param {logsheet_templatesCreateArgs} args - Arguments to create a Logsheet_templates.
+     * @example
+     * // Create one Logsheet_templates
+     * const Logsheet_templates = await prisma.logsheet_templates.create({
+     *   data: {
+     *     // ... data to create a Logsheet_templates
+     *   }
+     * })
+     * 
+     */
+    create<T extends logsheet_templatesCreateArgs>(args: SelectSubset<T, logsheet_templatesCreateArgs<ExtArgs>>): Prisma__logsheet_templatesClient<$Result.GetResult<Prisma.$logsheet_templatesPayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many Logsheet_templates.
+     * @param {logsheet_templatesCreateManyArgs} args - Arguments to create many Logsheet_templates.
+     * @example
+     * // Create many Logsheet_templates
+     * const logsheet_templates = await prisma.logsheet_templates.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends logsheet_templatesCreateManyArgs>(args?: SelectSubset<T, logsheet_templatesCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Logsheet_templates.
+     * @param {logsheet_templatesDeleteArgs} args - Arguments to delete one Logsheet_templates.
+     * @example
+     * // Delete one Logsheet_templates
+     * const Logsheet_templates = await prisma.logsheet_templates.delete({
+     *   where: {
+     *     // ... filter to delete one Logsheet_templates
+     *   }
+     * })
+     * 
+     */
+    delete<T extends logsheet_templatesDeleteArgs>(args: SelectSubset<T, logsheet_templatesDeleteArgs<ExtArgs>>): Prisma__logsheet_templatesClient<$Result.GetResult<Prisma.$logsheet_templatesPayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one Logsheet_templates.
+     * @param {logsheet_templatesUpdateArgs} args - Arguments to update one Logsheet_templates.
+     * @example
+     * // Update one Logsheet_templates
+     * const logsheet_templates = await prisma.logsheet_templates.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends logsheet_templatesUpdateArgs>(args: SelectSubset<T, logsheet_templatesUpdateArgs<ExtArgs>>): Prisma__logsheet_templatesClient<$Result.GetResult<Prisma.$logsheet_templatesPayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more Logsheet_templates.
+     * @param {logsheet_templatesDeleteManyArgs} args - Arguments to filter Logsheet_templates to delete.
+     * @example
+     * // Delete a few Logsheet_templates
+     * const { count } = await prisma.logsheet_templates.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends logsheet_templatesDeleteManyArgs>(args?: SelectSubset<T, logsheet_templatesDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Logsheet_templates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {logsheet_templatesUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Logsheet_templates
+     * const logsheet_templates = await prisma.logsheet_templates.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends logsheet_templatesUpdateManyArgs>(args: SelectSubset<T, logsheet_templatesUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Logsheet_templates.
+     * @param {logsheet_templatesUpsertArgs} args - Arguments to update or create a Logsheet_templates.
+     * @example
+     * // Update or create a Logsheet_templates
+     * const logsheet_templates = await prisma.logsheet_templates.upsert({
+     *   create: {
+     *     // ... data to create a Logsheet_templates
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Logsheet_templates we want to update
+     *   }
+     * })
+     */
+    upsert<T extends logsheet_templatesUpsertArgs>(args: SelectSubset<T, logsheet_templatesUpsertArgs<ExtArgs>>): Prisma__logsheet_templatesClient<$Result.GetResult<Prisma.$logsheet_templatesPayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of Logsheet_templates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {logsheet_templatesCountArgs} args - Arguments to filter Logsheet_templates to count.
+     * @example
+     * // Count the number of Logsheet_templates
+     * const count = await prisma.logsheet_templates.count({
+     *   where: {
+     *     // ... the filter for the Logsheet_templates we want to count
+     *   }
+     * })
+    **/
+    count<T extends logsheet_templatesCountArgs>(
+      args?: Subset<T, logsheet_templatesCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Logsheet_templatesCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Logsheet_templates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Logsheet_templatesAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Logsheet_templatesAggregateArgs>(args: Subset<T, Logsheet_templatesAggregateArgs>): Prisma.PrismaPromise<GetLogsheet_templatesAggregateType<T>>
+
+    /**
+     * Group by Logsheet_templates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {logsheet_templatesGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends logsheet_templatesGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: logsheet_templatesGroupByArgs['orderBy'] }
+        : { orderBy?: logsheet_templatesGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, logsheet_templatesGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetLogsheet_templatesGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the logsheet_templates model
+   */
+  readonly fields: logsheet_templatesFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for logsheet_templates.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__logsheet_templatesClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    entries<T extends logsheet_templates$entriesArgs<ExtArgs> = {}>(args?: Subset<T, logsheet_templates$entriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$logsheet_entriesPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    projects<T extends projectsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, projectsDefaultArgs<ExtArgs>>): Prisma__projectsClient<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the logsheet_templates model
+   */ 
+  interface logsheet_templatesFieldRefs {
+    readonly id: FieldRef<"logsheet_templates", 'Int'>
+    readonly project_id: FieldRef<"logsheet_templates", 'BigInt'>
+    readonly name: FieldRef<"logsheet_templates", 'String'>
+    readonly type: FieldRef<"logsheet_templates", 'LogsheetType'>
+    readonly system_name: FieldRef<"logsheet_templates", 'String'>
+    readonly room_name: FieldRef<"logsheet_templates", 'String'>
+    readonly parameters_json: FieldRef<"logsheet_templates", 'String'>
+    readonly design_json: FieldRef<"logsheet_templates", 'String'>
+    readonly time_slots: FieldRef<"logsheet_templates", 'String'>
+    readonly is_active: FieldRef<"logsheet_templates", 'Boolean'>
+    readonly created_at: FieldRef<"logsheet_templates", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * logsheet_templates findUnique
+   */
+  export type logsheet_templatesFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_templates
+     */
+    select?: logsheet_templatesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_templates
+     */
+    omit?: logsheet_templatesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_templatesInclude<ExtArgs> | null
+    /**
+     * Filter, which logsheet_templates to fetch.
+     */
+    where: logsheet_templatesWhereUniqueInput
+  }
+
+  /**
+   * logsheet_templates findUniqueOrThrow
+   */
+  export type logsheet_templatesFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_templates
+     */
+    select?: logsheet_templatesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_templates
+     */
+    omit?: logsheet_templatesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_templatesInclude<ExtArgs> | null
+    /**
+     * Filter, which logsheet_templates to fetch.
+     */
+    where: logsheet_templatesWhereUniqueInput
+  }
+
+  /**
+   * logsheet_templates findFirst
+   */
+  export type logsheet_templatesFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_templates
+     */
+    select?: logsheet_templatesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_templates
+     */
+    omit?: logsheet_templatesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_templatesInclude<ExtArgs> | null
+    /**
+     * Filter, which logsheet_templates to fetch.
+     */
+    where?: logsheet_templatesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of logsheet_templates to fetch.
+     */
+    orderBy?: logsheet_templatesOrderByWithRelationInput | logsheet_templatesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for logsheet_templates.
+     */
+    cursor?: logsheet_templatesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` logsheet_templates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` logsheet_templates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of logsheet_templates.
+     */
+    distinct?: Logsheet_templatesScalarFieldEnum | Logsheet_templatesScalarFieldEnum[]
+  }
+
+  /**
+   * logsheet_templates findFirstOrThrow
+   */
+  export type logsheet_templatesFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_templates
+     */
+    select?: logsheet_templatesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_templates
+     */
+    omit?: logsheet_templatesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_templatesInclude<ExtArgs> | null
+    /**
+     * Filter, which logsheet_templates to fetch.
+     */
+    where?: logsheet_templatesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of logsheet_templates to fetch.
+     */
+    orderBy?: logsheet_templatesOrderByWithRelationInput | logsheet_templatesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for logsheet_templates.
+     */
+    cursor?: logsheet_templatesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` logsheet_templates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` logsheet_templates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of logsheet_templates.
+     */
+    distinct?: Logsheet_templatesScalarFieldEnum | Logsheet_templatesScalarFieldEnum[]
+  }
+
+  /**
+   * logsheet_templates findMany
+   */
+  export type logsheet_templatesFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_templates
+     */
+    select?: logsheet_templatesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_templates
+     */
+    omit?: logsheet_templatesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_templatesInclude<ExtArgs> | null
+    /**
+     * Filter, which logsheet_templates to fetch.
+     */
+    where?: logsheet_templatesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of logsheet_templates to fetch.
+     */
+    orderBy?: logsheet_templatesOrderByWithRelationInput | logsheet_templatesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing logsheet_templates.
+     */
+    cursor?: logsheet_templatesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` logsheet_templates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` logsheet_templates.
+     */
+    skip?: number
+    distinct?: Logsheet_templatesScalarFieldEnum | Logsheet_templatesScalarFieldEnum[]
+  }
+
+  /**
+   * logsheet_templates create
+   */
+  export type logsheet_templatesCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_templates
+     */
+    select?: logsheet_templatesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_templates
+     */
+    omit?: logsheet_templatesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_templatesInclude<ExtArgs> | null
+    /**
+     * The data needed to create a logsheet_templates.
+     */
+    data: XOR<logsheet_templatesCreateInput, logsheet_templatesUncheckedCreateInput>
+  }
+
+  /**
+   * logsheet_templates createMany
+   */
+  export type logsheet_templatesCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many logsheet_templates.
+     */
+    data: logsheet_templatesCreateManyInput | logsheet_templatesCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * logsheet_templates update
+   */
+  export type logsheet_templatesUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_templates
+     */
+    select?: logsheet_templatesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_templates
+     */
+    omit?: logsheet_templatesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_templatesInclude<ExtArgs> | null
+    /**
+     * The data needed to update a logsheet_templates.
+     */
+    data: XOR<logsheet_templatesUpdateInput, logsheet_templatesUncheckedUpdateInput>
+    /**
+     * Choose, which logsheet_templates to update.
+     */
+    where: logsheet_templatesWhereUniqueInput
+  }
+
+  /**
+   * logsheet_templates updateMany
+   */
+  export type logsheet_templatesUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update logsheet_templates.
+     */
+    data: XOR<logsheet_templatesUpdateManyMutationInput, logsheet_templatesUncheckedUpdateManyInput>
+    /**
+     * Filter which logsheet_templates to update
+     */
+    where?: logsheet_templatesWhereInput
+    /**
+     * Limit how many logsheet_templates to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * logsheet_templates upsert
+   */
+  export type logsheet_templatesUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_templates
+     */
+    select?: logsheet_templatesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_templates
+     */
+    omit?: logsheet_templatesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_templatesInclude<ExtArgs> | null
+    /**
+     * The filter to search for the logsheet_templates to update in case it exists.
+     */
+    where: logsheet_templatesWhereUniqueInput
+    /**
+     * In case the logsheet_templates found by the `where` argument doesn't exist, create a new logsheet_templates with this data.
+     */
+    create: XOR<logsheet_templatesCreateInput, logsheet_templatesUncheckedCreateInput>
+    /**
+     * In case the logsheet_templates was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<logsheet_templatesUpdateInput, logsheet_templatesUncheckedUpdateInput>
+  }
+
+  /**
+   * logsheet_templates delete
+   */
+  export type logsheet_templatesDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_templates
+     */
+    select?: logsheet_templatesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_templates
+     */
+    omit?: logsheet_templatesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_templatesInclude<ExtArgs> | null
+    /**
+     * Filter which logsheet_templates to delete.
+     */
+    where: logsheet_templatesWhereUniqueInput
+  }
+
+  /**
+   * logsheet_templates deleteMany
+   */
+  export type logsheet_templatesDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which logsheet_templates to delete
+     */
+    where?: logsheet_templatesWhereInput
+    /**
+     * Limit how many logsheet_templates to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * logsheet_templates.entries
+   */
+  export type logsheet_templates$entriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_entries
+     */
+    select?: logsheet_entriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_entries
+     */
+    omit?: logsheet_entriesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_entriesInclude<ExtArgs> | null
+    where?: logsheet_entriesWhereInput
+    orderBy?: logsheet_entriesOrderByWithRelationInput | logsheet_entriesOrderByWithRelationInput[]
+    cursor?: logsheet_entriesWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Logsheet_entriesScalarFieldEnum | Logsheet_entriesScalarFieldEnum[]
+  }
+
+  /**
+   * logsheet_templates without action
+   */
+  export type logsheet_templatesDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_templates
+     */
+    select?: logsheet_templatesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_templates
+     */
+    omit?: logsheet_templatesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_templatesInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model logsheet_entries
+   */
+
+  export type AggregateLogsheet_entries = {
+    _count: Logsheet_entriesCountAggregateOutputType | null
+    _avg: Logsheet_entriesAvgAggregateOutputType | null
+    _sum: Logsheet_entriesSumAggregateOutputType | null
+    _min: Logsheet_entriesMinAggregateOutputType | null
+    _max: Logsheet_entriesMaxAggregateOutputType | null
+  }
+
+  export type Logsheet_entriesAvgAggregateOutputType = {
+    id: number | null
+    template_id: number | null
+  }
+
+  export type Logsheet_entriesSumAggregateOutputType = {
+    id: number | null
+    template_id: number | null
+  }
+
+  export type Logsheet_entriesMinAggregateOutputType = {
+    id: number | null
+    template_id: number | null
+    log_date: Date | null
+    log_time: string | null
+    recorded_by: string | null
+    values_json: string | null
+    notes: string | null
+    created_at: Date | null
+  }
+
+  export type Logsheet_entriesMaxAggregateOutputType = {
+    id: number | null
+    template_id: number | null
+    log_date: Date | null
+    log_time: string | null
+    recorded_by: string | null
+    values_json: string | null
+    notes: string | null
+    created_at: Date | null
+  }
+
+  export type Logsheet_entriesCountAggregateOutputType = {
+    id: number
+    template_id: number
+    log_date: number
+    log_time: number
+    recorded_by: number
+    values_json: number
+    notes: number
+    created_at: number
+    _all: number
+  }
+
+
+  export type Logsheet_entriesAvgAggregateInputType = {
+    id?: true
+    template_id?: true
+  }
+
+  export type Logsheet_entriesSumAggregateInputType = {
+    id?: true
+    template_id?: true
+  }
+
+  export type Logsheet_entriesMinAggregateInputType = {
+    id?: true
+    template_id?: true
+    log_date?: true
+    log_time?: true
+    recorded_by?: true
+    values_json?: true
+    notes?: true
+    created_at?: true
+  }
+
+  export type Logsheet_entriesMaxAggregateInputType = {
+    id?: true
+    template_id?: true
+    log_date?: true
+    log_time?: true
+    recorded_by?: true
+    values_json?: true
+    notes?: true
+    created_at?: true
+  }
+
+  export type Logsheet_entriesCountAggregateInputType = {
+    id?: true
+    template_id?: true
+    log_date?: true
+    log_time?: true
+    recorded_by?: true
+    values_json?: true
+    notes?: true
+    created_at?: true
+    _all?: true
+  }
+
+  export type Logsheet_entriesAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which logsheet_entries to aggregate.
+     */
+    where?: logsheet_entriesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of logsheet_entries to fetch.
+     */
+    orderBy?: logsheet_entriesOrderByWithRelationInput | logsheet_entriesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: logsheet_entriesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` logsheet_entries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` logsheet_entries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned logsheet_entries
+    **/
+    _count?: true | Logsheet_entriesCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Logsheet_entriesAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Logsheet_entriesSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Logsheet_entriesMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Logsheet_entriesMaxAggregateInputType
+  }
+
+  export type GetLogsheet_entriesAggregateType<T extends Logsheet_entriesAggregateArgs> = {
+        [P in keyof T & keyof AggregateLogsheet_entries]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateLogsheet_entries[P]>
+      : GetScalarType<T[P], AggregateLogsheet_entries[P]>
+  }
+
+
+
+
+  export type logsheet_entriesGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: logsheet_entriesWhereInput
+    orderBy?: logsheet_entriesOrderByWithAggregationInput | logsheet_entriesOrderByWithAggregationInput[]
+    by: Logsheet_entriesScalarFieldEnum[] | Logsheet_entriesScalarFieldEnum
+    having?: logsheet_entriesScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Logsheet_entriesCountAggregateInputType | true
+    _avg?: Logsheet_entriesAvgAggregateInputType
+    _sum?: Logsheet_entriesSumAggregateInputType
+    _min?: Logsheet_entriesMinAggregateInputType
+    _max?: Logsheet_entriesMaxAggregateInputType
+  }
+
+  export type Logsheet_entriesGroupByOutputType = {
+    id: number
+    template_id: number
+    log_date: Date
+    log_time: string
+    recorded_by: string
+    values_json: string
+    notes: string | null
+    created_at: Date
+    _count: Logsheet_entriesCountAggregateOutputType | null
+    _avg: Logsheet_entriesAvgAggregateOutputType | null
+    _sum: Logsheet_entriesSumAggregateOutputType | null
+    _min: Logsheet_entriesMinAggregateOutputType | null
+    _max: Logsheet_entriesMaxAggregateOutputType | null
+  }
+
+  type GetLogsheet_entriesGroupByPayload<T extends logsheet_entriesGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Logsheet_entriesGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Logsheet_entriesGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Logsheet_entriesGroupByOutputType[P]>
+            : GetScalarType<T[P], Logsheet_entriesGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type logsheet_entriesSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    template_id?: boolean
+    log_date?: boolean
+    log_time?: boolean
+    recorded_by?: boolean
+    values_json?: boolean
+    notes?: boolean
+    created_at?: boolean
+    template?: boolean | logsheet_templatesDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["logsheet_entries"]>
+
+
+
+  export type logsheet_entriesSelectScalar = {
+    id?: boolean
+    template_id?: boolean
+    log_date?: boolean
+    log_time?: boolean
+    recorded_by?: boolean
+    values_json?: boolean
+    notes?: boolean
+    created_at?: boolean
+  }
+
+  export type logsheet_entriesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "template_id" | "log_date" | "log_time" | "recorded_by" | "values_json" | "notes" | "created_at", ExtArgs["result"]["logsheet_entries"]>
+  export type logsheet_entriesInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    template?: boolean | logsheet_templatesDefaultArgs<ExtArgs>
+  }
+
+  export type $logsheet_entriesPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "logsheet_entries"
+    objects: {
+      template: Prisma.$logsheet_templatesPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      template_id: number
+      log_date: Date
+      log_time: string
+      recorded_by: string
+      values_json: string
+      notes: string | null
+      created_at: Date
+    }, ExtArgs["result"]["logsheet_entries"]>
+    composites: {}
+  }
+
+  type logsheet_entriesGetPayload<S extends boolean | null | undefined | logsheet_entriesDefaultArgs> = $Result.GetResult<Prisma.$logsheet_entriesPayload, S>
+
+  type logsheet_entriesCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<logsheet_entriesFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Logsheet_entriesCountAggregateInputType | true
+    }
+
+  export interface logsheet_entriesDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['logsheet_entries'], meta: { name: 'logsheet_entries' } }
+    /**
+     * Find zero or one Logsheet_entries that matches the filter.
+     * @param {logsheet_entriesFindUniqueArgs} args - Arguments to find a Logsheet_entries
+     * @example
+     * // Get one Logsheet_entries
+     * const logsheet_entries = await prisma.logsheet_entries.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends logsheet_entriesFindUniqueArgs>(args: SelectSubset<T, logsheet_entriesFindUniqueArgs<ExtArgs>>): Prisma__logsheet_entriesClient<$Result.GetResult<Prisma.$logsheet_entriesPayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one Logsheet_entries that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {logsheet_entriesFindUniqueOrThrowArgs} args - Arguments to find a Logsheet_entries
+     * @example
+     * // Get one Logsheet_entries
+     * const logsheet_entries = await prisma.logsheet_entries.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends logsheet_entriesFindUniqueOrThrowArgs>(args: SelectSubset<T, logsheet_entriesFindUniqueOrThrowArgs<ExtArgs>>): Prisma__logsheet_entriesClient<$Result.GetResult<Prisma.$logsheet_entriesPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Logsheet_entries that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {logsheet_entriesFindFirstArgs} args - Arguments to find a Logsheet_entries
+     * @example
+     * // Get one Logsheet_entries
+     * const logsheet_entries = await prisma.logsheet_entries.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends logsheet_entriesFindFirstArgs>(args?: SelectSubset<T, logsheet_entriesFindFirstArgs<ExtArgs>>): Prisma__logsheet_entriesClient<$Result.GetResult<Prisma.$logsheet_entriesPayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Logsheet_entries that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {logsheet_entriesFindFirstOrThrowArgs} args - Arguments to find a Logsheet_entries
+     * @example
+     * // Get one Logsheet_entries
+     * const logsheet_entries = await prisma.logsheet_entries.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends logsheet_entriesFindFirstOrThrowArgs>(args?: SelectSubset<T, logsheet_entriesFindFirstOrThrowArgs<ExtArgs>>): Prisma__logsheet_entriesClient<$Result.GetResult<Prisma.$logsheet_entriesPayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more Logsheet_entries that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {logsheet_entriesFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Logsheet_entries
+     * const logsheet_entries = await prisma.logsheet_entries.findMany()
+     * 
+     * // Get first 10 Logsheet_entries
+     * const logsheet_entries = await prisma.logsheet_entries.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const logsheet_entriesWithIdOnly = await prisma.logsheet_entries.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends logsheet_entriesFindManyArgs>(args?: SelectSubset<T, logsheet_entriesFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$logsheet_entriesPayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a Logsheet_entries.
+     * @param {logsheet_entriesCreateArgs} args - Arguments to create a Logsheet_entries.
+     * @example
+     * // Create one Logsheet_entries
+     * const Logsheet_entries = await prisma.logsheet_entries.create({
+     *   data: {
+     *     // ... data to create a Logsheet_entries
+     *   }
+     * })
+     * 
+     */
+    create<T extends logsheet_entriesCreateArgs>(args: SelectSubset<T, logsheet_entriesCreateArgs<ExtArgs>>): Prisma__logsheet_entriesClient<$Result.GetResult<Prisma.$logsheet_entriesPayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many Logsheet_entries.
+     * @param {logsheet_entriesCreateManyArgs} args - Arguments to create many Logsheet_entries.
+     * @example
+     * // Create many Logsheet_entries
+     * const logsheet_entries = await prisma.logsheet_entries.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends logsheet_entriesCreateManyArgs>(args?: SelectSubset<T, logsheet_entriesCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Logsheet_entries.
+     * @param {logsheet_entriesDeleteArgs} args - Arguments to delete one Logsheet_entries.
+     * @example
+     * // Delete one Logsheet_entries
+     * const Logsheet_entries = await prisma.logsheet_entries.delete({
+     *   where: {
+     *     // ... filter to delete one Logsheet_entries
+     *   }
+     * })
+     * 
+     */
+    delete<T extends logsheet_entriesDeleteArgs>(args: SelectSubset<T, logsheet_entriesDeleteArgs<ExtArgs>>): Prisma__logsheet_entriesClient<$Result.GetResult<Prisma.$logsheet_entriesPayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one Logsheet_entries.
+     * @param {logsheet_entriesUpdateArgs} args - Arguments to update one Logsheet_entries.
+     * @example
+     * // Update one Logsheet_entries
+     * const logsheet_entries = await prisma.logsheet_entries.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends logsheet_entriesUpdateArgs>(args: SelectSubset<T, logsheet_entriesUpdateArgs<ExtArgs>>): Prisma__logsheet_entriesClient<$Result.GetResult<Prisma.$logsheet_entriesPayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more Logsheet_entries.
+     * @param {logsheet_entriesDeleteManyArgs} args - Arguments to filter Logsheet_entries to delete.
+     * @example
+     * // Delete a few Logsheet_entries
+     * const { count } = await prisma.logsheet_entries.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends logsheet_entriesDeleteManyArgs>(args?: SelectSubset<T, logsheet_entriesDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Logsheet_entries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {logsheet_entriesUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Logsheet_entries
+     * const logsheet_entries = await prisma.logsheet_entries.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends logsheet_entriesUpdateManyArgs>(args: SelectSubset<T, logsheet_entriesUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Logsheet_entries.
+     * @param {logsheet_entriesUpsertArgs} args - Arguments to update or create a Logsheet_entries.
+     * @example
+     * // Update or create a Logsheet_entries
+     * const logsheet_entries = await prisma.logsheet_entries.upsert({
+     *   create: {
+     *     // ... data to create a Logsheet_entries
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Logsheet_entries we want to update
+     *   }
+     * })
+     */
+    upsert<T extends logsheet_entriesUpsertArgs>(args: SelectSubset<T, logsheet_entriesUpsertArgs<ExtArgs>>): Prisma__logsheet_entriesClient<$Result.GetResult<Prisma.$logsheet_entriesPayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of Logsheet_entries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {logsheet_entriesCountArgs} args - Arguments to filter Logsheet_entries to count.
+     * @example
+     * // Count the number of Logsheet_entries
+     * const count = await prisma.logsheet_entries.count({
+     *   where: {
+     *     // ... the filter for the Logsheet_entries we want to count
+     *   }
+     * })
+    **/
+    count<T extends logsheet_entriesCountArgs>(
+      args?: Subset<T, logsheet_entriesCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Logsheet_entriesCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Logsheet_entries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Logsheet_entriesAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Logsheet_entriesAggregateArgs>(args: Subset<T, Logsheet_entriesAggregateArgs>): Prisma.PrismaPromise<GetLogsheet_entriesAggregateType<T>>
+
+    /**
+     * Group by Logsheet_entries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {logsheet_entriesGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends logsheet_entriesGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: logsheet_entriesGroupByArgs['orderBy'] }
+        : { orderBy?: logsheet_entriesGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, logsheet_entriesGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetLogsheet_entriesGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the logsheet_entries model
+   */
+  readonly fields: logsheet_entriesFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for logsheet_entries.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__logsheet_entriesClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    template<T extends logsheet_templatesDefaultArgs<ExtArgs> = {}>(args?: Subset<T, logsheet_templatesDefaultArgs<ExtArgs>>): Prisma__logsheet_templatesClient<$Result.GetResult<Prisma.$logsheet_templatesPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the logsheet_entries model
+   */ 
+  interface logsheet_entriesFieldRefs {
+    readonly id: FieldRef<"logsheet_entries", 'Int'>
+    readonly template_id: FieldRef<"logsheet_entries", 'Int'>
+    readonly log_date: FieldRef<"logsheet_entries", 'DateTime'>
+    readonly log_time: FieldRef<"logsheet_entries", 'String'>
+    readonly recorded_by: FieldRef<"logsheet_entries", 'String'>
+    readonly values_json: FieldRef<"logsheet_entries", 'String'>
+    readonly notes: FieldRef<"logsheet_entries", 'String'>
+    readonly created_at: FieldRef<"logsheet_entries", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * logsheet_entries findUnique
+   */
+  export type logsheet_entriesFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_entries
+     */
+    select?: logsheet_entriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_entries
+     */
+    omit?: logsheet_entriesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_entriesInclude<ExtArgs> | null
+    /**
+     * Filter, which logsheet_entries to fetch.
+     */
+    where: logsheet_entriesWhereUniqueInput
+  }
+
+  /**
+   * logsheet_entries findUniqueOrThrow
+   */
+  export type logsheet_entriesFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_entries
+     */
+    select?: logsheet_entriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_entries
+     */
+    omit?: logsheet_entriesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_entriesInclude<ExtArgs> | null
+    /**
+     * Filter, which logsheet_entries to fetch.
+     */
+    where: logsheet_entriesWhereUniqueInput
+  }
+
+  /**
+   * logsheet_entries findFirst
+   */
+  export type logsheet_entriesFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_entries
+     */
+    select?: logsheet_entriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_entries
+     */
+    omit?: logsheet_entriesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_entriesInclude<ExtArgs> | null
+    /**
+     * Filter, which logsheet_entries to fetch.
+     */
+    where?: logsheet_entriesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of logsheet_entries to fetch.
+     */
+    orderBy?: logsheet_entriesOrderByWithRelationInput | logsheet_entriesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for logsheet_entries.
+     */
+    cursor?: logsheet_entriesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` logsheet_entries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` logsheet_entries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of logsheet_entries.
+     */
+    distinct?: Logsheet_entriesScalarFieldEnum | Logsheet_entriesScalarFieldEnum[]
+  }
+
+  /**
+   * logsheet_entries findFirstOrThrow
+   */
+  export type logsheet_entriesFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_entries
+     */
+    select?: logsheet_entriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_entries
+     */
+    omit?: logsheet_entriesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_entriesInclude<ExtArgs> | null
+    /**
+     * Filter, which logsheet_entries to fetch.
+     */
+    where?: logsheet_entriesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of logsheet_entries to fetch.
+     */
+    orderBy?: logsheet_entriesOrderByWithRelationInput | logsheet_entriesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for logsheet_entries.
+     */
+    cursor?: logsheet_entriesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` logsheet_entries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` logsheet_entries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of logsheet_entries.
+     */
+    distinct?: Logsheet_entriesScalarFieldEnum | Logsheet_entriesScalarFieldEnum[]
+  }
+
+  /**
+   * logsheet_entries findMany
+   */
+  export type logsheet_entriesFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_entries
+     */
+    select?: logsheet_entriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_entries
+     */
+    omit?: logsheet_entriesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_entriesInclude<ExtArgs> | null
+    /**
+     * Filter, which logsheet_entries to fetch.
+     */
+    where?: logsheet_entriesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of logsheet_entries to fetch.
+     */
+    orderBy?: logsheet_entriesOrderByWithRelationInput | logsheet_entriesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing logsheet_entries.
+     */
+    cursor?: logsheet_entriesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` logsheet_entries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` logsheet_entries.
+     */
+    skip?: number
+    distinct?: Logsheet_entriesScalarFieldEnum | Logsheet_entriesScalarFieldEnum[]
+  }
+
+  /**
+   * logsheet_entries create
+   */
+  export type logsheet_entriesCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_entries
+     */
+    select?: logsheet_entriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_entries
+     */
+    omit?: logsheet_entriesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_entriesInclude<ExtArgs> | null
+    /**
+     * The data needed to create a logsheet_entries.
+     */
+    data: XOR<logsheet_entriesCreateInput, logsheet_entriesUncheckedCreateInput>
+  }
+
+  /**
+   * logsheet_entries createMany
+   */
+  export type logsheet_entriesCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many logsheet_entries.
+     */
+    data: logsheet_entriesCreateManyInput | logsheet_entriesCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * logsheet_entries update
+   */
+  export type logsheet_entriesUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_entries
+     */
+    select?: logsheet_entriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_entries
+     */
+    omit?: logsheet_entriesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_entriesInclude<ExtArgs> | null
+    /**
+     * The data needed to update a logsheet_entries.
+     */
+    data: XOR<logsheet_entriesUpdateInput, logsheet_entriesUncheckedUpdateInput>
+    /**
+     * Choose, which logsheet_entries to update.
+     */
+    where: logsheet_entriesWhereUniqueInput
+  }
+
+  /**
+   * logsheet_entries updateMany
+   */
+  export type logsheet_entriesUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update logsheet_entries.
+     */
+    data: XOR<logsheet_entriesUpdateManyMutationInput, logsheet_entriesUncheckedUpdateManyInput>
+    /**
+     * Filter which logsheet_entries to update
+     */
+    where?: logsheet_entriesWhereInput
+    /**
+     * Limit how many logsheet_entries to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * logsheet_entries upsert
+   */
+  export type logsheet_entriesUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_entries
+     */
+    select?: logsheet_entriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_entries
+     */
+    omit?: logsheet_entriesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_entriesInclude<ExtArgs> | null
+    /**
+     * The filter to search for the logsheet_entries to update in case it exists.
+     */
+    where: logsheet_entriesWhereUniqueInput
+    /**
+     * In case the logsheet_entries found by the `where` argument doesn't exist, create a new logsheet_entries with this data.
+     */
+    create: XOR<logsheet_entriesCreateInput, logsheet_entriesUncheckedCreateInput>
+    /**
+     * In case the logsheet_entries was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<logsheet_entriesUpdateInput, logsheet_entriesUncheckedUpdateInput>
+  }
+
+  /**
+   * logsheet_entries delete
+   */
+  export type logsheet_entriesDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_entries
+     */
+    select?: logsheet_entriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_entries
+     */
+    omit?: logsheet_entriesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_entriesInclude<ExtArgs> | null
+    /**
+     * Filter which logsheet_entries to delete.
+     */
+    where: logsheet_entriesWhereUniqueInput
+  }
+
+  /**
+   * logsheet_entries deleteMany
+   */
+  export type logsheet_entriesDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which logsheet_entries to delete
+     */
+    where?: logsheet_entriesWhereInput
+    /**
+     * Limit how many logsheet_entries to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * logsheet_entries without action
+   */
+  export type logsheet_entriesDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the logsheet_entries
+     */
+    select?: logsheet_entriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the logsheet_entries
+     */
+    omit?: logsheet_entriesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: logsheet_entriesInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -45464,10 +53766,31 @@ export namespace Prisma {
     enabled_forms: 'enabled_forms',
     latitude: 'latitude',
     longitude: 'longitude',
-    radius_meters: 'radius_meters'
+    radius_meters: 'radius_meters',
+    enabled_unit_types: 'enabled_unit_types',
+    monitoring_focus: 'monitoring_focus'
   };
 
   export type ProjectsScalarFieldEnum = (typeof ProjectsScalarFieldEnum)[keyof typeof ProjectsScalarFieldEnum]
+
+
+  export const Knowledge_resourcesScalarFieldEnum: {
+    id: 'id',
+    title: 'title',
+    category: 'category',
+    type: 'type',
+    file_url: 'file_url',
+    href: 'href',
+    thumbnail: 'thumbnail',
+    size: 'size',
+    tags: 'tags',
+    visibility: 'visibility',
+    project_id: 'project_id',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
+  };
+
+  export type Knowledge_resourcesScalarFieldEnum = (typeof Knowledge_resourcesScalarFieldEnum)[keyof typeof Knowledge_resourcesScalarFieldEnum]
 
 
   export const Refresh_tokensScalarFieldEnum: {
@@ -45560,15 +53883,17 @@ export namespace Prisma {
     phone: 'phone',
     is_active: 'is_active',
     company_name: 'company_name',
-    two_factor_enabled: 'two_factor_enabled',
-    two_factor_secret: 'two_factor_secret',
-    otp_code: 'otp_code',
-    otp_expiry: 'otp_expiry',
     failed_login_attempts: 'failed_login_attempts',
     locked_until: 'locked_until',
+    otp_code: 'otp_code',
+    otp_expiry: 'otp_expiry',
+    two_factor_enabled: 'two_factor_enabled',
+    two_factor_secret: 'two_factor_secret',
     attendance_enabled: 'attendance_enabled',
     face_reference_url: 'face_reference_url',
-    face_verification_enabled: 'face_verification_enabled'
+    face_verification_enabled: 'face_verification_enabled',
+    avatar_url: 'avatar_url',
+    bio: 'bio'
   };
 
   export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
@@ -45764,7 +54089,8 @@ export namespace Prisma {
     repair_date: 'repair_date',
     finding: 'finding',
     advise: 'advise',
-    report_pdf: 'report_pdf'
+    report_pdf: 'report_pdf',
+    technical_json: 'technical_json'
   };
 
   export type Corrective_maintenancesScalarFieldEnum = (typeof Corrective_maintenancesScalarFieldEnum)[keyof typeof Corrective_maintenancesScalarFieldEnum]
@@ -45980,6 +54306,22 @@ export namespace Prisma {
   export type ComplaintsScalarFieldEnum = (typeof ComplaintsScalarFieldEnum)[keyof typeof ComplaintsScalarFieldEnum]
 
 
+  export const Unit_edit_requestsScalarFieldEnum: {
+    id: 'id',
+    unit_id: 'unit_id',
+    requested_by: 'requested_by',
+    reporter_name: 'reporter_name',
+    details_json: 'details_json',
+    status: 'status',
+    requested_at: 'requested_at',
+    processed_by: 'processed_by',
+    processed_at: 'processed_at',
+    admin_note: 'admin_note'
+  };
+
+  export type Unit_edit_requestsScalarFieldEnum = (typeof Unit_edit_requestsScalarFieldEnum)[keyof typeof Unit_edit_requestsScalarFieldEnum]
+
+
   export const User_push_tokensScalarFieldEnum: {
     id: 'id',
     user_id: 'user_id',
@@ -45989,6 +54331,20 @@ export namespace Prisma {
   };
 
   export type User_push_tokensScalarFieldEnum = (typeof User_push_tokensScalarFieldEnum)[keyof typeof User_push_tokensScalarFieldEnum]
+
+
+  export const NotificationsScalarFieldEnum: {
+    id: 'id',
+    user_id: 'user_id',
+    title: 'title',
+    message: 'message',
+    type: 'type',
+    link: 'link',
+    is_read: 'is_read',
+    created_at: 'created_at'
+  };
+
+  export type NotificationsScalarFieldEnum = (typeof NotificationsScalarFieldEnum)[keyof typeof NotificationsScalarFieldEnum]
 
 
   export const Daily_ops_logsScalarFieldEnum: {
@@ -46055,6 +54411,71 @@ export namespace Prisma {
   export type Vendor_attendanceScalarFieldEnum = (typeof Vendor_attendanceScalarFieldEnum)[keyof typeof Vendor_attendanceScalarFieldEnum]
 
 
+  export const Project_intelligenceScalarFieldEnum: {
+    id: 'id',
+    project_id: 'project_id',
+    strategic_status: 'strategic_status',
+    health_score: 'health_score',
+    bottlenecks: 'bottlenecks',
+    stakeholders: 'stakeholders',
+    impact_level: 'impact_level',
+    action_status: 'action_status',
+    last_update_note: 'last_update_note',
+    updated_at: 'updated_at',
+    updated_by_id: 'updated_by_id'
+  };
+
+  export type Project_intelligenceScalarFieldEnum = (typeof Project_intelligenceScalarFieldEnum)[keyof typeof Project_intelligenceScalarFieldEnum]
+
+
+  export const Project_issuesScalarFieldEnum: {
+    id: 'id',
+    project_id: 'project_id',
+    issue_text: 'issue_text',
+    solution_text: 'solution_text',
+    status: 'status',
+    created_at: 'created_at',
+    updated_at: 'updated_at',
+    action_status: 'action_status',
+    outcome: 'outcome',
+    roadmap_action: 'roadmap_action',
+    urgency: 'urgency'
+  };
+
+  export type Project_issuesScalarFieldEnum = (typeof Project_issuesScalarFieldEnum)[keyof typeof Project_issuesScalarFieldEnum]
+
+
+  export const Logsheet_templatesScalarFieldEnum: {
+    id: 'id',
+    project_id: 'project_id',
+    name: 'name',
+    type: 'type',
+    system_name: 'system_name',
+    room_name: 'room_name',
+    parameters_json: 'parameters_json',
+    design_json: 'design_json',
+    time_slots: 'time_slots',
+    is_active: 'is_active',
+    created_at: 'created_at'
+  };
+
+  export type Logsheet_templatesScalarFieldEnum = (typeof Logsheet_templatesScalarFieldEnum)[keyof typeof Logsheet_templatesScalarFieldEnum]
+
+
+  export const Logsheet_entriesScalarFieldEnum: {
+    id: 'id',
+    template_id: 'template_id',
+    log_date: 'log_date',
+    log_time: 'log_time',
+    recorded_by: 'recorded_by',
+    values_json: 'values_json',
+    notes: 'notes',
+    created_at: 'created_at'
+  };
+
+  export type Logsheet_entriesScalarFieldEnum = (typeof Logsheet_entriesScalarFieldEnum)[keyof typeof Logsheet_entriesScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -46092,10 +54513,28 @@ export namespace Prisma {
   export const projectsOrderByRelevanceFieldEnum: {
     name: 'name',
     code: 'code',
-    enabled_forms: 'enabled_forms'
+    enabled_forms: 'enabled_forms',
+    enabled_unit_types: 'enabled_unit_types',
+    monitoring_focus: 'monitoring_focus'
   };
 
   export type projectsOrderByRelevanceFieldEnum = (typeof projectsOrderByRelevanceFieldEnum)[keyof typeof projectsOrderByRelevanceFieldEnum]
+
+
+  export const knowledge_resourcesOrderByRelevanceFieldEnum: {
+    id: 'id',
+    title: 'title',
+    category: 'category',
+    type: 'type',
+    file_url: 'file_url',
+    href: 'href',
+    thumbnail: 'thumbnail',
+    size: 'size',
+    tags: 'tags',
+    visibility: 'visibility'
+  };
+
+  export type knowledge_resourcesOrderByRelevanceFieldEnum = (typeof knowledge_resourcesOrderByRelevanceFieldEnum)[keyof typeof knowledge_resourcesOrderByRelevanceFieldEnum]
 
 
   export const refresh_tokensOrderByRelevanceFieldEnum: {
@@ -46140,9 +54579,11 @@ export namespace Prisma {
     password: 'password',
     phone: 'phone',
     company_name: 'company_name',
-    two_factor_secret: 'two_factor_secret',
     otp_code: 'otp_code',
-    face_reference_url: 'face_reference_url'
+    two_factor_secret: 'two_factor_secret',
+    face_reference_url: 'face_reference_url',
+    avatar_url: 'avatar_url',
+    bio: 'bio'
   };
 
   export type usersOrderByRelevanceFieldEnum = (typeof usersOrderByRelevanceFieldEnum)[keyof typeof usersOrderByRelevanceFieldEnum]
@@ -46260,7 +54701,8 @@ export namespace Prisma {
     inspector_name: 'inspector_name',
     finding: 'finding',
     advise: 'advise',
-    report_pdf: 'report_pdf'
+    report_pdf: 'report_pdf',
+    technical_json: 'technical_json'
   };
 
   export type corrective_maintenancesOrderByRelevanceFieldEnum = (typeof corrective_maintenancesOrderByRelevanceFieldEnum)[keyof typeof corrective_maintenancesOrderByRelevanceFieldEnum]
@@ -46377,12 +54819,32 @@ export namespace Prisma {
   export type complaintsOrderByRelevanceFieldEnum = (typeof complaintsOrderByRelevanceFieldEnum)[keyof typeof complaintsOrderByRelevanceFieldEnum]
 
 
+  export const unit_edit_requestsOrderByRelevanceFieldEnum: {
+    reporter_name: 'reporter_name',
+    details_json: 'details_json',
+    status: 'status',
+    admin_note: 'admin_note'
+  };
+
+  export type unit_edit_requestsOrderByRelevanceFieldEnum = (typeof unit_edit_requestsOrderByRelevanceFieldEnum)[keyof typeof unit_edit_requestsOrderByRelevanceFieldEnum]
+
+
   export const user_push_tokensOrderByRelevanceFieldEnum: {
     token: 'token',
     platform: 'platform'
   };
 
   export type user_push_tokensOrderByRelevanceFieldEnum = (typeof user_push_tokensOrderByRelevanceFieldEnum)[keyof typeof user_push_tokensOrderByRelevanceFieldEnum]
+
+
+  export const notificationsOrderByRelevanceFieldEnum: {
+    title: 'title',
+    message: 'message',
+    type: 'type',
+    link: 'link'
+  };
+
+  export type notificationsOrderByRelevanceFieldEnum = (typeof notificationsOrderByRelevanceFieldEnum)[keyof typeof notificationsOrderByRelevanceFieldEnum]
 
 
   export const daily_ops_logsOrderByRelevanceFieldEnum: {
@@ -46404,6 +54866,54 @@ export namespace Prisma {
   };
 
   export type vendor_attendanceOrderByRelevanceFieldEnum = (typeof vendor_attendanceOrderByRelevanceFieldEnum)[keyof typeof vendor_attendanceOrderByRelevanceFieldEnum]
+
+
+  export const project_intelligenceOrderByRelevanceFieldEnum: {
+    strategic_status: 'strategic_status',
+    health_score: 'health_score',
+    bottlenecks: 'bottlenecks',
+    stakeholders: 'stakeholders',
+    impact_level: 'impact_level',
+    action_status: 'action_status',
+    last_update_note: 'last_update_note'
+  };
+
+  export type project_intelligenceOrderByRelevanceFieldEnum = (typeof project_intelligenceOrderByRelevanceFieldEnum)[keyof typeof project_intelligenceOrderByRelevanceFieldEnum]
+
+
+  export const project_issuesOrderByRelevanceFieldEnum: {
+    issue_text: 'issue_text',
+    solution_text: 'solution_text',
+    status: 'status',
+    action_status: 'action_status',
+    outcome: 'outcome',
+    roadmap_action: 'roadmap_action',
+    urgency: 'urgency'
+  };
+
+  export type project_issuesOrderByRelevanceFieldEnum = (typeof project_issuesOrderByRelevanceFieldEnum)[keyof typeof project_issuesOrderByRelevanceFieldEnum]
+
+
+  export const logsheet_templatesOrderByRelevanceFieldEnum: {
+    name: 'name',
+    system_name: 'system_name',
+    room_name: 'room_name',
+    parameters_json: 'parameters_json',
+    design_json: 'design_json',
+    time_slots: 'time_slots'
+  };
+
+  export type logsheet_templatesOrderByRelevanceFieldEnum = (typeof logsheet_templatesOrderByRelevanceFieldEnum)[keyof typeof logsheet_templatesOrderByRelevanceFieldEnum]
+
+
+  export const logsheet_entriesOrderByRelevanceFieldEnum: {
+    log_time: 'log_time',
+    recorded_by: 'recorded_by',
+    values_json: 'values_json',
+    notes: 'notes'
+  };
+
+  export type logsheet_entriesOrderByRelevanceFieldEnum = (typeof logsheet_entriesOrderByRelevanceFieldEnum)[keyof typeof logsheet_entriesOrderByRelevanceFieldEnum]
 
 
   /**
@@ -46577,6 +55087,13 @@ export namespace Prisma {
    */
   export type EnumScheduleStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ScheduleStatus'>
     
+
+
+  /**
+   * Reference to a field of type 'LogsheetType'
+   */
+  export type EnumLogsheetTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LogsheetType'>
+    
   /**
    * Deep Input Types
    */
@@ -46726,12 +55243,18 @@ export namespace Prisma {
     latitude?: DecimalNullableFilter<"projects"> | Decimal | DecimalJsLike | number | string | null
     longitude?: DecimalNullableFilter<"projects"> | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFilter<"projects"> | number
+    enabled_unit_types?: StringFilter<"projects"> | string
+    monitoring_focus?: StringFilter<"projects"> | string
+    logsheet_templates?: Logsheet_templatesListRelationFilter
+    project_intelligence?: XOR<Project_intelligenceNullableScalarRelationFilter, project_intelligenceWhereInput> | null
+    project_issues?: Project_issuesListRelationFilter
     customers?: XOR<CustomersScalarRelationFilter, customersWhereInput>
     schedule_targets?: Schedule_targetsListRelationFilter
     schedules?: SchedulesListRelationFilter
     units?: UnitsListRelationFilter
     user_project_access?: User_project_accessListRelationFilter
     vendor_attendance?: Vendor_attendanceListRelationFilter
+    knowledge_resources?: Knowledge_resourcesListRelationFilter
   }
 
   export type projectsOrderByWithRelationInput = {
@@ -46745,12 +55268,18 @@ export namespace Prisma {
     latitude?: SortOrderInput | SortOrder
     longitude?: SortOrderInput | SortOrder
     radius_meters?: SortOrder
+    enabled_unit_types?: SortOrder
+    monitoring_focus?: SortOrder
+    logsheet_templates?: logsheet_templatesOrderByRelationAggregateInput
+    project_intelligence?: project_intelligenceOrderByWithRelationInput
+    project_issues?: project_issuesOrderByRelationAggregateInput
     customers?: customersOrderByWithRelationInput
     schedule_targets?: schedule_targetsOrderByRelationAggregateInput
     schedules?: schedulesOrderByRelationAggregateInput
     units?: unitsOrderByRelationAggregateInput
     user_project_access?: user_project_accessOrderByRelationAggregateInput
     vendor_attendance?: vendor_attendanceOrderByRelationAggregateInput
+    knowledge_resources?: knowledge_resourcesOrderByRelationAggregateInput
     _relevance?: projectsOrderByRelevanceInput
   }
 
@@ -46769,12 +55298,18 @@ export namespace Prisma {
     latitude?: DecimalNullableFilter<"projects"> | Decimal | DecimalJsLike | number | string | null
     longitude?: DecimalNullableFilter<"projects"> | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFilter<"projects"> | number
+    enabled_unit_types?: StringFilter<"projects"> | string
+    monitoring_focus?: StringFilter<"projects"> | string
+    logsheet_templates?: Logsheet_templatesListRelationFilter
+    project_intelligence?: XOR<Project_intelligenceNullableScalarRelationFilter, project_intelligenceWhereInput> | null
+    project_issues?: Project_issuesListRelationFilter
     customers?: XOR<CustomersScalarRelationFilter, customersWhereInput>
     schedule_targets?: Schedule_targetsListRelationFilter
     schedules?: SchedulesListRelationFilter
     units?: UnitsListRelationFilter
     user_project_access?: User_project_accessListRelationFilter
     vendor_attendance?: Vendor_attendanceListRelationFilter
+    knowledge_resources?: Knowledge_resourcesListRelationFilter
   }, "id" | "customer_id_name">
 
   export type projectsOrderByWithAggregationInput = {
@@ -46788,6 +55323,8 @@ export namespace Prisma {
     latitude?: SortOrderInput | SortOrder
     longitude?: SortOrderInput | SortOrder
     radius_meters?: SortOrder
+    enabled_unit_types?: SortOrder
+    monitoring_focus?: SortOrder
     _count?: projectsCountOrderByAggregateInput
     _avg?: projectsAvgOrderByAggregateInput
     _max?: projectsMaxOrderByAggregateInput
@@ -46809,6 +55346,106 @@ export namespace Prisma {
     latitude?: DecimalNullableWithAggregatesFilter<"projects"> | Decimal | DecimalJsLike | number | string | null
     longitude?: DecimalNullableWithAggregatesFilter<"projects"> | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntWithAggregatesFilter<"projects"> | number
+    enabled_unit_types?: StringWithAggregatesFilter<"projects"> | string
+    monitoring_focus?: StringWithAggregatesFilter<"projects"> | string
+  }
+
+  export type knowledge_resourcesWhereInput = {
+    AND?: knowledge_resourcesWhereInput | knowledge_resourcesWhereInput[]
+    OR?: knowledge_resourcesWhereInput[]
+    NOT?: knowledge_resourcesWhereInput | knowledge_resourcesWhereInput[]
+    id?: StringFilter<"knowledge_resources"> | string
+    title?: StringFilter<"knowledge_resources"> | string
+    category?: StringFilter<"knowledge_resources"> | string
+    type?: StringFilter<"knowledge_resources"> | string
+    file_url?: StringNullableFilter<"knowledge_resources"> | string | null
+    href?: StringNullableFilter<"knowledge_resources"> | string | null
+    thumbnail?: StringNullableFilter<"knowledge_resources"> | string | null
+    size?: StringNullableFilter<"knowledge_resources"> | string | null
+    tags?: StringNullableFilter<"knowledge_resources"> | string | null
+    visibility?: StringFilter<"knowledge_resources"> | string
+    project_id?: BigIntNullableFilter<"knowledge_resources"> | bigint | number | null
+    created_at?: DateTimeFilter<"knowledge_resources"> | Date | string
+    updated_at?: DateTimeFilter<"knowledge_resources"> | Date | string
+    projects?: XOR<ProjectsNullableScalarRelationFilter, projectsWhereInput> | null
+  }
+
+  export type knowledge_resourcesOrderByWithRelationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    category?: SortOrder
+    type?: SortOrder
+    file_url?: SortOrderInput | SortOrder
+    href?: SortOrderInput | SortOrder
+    thumbnail?: SortOrderInput | SortOrder
+    size?: SortOrderInput | SortOrder
+    tags?: SortOrderInput | SortOrder
+    visibility?: SortOrder
+    project_id?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    projects?: projectsOrderByWithRelationInput
+    _relevance?: knowledge_resourcesOrderByRelevanceInput
+  }
+
+  export type knowledge_resourcesWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: knowledge_resourcesWhereInput | knowledge_resourcesWhereInput[]
+    OR?: knowledge_resourcesWhereInput[]
+    NOT?: knowledge_resourcesWhereInput | knowledge_resourcesWhereInput[]
+    title?: StringFilter<"knowledge_resources"> | string
+    category?: StringFilter<"knowledge_resources"> | string
+    type?: StringFilter<"knowledge_resources"> | string
+    file_url?: StringNullableFilter<"knowledge_resources"> | string | null
+    href?: StringNullableFilter<"knowledge_resources"> | string | null
+    thumbnail?: StringNullableFilter<"knowledge_resources"> | string | null
+    size?: StringNullableFilter<"knowledge_resources"> | string | null
+    tags?: StringNullableFilter<"knowledge_resources"> | string | null
+    visibility?: StringFilter<"knowledge_resources"> | string
+    project_id?: BigIntNullableFilter<"knowledge_resources"> | bigint | number | null
+    created_at?: DateTimeFilter<"knowledge_resources"> | Date | string
+    updated_at?: DateTimeFilter<"knowledge_resources"> | Date | string
+    projects?: XOR<ProjectsNullableScalarRelationFilter, projectsWhereInput> | null
+  }, "id">
+
+  export type knowledge_resourcesOrderByWithAggregationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    category?: SortOrder
+    type?: SortOrder
+    file_url?: SortOrderInput | SortOrder
+    href?: SortOrderInput | SortOrder
+    thumbnail?: SortOrderInput | SortOrder
+    size?: SortOrderInput | SortOrder
+    tags?: SortOrderInput | SortOrder
+    visibility?: SortOrder
+    project_id?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    _count?: knowledge_resourcesCountOrderByAggregateInput
+    _avg?: knowledge_resourcesAvgOrderByAggregateInput
+    _max?: knowledge_resourcesMaxOrderByAggregateInput
+    _min?: knowledge_resourcesMinOrderByAggregateInput
+    _sum?: knowledge_resourcesSumOrderByAggregateInput
+  }
+
+  export type knowledge_resourcesScalarWhereWithAggregatesInput = {
+    AND?: knowledge_resourcesScalarWhereWithAggregatesInput | knowledge_resourcesScalarWhereWithAggregatesInput[]
+    OR?: knowledge_resourcesScalarWhereWithAggregatesInput[]
+    NOT?: knowledge_resourcesScalarWhereWithAggregatesInput | knowledge_resourcesScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"knowledge_resources"> | string
+    title?: StringWithAggregatesFilter<"knowledge_resources"> | string
+    category?: StringWithAggregatesFilter<"knowledge_resources"> | string
+    type?: StringWithAggregatesFilter<"knowledge_resources"> | string
+    file_url?: StringNullableWithAggregatesFilter<"knowledge_resources"> | string | null
+    href?: StringNullableWithAggregatesFilter<"knowledge_resources"> | string | null
+    thumbnail?: StringNullableWithAggregatesFilter<"knowledge_resources"> | string | null
+    size?: StringNullableWithAggregatesFilter<"knowledge_resources"> | string | null
+    tags?: StringNullableWithAggregatesFilter<"knowledge_resources"> | string | null
+    visibility?: StringWithAggregatesFilter<"knowledge_resources"> | string
+    project_id?: BigIntNullableWithAggregatesFilter<"knowledge_resources"> | bigint | number | null
+    created_at?: DateTimeWithAggregatesFilter<"knowledge_resources"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"knowledge_resources"> | Date | string
   }
 
   export type refresh_tokensWhereInput = {
@@ -47008,6 +55645,7 @@ export namespace Prisma {
     service_logs?: Service_logsListRelationFilter
     tickets?: TicketsListRelationFilter
     unit_comments?: Unit_commentsListRelationFilter
+    unit_edit_requests?: Unit_edit_requestsListRelationFilter
     projects?: XOR<ProjectsNullableScalarRelationFilter, projectsWhereInput> | null
     user_unit_access?: User_unit_accessListRelationFilter
   }
@@ -47047,6 +55685,7 @@ export namespace Prisma {
     service_logs?: service_logsOrderByRelationAggregateInput
     tickets?: ticketsOrderByRelationAggregateInput
     unit_comments?: unit_commentsOrderByRelationAggregateInput
+    unit_edit_requests?: unit_edit_requestsOrderByRelationAggregateInput
     projects?: projectsOrderByWithRelationInput
     user_unit_access?: user_unit_accessOrderByRelationAggregateInput
     _relevance?: unitsOrderByRelevanceInput
@@ -47090,6 +55729,7 @@ export namespace Prisma {
     service_logs?: Service_logsListRelationFilter
     tickets?: TicketsListRelationFilter
     unit_comments?: Unit_commentsListRelationFilter
+    unit_edit_requests?: Unit_edit_requestsListRelationFilter
     projects?: XOR<ProjectsNullableScalarRelationFilter, projectsWhereInput> | null
     user_unit_access?: User_unit_accessListRelationFilter
   }, "id" | "qr_code_token" | "serial_number">
@@ -47304,15 +55944,19 @@ export namespace Prisma {
     phone?: StringNullableFilter<"users"> | string | null
     is_active?: BoolFilter<"users"> | boolean
     company_name?: StringNullableFilter<"users"> | string | null
-    two_factor_enabled?: BoolFilter<"users"> | boolean
-    two_factor_secret?: StringNullableFilter<"users"> | string | null
-    otp_code?: StringNullableFilter<"users"> | string | null
-    otp_expiry?: DateTimeNullableFilter<"users"> | Date | string | null
     failed_login_attempts?: IntFilter<"users"> | number
     locked_until?: DateTimeNullableFilter<"users"> | Date | string | null
+    otp_code?: StringNullableFilter<"users"> | string | null
+    otp_expiry?: DateTimeNullableFilter<"users"> | Date | string | null
+    two_factor_enabled?: BoolFilter<"users"> | boolean
+    two_factor_secret?: StringNullableFilter<"users"> | string | null
     attendance_enabled?: BoolFilter<"users"> | boolean
     face_reference_url?: StringNullableFilter<"users"> | string | null
     face_verification_enabled?: BoolFilter<"users"> | boolean
+    avatar_url?: StringNullableFilter<"users"> | string | null
+    bio?: StringNullableFilter<"users"> | string | null
+    audit_logs?: Audit_logsListRelationFilter
+    intelligence_updates?: Project_intelligenceListRelationFilter
     refresh_tokens?: Refresh_tokensListRelationFilter
     schedule_messages?: Schedule_messagesListRelationFilter
     schedule_targets?: Schedule_targetsListRelationFilter
@@ -47322,7 +55966,9 @@ export namespace Prisma {
     user_push_tokens?: User_push_tokensListRelationFilter
     user_roles?: User_rolesListRelationFilter
     user_unit_access?: User_unit_accessListRelationFilter
-    audit_logs?: Audit_logsListRelationFilter
+    unit_edit_requests?: Unit_edit_requestsListRelationFilter
+    processed_requests?: Unit_edit_requestsListRelationFilter
+    notifications?: NotificationsListRelationFilter
     roles?: XOR<RolesNullableScalarRelationFilter, rolesWhereInput> | null
     vendor_attendance?: Vendor_attendanceListRelationFilter
   }
@@ -47336,15 +55982,19 @@ export namespace Prisma {
     phone?: SortOrderInput | SortOrder
     is_active?: SortOrder
     company_name?: SortOrderInput | SortOrder
-    two_factor_enabled?: SortOrder
-    two_factor_secret?: SortOrderInput | SortOrder
-    otp_code?: SortOrderInput | SortOrder
-    otp_expiry?: SortOrderInput | SortOrder
     failed_login_attempts?: SortOrder
     locked_until?: SortOrderInput | SortOrder
+    otp_code?: SortOrderInput | SortOrder
+    otp_expiry?: SortOrderInput | SortOrder
+    two_factor_enabled?: SortOrder
+    two_factor_secret?: SortOrderInput | SortOrder
     attendance_enabled?: SortOrder
     face_reference_url?: SortOrderInput | SortOrder
     face_verification_enabled?: SortOrder
+    avatar_url?: SortOrderInput | SortOrder
+    bio?: SortOrderInput | SortOrder
+    audit_logs?: audit_logsOrderByRelationAggregateInput
+    intelligence_updates?: project_intelligenceOrderByRelationAggregateInput
     refresh_tokens?: refresh_tokensOrderByRelationAggregateInput
     schedule_messages?: schedule_messagesOrderByRelationAggregateInput
     schedule_targets?: schedule_targetsOrderByRelationAggregateInput
@@ -47354,7 +56004,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensOrderByRelationAggregateInput
     user_roles?: user_rolesOrderByRelationAggregateInput
     user_unit_access?: user_unit_accessOrderByRelationAggregateInput
-    audit_logs?: audit_logsOrderByRelationAggregateInput
+    unit_edit_requests?: unit_edit_requestsOrderByRelationAggregateInput
+    processed_requests?: unit_edit_requestsOrderByRelationAggregateInput
+    notifications?: notificationsOrderByRelationAggregateInput
     roles?: rolesOrderByWithRelationInput
     vendor_attendance?: vendor_attendanceOrderByRelationAggregateInput
     _relevance?: usersOrderByRelevanceInput
@@ -47372,15 +56024,19 @@ export namespace Prisma {
     phone?: StringNullableFilter<"users"> | string | null
     is_active?: BoolFilter<"users"> | boolean
     company_name?: StringNullableFilter<"users"> | string | null
-    two_factor_enabled?: BoolFilter<"users"> | boolean
-    two_factor_secret?: StringNullableFilter<"users"> | string | null
-    otp_code?: StringNullableFilter<"users"> | string | null
-    otp_expiry?: DateTimeNullableFilter<"users"> | Date | string | null
     failed_login_attempts?: IntFilter<"users"> | number
     locked_until?: DateTimeNullableFilter<"users"> | Date | string | null
+    otp_code?: StringNullableFilter<"users"> | string | null
+    otp_expiry?: DateTimeNullableFilter<"users"> | Date | string | null
+    two_factor_enabled?: BoolFilter<"users"> | boolean
+    two_factor_secret?: StringNullableFilter<"users"> | string | null
     attendance_enabled?: BoolFilter<"users"> | boolean
     face_reference_url?: StringNullableFilter<"users"> | string | null
     face_verification_enabled?: BoolFilter<"users"> | boolean
+    avatar_url?: StringNullableFilter<"users"> | string | null
+    bio?: StringNullableFilter<"users"> | string | null
+    audit_logs?: Audit_logsListRelationFilter
+    intelligence_updates?: Project_intelligenceListRelationFilter
     refresh_tokens?: Refresh_tokensListRelationFilter
     schedule_messages?: Schedule_messagesListRelationFilter
     schedule_targets?: Schedule_targetsListRelationFilter
@@ -47390,7 +56046,9 @@ export namespace Prisma {
     user_push_tokens?: User_push_tokensListRelationFilter
     user_roles?: User_rolesListRelationFilter
     user_unit_access?: User_unit_accessListRelationFilter
-    audit_logs?: Audit_logsListRelationFilter
+    unit_edit_requests?: Unit_edit_requestsListRelationFilter
+    processed_requests?: Unit_edit_requestsListRelationFilter
+    notifications?: NotificationsListRelationFilter
     roles?: XOR<RolesNullableScalarRelationFilter, rolesWhereInput> | null
     vendor_attendance?: Vendor_attendanceListRelationFilter
   }, "id" | "email">
@@ -47404,15 +56062,17 @@ export namespace Prisma {
     phone?: SortOrderInput | SortOrder
     is_active?: SortOrder
     company_name?: SortOrderInput | SortOrder
-    two_factor_enabled?: SortOrder
-    two_factor_secret?: SortOrderInput | SortOrder
-    otp_code?: SortOrderInput | SortOrder
-    otp_expiry?: SortOrderInput | SortOrder
     failed_login_attempts?: SortOrder
     locked_until?: SortOrderInput | SortOrder
+    otp_code?: SortOrderInput | SortOrder
+    otp_expiry?: SortOrderInput | SortOrder
+    two_factor_enabled?: SortOrder
+    two_factor_secret?: SortOrderInput | SortOrder
     attendance_enabled?: SortOrder
     face_reference_url?: SortOrderInput | SortOrder
     face_verification_enabled?: SortOrder
+    avatar_url?: SortOrderInput | SortOrder
+    bio?: SortOrderInput | SortOrder
     _count?: usersCountOrderByAggregateInput
     _avg?: usersAvgOrderByAggregateInput
     _max?: usersMaxOrderByAggregateInput
@@ -47432,15 +56092,17 @@ export namespace Prisma {
     phone?: StringNullableWithAggregatesFilter<"users"> | string | null
     is_active?: BoolWithAggregatesFilter<"users"> | boolean
     company_name?: StringNullableWithAggregatesFilter<"users"> | string | null
-    two_factor_enabled?: BoolWithAggregatesFilter<"users"> | boolean
-    two_factor_secret?: StringNullableWithAggregatesFilter<"users"> | string | null
-    otp_code?: StringNullableWithAggregatesFilter<"users"> | string | null
-    otp_expiry?: DateTimeNullableWithAggregatesFilter<"users"> | Date | string | null
     failed_login_attempts?: IntWithAggregatesFilter<"users"> | number
     locked_until?: DateTimeNullableWithAggregatesFilter<"users"> | Date | string | null
+    otp_code?: StringNullableWithAggregatesFilter<"users"> | string | null
+    otp_expiry?: DateTimeNullableWithAggregatesFilter<"users"> | Date | string | null
+    two_factor_enabled?: BoolWithAggregatesFilter<"users"> | boolean
+    two_factor_secret?: StringNullableWithAggregatesFilter<"users"> | string | null
     attendance_enabled?: BoolWithAggregatesFilter<"users"> | boolean
     face_reference_url?: StringNullableWithAggregatesFilter<"users"> | string | null
     face_verification_enabled?: BoolWithAggregatesFilter<"users"> | boolean
+    avatar_url?: StringNullableWithAggregatesFilter<"users"> | string | null
+    bio?: StringNullableWithAggregatesFilter<"users"> | string | null
   }
 
   export type audit_logsWhereInput = {
@@ -48380,6 +57042,7 @@ export namespace Prisma {
     finding?: StringNullableFilter<"corrective_maintenances"> | string | null
     advise?: StringNullableFilter<"corrective_maintenances"> | string | null
     report_pdf?: StringNullableFilter<"corrective_maintenances"> | string | null
+    technical_json?: StringNullableFilter<"corrective_maintenances"> | string | null
   }
 
   export type corrective_maintenancesOrderByWithRelationInput = {
@@ -48393,6 +57056,7 @@ export namespace Prisma {
     finding?: SortOrderInput | SortOrder
     advise?: SortOrderInput | SortOrder
     report_pdf?: SortOrderInput | SortOrder
+    technical_json?: SortOrderInput | SortOrder
     _relevance?: corrective_maintenancesOrderByRelevanceInput
   }
 
@@ -48410,6 +57074,7 @@ export namespace Prisma {
     finding?: StringNullableFilter<"corrective_maintenances"> | string | null
     advise?: StringNullableFilter<"corrective_maintenances"> | string | null
     report_pdf?: StringNullableFilter<"corrective_maintenances"> | string | null
+    technical_json?: StringNullableFilter<"corrective_maintenances"> | string | null
   }, "id">
 
   export type corrective_maintenancesOrderByWithAggregationInput = {
@@ -48423,6 +57088,7 @@ export namespace Prisma {
     finding?: SortOrderInput | SortOrder
     advise?: SortOrderInput | SortOrder
     report_pdf?: SortOrderInput | SortOrder
+    technical_json?: SortOrderInput | SortOrder
     _count?: corrective_maintenancesCountOrderByAggregateInput
     _avg?: corrective_maintenancesAvgOrderByAggregateInput
     _max?: corrective_maintenancesMaxOrderByAggregateInput
@@ -48444,6 +57110,7 @@ export namespace Prisma {
     finding?: StringNullableWithAggregatesFilter<"corrective_maintenances"> | string | null
     advise?: StringNullableWithAggregatesFilter<"corrective_maintenances"> | string | null
     report_pdf?: StringNullableWithAggregatesFilter<"corrective_maintenances"> | string | null
+    technical_json?: StringNullableWithAggregatesFilter<"corrective_maintenances"> | string | null
   }
 
   export type maintenance_contractsWhereInput = {
@@ -49561,6 +58228,95 @@ export namespace Prisma {
     created_at?: DateTimeWithAggregatesFilter<"complaints"> | Date | string
   }
 
+  export type unit_edit_requestsWhereInput = {
+    AND?: unit_edit_requestsWhereInput | unit_edit_requestsWhereInput[]
+    OR?: unit_edit_requestsWhereInput[]
+    NOT?: unit_edit_requestsWhereInput | unit_edit_requestsWhereInput[]
+    id?: IntFilter<"unit_edit_requests"> | number
+    unit_id?: IntFilter<"unit_edit_requests"> | number
+    requested_by?: IntNullableFilter<"unit_edit_requests"> | number | null
+    reporter_name?: StringNullableFilter<"unit_edit_requests"> | string | null
+    details_json?: StringFilter<"unit_edit_requests"> | string
+    status?: StringFilter<"unit_edit_requests"> | string
+    requested_at?: DateTimeFilter<"unit_edit_requests"> | Date | string
+    processed_by?: IntNullableFilter<"unit_edit_requests"> | number | null
+    processed_at?: DateTimeNullableFilter<"unit_edit_requests"> | Date | string | null
+    admin_note?: StringNullableFilter<"unit_edit_requests"> | string | null
+    units?: XOR<UnitsScalarRelationFilter, unitsWhereInput>
+    users?: XOR<UsersNullableScalarRelationFilter, usersWhereInput> | null
+    processor?: XOR<UsersNullableScalarRelationFilter, usersWhereInput> | null
+  }
+
+  export type unit_edit_requestsOrderByWithRelationInput = {
+    id?: SortOrder
+    unit_id?: SortOrder
+    requested_by?: SortOrderInput | SortOrder
+    reporter_name?: SortOrderInput | SortOrder
+    details_json?: SortOrder
+    status?: SortOrder
+    requested_at?: SortOrder
+    processed_by?: SortOrderInput | SortOrder
+    processed_at?: SortOrderInput | SortOrder
+    admin_note?: SortOrderInput | SortOrder
+    units?: unitsOrderByWithRelationInput
+    users?: usersOrderByWithRelationInput
+    processor?: usersOrderByWithRelationInput
+    _relevance?: unit_edit_requestsOrderByRelevanceInput
+  }
+
+  export type unit_edit_requestsWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: unit_edit_requestsWhereInput | unit_edit_requestsWhereInput[]
+    OR?: unit_edit_requestsWhereInput[]
+    NOT?: unit_edit_requestsWhereInput | unit_edit_requestsWhereInput[]
+    unit_id?: IntFilter<"unit_edit_requests"> | number
+    requested_by?: IntNullableFilter<"unit_edit_requests"> | number | null
+    reporter_name?: StringNullableFilter<"unit_edit_requests"> | string | null
+    details_json?: StringFilter<"unit_edit_requests"> | string
+    status?: StringFilter<"unit_edit_requests"> | string
+    requested_at?: DateTimeFilter<"unit_edit_requests"> | Date | string
+    processed_by?: IntNullableFilter<"unit_edit_requests"> | number | null
+    processed_at?: DateTimeNullableFilter<"unit_edit_requests"> | Date | string | null
+    admin_note?: StringNullableFilter<"unit_edit_requests"> | string | null
+    units?: XOR<UnitsScalarRelationFilter, unitsWhereInput>
+    users?: XOR<UsersNullableScalarRelationFilter, usersWhereInput> | null
+    processor?: XOR<UsersNullableScalarRelationFilter, usersWhereInput> | null
+  }, "id">
+
+  export type unit_edit_requestsOrderByWithAggregationInput = {
+    id?: SortOrder
+    unit_id?: SortOrder
+    requested_by?: SortOrderInput | SortOrder
+    reporter_name?: SortOrderInput | SortOrder
+    details_json?: SortOrder
+    status?: SortOrder
+    requested_at?: SortOrder
+    processed_by?: SortOrderInput | SortOrder
+    processed_at?: SortOrderInput | SortOrder
+    admin_note?: SortOrderInput | SortOrder
+    _count?: unit_edit_requestsCountOrderByAggregateInput
+    _avg?: unit_edit_requestsAvgOrderByAggregateInput
+    _max?: unit_edit_requestsMaxOrderByAggregateInput
+    _min?: unit_edit_requestsMinOrderByAggregateInput
+    _sum?: unit_edit_requestsSumOrderByAggregateInput
+  }
+
+  export type unit_edit_requestsScalarWhereWithAggregatesInput = {
+    AND?: unit_edit_requestsScalarWhereWithAggregatesInput | unit_edit_requestsScalarWhereWithAggregatesInput[]
+    OR?: unit_edit_requestsScalarWhereWithAggregatesInput[]
+    NOT?: unit_edit_requestsScalarWhereWithAggregatesInput | unit_edit_requestsScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"unit_edit_requests"> | number
+    unit_id?: IntWithAggregatesFilter<"unit_edit_requests"> | number
+    requested_by?: IntNullableWithAggregatesFilter<"unit_edit_requests"> | number | null
+    reporter_name?: StringNullableWithAggregatesFilter<"unit_edit_requests"> | string | null
+    details_json?: StringWithAggregatesFilter<"unit_edit_requests"> | string
+    status?: StringWithAggregatesFilter<"unit_edit_requests"> | string
+    requested_at?: DateTimeWithAggregatesFilter<"unit_edit_requests"> | Date | string
+    processed_by?: IntNullableWithAggregatesFilter<"unit_edit_requests"> | number | null
+    processed_at?: DateTimeNullableWithAggregatesFilter<"unit_edit_requests"> | Date | string | null
+    admin_note?: StringNullableWithAggregatesFilter<"unit_edit_requests"> | string | null
+  }
+
   export type user_push_tokensWhereInput = {
     AND?: user_push_tokensWhereInput | user_push_tokensWhereInput[]
     OR?: user_push_tokensWhereInput[]
@@ -49585,15 +58341,16 @@ export namespace Prisma {
 
   export type user_push_tokensWhereUniqueInput = Prisma.AtLeast<{
     id?: number
-    token?: string
+    user_id_token?: user_push_tokensUser_id_tokenCompoundUniqueInput
     AND?: user_push_tokensWhereInput | user_push_tokensWhereInput[]
     OR?: user_push_tokensWhereInput[]
     NOT?: user_push_tokensWhereInput | user_push_tokensWhereInput[]
     user_id?: IntFilter<"user_push_tokens"> | number
+    token?: StringFilter<"user_push_tokens"> | string
     platform?: StringFilter<"user_push_tokens"> | string
     created_at?: DateTimeFilter<"user_push_tokens"> | Date | string
     users?: XOR<UsersScalarRelationFilter, usersWhereInput>
-  }, "id" | "token">
+  }, "id" | "user_id_token">
 
   export type user_push_tokensOrderByWithAggregationInput = {
     id?: SortOrder
@@ -49617,6 +58374,79 @@ export namespace Prisma {
     token?: StringWithAggregatesFilter<"user_push_tokens"> | string
     platform?: StringWithAggregatesFilter<"user_push_tokens"> | string
     created_at?: DateTimeWithAggregatesFilter<"user_push_tokens"> | Date | string
+  }
+
+  export type notificationsWhereInput = {
+    AND?: notificationsWhereInput | notificationsWhereInput[]
+    OR?: notificationsWhereInput[]
+    NOT?: notificationsWhereInput | notificationsWhereInput[]
+    id?: IntFilter<"notifications"> | number
+    user_id?: IntFilter<"notifications"> | number
+    title?: StringFilter<"notifications"> | string
+    message?: StringFilter<"notifications"> | string
+    type?: StringFilter<"notifications"> | string
+    link?: StringNullableFilter<"notifications"> | string | null
+    is_read?: BoolFilter<"notifications"> | boolean
+    created_at?: DateTimeFilter<"notifications"> | Date | string
+    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+  }
+
+  export type notificationsOrderByWithRelationInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    type?: SortOrder
+    link?: SortOrderInput | SortOrder
+    is_read?: SortOrder
+    created_at?: SortOrder
+    users?: usersOrderByWithRelationInput
+    _relevance?: notificationsOrderByRelevanceInput
+  }
+
+  export type notificationsWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: notificationsWhereInput | notificationsWhereInput[]
+    OR?: notificationsWhereInput[]
+    NOT?: notificationsWhereInput | notificationsWhereInput[]
+    user_id?: IntFilter<"notifications"> | number
+    title?: StringFilter<"notifications"> | string
+    message?: StringFilter<"notifications"> | string
+    type?: StringFilter<"notifications"> | string
+    link?: StringNullableFilter<"notifications"> | string | null
+    is_read?: BoolFilter<"notifications"> | boolean
+    created_at?: DateTimeFilter<"notifications"> | Date | string
+    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+  }, "id">
+
+  export type notificationsOrderByWithAggregationInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    type?: SortOrder
+    link?: SortOrderInput | SortOrder
+    is_read?: SortOrder
+    created_at?: SortOrder
+    _count?: notificationsCountOrderByAggregateInput
+    _avg?: notificationsAvgOrderByAggregateInput
+    _max?: notificationsMaxOrderByAggregateInput
+    _min?: notificationsMinOrderByAggregateInput
+    _sum?: notificationsSumOrderByAggregateInput
+  }
+
+  export type notificationsScalarWhereWithAggregatesInput = {
+    AND?: notificationsScalarWhereWithAggregatesInput | notificationsScalarWhereWithAggregatesInput[]
+    OR?: notificationsScalarWhereWithAggregatesInput[]
+    NOT?: notificationsScalarWhereWithAggregatesInput | notificationsScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"notifications"> | number
+    user_id?: IntWithAggregatesFilter<"notifications"> | number
+    title?: StringWithAggregatesFilter<"notifications"> | string
+    message?: StringWithAggregatesFilter<"notifications"> | string
+    type?: StringWithAggregatesFilter<"notifications"> | string
+    link?: StringNullableWithAggregatesFilter<"notifications"> | string | null
+    is_read?: BoolWithAggregatesFilter<"notifications"> | boolean
+    created_at?: DateTimeWithAggregatesFilter<"notifications"> | Date | string
   }
 
   export type daily_ops_logsWhereInput = {
@@ -49872,8 +58702,8 @@ export namespace Prisma {
     check_out_long?: DecimalNullableFilter<"vendor_attendance"> | Decimal | DecimalJsLike | number | string | null
     check_in_photo?: StringNullableFilter<"vendor_attendance"> | string | null
     check_out_photo?: StringNullableFilter<"vendor_attendance"> | string | null
-    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
     projects?: XOR<ProjectsScalarRelationFilter, projectsWhereInput>
+    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
   }
 
   export type vendor_attendanceOrderByWithRelationInput = {
@@ -49888,8 +58718,8 @@ export namespace Prisma {
     check_out_long?: SortOrderInput | SortOrder
     check_in_photo?: SortOrderInput | SortOrder
     check_out_photo?: SortOrderInput | SortOrder
-    users?: usersOrderByWithRelationInput
     projects?: projectsOrderByWithRelationInput
+    users?: usersOrderByWithRelationInput
     _relevance?: vendor_attendanceOrderByRelevanceInput
   }
 
@@ -49908,8 +58738,8 @@ export namespace Prisma {
     check_out_long?: DecimalNullableFilter<"vendor_attendance"> | Decimal | DecimalJsLike | number | string | null
     check_in_photo?: StringNullableFilter<"vendor_attendance"> | string | null
     check_out_photo?: StringNullableFilter<"vendor_attendance"> | string | null
-    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
     projects?: XOR<ProjectsScalarRelationFilter, projectsWhereInput>
+    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
   }, "id">
 
   export type vendor_attendanceOrderByWithAggregationInput = {
@@ -49946,6 +58776,350 @@ export namespace Prisma {
     check_out_long?: DecimalNullableWithAggregatesFilter<"vendor_attendance"> | Decimal | DecimalJsLike | number | string | null
     check_in_photo?: StringNullableWithAggregatesFilter<"vendor_attendance"> | string | null
     check_out_photo?: StringNullableWithAggregatesFilter<"vendor_attendance"> | string | null
+  }
+
+  export type project_intelligenceWhereInput = {
+    AND?: project_intelligenceWhereInput | project_intelligenceWhereInput[]
+    OR?: project_intelligenceWhereInput[]
+    NOT?: project_intelligenceWhereInput | project_intelligenceWhereInput[]
+    id?: BigIntFilter<"project_intelligence"> | bigint | number
+    project_id?: BigIntFilter<"project_intelligence"> | bigint | number
+    strategic_status?: StringFilter<"project_intelligence"> | string
+    health_score?: StringFilter<"project_intelligence"> | string
+    bottlenecks?: StringNullableFilter<"project_intelligence"> | string | null
+    stakeholders?: StringNullableFilter<"project_intelligence"> | string | null
+    impact_level?: StringFilter<"project_intelligence"> | string
+    action_status?: StringFilter<"project_intelligence"> | string
+    last_update_note?: StringNullableFilter<"project_intelligence"> | string | null
+    updated_at?: DateTimeFilter<"project_intelligence"> | Date | string
+    updated_by_id?: IntNullableFilter<"project_intelligence"> | number | null
+    projects?: XOR<ProjectsScalarRelationFilter, projectsWhereInput>
+    updated_by?: XOR<UsersNullableScalarRelationFilter, usersWhereInput> | null
+  }
+
+  export type project_intelligenceOrderByWithRelationInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+    strategic_status?: SortOrder
+    health_score?: SortOrder
+    bottlenecks?: SortOrderInput | SortOrder
+    stakeholders?: SortOrderInput | SortOrder
+    impact_level?: SortOrder
+    action_status?: SortOrder
+    last_update_note?: SortOrderInput | SortOrder
+    updated_at?: SortOrder
+    updated_by_id?: SortOrderInput | SortOrder
+    projects?: projectsOrderByWithRelationInput
+    updated_by?: usersOrderByWithRelationInput
+    _relevance?: project_intelligenceOrderByRelevanceInput
+  }
+
+  export type project_intelligenceWhereUniqueInput = Prisma.AtLeast<{
+    id?: bigint | number
+    project_id?: bigint | number
+    AND?: project_intelligenceWhereInput | project_intelligenceWhereInput[]
+    OR?: project_intelligenceWhereInput[]
+    NOT?: project_intelligenceWhereInput | project_intelligenceWhereInput[]
+    strategic_status?: StringFilter<"project_intelligence"> | string
+    health_score?: StringFilter<"project_intelligence"> | string
+    bottlenecks?: StringNullableFilter<"project_intelligence"> | string | null
+    stakeholders?: StringNullableFilter<"project_intelligence"> | string | null
+    impact_level?: StringFilter<"project_intelligence"> | string
+    action_status?: StringFilter<"project_intelligence"> | string
+    last_update_note?: StringNullableFilter<"project_intelligence"> | string | null
+    updated_at?: DateTimeFilter<"project_intelligence"> | Date | string
+    updated_by_id?: IntNullableFilter<"project_intelligence"> | number | null
+    projects?: XOR<ProjectsScalarRelationFilter, projectsWhereInput>
+    updated_by?: XOR<UsersNullableScalarRelationFilter, usersWhereInput> | null
+  }, "id" | "project_id">
+
+  export type project_intelligenceOrderByWithAggregationInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+    strategic_status?: SortOrder
+    health_score?: SortOrder
+    bottlenecks?: SortOrderInput | SortOrder
+    stakeholders?: SortOrderInput | SortOrder
+    impact_level?: SortOrder
+    action_status?: SortOrder
+    last_update_note?: SortOrderInput | SortOrder
+    updated_at?: SortOrder
+    updated_by_id?: SortOrderInput | SortOrder
+    _count?: project_intelligenceCountOrderByAggregateInput
+    _avg?: project_intelligenceAvgOrderByAggregateInput
+    _max?: project_intelligenceMaxOrderByAggregateInput
+    _min?: project_intelligenceMinOrderByAggregateInput
+    _sum?: project_intelligenceSumOrderByAggregateInput
+  }
+
+  export type project_intelligenceScalarWhereWithAggregatesInput = {
+    AND?: project_intelligenceScalarWhereWithAggregatesInput | project_intelligenceScalarWhereWithAggregatesInput[]
+    OR?: project_intelligenceScalarWhereWithAggregatesInput[]
+    NOT?: project_intelligenceScalarWhereWithAggregatesInput | project_intelligenceScalarWhereWithAggregatesInput[]
+    id?: BigIntWithAggregatesFilter<"project_intelligence"> | bigint | number
+    project_id?: BigIntWithAggregatesFilter<"project_intelligence"> | bigint | number
+    strategic_status?: StringWithAggregatesFilter<"project_intelligence"> | string
+    health_score?: StringWithAggregatesFilter<"project_intelligence"> | string
+    bottlenecks?: StringNullableWithAggregatesFilter<"project_intelligence"> | string | null
+    stakeholders?: StringNullableWithAggregatesFilter<"project_intelligence"> | string | null
+    impact_level?: StringWithAggregatesFilter<"project_intelligence"> | string
+    action_status?: StringWithAggregatesFilter<"project_intelligence"> | string
+    last_update_note?: StringNullableWithAggregatesFilter<"project_intelligence"> | string | null
+    updated_at?: DateTimeWithAggregatesFilter<"project_intelligence"> | Date | string
+    updated_by_id?: IntNullableWithAggregatesFilter<"project_intelligence"> | number | null
+  }
+
+  export type project_issuesWhereInput = {
+    AND?: project_issuesWhereInput | project_issuesWhereInput[]
+    OR?: project_issuesWhereInput[]
+    NOT?: project_issuesWhereInput | project_issuesWhereInput[]
+    id?: BigIntFilter<"project_issues"> | bigint | number
+    project_id?: BigIntFilter<"project_issues"> | bigint | number
+    issue_text?: StringFilter<"project_issues"> | string
+    solution_text?: StringNullableFilter<"project_issues"> | string | null
+    status?: StringFilter<"project_issues"> | string
+    created_at?: DateTimeNullableFilter<"project_issues"> | Date | string | null
+    updated_at?: DateTimeNullableFilter<"project_issues"> | Date | string | null
+    action_status?: StringNullableFilter<"project_issues"> | string | null
+    outcome?: StringNullableFilter<"project_issues"> | string | null
+    roadmap_action?: StringNullableFilter<"project_issues"> | string | null
+    urgency?: StringNullableFilter<"project_issues"> | string | null
+    projects?: XOR<ProjectsScalarRelationFilter, projectsWhereInput>
+  }
+
+  export type project_issuesOrderByWithRelationInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+    issue_text?: SortOrder
+    solution_text?: SortOrderInput | SortOrder
+    status?: SortOrder
+    created_at?: SortOrderInput | SortOrder
+    updated_at?: SortOrderInput | SortOrder
+    action_status?: SortOrderInput | SortOrder
+    outcome?: SortOrderInput | SortOrder
+    roadmap_action?: SortOrderInput | SortOrder
+    urgency?: SortOrderInput | SortOrder
+    projects?: projectsOrderByWithRelationInput
+    _relevance?: project_issuesOrderByRelevanceInput
+  }
+
+  export type project_issuesWhereUniqueInput = Prisma.AtLeast<{
+    id?: bigint | number
+    AND?: project_issuesWhereInput | project_issuesWhereInput[]
+    OR?: project_issuesWhereInput[]
+    NOT?: project_issuesWhereInput | project_issuesWhereInput[]
+    project_id?: BigIntFilter<"project_issues"> | bigint | number
+    issue_text?: StringFilter<"project_issues"> | string
+    solution_text?: StringNullableFilter<"project_issues"> | string | null
+    status?: StringFilter<"project_issues"> | string
+    created_at?: DateTimeNullableFilter<"project_issues"> | Date | string | null
+    updated_at?: DateTimeNullableFilter<"project_issues"> | Date | string | null
+    action_status?: StringNullableFilter<"project_issues"> | string | null
+    outcome?: StringNullableFilter<"project_issues"> | string | null
+    roadmap_action?: StringNullableFilter<"project_issues"> | string | null
+    urgency?: StringNullableFilter<"project_issues"> | string | null
+    projects?: XOR<ProjectsScalarRelationFilter, projectsWhereInput>
+  }, "id">
+
+  export type project_issuesOrderByWithAggregationInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+    issue_text?: SortOrder
+    solution_text?: SortOrderInput | SortOrder
+    status?: SortOrder
+    created_at?: SortOrderInput | SortOrder
+    updated_at?: SortOrderInput | SortOrder
+    action_status?: SortOrderInput | SortOrder
+    outcome?: SortOrderInput | SortOrder
+    roadmap_action?: SortOrderInput | SortOrder
+    urgency?: SortOrderInput | SortOrder
+    _count?: project_issuesCountOrderByAggregateInput
+    _avg?: project_issuesAvgOrderByAggregateInput
+    _max?: project_issuesMaxOrderByAggregateInput
+    _min?: project_issuesMinOrderByAggregateInput
+    _sum?: project_issuesSumOrderByAggregateInput
+  }
+
+  export type project_issuesScalarWhereWithAggregatesInput = {
+    AND?: project_issuesScalarWhereWithAggregatesInput | project_issuesScalarWhereWithAggregatesInput[]
+    OR?: project_issuesScalarWhereWithAggregatesInput[]
+    NOT?: project_issuesScalarWhereWithAggregatesInput | project_issuesScalarWhereWithAggregatesInput[]
+    id?: BigIntWithAggregatesFilter<"project_issues"> | bigint | number
+    project_id?: BigIntWithAggregatesFilter<"project_issues"> | bigint | number
+    issue_text?: StringWithAggregatesFilter<"project_issues"> | string
+    solution_text?: StringNullableWithAggregatesFilter<"project_issues"> | string | null
+    status?: StringWithAggregatesFilter<"project_issues"> | string
+    created_at?: DateTimeNullableWithAggregatesFilter<"project_issues"> | Date | string | null
+    updated_at?: DateTimeNullableWithAggregatesFilter<"project_issues"> | Date | string | null
+    action_status?: StringNullableWithAggregatesFilter<"project_issues"> | string | null
+    outcome?: StringNullableWithAggregatesFilter<"project_issues"> | string | null
+    roadmap_action?: StringNullableWithAggregatesFilter<"project_issues"> | string | null
+    urgency?: StringNullableWithAggregatesFilter<"project_issues"> | string | null
+  }
+
+  export type logsheet_templatesWhereInput = {
+    AND?: logsheet_templatesWhereInput | logsheet_templatesWhereInput[]
+    OR?: logsheet_templatesWhereInput[]
+    NOT?: logsheet_templatesWhereInput | logsheet_templatesWhereInput[]
+    id?: IntFilter<"logsheet_templates"> | number
+    project_id?: BigIntFilter<"logsheet_templates"> | bigint | number
+    name?: StringFilter<"logsheet_templates"> | string
+    type?: EnumLogsheetTypeFilter<"logsheet_templates"> | $Enums.LogsheetType
+    system_name?: StringNullableFilter<"logsheet_templates"> | string | null
+    room_name?: StringNullableFilter<"logsheet_templates"> | string | null
+    parameters_json?: StringFilter<"logsheet_templates"> | string
+    design_json?: StringNullableFilter<"logsheet_templates"> | string | null
+    time_slots?: StringNullableFilter<"logsheet_templates"> | string | null
+    is_active?: BoolFilter<"logsheet_templates"> | boolean
+    created_at?: DateTimeFilter<"logsheet_templates"> | Date | string
+    entries?: Logsheet_entriesListRelationFilter
+    projects?: XOR<ProjectsScalarRelationFilter, projectsWhereInput>
+  }
+
+  export type logsheet_templatesOrderByWithRelationInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+    name?: SortOrder
+    type?: SortOrder
+    system_name?: SortOrderInput | SortOrder
+    room_name?: SortOrderInput | SortOrder
+    parameters_json?: SortOrder
+    design_json?: SortOrderInput | SortOrder
+    time_slots?: SortOrderInput | SortOrder
+    is_active?: SortOrder
+    created_at?: SortOrder
+    entries?: logsheet_entriesOrderByRelationAggregateInput
+    projects?: projectsOrderByWithRelationInput
+    _relevance?: logsheet_templatesOrderByRelevanceInput
+  }
+
+  export type logsheet_templatesWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: logsheet_templatesWhereInput | logsheet_templatesWhereInput[]
+    OR?: logsheet_templatesWhereInput[]
+    NOT?: logsheet_templatesWhereInput | logsheet_templatesWhereInput[]
+    project_id?: BigIntFilter<"logsheet_templates"> | bigint | number
+    name?: StringFilter<"logsheet_templates"> | string
+    type?: EnumLogsheetTypeFilter<"logsheet_templates"> | $Enums.LogsheetType
+    system_name?: StringNullableFilter<"logsheet_templates"> | string | null
+    room_name?: StringNullableFilter<"logsheet_templates"> | string | null
+    parameters_json?: StringFilter<"logsheet_templates"> | string
+    design_json?: StringNullableFilter<"logsheet_templates"> | string | null
+    time_slots?: StringNullableFilter<"logsheet_templates"> | string | null
+    is_active?: BoolFilter<"logsheet_templates"> | boolean
+    created_at?: DateTimeFilter<"logsheet_templates"> | Date | string
+    entries?: Logsheet_entriesListRelationFilter
+    projects?: XOR<ProjectsScalarRelationFilter, projectsWhereInput>
+  }, "id">
+
+  export type logsheet_templatesOrderByWithAggregationInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+    name?: SortOrder
+    type?: SortOrder
+    system_name?: SortOrderInput | SortOrder
+    room_name?: SortOrderInput | SortOrder
+    parameters_json?: SortOrder
+    design_json?: SortOrderInput | SortOrder
+    time_slots?: SortOrderInput | SortOrder
+    is_active?: SortOrder
+    created_at?: SortOrder
+    _count?: logsheet_templatesCountOrderByAggregateInput
+    _avg?: logsheet_templatesAvgOrderByAggregateInput
+    _max?: logsheet_templatesMaxOrderByAggregateInput
+    _min?: logsheet_templatesMinOrderByAggregateInput
+    _sum?: logsheet_templatesSumOrderByAggregateInput
+  }
+
+  export type logsheet_templatesScalarWhereWithAggregatesInput = {
+    AND?: logsheet_templatesScalarWhereWithAggregatesInput | logsheet_templatesScalarWhereWithAggregatesInput[]
+    OR?: logsheet_templatesScalarWhereWithAggregatesInput[]
+    NOT?: logsheet_templatesScalarWhereWithAggregatesInput | logsheet_templatesScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"logsheet_templates"> | number
+    project_id?: BigIntWithAggregatesFilter<"logsheet_templates"> | bigint | number
+    name?: StringWithAggregatesFilter<"logsheet_templates"> | string
+    type?: EnumLogsheetTypeWithAggregatesFilter<"logsheet_templates"> | $Enums.LogsheetType
+    system_name?: StringNullableWithAggregatesFilter<"logsheet_templates"> | string | null
+    room_name?: StringNullableWithAggregatesFilter<"logsheet_templates"> | string | null
+    parameters_json?: StringWithAggregatesFilter<"logsheet_templates"> | string
+    design_json?: StringNullableWithAggregatesFilter<"logsheet_templates"> | string | null
+    time_slots?: StringNullableWithAggregatesFilter<"logsheet_templates"> | string | null
+    is_active?: BoolWithAggregatesFilter<"logsheet_templates"> | boolean
+    created_at?: DateTimeWithAggregatesFilter<"logsheet_templates"> | Date | string
+  }
+
+  export type logsheet_entriesWhereInput = {
+    AND?: logsheet_entriesWhereInput | logsheet_entriesWhereInput[]
+    OR?: logsheet_entriesWhereInput[]
+    NOT?: logsheet_entriesWhereInput | logsheet_entriesWhereInput[]
+    id?: IntFilter<"logsheet_entries"> | number
+    template_id?: IntFilter<"logsheet_entries"> | number
+    log_date?: DateTimeFilter<"logsheet_entries"> | Date | string
+    log_time?: StringFilter<"logsheet_entries"> | string
+    recorded_by?: StringFilter<"logsheet_entries"> | string
+    values_json?: StringFilter<"logsheet_entries"> | string
+    notes?: StringNullableFilter<"logsheet_entries"> | string | null
+    created_at?: DateTimeFilter<"logsheet_entries"> | Date | string
+    template?: XOR<Logsheet_templatesScalarRelationFilter, logsheet_templatesWhereInput>
+  }
+
+  export type logsheet_entriesOrderByWithRelationInput = {
+    id?: SortOrder
+    template_id?: SortOrder
+    log_date?: SortOrder
+    log_time?: SortOrder
+    recorded_by?: SortOrder
+    values_json?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    template?: logsheet_templatesOrderByWithRelationInput
+    _relevance?: logsheet_entriesOrderByRelevanceInput
+  }
+
+  export type logsheet_entriesWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    template_id_log_date_log_time?: logsheet_entriesTemplate_idLog_dateLog_timeCompoundUniqueInput
+    AND?: logsheet_entriesWhereInput | logsheet_entriesWhereInput[]
+    OR?: logsheet_entriesWhereInput[]
+    NOT?: logsheet_entriesWhereInput | logsheet_entriesWhereInput[]
+    template_id?: IntFilter<"logsheet_entries"> | number
+    log_date?: DateTimeFilter<"logsheet_entries"> | Date | string
+    log_time?: StringFilter<"logsheet_entries"> | string
+    recorded_by?: StringFilter<"logsheet_entries"> | string
+    values_json?: StringFilter<"logsheet_entries"> | string
+    notes?: StringNullableFilter<"logsheet_entries"> | string | null
+    created_at?: DateTimeFilter<"logsheet_entries"> | Date | string
+    template?: XOR<Logsheet_templatesScalarRelationFilter, logsheet_templatesWhereInput>
+  }, "id" | "template_id_log_date_log_time">
+
+  export type logsheet_entriesOrderByWithAggregationInput = {
+    id?: SortOrder
+    template_id?: SortOrder
+    log_date?: SortOrder
+    log_time?: SortOrder
+    recorded_by?: SortOrder
+    values_json?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    _count?: logsheet_entriesCountOrderByAggregateInput
+    _avg?: logsheet_entriesAvgOrderByAggregateInput
+    _max?: logsheet_entriesMaxOrderByAggregateInput
+    _min?: logsheet_entriesMinOrderByAggregateInput
+    _sum?: logsheet_entriesSumOrderByAggregateInput
+  }
+
+  export type logsheet_entriesScalarWhereWithAggregatesInput = {
+    AND?: logsheet_entriesScalarWhereWithAggregatesInput | logsheet_entriesScalarWhereWithAggregatesInput[]
+    OR?: logsheet_entriesScalarWhereWithAggregatesInput[]
+    NOT?: logsheet_entriesScalarWhereWithAggregatesInput | logsheet_entriesScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"logsheet_entries"> | number
+    template_id?: IntWithAggregatesFilter<"logsheet_entries"> | number
+    log_date?: DateTimeWithAggregatesFilter<"logsheet_entries"> | Date | string
+    log_time?: StringWithAggregatesFilter<"logsheet_entries"> | string
+    recorded_by?: StringWithAggregatesFilter<"logsheet_entries"> | string
+    values_json?: StringWithAggregatesFilter<"logsheet_entries"> | string
+    notes?: StringNullableWithAggregatesFilter<"logsheet_entries"> | string | null
+    created_at?: DateTimeWithAggregatesFilter<"logsheet_entries"> | Date | string
   }
 
   export type customersCreateInput = {
@@ -50094,12 +59268,18 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
     customers: customersCreateNestedOneWithoutProjectsInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
     schedules?: schedulesCreateNestedManyWithoutProjectsInput
     units?: unitsCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateInput = {
@@ -50113,11 +59293,17 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
     schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUpdateInput = {
@@ -50130,12 +59316,18 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
     customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUpdateManyWithoutProjectsNestedInput
     units?: unitsUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateInput = {
@@ -50149,11 +59341,17 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsCreateManyInput = {
@@ -50167,6 +59365,8 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
   }
 
   export type projectsUpdateManyMutationInput = {
@@ -50179,6 +59379,8 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
   }
 
   export type projectsUncheckedUpdateManyInput = {
@@ -50192,6 +59394,119 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type knowledge_resourcesCreateInput = {
+    id?: string
+    title: string
+    category: string
+    type: string
+    file_url?: string | null
+    href?: string | null
+    thumbnail?: string | null
+    size?: string | null
+    tags?: string | null
+    visibility?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    projects?: projectsCreateNestedOneWithoutKnowledge_resourcesInput
+  }
+
+  export type knowledge_resourcesUncheckedCreateInput = {
+    id?: string
+    title: string
+    category: string
+    type: string
+    file_url?: string | null
+    href?: string | null
+    thumbnail?: string | null
+    size?: string | null
+    tags?: string | null
+    visibility?: string
+    project_id?: bigint | number | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type knowledge_resourcesUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    file_url?: NullableStringFieldUpdateOperationsInput | string | null
+    href?: NullableStringFieldUpdateOperationsInput | string | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    projects?: projectsUpdateOneWithoutKnowledge_resourcesNestedInput
+  }
+
+  export type knowledge_resourcesUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    file_url?: NullableStringFieldUpdateOperationsInput | string | null
+    href?: NullableStringFieldUpdateOperationsInput | string | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
+    project_id?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type knowledge_resourcesCreateManyInput = {
+    id?: string
+    title: string
+    category: string
+    type: string
+    file_url?: string | null
+    href?: string | null
+    thumbnail?: string | null
+    size?: string | null
+    tags?: string | null
+    visibility?: string
+    project_id?: bigint | number | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type knowledge_resourcesUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    file_url?: NullableStringFieldUpdateOperationsInput | string | null
+    href?: NullableStringFieldUpdateOperationsInput | string | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type knowledge_resourcesUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    file_url?: NullableStringFieldUpdateOperationsInput | string | null
+    href?: NullableStringFieldUpdateOperationsInput | string | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
+    project_id?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type refresh_tokensCreateInput = {
@@ -50367,6 +59682,7 @@ export namespace Prisma {
     service_logs?: service_logsCreateNestedManyWithoutUnitsInput
     tickets?: ticketsCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUnitsInput
     projects?: projectsCreateNestedOneWithoutUnitsInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUnitsInput
   }
@@ -50406,6 +59722,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedCreateNestedManyWithoutUnitsInput
     tickets?: ticketsUncheckedCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsUncheckedCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUnitsInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUnitsInput
   }
 
@@ -50442,6 +59759,7 @@ export namespace Prisma {
     service_logs?: service_logsUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUnitsNestedInput
     projects?: projectsUpdateOneWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUnitsNestedInput
   }
@@ -50481,6 +59799,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUncheckedUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUncheckedUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUnitsNestedInput
   }
 
@@ -50669,15 +59988,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
@@ -50687,7 +60010,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
@@ -50701,15 +60026,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
@@ -50719,7 +60048,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
@@ -50730,15 +60061,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
@@ -50748,7 +60083,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
@@ -50762,15 +60099,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
@@ -50780,7 +60121,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
@@ -50793,15 +60136,17 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
   }
 
   export type usersUpdateManyMutationInput = {
@@ -50811,15 +60156,17 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type usersUncheckedUpdateManyInput = {
@@ -50831,15 +60178,17 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type audit_logsCreateInput = {
@@ -51867,6 +61216,7 @@ export namespace Prisma {
     finding?: string | null
     advise?: string | null
     report_pdf?: string | null
+    technical_json?: string | null
   }
 
   export type corrective_maintenancesUncheckedCreateInput = {
@@ -51880,6 +61230,7 @@ export namespace Prisma {
     finding?: string | null
     advise?: string | null
     report_pdf?: string | null
+    technical_json?: string | null
   }
 
   export type corrective_maintenancesUpdateInput = {
@@ -51892,6 +61243,7 @@ export namespace Prisma {
     finding?: NullableStringFieldUpdateOperationsInput | string | null
     advise?: NullableStringFieldUpdateOperationsInput | string | null
     report_pdf?: NullableStringFieldUpdateOperationsInput | string | null
+    technical_json?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type corrective_maintenancesUncheckedUpdateInput = {
@@ -51905,6 +61257,7 @@ export namespace Prisma {
     finding?: NullableStringFieldUpdateOperationsInput | string | null
     advise?: NullableStringFieldUpdateOperationsInput | string | null
     report_pdf?: NullableStringFieldUpdateOperationsInput | string | null
+    technical_json?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type corrective_maintenancesCreateManyInput = {
@@ -51918,6 +61271,7 @@ export namespace Prisma {
     finding?: string | null
     advise?: string | null
     report_pdf?: string | null
+    technical_json?: string | null
   }
 
   export type corrective_maintenancesUpdateManyMutationInput = {
@@ -51930,6 +61284,7 @@ export namespace Prisma {
     finding?: NullableStringFieldUpdateOperationsInput | string | null
     advise?: NullableStringFieldUpdateOperationsInput | string | null
     report_pdf?: NullableStringFieldUpdateOperationsInput | string | null
+    technical_json?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type corrective_maintenancesUncheckedUpdateManyInput = {
@@ -51943,6 +61298,7 @@ export namespace Prisma {
     finding?: NullableStringFieldUpdateOperationsInput | string | null
     advise?: NullableStringFieldUpdateOperationsInput | string | null
     report_pdf?: NullableStringFieldUpdateOperationsInput | string | null
+    technical_json?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type maintenance_contractsCreateInput = {
@@ -53118,6 +62474,91 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type unit_edit_requestsCreateInput = {
+    reporter_name?: string | null
+    details_json: string
+    status?: string
+    requested_at?: Date | string
+    processed_at?: Date | string | null
+    admin_note?: string | null
+    units: unitsCreateNestedOneWithoutUnit_edit_requestsInput
+    users?: usersCreateNestedOneWithoutUnit_edit_requestsInput
+    processor?: usersCreateNestedOneWithoutProcessed_requestsInput
+  }
+
+  export type unit_edit_requestsUncheckedCreateInput = {
+    id?: number
+    unit_id: number
+    requested_by?: number | null
+    reporter_name?: string | null
+    details_json: string
+    status?: string
+    requested_at?: Date | string
+    processed_by?: number | null
+    processed_at?: Date | string | null
+    admin_note?: string | null
+  }
+
+  export type unit_edit_requestsUpdateInput = {
+    reporter_name?: NullableStringFieldUpdateOperationsInput | string | null
+    details_json?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requested_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    processed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    admin_note?: NullableStringFieldUpdateOperationsInput | string | null
+    units?: unitsUpdateOneRequiredWithoutUnit_edit_requestsNestedInput
+    users?: usersUpdateOneWithoutUnit_edit_requestsNestedInput
+    processor?: usersUpdateOneWithoutProcessed_requestsNestedInput
+  }
+
+  export type unit_edit_requestsUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    unit_id?: IntFieldUpdateOperationsInput | number
+    requested_by?: NullableIntFieldUpdateOperationsInput | number | null
+    reporter_name?: NullableStringFieldUpdateOperationsInput | string | null
+    details_json?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requested_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    processed_by?: NullableIntFieldUpdateOperationsInput | number | null
+    processed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    admin_note?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type unit_edit_requestsCreateManyInput = {
+    id?: number
+    unit_id: number
+    requested_by?: number | null
+    reporter_name?: string | null
+    details_json: string
+    status?: string
+    requested_at?: Date | string
+    processed_by?: number | null
+    processed_at?: Date | string | null
+    admin_note?: string | null
+  }
+
+  export type unit_edit_requestsUpdateManyMutationInput = {
+    reporter_name?: NullableStringFieldUpdateOperationsInput | string | null
+    details_json?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requested_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    processed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    admin_note?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type unit_edit_requestsUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    unit_id?: IntFieldUpdateOperationsInput | number
+    requested_by?: NullableIntFieldUpdateOperationsInput | number | null
+    reporter_name?: NullableStringFieldUpdateOperationsInput | string | null
+    details_json?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requested_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    processed_by?: NullableIntFieldUpdateOperationsInput | number | null
+    processed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    admin_note?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type user_push_tokensCreateInput = {
     token: string
     platform?: string
@@ -53167,6 +62608,79 @@ export namespace Prisma {
     user_id?: IntFieldUpdateOperationsInput | number
     token?: StringFieldUpdateOperationsInput | string
     platform?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type notificationsCreateInput = {
+    title: string
+    message: string
+    type?: string
+    link?: string | null
+    is_read?: boolean
+    created_at?: Date | string
+    users: usersCreateNestedOneWithoutNotificationsInput
+  }
+
+  export type notificationsUncheckedCreateInput = {
+    id?: number
+    user_id: number
+    title: string
+    message: string
+    type?: string
+    link?: string | null
+    is_read?: boolean
+    created_at?: Date | string
+  }
+
+  export type notificationsUpdateInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    link?: NullableStringFieldUpdateOperationsInput | string | null
+    is_read?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: usersUpdateOneRequiredWithoutNotificationsNestedInput
+  }
+
+  export type notificationsUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    user_id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    link?: NullableStringFieldUpdateOperationsInput | string | null
+    is_read?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type notificationsCreateManyInput = {
+    id?: number
+    user_id: number
+    title: string
+    message: string
+    type?: string
+    link?: string | null
+    is_read?: boolean
+    created_at?: Date | string
+  }
+
+  export type notificationsUpdateManyMutationInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    link?: NullableStringFieldUpdateOperationsInput | string | null
+    is_read?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type notificationsUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    user_id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    link?: NullableStringFieldUpdateOperationsInput | string | null
+    is_read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -53483,8 +62997,8 @@ export namespace Prisma {
     check_out_long?: Decimal | DecimalJsLike | number | string | null
     check_in_photo?: string | null
     check_out_photo?: string | null
-    users: usersCreateNestedOneWithoutVendor_attendanceInput
     projects: projectsCreateNestedOneWithoutVendor_attendanceInput
+    users: usersCreateNestedOneWithoutVendor_attendanceInput
   }
 
   export type vendor_attendanceUncheckedCreateInput = {
@@ -53510,8 +63024,8 @@ export namespace Prisma {
     check_out_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     check_in_photo?: NullableStringFieldUpdateOperationsInput | string | null
     check_out_photo?: NullableStringFieldUpdateOperationsInput | string | null
-    users?: usersUpdateOneRequiredWithoutVendor_attendanceNestedInput
     projects?: projectsUpdateOneRequiredWithoutVendor_attendanceNestedInput
+    users?: usersUpdateOneRequiredWithoutVendor_attendanceNestedInput
   }
 
   export type vendor_attendanceUncheckedUpdateInput = {
@@ -53565,6 +63079,370 @@ export namespace Prisma {
     check_out_long?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     check_in_photo?: NullableStringFieldUpdateOperationsInput | string | null
     check_out_photo?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type project_intelligenceCreateInput = {
+    id?: bigint | number
+    strategic_status?: string
+    health_score?: string
+    bottlenecks?: string | null
+    stakeholders?: string | null
+    impact_level?: string
+    action_status?: string
+    last_update_note?: string | null
+    updated_at?: Date | string
+    projects: projectsCreateNestedOneWithoutProject_intelligenceInput
+    updated_by?: usersCreateNestedOneWithoutIntelligence_updatesInput
+  }
+
+  export type project_intelligenceUncheckedCreateInput = {
+    id?: bigint | number
+    project_id: bigint | number
+    strategic_status?: string
+    health_score?: string
+    bottlenecks?: string | null
+    stakeholders?: string | null
+    impact_level?: string
+    action_status?: string
+    last_update_note?: string | null
+    updated_at?: Date | string
+    updated_by_id?: number | null
+  }
+
+  export type project_intelligenceUpdateInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    strategic_status?: StringFieldUpdateOperationsInput | string
+    health_score?: StringFieldUpdateOperationsInput | string
+    bottlenecks?: NullableStringFieldUpdateOperationsInput | string | null
+    stakeholders?: NullableStringFieldUpdateOperationsInput | string | null
+    impact_level?: StringFieldUpdateOperationsInput | string
+    action_status?: StringFieldUpdateOperationsInput | string
+    last_update_note?: NullableStringFieldUpdateOperationsInput | string | null
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    projects?: projectsUpdateOneRequiredWithoutProject_intelligenceNestedInput
+    updated_by?: usersUpdateOneWithoutIntelligence_updatesNestedInput
+  }
+
+  export type project_intelligenceUncheckedUpdateInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    project_id?: BigIntFieldUpdateOperationsInput | bigint | number
+    strategic_status?: StringFieldUpdateOperationsInput | string
+    health_score?: StringFieldUpdateOperationsInput | string
+    bottlenecks?: NullableStringFieldUpdateOperationsInput | string | null
+    stakeholders?: NullableStringFieldUpdateOperationsInput | string | null
+    impact_level?: StringFieldUpdateOperationsInput | string
+    action_status?: StringFieldUpdateOperationsInput | string
+    last_update_note?: NullableStringFieldUpdateOperationsInput | string | null
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_by_id?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type project_intelligenceCreateManyInput = {
+    id?: bigint | number
+    project_id: bigint | number
+    strategic_status?: string
+    health_score?: string
+    bottlenecks?: string | null
+    stakeholders?: string | null
+    impact_level?: string
+    action_status?: string
+    last_update_note?: string | null
+    updated_at?: Date | string
+    updated_by_id?: number | null
+  }
+
+  export type project_intelligenceUpdateManyMutationInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    strategic_status?: StringFieldUpdateOperationsInput | string
+    health_score?: StringFieldUpdateOperationsInput | string
+    bottlenecks?: NullableStringFieldUpdateOperationsInput | string | null
+    stakeholders?: NullableStringFieldUpdateOperationsInput | string | null
+    impact_level?: StringFieldUpdateOperationsInput | string
+    action_status?: StringFieldUpdateOperationsInput | string
+    last_update_note?: NullableStringFieldUpdateOperationsInput | string | null
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type project_intelligenceUncheckedUpdateManyInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    project_id?: BigIntFieldUpdateOperationsInput | bigint | number
+    strategic_status?: StringFieldUpdateOperationsInput | string
+    health_score?: StringFieldUpdateOperationsInput | string
+    bottlenecks?: NullableStringFieldUpdateOperationsInput | string | null
+    stakeholders?: NullableStringFieldUpdateOperationsInput | string | null
+    impact_level?: StringFieldUpdateOperationsInput | string
+    action_status?: StringFieldUpdateOperationsInput | string
+    last_update_note?: NullableStringFieldUpdateOperationsInput | string | null
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_by_id?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type project_issuesCreateInput = {
+    id?: bigint | number
+    issue_text: string
+    solution_text?: string | null
+    status?: string
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    action_status?: string | null
+    outcome?: string | null
+    roadmap_action?: string | null
+    urgency?: string | null
+    projects: projectsCreateNestedOneWithoutProject_issuesInput
+  }
+
+  export type project_issuesUncheckedCreateInput = {
+    id?: bigint | number
+    project_id: bigint | number
+    issue_text: string
+    solution_text?: string | null
+    status?: string
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    action_status?: string | null
+    outcome?: string | null
+    roadmap_action?: string | null
+    urgency?: string | null
+  }
+
+  export type project_issuesUpdateInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    issue_text?: StringFieldUpdateOperationsInput | string
+    solution_text?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    action_status?: NullableStringFieldUpdateOperationsInput | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    roadmap_action?: NullableStringFieldUpdateOperationsInput | string | null
+    urgency?: NullableStringFieldUpdateOperationsInput | string | null
+    projects?: projectsUpdateOneRequiredWithoutProject_issuesNestedInput
+  }
+
+  export type project_issuesUncheckedUpdateInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    project_id?: BigIntFieldUpdateOperationsInput | bigint | number
+    issue_text?: StringFieldUpdateOperationsInput | string
+    solution_text?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    action_status?: NullableStringFieldUpdateOperationsInput | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    roadmap_action?: NullableStringFieldUpdateOperationsInput | string | null
+    urgency?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type project_issuesCreateManyInput = {
+    id?: bigint | number
+    project_id: bigint | number
+    issue_text: string
+    solution_text?: string | null
+    status?: string
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    action_status?: string | null
+    outcome?: string | null
+    roadmap_action?: string | null
+    urgency?: string | null
+  }
+
+  export type project_issuesUpdateManyMutationInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    issue_text?: StringFieldUpdateOperationsInput | string
+    solution_text?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    action_status?: NullableStringFieldUpdateOperationsInput | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    roadmap_action?: NullableStringFieldUpdateOperationsInput | string | null
+    urgency?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type project_issuesUncheckedUpdateManyInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    project_id?: BigIntFieldUpdateOperationsInput | bigint | number
+    issue_text?: StringFieldUpdateOperationsInput | string
+    solution_text?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    action_status?: NullableStringFieldUpdateOperationsInput | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    roadmap_action?: NullableStringFieldUpdateOperationsInput | string | null
+    urgency?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type logsheet_templatesCreateInput = {
+    name: string
+    type: $Enums.LogsheetType
+    system_name?: string | null
+    room_name?: string | null
+    parameters_json: string
+    design_json?: string | null
+    time_slots?: string | null
+    is_active?: boolean
+    created_at?: Date | string
+    entries?: logsheet_entriesCreateNestedManyWithoutTemplateInput
+    projects: projectsCreateNestedOneWithoutLogsheet_templatesInput
+  }
+
+  export type logsheet_templatesUncheckedCreateInput = {
+    id?: number
+    project_id: bigint | number
+    name: string
+    type: $Enums.LogsheetType
+    system_name?: string | null
+    room_name?: string | null
+    parameters_json: string
+    design_json?: string | null
+    time_slots?: string | null
+    is_active?: boolean
+    created_at?: Date | string
+    entries?: logsheet_entriesUncheckedCreateNestedManyWithoutTemplateInput
+  }
+
+  export type logsheet_templatesUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumLogsheetTypeFieldUpdateOperationsInput | $Enums.LogsheetType
+    system_name?: NullableStringFieldUpdateOperationsInput | string | null
+    room_name?: NullableStringFieldUpdateOperationsInput | string | null
+    parameters_json?: StringFieldUpdateOperationsInput | string
+    design_json?: NullableStringFieldUpdateOperationsInput | string | null
+    time_slots?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    entries?: logsheet_entriesUpdateManyWithoutTemplateNestedInput
+    projects?: projectsUpdateOneRequiredWithoutLogsheet_templatesNestedInput
+  }
+
+  export type logsheet_templatesUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    project_id?: BigIntFieldUpdateOperationsInput | bigint | number
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumLogsheetTypeFieldUpdateOperationsInput | $Enums.LogsheetType
+    system_name?: NullableStringFieldUpdateOperationsInput | string | null
+    room_name?: NullableStringFieldUpdateOperationsInput | string | null
+    parameters_json?: StringFieldUpdateOperationsInput | string
+    design_json?: NullableStringFieldUpdateOperationsInput | string | null
+    time_slots?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    entries?: logsheet_entriesUncheckedUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type logsheet_templatesCreateManyInput = {
+    id?: number
+    project_id: bigint | number
+    name: string
+    type: $Enums.LogsheetType
+    system_name?: string | null
+    room_name?: string | null
+    parameters_json: string
+    design_json?: string | null
+    time_slots?: string | null
+    is_active?: boolean
+    created_at?: Date | string
+  }
+
+  export type logsheet_templatesUpdateManyMutationInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumLogsheetTypeFieldUpdateOperationsInput | $Enums.LogsheetType
+    system_name?: NullableStringFieldUpdateOperationsInput | string | null
+    room_name?: NullableStringFieldUpdateOperationsInput | string | null
+    parameters_json?: StringFieldUpdateOperationsInput | string
+    design_json?: NullableStringFieldUpdateOperationsInput | string | null
+    time_slots?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type logsheet_templatesUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    project_id?: BigIntFieldUpdateOperationsInput | bigint | number
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumLogsheetTypeFieldUpdateOperationsInput | $Enums.LogsheetType
+    system_name?: NullableStringFieldUpdateOperationsInput | string | null
+    room_name?: NullableStringFieldUpdateOperationsInput | string | null
+    parameters_json?: StringFieldUpdateOperationsInput | string
+    design_json?: NullableStringFieldUpdateOperationsInput | string | null
+    time_slots?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type logsheet_entriesCreateInput = {
+    log_date: Date | string
+    log_time: string
+    recorded_by: string
+    values_json: string
+    notes?: string | null
+    created_at?: Date | string
+    template: logsheet_templatesCreateNestedOneWithoutEntriesInput
+  }
+
+  export type logsheet_entriesUncheckedCreateInput = {
+    id?: number
+    template_id: number
+    log_date: Date | string
+    log_time: string
+    recorded_by: string
+    values_json: string
+    notes?: string | null
+    created_at?: Date | string
+  }
+
+  export type logsheet_entriesUpdateInput = {
+    log_date?: DateTimeFieldUpdateOperationsInput | Date | string
+    log_time?: StringFieldUpdateOperationsInput | string
+    recorded_by?: StringFieldUpdateOperationsInput | string
+    values_json?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    template?: logsheet_templatesUpdateOneRequiredWithoutEntriesNestedInput
+  }
+
+  export type logsheet_entriesUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    template_id?: IntFieldUpdateOperationsInput | number
+    log_date?: DateTimeFieldUpdateOperationsInput | Date | string
+    log_time?: StringFieldUpdateOperationsInput | string
+    recorded_by?: StringFieldUpdateOperationsInput | string
+    values_json?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type logsheet_entriesCreateManyInput = {
+    id?: number
+    template_id: number
+    log_date: Date | string
+    log_time: string
+    recorded_by: string
+    values_json: string
+    notes?: string | null
+    created_at?: Date | string
+  }
+
+  export type logsheet_entriesUpdateManyMutationInput = {
+    log_date?: DateTimeFieldUpdateOperationsInput | Date | string
+    log_time?: StringFieldUpdateOperationsInput | string
+    recorded_by?: StringFieldUpdateOperationsInput | string
+    values_json?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type logsheet_entriesUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    template_id?: IntFieldUpdateOperationsInput | number
+    log_date?: DateTimeFieldUpdateOperationsInput | Date | string
+    log_time?: StringFieldUpdateOperationsInput | string
+    recorded_by?: StringFieldUpdateOperationsInput | string
+    values_json?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -53905,6 +63783,23 @@ export namespace Prisma {
     not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
   }
 
+  export type Logsheet_templatesListRelationFilter = {
+    every?: logsheet_templatesWhereInput
+    some?: logsheet_templatesWhereInput
+    none?: logsheet_templatesWhereInput
+  }
+
+  export type Project_intelligenceNullableScalarRelationFilter = {
+    is?: project_intelligenceWhereInput | null
+    isNot?: project_intelligenceWhereInput | null
+  }
+
+  export type Project_issuesListRelationFilter = {
+    every?: project_issuesWhereInput
+    some?: project_issuesWhereInput
+    none?: project_issuesWhereInput
+  }
+
   export type CustomersScalarRelationFilter = {
     is?: customersWhereInput
     isNot?: customersWhereInput
@@ -53940,6 +63835,20 @@ export namespace Prisma {
     none?: vendor_attendanceWhereInput
   }
 
+  export type Knowledge_resourcesListRelationFilter = {
+    every?: knowledge_resourcesWhereInput
+    some?: knowledge_resourcesWhereInput
+    none?: knowledge_resourcesWhereInput
+  }
+
+  export type logsheet_templatesOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type project_issuesOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type schedule_targetsOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -53957,6 +63866,10 @@ export namespace Prisma {
   }
 
   export type vendor_attendanceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type knowledge_resourcesOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -53982,6 +63895,8 @@ export namespace Prisma {
     latitude?: SortOrder
     longitude?: SortOrder
     radius_meters?: SortOrder
+    enabled_unit_types?: SortOrder
+    monitoring_focus?: SortOrder
   }
 
   export type projectsAvgOrderByAggregateInput = {
@@ -54003,6 +63918,8 @@ export namespace Prisma {
     latitude?: SortOrder
     longitude?: SortOrder
     radius_meters?: SortOrder
+    enabled_unit_types?: SortOrder
+    monitoring_focus?: SortOrder
   }
 
   export type projectsMinOrderByAggregateInput = {
@@ -54016,6 +63933,8 @@ export namespace Prisma {
     latitude?: SortOrder
     longitude?: SortOrder
     radius_meters?: SortOrder
+    enabled_unit_types?: SortOrder
+    monitoring_focus?: SortOrder
   }
 
   export type projectsSumOrderByAggregateInput = {
@@ -54064,6 +63983,100 @@ export namespace Prisma {
     _sum?: NestedDecimalNullableFilter<$PrismaModel>
     _min?: NestedDecimalNullableFilter<$PrismaModel>
     _max?: NestedDecimalNullableFilter<$PrismaModel>
+  }
+
+  export type BigIntNullableFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
+    in?: bigint[] | number[] | null
+    notIn?: bigint[] | number[] | null
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntNullableFilter<$PrismaModel> | bigint | number | null
+  }
+
+  export type ProjectsNullableScalarRelationFilter = {
+    is?: projectsWhereInput | null
+    isNot?: projectsWhereInput | null
+  }
+
+  export type knowledge_resourcesOrderByRelevanceInput = {
+    fields: knowledge_resourcesOrderByRelevanceFieldEnum | knowledge_resourcesOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type knowledge_resourcesCountOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    category?: SortOrder
+    type?: SortOrder
+    file_url?: SortOrder
+    href?: SortOrder
+    thumbnail?: SortOrder
+    size?: SortOrder
+    tags?: SortOrder
+    visibility?: SortOrder
+    project_id?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type knowledge_resourcesAvgOrderByAggregateInput = {
+    project_id?: SortOrder
+  }
+
+  export type knowledge_resourcesMaxOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    category?: SortOrder
+    type?: SortOrder
+    file_url?: SortOrder
+    href?: SortOrder
+    thumbnail?: SortOrder
+    size?: SortOrder
+    tags?: SortOrder
+    visibility?: SortOrder
+    project_id?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type knowledge_resourcesMinOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    category?: SortOrder
+    type?: SortOrder
+    file_url?: SortOrder
+    href?: SortOrder
+    thumbnail?: SortOrder
+    size?: SortOrder
+    tags?: SortOrder
+    visibility?: SortOrder
+    project_id?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type knowledge_resourcesSumOrderByAggregateInput = {
+    project_id?: SortOrder
+  }
+
+  export type BigIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
+    in?: bigint[] | number[] | null
+    notIn?: bigint[] | number[] | null
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntNullableWithAggregatesFilter<$PrismaModel> | bigint | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedBigIntNullableFilter<$PrismaModel>
+    _min?: NestedBigIntNullableFilter<$PrismaModel>
+    _max?: NestedBigIntNullableFilter<$PrismaModel>
   }
 
   export type UsersScalarRelationFilter = {
@@ -54226,17 +64239,6 @@ export namespace Prisma {
     not?: NestedEnumunits_statusNullableFilter<$PrismaModel> | $Enums.units_status | null
   }
 
-  export type BigIntNullableFilter<$PrismaModel = never> = {
-    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
-    in?: bigint[] | number[] | null
-    notIn?: bigint[] | number[] | null
-    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    not?: NestedBigIntNullableFilter<$PrismaModel> | bigint | number | null
-  }
-
   export type ActivitiesListRelationFilter = {
     every?: activitiesWhereInput
     some?: activitiesWhereInput
@@ -54291,9 +64293,10 @@ export namespace Prisma {
     none?: unit_commentsWhereInput
   }
 
-  export type ProjectsNullableScalarRelationFilter = {
-    is?: projectsWhereInput | null
-    isNot?: projectsWhereInput | null
+  export type Unit_edit_requestsListRelationFilter = {
+    every?: unit_edit_requestsWhereInput
+    some?: unit_edit_requestsWhereInput
+    none?: unit_edit_requestsWhereInput
   }
 
   export type User_unit_accessListRelationFilter = {
@@ -54335,6 +64338,10 @@ export namespace Prisma {
   }
 
   export type unit_commentsOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type unit_edit_requestsOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -54466,22 +64473,6 @@ export namespace Prisma {
     _max?: NestedEnumunits_statusNullableFilter<$PrismaModel>
   }
 
-  export type BigIntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
-    in?: bigint[] | number[] | null
-    notIn?: bigint[] | number[] | null
-    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    not?: NestedBigIntNullableWithAggregatesFilter<$PrismaModel> | bigint | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedBigIntNullableFilter<$PrismaModel>
-    _min?: NestedBigIntNullableFilter<$PrismaModel>
-    _max?: NestedBigIntNullableFilter<$PrismaModel>
-  }
-
   export type ProjectsScalarRelationFilter = {
     is?: projectsWhereInput
     isNot?: projectsWhereInput
@@ -54582,6 +64573,18 @@ export namespace Prisma {
     unit_id?: SortOrder
   }
 
+  export type Audit_logsListRelationFilter = {
+    every?: audit_logsWhereInput
+    some?: audit_logsWhereInput
+    none?: audit_logsWhereInput
+  }
+
+  export type Project_intelligenceListRelationFilter = {
+    every?: project_intelligenceWhereInput
+    some?: project_intelligenceWhereInput
+    none?: project_intelligenceWhereInput
+  }
+
   export type Refresh_tokensListRelationFilter = {
     every?: refresh_tokensWhereInput
     some?: refresh_tokensWhereInput
@@ -54600,15 +64603,23 @@ export namespace Prisma {
     none?: user_push_tokensWhereInput
   }
 
-  export type Audit_logsListRelationFilter = {
-    every?: audit_logsWhereInput
-    some?: audit_logsWhereInput
-    none?: audit_logsWhereInput
+  export type NotificationsListRelationFilter = {
+    every?: notificationsWhereInput
+    some?: notificationsWhereInput
+    none?: notificationsWhereInput
   }
 
   export type RolesNullableScalarRelationFilter = {
     is?: rolesWhereInput | null
     isNot?: rolesWhereInput | null
+  }
+
+  export type audit_logsOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type project_intelligenceOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type refresh_tokensOrderByRelationAggregateInput = {
@@ -54623,7 +64634,7 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type audit_logsOrderByRelationAggregateInput = {
+  export type notificationsOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -54642,15 +64653,17 @@ export namespace Prisma {
     phone?: SortOrder
     is_active?: SortOrder
     company_name?: SortOrder
-    two_factor_enabled?: SortOrder
-    two_factor_secret?: SortOrder
-    otp_code?: SortOrder
-    otp_expiry?: SortOrder
     failed_login_attempts?: SortOrder
     locked_until?: SortOrder
+    otp_code?: SortOrder
+    otp_expiry?: SortOrder
+    two_factor_enabled?: SortOrder
+    two_factor_secret?: SortOrder
     attendance_enabled?: SortOrder
     face_reference_url?: SortOrder
     face_verification_enabled?: SortOrder
+    avatar_url?: SortOrder
+    bio?: SortOrder
   }
 
   export type usersAvgOrderByAggregateInput = {
@@ -54668,15 +64681,17 @@ export namespace Prisma {
     phone?: SortOrder
     is_active?: SortOrder
     company_name?: SortOrder
-    two_factor_enabled?: SortOrder
-    two_factor_secret?: SortOrder
-    otp_code?: SortOrder
-    otp_expiry?: SortOrder
     failed_login_attempts?: SortOrder
     locked_until?: SortOrder
+    otp_code?: SortOrder
+    otp_expiry?: SortOrder
+    two_factor_enabled?: SortOrder
+    two_factor_secret?: SortOrder
     attendance_enabled?: SortOrder
     face_reference_url?: SortOrder
     face_verification_enabled?: SortOrder
+    avatar_url?: SortOrder
+    bio?: SortOrder
   }
 
   export type usersMinOrderByAggregateInput = {
@@ -54688,15 +64703,17 @@ export namespace Prisma {
     phone?: SortOrder
     is_active?: SortOrder
     company_name?: SortOrder
-    two_factor_enabled?: SortOrder
-    two_factor_secret?: SortOrder
-    otp_code?: SortOrder
-    otp_expiry?: SortOrder
     failed_login_attempts?: SortOrder
     locked_until?: SortOrder
+    otp_code?: SortOrder
+    otp_expiry?: SortOrder
+    two_factor_enabled?: SortOrder
+    two_factor_secret?: SortOrder
     attendance_enabled?: SortOrder
     face_reference_url?: SortOrder
     face_verification_enabled?: SortOrder
+    avatar_url?: SortOrder
+    bio?: SortOrder
   }
 
   export type usersSumOrderByAggregateInput = {
@@ -55483,6 +65500,7 @@ export namespace Prisma {
     finding?: SortOrder
     advise?: SortOrder
     report_pdf?: SortOrder
+    technical_json?: SortOrder
   }
 
   export type corrective_maintenancesAvgOrderByAggregateInput = {
@@ -55501,6 +65519,7 @@ export namespace Prisma {
     finding?: SortOrder
     advise?: SortOrder
     report_pdf?: SortOrder
+    technical_json?: SortOrder
   }
 
   export type corrective_maintenancesMinOrderByAggregateInput = {
@@ -55514,6 +65533,7 @@ export namespace Prisma {
     finding?: SortOrder
     advise?: SortOrder
     report_pdf?: SortOrder
+    technical_json?: SortOrder
   }
 
   export type corrective_maintenancesSumOrderByAggregateInput = {
@@ -56548,10 +66568,74 @@ export namespace Prisma {
     unit_id?: SortOrder
   }
 
+  export type unit_edit_requestsOrderByRelevanceInput = {
+    fields: unit_edit_requestsOrderByRelevanceFieldEnum | unit_edit_requestsOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type unit_edit_requestsCountOrderByAggregateInput = {
+    id?: SortOrder
+    unit_id?: SortOrder
+    requested_by?: SortOrder
+    reporter_name?: SortOrder
+    details_json?: SortOrder
+    status?: SortOrder
+    requested_at?: SortOrder
+    processed_by?: SortOrder
+    processed_at?: SortOrder
+    admin_note?: SortOrder
+  }
+
+  export type unit_edit_requestsAvgOrderByAggregateInput = {
+    id?: SortOrder
+    unit_id?: SortOrder
+    requested_by?: SortOrder
+    processed_by?: SortOrder
+  }
+
+  export type unit_edit_requestsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    unit_id?: SortOrder
+    requested_by?: SortOrder
+    reporter_name?: SortOrder
+    details_json?: SortOrder
+    status?: SortOrder
+    requested_at?: SortOrder
+    processed_by?: SortOrder
+    processed_at?: SortOrder
+    admin_note?: SortOrder
+  }
+
+  export type unit_edit_requestsMinOrderByAggregateInput = {
+    id?: SortOrder
+    unit_id?: SortOrder
+    requested_by?: SortOrder
+    reporter_name?: SortOrder
+    details_json?: SortOrder
+    status?: SortOrder
+    requested_at?: SortOrder
+    processed_by?: SortOrder
+    processed_at?: SortOrder
+    admin_note?: SortOrder
+  }
+
+  export type unit_edit_requestsSumOrderByAggregateInput = {
+    id?: SortOrder
+    unit_id?: SortOrder
+    requested_by?: SortOrder
+    processed_by?: SortOrder
+  }
+
   export type user_push_tokensOrderByRelevanceInput = {
     fields: user_push_tokensOrderByRelevanceFieldEnum | user_push_tokensOrderByRelevanceFieldEnum[]
     sort: SortOrder
     search: string
+  }
+
+  export type user_push_tokensUser_id_tokenCompoundUniqueInput = {
+    user_id: number
+    token: string
   }
 
   export type user_push_tokensCountOrderByAggregateInput = {
@@ -56584,6 +66668,55 @@ export namespace Prisma {
   }
 
   export type user_push_tokensSumOrderByAggregateInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+  }
+
+  export type notificationsOrderByRelevanceInput = {
+    fields: notificationsOrderByRelevanceFieldEnum | notificationsOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type notificationsCountOrderByAggregateInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    type?: SortOrder
+    link?: SortOrder
+    is_read?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type notificationsAvgOrderByAggregateInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+  }
+
+  export type notificationsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    type?: SortOrder
+    link?: SortOrder
+    is_read?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type notificationsMinOrderByAggregateInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    type?: SortOrder
+    link?: SortOrder
+    is_read?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type notificationsSumOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
   }
@@ -56860,6 +66993,269 @@ export namespace Prisma {
     check_out_long?: SortOrder
   }
 
+  export type project_intelligenceOrderByRelevanceInput = {
+    fields: project_intelligenceOrderByRelevanceFieldEnum | project_intelligenceOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type project_intelligenceCountOrderByAggregateInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+    strategic_status?: SortOrder
+    health_score?: SortOrder
+    bottlenecks?: SortOrder
+    stakeholders?: SortOrder
+    impact_level?: SortOrder
+    action_status?: SortOrder
+    last_update_note?: SortOrder
+    updated_at?: SortOrder
+    updated_by_id?: SortOrder
+  }
+
+  export type project_intelligenceAvgOrderByAggregateInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+    updated_by_id?: SortOrder
+  }
+
+  export type project_intelligenceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+    strategic_status?: SortOrder
+    health_score?: SortOrder
+    bottlenecks?: SortOrder
+    stakeholders?: SortOrder
+    impact_level?: SortOrder
+    action_status?: SortOrder
+    last_update_note?: SortOrder
+    updated_at?: SortOrder
+    updated_by_id?: SortOrder
+  }
+
+  export type project_intelligenceMinOrderByAggregateInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+    strategic_status?: SortOrder
+    health_score?: SortOrder
+    bottlenecks?: SortOrder
+    stakeholders?: SortOrder
+    impact_level?: SortOrder
+    action_status?: SortOrder
+    last_update_note?: SortOrder
+    updated_at?: SortOrder
+    updated_by_id?: SortOrder
+  }
+
+  export type project_intelligenceSumOrderByAggregateInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+    updated_by_id?: SortOrder
+  }
+
+  export type project_issuesOrderByRelevanceInput = {
+    fields: project_issuesOrderByRelevanceFieldEnum | project_issuesOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type project_issuesCountOrderByAggregateInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+    issue_text?: SortOrder
+    solution_text?: SortOrder
+    status?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    action_status?: SortOrder
+    outcome?: SortOrder
+    roadmap_action?: SortOrder
+    urgency?: SortOrder
+  }
+
+  export type project_issuesAvgOrderByAggregateInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+  }
+
+  export type project_issuesMaxOrderByAggregateInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+    issue_text?: SortOrder
+    solution_text?: SortOrder
+    status?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    action_status?: SortOrder
+    outcome?: SortOrder
+    roadmap_action?: SortOrder
+    urgency?: SortOrder
+  }
+
+  export type project_issuesMinOrderByAggregateInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+    issue_text?: SortOrder
+    solution_text?: SortOrder
+    status?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    action_status?: SortOrder
+    outcome?: SortOrder
+    roadmap_action?: SortOrder
+    urgency?: SortOrder
+  }
+
+  export type project_issuesSumOrderByAggregateInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+  }
+
+  export type EnumLogsheetTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.LogsheetType | EnumLogsheetTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.LogsheetType[]
+    notIn?: $Enums.LogsheetType[]
+    not?: NestedEnumLogsheetTypeFilter<$PrismaModel> | $Enums.LogsheetType
+  }
+
+  export type Logsheet_entriesListRelationFilter = {
+    every?: logsheet_entriesWhereInput
+    some?: logsheet_entriesWhereInput
+    none?: logsheet_entriesWhereInput
+  }
+
+  export type logsheet_entriesOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type logsheet_templatesOrderByRelevanceInput = {
+    fields: logsheet_templatesOrderByRelevanceFieldEnum | logsheet_templatesOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type logsheet_templatesCountOrderByAggregateInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+    name?: SortOrder
+    type?: SortOrder
+    system_name?: SortOrder
+    room_name?: SortOrder
+    parameters_json?: SortOrder
+    design_json?: SortOrder
+    time_slots?: SortOrder
+    is_active?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type logsheet_templatesAvgOrderByAggregateInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+  }
+
+  export type logsheet_templatesMaxOrderByAggregateInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+    name?: SortOrder
+    type?: SortOrder
+    system_name?: SortOrder
+    room_name?: SortOrder
+    parameters_json?: SortOrder
+    design_json?: SortOrder
+    time_slots?: SortOrder
+    is_active?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type logsheet_templatesMinOrderByAggregateInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+    name?: SortOrder
+    type?: SortOrder
+    system_name?: SortOrder
+    room_name?: SortOrder
+    parameters_json?: SortOrder
+    design_json?: SortOrder
+    time_slots?: SortOrder
+    is_active?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type logsheet_templatesSumOrderByAggregateInput = {
+    id?: SortOrder
+    project_id?: SortOrder
+  }
+
+  export type EnumLogsheetTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.LogsheetType | EnumLogsheetTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.LogsheetType[]
+    notIn?: $Enums.LogsheetType[]
+    not?: NestedEnumLogsheetTypeWithAggregatesFilter<$PrismaModel> | $Enums.LogsheetType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumLogsheetTypeFilter<$PrismaModel>
+    _max?: NestedEnumLogsheetTypeFilter<$PrismaModel>
+  }
+
+  export type Logsheet_templatesScalarRelationFilter = {
+    is?: logsheet_templatesWhereInput
+    isNot?: logsheet_templatesWhereInput
+  }
+
+  export type logsheet_entriesOrderByRelevanceInput = {
+    fields: logsheet_entriesOrderByRelevanceFieldEnum | logsheet_entriesOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type logsheet_entriesTemplate_idLog_dateLog_timeCompoundUniqueInput = {
+    template_id: number
+    log_date: Date | string
+    log_time: string
+  }
+
+  export type logsheet_entriesCountOrderByAggregateInput = {
+    id?: SortOrder
+    template_id?: SortOrder
+    log_date?: SortOrder
+    log_time?: SortOrder
+    recorded_by?: SortOrder
+    values_json?: SortOrder
+    notes?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type logsheet_entriesAvgOrderByAggregateInput = {
+    id?: SortOrder
+    template_id?: SortOrder
+  }
+
+  export type logsheet_entriesMaxOrderByAggregateInput = {
+    id?: SortOrder
+    template_id?: SortOrder
+    log_date?: SortOrder
+    log_time?: SortOrder
+    recorded_by?: SortOrder
+    values_json?: SortOrder
+    notes?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type logsheet_entriesMinOrderByAggregateInput = {
+    id?: SortOrder
+    template_id?: SortOrder
+    log_date?: SortOrder
+    log_time?: SortOrder
+    recorded_by?: SortOrder
+    values_json?: SortOrder
+    notes?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type logsheet_entriesSumOrderByAggregateInput = {
+    id?: SortOrder
+    template_id?: SortOrder
+  }
+
   export type contractsCreateNestedManyWithoutCustomersInput = {
     create?: XOR<contractsCreateWithoutCustomersInput, contractsUncheckedCreateWithoutCustomersInput> | contractsCreateWithoutCustomersInput[] | contractsUncheckedCreateWithoutCustomersInput[]
     connectOrCreate?: contractsCreateOrConnectWithoutCustomersInput | contractsCreateOrConnectWithoutCustomersInput[]
@@ -57106,6 +67502,26 @@ export namespace Prisma {
     deleteMany?: role_permissionsScalarWhereInput | role_permissionsScalarWhereInput[]
   }
 
+  export type logsheet_templatesCreateNestedManyWithoutProjectsInput = {
+    create?: XOR<logsheet_templatesCreateWithoutProjectsInput, logsheet_templatesUncheckedCreateWithoutProjectsInput> | logsheet_templatesCreateWithoutProjectsInput[] | logsheet_templatesUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: logsheet_templatesCreateOrConnectWithoutProjectsInput | logsheet_templatesCreateOrConnectWithoutProjectsInput[]
+    createMany?: logsheet_templatesCreateManyProjectsInputEnvelope
+    connect?: logsheet_templatesWhereUniqueInput | logsheet_templatesWhereUniqueInput[]
+  }
+
+  export type project_intelligenceCreateNestedOneWithoutProjectsInput = {
+    create?: XOR<project_intelligenceCreateWithoutProjectsInput, project_intelligenceUncheckedCreateWithoutProjectsInput>
+    connectOrCreate?: project_intelligenceCreateOrConnectWithoutProjectsInput
+    connect?: project_intelligenceWhereUniqueInput
+  }
+
+  export type project_issuesCreateNestedManyWithoutProjectsInput = {
+    create?: XOR<project_issuesCreateWithoutProjectsInput, project_issuesUncheckedCreateWithoutProjectsInput> | project_issuesCreateWithoutProjectsInput[] | project_issuesUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: project_issuesCreateOrConnectWithoutProjectsInput | project_issuesCreateOrConnectWithoutProjectsInput[]
+    createMany?: project_issuesCreateManyProjectsInputEnvelope
+    connect?: project_issuesWhereUniqueInput | project_issuesWhereUniqueInput[]
+  }
+
   export type customersCreateNestedOneWithoutProjectsInput = {
     create?: XOR<customersCreateWithoutProjectsInput, customersUncheckedCreateWithoutProjectsInput>
     connectOrCreate?: customersCreateOrConnectWithoutProjectsInput
@@ -57147,6 +67563,33 @@ export namespace Prisma {
     connect?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
   }
 
+  export type knowledge_resourcesCreateNestedManyWithoutProjectsInput = {
+    create?: XOR<knowledge_resourcesCreateWithoutProjectsInput, knowledge_resourcesUncheckedCreateWithoutProjectsInput> | knowledge_resourcesCreateWithoutProjectsInput[] | knowledge_resourcesUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: knowledge_resourcesCreateOrConnectWithoutProjectsInput | knowledge_resourcesCreateOrConnectWithoutProjectsInput[]
+    createMany?: knowledge_resourcesCreateManyProjectsInputEnvelope
+    connect?: knowledge_resourcesWhereUniqueInput | knowledge_resourcesWhereUniqueInput[]
+  }
+
+  export type logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput = {
+    create?: XOR<logsheet_templatesCreateWithoutProjectsInput, logsheet_templatesUncheckedCreateWithoutProjectsInput> | logsheet_templatesCreateWithoutProjectsInput[] | logsheet_templatesUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: logsheet_templatesCreateOrConnectWithoutProjectsInput | logsheet_templatesCreateOrConnectWithoutProjectsInput[]
+    createMany?: logsheet_templatesCreateManyProjectsInputEnvelope
+    connect?: logsheet_templatesWhereUniqueInput | logsheet_templatesWhereUniqueInput[]
+  }
+
+  export type project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput = {
+    create?: XOR<project_intelligenceCreateWithoutProjectsInput, project_intelligenceUncheckedCreateWithoutProjectsInput>
+    connectOrCreate?: project_intelligenceCreateOrConnectWithoutProjectsInput
+    connect?: project_intelligenceWhereUniqueInput
+  }
+
+  export type project_issuesUncheckedCreateNestedManyWithoutProjectsInput = {
+    create?: XOR<project_issuesCreateWithoutProjectsInput, project_issuesUncheckedCreateWithoutProjectsInput> | project_issuesCreateWithoutProjectsInput[] | project_issuesUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: project_issuesCreateOrConnectWithoutProjectsInput | project_issuesCreateOrConnectWithoutProjectsInput[]
+    createMany?: project_issuesCreateManyProjectsInputEnvelope
+    connect?: project_issuesWhereUniqueInput | project_issuesWhereUniqueInput[]
+  }
+
   export type schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput = {
     create?: XOR<schedule_targetsCreateWithoutProjectsInput, schedule_targetsUncheckedCreateWithoutProjectsInput> | schedule_targetsCreateWithoutProjectsInput[] | schedule_targetsUncheckedCreateWithoutProjectsInput[]
     connectOrCreate?: schedule_targetsCreateOrConnectWithoutProjectsInput | schedule_targetsCreateOrConnectWithoutProjectsInput[]
@@ -57182,6 +67625,13 @@ export namespace Prisma {
     connect?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
   }
 
+  export type knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput = {
+    create?: XOR<knowledge_resourcesCreateWithoutProjectsInput, knowledge_resourcesUncheckedCreateWithoutProjectsInput> | knowledge_resourcesCreateWithoutProjectsInput[] | knowledge_resourcesUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: knowledge_resourcesCreateOrConnectWithoutProjectsInput | knowledge_resourcesCreateOrConnectWithoutProjectsInput[]
+    createMany?: knowledge_resourcesCreateManyProjectsInputEnvelope
+    connect?: knowledge_resourcesWhereUniqueInput | knowledge_resourcesWhereUniqueInput[]
+  }
+
   export type Enumprojects_statusFieldUpdateOperationsInput = {
     set?: $Enums.projects_status
   }
@@ -57196,6 +67646,44 @@ export namespace Prisma {
     decrement?: Decimal | DecimalJsLike | number | string
     multiply?: Decimal | DecimalJsLike | number | string
     divide?: Decimal | DecimalJsLike | number | string
+  }
+
+  export type logsheet_templatesUpdateManyWithoutProjectsNestedInput = {
+    create?: XOR<logsheet_templatesCreateWithoutProjectsInput, logsheet_templatesUncheckedCreateWithoutProjectsInput> | logsheet_templatesCreateWithoutProjectsInput[] | logsheet_templatesUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: logsheet_templatesCreateOrConnectWithoutProjectsInput | logsheet_templatesCreateOrConnectWithoutProjectsInput[]
+    upsert?: logsheet_templatesUpsertWithWhereUniqueWithoutProjectsInput | logsheet_templatesUpsertWithWhereUniqueWithoutProjectsInput[]
+    createMany?: logsheet_templatesCreateManyProjectsInputEnvelope
+    set?: logsheet_templatesWhereUniqueInput | logsheet_templatesWhereUniqueInput[]
+    disconnect?: logsheet_templatesWhereUniqueInput | logsheet_templatesWhereUniqueInput[]
+    delete?: logsheet_templatesWhereUniqueInput | logsheet_templatesWhereUniqueInput[]
+    connect?: logsheet_templatesWhereUniqueInput | logsheet_templatesWhereUniqueInput[]
+    update?: logsheet_templatesUpdateWithWhereUniqueWithoutProjectsInput | logsheet_templatesUpdateWithWhereUniqueWithoutProjectsInput[]
+    updateMany?: logsheet_templatesUpdateManyWithWhereWithoutProjectsInput | logsheet_templatesUpdateManyWithWhereWithoutProjectsInput[]
+    deleteMany?: logsheet_templatesScalarWhereInput | logsheet_templatesScalarWhereInput[]
+  }
+
+  export type project_intelligenceUpdateOneWithoutProjectsNestedInput = {
+    create?: XOR<project_intelligenceCreateWithoutProjectsInput, project_intelligenceUncheckedCreateWithoutProjectsInput>
+    connectOrCreate?: project_intelligenceCreateOrConnectWithoutProjectsInput
+    upsert?: project_intelligenceUpsertWithoutProjectsInput
+    disconnect?: project_intelligenceWhereInput | boolean
+    delete?: project_intelligenceWhereInput | boolean
+    connect?: project_intelligenceWhereUniqueInput
+    update?: XOR<XOR<project_intelligenceUpdateToOneWithWhereWithoutProjectsInput, project_intelligenceUpdateWithoutProjectsInput>, project_intelligenceUncheckedUpdateWithoutProjectsInput>
+  }
+
+  export type project_issuesUpdateManyWithoutProjectsNestedInput = {
+    create?: XOR<project_issuesCreateWithoutProjectsInput, project_issuesUncheckedCreateWithoutProjectsInput> | project_issuesCreateWithoutProjectsInput[] | project_issuesUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: project_issuesCreateOrConnectWithoutProjectsInput | project_issuesCreateOrConnectWithoutProjectsInput[]
+    upsert?: project_issuesUpsertWithWhereUniqueWithoutProjectsInput | project_issuesUpsertWithWhereUniqueWithoutProjectsInput[]
+    createMany?: project_issuesCreateManyProjectsInputEnvelope
+    set?: project_issuesWhereUniqueInput | project_issuesWhereUniqueInput[]
+    disconnect?: project_issuesWhereUniqueInput | project_issuesWhereUniqueInput[]
+    delete?: project_issuesWhereUniqueInput | project_issuesWhereUniqueInput[]
+    connect?: project_issuesWhereUniqueInput | project_issuesWhereUniqueInput[]
+    update?: project_issuesUpdateWithWhereUniqueWithoutProjectsInput | project_issuesUpdateWithWhereUniqueWithoutProjectsInput[]
+    updateMany?: project_issuesUpdateManyWithWhereWithoutProjectsInput | project_issuesUpdateManyWithWhereWithoutProjectsInput[]
+    deleteMany?: project_issuesScalarWhereInput | project_issuesScalarWhereInput[]
   }
 
   export type customersUpdateOneRequiredWithoutProjectsNestedInput = {
@@ -57276,6 +67764,58 @@ export namespace Prisma {
     deleteMany?: vendor_attendanceScalarWhereInput | vendor_attendanceScalarWhereInput[]
   }
 
+  export type knowledge_resourcesUpdateManyWithoutProjectsNestedInput = {
+    create?: XOR<knowledge_resourcesCreateWithoutProjectsInput, knowledge_resourcesUncheckedCreateWithoutProjectsInput> | knowledge_resourcesCreateWithoutProjectsInput[] | knowledge_resourcesUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: knowledge_resourcesCreateOrConnectWithoutProjectsInput | knowledge_resourcesCreateOrConnectWithoutProjectsInput[]
+    upsert?: knowledge_resourcesUpsertWithWhereUniqueWithoutProjectsInput | knowledge_resourcesUpsertWithWhereUniqueWithoutProjectsInput[]
+    createMany?: knowledge_resourcesCreateManyProjectsInputEnvelope
+    set?: knowledge_resourcesWhereUniqueInput | knowledge_resourcesWhereUniqueInput[]
+    disconnect?: knowledge_resourcesWhereUniqueInput | knowledge_resourcesWhereUniqueInput[]
+    delete?: knowledge_resourcesWhereUniqueInput | knowledge_resourcesWhereUniqueInput[]
+    connect?: knowledge_resourcesWhereUniqueInput | knowledge_resourcesWhereUniqueInput[]
+    update?: knowledge_resourcesUpdateWithWhereUniqueWithoutProjectsInput | knowledge_resourcesUpdateWithWhereUniqueWithoutProjectsInput[]
+    updateMany?: knowledge_resourcesUpdateManyWithWhereWithoutProjectsInput | knowledge_resourcesUpdateManyWithWhereWithoutProjectsInput[]
+    deleteMany?: knowledge_resourcesScalarWhereInput | knowledge_resourcesScalarWhereInput[]
+  }
+
+  export type logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput = {
+    create?: XOR<logsheet_templatesCreateWithoutProjectsInput, logsheet_templatesUncheckedCreateWithoutProjectsInput> | logsheet_templatesCreateWithoutProjectsInput[] | logsheet_templatesUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: logsheet_templatesCreateOrConnectWithoutProjectsInput | logsheet_templatesCreateOrConnectWithoutProjectsInput[]
+    upsert?: logsheet_templatesUpsertWithWhereUniqueWithoutProjectsInput | logsheet_templatesUpsertWithWhereUniqueWithoutProjectsInput[]
+    createMany?: logsheet_templatesCreateManyProjectsInputEnvelope
+    set?: logsheet_templatesWhereUniqueInput | logsheet_templatesWhereUniqueInput[]
+    disconnect?: logsheet_templatesWhereUniqueInput | logsheet_templatesWhereUniqueInput[]
+    delete?: logsheet_templatesWhereUniqueInput | logsheet_templatesWhereUniqueInput[]
+    connect?: logsheet_templatesWhereUniqueInput | logsheet_templatesWhereUniqueInput[]
+    update?: logsheet_templatesUpdateWithWhereUniqueWithoutProjectsInput | logsheet_templatesUpdateWithWhereUniqueWithoutProjectsInput[]
+    updateMany?: logsheet_templatesUpdateManyWithWhereWithoutProjectsInput | logsheet_templatesUpdateManyWithWhereWithoutProjectsInput[]
+    deleteMany?: logsheet_templatesScalarWhereInput | logsheet_templatesScalarWhereInput[]
+  }
+
+  export type project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput = {
+    create?: XOR<project_intelligenceCreateWithoutProjectsInput, project_intelligenceUncheckedCreateWithoutProjectsInput>
+    connectOrCreate?: project_intelligenceCreateOrConnectWithoutProjectsInput
+    upsert?: project_intelligenceUpsertWithoutProjectsInput
+    disconnect?: project_intelligenceWhereInput | boolean
+    delete?: project_intelligenceWhereInput | boolean
+    connect?: project_intelligenceWhereUniqueInput
+    update?: XOR<XOR<project_intelligenceUpdateToOneWithWhereWithoutProjectsInput, project_intelligenceUpdateWithoutProjectsInput>, project_intelligenceUncheckedUpdateWithoutProjectsInput>
+  }
+
+  export type project_issuesUncheckedUpdateManyWithoutProjectsNestedInput = {
+    create?: XOR<project_issuesCreateWithoutProjectsInput, project_issuesUncheckedCreateWithoutProjectsInput> | project_issuesCreateWithoutProjectsInput[] | project_issuesUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: project_issuesCreateOrConnectWithoutProjectsInput | project_issuesCreateOrConnectWithoutProjectsInput[]
+    upsert?: project_issuesUpsertWithWhereUniqueWithoutProjectsInput | project_issuesUpsertWithWhereUniqueWithoutProjectsInput[]
+    createMany?: project_issuesCreateManyProjectsInputEnvelope
+    set?: project_issuesWhereUniqueInput | project_issuesWhereUniqueInput[]
+    disconnect?: project_issuesWhereUniqueInput | project_issuesWhereUniqueInput[]
+    delete?: project_issuesWhereUniqueInput | project_issuesWhereUniqueInput[]
+    connect?: project_issuesWhereUniqueInput | project_issuesWhereUniqueInput[]
+    update?: project_issuesUpdateWithWhereUniqueWithoutProjectsInput | project_issuesUpdateWithWhereUniqueWithoutProjectsInput[]
+    updateMany?: project_issuesUpdateManyWithWhereWithoutProjectsInput | project_issuesUpdateManyWithWhereWithoutProjectsInput[]
+    deleteMany?: project_issuesScalarWhereInput | project_issuesScalarWhereInput[]
+  }
+
   export type schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput = {
     create?: XOR<schedule_targetsCreateWithoutProjectsInput, schedule_targetsUncheckedCreateWithoutProjectsInput> | schedule_targetsCreateWithoutProjectsInput[] | schedule_targetsUncheckedCreateWithoutProjectsInput[]
     connectOrCreate?: schedule_targetsCreateOrConnectWithoutProjectsInput | schedule_targetsCreateOrConnectWithoutProjectsInput[]
@@ -57344,6 +67884,44 @@ export namespace Prisma {
     update?: vendor_attendanceUpdateWithWhereUniqueWithoutProjectsInput | vendor_attendanceUpdateWithWhereUniqueWithoutProjectsInput[]
     updateMany?: vendor_attendanceUpdateManyWithWhereWithoutProjectsInput | vendor_attendanceUpdateManyWithWhereWithoutProjectsInput[]
     deleteMany?: vendor_attendanceScalarWhereInput | vendor_attendanceScalarWhereInput[]
+  }
+
+  export type knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput = {
+    create?: XOR<knowledge_resourcesCreateWithoutProjectsInput, knowledge_resourcesUncheckedCreateWithoutProjectsInput> | knowledge_resourcesCreateWithoutProjectsInput[] | knowledge_resourcesUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: knowledge_resourcesCreateOrConnectWithoutProjectsInput | knowledge_resourcesCreateOrConnectWithoutProjectsInput[]
+    upsert?: knowledge_resourcesUpsertWithWhereUniqueWithoutProjectsInput | knowledge_resourcesUpsertWithWhereUniqueWithoutProjectsInput[]
+    createMany?: knowledge_resourcesCreateManyProjectsInputEnvelope
+    set?: knowledge_resourcesWhereUniqueInput | knowledge_resourcesWhereUniqueInput[]
+    disconnect?: knowledge_resourcesWhereUniqueInput | knowledge_resourcesWhereUniqueInput[]
+    delete?: knowledge_resourcesWhereUniqueInput | knowledge_resourcesWhereUniqueInput[]
+    connect?: knowledge_resourcesWhereUniqueInput | knowledge_resourcesWhereUniqueInput[]
+    update?: knowledge_resourcesUpdateWithWhereUniqueWithoutProjectsInput | knowledge_resourcesUpdateWithWhereUniqueWithoutProjectsInput[]
+    updateMany?: knowledge_resourcesUpdateManyWithWhereWithoutProjectsInput | knowledge_resourcesUpdateManyWithWhereWithoutProjectsInput[]
+    deleteMany?: knowledge_resourcesScalarWhereInput | knowledge_resourcesScalarWhereInput[]
+  }
+
+  export type projectsCreateNestedOneWithoutKnowledge_resourcesInput = {
+    create?: XOR<projectsCreateWithoutKnowledge_resourcesInput, projectsUncheckedCreateWithoutKnowledge_resourcesInput>
+    connectOrCreate?: projectsCreateOrConnectWithoutKnowledge_resourcesInput
+    connect?: projectsWhereUniqueInput
+  }
+
+  export type projectsUpdateOneWithoutKnowledge_resourcesNestedInput = {
+    create?: XOR<projectsCreateWithoutKnowledge_resourcesInput, projectsUncheckedCreateWithoutKnowledge_resourcesInput>
+    connectOrCreate?: projectsCreateOrConnectWithoutKnowledge_resourcesInput
+    upsert?: projectsUpsertWithoutKnowledge_resourcesInput
+    disconnect?: projectsWhereInput | boolean
+    delete?: projectsWhereInput | boolean
+    connect?: projectsWhereUniqueInput
+    update?: XOR<XOR<projectsUpdateToOneWithWhereWithoutKnowledge_resourcesInput, projectsUpdateWithoutKnowledge_resourcesInput>, projectsUncheckedUpdateWithoutKnowledge_resourcesInput>
+  }
+
+  export type NullableBigIntFieldUpdateOperationsInput = {
+    set?: bigint | number | null
+    increment?: bigint | number
+    decrement?: bigint | number
+    multiply?: bigint | number
+    divide?: bigint | number
   }
 
   export type usersCreateNestedOneWithoutRefresh_tokensInput = {
@@ -57591,6 +68169,13 @@ export namespace Prisma {
     connect?: unit_commentsWhereUniqueInput | unit_commentsWhereUniqueInput[]
   }
 
+  export type unit_edit_requestsCreateNestedManyWithoutUnitsInput = {
+    create?: XOR<unit_edit_requestsCreateWithoutUnitsInput, unit_edit_requestsUncheckedCreateWithoutUnitsInput> | unit_edit_requestsCreateWithoutUnitsInput[] | unit_edit_requestsUncheckedCreateWithoutUnitsInput[]
+    connectOrCreate?: unit_edit_requestsCreateOrConnectWithoutUnitsInput | unit_edit_requestsCreateOrConnectWithoutUnitsInput[]
+    createMany?: unit_edit_requestsCreateManyUnitsInputEnvelope
+    connect?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+  }
+
   export type projectsCreateNestedOneWithoutUnitsInput = {
     create?: XOR<projectsCreateWithoutUnitsInput, projectsUncheckedCreateWithoutUnitsInput>
     connectOrCreate?: projectsCreateOrConnectWithoutUnitsInput
@@ -57679,6 +68264,13 @@ export namespace Prisma {
     connectOrCreate?: unit_commentsCreateOrConnectWithoutUnitsInput | unit_commentsCreateOrConnectWithoutUnitsInput[]
     createMany?: unit_commentsCreateManyUnitsInputEnvelope
     connect?: unit_commentsWhereUniqueInput | unit_commentsWhereUniqueInput[]
+  }
+
+  export type unit_edit_requestsUncheckedCreateNestedManyWithoutUnitsInput = {
+    create?: XOR<unit_edit_requestsCreateWithoutUnitsInput, unit_edit_requestsUncheckedCreateWithoutUnitsInput> | unit_edit_requestsCreateWithoutUnitsInput[] | unit_edit_requestsUncheckedCreateWithoutUnitsInput[]
+    connectOrCreate?: unit_edit_requestsCreateOrConnectWithoutUnitsInput | unit_edit_requestsCreateOrConnectWithoutUnitsInput[]
+    createMany?: unit_edit_requestsCreateManyUnitsInputEnvelope
+    connect?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
   }
 
   export type user_unit_accessUncheckedCreateNestedManyWithoutUnitsInput = {
@@ -57854,6 +68446,20 @@ export namespace Prisma {
     deleteMany?: unit_commentsScalarWhereInput | unit_commentsScalarWhereInput[]
   }
 
+  export type unit_edit_requestsUpdateManyWithoutUnitsNestedInput = {
+    create?: XOR<unit_edit_requestsCreateWithoutUnitsInput, unit_edit_requestsUncheckedCreateWithoutUnitsInput> | unit_edit_requestsCreateWithoutUnitsInput[] | unit_edit_requestsUncheckedCreateWithoutUnitsInput[]
+    connectOrCreate?: unit_edit_requestsCreateOrConnectWithoutUnitsInput | unit_edit_requestsCreateOrConnectWithoutUnitsInput[]
+    upsert?: unit_edit_requestsUpsertWithWhereUniqueWithoutUnitsInput | unit_edit_requestsUpsertWithWhereUniqueWithoutUnitsInput[]
+    createMany?: unit_edit_requestsCreateManyUnitsInputEnvelope
+    set?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    disconnect?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    delete?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    connect?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    update?: unit_edit_requestsUpdateWithWhereUniqueWithoutUnitsInput | unit_edit_requestsUpdateWithWhereUniqueWithoutUnitsInput[]
+    updateMany?: unit_edit_requestsUpdateManyWithWhereWithoutUnitsInput | unit_edit_requestsUpdateManyWithWhereWithoutUnitsInput[]
+    deleteMany?: unit_edit_requestsScalarWhereInput | unit_edit_requestsScalarWhereInput[]
+  }
+
   export type projectsUpdateOneWithoutUnitsNestedInput = {
     create?: XOR<projectsCreateWithoutUnitsInput, projectsUncheckedCreateWithoutUnitsInput>
     connectOrCreate?: projectsCreateOrConnectWithoutUnitsInput
@@ -57876,14 +68482,6 @@ export namespace Prisma {
     update?: user_unit_accessUpdateWithWhereUniqueWithoutUnitsInput | user_unit_accessUpdateWithWhereUniqueWithoutUnitsInput[]
     updateMany?: user_unit_accessUpdateManyWithWhereWithoutUnitsInput | user_unit_accessUpdateManyWithWhereWithoutUnitsInput[]
     deleteMany?: user_unit_accessScalarWhereInput | user_unit_accessScalarWhereInput[]
-  }
-
-  export type NullableBigIntFieldUpdateOperationsInput = {
-    set?: bigint | number | null
-    increment?: bigint | number
-    decrement?: bigint | number
-    multiply?: bigint | number
-    divide?: bigint | number
   }
 
   export type activitiesUncheckedUpdateManyWithoutUnitsNestedInput = {
@@ -58040,6 +68638,20 @@ export namespace Prisma {
     deleteMany?: unit_commentsScalarWhereInput | unit_commentsScalarWhereInput[]
   }
 
+  export type unit_edit_requestsUncheckedUpdateManyWithoutUnitsNestedInput = {
+    create?: XOR<unit_edit_requestsCreateWithoutUnitsInput, unit_edit_requestsUncheckedCreateWithoutUnitsInput> | unit_edit_requestsCreateWithoutUnitsInput[] | unit_edit_requestsUncheckedCreateWithoutUnitsInput[]
+    connectOrCreate?: unit_edit_requestsCreateOrConnectWithoutUnitsInput | unit_edit_requestsCreateOrConnectWithoutUnitsInput[]
+    upsert?: unit_edit_requestsUpsertWithWhereUniqueWithoutUnitsInput | unit_edit_requestsUpsertWithWhereUniqueWithoutUnitsInput[]
+    createMany?: unit_edit_requestsCreateManyUnitsInputEnvelope
+    set?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    disconnect?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    delete?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    connect?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    update?: unit_edit_requestsUpdateWithWhereUniqueWithoutUnitsInput | unit_edit_requestsUpdateWithWhereUniqueWithoutUnitsInput[]
+    updateMany?: unit_edit_requestsUpdateManyWithWhereWithoutUnitsInput | unit_edit_requestsUpdateManyWithWhereWithoutUnitsInput[]
+    deleteMany?: unit_edit_requestsScalarWhereInput | unit_edit_requestsScalarWhereInput[]
+  }
+
   export type user_unit_accessUncheckedUpdateManyWithoutUnitsNestedInput = {
     create?: XOR<user_unit_accessCreateWithoutUnitsInput, user_unit_accessUncheckedCreateWithoutUnitsInput> | user_unit_accessCreateWithoutUnitsInput[] | user_unit_accessUncheckedCreateWithoutUnitsInput[]
     connectOrCreate?: user_unit_accessCreateOrConnectWithoutUnitsInput | user_unit_accessCreateOrConnectWithoutUnitsInput[]
@@ -58138,6 +68750,20 @@ export namespace Prisma {
     update?: XOR<XOR<usersUpdateToOneWithWhereWithoutUser_unit_accessInput, usersUpdateWithoutUser_unit_accessInput>, usersUncheckedUpdateWithoutUser_unit_accessInput>
   }
 
+  export type audit_logsCreateNestedManyWithoutUsersInput = {
+    create?: XOR<audit_logsCreateWithoutUsersInput, audit_logsUncheckedCreateWithoutUsersInput> | audit_logsCreateWithoutUsersInput[] | audit_logsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: audit_logsCreateOrConnectWithoutUsersInput | audit_logsCreateOrConnectWithoutUsersInput[]
+    createMany?: audit_logsCreateManyUsersInputEnvelope
+    connect?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
+  }
+
+  export type project_intelligenceCreateNestedManyWithoutUpdated_byInput = {
+    create?: XOR<project_intelligenceCreateWithoutUpdated_byInput, project_intelligenceUncheckedCreateWithoutUpdated_byInput> | project_intelligenceCreateWithoutUpdated_byInput[] | project_intelligenceUncheckedCreateWithoutUpdated_byInput[]
+    connectOrCreate?: project_intelligenceCreateOrConnectWithoutUpdated_byInput | project_intelligenceCreateOrConnectWithoutUpdated_byInput[]
+    createMany?: project_intelligenceCreateManyUpdated_byInputEnvelope
+    connect?: project_intelligenceWhereUniqueInput | project_intelligenceWhereUniqueInput[]
+  }
+
   export type refresh_tokensCreateNestedManyWithoutUsersInput = {
     create?: XOR<refresh_tokensCreateWithoutUsersInput, refresh_tokensUncheckedCreateWithoutUsersInput> | refresh_tokensCreateWithoutUsersInput[] | refresh_tokensUncheckedCreateWithoutUsersInput[]
     connectOrCreate?: refresh_tokensCreateOrConnectWithoutUsersInput | refresh_tokensCreateOrConnectWithoutUsersInput[]
@@ -58201,11 +68827,25 @@ export namespace Prisma {
     connect?: user_unit_accessWhereUniqueInput | user_unit_accessWhereUniqueInput[]
   }
 
-  export type audit_logsCreateNestedManyWithoutUsersInput = {
-    create?: XOR<audit_logsCreateWithoutUsersInput, audit_logsUncheckedCreateWithoutUsersInput> | audit_logsCreateWithoutUsersInput[] | audit_logsUncheckedCreateWithoutUsersInput[]
-    connectOrCreate?: audit_logsCreateOrConnectWithoutUsersInput | audit_logsCreateOrConnectWithoutUsersInput[]
-    createMany?: audit_logsCreateManyUsersInputEnvelope
-    connect?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
+  export type unit_edit_requestsCreateNestedManyWithoutUsersInput = {
+    create?: XOR<unit_edit_requestsCreateWithoutUsersInput, unit_edit_requestsUncheckedCreateWithoutUsersInput> | unit_edit_requestsCreateWithoutUsersInput[] | unit_edit_requestsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: unit_edit_requestsCreateOrConnectWithoutUsersInput | unit_edit_requestsCreateOrConnectWithoutUsersInput[]
+    createMany?: unit_edit_requestsCreateManyUsersInputEnvelope
+    connect?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+  }
+
+  export type unit_edit_requestsCreateNestedManyWithoutProcessorInput = {
+    create?: XOR<unit_edit_requestsCreateWithoutProcessorInput, unit_edit_requestsUncheckedCreateWithoutProcessorInput> | unit_edit_requestsCreateWithoutProcessorInput[] | unit_edit_requestsUncheckedCreateWithoutProcessorInput[]
+    connectOrCreate?: unit_edit_requestsCreateOrConnectWithoutProcessorInput | unit_edit_requestsCreateOrConnectWithoutProcessorInput[]
+    createMany?: unit_edit_requestsCreateManyProcessorInputEnvelope
+    connect?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+  }
+
+  export type notificationsCreateNestedManyWithoutUsersInput = {
+    create?: XOR<notificationsCreateWithoutUsersInput, notificationsUncheckedCreateWithoutUsersInput> | notificationsCreateWithoutUsersInput[] | notificationsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: notificationsCreateOrConnectWithoutUsersInput | notificationsCreateOrConnectWithoutUsersInput[]
+    createMany?: notificationsCreateManyUsersInputEnvelope
+    connect?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
   }
 
   export type rolesCreateNestedOneWithoutUsersInput = {
@@ -58219,6 +68859,20 @@ export namespace Prisma {
     connectOrCreate?: vendor_attendanceCreateOrConnectWithoutUsersInput | vendor_attendanceCreateOrConnectWithoutUsersInput[]
     createMany?: vendor_attendanceCreateManyUsersInputEnvelope
     connect?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+  }
+
+  export type audit_logsUncheckedCreateNestedManyWithoutUsersInput = {
+    create?: XOR<audit_logsCreateWithoutUsersInput, audit_logsUncheckedCreateWithoutUsersInput> | audit_logsCreateWithoutUsersInput[] | audit_logsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: audit_logsCreateOrConnectWithoutUsersInput | audit_logsCreateOrConnectWithoutUsersInput[]
+    createMany?: audit_logsCreateManyUsersInputEnvelope
+    connect?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
+  }
+
+  export type project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput = {
+    create?: XOR<project_intelligenceCreateWithoutUpdated_byInput, project_intelligenceUncheckedCreateWithoutUpdated_byInput> | project_intelligenceCreateWithoutUpdated_byInput[] | project_intelligenceUncheckedCreateWithoutUpdated_byInput[]
+    connectOrCreate?: project_intelligenceCreateOrConnectWithoutUpdated_byInput | project_intelligenceCreateOrConnectWithoutUpdated_byInput[]
+    createMany?: project_intelligenceCreateManyUpdated_byInputEnvelope
+    connect?: project_intelligenceWhereUniqueInput | project_intelligenceWhereUniqueInput[]
   }
 
   export type refresh_tokensUncheckedCreateNestedManyWithoutUsersInput = {
@@ -58284,11 +68938,25 @@ export namespace Prisma {
     connect?: user_unit_accessWhereUniqueInput | user_unit_accessWhereUniqueInput[]
   }
 
-  export type audit_logsUncheckedCreateNestedManyWithoutUsersInput = {
-    create?: XOR<audit_logsCreateWithoutUsersInput, audit_logsUncheckedCreateWithoutUsersInput> | audit_logsCreateWithoutUsersInput[] | audit_logsUncheckedCreateWithoutUsersInput[]
-    connectOrCreate?: audit_logsCreateOrConnectWithoutUsersInput | audit_logsCreateOrConnectWithoutUsersInput[]
-    createMany?: audit_logsCreateManyUsersInputEnvelope
-    connect?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
+  export type unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput = {
+    create?: XOR<unit_edit_requestsCreateWithoutUsersInput, unit_edit_requestsUncheckedCreateWithoutUsersInput> | unit_edit_requestsCreateWithoutUsersInput[] | unit_edit_requestsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: unit_edit_requestsCreateOrConnectWithoutUsersInput | unit_edit_requestsCreateOrConnectWithoutUsersInput[]
+    createMany?: unit_edit_requestsCreateManyUsersInputEnvelope
+    connect?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+  }
+
+  export type unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput = {
+    create?: XOR<unit_edit_requestsCreateWithoutProcessorInput, unit_edit_requestsUncheckedCreateWithoutProcessorInput> | unit_edit_requestsCreateWithoutProcessorInput[] | unit_edit_requestsUncheckedCreateWithoutProcessorInput[]
+    connectOrCreate?: unit_edit_requestsCreateOrConnectWithoutProcessorInput | unit_edit_requestsCreateOrConnectWithoutProcessorInput[]
+    createMany?: unit_edit_requestsCreateManyProcessorInputEnvelope
+    connect?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+  }
+
+  export type notificationsUncheckedCreateNestedManyWithoutUsersInput = {
+    create?: XOR<notificationsCreateWithoutUsersInput, notificationsUncheckedCreateWithoutUsersInput> | notificationsCreateWithoutUsersInput[] | notificationsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: notificationsCreateOrConnectWithoutUsersInput | notificationsCreateOrConnectWithoutUsersInput[]
+    createMany?: notificationsCreateManyUsersInputEnvelope
+    connect?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
   }
 
   export type vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput = {
@@ -58296,6 +68964,34 @@ export namespace Prisma {
     connectOrCreate?: vendor_attendanceCreateOrConnectWithoutUsersInput | vendor_attendanceCreateOrConnectWithoutUsersInput[]
     createMany?: vendor_attendanceCreateManyUsersInputEnvelope
     connect?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+  }
+
+  export type audit_logsUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<audit_logsCreateWithoutUsersInput, audit_logsUncheckedCreateWithoutUsersInput> | audit_logsCreateWithoutUsersInput[] | audit_logsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: audit_logsCreateOrConnectWithoutUsersInput | audit_logsCreateOrConnectWithoutUsersInput[]
+    upsert?: audit_logsUpsertWithWhereUniqueWithoutUsersInput | audit_logsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: audit_logsCreateManyUsersInputEnvelope
+    set?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
+    disconnect?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
+    delete?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
+    connect?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
+    update?: audit_logsUpdateWithWhereUniqueWithoutUsersInput | audit_logsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: audit_logsUpdateManyWithWhereWithoutUsersInput | audit_logsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: audit_logsScalarWhereInput | audit_logsScalarWhereInput[]
+  }
+
+  export type project_intelligenceUpdateManyWithoutUpdated_byNestedInput = {
+    create?: XOR<project_intelligenceCreateWithoutUpdated_byInput, project_intelligenceUncheckedCreateWithoutUpdated_byInput> | project_intelligenceCreateWithoutUpdated_byInput[] | project_intelligenceUncheckedCreateWithoutUpdated_byInput[]
+    connectOrCreate?: project_intelligenceCreateOrConnectWithoutUpdated_byInput | project_intelligenceCreateOrConnectWithoutUpdated_byInput[]
+    upsert?: project_intelligenceUpsertWithWhereUniqueWithoutUpdated_byInput | project_intelligenceUpsertWithWhereUniqueWithoutUpdated_byInput[]
+    createMany?: project_intelligenceCreateManyUpdated_byInputEnvelope
+    set?: project_intelligenceWhereUniqueInput | project_intelligenceWhereUniqueInput[]
+    disconnect?: project_intelligenceWhereUniqueInput | project_intelligenceWhereUniqueInput[]
+    delete?: project_intelligenceWhereUniqueInput | project_intelligenceWhereUniqueInput[]
+    connect?: project_intelligenceWhereUniqueInput | project_intelligenceWhereUniqueInput[]
+    update?: project_intelligenceUpdateWithWhereUniqueWithoutUpdated_byInput | project_intelligenceUpdateWithWhereUniqueWithoutUpdated_byInput[]
+    updateMany?: project_intelligenceUpdateManyWithWhereWithoutUpdated_byInput | project_intelligenceUpdateManyWithWhereWithoutUpdated_byInput[]
+    deleteMany?: project_intelligenceScalarWhereInput | project_intelligenceScalarWhereInput[]
   }
 
   export type refresh_tokensUpdateManyWithoutUsersNestedInput = {
@@ -58424,18 +69120,46 @@ export namespace Prisma {
     deleteMany?: user_unit_accessScalarWhereInput | user_unit_accessScalarWhereInput[]
   }
 
-  export type audit_logsUpdateManyWithoutUsersNestedInput = {
-    create?: XOR<audit_logsCreateWithoutUsersInput, audit_logsUncheckedCreateWithoutUsersInput> | audit_logsCreateWithoutUsersInput[] | audit_logsUncheckedCreateWithoutUsersInput[]
-    connectOrCreate?: audit_logsCreateOrConnectWithoutUsersInput | audit_logsCreateOrConnectWithoutUsersInput[]
-    upsert?: audit_logsUpsertWithWhereUniqueWithoutUsersInput | audit_logsUpsertWithWhereUniqueWithoutUsersInput[]
-    createMany?: audit_logsCreateManyUsersInputEnvelope
-    set?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
-    disconnect?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
-    delete?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
-    connect?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
-    update?: audit_logsUpdateWithWhereUniqueWithoutUsersInput | audit_logsUpdateWithWhereUniqueWithoutUsersInput[]
-    updateMany?: audit_logsUpdateManyWithWhereWithoutUsersInput | audit_logsUpdateManyWithWhereWithoutUsersInput[]
-    deleteMany?: audit_logsScalarWhereInput | audit_logsScalarWhereInput[]
+  export type unit_edit_requestsUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<unit_edit_requestsCreateWithoutUsersInput, unit_edit_requestsUncheckedCreateWithoutUsersInput> | unit_edit_requestsCreateWithoutUsersInput[] | unit_edit_requestsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: unit_edit_requestsCreateOrConnectWithoutUsersInput | unit_edit_requestsCreateOrConnectWithoutUsersInput[]
+    upsert?: unit_edit_requestsUpsertWithWhereUniqueWithoutUsersInput | unit_edit_requestsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: unit_edit_requestsCreateManyUsersInputEnvelope
+    set?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    disconnect?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    delete?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    connect?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    update?: unit_edit_requestsUpdateWithWhereUniqueWithoutUsersInput | unit_edit_requestsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: unit_edit_requestsUpdateManyWithWhereWithoutUsersInput | unit_edit_requestsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: unit_edit_requestsScalarWhereInput | unit_edit_requestsScalarWhereInput[]
+  }
+
+  export type unit_edit_requestsUpdateManyWithoutProcessorNestedInput = {
+    create?: XOR<unit_edit_requestsCreateWithoutProcessorInput, unit_edit_requestsUncheckedCreateWithoutProcessorInput> | unit_edit_requestsCreateWithoutProcessorInput[] | unit_edit_requestsUncheckedCreateWithoutProcessorInput[]
+    connectOrCreate?: unit_edit_requestsCreateOrConnectWithoutProcessorInput | unit_edit_requestsCreateOrConnectWithoutProcessorInput[]
+    upsert?: unit_edit_requestsUpsertWithWhereUniqueWithoutProcessorInput | unit_edit_requestsUpsertWithWhereUniqueWithoutProcessorInput[]
+    createMany?: unit_edit_requestsCreateManyProcessorInputEnvelope
+    set?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    disconnect?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    delete?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    connect?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    update?: unit_edit_requestsUpdateWithWhereUniqueWithoutProcessorInput | unit_edit_requestsUpdateWithWhereUniqueWithoutProcessorInput[]
+    updateMany?: unit_edit_requestsUpdateManyWithWhereWithoutProcessorInput | unit_edit_requestsUpdateManyWithWhereWithoutProcessorInput[]
+    deleteMany?: unit_edit_requestsScalarWhereInput | unit_edit_requestsScalarWhereInput[]
+  }
+
+  export type notificationsUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<notificationsCreateWithoutUsersInput, notificationsUncheckedCreateWithoutUsersInput> | notificationsCreateWithoutUsersInput[] | notificationsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: notificationsCreateOrConnectWithoutUsersInput | notificationsCreateOrConnectWithoutUsersInput[]
+    upsert?: notificationsUpsertWithWhereUniqueWithoutUsersInput | notificationsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: notificationsCreateManyUsersInputEnvelope
+    set?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
+    disconnect?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
+    delete?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
+    connect?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
+    update?: notificationsUpdateWithWhereUniqueWithoutUsersInput | notificationsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: notificationsUpdateManyWithWhereWithoutUsersInput | notificationsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: notificationsScalarWhereInput | notificationsScalarWhereInput[]
   }
 
   export type rolesUpdateOneWithoutUsersNestedInput = {
@@ -58460,6 +69184,34 @@ export namespace Prisma {
     update?: vendor_attendanceUpdateWithWhereUniqueWithoutUsersInput | vendor_attendanceUpdateWithWhereUniqueWithoutUsersInput[]
     updateMany?: vendor_attendanceUpdateManyWithWhereWithoutUsersInput | vendor_attendanceUpdateManyWithWhereWithoutUsersInput[]
     deleteMany?: vendor_attendanceScalarWhereInput | vendor_attendanceScalarWhereInput[]
+  }
+
+  export type audit_logsUncheckedUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<audit_logsCreateWithoutUsersInput, audit_logsUncheckedCreateWithoutUsersInput> | audit_logsCreateWithoutUsersInput[] | audit_logsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: audit_logsCreateOrConnectWithoutUsersInput | audit_logsCreateOrConnectWithoutUsersInput[]
+    upsert?: audit_logsUpsertWithWhereUniqueWithoutUsersInput | audit_logsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: audit_logsCreateManyUsersInputEnvelope
+    set?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
+    disconnect?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
+    delete?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
+    connect?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
+    update?: audit_logsUpdateWithWhereUniqueWithoutUsersInput | audit_logsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: audit_logsUpdateManyWithWhereWithoutUsersInput | audit_logsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: audit_logsScalarWhereInput | audit_logsScalarWhereInput[]
+  }
+
+  export type project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput = {
+    create?: XOR<project_intelligenceCreateWithoutUpdated_byInput, project_intelligenceUncheckedCreateWithoutUpdated_byInput> | project_intelligenceCreateWithoutUpdated_byInput[] | project_intelligenceUncheckedCreateWithoutUpdated_byInput[]
+    connectOrCreate?: project_intelligenceCreateOrConnectWithoutUpdated_byInput | project_intelligenceCreateOrConnectWithoutUpdated_byInput[]
+    upsert?: project_intelligenceUpsertWithWhereUniqueWithoutUpdated_byInput | project_intelligenceUpsertWithWhereUniqueWithoutUpdated_byInput[]
+    createMany?: project_intelligenceCreateManyUpdated_byInputEnvelope
+    set?: project_intelligenceWhereUniqueInput | project_intelligenceWhereUniqueInput[]
+    disconnect?: project_intelligenceWhereUniqueInput | project_intelligenceWhereUniqueInput[]
+    delete?: project_intelligenceWhereUniqueInput | project_intelligenceWhereUniqueInput[]
+    connect?: project_intelligenceWhereUniqueInput | project_intelligenceWhereUniqueInput[]
+    update?: project_intelligenceUpdateWithWhereUniqueWithoutUpdated_byInput | project_intelligenceUpdateWithWhereUniqueWithoutUpdated_byInput[]
+    updateMany?: project_intelligenceUpdateManyWithWhereWithoutUpdated_byInput | project_intelligenceUpdateManyWithWhereWithoutUpdated_byInput[]
+    deleteMany?: project_intelligenceScalarWhereInput | project_intelligenceScalarWhereInput[]
   }
 
   export type refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput = {
@@ -58588,18 +69340,46 @@ export namespace Prisma {
     deleteMany?: user_unit_accessScalarWhereInput | user_unit_accessScalarWhereInput[]
   }
 
-  export type audit_logsUncheckedUpdateManyWithoutUsersNestedInput = {
-    create?: XOR<audit_logsCreateWithoutUsersInput, audit_logsUncheckedCreateWithoutUsersInput> | audit_logsCreateWithoutUsersInput[] | audit_logsUncheckedCreateWithoutUsersInput[]
-    connectOrCreate?: audit_logsCreateOrConnectWithoutUsersInput | audit_logsCreateOrConnectWithoutUsersInput[]
-    upsert?: audit_logsUpsertWithWhereUniqueWithoutUsersInput | audit_logsUpsertWithWhereUniqueWithoutUsersInput[]
-    createMany?: audit_logsCreateManyUsersInputEnvelope
-    set?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
-    disconnect?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
-    delete?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
-    connect?: audit_logsWhereUniqueInput | audit_logsWhereUniqueInput[]
-    update?: audit_logsUpdateWithWhereUniqueWithoutUsersInput | audit_logsUpdateWithWhereUniqueWithoutUsersInput[]
-    updateMany?: audit_logsUpdateManyWithWhereWithoutUsersInput | audit_logsUpdateManyWithWhereWithoutUsersInput[]
-    deleteMany?: audit_logsScalarWhereInput | audit_logsScalarWhereInput[]
+  export type unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<unit_edit_requestsCreateWithoutUsersInput, unit_edit_requestsUncheckedCreateWithoutUsersInput> | unit_edit_requestsCreateWithoutUsersInput[] | unit_edit_requestsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: unit_edit_requestsCreateOrConnectWithoutUsersInput | unit_edit_requestsCreateOrConnectWithoutUsersInput[]
+    upsert?: unit_edit_requestsUpsertWithWhereUniqueWithoutUsersInput | unit_edit_requestsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: unit_edit_requestsCreateManyUsersInputEnvelope
+    set?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    disconnect?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    delete?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    connect?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    update?: unit_edit_requestsUpdateWithWhereUniqueWithoutUsersInput | unit_edit_requestsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: unit_edit_requestsUpdateManyWithWhereWithoutUsersInput | unit_edit_requestsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: unit_edit_requestsScalarWhereInput | unit_edit_requestsScalarWhereInput[]
+  }
+
+  export type unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput = {
+    create?: XOR<unit_edit_requestsCreateWithoutProcessorInput, unit_edit_requestsUncheckedCreateWithoutProcessorInput> | unit_edit_requestsCreateWithoutProcessorInput[] | unit_edit_requestsUncheckedCreateWithoutProcessorInput[]
+    connectOrCreate?: unit_edit_requestsCreateOrConnectWithoutProcessorInput | unit_edit_requestsCreateOrConnectWithoutProcessorInput[]
+    upsert?: unit_edit_requestsUpsertWithWhereUniqueWithoutProcessorInput | unit_edit_requestsUpsertWithWhereUniqueWithoutProcessorInput[]
+    createMany?: unit_edit_requestsCreateManyProcessorInputEnvelope
+    set?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    disconnect?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    delete?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    connect?: unit_edit_requestsWhereUniqueInput | unit_edit_requestsWhereUniqueInput[]
+    update?: unit_edit_requestsUpdateWithWhereUniqueWithoutProcessorInput | unit_edit_requestsUpdateWithWhereUniqueWithoutProcessorInput[]
+    updateMany?: unit_edit_requestsUpdateManyWithWhereWithoutProcessorInput | unit_edit_requestsUpdateManyWithWhereWithoutProcessorInput[]
+    deleteMany?: unit_edit_requestsScalarWhereInput | unit_edit_requestsScalarWhereInput[]
+  }
+
+  export type notificationsUncheckedUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<notificationsCreateWithoutUsersInput, notificationsUncheckedCreateWithoutUsersInput> | notificationsCreateWithoutUsersInput[] | notificationsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: notificationsCreateOrConnectWithoutUsersInput | notificationsCreateOrConnectWithoutUsersInput[]
+    upsert?: notificationsUpsertWithWhereUniqueWithoutUsersInput | notificationsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: notificationsCreateManyUsersInputEnvelope
+    set?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
+    disconnect?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
+    delete?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
+    connect?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
+    update?: notificationsUpdateWithWhereUniqueWithoutUsersInput | notificationsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: notificationsUpdateManyWithWhereWithoutUsersInput | notificationsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: notificationsScalarWhereInput | notificationsScalarWhereInput[]
   }
 
   export type vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput = {
@@ -59276,6 +70056,52 @@ export namespace Prisma {
     update?: XOR<XOR<unitsUpdateToOneWithWhereWithoutComplaintsInput, unitsUpdateWithoutComplaintsInput>, unitsUncheckedUpdateWithoutComplaintsInput>
   }
 
+  export type unitsCreateNestedOneWithoutUnit_edit_requestsInput = {
+    create?: XOR<unitsCreateWithoutUnit_edit_requestsInput, unitsUncheckedCreateWithoutUnit_edit_requestsInput>
+    connectOrCreate?: unitsCreateOrConnectWithoutUnit_edit_requestsInput
+    connect?: unitsWhereUniqueInput
+  }
+
+  export type usersCreateNestedOneWithoutUnit_edit_requestsInput = {
+    create?: XOR<usersCreateWithoutUnit_edit_requestsInput, usersUncheckedCreateWithoutUnit_edit_requestsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutUnit_edit_requestsInput
+    connect?: usersWhereUniqueInput
+  }
+
+  export type usersCreateNestedOneWithoutProcessed_requestsInput = {
+    create?: XOR<usersCreateWithoutProcessed_requestsInput, usersUncheckedCreateWithoutProcessed_requestsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutProcessed_requestsInput
+    connect?: usersWhereUniqueInput
+  }
+
+  export type unitsUpdateOneRequiredWithoutUnit_edit_requestsNestedInput = {
+    create?: XOR<unitsCreateWithoutUnit_edit_requestsInput, unitsUncheckedCreateWithoutUnit_edit_requestsInput>
+    connectOrCreate?: unitsCreateOrConnectWithoutUnit_edit_requestsInput
+    upsert?: unitsUpsertWithoutUnit_edit_requestsInput
+    connect?: unitsWhereUniqueInput
+    update?: XOR<XOR<unitsUpdateToOneWithWhereWithoutUnit_edit_requestsInput, unitsUpdateWithoutUnit_edit_requestsInput>, unitsUncheckedUpdateWithoutUnit_edit_requestsInput>
+  }
+
+  export type usersUpdateOneWithoutUnit_edit_requestsNestedInput = {
+    create?: XOR<usersCreateWithoutUnit_edit_requestsInput, usersUncheckedCreateWithoutUnit_edit_requestsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutUnit_edit_requestsInput
+    upsert?: usersUpsertWithoutUnit_edit_requestsInput
+    disconnect?: usersWhereInput | boolean
+    delete?: usersWhereInput | boolean
+    connect?: usersWhereUniqueInput
+    update?: XOR<XOR<usersUpdateToOneWithWhereWithoutUnit_edit_requestsInput, usersUpdateWithoutUnit_edit_requestsInput>, usersUncheckedUpdateWithoutUnit_edit_requestsInput>
+  }
+
+  export type usersUpdateOneWithoutProcessed_requestsNestedInput = {
+    create?: XOR<usersCreateWithoutProcessed_requestsInput, usersUncheckedCreateWithoutProcessed_requestsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutProcessed_requestsInput
+    upsert?: usersUpsertWithoutProcessed_requestsInput
+    disconnect?: usersWhereInput | boolean
+    delete?: usersWhereInput | boolean
+    connect?: usersWhereUniqueInput
+    update?: XOR<XOR<usersUpdateToOneWithWhereWithoutProcessed_requestsInput, usersUpdateWithoutProcessed_requestsInput>, usersUncheckedUpdateWithoutProcessed_requestsInput>
+  }
+
   export type usersCreateNestedOneWithoutUser_push_tokensInput = {
     create?: XOR<usersCreateWithoutUser_push_tokensInput, usersUncheckedCreateWithoutUser_push_tokensInput>
     connectOrCreate?: usersCreateOrConnectWithoutUser_push_tokensInput
@@ -59288,6 +70114,20 @@ export namespace Prisma {
     upsert?: usersUpsertWithoutUser_push_tokensInput
     connect?: usersWhereUniqueInput
     update?: XOR<XOR<usersUpdateToOneWithWhereWithoutUser_push_tokensInput, usersUpdateWithoutUser_push_tokensInput>, usersUncheckedUpdateWithoutUser_push_tokensInput>
+  }
+
+  export type usersCreateNestedOneWithoutNotificationsInput = {
+    create?: XOR<usersCreateWithoutNotificationsInput, usersUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutNotificationsInput
+    connect?: usersWhereUniqueInput
+  }
+
+  export type usersUpdateOneRequiredWithoutNotificationsNestedInput = {
+    create?: XOR<usersCreateWithoutNotificationsInput, usersUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutNotificationsInput
+    upsert?: usersUpsertWithoutNotificationsInput
+    connect?: usersWhereUniqueInput
+    update?: XOR<XOR<usersUpdateToOneWithWhereWithoutNotificationsInput, usersUpdateWithoutNotificationsInput>, usersUncheckedUpdateWithoutNotificationsInput>
   }
 
   export type unitsCreateNestedOneWithoutDaily_ops_logsInput = {
@@ -59304,16 +70144,24 @@ export namespace Prisma {
     update?: XOR<XOR<unitsUpdateToOneWithWhereWithoutDaily_ops_logsInput, unitsUpdateWithoutDaily_ops_logsInput>, unitsUncheckedUpdateWithoutDaily_ops_logsInput>
   }
 
+  export type projectsCreateNestedOneWithoutVendor_attendanceInput = {
+    create?: XOR<projectsCreateWithoutVendor_attendanceInput, projectsUncheckedCreateWithoutVendor_attendanceInput>
+    connectOrCreate?: projectsCreateOrConnectWithoutVendor_attendanceInput
+    connect?: projectsWhereUniqueInput
+  }
+
   export type usersCreateNestedOneWithoutVendor_attendanceInput = {
     create?: XOR<usersCreateWithoutVendor_attendanceInput, usersUncheckedCreateWithoutVendor_attendanceInput>
     connectOrCreate?: usersCreateOrConnectWithoutVendor_attendanceInput
     connect?: usersWhereUniqueInput
   }
 
-  export type projectsCreateNestedOneWithoutVendor_attendanceInput = {
+  export type projectsUpdateOneRequiredWithoutVendor_attendanceNestedInput = {
     create?: XOR<projectsCreateWithoutVendor_attendanceInput, projectsUncheckedCreateWithoutVendor_attendanceInput>
     connectOrCreate?: projectsCreateOrConnectWithoutVendor_attendanceInput
+    upsert?: projectsUpsertWithoutVendor_attendanceInput
     connect?: projectsWhereUniqueInput
+    update?: XOR<XOR<projectsUpdateToOneWithWhereWithoutVendor_attendanceInput, projectsUpdateWithoutVendor_attendanceInput>, projectsUncheckedUpdateWithoutVendor_attendanceInput>
   }
 
   export type usersUpdateOneRequiredWithoutVendor_attendanceNestedInput = {
@@ -59324,12 +70172,122 @@ export namespace Prisma {
     update?: XOR<XOR<usersUpdateToOneWithWhereWithoutVendor_attendanceInput, usersUpdateWithoutVendor_attendanceInput>, usersUncheckedUpdateWithoutVendor_attendanceInput>
   }
 
-  export type projectsUpdateOneRequiredWithoutVendor_attendanceNestedInput = {
-    create?: XOR<projectsCreateWithoutVendor_attendanceInput, projectsUncheckedCreateWithoutVendor_attendanceInput>
-    connectOrCreate?: projectsCreateOrConnectWithoutVendor_attendanceInput
-    upsert?: projectsUpsertWithoutVendor_attendanceInput
+  export type projectsCreateNestedOneWithoutProject_intelligenceInput = {
+    create?: XOR<projectsCreateWithoutProject_intelligenceInput, projectsUncheckedCreateWithoutProject_intelligenceInput>
+    connectOrCreate?: projectsCreateOrConnectWithoutProject_intelligenceInput
     connect?: projectsWhereUniqueInput
-    update?: XOR<XOR<projectsUpdateToOneWithWhereWithoutVendor_attendanceInput, projectsUpdateWithoutVendor_attendanceInput>, projectsUncheckedUpdateWithoutVendor_attendanceInput>
+  }
+
+  export type usersCreateNestedOneWithoutIntelligence_updatesInput = {
+    create?: XOR<usersCreateWithoutIntelligence_updatesInput, usersUncheckedCreateWithoutIntelligence_updatesInput>
+    connectOrCreate?: usersCreateOrConnectWithoutIntelligence_updatesInput
+    connect?: usersWhereUniqueInput
+  }
+
+  export type projectsUpdateOneRequiredWithoutProject_intelligenceNestedInput = {
+    create?: XOR<projectsCreateWithoutProject_intelligenceInput, projectsUncheckedCreateWithoutProject_intelligenceInput>
+    connectOrCreate?: projectsCreateOrConnectWithoutProject_intelligenceInput
+    upsert?: projectsUpsertWithoutProject_intelligenceInput
+    connect?: projectsWhereUniqueInput
+    update?: XOR<XOR<projectsUpdateToOneWithWhereWithoutProject_intelligenceInput, projectsUpdateWithoutProject_intelligenceInput>, projectsUncheckedUpdateWithoutProject_intelligenceInput>
+  }
+
+  export type usersUpdateOneWithoutIntelligence_updatesNestedInput = {
+    create?: XOR<usersCreateWithoutIntelligence_updatesInput, usersUncheckedCreateWithoutIntelligence_updatesInput>
+    connectOrCreate?: usersCreateOrConnectWithoutIntelligence_updatesInput
+    upsert?: usersUpsertWithoutIntelligence_updatesInput
+    disconnect?: usersWhereInput | boolean
+    delete?: usersWhereInput | boolean
+    connect?: usersWhereUniqueInput
+    update?: XOR<XOR<usersUpdateToOneWithWhereWithoutIntelligence_updatesInput, usersUpdateWithoutIntelligence_updatesInput>, usersUncheckedUpdateWithoutIntelligence_updatesInput>
+  }
+
+  export type projectsCreateNestedOneWithoutProject_issuesInput = {
+    create?: XOR<projectsCreateWithoutProject_issuesInput, projectsUncheckedCreateWithoutProject_issuesInput>
+    connectOrCreate?: projectsCreateOrConnectWithoutProject_issuesInput
+    connect?: projectsWhereUniqueInput
+  }
+
+  export type projectsUpdateOneRequiredWithoutProject_issuesNestedInput = {
+    create?: XOR<projectsCreateWithoutProject_issuesInput, projectsUncheckedCreateWithoutProject_issuesInput>
+    connectOrCreate?: projectsCreateOrConnectWithoutProject_issuesInput
+    upsert?: projectsUpsertWithoutProject_issuesInput
+    connect?: projectsWhereUniqueInput
+    update?: XOR<XOR<projectsUpdateToOneWithWhereWithoutProject_issuesInput, projectsUpdateWithoutProject_issuesInput>, projectsUncheckedUpdateWithoutProject_issuesInput>
+  }
+
+  export type logsheet_entriesCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<logsheet_entriesCreateWithoutTemplateInput, logsheet_entriesUncheckedCreateWithoutTemplateInput> | logsheet_entriesCreateWithoutTemplateInput[] | logsheet_entriesUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: logsheet_entriesCreateOrConnectWithoutTemplateInput | logsheet_entriesCreateOrConnectWithoutTemplateInput[]
+    createMany?: logsheet_entriesCreateManyTemplateInputEnvelope
+    connect?: logsheet_entriesWhereUniqueInput | logsheet_entriesWhereUniqueInput[]
+  }
+
+  export type projectsCreateNestedOneWithoutLogsheet_templatesInput = {
+    create?: XOR<projectsCreateWithoutLogsheet_templatesInput, projectsUncheckedCreateWithoutLogsheet_templatesInput>
+    connectOrCreate?: projectsCreateOrConnectWithoutLogsheet_templatesInput
+    connect?: projectsWhereUniqueInput
+  }
+
+  export type logsheet_entriesUncheckedCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<logsheet_entriesCreateWithoutTemplateInput, logsheet_entriesUncheckedCreateWithoutTemplateInput> | logsheet_entriesCreateWithoutTemplateInput[] | logsheet_entriesUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: logsheet_entriesCreateOrConnectWithoutTemplateInput | logsheet_entriesCreateOrConnectWithoutTemplateInput[]
+    createMany?: logsheet_entriesCreateManyTemplateInputEnvelope
+    connect?: logsheet_entriesWhereUniqueInput | logsheet_entriesWhereUniqueInput[]
+  }
+
+  export type EnumLogsheetTypeFieldUpdateOperationsInput = {
+    set?: $Enums.LogsheetType
+  }
+
+  export type logsheet_entriesUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<logsheet_entriesCreateWithoutTemplateInput, logsheet_entriesUncheckedCreateWithoutTemplateInput> | logsheet_entriesCreateWithoutTemplateInput[] | logsheet_entriesUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: logsheet_entriesCreateOrConnectWithoutTemplateInput | logsheet_entriesCreateOrConnectWithoutTemplateInput[]
+    upsert?: logsheet_entriesUpsertWithWhereUniqueWithoutTemplateInput | logsheet_entriesUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: logsheet_entriesCreateManyTemplateInputEnvelope
+    set?: logsheet_entriesWhereUniqueInput | logsheet_entriesWhereUniqueInput[]
+    disconnect?: logsheet_entriesWhereUniqueInput | logsheet_entriesWhereUniqueInput[]
+    delete?: logsheet_entriesWhereUniqueInput | logsheet_entriesWhereUniqueInput[]
+    connect?: logsheet_entriesWhereUniqueInput | logsheet_entriesWhereUniqueInput[]
+    update?: logsheet_entriesUpdateWithWhereUniqueWithoutTemplateInput | logsheet_entriesUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: logsheet_entriesUpdateManyWithWhereWithoutTemplateInput | logsheet_entriesUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: logsheet_entriesScalarWhereInput | logsheet_entriesScalarWhereInput[]
+  }
+
+  export type projectsUpdateOneRequiredWithoutLogsheet_templatesNestedInput = {
+    create?: XOR<projectsCreateWithoutLogsheet_templatesInput, projectsUncheckedCreateWithoutLogsheet_templatesInput>
+    connectOrCreate?: projectsCreateOrConnectWithoutLogsheet_templatesInput
+    upsert?: projectsUpsertWithoutLogsheet_templatesInput
+    connect?: projectsWhereUniqueInput
+    update?: XOR<XOR<projectsUpdateToOneWithWhereWithoutLogsheet_templatesInput, projectsUpdateWithoutLogsheet_templatesInput>, projectsUncheckedUpdateWithoutLogsheet_templatesInput>
+  }
+
+  export type logsheet_entriesUncheckedUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<logsheet_entriesCreateWithoutTemplateInput, logsheet_entriesUncheckedCreateWithoutTemplateInput> | logsheet_entriesCreateWithoutTemplateInput[] | logsheet_entriesUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: logsheet_entriesCreateOrConnectWithoutTemplateInput | logsheet_entriesCreateOrConnectWithoutTemplateInput[]
+    upsert?: logsheet_entriesUpsertWithWhereUniqueWithoutTemplateInput | logsheet_entriesUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: logsheet_entriesCreateManyTemplateInputEnvelope
+    set?: logsheet_entriesWhereUniqueInput | logsheet_entriesWhereUniqueInput[]
+    disconnect?: logsheet_entriesWhereUniqueInput | logsheet_entriesWhereUniqueInput[]
+    delete?: logsheet_entriesWhereUniqueInput | logsheet_entriesWhereUniqueInput[]
+    connect?: logsheet_entriesWhereUniqueInput | logsheet_entriesWhereUniqueInput[]
+    update?: logsheet_entriesUpdateWithWhereUniqueWithoutTemplateInput | logsheet_entriesUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: logsheet_entriesUpdateManyWithWhereWithoutTemplateInput | logsheet_entriesUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: logsheet_entriesScalarWhereInput | logsheet_entriesScalarWhereInput[]
+  }
+
+  export type logsheet_templatesCreateNestedOneWithoutEntriesInput = {
+    create?: XOR<logsheet_templatesCreateWithoutEntriesInput, logsheet_templatesUncheckedCreateWithoutEntriesInput>
+    connectOrCreate?: logsheet_templatesCreateOrConnectWithoutEntriesInput
+    connect?: logsheet_templatesWhereUniqueInput
+  }
+
+  export type logsheet_templatesUpdateOneRequiredWithoutEntriesNestedInput = {
+    create?: XOR<logsheet_templatesCreateWithoutEntriesInput, logsheet_templatesUncheckedCreateWithoutEntriesInput>
+    connectOrCreate?: logsheet_templatesCreateOrConnectWithoutEntriesInput
+    upsert?: logsheet_templatesUpsertWithoutEntriesInput
+    connect?: logsheet_templatesWhereUniqueInput
+    update?: XOR<XOR<logsheet_templatesUpdateToOneWithWhereWithoutEntriesInput, logsheet_templatesUpdateWithoutEntriesInput>, logsheet_templatesUncheckedUpdateWithoutEntriesInput>
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -59598,13 +70556,6 @@ export namespace Prisma {
     _max?: NestedDecimalNullableFilter<$PrismaModel>
   }
 
-  export type NestedEnumunits_statusNullableFilter<$PrismaModel = never> = {
-    equals?: $Enums.units_status | Enumunits_statusFieldRefInput<$PrismaModel> | null
-    in?: $Enums.units_status[] | null
-    notIn?: $Enums.units_status[] | null
-    not?: NestedEnumunits_statusNullableFilter<$PrismaModel> | $Enums.units_status | null
-  }
-
   export type NestedBigIntNullableFilter<$PrismaModel = never> = {
     equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
     in?: bigint[] | number[] | null
@@ -59614,6 +70565,40 @@ export namespace Prisma {
     gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
     gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
     not?: NestedBigIntNullableFilter<$PrismaModel> | bigint | number | null
+  }
+
+  export type NestedBigIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
+    in?: bigint[] | number[] | null
+    notIn?: bigint[] | number[] | null
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntNullableWithAggregatesFilter<$PrismaModel> | bigint | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedBigIntNullableFilter<$PrismaModel>
+    _min?: NestedBigIntNullableFilter<$PrismaModel>
+    _max?: NestedBigIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedEnumunits_statusNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.units_status | Enumunits_statusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.units_status[] | null
+    notIn?: $Enums.units_status[] | null
+    not?: NestedEnumunits_statusNullableFilter<$PrismaModel> | $Enums.units_status | null
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -59632,17 +70617,6 @@ export namespace Prisma {
     _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
-  export type NestedFloatNullableFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
-  }
-
   export type NestedEnumunits_statusNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.units_status | Enumunits_statusFieldRefInput<$PrismaModel> | null
     in?: $Enums.units_status[] | null
@@ -59651,22 +70625,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumunits_statusNullableFilter<$PrismaModel>
     _max?: NestedEnumunits_statusNullableFilter<$PrismaModel>
-  }
-
-  export type NestedBigIntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
-    in?: bigint[] | number[] | null
-    notIn?: bigint[] | number[] | null
-    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    not?: NestedBigIntNullableWithAggregatesFilter<$PrismaModel> | bigint | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedBigIntNullableFilter<$PrismaModel>
-    _min?: NestedBigIntNullableFilter<$PrismaModel>
-    _max?: NestedBigIntNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumahu_audits_approval_statusNullableFilter<$PrismaModel = never> = {
@@ -59936,6 +70894,23 @@ export namespace Prisma {
     _max?: NestedEnumScheduleStatusFilter<$PrismaModel>
   }
 
+  export type NestedEnumLogsheetTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.LogsheetType | EnumLogsheetTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.LogsheetType[]
+    notIn?: $Enums.LogsheetType[]
+    not?: NestedEnumLogsheetTypeFilter<$PrismaModel> | $Enums.LogsheetType
+  }
+
+  export type NestedEnumLogsheetTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.LogsheetType | EnumLogsheetTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.LogsheetType[]
+    notIn?: $Enums.LogsheetType[]
+    not?: NestedEnumLogsheetTypeWithAggregatesFilter<$PrismaModel> | $Enums.LogsheetType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumLogsheetTypeFilter<$PrismaModel>
+    _max?: NestedEnumLogsheetTypeFilter<$PrismaModel>
+  }
+
   export type contractsCreateWithoutCustomersInput = {
     site_id?: number | null
     contract_number?: string | null
@@ -59975,11 +70950,17 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
     schedules?: schedulesCreateNestedManyWithoutProjectsInput
     units?: unitsCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutCustomersInput = {
@@ -59992,11 +70973,17 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
     schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutCustomersInput = {
@@ -60125,6 +71112,8 @@ export namespace Prisma {
     latitude?: DecimalNullableFilter<"projects"> | Decimal | DecimalJsLike | number | string | null
     longitude?: DecimalNullableFilter<"projects"> | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFilter<"projects"> | number
+    enabled_unit_types?: StringFilter<"projects"> | string
+    monitoring_focus?: StringFilter<"projects"> | string
   }
 
   export type sitesUpsertWithWhereUniqueWithoutCustomersInput = {
@@ -60226,6 +71215,110 @@ export namespace Prisma {
     NOT?: role_permissionsScalarWhereInput | role_permissionsScalarWhereInput[]
     role_id?: IntFilter<"role_permissions"> | number
     permission_id?: BigIntFilter<"role_permissions"> | bigint | number
+  }
+
+  export type logsheet_templatesCreateWithoutProjectsInput = {
+    name: string
+    type: $Enums.LogsheetType
+    system_name?: string | null
+    room_name?: string | null
+    parameters_json: string
+    design_json?: string | null
+    time_slots?: string | null
+    is_active?: boolean
+    created_at?: Date | string
+    entries?: logsheet_entriesCreateNestedManyWithoutTemplateInput
+  }
+
+  export type logsheet_templatesUncheckedCreateWithoutProjectsInput = {
+    id?: number
+    name: string
+    type: $Enums.LogsheetType
+    system_name?: string | null
+    room_name?: string | null
+    parameters_json: string
+    design_json?: string | null
+    time_slots?: string | null
+    is_active?: boolean
+    created_at?: Date | string
+    entries?: logsheet_entriesUncheckedCreateNestedManyWithoutTemplateInput
+  }
+
+  export type logsheet_templatesCreateOrConnectWithoutProjectsInput = {
+    where: logsheet_templatesWhereUniqueInput
+    create: XOR<logsheet_templatesCreateWithoutProjectsInput, logsheet_templatesUncheckedCreateWithoutProjectsInput>
+  }
+
+  export type logsheet_templatesCreateManyProjectsInputEnvelope = {
+    data: logsheet_templatesCreateManyProjectsInput | logsheet_templatesCreateManyProjectsInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type project_intelligenceCreateWithoutProjectsInput = {
+    id?: bigint | number
+    strategic_status?: string
+    health_score?: string
+    bottlenecks?: string | null
+    stakeholders?: string | null
+    impact_level?: string
+    action_status?: string
+    last_update_note?: string | null
+    updated_at?: Date | string
+    updated_by?: usersCreateNestedOneWithoutIntelligence_updatesInput
+  }
+
+  export type project_intelligenceUncheckedCreateWithoutProjectsInput = {
+    id?: bigint | number
+    strategic_status?: string
+    health_score?: string
+    bottlenecks?: string | null
+    stakeholders?: string | null
+    impact_level?: string
+    action_status?: string
+    last_update_note?: string | null
+    updated_at?: Date | string
+    updated_by_id?: number | null
+  }
+
+  export type project_intelligenceCreateOrConnectWithoutProjectsInput = {
+    where: project_intelligenceWhereUniqueInput
+    create: XOR<project_intelligenceCreateWithoutProjectsInput, project_intelligenceUncheckedCreateWithoutProjectsInput>
+  }
+
+  export type project_issuesCreateWithoutProjectsInput = {
+    id?: bigint | number
+    issue_text: string
+    solution_text?: string | null
+    status?: string
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    action_status?: string | null
+    outcome?: string | null
+    roadmap_action?: string | null
+    urgency?: string | null
+  }
+
+  export type project_issuesUncheckedCreateWithoutProjectsInput = {
+    id?: bigint | number
+    issue_text: string
+    solution_text?: string | null
+    status?: string
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    action_status?: string | null
+    outcome?: string | null
+    roadmap_action?: string | null
+    urgency?: string | null
+  }
+
+  export type project_issuesCreateOrConnectWithoutProjectsInput = {
+    where: project_issuesWhereUniqueInput
+    create: XOR<project_issuesCreateWithoutProjectsInput, project_issuesUncheckedCreateWithoutProjectsInput>
+  }
+
+  export type project_issuesCreateManyProjectsInputEnvelope = {
+    data: project_issuesCreateManyProjectsInput | project_issuesCreateManyProjectsInput[]
+    skipDuplicates?: boolean
   }
 
   export type customersCreateWithoutProjectsInput = {
@@ -60370,6 +71463,7 @@ export namespace Prisma {
     service_logs?: service_logsCreateNestedManyWithoutUnitsInput
     tickets?: ticketsCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUnitsInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUnitsInput
   }
 
@@ -60407,6 +71501,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedCreateNestedManyWithoutUnitsInput
     tickets?: ticketsUncheckedCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsUncheckedCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUnitsInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUnitsInput
   }
 
@@ -60471,6 +71566,149 @@ export namespace Prisma {
   export type vendor_attendanceCreateManyProjectsInputEnvelope = {
     data: vendor_attendanceCreateManyProjectsInput | vendor_attendanceCreateManyProjectsInput[]
     skipDuplicates?: boolean
+  }
+
+  export type knowledge_resourcesCreateWithoutProjectsInput = {
+    id?: string
+    title: string
+    category: string
+    type: string
+    file_url?: string | null
+    href?: string | null
+    thumbnail?: string | null
+    size?: string | null
+    tags?: string | null
+    visibility?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type knowledge_resourcesUncheckedCreateWithoutProjectsInput = {
+    id?: string
+    title: string
+    category: string
+    type: string
+    file_url?: string | null
+    href?: string | null
+    thumbnail?: string | null
+    size?: string | null
+    tags?: string | null
+    visibility?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type knowledge_resourcesCreateOrConnectWithoutProjectsInput = {
+    where: knowledge_resourcesWhereUniqueInput
+    create: XOR<knowledge_resourcesCreateWithoutProjectsInput, knowledge_resourcesUncheckedCreateWithoutProjectsInput>
+  }
+
+  export type knowledge_resourcesCreateManyProjectsInputEnvelope = {
+    data: knowledge_resourcesCreateManyProjectsInput | knowledge_resourcesCreateManyProjectsInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type logsheet_templatesUpsertWithWhereUniqueWithoutProjectsInput = {
+    where: logsheet_templatesWhereUniqueInput
+    update: XOR<logsheet_templatesUpdateWithoutProjectsInput, logsheet_templatesUncheckedUpdateWithoutProjectsInput>
+    create: XOR<logsheet_templatesCreateWithoutProjectsInput, logsheet_templatesUncheckedCreateWithoutProjectsInput>
+  }
+
+  export type logsheet_templatesUpdateWithWhereUniqueWithoutProjectsInput = {
+    where: logsheet_templatesWhereUniqueInput
+    data: XOR<logsheet_templatesUpdateWithoutProjectsInput, logsheet_templatesUncheckedUpdateWithoutProjectsInput>
+  }
+
+  export type logsheet_templatesUpdateManyWithWhereWithoutProjectsInput = {
+    where: logsheet_templatesScalarWhereInput
+    data: XOR<logsheet_templatesUpdateManyMutationInput, logsheet_templatesUncheckedUpdateManyWithoutProjectsInput>
+  }
+
+  export type logsheet_templatesScalarWhereInput = {
+    AND?: logsheet_templatesScalarWhereInput | logsheet_templatesScalarWhereInput[]
+    OR?: logsheet_templatesScalarWhereInput[]
+    NOT?: logsheet_templatesScalarWhereInput | logsheet_templatesScalarWhereInput[]
+    id?: IntFilter<"logsheet_templates"> | number
+    project_id?: BigIntFilter<"logsheet_templates"> | bigint | number
+    name?: StringFilter<"logsheet_templates"> | string
+    type?: EnumLogsheetTypeFilter<"logsheet_templates"> | $Enums.LogsheetType
+    system_name?: StringNullableFilter<"logsheet_templates"> | string | null
+    room_name?: StringNullableFilter<"logsheet_templates"> | string | null
+    parameters_json?: StringFilter<"logsheet_templates"> | string
+    design_json?: StringNullableFilter<"logsheet_templates"> | string | null
+    time_slots?: StringNullableFilter<"logsheet_templates"> | string | null
+    is_active?: BoolFilter<"logsheet_templates"> | boolean
+    created_at?: DateTimeFilter<"logsheet_templates"> | Date | string
+  }
+
+  export type project_intelligenceUpsertWithoutProjectsInput = {
+    update: XOR<project_intelligenceUpdateWithoutProjectsInput, project_intelligenceUncheckedUpdateWithoutProjectsInput>
+    create: XOR<project_intelligenceCreateWithoutProjectsInput, project_intelligenceUncheckedCreateWithoutProjectsInput>
+    where?: project_intelligenceWhereInput
+  }
+
+  export type project_intelligenceUpdateToOneWithWhereWithoutProjectsInput = {
+    where?: project_intelligenceWhereInput
+    data: XOR<project_intelligenceUpdateWithoutProjectsInput, project_intelligenceUncheckedUpdateWithoutProjectsInput>
+  }
+
+  export type project_intelligenceUpdateWithoutProjectsInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    strategic_status?: StringFieldUpdateOperationsInput | string
+    health_score?: StringFieldUpdateOperationsInput | string
+    bottlenecks?: NullableStringFieldUpdateOperationsInput | string | null
+    stakeholders?: NullableStringFieldUpdateOperationsInput | string | null
+    impact_level?: StringFieldUpdateOperationsInput | string
+    action_status?: StringFieldUpdateOperationsInput | string
+    last_update_note?: NullableStringFieldUpdateOperationsInput | string | null
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_by?: usersUpdateOneWithoutIntelligence_updatesNestedInput
+  }
+
+  export type project_intelligenceUncheckedUpdateWithoutProjectsInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    strategic_status?: StringFieldUpdateOperationsInput | string
+    health_score?: StringFieldUpdateOperationsInput | string
+    bottlenecks?: NullableStringFieldUpdateOperationsInput | string | null
+    stakeholders?: NullableStringFieldUpdateOperationsInput | string | null
+    impact_level?: StringFieldUpdateOperationsInput | string
+    action_status?: StringFieldUpdateOperationsInput | string
+    last_update_note?: NullableStringFieldUpdateOperationsInput | string | null
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_by_id?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type project_issuesUpsertWithWhereUniqueWithoutProjectsInput = {
+    where: project_issuesWhereUniqueInput
+    update: XOR<project_issuesUpdateWithoutProjectsInput, project_issuesUncheckedUpdateWithoutProjectsInput>
+    create: XOR<project_issuesCreateWithoutProjectsInput, project_issuesUncheckedCreateWithoutProjectsInput>
+  }
+
+  export type project_issuesUpdateWithWhereUniqueWithoutProjectsInput = {
+    where: project_issuesWhereUniqueInput
+    data: XOR<project_issuesUpdateWithoutProjectsInput, project_issuesUncheckedUpdateWithoutProjectsInput>
+  }
+
+  export type project_issuesUpdateManyWithWhereWithoutProjectsInput = {
+    where: project_issuesScalarWhereInput
+    data: XOR<project_issuesUpdateManyMutationInput, project_issuesUncheckedUpdateManyWithoutProjectsInput>
+  }
+
+  export type project_issuesScalarWhereInput = {
+    AND?: project_issuesScalarWhereInput | project_issuesScalarWhereInput[]
+    OR?: project_issuesScalarWhereInput[]
+    NOT?: project_issuesScalarWhereInput | project_issuesScalarWhereInput[]
+    id?: BigIntFilter<"project_issues"> | bigint | number
+    project_id?: BigIntFilter<"project_issues"> | bigint | number
+    issue_text?: StringFilter<"project_issues"> | string
+    solution_text?: StringNullableFilter<"project_issues"> | string | null
+    status?: StringFilter<"project_issues"> | string
+    created_at?: DateTimeNullableFilter<"project_issues"> | Date | string | null
+    updated_at?: DateTimeNullableFilter<"project_issues"> | Date | string | null
+    action_status?: StringNullableFilter<"project_issues"> | string | null
+    outcome?: StringNullableFilter<"project_issues"> | string | null
+    roadmap_action?: StringNullableFilter<"project_issues"> | string | null
+    urgency?: StringNullableFilter<"project_issues"> | string | null
   }
 
   export type customersUpsertWithoutProjectsInput = {
@@ -60680,6 +71918,149 @@ export namespace Prisma {
     check_out_photo?: StringNullableFilter<"vendor_attendance"> | string | null
   }
 
+  export type knowledge_resourcesUpsertWithWhereUniqueWithoutProjectsInput = {
+    where: knowledge_resourcesWhereUniqueInput
+    update: XOR<knowledge_resourcesUpdateWithoutProjectsInput, knowledge_resourcesUncheckedUpdateWithoutProjectsInput>
+    create: XOR<knowledge_resourcesCreateWithoutProjectsInput, knowledge_resourcesUncheckedCreateWithoutProjectsInput>
+  }
+
+  export type knowledge_resourcesUpdateWithWhereUniqueWithoutProjectsInput = {
+    where: knowledge_resourcesWhereUniqueInput
+    data: XOR<knowledge_resourcesUpdateWithoutProjectsInput, knowledge_resourcesUncheckedUpdateWithoutProjectsInput>
+  }
+
+  export type knowledge_resourcesUpdateManyWithWhereWithoutProjectsInput = {
+    where: knowledge_resourcesScalarWhereInput
+    data: XOR<knowledge_resourcesUpdateManyMutationInput, knowledge_resourcesUncheckedUpdateManyWithoutProjectsInput>
+  }
+
+  export type knowledge_resourcesScalarWhereInput = {
+    AND?: knowledge_resourcesScalarWhereInput | knowledge_resourcesScalarWhereInput[]
+    OR?: knowledge_resourcesScalarWhereInput[]
+    NOT?: knowledge_resourcesScalarWhereInput | knowledge_resourcesScalarWhereInput[]
+    id?: StringFilter<"knowledge_resources"> | string
+    title?: StringFilter<"knowledge_resources"> | string
+    category?: StringFilter<"knowledge_resources"> | string
+    type?: StringFilter<"knowledge_resources"> | string
+    file_url?: StringNullableFilter<"knowledge_resources"> | string | null
+    href?: StringNullableFilter<"knowledge_resources"> | string | null
+    thumbnail?: StringNullableFilter<"knowledge_resources"> | string | null
+    size?: StringNullableFilter<"knowledge_resources"> | string | null
+    tags?: StringNullableFilter<"knowledge_resources"> | string | null
+    visibility?: StringFilter<"knowledge_resources"> | string
+    project_id?: BigIntNullableFilter<"knowledge_resources"> | bigint | number | null
+    created_at?: DateTimeFilter<"knowledge_resources"> | Date | string
+    updated_at?: DateTimeFilter<"knowledge_resources"> | Date | string
+  }
+
+  export type projectsCreateWithoutKnowledge_resourcesInput = {
+    id?: bigint | number
+    name: string
+    code?: string | null
+    status?: $Enums.projects_status
+    created_at?: Date | string
+    enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
+    customers: customersCreateNestedOneWithoutProjectsInput
+    schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
+    schedules?: schedulesCreateNestedManyWithoutProjectsInput
+    units?: unitsCreateNestedManyWithoutProjectsInput
+    user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
+  }
+
+  export type projectsUncheckedCreateWithoutKnowledge_resourcesInput = {
+    id?: bigint | number
+    customer_id: number
+    name: string
+    code?: string | null
+    status?: $Enums.projects_status
+    created_at?: Date | string
+    enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
+    schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
+    schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
+    units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
+    user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
+  }
+
+  export type projectsCreateOrConnectWithoutKnowledge_resourcesInput = {
+    where: projectsWhereUniqueInput
+    create: XOR<projectsCreateWithoutKnowledge_resourcesInput, projectsUncheckedCreateWithoutKnowledge_resourcesInput>
+  }
+
+  export type projectsUpsertWithoutKnowledge_resourcesInput = {
+    update: XOR<projectsUpdateWithoutKnowledge_resourcesInput, projectsUncheckedUpdateWithoutKnowledge_resourcesInput>
+    create: XOR<projectsCreateWithoutKnowledge_resourcesInput, projectsUncheckedCreateWithoutKnowledge_resourcesInput>
+    where?: projectsWhereInput
+  }
+
+  export type projectsUpdateToOneWithWhereWithoutKnowledge_resourcesInput = {
+    where?: projectsWhereInput
+    data: XOR<projectsUpdateWithoutKnowledge_resourcesInput, projectsUncheckedUpdateWithoutKnowledge_resourcesInput>
+  }
+
+  export type projectsUpdateWithoutKnowledge_resourcesInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
+    customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
+    schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
+    schedules?: schedulesUpdateManyWithoutProjectsNestedInput
+    units?: unitsUpdateManyWithoutProjectsNestedInput
+    user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
+  }
+
+  export type projectsUncheckedUpdateWithoutKnowledge_resourcesInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    customer_id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
+    schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
+    schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
+    units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
+    user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
+  }
+
   export type usersCreateWithoutRefresh_tokensInput = {
     name: string
     email: string
@@ -60687,15 +72068,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
     schedules?: schedulesCreateNestedManyWithoutUsersInput
@@ -60704,7 +72089,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
@@ -60718,15 +72105,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
     schedules?: schedulesUncheckedCreateNestedManyWithoutUsersInput
@@ -60735,7 +72126,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
@@ -60762,15 +72155,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
     schedules?: schedulesUpdateManyWithoutUsersNestedInput
@@ -60779,7 +72176,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
@@ -60793,15 +72192,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
     schedules?: schedulesUncheckedUpdateManyWithoutUsersNestedInput
@@ -60810,7 +72213,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
@@ -60935,15 +72340,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
@@ -60953,7 +72362,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
 
@@ -60965,15 +72376,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
@@ -60983,7 +72398,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
@@ -61065,15 +72482,17 @@ export namespace Prisma {
     phone?: StringNullableFilter<"users"> | string | null
     is_active?: BoolFilter<"users"> | boolean
     company_name?: StringNullableFilter<"users"> | string | null
-    two_factor_enabled?: BoolFilter<"users"> | boolean
-    two_factor_secret?: StringNullableFilter<"users"> | string | null
-    otp_code?: StringNullableFilter<"users"> | string | null
-    otp_expiry?: DateTimeNullableFilter<"users"> | Date | string | null
     failed_login_attempts?: IntFilter<"users"> | number
     locked_until?: DateTimeNullableFilter<"users"> | Date | string | null
+    otp_code?: StringNullableFilter<"users"> | string | null
+    otp_expiry?: DateTimeNullableFilter<"users"> | Date | string | null
+    two_factor_enabled?: BoolFilter<"users"> | boolean
+    two_factor_secret?: StringNullableFilter<"users"> | string | null
     attendance_enabled?: BoolFilter<"users"> | boolean
     face_reference_url?: StringNullableFilter<"users"> | string | null
     face_verification_enabled?: BoolFilter<"users"> | boolean
+    avatar_url?: StringNullableFilter<"users"> | string | null
+    bio?: StringNullableFilter<"users"> | string | null
   }
 
   export type activitiesCreateWithoutUnitsInput = {
@@ -61588,6 +73007,39 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type unit_edit_requestsCreateWithoutUnitsInput = {
+    reporter_name?: string | null
+    details_json: string
+    status?: string
+    requested_at?: Date | string
+    processed_at?: Date | string | null
+    admin_note?: string | null
+    users?: usersCreateNestedOneWithoutUnit_edit_requestsInput
+    processor?: usersCreateNestedOneWithoutProcessed_requestsInput
+  }
+
+  export type unit_edit_requestsUncheckedCreateWithoutUnitsInput = {
+    id?: number
+    requested_by?: number | null
+    reporter_name?: string | null
+    details_json: string
+    status?: string
+    requested_at?: Date | string
+    processed_by?: number | null
+    processed_at?: Date | string | null
+    admin_note?: string | null
+  }
+
+  export type unit_edit_requestsCreateOrConnectWithoutUnitsInput = {
+    where: unit_edit_requestsWhereUniqueInput
+    create: XOR<unit_edit_requestsCreateWithoutUnitsInput, unit_edit_requestsUncheckedCreateWithoutUnitsInput>
+  }
+
+  export type unit_edit_requestsCreateManyUnitsInputEnvelope = {
+    data: unit_edit_requestsCreateManyUnitsInput | unit_edit_requestsCreateManyUnitsInput[]
+    skipDuplicates?: boolean
+  }
+
   export type projectsCreateWithoutUnitsInput = {
     id?: bigint | number
     name: string
@@ -61598,11 +73050,17 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
     customers: customersCreateNestedOneWithoutProjectsInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
     schedules?: schedulesCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutUnitsInput = {
@@ -61616,10 +73074,16 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
     schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutUnitsInput = {
@@ -62034,6 +73498,38 @@ export namespace Prisma {
     created_at?: DateTimeNullableFilter<"unit_comments"> | Date | string | null
   }
 
+  export type unit_edit_requestsUpsertWithWhereUniqueWithoutUnitsInput = {
+    where: unit_edit_requestsWhereUniqueInput
+    update: XOR<unit_edit_requestsUpdateWithoutUnitsInput, unit_edit_requestsUncheckedUpdateWithoutUnitsInput>
+    create: XOR<unit_edit_requestsCreateWithoutUnitsInput, unit_edit_requestsUncheckedCreateWithoutUnitsInput>
+  }
+
+  export type unit_edit_requestsUpdateWithWhereUniqueWithoutUnitsInput = {
+    where: unit_edit_requestsWhereUniqueInput
+    data: XOR<unit_edit_requestsUpdateWithoutUnitsInput, unit_edit_requestsUncheckedUpdateWithoutUnitsInput>
+  }
+
+  export type unit_edit_requestsUpdateManyWithWhereWithoutUnitsInput = {
+    where: unit_edit_requestsScalarWhereInput
+    data: XOR<unit_edit_requestsUpdateManyMutationInput, unit_edit_requestsUncheckedUpdateManyWithoutUnitsInput>
+  }
+
+  export type unit_edit_requestsScalarWhereInput = {
+    AND?: unit_edit_requestsScalarWhereInput | unit_edit_requestsScalarWhereInput[]
+    OR?: unit_edit_requestsScalarWhereInput[]
+    NOT?: unit_edit_requestsScalarWhereInput | unit_edit_requestsScalarWhereInput[]
+    id?: IntFilter<"unit_edit_requests"> | number
+    unit_id?: IntFilter<"unit_edit_requests"> | number
+    requested_by?: IntNullableFilter<"unit_edit_requests"> | number | null
+    reporter_name?: StringNullableFilter<"unit_edit_requests"> | string | null
+    details_json?: StringFilter<"unit_edit_requests"> | string
+    status?: StringFilter<"unit_edit_requests"> | string
+    requested_at?: DateTimeFilter<"unit_edit_requests"> | Date | string
+    processed_by?: IntNullableFilter<"unit_edit_requests"> | number | null
+    processed_at?: DateTimeNullableFilter<"unit_edit_requests"> | Date | string | null
+    admin_note?: StringNullableFilter<"unit_edit_requests"> | string | null
+  }
+
   export type projectsUpsertWithoutUnitsInput = {
     update: XOR<projectsUpdateWithoutUnitsInput, projectsUncheckedUpdateWithoutUnitsInput>
     create: XOR<projectsCreateWithoutUnitsInput, projectsUncheckedCreateWithoutUnitsInput>
@@ -62055,11 +73551,17 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
     customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutUnitsInput = {
@@ -62073,10 +73575,16 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type user_unit_accessUpsertWithWhereUniqueWithoutUnitsInput = {
@@ -62113,11 +73621,17 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
     customers: customersCreateNestedOneWithoutProjectsInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
     schedules?: schedulesCreateNestedManyWithoutProjectsInput
     units?: unitsCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutUser_project_accessInput = {
@@ -62131,10 +73645,16 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
     schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutUser_project_accessInput = {
@@ -62149,15 +73669,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
@@ -62166,7 +73690,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
@@ -62180,15 +73706,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
@@ -62197,7 +73727,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
@@ -62227,11 +73759,17 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
     customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUpdateManyWithoutProjectsNestedInput
     units?: unitsUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutUser_project_accessInput = {
@@ -62245,10 +73783,16 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type usersUpsertWithoutUser_project_accessInput = {
@@ -62269,15 +73813,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
@@ -62286,7 +73834,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
@@ -62300,15 +73850,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
@@ -62317,7 +73871,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
@@ -62346,15 +73902,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
@@ -62363,7 +73923,9 @@ export namespace Prisma {
     user_project_access?: user_project_accessCreateNestedManyWithoutUsersInput
     user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
@@ -62377,15 +73939,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
@@ -62394,7 +73960,9 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutUsersInput
     user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
@@ -62445,15 +74013,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
@@ -62462,7 +74034,9 @@ export namespace Prisma {
     user_project_access?: user_project_accessUpdateManyWithoutUsersNestedInput
     user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
@@ -62476,15 +74050,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
@@ -62493,7 +74071,9 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutUsersNestedInput
     user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
@@ -62530,6 +74110,7 @@ export namespace Prisma {
     service_logs?: service_logsCreateNestedManyWithoutUnitsInput
     tickets?: ticketsCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUnitsInput
     projects?: projectsCreateNestedOneWithoutUnitsInput
   }
 
@@ -62568,6 +74149,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedCreateNestedManyWithoutUnitsInput
     tickets?: ticketsUncheckedCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsUncheckedCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUnitsInput
   }
 
   export type unitsCreateOrConnectWithoutUser_unit_accessInput = {
@@ -62582,15 +74164,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
@@ -62599,7 +74185,9 @@ export namespace Prisma {
     user_project_access?: user_project_accessCreateNestedManyWithoutUsersInput
     user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
@@ -62613,15 +74201,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
@@ -62630,7 +74222,9 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutUsersInput
     user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
@@ -62683,6 +74277,7 @@ export namespace Prisma {
     service_logs?: service_logsUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUnitsNestedInput
     projects?: projectsUpdateOneWithoutUnitsNestedInput
   }
 
@@ -62721,6 +74316,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUncheckedUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUncheckedUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUnitsNestedInput
   }
 
   export type usersUpsertWithoutUser_unit_accessInput = {
@@ -62741,15 +74337,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
@@ -62758,7 +74358,9 @@ export namespace Prisma {
     user_project_access?: user_project_accessUpdateManyWithoutUsersNestedInput
     user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
@@ -62772,15 +74374,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
@@ -62789,8 +74395,78 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutUsersNestedInput
     user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type audit_logsCreateWithoutUsersInput = {
+    id?: bigint | number
+    action: string
+    target_type?: string | null
+    target_id?: string | null
+    details?: string | null
+    ip_address?: string | null
+    user_agent?: string | null
+    created_at?: Date | string | null
+  }
+
+  export type audit_logsUncheckedCreateWithoutUsersInput = {
+    id?: bigint | number
+    action: string
+    target_type?: string | null
+    target_id?: string | null
+    details?: string | null
+    ip_address?: string | null
+    user_agent?: string | null
+    created_at?: Date | string | null
+  }
+
+  export type audit_logsCreateOrConnectWithoutUsersInput = {
+    where: audit_logsWhereUniqueInput
+    create: XOR<audit_logsCreateWithoutUsersInput, audit_logsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type audit_logsCreateManyUsersInputEnvelope = {
+    data: audit_logsCreateManyUsersInput | audit_logsCreateManyUsersInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type project_intelligenceCreateWithoutUpdated_byInput = {
+    id?: bigint | number
+    strategic_status?: string
+    health_score?: string
+    bottlenecks?: string | null
+    stakeholders?: string | null
+    impact_level?: string
+    action_status?: string
+    last_update_note?: string | null
+    updated_at?: Date | string
+    projects: projectsCreateNestedOneWithoutProject_intelligenceInput
+  }
+
+  export type project_intelligenceUncheckedCreateWithoutUpdated_byInput = {
+    id?: bigint | number
+    project_id: bigint | number
+    strategic_status?: string
+    health_score?: string
+    bottlenecks?: string | null
+    stakeholders?: string | null
+    impact_level?: string
+    action_status?: string
+    last_update_note?: string | null
+    updated_at?: Date | string
+  }
+
+  export type project_intelligenceCreateOrConnectWithoutUpdated_byInput = {
+    where: project_intelligenceWhereUniqueInput
+    create: XOR<project_intelligenceCreateWithoutUpdated_byInput, project_intelligenceUncheckedCreateWithoutUpdated_byInput>
+  }
+
+  export type project_intelligenceCreateManyUpdated_byInputEnvelope = {
+    data: project_intelligenceCreateManyUpdated_byInput | project_intelligenceCreateManyUpdated_byInput[]
+    skipDuplicates?: boolean
   }
 
   export type refresh_tokensCreateWithoutUsersInput = {
@@ -63112,35 +74788,98 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type audit_logsCreateWithoutUsersInput = {
-    id?: bigint | number
-    action: string
-    target_type?: string | null
-    target_id?: string | null
-    details?: string | null
-    ip_address?: string | null
-    user_agent?: string | null
-    created_at?: Date | string | null
+  export type unit_edit_requestsCreateWithoutUsersInput = {
+    reporter_name?: string | null
+    details_json: string
+    status?: string
+    requested_at?: Date | string
+    processed_at?: Date | string | null
+    admin_note?: string | null
+    units: unitsCreateNestedOneWithoutUnit_edit_requestsInput
+    processor?: usersCreateNestedOneWithoutProcessed_requestsInput
   }
 
-  export type audit_logsUncheckedCreateWithoutUsersInput = {
-    id?: bigint | number
-    action: string
-    target_type?: string | null
-    target_id?: string | null
-    details?: string | null
-    ip_address?: string | null
-    user_agent?: string | null
-    created_at?: Date | string | null
+  export type unit_edit_requestsUncheckedCreateWithoutUsersInput = {
+    id?: number
+    unit_id: number
+    reporter_name?: string | null
+    details_json: string
+    status?: string
+    requested_at?: Date | string
+    processed_by?: number | null
+    processed_at?: Date | string | null
+    admin_note?: string | null
   }
 
-  export type audit_logsCreateOrConnectWithoutUsersInput = {
-    where: audit_logsWhereUniqueInput
-    create: XOR<audit_logsCreateWithoutUsersInput, audit_logsUncheckedCreateWithoutUsersInput>
+  export type unit_edit_requestsCreateOrConnectWithoutUsersInput = {
+    where: unit_edit_requestsWhereUniqueInput
+    create: XOR<unit_edit_requestsCreateWithoutUsersInput, unit_edit_requestsUncheckedCreateWithoutUsersInput>
   }
 
-  export type audit_logsCreateManyUsersInputEnvelope = {
-    data: audit_logsCreateManyUsersInput | audit_logsCreateManyUsersInput[]
+  export type unit_edit_requestsCreateManyUsersInputEnvelope = {
+    data: unit_edit_requestsCreateManyUsersInput | unit_edit_requestsCreateManyUsersInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type unit_edit_requestsCreateWithoutProcessorInput = {
+    reporter_name?: string | null
+    details_json: string
+    status?: string
+    requested_at?: Date | string
+    processed_at?: Date | string | null
+    admin_note?: string | null
+    units: unitsCreateNestedOneWithoutUnit_edit_requestsInput
+    users?: usersCreateNestedOneWithoutUnit_edit_requestsInput
+  }
+
+  export type unit_edit_requestsUncheckedCreateWithoutProcessorInput = {
+    id?: number
+    unit_id: number
+    requested_by?: number | null
+    reporter_name?: string | null
+    details_json: string
+    status?: string
+    requested_at?: Date | string
+    processed_at?: Date | string | null
+    admin_note?: string | null
+  }
+
+  export type unit_edit_requestsCreateOrConnectWithoutProcessorInput = {
+    where: unit_edit_requestsWhereUniqueInput
+    create: XOR<unit_edit_requestsCreateWithoutProcessorInput, unit_edit_requestsUncheckedCreateWithoutProcessorInput>
+  }
+
+  export type unit_edit_requestsCreateManyProcessorInputEnvelope = {
+    data: unit_edit_requestsCreateManyProcessorInput | unit_edit_requestsCreateManyProcessorInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type notificationsCreateWithoutUsersInput = {
+    title: string
+    message: string
+    type?: string
+    link?: string | null
+    is_read?: boolean
+    created_at?: Date | string
+  }
+
+  export type notificationsUncheckedCreateWithoutUsersInput = {
+    id?: number
+    title: string
+    message: string
+    type?: string
+    link?: string | null
+    is_read?: boolean
+    created_at?: Date | string
+  }
+
+  export type notificationsCreateOrConnectWithoutUsersInput = {
+    where: notificationsWhereUniqueInput
+    create: XOR<notificationsCreateWithoutUsersInput, notificationsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type notificationsCreateManyUsersInputEnvelope = {
+    data: notificationsCreateManyUsersInput | notificationsCreateManyUsersInput[]
     skipDuplicates?: boolean
   }
 
@@ -63195,6 +74934,70 @@ export namespace Prisma {
   export type vendor_attendanceCreateManyUsersInputEnvelope = {
     data: vendor_attendanceCreateManyUsersInput | vendor_attendanceCreateManyUsersInput[]
     skipDuplicates?: boolean
+  }
+
+  export type audit_logsUpsertWithWhereUniqueWithoutUsersInput = {
+    where: audit_logsWhereUniqueInput
+    update: XOR<audit_logsUpdateWithoutUsersInput, audit_logsUncheckedUpdateWithoutUsersInput>
+    create: XOR<audit_logsCreateWithoutUsersInput, audit_logsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type audit_logsUpdateWithWhereUniqueWithoutUsersInput = {
+    where: audit_logsWhereUniqueInput
+    data: XOR<audit_logsUpdateWithoutUsersInput, audit_logsUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type audit_logsUpdateManyWithWhereWithoutUsersInput = {
+    where: audit_logsScalarWhereInput
+    data: XOR<audit_logsUpdateManyMutationInput, audit_logsUncheckedUpdateManyWithoutUsersInput>
+  }
+
+  export type audit_logsScalarWhereInput = {
+    AND?: audit_logsScalarWhereInput | audit_logsScalarWhereInput[]
+    OR?: audit_logsScalarWhereInput[]
+    NOT?: audit_logsScalarWhereInput | audit_logsScalarWhereInput[]
+    id?: BigIntFilter<"audit_logs"> | bigint | number
+    user_id?: IntNullableFilter<"audit_logs"> | number | null
+    action?: StringFilter<"audit_logs"> | string
+    target_type?: StringNullableFilter<"audit_logs"> | string | null
+    target_id?: StringNullableFilter<"audit_logs"> | string | null
+    details?: StringNullableFilter<"audit_logs"> | string | null
+    ip_address?: StringNullableFilter<"audit_logs"> | string | null
+    user_agent?: StringNullableFilter<"audit_logs"> | string | null
+    created_at?: DateTimeNullableFilter<"audit_logs"> | Date | string | null
+  }
+
+  export type project_intelligenceUpsertWithWhereUniqueWithoutUpdated_byInput = {
+    where: project_intelligenceWhereUniqueInput
+    update: XOR<project_intelligenceUpdateWithoutUpdated_byInput, project_intelligenceUncheckedUpdateWithoutUpdated_byInput>
+    create: XOR<project_intelligenceCreateWithoutUpdated_byInput, project_intelligenceUncheckedCreateWithoutUpdated_byInput>
+  }
+
+  export type project_intelligenceUpdateWithWhereUniqueWithoutUpdated_byInput = {
+    where: project_intelligenceWhereUniqueInput
+    data: XOR<project_intelligenceUpdateWithoutUpdated_byInput, project_intelligenceUncheckedUpdateWithoutUpdated_byInput>
+  }
+
+  export type project_intelligenceUpdateManyWithWhereWithoutUpdated_byInput = {
+    where: project_intelligenceScalarWhereInput
+    data: XOR<project_intelligenceUpdateManyMutationInput, project_intelligenceUncheckedUpdateManyWithoutUpdated_byInput>
+  }
+
+  export type project_intelligenceScalarWhereInput = {
+    AND?: project_intelligenceScalarWhereInput | project_intelligenceScalarWhereInput[]
+    OR?: project_intelligenceScalarWhereInput[]
+    NOT?: project_intelligenceScalarWhereInput | project_intelligenceScalarWhereInput[]
+    id?: BigIntFilter<"project_intelligence"> | bigint | number
+    project_id?: BigIntFilter<"project_intelligence"> | bigint | number
+    strategic_status?: StringFilter<"project_intelligence"> | string
+    health_score?: StringFilter<"project_intelligence"> | string
+    bottlenecks?: StringNullableFilter<"project_intelligence"> | string | null
+    stakeholders?: StringNullableFilter<"project_intelligence"> | string | null
+    impact_level?: StringFilter<"project_intelligence"> | string
+    action_status?: StringFilter<"project_intelligence"> | string
+    last_update_note?: StringNullableFilter<"project_intelligence"> | string | null
+    updated_at?: DateTimeFilter<"project_intelligence"> | Date | string
+    updated_by_id?: IntNullableFilter<"project_intelligence"> | number | null
   }
 
   export type refresh_tokensUpsertWithWhereUniqueWithoutUsersInput = {
@@ -63378,35 +75181,66 @@ export namespace Prisma {
     data: XOR<user_unit_accessUpdateManyMutationInput, user_unit_accessUncheckedUpdateManyWithoutUsersInput>
   }
 
-  export type audit_logsUpsertWithWhereUniqueWithoutUsersInput = {
-    where: audit_logsWhereUniqueInput
-    update: XOR<audit_logsUpdateWithoutUsersInput, audit_logsUncheckedUpdateWithoutUsersInput>
-    create: XOR<audit_logsCreateWithoutUsersInput, audit_logsUncheckedCreateWithoutUsersInput>
+  export type unit_edit_requestsUpsertWithWhereUniqueWithoutUsersInput = {
+    where: unit_edit_requestsWhereUniqueInput
+    update: XOR<unit_edit_requestsUpdateWithoutUsersInput, unit_edit_requestsUncheckedUpdateWithoutUsersInput>
+    create: XOR<unit_edit_requestsCreateWithoutUsersInput, unit_edit_requestsUncheckedCreateWithoutUsersInput>
   }
 
-  export type audit_logsUpdateWithWhereUniqueWithoutUsersInput = {
-    where: audit_logsWhereUniqueInput
-    data: XOR<audit_logsUpdateWithoutUsersInput, audit_logsUncheckedUpdateWithoutUsersInput>
+  export type unit_edit_requestsUpdateWithWhereUniqueWithoutUsersInput = {
+    where: unit_edit_requestsWhereUniqueInput
+    data: XOR<unit_edit_requestsUpdateWithoutUsersInput, unit_edit_requestsUncheckedUpdateWithoutUsersInput>
   }
 
-  export type audit_logsUpdateManyWithWhereWithoutUsersInput = {
-    where: audit_logsScalarWhereInput
-    data: XOR<audit_logsUpdateManyMutationInput, audit_logsUncheckedUpdateManyWithoutUsersInput>
+  export type unit_edit_requestsUpdateManyWithWhereWithoutUsersInput = {
+    where: unit_edit_requestsScalarWhereInput
+    data: XOR<unit_edit_requestsUpdateManyMutationInput, unit_edit_requestsUncheckedUpdateManyWithoutUsersInput>
   }
 
-  export type audit_logsScalarWhereInput = {
-    AND?: audit_logsScalarWhereInput | audit_logsScalarWhereInput[]
-    OR?: audit_logsScalarWhereInput[]
-    NOT?: audit_logsScalarWhereInput | audit_logsScalarWhereInput[]
-    id?: BigIntFilter<"audit_logs"> | bigint | number
-    user_id?: IntNullableFilter<"audit_logs"> | number | null
-    action?: StringFilter<"audit_logs"> | string
-    target_type?: StringNullableFilter<"audit_logs"> | string | null
-    target_id?: StringNullableFilter<"audit_logs"> | string | null
-    details?: StringNullableFilter<"audit_logs"> | string | null
-    ip_address?: StringNullableFilter<"audit_logs"> | string | null
-    user_agent?: StringNullableFilter<"audit_logs"> | string | null
-    created_at?: DateTimeNullableFilter<"audit_logs"> | Date | string | null
+  export type unit_edit_requestsUpsertWithWhereUniqueWithoutProcessorInput = {
+    where: unit_edit_requestsWhereUniqueInput
+    update: XOR<unit_edit_requestsUpdateWithoutProcessorInput, unit_edit_requestsUncheckedUpdateWithoutProcessorInput>
+    create: XOR<unit_edit_requestsCreateWithoutProcessorInput, unit_edit_requestsUncheckedCreateWithoutProcessorInput>
+  }
+
+  export type unit_edit_requestsUpdateWithWhereUniqueWithoutProcessorInput = {
+    where: unit_edit_requestsWhereUniqueInput
+    data: XOR<unit_edit_requestsUpdateWithoutProcessorInput, unit_edit_requestsUncheckedUpdateWithoutProcessorInput>
+  }
+
+  export type unit_edit_requestsUpdateManyWithWhereWithoutProcessorInput = {
+    where: unit_edit_requestsScalarWhereInput
+    data: XOR<unit_edit_requestsUpdateManyMutationInput, unit_edit_requestsUncheckedUpdateManyWithoutProcessorInput>
+  }
+
+  export type notificationsUpsertWithWhereUniqueWithoutUsersInput = {
+    where: notificationsWhereUniqueInput
+    update: XOR<notificationsUpdateWithoutUsersInput, notificationsUncheckedUpdateWithoutUsersInput>
+    create: XOR<notificationsCreateWithoutUsersInput, notificationsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type notificationsUpdateWithWhereUniqueWithoutUsersInput = {
+    where: notificationsWhereUniqueInput
+    data: XOR<notificationsUpdateWithoutUsersInput, notificationsUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type notificationsUpdateManyWithWhereWithoutUsersInput = {
+    where: notificationsScalarWhereInput
+    data: XOR<notificationsUpdateManyMutationInput, notificationsUncheckedUpdateManyWithoutUsersInput>
+  }
+
+  export type notificationsScalarWhereInput = {
+    AND?: notificationsScalarWhereInput | notificationsScalarWhereInput[]
+    OR?: notificationsScalarWhereInput[]
+    NOT?: notificationsScalarWhereInput | notificationsScalarWhereInput[]
+    id?: IntFilter<"notifications"> | number
+    user_id?: IntFilter<"notifications"> | number
+    title?: StringFilter<"notifications"> | string
+    message?: StringFilter<"notifications"> | string
+    type?: StringFilter<"notifications"> | string
+    link?: StringNullableFilter<"notifications"> | string | null
+    is_read?: BoolFilter<"notifications"> | boolean
+    created_at?: DateTimeFilter<"notifications"> | Date | string
   }
 
   export type rolesUpsertWithoutUsersInput = {
@@ -63456,15 +75290,18 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
@@ -63474,6 +75311,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
@@ -63487,15 +75327,18 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
@@ -63505,6 +75348,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
@@ -63531,15 +75377,18 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
@@ -63549,6 +75398,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
@@ -63562,15 +75414,18 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
@@ -63580,6 +75435,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
@@ -63615,6 +75473,7 @@ export namespace Prisma {
     service_logs?: service_logsCreateNestedManyWithoutUnitsInput
     tickets?: ticketsCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUnitsInput
     projects?: projectsCreateNestedOneWithoutUnitsInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUnitsInput
   }
@@ -63653,6 +75512,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedCreateNestedManyWithoutUnitsInput
     tickets?: ticketsUncheckedCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsUncheckedCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUnitsInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUnitsInput
   }
 
@@ -63704,6 +75564,7 @@ export namespace Prisma {
     service_logs?: service_logsUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUnitsNestedInput
     projects?: projectsUpdateOneWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUnitsNestedInput
   }
@@ -63742,6 +75603,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUncheckedUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUncheckedUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUnitsNestedInput
   }
 
@@ -63995,6 +75857,7 @@ export namespace Prisma {
     service_logs?: service_logsCreateNestedManyWithoutUnitsInput
     tickets?: ticketsCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUnitsInput
     projects?: projectsCreateNestedOneWithoutUnitsInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUnitsInput
   }
@@ -64033,6 +75896,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedCreateNestedManyWithoutUnitsInput
     tickets?: ticketsUncheckedCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsUncheckedCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUnitsInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUnitsInput
   }
 
@@ -64084,6 +75948,7 @@ export namespace Prisma {
     service_logs?: service_logsUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUnitsNestedInput
     projects?: projectsUpdateOneWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUnitsNestedInput
   }
@@ -64122,6 +75987,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUncheckedUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUncheckedUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUnitsNestedInput
   }
 
@@ -64375,6 +76241,7 @@ export namespace Prisma {
     service_logs?: service_logsCreateNestedManyWithoutUnitsInput
     tickets?: ticketsCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUnitsInput
     projects?: projectsCreateNestedOneWithoutUnitsInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUnitsInput
   }
@@ -64413,6 +76280,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedCreateNestedManyWithoutUnitsInput
     tickets?: ticketsUncheckedCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsUncheckedCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUnitsInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUnitsInput
   }
 
@@ -64464,6 +76332,7 @@ export namespace Prisma {
     service_logs?: service_logsUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUnitsNestedInput
     projects?: projectsUpdateOneWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUnitsNestedInput
   }
@@ -64502,6 +76371,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUncheckedUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUncheckedUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUnitsNestedInput
   }
 
@@ -64611,6 +76481,7 @@ export namespace Prisma {
     service_logs?: service_logsCreateNestedManyWithoutUnitsInput
     tickets?: ticketsCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUnitsInput
     projects?: projectsCreateNestedOneWithoutUnitsInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUnitsInput
   }
@@ -64649,6 +76520,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedCreateNestedManyWithoutUnitsInput
     tickets?: ticketsUncheckedCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsUncheckedCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUnitsInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUnitsInput
   }
 
@@ -64700,6 +76572,7 @@ export namespace Prisma {
     service_logs?: service_logsUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUnitsNestedInput
     projects?: projectsUpdateOneWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUnitsNestedInput
   }
@@ -64738,6 +76611,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUncheckedUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUncheckedUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUnitsNestedInput
   }
 
@@ -64823,6 +76697,7 @@ export namespace Prisma {
     service_logs?: service_logsCreateNestedManyWithoutUnitsInput
     tickets?: ticketsCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUnitsInput
     projects?: projectsCreateNestedOneWithoutUnitsInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUnitsInput
   }
@@ -64861,6 +76736,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedCreateNestedManyWithoutUnitsInput
     tickets?: ticketsUncheckedCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsUncheckedCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUnitsInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUnitsInput
   }
 
@@ -64876,15 +76752,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
@@ -64893,7 +76773,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
@@ -64907,15 +76789,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
@@ -64924,7 +76810,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
@@ -65032,6 +76920,7 @@ export namespace Prisma {
     service_logs?: service_logsUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUnitsNestedInput
     projects?: projectsUpdateOneWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUnitsNestedInput
   }
@@ -65070,6 +76959,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUncheckedUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUncheckedUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUnitsNestedInput
   }
 
@@ -65091,15 +76981,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
@@ -65108,7 +77002,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
@@ -65122,15 +77018,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
@@ -65139,7 +77039,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
@@ -65175,6 +77077,7 @@ export namespace Prisma {
     service_activities?: service_activitiesCreateNestedManyWithoutUnitsInput
     tickets?: ticketsCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUnitsInput
     projects?: projectsCreateNestedOneWithoutUnitsInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUnitsInput
   }
@@ -65213,6 +77116,7 @@ export namespace Prisma {
     service_activities?: service_activitiesUncheckedCreateNestedManyWithoutUnitsInput
     tickets?: ticketsUncheckedCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsUncheckedCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUnitsInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUnitsInput
   }
 
@@ -65264,6 +77168,7 @@ export namespace Prisma {
     service_activities?: service_activitiesUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUnitsNestedInput
     projects?: projectsUpdateOneWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUnitsNestedInput
   }
@@ -65302,6 +77207,7 @@ export namespace Prisma {
     service_activities?: service_activitiesUncheckedUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUncheckedUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUncheckedUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUnitsNestedInput
   }
 
@@ -65411,6 +77317,7 @@ export namespace Prisma {
     service_activities?: service_activitiesCreateNestedManyWithoutUnitsInput
     service_logs?: service_logsCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUnitsInput
     projects?: projectsCreateNestedOneWithoutUnitsInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUnitsInput
   }
@@ -65449,6 +77356,7 @@ export namespace Prisma {
     service_activities?: service_activitiesUncheckedCreateNestedManyWithoutUnitsInput
     service_logs?: service_logsUncheckedCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsUncheckedCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUnitsInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUnitsInput
   }
 
@@ -65534,6 +77442,7 @@ export namespace Prisma {
     service_activities?: service_activitiesUpdateManyWithoutUnitsNestedInput
     service_logs?: service_logsUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUnitsNestedInput
     projects?: projectsUpdateOneWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUnitsNestedInput
   }
@@ -65572,6 +77481,7 @@ export namespace Prisma {
     service_activities?: service_activitiesUncheckedUpdateManyWithoutUnitsNestedInput
     service_logs?: service_logsUncheckedUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUncheckedUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUnitsNestedInput
   }
 
@@ -65647,6 +77557,7 @@ export namespace Prisma {
     service_activities?: service_activitiesCreateNestedManyWithoutUnitsInput
     service_logs?: service_logsCreateNestedManyWithoutUnitsInput
     tickets?: ticketsCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUnitsInput
     projects?: projectsCreateNestedOneWithoutUnitsInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUnitsInput
   }
@@ -65685,6 +77596,7 @@ export namespace Prisma {
     service_activities?: service_activitiesUncheckedCreateNestedManyWithoutUnitsInput
     service_logs?: service_logsUncheckedCreateNestedManyWithoutUnitsInput
     tickets?: ticketsUncheckedCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUnitsInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUnitsInput
   }
 
@@ -65736,6 +77648,7 @@ export namespace Prisma {
     service_activities?: service_activitiesUpdateManyWithoutUnitsNestedInput
     service_logs?: service_logsUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUnitsNestedInput
     projects?: projectsUpdateOneWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUnitsNestedInput
   }
@@ -65774,6 +77687,7 @@ export namespace Prisma {
     service_activities?: service_activitiesUncheckedUpdateManyWithoutUnitsNestedInput
     service_logs?: service_logsUncheckedUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUncheckedUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUnitsNestedInput
   }
 
@@ -65864,15 +77778,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
@@ -65881,7 +77799,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
@@ -65895,15 +77815,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
@@ -65912,7 +77836,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
@@ -65931,11 +77857,17 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
     customers: customersCreateNestedOneWithoutProjectsInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
     units?: unitsCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutSchedulesInput = {
@@ -65949,10 +77881,16 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutSchedulesInput = {
@@ -65992,6 +77930,7 @@ export namespace Prisma {
     service_logs?: service_logsCreateNestedManyWithoutUnitsInput
     tickets?: ticketsCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUnitsInput
     projects?: projectsCreateNestedOneWithoutUnitsInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUnitsInput
   }
@@ -66030,6 +77969,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedCreateNestedManyWithoutUnitsInput
     tickets?: ticketsUncheckedCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsUncheckedCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUnitsInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUnitsInput
   }
 
@@ -66127,15 +78067,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
@@ -66144,7 +78088,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
@@ -66158,15 +78104,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
@@ -66175,7 +78125,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
@@ -66200,11 +78152,17 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
     customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
     units?: unitsUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutSchedulesInput = {
@@ -66218,10 +78176,16 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type unitsUpsertWithoutSchedulesInput = {
@@ -66267,6 +78231,7 @@ export namespace Prisma {
     service_logs?: service_logsUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUnitsNestedInput
     projects?: projectsUpdateOneWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUnitsNestedInput
   }
@@ -66305,6 +78270,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUncheckedUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUncheckedUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUnitsNestedInput
   }
 
@@ -66522,15 +78488,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
     schedules?: schedulesCreateNestedManyWithoutUsersInput
@@ -66539,7 +78509,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
@@ -66553,15 +78525,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
     schedules?: schedulesUncheckedCreateNestedManyWithoutUsersInput
@@ -66570,7 +78546,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
@@ -66642,15 +78620,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
     schedules?: schedulesUpdateManyWithoutUsersNestedInput
@@ -66659,7 +78641,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
@@ -66673,15 +78657,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
     schedules?: schedulesUncheckedUpdateManyWithoutUsersNestedInput
@@ -66690,7 +78678,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
@@ -66701,15 +78691,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedules?: schedulesCreateNestedManyWithoutUsersInput
@@ -66718,7 +78712,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
@@ -66732,15 +78728,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedules?: schedulesUncheckedCreateNestedManyWithoutUsersInput
@@ -66749,7 +78749,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
@@ -66768,11 +78770,17 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
     customers: customersCreateNestedOneWithoutProjectsInput
     schedules?: schedulesCreateNestedManyWithoutProjectsInput
     units?: unitsCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutSchedule_targetsInput = {
@@ -66786,10 +78794,16 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
     schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutSchedule_targetsInput = {
@@ -66815,15 +78829,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedules?: schedulesUpdateManyWithoutUsersNestedInput
@@ -66832,7 +78850,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
@@ -66846,15 +78866,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedules?: schedulesUncheckedUpdateManyWithoutUsersNestedInput
@@ -66863,7 +78887,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
@@ -66888,11 +78914,17 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
     customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
     schedules?: schedulesUpdateManyWithoutProjectsNestedInput
     units?: unitsUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutSchedule_targetsInput = {
@@ -66906,10 +78938,16 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type unitsCreateWithoutComplaintsInput = {
@@ -66944,6 +78982,7 @@ export namespace Prisma {
     service_logs?: service_logsCreateNestedManyWithoutUnitsInput
     tickets?: ticketsCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUnitsInput
     projects?: projectsCreateNestedOneWithoutUnitsInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUnitsInput
   }
@@ -66982,6 +79021,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedCreateNestedManyWithoutUnitsInput
     tickets?: ticketsUncheckedCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsUncheckedCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUnitsInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUnitsInput
   }
 
@@ -67033,6 +79073,7 @@ export namespace Prisma {
     service_logs?: service_logsUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUnitsNestedInput
     projects?: projectsUpdateOneWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUnitsNestedInput
   }
@@ -67071,7 +79112,490 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUncheckedUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUncheckedUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUnitsNestedInput
+  }
+
+  export type unitsCreateWithoutUnit_edit_requestsInput = {
+    project_id?: string | null
+    project_type?: string | null
+    unit_type?: string | null
+    site_id?: number | null
+    qr_code_token?: string | null
+    tag_number?: string | null
+    code?: string | null
+    customer_name?: string | null
+    customer_group?: string | null
+    location?: string | null
+    area?: string | null
+    building_floor?: string | null
+    room_tenant?: string | null
+    brand?: string | null
+    model?: string | null
+    capacity?: string | null
+    yoi?: number | null
+    serial_number?: string | null
+    status?: $Enums.units_status | null
+    last_service_date?: Date | string | null
+    created_at?: Date | string | null
+    activities?: activitiesCreateNestedManyWithoutUnitsInput
+    audit_tickets?: audit_ticketsCreateNestedManyWithoutUnitsInput
+    audits?: auditsCreateNestedManyWithoutUnitsInput
+    complaints?: complaintsCreateNestedManyWithoutUnitsInput
+    corrective?: correctiveCreateNestedManyWithoutUnitsInput
+    daily_ops_logs?: daily_ops_logsCreateNestedManyWithoutUnitsInput
+    schedules?: schedulesCreateNestedManyWithoutUnitsInput
+    service_activities?: service_activitiesCreateNestedManyWithoutUnitsInput
+    service_logs?: service_logsCreateNestedManyWithoutUnitsInput
+    tickets?: ticketsCreateNestedManyWithoutUnitsInput
+    unit_comments?: unit_commentsCreateNestedManyWithoutUnitsInput
+    projects?: projectsCreateNestedOneWithoutUnitsInput
+    user_unit_access?: user_unit_accessCreateNestedManyWithoutUnitsInput
+  }
+
+  export type unitsUncheckedCreateWithoutUnit_edit_requestsInput = {
+    id?: number
+    project_id?: string | null
+    project_type?: string | null
+    unit_type?: string | null
+    site_id?: number | null
+    qr_code_token?: string | null
+    tag_number?: string | null
+    code?: string | null
+    customer_name?: string | null
+    customer_group?: string | null
+    location?: string | null
+    area?: string | null
+    building_floor?: string | null
+    room_tenant?: string | null
+    brand?: string | null
+    model?: string | null
+    capacity?: string | null
+    yoi?: number | null
+    serial_number?: string | null
+    status?: $Enums.units_status | null
+    last_service_date?: Date | string | null
+    created_at?: Date | string | null
+    project_ref_id?: bigint | number | null
+    activities?: activitiesUncheckedCreateNestedManyWithoutUnitsInput
+    audit_tickets?: audit_ticketsUncheckedCreateNestedManyWithoutUnitsInput
+    audits?: auditsUncheckedCreateNestedManyWithoutUnitsInput
+    complaints?: complaintsUncheckedCreateNestedManyWithoutUnitsInput
+    corrective?: correctiveUncheckedCreateNestedManyWithoutUnitsInput
+    daily_ops_logs?: daily_ops_logsUncheckedCreateNestedManyWithoutUnitsInput
+    schedules?: schedulesUncheckedCreateNestedManyWithoutUnitsInput
+    service_activities?: service_activitiesUncheckedCreateNestedManyWithoutUnitsInput
+    service_logs?: service_logsUncheckedCreateNestedManyWithoutUnitsInput
+    tickets?: ticketsUncheckedCreateNestedManyWithoutUnitsInput
+    unit_comments?: unit_commentsUncheckedCreateNestedManyWithoutUnitsInput
+    user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUnitsInput
+  }
+
+  export type unitsCreateOrConnectWithoutUnit_edit_requestsInput = {
+    where: unitsWhereUniqueInput
+    create: XOR<unitsCreateWithoutUnit_edit_requestsInput, unitsUncheckedCreateWithoutUnit_edit_requestsInput>
+  }
+
+  export type usersCreateWithoutUnit_edit_requestsInput = {
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
+    schedules?: schedulesCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
+    roles?: rolesCreateNestedOneWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateWithoutUnit_edit_requestsInput = {
+    id?: number
+    role_id?: number | null
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
+    schedules?: schedulesUncheckedCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesUncheckedCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersCreateOrConnectWithoutUnit_edit_requestsInput = {
+    where: usersWhereUniqueInput
+    create: XOR<usersCreateWithoutUnit_edit_requestsInput, usersUncheckedCreateWithoutUnit_edit_requestsInput>
+  }
+
+  export type usersCreateWithoutProcessed_requestsInput = {
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
+    schedules?: schedulesCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
+    roles?: rolesCreateNestedOneWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateWithoutProcessed_requestsInput = {
+    id?: number
+    role_id?: number | null
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
+    schedules?: schedulesUncheckedCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesUncheckedCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersCreateOrConnectWithoutProcessed_requestsInput = {
+    where: usersWhereUniqueInput
+    create: XOR<usersCreateWithoutProcessed_requestsInput, usersUncheckedCreateWithoutProcessed_requestsInput>
+  }
+
+  export type unitsUpsertWithoutUnit_edit_requestsInput = {
+    update: XOR<unitsUpdateWithoutUnit_edit_requestsInput, unitsUncheckedUpdateWithoutUnit_edit_requestsInput>
+    create: XOR<unitsCreateWithoutUnit_edit_requestsInput, unitsUncheckedCreateWithoutUnit_edit_requestsInput>
+    where?: unitsWhereInput
+  }
+
+  export type unitsUpdateToOneWithWhereWithoutUnit_edit_requestsInput = {
+    where?: unitsWhereInput
+    data: XOR<unitsUpdateWithoutUnit_edit_requestsInput, unitsUncheckedUpdateWithoutUnit_edit_requestsInput>
+  }
+
+  export type unitsUpdateWithoutUnit_edit_requestsInput = {
+    project_id?: NullableStringFieldUpdateOperationsInput | string | null
+    project_type?: NullableStringFieldUpdateOperationsInput | string | null
+    unit_type?: NullableStringFieldUpdateOperationsInput | string | null
+    site_id?: NullableIntFieldUpdateOperationsInput | number | null
+    qr_code_token?: NullableStringFieldUpdateOperationsInput | string | null
+    tag_number?: NullableStringFieldUpdateOperationsInput | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_group?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    area?: NullableStringFieldUpdateOperationsInput | string | null
+    building_floor?: NullableStringFieldUpdateOperationsInput | string | null
+    room_tenant?: NullableStringFieldUpdateOperationsInput | string | null
+    brand?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    capacity?: NullableStringFieldUpdateOperationsInput | string | null
+    yoi?: NullableIntFieldUpdateOperationsInput | number | null
+    serial_number?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableEnumunits_statusFieldUpdateOperationsInput | $Enums.units_status | null
+    last_service_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    activities?: activitiesUpdateManyWithoutUnitsNestedInput
+    audit_tickets?: audit_ticketsUpdateManyWithoutUnitsNestedInput
+    audits?: auditsUpdateManyWithoutUnitsNestedInput
+    complaints?: complaintsUpdateManyWithoutUnitsNestedInput
+    corrective?: correctiveUpdateManyWithoutUnitsNestedInput
+    daily_ops_logs?: daily_ops_logsUpdateManyWithoutUnitsNestedInput
+    schedules?: schedulesUpdateManyWithoutUnitsNestedInput
+    service_activities?: service_activitiesUpdateManyWithoutUnitsNestedInput
+    service_logs?: service_logsUpdateManyWithoutUnitsNestedInput
+    tickets?: ticketsUpdateManyWithoutUnitsNestedInput
+    unit_comments?: unit_commentsUpdateManyWithoutUnitsNestedInput
+    projects?: projectsUpdateOneWithoutUnitsNestedInput
+    user_unit_access?: user_unit_accessUpdateManyWithoutUnitsNestedInput
+  }
+
+  export type unitsUncheckedUpdateWithoutUnit_edit_requestsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    project_id?: NullableStringFieldUpdateOperationsInput | string | null
+    project_type?: NullableStringFieldUpdateOperationsInput | string | null
+    unit_type?: NullableStringFieldUpdateOperationsInput | string | null
+    site_id?: NullableIntFieldUpdateOperationsInput | number | null
+    qr_code_token?: NullableStringFieldUpdateOperationsInput | string | null
+    tag_number?: NullableStringFieldUpdateOperationsInput | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_group?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    area?: NullableStringFieldUpdateOperationsInput | string | null
+    building_floor?: NullableStringFieldUpdateOperationsInput | string | null
+    room_tenant?: NullableStringFieldUpdateOperationsInput | string | null
+    brand?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    capacity?: NullableStringFieldUpdateOperationsInput | string | null
+    yoi?: NullableIntFieldUpdateOperationsInput | number | null
+    serial_number?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableEnumunits_statusFieldUpdateOperationsInput | $Enums.units_status | null
+    last_service_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    project_ref_id?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    activities?: activitiesUncheckedUpdateManyWithoutUnitsNestedInput
+    audit_tickets?: audit_ticketsUncheckedUpdateManyWithoutUnitsNestedInput
+    audits?: auditsUncheckedUpdateManyWithoutUnitsNestedInput
+    complaints?: complaintsUncheckedUpdateManyWithoutUnitsNestedInput
+    corrective?: correctiveUncheckedUpdateManyWithoutUnitsNestedInput
+    daily_ops_logs?: daily_ops_logsUncheckedUpdateManyWithoutUnitsNestedInput
+    schedules?: schedulesUncheckedUpdateManyWithoutUnitsNestedInput
+    service_activities?: service_activitiesUncheckedUpdateManyWithoutUnitsNestedInput
+    service_logs?: service_logsUncheckedUpdateManyWithoutUnitsNestedInput
+    tickets?: ticketsUncheckedUpdateManyWithoutUnitsNestedInput
+    unit_comments?: unit_commentsUncheckedUpdateManyWithoutUnitsNestedInput
+    user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUnitsNestedInput
+  }
+
+  export type usersUpsertWithoutUnit_edit_requestsInput = {
+    update: XOR<usersUpdateWithoutUnit_edit_requestsInput, usersUncheckedUpdateWithoutUnit_edit_requestsInput>
+    create: XOR<usersCreateWithoutUnit_edit_requestsInput, usersUncheckedCreateWithoutUnit_edit_requestsInput>
+    where?: usersWhereInput
+  }
+
+  export type usersUpdateToOneWithWhereWithoutUnit_edit_requestsInput = {
+    where?: usersWhereInput
+    data: XOR<usersUpdateWithoutUnit_edit_requestsInput, usersUncheckedUpdateWithoutUnit_edit_requestsInput>
+  }
+
+  export type usersUpdateWithoutUnit_edit_requestsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
+    roles?: rolesUpdateOneWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateWithoutUnit_edit_requestsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    role_id?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUncheckedUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUncheckedUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUncheckedUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type usersUpsertWithoutProcessed_requestsInput = {
+    update: XOR<usersUpdateWithoutProcessed_requestsInput, usersUncheckedUpdateWithoutProcessed_requestsInput>
+    create: XOR<usersCreateWithoutProcessed_requestsInput, usersUncheckedCreateWithoutProcessed_requestsInput>
+    where?: usersWhereInput
+  }
+
+  export type usersUpdateToOneWithWhereWithoutProcessed_requestsInput = {
+    where?: usersWhereInput
+    data: XOR<usersUpdateWithoutProcessed_requestsInput, usersUncheckedUpdateWithoutProcessed_requestsInput>
+  }
+
+  export type usersUpdateWithoutProcessed_requestsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
+    roles?: rolesUpdateOneWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateWithoutProcessed_requestsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    role_id?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUncheckedUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUncheckedUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUncheckedUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type usersCreateWithoutUser_push_tokensInput = {
@@ -67081,15 +79605,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
@@ -67098,7 +79626,9 @@ export namespace Prisma {
     user_project_access?: user_project_accessCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
   }
@@ -67112,15 +79642,19 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
     refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
     schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
@@ -67129,7 +79663,9 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutUsersInput
     user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
   }
 
@@ -67156,15 +79692,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
@@ -67173,7 +79713,9 @@ export namespace Prisma {
     user_project_access?: user_project_accessUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
@@ -67187,15 +79729,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
@@ -67204,7 +79750,167 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type usersCreateWithoutNotificationsInput = {
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
+    schedules?: schedulesCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    roles?: rolesCreateNestedOneWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateWithoutNotificationsInput = {
+    id?: number
+    role_id?: number | null
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
+    schedules?: schedulesUncheckedCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesUncheckedCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersCreateOrConnectWithoutNotificationsInput = {
+    where: usersWhereUniqueInput
+    create: XOR<usersCreateWithoutNotificationsInput, usersUncheckedCreateWithoutNotificationsInput>
+  }
+
+  export type usersUpsertWithoutNotificationsInput = {
+    update: XOR<usersUpdateWithoutNotificationsInput, usersUncheckedUpdateWithoutNotificationsInput>
+    create: XOR<usersCreateWithoutNotificationsInput, usersUncheckedCreateWithoutNotificationsInput>
+    where?: usersWhereInput
+  }
+
+  export type usersUpdateToOneWithWhereWithoutNotificationsInput = {
+    where?: usersWhereInput
+    data: XOR<usersUpdateWithoutNotificationsInput, usersUncheckedUpdateWithoutNotificationsInput>
+  }
+
+  export type usersUpdateWithoutNotificationsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    roles?: rolesUpdateOneWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateWithoutNotificationsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    role_id?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
     audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUncheckedUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUncheckedUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUncheckedUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
@@ -67240,6 +79946,7 @@ export namespace Prisma {
     service_logs?: service_logsCreateNestedManyWithoutUnitsInput
     tickets?: ticketsCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUnitsInput
     projects?: projectsCreateNestedOneWithoutUnitsInput
     user_unit_access?: user_unit_accessCreateNestedManyWithoutUnitsInput
   }
@@ -67278,6 +79985,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedCreateNestedManyWithoutUnitsInput
     tickets?: ticketsUncheckedCreateNestedManyWithoutUnitsInput
     unit_comments?: unit_commentsUncheckedCreateNestedManyWithoutUnitsInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUnitsInput
     user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUnitsInput
   }
 
@@ -67329,6 +80037,7 @@ export namespace Prisma {
     service_logs?: service_logsUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUnitsNestedInput
     projects?: projectsUpdateOneWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUnitsNestedInput
   }
@@ -67367,71 +80076,8 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUncheckedUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUncheckedUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUnitsNestedInput
-  }
-
-  export type usersCreateWithoutVendor_attendanceInput = {
-    name: string
-    email: string
-    password: string
-    phone?: string | null
-    is_active?: boolean
-    company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
-    failed_login_attempts?: number
-    locked_until?: Date | string | null
-    attendance_enabled?: boolean
-    face_reference_url?: string | null
-    face_verification_enabled?: boolean
-    refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
-    schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
-    schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
-    schedules?: schedulesCreateNestedManyWithoutUsersInput
-    service_activities?: service_activitiesCreateNestedManyWithoutUsersInput
-    user_project_access?: user_project_accessCreateNestedManyWithoutUsersInput
-    user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
-    user_roles?: user_rolesCreateNestedManyWithoutUsersInput
-    user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
-    roles?: rolesCreateNestedOneWithoutUsersInput
-  }
-
-  export type usersUncheckedCreateWithoutVendor_attendanceInput = {
-    id?: number
-    role_id?: number | null
-    name: string
-    email: string
-    password: string
-    phone?: string | null
-    is_active?: boolean
-    company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
-    failed_login_attempts?: number
-    locked_until?: Date | string | null
-    attendance_enabled?: boolean
-    face_reference_url?: string | null
-    face_verification_enabled?: boolean
-    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
-    schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
-    schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
-    schedules?: schedulesUncheckedCreateNestedManyWithoutUsersInput
-    service_activities?: service_activitiesUncheckedCreateNestedManyWithoutUsersInput
-    user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutUsersInput
-    user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
-    user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
-    user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
-    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
-  }
-
-  export type usersCreateOrConnectWithoutVendor_attendanceInput = {
-    where: usersWhereUniqueInput
-    create: XOR<usersCreateWithoutVendor_attendanceInput, usersUncheckedCreateWithoutVendor_attendanceInput>
   }
 
   export type projectsCreateWithoutVendor_attendanceInput = {
@@ -67444,11 +80090,17 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
     customers: customersCreateNestedOneWithoutProjectsInput
     schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
     schedules?: schedulesCreateNestedManyWithoutProjectsInput
     units?: unitsCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutVendor_attendanceInput = {
@@ -67462,10 +80114,16 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
     schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutVendor_attendanceInput = {
@@ -67473,74 +80131,80 @@ export namespace Prisma {
     create: XOR<projectsCreateWithoutVendor_attendanceInput, projectsUncheckedCreateWithoutVendor_attendanceInput>
   }
 
-  export type usersUpsertWithoutVendor_attendanceInput = {
-    update: XOR<usersUpdateWithoutVendor_attendanceInput, usersUncheckedUpdateWithoutVendor_attendanceInput>
+  export type usersCreateWithoutVendor_attendanceInput = {
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
+    schedules?: schedulesCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
+    roles?: rolesCreateNestedOneWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateWithoutVendor_attendanceInput = {
+    id?: number
+    role_id?: number | null
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
+    schedules?: schedulesUncheckedCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesUncheckedCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersCreateOrConnectWithoutVendor_attendanceInput = {
+    where: usersWhereUniqueInput
     create: XOR<usersCreateWithoutVendor_attendanceInput, usersUncheckedCreateWithoutVendor_attendanceInput>
-    where?: usersWhereInput
-  }
-
-  export type usersUpdateToOneWithWhereWithoutVendor_attendanceInput = {
-    where?: usersWhereInput
-    data: XOR<usersUpdateWithoutVendor_attendanceInput, usersUncheckedUpdateWithoutVendor_attendanceInput>
-  }
-
-  export type usersUpdateWithoutVendor_attendanceInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
-    is_active?: BoolFieldUpdateOperationsInput | boolean
-    company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    failed_login_attempts?: IntFieldUpdateOperationsInput | number
-    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
-    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
-    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
-    refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
-    schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
-    schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
-    schedules?: schedulesUpdateManyWithoutUsersNestedInput
-    service_activities?: service_activitiesUpdateManyWithoutUsersNestedInput
-    user_project_access?: user_project_accessUpdateManyWithoutUsersNestedInput
-    user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
-    user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
-    user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
-    roles?: rolesUpdateOneWithoutUsersNestedInput
-  }
-
-  export type usersUncheckedUpdateWithoutVendor_attendanceInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    role_id?: NullableIntFieldUpdateOperationsInput | number | null
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
-    is_active?: BoolFieldUpdateOperationsInput | boolean
-    company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    failed_login_attempts?: IntFieldUpdateOperationsInput | number
-    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
-    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
-    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
-    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
-    schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
-    schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
-    schedules?: schedulesUncheckedUpdateManyWithoutUsersNestedInput
-    service_activities?: service_activitiesUncheckedUpdateManyWithoutUsersNestedInput
-    user_project_access?: user_project_accessUncheckedUpdateManyWithoutUsersNestedInput
-    user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
-    user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
-    user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type projectsUpsertWithoutVendor_attendanceInput = {
@@ -67564,11 +80228,17 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
     customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUpdateManyWithoutProjectsNestedInput
     units?: unitsUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutVendor_attendanceInput = {
@@ -67582,10 +80252,709 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
+  }
+
+  export type usersUpsertWithoutVendor_attendanceInput = {
+    update: XOR<usersUpdateWithoutVendor_attendanceInput, usersUncheckedUpdateWithoutVendor_attendanceInput>
+    create: XOR<usersCreateWithoutVendor_attendanceInput, usersUncheckedCreateWithoutVendor_attendanceInput>
+    where?: usersWhereInput
+  }
+
+  export type usersUpdateToOneWithWhereWithoutVendor_attendanceInput = {
+    where?: usersWhereInput
+    data: XOR<usersUpdateWithoutVendor_attendanceInput, usersUncheckedUpdateWithoutVendor_attendanceInput>
+  }
+
+  export type usersUpdateWithoutVendor_attendanceInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
+    roles?: rolesUpdateOneWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateWithoutVendor_attendanceInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    role_id?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUncheckedUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUncheckedUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUncheckedUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type projectsCreateWithoutProject_intelligenceInput = {
+    id?: bigint | number
+    name: string
+    code?: string | null
+    status?: $Enums.projects_status
+    created_at?: Date | string
+    enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
+    project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
+    customers: customersCreateNestedOneWithoutProjectsInput
+    schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
+    schedules?: schedulesCreateNestedManyWithoutProjectsInput
+    units?: unitsCreateNestedManyWithoutProjectsInput
+    user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
+  }
+
+  export type projectsUncheckedCreateWithoutProject_intelligenceInput = {
+    id?: bigint | number
+    customer_id: number
+    name: string
+    code?: string | null
+    status?: $Enums.projects_status
+    created_at?: Date | string
+    enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
+    project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
+    schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
+    schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
+    units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
+    user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
+  }
+
+  export type projectsCreateOrConnectWithoutProject_intelligenceInput = {
+    where: projectsWhereUniqueInput
+    create: XOR<projectsCreateWithoutProject_intelligenceInput, projectsUncheckedCreateWithoutProject_intelligenceInput>
+  }
+
+  export type usersCreateWithoutIntelligence_updatesInput = {
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
+    schedules?: schedulesCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
+    roles?: rolesCreateNestedOneWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateWithoutIntelligence_updatesInput = {
+    id?: number
+    role_id?: number | null
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
+    schedules?: schedulesUncheckedCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesUncheckedCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersCreateOrConnectWithoutIntelligence_updatesInput = {
+    where: usersWhereUniqueInput
+    create: XOR<usersCreateWithoutIntelligence_updatesInput, usersUncheckedCreateWithoutIntelligence_updatesInput>
+  }
+
+  export type projectsUpsertWithoutProject_intelligenceInput = {
+    update: XOR<projectsUpdateWithoutProject_intelligenceInput, projectsUncheckedUpdateWithoutProject_intelligenceInput>
+    create: XOR<projectsCreateWithoutProject_intelligenceInput, projectsUncheckedCreateWithoutProject_intelligenceInput>
+    where?: projectsWhereInput
+  }
+
+  export type projectsUpdateToOneWithWhereWithoutProject_intelligenceInput = {
+    where?: projectsWhereInput
+    data: XOR<projectsUpdateWithoutProject_intelligenceInput, projectsUncheckedUpdateWithoutProject_intelligenceInput>
+  }
+
+  export type projectsUpdateWithoutProject_intelligenceInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
+    project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
+    customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
+    schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
+    schedules?: schedulesUpdateManyWithoutProjectsNestedInput
+    units?: unitsUpdateManyWithoutProjectsNestedInput
+    user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
+  }
+
+  export type projectsUncheckedUpdateWithoutProject_intelligenceInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    customer_id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
+    project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
+    schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
+    schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
+    units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
+    user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
+  }
+
+  export type usersUpsertWithoutIntelligence_updatesInput = {
+    update: XOR<usersUpdateWithoutIntelligence_updatesInput, usersUncheckedUpdateWithoutIntelligence_updatesInput>
+    create: XOR<usersCreateWithoutIntelligence_updatesInput, usersUncheckedCreateWithoutIntelligence_updatesInput>
+    where?: usersWhereInput
+  }
+
+  export type usersUpdateToOneWithWhereWithoutIntelligence_updatesInput = {
+    where?: usersWhereInput
+    data: XOR<usersUpdateWithoutIntelligence_updatesInput, usersUncheckedUpdateWithoutIntelligence_updatesInput>
+  }
+
+  export type usersUpdateWithoutIntelligence_updatesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
+    roles?: rolesUpdateOneWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateWithoutIntelligence_updatesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    role_id?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUncheckedUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUncheckedUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUncheckedUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type projectsCreateWithoutProject_issuesInput = {
+    id?: bigint | number
+    name: string
+    code?: string | null
+    status?: $Enums.projects_status
+    created_at?: Date | string
+    enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
+    customers: customersCreateNestedOneWithoutProjectsInput
+    schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
+    schedules?: schedulesCreateNestedManyWithoutProjectsInput
+    units?: unitsCreateNestedManyWithoutProjectsInput
+    user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
+  }
+
+  export type projectsUncheckedCreateWithoutProject_issuesInput = {
+    id?: bigint | number
+    customer_id: number
+    name: string
+    code?: string | null
+    status?: $Enums.projects_status
+    created_at?: Date | string
+    enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
+    schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
+    schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
+    units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
+    user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
+  }
+
+  export type projectsCreateOrConnectWithoutProject_issuesInput = {
+    where: projectsWhereUniqueInput
+    create: XOR<projectsCreateWithoutProject_issuesInput, projectsUncheckedCreateWithoutProject_issuesInput>
+  }
+
+  export type projectsUpsertWithoutProject_issuesInput = {
+    update: XOR<projectsUpdateWithoutProject_issuesInput, projectsUncheckedUpdateWithoutProject_issuesInput>
+    create: XOR<projectsCreateWithoutProject_issuesInput, projectsUncheckedCreateWithoutProject_issuesInput>
+    where?: projectsWhereInput
+  }
+
+  export type projectsUpdateToOneWithWhereWithoutProject_issuesInput = {
+    where?: projectsWhereInput
+    data: XOR<projectsUpdateWithoutProject_issuesInput, projectsUncheckedUpdateWithoutProject_issuesInput>
+  }
+
+  export type projectsUpdateWithoutProject_issuesInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
+    customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
+    schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
+    schedules?: schedulesUpdateManyWithoutProjectsNestedInput
+    units?: unitsUpdateManyWithoutProjectsNestedInput
+    user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
+  }
+
+  export type projectsUncheckedUpdateWithoutProject_issuesInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    customer_id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
+    schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
+    schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
+    units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
+    user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
+  }
+
+  export type logsheet_entriesCreateWithoutTemplateInput = {
+    log_date: Date | string
+    log_time: string
+    recorded_by: string
+    values_json: string
+    notes?: string | null
+    created_at?: Date | string
+  }
+
+  export type logsheet_entriesUncheckedCreateWithoutTemplateInput = {
+    id?: number
+    log_date: Date | string
+    log_time: string
+    recorded_by: string
+    values_json: string
+    notes?: string | null
+    created_at?: Date | string
+  }
+
+  export type logsheet_entriesCreateOrConnectWithoutTemplateInput = {
+    where: logsheet_entriesWhereUniqueInput
+    create: XOR<logsheet_entriesCreateWithoutTemplateInput, logsheet_entriesUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type logsheet_entriesCreateManyTemplateInputEnvelope = {
+    data: logsheet_entriesCreateManyTemplateInput | logsheet_entriesCreateManyTemplateInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type projectsCreateWithoutLogsheet_templatesInput = {
+    id?: bigint | number
+    name: string
+    code?: string | null
+    status?: $Enums.projects_status
+    created_at?: Date | string
+    enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
+    customers: customersCreateNestedOneWithoutProjectsInput
+    schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
+    schedules?: schedulesCreateNestedManyWithoutProjectsInput
+    units?: unitsCreateNestedManyWithoutProjectsInput
+    user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
+  }
+
+  export type projectsUncheckedCreateWithoutLogsheet_templatesInput = {
+    id?: bigint | number
+    customer_id: number
+    name: string
+    code?: string | null
+    status?: $Enums.projects_status
+    created_at?: Date | string
+    enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
+    schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
+    schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
+    units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
+    user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
+  }
+
+  export type projectsCreateOrConnectWithoutLogsheet_templatesInput = {
+    where: projectsWhereUniqueInput
+    create: XOR<projectsCreateWithoutLogsheet_templatesInput, projectsUncheckedCreateWithoutLogsheet_templatesInput>
+  }
+
+  export type logsheet_entriesUpsertWithWhereUniqueWithoutTemplateInput = {
+    where: logsheet_entriesWhereUniqueInput
+    update: XOR<logsheet_entriesUpdateWithoutTemplateInput, logsheet_entriesUncheckedUpdateWithoutTemplateInput>
+    create: XOR<logsheet_entriesCreateWithoutTemplateInput, logsheet_entriesUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type logsheet_entriesUpdateWithWhereUniqueWithoutTemplateInput = {
+    where: logsheet_entriesWhereUniqueInput
+    data: XOR<logsheet_entriesUpdateWithoutTemplateInput, logsheet_entriesUncheckedUpdateWithoutTemplateInput>
+  }
+
+  export type logsheet_entriesUpdateManyWithWhereWithoutTemplateInput = {
+    where: logsheet_entriesScalarWhereInput
+    data: XOR<logsheet_entriesUpdateManyMutationInput, logsheet_entriesUncheckedUpdateManyWithoutTemplateInput>
+  }
+
+  export type logsheet_entriesScalarWhereInput = {
+    AND?: logsheet_entriesScalarWhereInput | logsheet_entriesScalarWhereInput[]
+    OR?: logsheet_entriesScalarWhereInput[]
+    NOT?: logsheet_entriesScalarWhereInput | logsheet_entriesScalarWhereInput[]
+    id?: IntFilter<"logsheet_entries"> | number
+    template_id?: IntFilter<"logsheet_entries"> | number
+    log_date?: DateTimeFilter<"logsheet_entries"> | Date | string
+    log_time?: StringFilter<"logsheet_entries"> | string
+    recorded_by?: StringFilter<"logsheet_entries"> | string
+    values_json?: StringFilter<"logsheet_entries"> | string
+    notes?: StringNullableFilter<"logsheet_entries"> | string | null
+    created_at?: DateTimeFilter<"logsheet_entries"> | Date | string
+  }
+
+  export type projectsUpsertWithoutLogsheet_templatesInput = {
+    update: XOR<projectsUpdateWithoutLogsheet_templatesInput, projectsUncheckedUpdateWithoutLogsheet_templatesInput>
+    create: XOR<projectsCreateWithoutLogsheet_templatesInput, projectsUncheckedCreateWithoutLogsheet_templatesInput>
+    where?: projectsWhereInput
+  }
+
+  export type projectsUpdateToOneWithWhereWithoutLogsheet_templatesInput = {
+    where?: projectsWhereInput
+    data: XOR<projectsUpdateWithoutLogsheet_templatesInput, projectsUncheckedUpdateWithoutLogsheet_templatesInput>
+  }
+
+  export type projectsUpdateWithoutLogsheet_templatesInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
+    customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
+    schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
+    schedules?: schedulesUpdateManyWithoutProjectsNestedInput
+    units?: unitsUpdateManyWithoutProjectsNestedInput
+    user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
+  }
+
+  export type projectsUncheckedUpdateWithoutLogsheet_templatesInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    customer_id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
+    schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
+    schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
+    units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
+    user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
+  }
+
+  export type logsheet_templatesCreateWithoutEntriesInput = {
+    name: string
+    type: $Enums.LogsheetType
+    system_name?: string | null
+    room_name?: string | null
+    parameters_json: string
+    design_json?: string | null
+    time_slots?: string | null
+    is_active?: boolean
+    created_at?: Date | string
+    projects: projectsCreateNestedOneWithoutLogsheet_templatesInput
+  }
+
+  export type logsheet_templatesUncheckedCreateWithoutEntriesInput = {
+    id?: number
+    project_id: bigint | number
+    name: string
+    type: $Enums.LogsheetType
+    system_name?: string | null
+    room_name?: string | null
+    parameters_json: string
+    design_json?: string | null
+    time_slots?: string | null
+    is_active?: boolean
+    created_at?: Date | string
+  }
+
+  export type logsheet_templatesCreateOrConnectWithoutEntriesInput = {
+    where: logsheet_templatesWhereUniqueInput
+    create: XOR<logsheet_templatesCreateWithoutEntriesInput, logsheet_templatesUncheckedCreateWithoutEntriesInput>
+  }
+
+  export type logsheet_templatesUpsertWithoutEntriesInput = {
+    update: XOR<logsheet_templatesUpdateWithoutEntriesInput, logsheet_templatesUncheckedUpdateWithoutEntriesInput>
+    create: XOR<logsheet_templatesCreateWithoutEntriesInput, logsheet_templatesUncheckedCreateWithoutEntriesInput>
+    where?: logsheet_templatesWhereInput
+  }
+
+  export type logsheet_templatesUpdateToOneWithWhereWithoutEntriesInput = {
+    where?: logsheet_templatesWhereInput
+    data: XOR<logsheet_templatesUpdateWithoutEntriesInput, logsheet_templatesUncheckedUpdateWithoutEntriesInput>
+  }
+
+  export type logsheet_templatesUpdateWithoutEntriesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumLogsheetTypeFieldUpdateOperationsInput | $Enums.LogsheetType
+    system_name?: NullableStringFieldUpdateOperationsInput | string | null
+    room_name?: NullableStringFieldUpdateOperationsInput | string | null
+    parameters_json?: StringFieldUpdateOperationsInput | string
+    design_json?: NullableStringFieldUpdateOperationsInput | string | null
+    time_slots?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    projects?: projectsUpdateOneRequiredWithoutLogsheet_templatesNestedInput
+  }
+
+  export type logsheet_templatesUncheckedUpdateWithoutEntriesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    project_id?: BigIntFieldUpdateOperationsInput | bigint | number
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumLogsheetTypeFieldUpdateOperationsInput | $Enums.LogsheetType
+    system_name?: NullableStringFieldUpdateOperationsInput | string | null
+    room_name?: NullableStringFieldUpdateOperationsInput | string | null
+    parameters_json?: StringFieldUpdateOperationsInput | string
+    design_json?: NullableStringFieldUpdateOperationsInput | string | null
+    time_slots?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type contractsCreateManyCustomersInput = {
@@ -67608,6 +80977,8 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
   }
 
   export type sitesCreateManyCustomersInput = {
@@ -67668,11 +81039,17 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUpdateManyWithoutProjectsNestedInput
     units?: unitsUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutCustomersInput = {
@@ -67685,11 +81062,17 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
     schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateManyWithoutCustomersInput = {
@@ -67702,6 +81085,8 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
   }
 
   export type sitesUpdateWithoutCustomersInput = {
@@ -67775,6 +81160,32 @@ export namespace Prisma {
     role_id?: IntFieldUpdateOperationsInput | number
   }
 
+  export type logsheet_templatesCreateManyProjectsInput = {
+    id?: number
+    name: string
+    type: $Enums.LogsheetType
+    system_name?: string | null
+    room_name?: string | null
+    parameters_json: string
+    design_json?: string | null
+    time_slots?: string | null
+    is_active?: boolean
+    created_at?: Date | string
+  }
+
+  export type project_issuesCreateManyProjectsInput = {
+    id?: bigint | number
+    issue_text: string
+    solution_text?: string | null
+    status?: string
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    action_status?: string | null
+    outcome?: string | null
+    roadmap_action?: string | null
+    urgency?: string | null
+  }
+
   export type schedule_targetsCreateManyProjectsInput = {
     id?: number
     assignee_id?: number | null
@@ -67840,6 +81251,100 @@ export namespace Prisma {
     check_out_long?: Decimal | DecimalJsLike | number | string | null
     check_in_photo?: string | null
     check_out_photo?: string | null
+  }
+
+  export type knowledge_resourcesCreateManyProjectsInput = {
+    id?: string
+    title: string
+    category: string
+    type: string
+    file_url?: string | null
+    href?: string | null
+    thumbnail?: string | null
+    size?: string | null
+    tags?: string | null
+    visibility?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type logsheet_templatesUpdateWithoutProjectsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumLogsheetTypeFieldUpdateOperationsInput | $Enums.LogsheetType
+    system_name?: NullableStringFieldUpdateOperationsInput | string | null
+    room_name?: NullableStringFieldUpdateOperationsInput | string | null
+    parameters_json?: StringFieldUpdateOperationsInput | string
+    design_json?: NullableStringFieldUpdateOperationsInput | string | null
+    time_slots?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    entries?: logsheet_entriesUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type logsheet_templatesUncheckedUpdateWithoutProjectsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumLogsheetTypeFieldUpdateOperationsInput | $Enums.LogsheetType
+    system_name?: NullableStringFieldUpdateOperationsInput | string | null
+    room_name?: NullableStringFieldUpdateOperationsInput | string | null
+    parameters_json?: StringFieldUpdateOperationsInput | string
+    design_json?: NullableStringFieldUpdateOperationsInput | string | null
+    time_slots?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    entries?: logsheet_entriesUncheckedUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type logsheet_templatesUncheckedUpdateManyWithoutProjectsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumLogsheetTypeFieldUpdateOperationsInput | $Enums.LogsheetType
+    system_name?: NullableStringFieldUpdateOperationsInput | string | null
+    room_name?: NullableStringFieldUpdateOperationsInput | string | null
+    parameters_json?: StringFieldUpdateOperationsInput | string
+    design_json?: NullableStringFieldUpdateOperationsInput | string | null
+    time_slots?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type project_issuesUpdateWithoutProjectsInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    issue_text?: StringFieldUpdateOperationsInput | string
+    solution_text?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    action_status?: NullableStringFieldUpdateOperationsInput | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    roadmap_action?: NullableStringFieldUpdateOperationsInput | string | null
+    urgency?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type project_issuesUncheckedUpdateWithoutProjectsInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    issue_text?: StringFieldUpdateOperationsInput | string
+    solution_text?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    action_status?: NullableStringFieldUpdateOperationsInput | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    roadmap_action?: NullableStringFieldUpdateOperationsInput | string | null
+    urgency?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type project_issuesUncheckedUpdateManyWithoutProjectsInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    issue_text?: StringFieldUpdateOperationsInput | string
+    solution_text?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    action_status?: NullableStringFieldUpdateOperationsInput | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    roadmap_action?: NullableStringFieldUpdateOperationsInput | string | null
+    urgency?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type schedule_targetsUpdateWithoutProjectsInput = {
@@ -67955,6 +81460,7 @@ export namespace Prisma {
     service_logs?: service_logsUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUnitsNestedInput
   }
 
@@ -67992,6 +81498,7 @@ export namespace Prisma {
     service_logs?: service_logsUncheckedUpdateManyWithoutUnitsNestedInput
     tickets?: ticketsUncheckedUpdateManyWithoutUnitsNestedInput
     unit_comments?: unit_commentsUncheckedUpdateManyWithoutUnitsNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUnitsNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUnitsNestedInput
   }
 
@@ -68070,6 +81577,51 @@ export namespace Prisma {
     check_out_photo?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type knowledge_resourcesUpdateWithoutProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    file_url?: NullableStringFieldUpdateOperationsInput | string | null
+    href?: NullableStringFieldUpdateOperationsInput | string | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type knowledge_resourcesUncheckedUpdateWithoutProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    file_url?: NullableStringFieldUpdateOperationsInput | string | null
+    href?: NullableStringFieldUpdateOperationsInput | string | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type knowledge_resourcesUncheckedUpdateManyWithoutProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    file_url?: NullableStringFieldUpdateOperationsInput | string | null
+    href?: NullableStringFieldUpdateOperationsInput | string | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type role_permissionsCreateManyRolesInput = {
     permission_id: bigint | number
   }
@@ -68086,15 +81638,17 @@ export namespace Prisma {
     phone?: string | null
     is_active?: boolean
     company_name?: string | null
-    two_factor_enabled?: boolean
-    two_factor_secret?: string | null
-    otp_code?: string | null
-    otp_expiry?: Date | string | null
     failed_login_attempts?: number
     locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
     attendance_enabled?: boolean
     face_reference_url?: string | null
     face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
   }
 
   export type role_permissionsUpdateWithoutRolesInput = {
@@ -68128,15 +81682,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
@@ -68146,7 +81704,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
   }
 
@@ -68158,15 +81718,19 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
     refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
     schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
@@ -68176,7 +81740,9 @@ export namespace Prisma {
     user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
     user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
     user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
-    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
   }
 
@@ -68188,15 +81754,17 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
-    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
-    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
-    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     failed_login_attempts?: IntFieldUpdateOperationsInput | number
     locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
     attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
     face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
     face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type activitiesCreateManyUnitsInput = {
@@ -68398,6 +81966,18 @@ export namespace Prisma {
     user_name?: string | null
     comment: string
     created_at?: Date | string | null
+  }
+
+  export type unit_edit_requestsCreateManyUnitsInput = {
+    id?: number
+    requested_by?: number | null
+    reporter_name?: string | null
+    details_json: string
+    status?: string
+    requested_at?: Date | string
+    processed_by?: number | null
+    processed_at?: Date | string | null
+    admin_note?: string | null
   }
 
   export type user_unit_accessCreateManyUnitsInput = {
@@ -69007,6 +82587,41 @@ export namespace Prisma {
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type unit_edit_requestsUpdateWithoutUnitsInput = {
+    reporter_name?: NullableStringFieldUpdateOperationsInput | string | null
+    details_json?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requested_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    processed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    admin_note?: NullableStringFieldUpdateOperationsInput | string | null
+    users?: usersUpdateOneWithoutUnit_edit_requestsNestedInput
+    processor?: usersUpdateOneWithoutProcessed_requestsNestedInput
+  }
+
+  export type unit_edit_requestsUncheckedUpdateWithoutUnitsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    requested_by?: NullableIntFieldUpdateOperationsInput | number | null
+    reporter_name?: NullableStringFieldUpdateOperationsInput | string | null
+    details_json?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requested_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    processed_by?: NullableIntFieldUpdateOperationsInput | number | null
+    processed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    admin_note?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type unit_edit_requestsUncheckedUpdateManyWithoutUnitsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    requested_by?: NullableIntFieldUpdateOperationsInput | number | null
+    reporter_name?: NullableStringFieldUpdateOperationsInput | string | null
+    details_json?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requested_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    processed_by?: NullableIntFieldUpdateOperationsInput | number | null
+    processed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    admin_note?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type user_unit_accessUpdateWithoutUnitsInput = {
     users?: usersUpdateOneRequiredWithoutUser_unit_accessNestedInput
   }
@@ -69017,6 +82632,30 @@ export namespace Prisma {
 
   export type user_unit_accessUncheckedUpdateManyWithoutUnitsInput = {
     user_id?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type audit_logsCreateManyUsersInput = {
+    id?: bigint | number
+    action: string
+    target_type?: string | null
+    target_id?: string | null
+    details?: string | null
+    ip_address?: string | null
+    user_agent?: string | null
+    created_at?: Date | string | null
+  }
+
+  export type project_intelligenceCreateManyUpdated_byInput = {
+    id?: bigint | number
+    project_id: bigint | number
+    strategic_status?: string
+    health_score?: string
+    bottlenecks?: string | null
+    stakeholders?: string | null
+    impact_level?: string
+    action_status?: string
+    last_update_note?: string | null
+    updated_at?: Date | string
   }
 
   export type refresh_tokensCreateManyUsersInput = {
@@ -69130,15 +82769,38 @@ export namespace Prisma {
     unit_id: number
   }
 
-  export type audit_logsCreateManyUsersInput = {
-    id?: bigint | number
-    action: string
-    target_type?: string | null
-    target_id?: string | null
-    details?: string | null
-    ip_address?: string | null
-    user_agent?: string | null
-    created_at?: Date | string | null
+  export type unit_edit_requestsCreateManyUsersInput = {
+    id?: number
+    unit_id: number
+    reporter_name?: string | null
+    details_json: string
+    status?: string
+    requested_at?: Date | string
+    processed_by?: number | null
+    processed_at?: Date | string | null
+    admin_note?: string | null
+  }
+
+  export type unit_edit_requestsCreateManyProcessorInput = {
+    id?: number
+    unit_id: number
+    requested_by?: number | null
+    reporter_name?: string | null
+    details_json: string
+    status?: string
+    requested_at?: Date | string
+    processed_at?: Date | string | null
+    admin_note?: string | null
+  }
+
+  export type notificationsCreateManyUsersInput = {
+    id?: number
+    title: string
+    message: string
+    type?: string
+    link?: string | null
+    is_read?: boolean
+    created_at?: Date | string
   }
 
   export type vendor_attendanceCreateManyUsersInput = {
@@ -69152,6 +82814,78 @@ export namespace Prisma {
     check_out_long?: Decimal | DecimalJsLike | number | string | null
     check_in_photo?: string | null
     check_out_photo?: string | null
+  }
+
+  export type audit_logsUpdateWithoutUsersInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    action?: StringFieldUpdateOperationsInput | string
+    target_type?: NullableStringFieldUpdateOperationsInput | string | null
+    target_id?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type audit_logsUncheckedUpdateWithoutUsersInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    action?: StringFieldUpdateOperationsInput | string
+    target_type?: NullableStringFieldUpdateOperationsInput | string | null
+    target_id?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type audit_logsUncheckedUpdateManyWithoutUsersInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    action?: StringFieldUpdateOperationsInput | string
+    target_type?: NullableStringFieldUpdateOperationsInput | string | null
+    target_id?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type project_intelligenceUpdateWithoutUpdated_byInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    strategic_status?: StringFieldUpdateOperationsInput | string
+    health_score?: StringFieldUpdateOperationsInput | string
+    bottlenecks?: NullableStringFieldUpdateOperationsInput | string | null
+    stakeholders?: NullableStringFieldUpdateOperationsInput | string | null
+    impact_level?: StringFieldUpdateOperationsInput | string
+    action_status?: StringFieldUpdateOperationsInput | string
+    last_update_note?: NullableStringFieldUpdateOperationsInput | string | null
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    projects?: projectsUpdateOneRequiredWithoutProject_intelligenceNestedInput
+  }
+
+  export type project_intelligenceUncheckedUpdateWithoutUpdated_byInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    project_id?: BigIntFieldUpdateOperationsInput | bigint | number
+    strategic_status?: StringFieldUpdateOperationsInput | string
+    health_score?: StringFieldUpdateOperationsInput | string
+    bottlenecks?: NullableStringFieldUpdateOperationsInput | string | null
+    stakeholders?: NullableStringFieldUpdateOperationsInput | string | null
+    impact_level?: StringFieldUpdateOperationsInput | string
+    action_status?: StringFieldUpdateOperationsInput | string
+    last_update_note?: NullableStringFieldUpdateOperationsInput | string | null
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type project_intelligenceUncheckedUpdateManyWithoutUpdated_byInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    project_id?: BigIntFieldUpdateOperationsInput | bigint | number
+    strategic_status?: StringFieldUpdateOperationsInput | string
+    health_score?: StringFieldUpdateOperationsInput | string
+    bottlenecks?: NullableStringFieldUpdateOperationsInput | string | null
+    stakeholders?: NullableStringFieldUpdateOperationsInput | string | null
+    impact_level?: StringFieldUpdateOperationsInput | string
+    action_status?: StringFieldUpdateOperationsInput | string
+    last_update_note?: NullableStringFieldUpdateOperationsInput | string | null
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type refresh_tokensUpdateWithoutUsersInput = {
@@ -69494,37 +83228,103 @@ export namespace Prisma {
     unit_id?: IntFieldUpdateOperationsInput | number
   }
 
-  export type audit_logsUpdateWithoutUsersInput = {
-    id?: BigIntFieldUpdateOperationsInput | bigint | number
-    action?: StringFieldUpdateOperationsInput | string
-    target_type?: NullableStringFieldUpdateOperationsInput | string | null
-    target_id?: NullableStringFieldUpdateOperationsInput | string | null
-    details?: NullableStringFieldUpdateOperationsInput | string | null
-    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
-    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
-    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  export type unit_edit_requestsUpdateWithoutUsersInput = {
+    reporter_name?: NullableStringFieldUpdateOperationsInput | string | null
+    details_json?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requested_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    processed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    admin_note?: NullableStringFieldUpdateOperationsInput | string | null
+    units?: unitsUpdateOneRequiredWithoutUnit_edit_requestsNestedInput
+    processor?: usersUpdateOneWithoutProcessed_requestsNestedInput
   }
 
-  export type audit_logsUncheckedUpdateWithoutUsersInput = {
-    id?: BigIntFieldUpdateOperationsInput | bigint | number
-    action?: StringFieldUpdateOperationsInput | string
-    target_type?: NullableStringFieldUpdateOperationsInput | string | null
-    target_id?: NullableStringFieldUpdateOperationsInput | string | null
-    details?: NullableStringFieldUpdateOperationsInput | string | null
-    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
-    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
-    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  export type unit_edit_requestsUncheckedUpdateWithoutUsersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    unit_id?: IntFieldUpdateOperationsInput | number
+    reporter_name?: NullableStringFieldUpdateOperationsInput | string | null
+    details_json?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requested_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    processed_by?: NullableIntFieldUpdateOperationsInput | number | null
+    processed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    admin_note?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type audit_logsUncheckedUpdateManyWithoutUsersInput = {
-    id?: BigIntFieldUpdateOperationsInput | bigint | number
-    action?: StringFieldUpdateOperationsInput | string
-    target_type?: NullableStringFieldUpdateOperationsInput | string | null
-    target_id?: NullableStringFieldUpdateOperationsInput | string | null
-    details?: NullableStringFieldUpdateOperationsInput | string | null
-    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
-    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
-    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  export type unit_edit_requestsUncheckedUpdateManyWithoutUsersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    unit_id?: IntFieldUpdateOperationsInput | number
+    reporter_name?: NullableStringFieldUpdateOperationsInput | string | null
+    details_json?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requested_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    processed_by?: NullableIntFieldUpdateOperationsInput | number | null
+    processed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    admin_note?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type unit_edit_requestsUpdateWithoutProcessorInput = {
+    reporter_name?: NullableStringFieldUpdateOperationsInput | string | null
+    details_json?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requested_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    processed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    admin_note?: NullableStringFieldUpdateOperationsInput | string | null
+    units?: unitsUpdateOneRequiredWithoutUnit_edit_requestsNestedInput
+    users?: usersUpdateOneWithoutUnit_edit_requestsNestedInput
+  }
+
+  export type unit_edit_requestsUncheckedUpdateWithoutProcessorInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    unit_id?: IntFieldUpdateOperationsInput | number
+    requested_by?: NullableIntFieldUpdateOperationsInput | number | null
+    reporter_name?: NullableStringFieldUpdateOperationsInput | string | null
+    details_json?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requested_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    processed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    admin_note?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type unit_edit_requestsUncheckedUpdateManyWithoutProcessorInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    unit_id?: IntFieldUpdateOperationsInput | number
+    requested_by?: NullableIntFieldUpdateOperationsInput | number | null
+    reporter_name?: NullableStringFieldUpdateOperationsInput | string | null
+    details_json?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requested_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    processed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    admin_note?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type notificationsUpdateWithoutUsersInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    link?: NullableStringFieldUpdateOperationsInput | string | null
+    is_read?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type notificationsUncheckedUpdateWithoutUsersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    link?: NullableStringFieldUpdateOperationsInput | string | null
+    is_read?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type notificationsUncheckedUpdateManyWithoutUsersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    link?: NullableStringFieldUpdateOperationsInput | string | null
+    is_read?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type vendor_attendanceUpdateWithoutUsersInput = {
@@ -69725,6 +83525,45 @@ export namespace Prisma {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     content?: StringFieldUpdateOperationsInput | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type logsheet_entriesCreateManyTemplateInput = {
+    id?: number
+    log_date: Date | string
+    log_time: string
+    recorded_by: string
+    values_json: string
+    notes?: string | null
+    created_at?: Date | string
+  }
+
+  export type logsheet_entriesUpdateWithoutTemplateInput = {
+    log_date?: DateTimeFieldUpdateOperationsInput | Date | string
+    log_time?: StringFieldUpdateOperationsInput | string
+    recorded_by?: StringFieldUpdateOperationsInput | string
+    values_json?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type logsheet_entriesUncheckedUpdateWithoutTemplateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    log_date?: DateTimeFieldUpdateOperationsInput | Date | string
+    log_time?: StringFieldUpdateOperationsInput | string
+    recorded_by?: StringFieldUpdateOperationsInput | string
+    values_json?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type logsheet_entriesUncheckedUpdateManyWithoutTemplateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    log_date?: DateTimeFieldUpdateOperationsInput | Date | string
+    log_time?: StringFieldUpdateOperationsInput | string
+    recorded_by?: StringFieldUpdateOperationsInput | string
+    values_json?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

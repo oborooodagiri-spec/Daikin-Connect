@@ -1,6 +1,7 @@
 import React from "react";
 import { ReportSignatureFooter } from "./ReportSignatureFooter";
 import { t, Language } from "@/lib/i18n";
+import { getPhotoUrl } from "@/lib/photo_utils";
 
 export const getChillerPreventiveSections = (data: any, unit: any, engineerName?: string, customerName?: string, lang: Language = 'id') => {
   const { header, scope, technicalAdvice, activity_photos } = data || {};
@@ -272,7 +273,7 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2mm" }}>
             {chunk.map((p: any, i: number) => (
               <div key={i} style={photoWrapperStyle}>
-                <img src={p.photo_url} alt={`Photo ${i}`} style={photoImgStyle} />
+                <img src={getPhotoUrl(p.photo_url)} alt={`Photo ${i}`} style={photoImgStyle} />
                 <p style={photoCaptionStyle}>Photo {chunkIdx * 6 + i + 1}: {p.label || p.description || 'Maintenance Documentation'}</p>
               </div>
             ))}

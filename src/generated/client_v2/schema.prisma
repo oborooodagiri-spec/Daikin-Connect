@@ -31,19 +31,29 @@ model permissions {
 }
 
 model projects {
-  id                  BigInt                @id @default(autoincrement()) @db.UnsignedBigInt
-  customer_id         Int
-  name                String                @db.VarChar(150)
-  code                String?               @db.VarChar(50)
-  status              projects_status       @default(active)
-  created_at          DateTime              @default(now()) @db.Timestamp(0)
-  enabled_forms       String?               @db.Text
-  customers           customers             @relation(fields: [customer_id], references: [id], onUpdate: Restrict, map: "fk_projects_customer")
-  schedule_targets    schedule_targets[]
-  schedules           schedules[]
-  units               units[]
-  user_project_access user_project_access[]
-  vendor_attendance   vendor_attendance[]
+  id                   BigInt                @id @default(autoincrement()) @db.UnsignedBigInt
+  customer_id          Int
+  name                 String                @db.VarChar(150)
+  code                 String?               @db.VarChar(50)
+  status               projects_status       @default(active)
+  created_at           DateTime              @default(now()) @db.Timestamp(0)
+  enabled_forms        String?               @db.Text
+  customers            customers             @relation(fields: [customer_id], references: [id], onUpdate: Restrict, map: "fk_projects_customer")
+  schedule_targets     schedule_targets[]
+  schedules            schedules[]
+  units                units[]
+  user_project_access  user_project_access[]
+  vendor_attendance    vendor_attendance[]
+  logsheet_templates   logsheet_templates[]
+  project_intelligence project_intelligence?
+  project_issues       project_issues[]
+
+  latitude      Decimal? @db.Decimal(10, 8)
+  longitude     Decimal? @db.Decimal(11, 8)
+  radius_meters Int      @default(100)
+
+  enabled_unit_types String @default("Chiller") @db.Text
+  monitoring_focus   String @default("UNIT") @db.VarChar(50)
 
   @@unique([customer_id, name], map: "uq_project_per_customer")
   @@index([customer_id], map: "idx_projects_customer")
@@ -117,6 +127,7 @@ model units {
   unit_comments      unit_comments[]
   projects           projects?            @relation(fields: [project_ref_id], references: [id], onUpdate: Restrict, map: "fk_units_project_ref")
   user_unit_access   user_unit_access[]
+  unit_edit_requests unit_edit_requests[]
 
   @@index([project_ref_id], map: "fk_units_project_ref")
 }
@@ -162,28 +173,54 @@ model users {
   company_name String? @db.VarChar(150)
 
   // Security & 2FA
-  two_factor_enabled    Boolean   @default(true)
-  two_factor_secret     String?   @db.VarChar(255)
-  otp_code              String?   @db.VarChar(6)
-  otp_expiry            DateTime? @db.DateTime(0)
-  failed_login_attempts Int       @default(0)
-  locked_until          DateTime? @db.DateTime(0)
-  attendance_enabled    Boolean   @default(false)
+  two_factor_enabled        Boolean   @default(true)
+  two_factor_secret         String?   @db.VarChar(255)
+  otp_code                  String?   @db.VarChar(6)
+  otp_expiry                DateTime? @db.DateTime(0)
+  failed_login_attempts     Int       @default(0)
+  locked_until              DateTime? @db.DateTime(0)
+  attendance_enabled        Boolean   @default(false)
+  face_reference_url        String?   @db.VarChar(255)
+  face_verification_enabled Boolean   @default(true)
 
-  refresh_tokens      refresh_tokens[]
-  schedule_messages   schedule_messages[]
-  schedule_targets    schedule_targets[]
-  schedules           schedules[]
-  service_activities  service_activities[]
-  user_project_access user_project_access[]
-  user_push_tokens    user_push_tokens[]
-  user_roles          user_roles[]
-  user_unit_access    user_unit_access[]
-  audit_logs          audit_logs[]
-  roles               roles?                @relation(fields: [role_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "users_ibfk_1")
-  vendor_attendance   vendor_attendance[]
+  // Profile
+  avatar_url String? @db.VarChar(255)
+  bio        String? @db.VarChar(500)
+
+  refresh_tokens       refresh_tokens[]
+  schedule_messages    schedule_messages[]
+  schedule_targets     schedule_targets[]
+  schedules            schedules[]
+  service_activities   service_activities[]
+  user_project_access  user_project_access[]
+  user_push_tokens     user_push_tokens[]
+  user_roles           user_roles[]
+  user_unit_access     user_unit_access[]
+  audit_logs           audit_logs[]
+  roles                roles?                 @relation(fields: [role_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "users_ibfk_1")
+  vendor_attendance    vendor_attendance[]
+  intelligence_updates project_intelligence[] @relation("IntelligenceUpdater")
+  unit_edit_requests   unit_edit_requests[]
+  notifications        notifications[]
 
   @@index([role_id], map: "role_id")
+}
+
+model notifications {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  title      String   @db.VarChar(150)
+  message    String   @db.Text
+  type       String   @default("info") // info, success, warning, error, alert
+  link       String?  @db.VarChar(255)
+  is_read    Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  users users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([is_read])
+  @@index([created_at])
 }
 
 model audit_logs {
@@ -371,6 +408,7 @@ model corrective_maintenances {
   finding           String?   @db.Text
   advise            String?   @db.Text
   report_pdf        String?   @db.VarChar(255)
+  technical_json    String?   @db.LongText
 }
 
 model maintenance_contracts {
@@ -784,4 +822,108 @@ model vendor_attendance {
 
   @@index([user_id, check_in_time])
   @@index([project_id])
+}
+
+// ─── PROJECT STRATEGIC MONITORING ───────────────────────────────
+model project_intelligence {
+  id               BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  project_id       BigInt   @unique @db.UnsignedBigInt
+  strategic_status String   @default("Proposal Request") @db.VarChar(100)
+  health_score     String   @default("Healthy") @db.VarChar(50) // Healthy, At Risk, Critical
+  bottlenecks      String?  @db.Text
+  stakeholders     String?  @db.VarChar(255)
+  impact_level     String   @default("Low") @db.VarChar(50) // Low, Medium, High, Critical
+  action_status    String   @default("Pending") @db.VarChar(100) // Pending, In Progress, Resolved
+  last_update_note String?  @db.Text
+  updated_at       DateTime @updatedAt
+  updated_by_id    Int?
+
+  projects   projects @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  updated_by users?   @relation("IntelligenceUpdater", fields: [updated_by_id], references: [id])
+
+  @@index([project_id])
+}
+
+model project_issues {
+  id            BigInt  @id @default(autoincrement()) @db.UnsignedBigInt
+  project_id    BigInt  @db.UnsignedBigInt
+  issue_text    String  @db.Text
+  solution_text String? @db.Text
+
+  // New granular tracking fields
+  urgency        String? @default("Normal") // Normal, High, Critical
+  action_status  String? @default("Pending") // Pending, In Progress, Resolved
+  outcome        String? @default("Ongoing") // Success, Failed, Ongoing
+  roadmap_action String? @db.Text
+
+  status     String    @default("Todo") // Todo, Done
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  updated_at DateTime? @default(now()) @db.Timestamp(0)
+
+  projects projects @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "project_issues_ibfk_1")
+
+  @@index([project_id], map: "project_id")
+}
+
+// ─── LOGSHEET MONITORING HVAC ───────────────────────────────
+
+model logsheet_templates {
+  id              Int                @id @default(autoincrement())
+  project_id      BigInt             @db.UnsignedBigInt
+  name            String             @db.VarChar(150)
+  type            LogsheetType
+  system_name     String?            @db.VarChar(100)
+  room_name       String?            @db.VarChar(150)
+  parameters_json String             @db.LongText
+  design_json     String?            @db.LongText
+  time_slots      String?            @db.VarChar(255)
+  is_active       Boolean            @default(true)
+  created_at      DateTime           @default(now()) @db.Timestamp(0)
+  projects        projects           @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  entries         logsheet_entries[]
+
+  @@index([project_id])
+}
+
+model logsheet_entries {
+  id          Int                @id @default(autoincrement())
+  template_id Int
+  log_date    DateTime           @db.Date
+  log_time    String             @db.VarChar(5)
+  recorded_by String             @db.VarChar(150)
+  values_json String             @db.LongText
+  notes       String?            @db.Text
+  created_at  DateTime           @default(now()) @db.Timestamp(0)
+  template    logsheet_templates @relation(fields: [template_id], references: [id], onDelete: Cascade)
+
+  @@unique([template_id, log_date, log_time])
+  @@index([template_id, log_date])
+}
+
+enum LogsheetType {
+  Chiller
+  AHU
+  FCU
+  CRAC
+}
+
+model unit_edit_requests {
+  id           Int      @id @default(autoincrement())
+  unit_id      Int
+  requested_by Int
+  requested_at DateTime @default(now())
+
+  // JSON payload of proposed changes
+  details_json String @db.LongText
+
+  status       String    @default("Pending") // Pending, Approved, Rejected
+  processed_by Int?
+  processed_at DateTime?
+  admin_note   String?   @db.Text
+
+  units units @relation(fields: [unit_id], references: [id], onDelete: Cascade)
+  users users @relation(fields: [requested_by], references: [id], onDelete: Cascade)
+
+  @@index([unit_id])
+  @@index([requested_by])
 }

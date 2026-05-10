@@ -1,6 +1,7 @@
 import React from "react";
 import { ReportSignatureFooter } from "./ReportSignatureFooter";
 import { t, Language } from "@/lib/i18n";
+import { getPhotoUrl } from "@/lib/photo_utils";
 
 export const getPreventiveSections = (data: any, unit: any, engineerName?: string, customerName?: string, lang: Language = 'id') => {
   const { header, scope, parts, technicalAdvice, activity_photos } = data || {};
@@ -279,7 +280,7 @@ export const getPreventiveSections = (data: any, unit: any, engineerName?: strin
             {chunk.map((p: any, i: number) => (
               <div key={i} style={photoWrapperStyle}>
                 <img 
-                  src={p.photo_url} 
+                  src={getPhotoUrl(p.photo_url)} 
                   alt={`Photo ${i}`} 
                   style={photoImgStyle} 
                 />

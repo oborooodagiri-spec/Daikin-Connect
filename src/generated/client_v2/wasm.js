@@ -144,7 +144,25 @@ exports.Prisma.ProjectsScalarFieldEnum = {
   enabled_forms: 'enabled_forms',
   latitude: 'latitude',
   longitude: 'longitude',
-  radius_meters: 'radius_meters'
+  radius_meters: 'radius_meters',
+  enabled_unit_types: 'enabled_unit_types',
+  monitoring_focus: 'monitoring_focus'
+};
+
+exports.Prisma.Knowledge_resourcesScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  category: 'category',
+  type: 'type',
+  file_url: 'file_url',
+  href: 'href',
+  thumbnail: 'thumbnail',
+  size: 'size',
+  tags: 'tags',
+  visibility: 'visibility',
+  project_id: 'project_id',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
 };
 
 exports.Prisma.Refresh_tokensScalarFieldEnum = {
@@ -216,15 +234,17 @@ exports.Prisma.UsersScalarFieldEnum = {
   phone: 'phone',
   is_active: 'is_active',
   company_name: 'company_name',
-  two_factor_enabled: 'two_factor_enabled',
-  two_factor_secret: 'two_factor_secret',
-  otp_code: 'otp_code',
-  otp_expiry: 'otp_expiry',
   failed_login_attempts: 'failed_login_attempts',
   locked_until: 'locked_until',
+  otp_code: 'otp_code',
+  otp_expiry: 'otp_expiry',
+  two_factor_enabled: 'two_factor_enabled',
+  two_factor_secret: 'two_factor_secret',
   attendance_enabled: 'attendance_enabled',
   face_reference_url: 'face_reference_url',
-  face_verification_enabled: 'face_verification_enabled'
+  face_verification_enabled: 'face_verification_enabled',
+  avatar_url: 'avatar_url',
+  bio: 'bio'
 };
 
 exports.Prisma.Audit_logsScalarFieldEnum = {
@@ -387,7 +407,8 @@ exports.Prisma.Corrective_maintenancesScalarFieldEnum = {
   repair_date: 'repair_date',
   finding: 'finding',
   advise: 'advise',
-  report_pdf: 'report_pdf'
+  report_pdf: 'report_pdf',
+  technical_json: 'technical_json'
 };
 
 exports.Prisma.Maintenance_contractsScalarFieldEnum = {
@@ -561,11 +582,35 @@ exports.Prisma.ComplaintsScalarFieldEnum = {
   created_at: 'created_at'
 };
 
+exports.Prisma.Unit_edit_requestsScalarFieldEnum = {
+  id: 'id',
+  unit_id: 'unit_id',
+  requested_by: 'requested_by',
+  reporter_name: 'reporter_name',
+  details_json: 'details_json',
+  status: 'status',
+  requested_at: 'requested_at',
+  processed_by: 'processed_by',
+  processed_at: 'processed_at',
+  admin_note: 'admin_note'
+};
+
 exports.Prisma.User_push_tokensScalarFieldEnum = {
   id: 'id',
   user_id: 'user_id',
   token: 'token',
   platform: 'platform',
+  created_at: 'created_at'
+};
+
+exports.Prisma.NotificationsScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  title: 'title',
+  message: 'message',
+  type: 'type',
+  link: 'link',
+  is_read: 'is_read',
   created_at: 'created_at'
 };
 
@@ -627,6 +672,59 @@ exports.Prisma.Vendor_attendanceScalarFieldEnum = {
   check_out_photo: 'check_out_photo'
 };
 
+exports.Prisma.Project_intelligenceScalarFieldEnum = {
+  id: 'id',
+  project_id: 'project_id',
+  strategic_status: 'strategic_status',
+  health_score: 'health_score',
+  bottlenecks: 'bottlenecks',
+  stakeholders: 'stakeholders',
+  impact_level: 'impact_level',
+  action_status: 'action_status',
+  last_update_note: 'last_update_note',
+  updated_at: 'updated_at',
+  updated_by_id: 'updated_by_id'
+};
+
+exports.Prisma.Project_issuesScalarFieldEnum = {
+  id: 'id',
+  project_id: 'project_id',
+  issue_text: 'issue_text',
+  solution_text: 'solution_text',
+  status: 'status',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  action_status: 'action_status',
+  outcome: 'outcome',
+  roadmap_action: 'roadmap_action',
+  urgency: 'urgency'
+};
+
+exports.Prisma.Logsheet_templatesScalarFieldEnum = {
+  id: 'id',
+  project_id: 'project_id',
+  name: 'name',
+  type: 'type',
+  system_name: 'system_name',
+  room_name: 'room_name',
+  parameters_json: 'parameters_json',
+  design_json: 'design_json',
+  time_slots: 'time_slots',
+  is_active: 'is_active',
+  created_at: 'created_at'
+};
+
+exports.Prisma.Logsheet_entriesScalarFieldEnum = {
+  id: 'id',
+  template_id: 'template_id',
+  log_date: 'log_date',
+  log_time: 'log_time',
+  recorded_by: 'recorded_by',
+  values_json: 'values_json',
+  notes: 'notes',
+  created_at: 'created_at'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -652,7 +750,22 @@ exports.Prisma.permissionsOrderByRelevanceFieldEnum = {
 exports.Prisma.projectsOrderByRelevanceFieldEnum = {
   name: 'name',
   code: 'code',
-  enabled_forms: 'enabled_forms'
+  enabled_forms: 'enabled_forms',
+  enabled_unit_types: 'enabled_unit_types',
+  monitoring_focus: 'monitoring_focus'
+};
+
+exports.Prisma.knowledge_resourcesOrderByRelevanceFieldEnum = {
+  id: 'id',
+  title: 'title',
+  category: 'category',
+  type: 'type',
+  file_url: 'file_url',
+  href: 'href',
+  thumbnail: 'thumbnail',
+  size: 'size',
+  tags: 'tags',
+  visibility: 'visibility'
 };
 
 exports.Prisma.refresh_tokensOrderByRelevanceFieldEnum = {
@@ -688,9 +801,11 @@ exports.Prisma.usersOrderByRelevanceFieldEnum = {
   password: 'password',
   phone: 'phone',
   company_name: 'company_name',
-  two_factor_secret: 'two_factor_secret',
   otp_code: 'otp_code',
-  face_reference_url: 'face_reference_url'
+  two_factor_secret: 'two_factor_secret',
+  face_reference_url: 'face_reference_url',
+  avatar_url: 'avatar_url',
+  bio: 'bio'
 };
 
 exports.Prisma.audit_logsOrderByRelevanceFieldEnum = {
@@ -778,7 +893,8 @@ exports.Prisma.corrective_maintenancesOrderByRelevanceFieldEnum = {
   inspector_name: 'inspector_name',
   finding: 'finding',
   advise: 'advise',
-  report_pdf: 'report_pdf'
+  report_pdf: 'report_pdf',
+  technical_json: 'technical_json'
 };
 
 exports.Prisma.maintenance_contractsOrderByRelevanceFieldEnum = {
@@ -856,9 +972,23 @@ exports.Prisma.complaintsOrderByRelevanceFieldEnum = {
   status: 'status'
 };
 
+exports.Prisma.unit_edit_requestsOrderByRelevanceFieldEnum = {
+  reporter_name: 'reporter_name',
+  details_json: 'details_json',
+  status: 'status',
+  admin_note: 'admin_note'
+};
+
 exports.Prisma.user_push_tokensOrderByRelevanceFieldEnum = {
   token: 'token',
   platform: 'platform'
+};
+
+exports.Prisma.notificationsOrderByRelevanceFieldEnum = {
+  title: 'title',
+  message: 'message',
+  type: 'type',
+  link: 'link'
 };
 
 exports.Prisma.daily_ops_logsOrderByRelevanceFieldEnum = {
@@ -874,6 +1004,42 @@ exports.Prisma.daily_ops_logsOrderByRelevanceFieldEnum = {
 exports.Prisma.vendor_attendanceOrderByRelevanceFieldEnum = {
   check_in_photo: 'check_in_photo',
   check_out_photo: 'check_out_photo'
+};
+
+exports.Prisma.project_intelligenceOrderByRelevanceFieldEnum = {
+  strategic_status: 'strategic_status',
+  health_score: 'health_score',
+  bottlenecks: 'bottlenecks',
+  stakeholders: 'stakeholders',
+  impact_level: 'impact_level',
+  action_status: 'action_status',
+  last_update_note: 'last_update_note'
+};
+
+exports.Prisma.project_issuesOrderByRelevanceFieldEnum = {
+  issue_text: 'issue_text',
+  solution_text: 'solution_text',
+  status: 'status',
+  action_status: 'action_status',
+  outcome: 'outcome',
+  roadmap_action: 'roadmap_action',
+  urgency: 'urgency'
+};
+
+exports.Prisma.logsheet_templatesOrderByRelevanceFieldEnum = {
+  name: 'name',
+  system_name: 'system_name',
+  room_name: 'room_name',
+  parameters_json: 'parameters_json',
+  design_json: 'design_json',
+  time_slots: 'time_slots'
+};
+
+exports.Prisma.logsheet_entriesOrderByRelevanceFieldEnum = {
+  log_time: 'log_time',
+  recorded_by: 'recorded_by',
+  values_json: 'values_json',
+  notes: 'notes'
 };
 exports.customers_customer_type = exports.$Enums.customers_customer_type = {
   Corporate: 'Corporate',
@@ -984,10 +1150,18 @@ exports.ScheduleStatus = exports.$Enums.ScheduleStatus = {
   Missed: 'Missed'
 };
 
+exports.LogsheetType = exports.$Enums.LogsheetType = {
+  Chiller: 'Chiller',
+  AHU: 'AHU',
+  FCU: 'FCU',
+  CRAC: 'CRAC'
+};
+
 exports.Prisma.ModelName = {
   customers: 'customers',
   permissions: 'permissions',
   projects: 'projects',
+  knowledge_resources: 'knowledge_resources',
   refresh_tokens: 'refresh_tokens',
   role_permissions: 'role_permissions',
   roles: 'roles',
@@ -1020,9 +1194,15 @@ exports.Prisma.ModelName = {
   schedule_messages: 'schedule_messages',
   schedule_targets: 'schedule_targets',
   complaints: 'complaints',
+  unit_edit_requests: 'unit_edit_requests',
   user_push_tokens: 'user_push_tokens',
+  notifications: 'notifications',
   daily_ops_logs: 'daily_ops_logs',
-  vendor_attendance: 'vendor_attendance'
+  vendor_attendance: 'vendor_attendance',
+  project_intelligence: 'project_intelligence',
+  project_issues: 'project_issues',
+  logsheet_templates: 'logsheet_templates',
+  logsheet_entries: 'logsheet_entries'
 };
 
 /**

@@ -6,6 +6,7 @@ import {
   FileVideo, ImageIcon, User, Calendar, 
   ExternalLink, Maximize2, Play, X 
 } from "lucide-react";
+import { getPhotoUrl } from "@/lib/photo_utils";
 
 interface MediaItem {
   id: number;
@@ -73,7 +74,7 @@ export default function MediaGallery({ groups }: { groups: MediaGroup[] }) {
                   {item.type === "video" ? (
                     <div className="w-full h-full flex items-center justify-center bg-slate-900">
                       <video 
-                        src={item.url} 
+                        src={getPhotoUrl(item.url)} 
                         className="w-full h-full object-cover opacity-60"
                         muted
                         playsInline
@@ -89,7 +90,7 @@ export default function MediaGallery({ groups }: { groups: MediaGroup[] }) {
                     </div>
                   ) : (
                     <img 
-                      src={item.url} 
+                      src={getPhotoUrl(item.url)} 
                       alt={item.description}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
@@ -143,14 +144,14 @@ export default function MediaGallery({ groups }: { groups: MediaGroup[] }) {
               <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl bg-black flex items-center justify-center border border-white/5">
                 {selectedMedia.type === "video" ? (
                   <video 
-                    src={selectedMedia.url} 
+                    src={getPhotoUrl(selectedMedia.url)} 
                     className="max-w-full max-h-[70vh] rounded-lg"
                     controls 
                     autoPlay
                   />
                 ) : (
                   <img 
-                    src={selectedMedia.url} 
+                    src={getPhotoUrl(selectedMedia.url)} 
                     className="max-w-full max-h-[70vh] object-contain rounded-lg"
                     alt="Documentation" 
                   />

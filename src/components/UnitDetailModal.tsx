@@ -17,6 +17,7 @@ import MediaGallery from "./dashboard/MediaGallery";
 import { AlertCircle, Trash2, ShieldCheck, Zap, Activity } from "lucide-react";
 import Portal from "./Portal";
 import { t, Language } from "@/lib/i18n";
+import { getPhotoUrl } from "@/lib/photo_utils";
 
 interface Unit {
   id: string | number;
@@ -664,7 +665,7 @@ export default function UnitDetailModal({
                               
                                {c.photo_url && (
                                  <div className="w-16 h-16 rounded-xl overflow-hidden border border-white ml-4 shadow-sm shrink-0 relative">
-                                    <img src={c.photo_url} alt="Problem" className="w-full h-full object-cover" />
+                                    <img src={getPhotoUrl(c.photo_url)} alt="Problem" className="w-full h-full object-cover" />
                                  </div>
                               )}
 
