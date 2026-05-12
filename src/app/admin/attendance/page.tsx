@@ -95,17 +95,14 @@ export default function AttendanceRecordsPage() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
           <div className="space-y-3">
-            <div className="flex items-center gap-3">
-               <div className="p-3 bg-emerald-500 rounded-2xl text-white shadow-lg shadow-emerald-200">
-                  <ShieldCheck size={28} />
+               <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-blue-600 rounded-3xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
+                     <Fingerprint size={28} />
+                  </div>
+                  <div>
+                     <h1 className="text-3xl font-black text-[#003366] tracking-tight">Attendance Record</h1>
+                  </div>
                </div>
-               <h1 className="text-4xl font-black text-[#003366] uppercase tracking-tight">
-                 Global <span className="text-[#00a1e4]">Attendance</span>
-               </h1>
-            </div>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.3em] flex items-center gap-2">
-               Enterprise Grade Personnel Monitoring System
-            </p>
           </div>
 
           <div className="flex items-center gap-4">
