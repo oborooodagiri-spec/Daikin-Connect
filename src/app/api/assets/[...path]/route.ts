@@ -9,35 +9,48 @@ export async function GET(
   try {
     const { path: pathSegments } = await params;
     
-    // Clean up path segments to remove redundant 'uploads' or 'api' or 'assets'
+    // Clean up path segments to remove redundant 'public', 'uploads', 'api', or 'assets'
     const cleanSegments = pathSegments.filter(s => 
+      s.toLowerCase() !== "public" && 
       s.toLowerCase() !== "uploads" && 
       s.toLowerCase() !== "api" && 
       s.toLowerCase() !== "assets"
     );
 
-    const filePath = cleanSegments.join("/");
-    const absolutePath = path.join(process.cwd(), "public", "uploads", ...cleanSegments);
+    // VPS Path Normalization: Check common deployment roots
+    const cwd = process.cwd();
+    const possibleRoots = [
+      cwd,
+      path.join(cwd, ".."), // parent dir (for some pm2/next deployments)
+      "/home/daikin-connect/public_html", // common shared hosting path
+      "/var/www/html"
+    ];
 
-    // Security check: ensure the path is within the uploads directory
-    const resolvedPath = path.resolve(absolutePath);
-    const baseUploadsPath = path.resolve(path.join(process.cwd(), "public", "uploads"));
+    let targetPath = "";
+    let found = false;
 
-    if (!resolvedPath.startsWith(baseUploadsPath)) {
-      return new NextResponse("Forbidden", { status: 403 });
+    // Direct path construction
+    const relativePath = path.join("public", "uploads", ...cleanSegments);
+    
+    for (const root of possibleRoots) {
+      const fullPath = path.join(root, relativePath);
+      if (fs.existsSync(fullPath)) {
+        targetPath = fullPath;
+        found = true;
+        break;
+      }
     }
-
-    let targetPath = resolvedPath;
-    let found = fs.existsSync(targetPath);
 
     if (!found) {
       // Aggressive fallback: search recursively for the filename in public/uploads
-      const fileName = path.basename(filePath);
+      const fileName = cleanSegments[cleanSegments.length - 1] || "";
       const fileNameLower = fileName.toLowerCase();
       
       const searchDirs = [
         path.join(process.cwd(), "public", "uploads"),
-        path.join(process.cwd(), "uploads"), // Check root uploads too just in case
+        path.join(process.cwd(), "public"),
+        path.join(process.cwd(), "uploads"),
+        process.cwd(), // Last resort: search entire project root (be careful, but it's restricted by fileName match)
       ];
 
       function findRecursive(dir: string): string | null {
@@ -71,6 +84,13 @@ export async function GET(
     }
 
     if (!found) {
+      // PRO-TIP: If we are on localhost and the file isn't here, try to redirect to production
+      const isLocal = req.headers.get("host")?.includes("localhost");
+      if (isLocal) {
+        const prodUrl = `https://daikin-connect.com/api/assets/${cleanSegments.join("/")}`;
+        return NextResponse.redirect(prodUrl);
+      }
+      
       return new NextResponse("Not Found", { status: 404 });
     }
 

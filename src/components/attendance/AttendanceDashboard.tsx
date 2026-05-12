@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { 
   ChevronLeft, Calendar, ChevronRight, Clock, MapPin, 
   User, CheckCircle2, AlertCircle, History, Fingerprint,
-  MoreVertical, Download
+  MoreVertical, Download, X, FileImage
 } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from "date-fns";
 import { id } from "date-fns/locale";
@@ -19,6 +19,7 @@ export default function AttendanceDashboard({ projectId }: { projectId: string }
   const [loading, setLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState(new Date());
   const [isMounted, setIsMounted] = useState(false);
+  const [selectedHistory, setSelectedHistory] = useState<any>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -83,14 +84,18 @@ export default function AttendanceDashboard({ projectId }: { projectId: string }
              </div>
            ) : (
              history.map((item, idx) => (
-               <div key={idx} className="bg-white rounded-2xl border border-slate-100 p-4 flex items-center justify-between hover:border-blue-200 transition-colors cursor-pointer group">
+               <div 
+                 key={idx} 
+                 onClick={() => setSelectedHistory(item)}
+                 className="bg-white rounded-2xl border border-slate-100 p-4 flex items-center justify-between hover:border-blue-200 transition-colors cursor-pointer group"
+               >
                   <div className="flex items-center gap-4">
                      <div className="text-left">
                         <p className="text-[13px] font-black text-slate-700">
                            {format(new Date(item.check_in_time), "dd MMM")}
                         </p>
                         <p className="text-[11px] text-slate-400 font-bold uppercase tracking-tight">
-                           Jam kerja
+                           {item.projects?.name || 'Jam kerja'}
                         </p>
                      </div>
                      <div className="h-8 w-[1px] bg-slate-100 mx-2" />
@@ -112,6 +117,15 @@ export default function AttendanceDashboard({ projectId }: { projectId: string }
              ))
            )}
         </div>
+
+        <AnimatePresence>
+          {selectedHistory && (
+             <HistoryDetailModal 
+                item={selectedHistory} 
+                onClose={() => setSelectedHistory(null)} 
+             />
+          )}
+        </AnimatePresence>
       </div>
     );
   };
@@ -182,6 +196,103 @@ function StatItem({ label, value }: { label: string, value: number }) {
     <div className="text-left">
        <p className="text-[11px] font-bold text-slate-500 mb-1 leading-tight">{label}</p>
        <p className="text-xl font-black text-slate-800">{value}</p>
+    </div>
+  );
+}
+
+function HistoryDetailModal({ item, onClose }: { item: any; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-0 sm:p-4">
+       <motion.div 
+         initial={{ opacity: 0 }} 
+         animate={{ opacity: 1 }} 
+         exit={{ opacity: 0 }}
+         onClick={onClose}
+         className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+       />
+       <motion.div 
+         initial={{ y: "100%" }} 
+         animate={{ y: 0 }} 
+         exit={{ y: "100%" }}
+         className="relative w-full max-w-md bg-white rounded-t-[3rem] sm:rounded-[3rem] overflow-hidden shadow-2xl"
+       >
+          <div className="p-8 pb-4 flex justify-between items-start">
+             <div>
+                <h3 className="text-2xl font-black text-slate-800 tracking-tight">Attendance Information</h3>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
+                   {format(new Date(item.check_in_time), "EEEE, dd MMMM yyyy", { locale: id })}
+                </p>
+             </div>
+             <button onClick={onClose} className="p-3 bg-slate-50 rounded-2xl text-slate-400 hover:text-rose-500 transition-colors">
+                <X size={24} />
+             </button>
+          </div>
+
+          <div className="p-8 space-y-8 overflow-y-auto max-h-[70vh]">
+             <div className="grid grid-cols-2 gap-4">
+                <PhotoCard label="Clock In" url={item.check_in_photo} time={item.check_in_time} color="emerald" />
+                <PhotoCard label="Clock Out" url={item.check_out_photo} time={item.check_out_time} color="rose" />
+             </div>
+
+             <div className="space-y-4">
+                <div className="flex items-start gap-4">
+                   <div className="p-3 bg-blue-50 text-blue-600 rounded-2xl">
+                      <MapPin size={20} />
+                   </div>
+                   <div>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Lokasi Proyek</p>
+                      <p className="text-sm font-bold text-slate-700">{item.projects?.name || 'Unknown Site'}</p>
+                   </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                   <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl">
+                      <Clock size={20} />
+                   </div>
+                   <div>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Durasi Kerja</p>
+                      <p className="text-sm font-bold text-slate-700">
+                         {item.check_out_time ? 
+                            `${Math.round((new Date(item.check_out_time).getTime() - new Date(item.check_in_time).getTime()) / 3600000)} Jam` 
+                            : 'Sedang berlangsung'}
+                      </p>
+                   </div>
+                </div>
+             </div>
+
+             {item.check_in_notes && (
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Catatan</p>
+                   <p className="text-xs text-slate-600 italic">"{item.check_in_notes}"</p>
+                </div>
+             )}
+          </div>
+       </motion.div>
+    </div>
+  );
+}
+
+function PhotoCard({ label, url, time, color }: any) {
+  return (
+    <div className="space-y-2">
+       <p className={`text-[10px] font-black text-${color}-600 uppercase tracking-widest flex items-center gap-1`}>
+          <span className={`w-1.5 h-1.5 rounded-full bg-${color}-500`} /> {label}
+       </p>
+       <div className="aspect-[3/4] bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 relative group">
+          {url ? (
+             <img src={url} className="w-full h-full object-cover" />
+          ) : (
+             <div className="w-full h-full flex flex-col items-center justify-center text-slate-200">
+                <FileImage size={32} className="opacity-20 mb-2" />
+                <span className="text-[9px] font-black uppercase">{time ? 'Photo Missing' : 'N/A'}</span>
+             </div>
+          )}
+          {url && (
+             <div className="absolute bottom-2 left-2 right-2 p-2 bg-black/40 backdrop-blur-md rounded-xl text-white text-[10px] font-bold text-center">
+                {time ? format(new Date(time), "HH:mm") : "-"}
+             </div>
+          )}
+       </div>
     </div>
   );
 }
