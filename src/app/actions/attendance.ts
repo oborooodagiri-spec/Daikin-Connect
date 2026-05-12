@@ -16,6 +16,10 @@ export async function getActiveAttendance(projectId: string) {
     const session = await getSession();
     if (!session) return { error: "Unauthorized" };
 
+    if (!projectId || projectId === "empty" || isNaN(Number(projectId))) {
+      return { success: false, error: "No project assigned to this user" };
+    }
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -149,6 +153,10 @@ export async function submitCheckIn(data: {
   try {
     const session = await getSession();
     if (!session) return { error: "Unauthorized" };
+
+    if (!data.projectId || data.projectId === "empty" || isNaN(Number(data.projectId))) {
+      return { error: "Invalid project ID" };
+    }
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);

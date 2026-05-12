@@ -70,9 +70,10 @@ export async function getDashboardData(filters: { customerId?: string; projectId
     const unitWhere: any = {};
     const baseActivityWhere: any = {};
 
-    if (filters.projectId) {
-      unitWhere.project_ref_id = BigInt(filters.projectId);
-      baseActivityWhere.units = { project_ref_id: BigInt(filters.projectId) };
+    if (filters.projectId && filters.projectId !== "empty" && !isNaN(Number(filters.projectId))) {
+      const pid = BigInt(filters.projectId);
+      unitWhere.project_ref_id = pid;
+      baseActivityWhere.units = { project_ref_id: pid };
     } else if (filters.customerId) {
       unitWhere.projects = { customer_id: parseInt(filters.customerId) };
       baseActivityWhere.units = { projects: { customer_id: parseInt(filters.customerId) } };
@@ -112,7 +113,7 @@ export async function getDashboardData(filters: { customerId?: string; projectId
           type,
           month: currentMonth,
           year: currentYear,
-          ...(filters.projectId ? { project_id: BigInt(filters.projectId) } : {}),
+          ...(filters.projectId && filters.projectId !== "empty" && !isNaN(Number(filters.projectId)) ? { project_id: BigInt(filters.projectId) } : {}),
           ...(accessibleIds ? { project_id: { in: accessibleIds.map(id => BigInt(id)) } } : {})
         }
       });
@@ -134,8 +135,11 @@ export async function getDashboardData(filters: { customerId?: string; projectId
         type: "Corrective",
         start_at: { gte: startOfMonth }
       };
-      if (filters.projectId) scheduleWhere.project_id = BigInt(filters.projectId);
-      else if (accessibleIds) scheduleWhere.project_id = { in: accessibleIds.map(id => BigInt(id)) };
+      if (filters.projectId && filters.projectId !== "empty" && !isNaN(Number(filters.projectId))) {
+        scheduleWhere.project_id = BigInt(filters.projectId);
+      } else if (accessibleIds) {
+        scheduleWhere.project_id = { in: accessibleIds.map(id => BigInt(id)) };
+      }
 
       const [appeared, resolved] = await Promise.all([
         (prisma.schedules as any).count({ where: scheduleWhere }),
@@ -208,7 +212,7 @@ export async function getDashboardData(filters: { customerId?: string; projectId
 
     // helper for project config fetch
     const fetchProjectConfig = async (pid: string) => {
-      if (!pid || pid === "undefined") {
+      if (!pid || pid === "undefined" || pid === "empty" || isNaN(Number(pid))) {
         return {
           enabled_forms: "Audit,Preventive,Corrective",
           enabled_unit_types: "Chiller",

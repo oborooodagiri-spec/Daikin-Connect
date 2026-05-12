@@ -13,6 +13,7 @@ import { ShieldCheck, ShieldAlert, Fingerprint } from "lucide-react";
 
 
 export default function AttendanceClient({ projectId }: { projectId: string }) {
+  const [isMounted, setIsMounted] = useState(false);
   const [activeRecord, setActiveRecord] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -34,8 +35,9 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
   useEffect(() => {
+    setIsMounted(true);
     fetchStatus();
-    checkPermissionsAndTrack();
+    startLocationTracking(); // Trigger prompt immediately
     return () => stopCamera();
   }, [projectId]);
 
@@ -89,14 +91,7 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
     setLoading(false);
   };
 
-  const checkPermissionsAndTrack = async () => {
-    try {
-      const result = await navigator.permissions.query({ name: 'geolocation' });
-      if (result.state === 'granted') {
-        startLocationTracking();
-      }
-    } catch (e) {}
-  };
+  // Location tracking is now started directly in useEffect
 
   const startLocationTracking = (useHighAccuracy = true) => {
     if (!navigator.geolocation) {
@@ -195,10 +190,11 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
         const faceRes = await verifyFaceMatch(photoUrl);
         setVerifying(false);
         if (faceRes.isEnrollment) {
-           alert("✨ REGISTRASI WAJAH BERHASIL!");
-           await fetchStatus();
-           return;
-        } else if (!faceRes.match) throw new Error(`Face Mismatch: ${faceRes.reason}`);
+           // Proceed after enrollment without returning
+           console.log("Face enrolled successfully, proceeding to check-in...");
+        } else if (!faceRes.match) {
+           throw new Error(`Face Mismatch: ${faceRes.reason}`);
+        }
       }
 
       if (!activeRecord) {
@@ -267,6 +263,8 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
   }
 
   const isWorking = activeRecord && !activeRecord.check_out_time;
+
+  if (!isMounted) return <div className="min-h-[400px]" />;
 
   return (
     <div className="max-w-md mx-auto w-full px-4 py-6">

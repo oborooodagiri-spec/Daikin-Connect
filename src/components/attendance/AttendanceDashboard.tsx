@@ -18,6 +18,11 @@ export default function AttendanceDashboard({ projectId }: { projectId: string }
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState(new Date());
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -111,10 +116,12 @@ export default function AttendanceDashboard({ projectId }: { projectId: string }
     );
   };
 
+  if (!isMounted) return <div className="min-h-screen bg-[#f8fafc]" />;
+
   return (
     <div className="min-h-screen bg-[#f8fafc] font-sans">
       {/* Header */}
-      <div className="bg-[#e11d48] text-white p-4 pb-12 flex items-center gap-4 sticky top-0 z-50 shadow-lg">
+      <div className="bg-[#e11d48] text-white p-4 pb-8 flex items-center gap-4 sticky top-0 z-50 shadow-lg">
          <button onClick={() => window.history.back()} className="p-2 hover:bg-white/10 rounded-full">
             <ChevronLeft size={24} />
          </button>
@@ -122,7 +129,7 @@ export default function AttendanceDashboard({ projectId }: { projectId: string }
       </div>
 
       {/* Tabs */}
-      <div className="bg-white px-4 -mt-6 rounded-t-[2rem] border-b border-slate-100 sticky top-[68px] z-40">
+      <div className="bg-white px-4 -mt-4 rounded-t-[2rem] border-b border-slate-100 sticky top-[60px] z-40">
          <div className="flex justify-around">
             <TabItem active={activeTab === "riwayat"} onClick={() => setActiveTab("riwayat")}>Riwayat</TabItem>
             <TabItem active={activeTab === "absensi"} onClick={() => setActiveTab("absensi")}>Absensi</TabItem>
@@ -157,7 +164,7 @@ function TabItem({ children, active, onClick }: { children: React.ReactNode; act
   return (
     <button 
       onClick={onClick}
-      className={`py-4 px-6 text-sm font-black transition-all relative ${active ? 'text-blue-600' : 'text-slate-400'}`}
+      className={`py-3 px-6 text-sm font-black transition-all relative ${active ? 'text-blue-600' : 'text-slate-400'}`}
     >
       {children}
       {active && (

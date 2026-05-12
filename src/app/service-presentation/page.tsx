@@ -57,7 +57,7 @@ export default function ServicePresentationPage() {
            </h1>
            
            <p className="text-lg md:text-xl text-slate-400 font-bold max-w-2xl mx-auto leading-relaxed mb-12">
-             Meninggalkan maintenance tradisional menuju pengelolaan aset berbasis data yang komprehensif, transparan, dan terintegrasi.
+             Meninggalkan maintenance konvensional menuju pengelolaan aset berbasis data yang komprehensif, transparan, dan terintegrasi.
            </p>
 
            <div className="flex justify-center gap-6">
@@ -111,7 +111,7 @@ export default function ServicePresentationPage() {
                 <CompareItem 
                   icon={compareMode === 'conventional' ? Activity : Zap} 
                   title={compareMode === 'conventional' ? "Reactive Mode" : "Engineering Review"} 
-                  desc={compareMode === 'conventional' ? "Menunggu unit rusak baru diperbaiki. Downtime lama dan biaya tak terduga." : "Analisa performa rutin untuk mendeteksi anomali sebelum terjadi kerusakan."}
+                  desc={compareMode === 'conventional' ? "Menunggu unit rusak baru diperbaiki. Downtime lama dan biaya tak terduga." : "Analisa performa rutin untuk mendeteksi permasalahan sebelum terjadi kerusakan."}
                   isSmart={compareMode === 'smart'}
                 />
                 <CompareItem 
@@ -146,16 +146,17 @@ export default function ServicePresentationPage() {
                  <div className="mb-10">
                     <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Level 01</span>
                     <h3 className="text-3xl font-black uppercase text-slate-300">DASAR</h3>
-                    <p className="text-[9px] font-bold text-[#00a1e4]/60 uppercase tracking-widest mt-1">Maintenance & History</p>
+                    <p className="text-[9px] font-bold text-[#00a1e4]/60 uppercase tracking-widest mt-1">Digital Maintenance & History</p>
                  </div>
                  <ul className="space-y-6 mb-12 flex-1">
-                    <FeatureItem text="Perawatan Rutin Terjadwal" />
-                    <FeatureItem text="Pelaporan Digital (PDF Manual)" />
-                    <FeatureItem text="Akses Riwayat Servis Aset" />
-                    <FeatureDisabled text="Live Performance Dashboard" />
-                    <FeatureDisabled text="Comprehensive Health Audit" />
+                    <FeatureItem text="Perawatan Rutin Terjadwal (Preventive Maintenance)" />
+                    <FeatureItem text="Pelaporan Servis Digital (Akses Database & PDF)" />
+                    <FeatureItem text="Pencatatan Riwayat Aset Terpusat" />
+                    <FeatureItem text="Dukungan Perbaikan Standar" />
+                    <FeatureDisabled text="Pemantauan Performa Unit (Live/Periodic)" />
+                    <FeatureDisabled text="Audit Engineering & Konsultasi Strategis" />
                  </ul>
-                 <button className="w-full py-5 border border-white/10 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-[#00a1e4] transition-all">Info Paket Dasar</button>
+                 <button className="w-full py-5 border border-white/10 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-[#00a1e4] transition-all">[ INFO PAKET DASAR ]</button>
               </div>
 
               {/* Paket Menengah */}
@@ -166,17 +167,18 @@ export default function ServicePresentationPage() {
                     <div className="mb-10">
                        <span className="text-[10px] font-black text-blue-300/40 uppercase tracking-widest mb-2 block">Level 02</span>
                        <h3 className="text-3xl font-black uppercase text-white">MENENGAH</h3>
-                       <p className="text-[9px] font-bold text-blue-300 uppercase tracking-widest mt-1">Smart Asset Control</p>
+                       <p className="text-[9px] font-bold text-blue-300 uppercase tracking-widest mt-1">Smart Performance & Control</p>
                     </div>
                     <ul className="space-y-6 mb-12 flex-1">
-                       <FeatureItem text="Semua Fitur Paket Dasar" bold />
-                       <FeatureItem text="Live Executive Dashboard" highlight />
-                       <FeatureItem text="Engineering Audit Reporting" highlight />
-                       <FeatureItem text="Health Index Scoring (Per-Unit)" />
-                       <FeatureItem text="SLA Respon 24/7 Priority" />
-                       <FeatureDisabled text="Energy Efficiency Audit" />
+                       <FeatureItem text="SEMUA FITUR PAKET DASAR" bold />
+                       <FeatureItem text="Laporan Performa Unit (Unit Performance Monitoring)" highlight />
+                       <FeatureItem text="Penilaian Kesehatan Aset (Health Index Scoring Per-Unit)" highlight />
+                       <FeatureItem text="Laporan Audit Engineering Dasar" highlight />
+                       <FeatureItem text="SLA Respon Prioritas (24/7 Technical Support)" />
+                       <FeatureDisabled text="Audit Efisiensi Energi Menyeluruh" />
+                       <FeatureDisabled text="Konsultasi Manajemen Siklus Hidup Aset" />
                     </ul>
-                    <button className="w-full py-5 bg-[#00a1e4] text-white rounded-2xl text-[9px] font-black uppercase tracking-widest hover:scale-[1.02] transition-all shadow-xl shadow-blue-500/20">Mulai Level Menengah</button>
+                    <button className="w-full py-5 bg-[#00a1e4] text-white rounded-2xl text-[9px] font-black uppercase tracking-widest hover:scale-[1.02] transition-all shadow-xl shadow-blue-500/20">[ MULAI LEVEL MENENGAH ]</button>
                  </div>
               </div>
 
@@ -185,17 +187,17 @@ export default function ServicePresentationPage() {
                  <div className="mb-10">
                     <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Level 03</span>
                     <h3 className="text-3xl font-black uppercase text-slate-300">LENGKAP</h3>
-                    <p className="text-[9px] font-bold text-[#00a1e4]/60 uppercase tracking-widest mt-1">Strategic Asset Management</p>
+                    <p className="text-[9px] font-bold text-[#00a1e4]/60 uppercase tracking-widest mt-1">Strategic Value Engineering & Consultant</p>
                  </div>
                  <ul className="space-y-6 mb-12 flex-1">
-                    <FeatureItem text="Semua Fitur Menengah" bold />
-                    <FeatureItem text="Audit Efisiensi Energi" highlight />
-                    <FeatureItem text="Comprehensive Health Analytics" highlight />
-                    <FeatureItem text="Life Cycle Management Review" highlight />
-                    <FeatureItem text="Digital Twin Linkage & Asset Hub" />
-                    <FeatureItem text="VIP Dedicated Engineering" />
+                    <FeatureItem text="SEMUA FITUR PAKET MENENGAH" bold />
+                    <FeatureItem text="Audit Efisiensi Energi & Optimalisasi (Value Engineering)" highlight />
+                    <FeatureItem text="Tinjauan Manajemen Siklus Hidup Aset (Life Cycle Review)" highlight />
+                    <FeatureItem text="Analitik Pemeliharaan Prediktif (Predictive Maintenance)" highlight />
+                    <FeatureItem text="Laporan Rekayasa Finansial (ROI & Cost Saving Analysis)" />
+                    <FeatureItem text="VIP Dedicated Engineer & Konsultasi Strategis" />
                  </ul>
-                 <button className="w-full py-5 border border-white/10 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-[#00a1e4] transition-all font-mono italic">Tier-3 Strategy</button>
+                 <button className="w-full py-5 border border-white/10 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-[#00a1e4] transition-all font-mono italic">[ TIER-3 STRATEGY ]</button>
               </div>
            </div>
         </div>
