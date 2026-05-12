@@ -7,7 +7,7 @@ import {
   MapPin, Clock, FileImage, ShieldCheck, Download, 
   Loader2, Search, Filter, Calendar, Users, 
   Briefcase, ArrowUpRight, CheckCircle2, ChevronRight,
-  UserCheck, AlertCircle
+  UserCheck, AlertCircle, Fingerprint
 } from "lucide-react";
 import AttendanceDetail from "@/components/admin/AttendanceDetail";
 import { AnimatePresence, motion } from "framer-motion";
