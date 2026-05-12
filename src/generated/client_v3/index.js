@@ -1192,7 +1192,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/root/Daikin-Connect/src/generated/client_v3",
+      "value": "C:\\Users\\D22AGRI-EPL\\Desktop\\daikin-connect-clean\\src\\generated\\client_v3",
       "fromEnvVar": null
     },
     "config": {
@@ -1201,12 +1201,12 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "debian-openssl-3.0.x",
+        "value": "windows",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/root/Daikin-Connect/prisma/schema.prisma",
+    "sourceFilePath": "C:\\Users\\D22AGRI-EPL\\Desktop\\daikin-connect-clean\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -1269,8 +1269,8 @@ exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
 
 // file annotations for bundling tools to include these files
-path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
-path.join(process.cwd(), "src/generated/client_v3/libquery_engine-debian-openssl-3.0.x.so.node")
+path.join(__dirname, "query_engine-windows.dll.node");
+path.join(process.cwd(), "src/generated/client_v3/query_engine-windows.dll.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "src/generated/client_v3/schema.prisma")

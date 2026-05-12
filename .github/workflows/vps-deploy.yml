@@ -15,7 +15,14 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd /var/www/daikin-connect
+            if [ -d "/root/Daikin-Connect" ]; then
+              cd /root/Daikin-Connect
+            elif [ -d "/var/www/daikin-connect" ]; then
+              cd /var/www/daikin-connect
+            else
+              echo "Deployment directory not found!"
+              exit 1
+            fi
             git pull origin main
             npm install
             npm run build

@@ -1191,7 +1191,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/root/Daikin-Connect/src/generated/client_v3",
+      "value": "C:\\Users\\D22AGRI-EPL\\Desktop\\daikin-connect-clean\\src\\generated\\client_v3",
       "fromEnvVar": null
     },
     "config": {
@@ -1200,12 +1200,12 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "debian-openssl-3.0.x",
+        "value": "windows",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/root/Daikin-Connect/prisma/schema.prisma",
+    "sourceFilePath": "C:\\Users\\D22AGRI-EPL\\Desktop\\daikin-connect-clean\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
