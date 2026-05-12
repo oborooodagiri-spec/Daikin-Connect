@@ -330,8 +330,19 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
                    <p className="text-[13px] font-black text-slate-700">{format(new Date(), "dd MMM yyyy")} (08:30 - 17:30)</p>
                 </div>
              </div>
-             <div className="relative z-10 w-64 h-80 border-4 border-white border-dashed rounded-[5rem] flex flex-col items-center justify-center">
-                <div className="absolute bottom-10 w-8 h-[2px] bg-white rounded-full opacity-50" />
+             <div className="relative z-10 w-full h-full flex items-center justify-center pointer-events-none">
+                <svg width="280" height="350" viewBox="0 0 280 350" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-80">
+                   <path 
+                     d="M140 40C110 40 85 65 85 95V115C85 145 110 170 140 170C170 170 195 145 195 115V95C195 65 170 40 140 40Z" 
+                     stroke="white" strokeWidth="4" strokeDasharray="12 12" strokeLinecap="round"
+                   />
+                   <path 
+                     d="M40 310C40 260 70 210 140 210C210 210 240 260 240 310" 
+                     stroke="white" strokeWidth="4" strokeDasharray="12 12" strokeLinecap="round"
+                   />
+                   {/* Centering crosshair or indicator */}
+                   <circle cx="140" cy="115" r="4" fill="white" className="animate-pulse" />
+                </svg>
              </div>
              <div className="absolute bottom-0 left-0 right-0 z-30 bg-white rounded-t-[2.5rem] p-8 shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
                 <div className="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-8" />
