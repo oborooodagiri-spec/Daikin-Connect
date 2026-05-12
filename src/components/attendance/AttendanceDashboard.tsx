@@ -136,11 +136,11 @@ export default function AttendanceDashboard({ projects }: { projects: {id: strin
   return (
     <div className="min-h-screen bg-[#f8fafc] font-sans">
       {/* Header */}
-      <div className="bg-[#e11d48] text-white p-4 pb-14 flex items-center gap-4 sticky top-0 z-50 shadow-lg">
+      <div className="bg-[#003366] text-white p-4 pb-14 flex items-center gap-4 sticky top-0 z-50 shadow-lg">
          <button onClick={() => window.history.back()} className="p-2 hover:bg-white/10 rounded-full">
             <ChevronLeft size={24} />
          </button>
-         <h1 className="text-xl font-black tracking-tight">Daftar Absensi</h1>
+         <h1 className="text-xl font-bold">Daftar Absensi</h1>
       </div>
 
       {/* Tabs */}

@@ -152,13 +152,17 @@ export default function AttendanceClient({
   const fallbackToNetwork = async (reasonMsg: string) => {
     try {
       setLocError(reasonMsg);
-      const res = await fetch("https://get.geojs.io/v1/ip/geo.json");
+      const res = await fetch("https://ipapi.co/json/");
       const data = await res.json();
       if (data.latitude && data.longitude) {
         setLocation({ lat: parseFloat(data.latitude), long: parseFloat(data.longitude), isFallback: true, city: data.city });
         setLocError("");
+      } else {
+        setLocError("Mohon izinkan akses lokasi (GPS) di browser Anda.");
       }
-    } catch (e) {}
+    } catch (e) {
+      setLocError("Mohon izinkan akses lokasi (GPS) di browser Anda.");
+    }
   };
 
   useEffect(() => {
@@ -326,7 +330,7 @@ export default function AttendanceClient({
              <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Status Lokasi</p>
                 <p className="text-sm font-black text-slate-700">
-                   {!location ? 'Mendeteksi GPS...' : (distance !== null && projectLocation && distance <= (projectLocation.radius || 100) ? 'Di Dalam Area Proyek' : 'Di Luar Area Proyek')}
+                   {!location ? (locError ? locError : 'Mendeteksi GPS...') : (distance !== null && projectLocation && distance <= (projectLocation.radius || 100) ? 'Di Dalam Area Proyek' : 'Di Luar Area Proyek')}
                 </p>
              </div>
           </div>
@@ -365,9 +369,9 @@ export default function AttendanceClient({
 
       {showScanner && (
         <div className="fixed inset-0 z-[9999] bg-black flex flex-col animate-in slide-in-from-bottom duration-500 overflow-hidden">
-          <div className="bg-[#e11d48] text-white p-4 flex items-center gap-4 z-20">
+          <div className="bg-[#003366] text-white p-4 flex items-center gap-4 z-20">
              <button onClick={() => { setShowScanner(false); stopCamera(); }} className="p-2"><ChevronLeft size={24} /></button>
-             <h1 className="text-xl font-black tracking-tight">{isWorking ? 'Clock Out' : 'Clock In'}</h1>
+             <h1 className="text-xl font-bold">{isWorking ? 'Clock Out' : 'Clock In'}</h1>
           </div>
           <div className="flex-1 relative flex flex-col items-center justify-center">
               {!hasFace && (
