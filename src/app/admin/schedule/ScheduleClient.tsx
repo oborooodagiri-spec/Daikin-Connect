@@ -1188,7 +1188,7 @@ export default function ScheduleClient() {
                      })}
                      {/* Add Row Button */}
                      <tr id="add-personnel-row">
-                         <td className="sticky left-0 bg-white p-4">
+                         <td className="sticky left-0 bg-white p-4 z-20 border-r border-slate-100">
                             
                              <div className="flex flex-col gap-3">
                                 <div className="flex gap-2">
