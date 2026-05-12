@@ -121,7 +121,7 @@ export default function AttendanceDashboard({ projectId }: { projectId: string }
   return (
     <div className="min-h-screen bg-[#f8fafc] font-sans">
       {/* Header */}
-      <div className="bg-[#e11d48] text-white p-4 pb-10 flex items-center gap-4 sticky top-0 z-50 shadow-lg">
+      <div className="bg-[#e11d48] text-white p-4 pb-14 flex items-center gap-4 sticky top-0 z-50 shadow-lg">
          <button onClick={() => window.history.back()} className="p-2 hover:bg-white/10 rounded-full">
             <ChevronLeft size={24} />
          </button>
@@ -129,7 +129,7 @@ export default function AttendanceDashboard({ projectId }: { projectId: string }
       </div>
 
       {/* Tabs */}
-      <div className="bg-white px-4 -mt-6 pt-2 rounded-t-[2.5rem] border-b border-slate-100 sticky top-[64px] z-40">
+      <div className="bg-white px-4 -mt-10 pt-6 rounded-t-[3rem] border-b border-slate-100 sticky top-[72px] z-40">
          <div className="flex justify-around">
             <TabItem active={activeTab === "riwayat"} onClick={() => setActiveTab("riwayat")}>Riwayat</TabItem>
             <TabItem active={activeTab === "absensi"} onClick={() => setActiveTab("absensi")}>Absensi</TabItem>

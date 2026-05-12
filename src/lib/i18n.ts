@@ -51,7 +51,6 @@ export const DICTIONARY: Record<string, Record<Language, string>> = {
   "Leaving Air Enthalpy": { id: "Entalpi Udara Keluar", en: "Leaving Air Enthalpy", ja: "吹出空気エンタルピー" },
   "Entering Air Enthalpy": { id: "Entalpi Udara Masuk", en: "Entering Air Enthalpy", ja: "吸込空気エンタルピー" },
   "Actual Air Flow": { id: "Aliran Udara Aktual", en: "Actual Airflow", ja: "実測風量" },
-  "Design Air Flow": { id: "Aliran Udara Desain", en: "Design Airflow", ja: "設計風量" },
 
   "Room Temp": { id: "Suhu Ruangan", en: "Room Temp", ja: "室温" },
   "Current": { id: "Arus", en: "Current", ja: "電流" },
@@ -291,7 +290,6 @@ export const DICTIONARY: Record<string, Record<Language, string>> = {
   "Number of Diffusers": { id: "Jumlah Diffuser", en: "Number of Diffusers", ja: "吹出口数" },
   "Air Volume (CFM)": { id: "Volume Udara (CFM)", en: "Air Volume (CFM)", ja: "風量 (CFM)" },
   "AHU TECHNICAL PERFORMANCE": { id: "PERFORMA TEKNIS AHU", en: "AHU TECHNICAL PERFORMANCE", ja: "AHU技術性能" },
-  "ELECTRICAL PERFORMANCE": { id: "PERFORMA ELEKTRIKAL", en: "ELECTRICAL PERFORMANCE", ja: "電気性能" },
 };
 
 export function t(key: string, lang: Language): string {
