@@ -16,12 +16,17 @@ export async function getActiveAttendance(projectId: string) {
     const session = await getSession();
     if (!session) return { error: "Unauthorized" };
 
-    if (!projectId || projectId === "empty" || isNaN(Number(projectId))) {
-      return { success: false, error: "No project assigned to this user" };
-    }
-
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+
+    const whereClause: any = {
+      user_id: parseInt(session.userId),
+      check_in_time: { gte: today }
+    };
+
+    if (projectId && projectId !== "empty" && !isNaN(Number(projectId))) {
+      whereClause.project_id = BigInt(projectId);
+    }
 
     const user = await prisma.users.findUnique({
       where: { id: parseInt(session.userId) },
@@ -29,29 +34,32 @@ export async function getActiveAttendance(projectId: string) {
     });
 
     const activeRecord = await (prisma as any).vendor_attendance.findFirst({
-      where: {
-        user_id: parseInt(session.userId),
-        project_id: BigInt(projectId),
-        check_in_time: {
-          gte: today,
-        },
+      where: whereClause,
+      include: {
+        projects: { select: { name: true, latitude: true, longitude: true, radius_meters: true } }
       },
       orderBy: {
         check_in_time: "desc",
       },
     });
 
-    const project = await prisma.projects.findUnique({
+    const targetProject = activeRecord?.projects || (projectId && !isNaN(Number(projectId)) ? await prisma.projects.findUnique({
       where: { id: BigInt(projectId) },
-      select: { latitude: true, longitude: true, radius_meters: true }
-    });
+      select: { name: true, latitude: true, longitude: true, radius_meters: true }
+    }) : null);
 
     // Convert BigInt for JSON serialization
     return serializePrisma({
       success: true,
       data: activeRecord,
       hasFace: !!user?.face_reference_url,
-      projectLocation: project ? { lat: Number(project.latitude), long: Number(project.longitude), radius: project.radius_meters } : null
+      faceUrl: user?.face_reference_url,
+      projectLocation: targetProject ? { 
+        name: targetProject.name,
+        lat: Number(targetProject.latitude), 
+        long: Number(targetProject.longitude), 
+        radius: targetProject.radius_meters 
+      } : null
     });
   } catch (error: any) {
     console.error("Error fetching attendance:", error);
@@ -315,17 +323,21 @@ export async function verifyFaceMatch(photoUrl: string) {
        imageUrlToBase64(photoUrl)
     ]);
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
     const prompt = `
-      Act as a high-security facial recognition system.
-      Compare the person in Image 1 (Registered Identity) with Image 2 (Current Attendance Snapshot).
-      
-      RULES:
-      - Ignore differences in lighting, background, or camera quality.
-      - Ignore hair style changes if facial features match.
-      - Reject if it is a photo of a screen or paper (spoofing).
-      - Return ONLY a JSON object: {"match": boolean, "confidence": number (0-100), "reason": "short explanation"}.
+      Act as a high-precision biometric facial recognition auditor for an enterprise attendance system.
+      Compare the identity of the person in Image 1 (Authorized Reference) with the person in Image 2 (Current Live Capture).
+
+      EVALUATION GUIDELINES:
+      - PRIMARY FOCUS: Bone structure, eye shape, nose bridge, and facial proportions.
+      - TOLERANCE: Allow for changes in lighting, background, hair length, facial hair (beard/mustache), and minor skin blemishes.
+      - ACCESSORIES: Do not reject if the user is wearing glasses or a mask unless it completely obscures identity.
+      - ANTI-SPOOFING: Reject if Image 2 appears to be a photo of a screen, a printed photo, or a digital manipulation.
+      - CONFIDENCE: Provide a percentage based on structural similarity.
+
+      OUTPUT FORMAT (JSON ONLY):
+      {"match": boolean, "confidence": number (0-100), "reason": "concise technical explanation"}
     `;
 
     const result = await model.generateContent([
@@ -340,7 +352,7 @@ export async function verifyFaceMatch(photoUrl: string) {
     if (!jsonMatch) throw new Error("Invalid AI response");
     const aiResult = JSON.parse(jsonMatch[0]);
 
-    if (aiResult.match && aiResult.confidence >= 85) {
+    if (aiResult.match && aiResult.confidence >= 75) {
        return { success: true, match: true, confidence: aiResult.confidence };
     } else {
        return { 

@@ -8813,6 +8813,7 @@ export namespace Prisma {
     size: string | null
     tags: string | null
     visibility: string | null
+    allowed_users: string | null
     project_id: bigint | null
     created_at: Date | null
     updated_at: Date | null
@@ -8829,6 +8830,7 @@ export namespace Prisma {
     size: string | null
     tags: string | null
     visibility: string | null
+    allowed_users: string | null
     project_id: bigint | null
     created_at: Date | null
     updated_at: Date | null
@@ -8845,6 +8847,7 @@ export namespace Prisma {
     size: number
     tags: number
     visibility: number
+    allowed_users: number
     project_id: number
     created_at: number
     updated_at: number
@@ -8871,6 +8874,7 @@ export namespace Prisma {
     size?: true
     tags?: true
     visibility?: true
+    allowed_users?: true
     project_id?: true
     created_at?: true
     updated_at?: true
@@ -8887,6 +8891,7 @@ export namespace Prisma {
     size?: true
     tags?: true
     visibility?: true
+    allowed_users?: true
     project_id?: true
     created_at?: true
     updated_at?: true
@@ -8903,6 +8908,7 @@ export namespace Prisma {
     size?: true
     tags?: true
     visibility?: true
+    allowed_users?: true
     project_id?: true
     created_at?: true
     updated_at?: true
@@ -9006,6 +9012,7 @@ export namespace Prisma {
     size: string | null
     tags: string | null
     visibility: string
+    allowed_users: string | null
     project_id: bigint | null
     created_at: Date
     updated_at: Date
@@ -9041,6 +9048,7 @@ export namespace Prisma {
     size?: boolean
     tags?: boolean
     visibility?: boolean
+    allowed_users?: boolean
     project_id?: boolean
     created_at?: boolean
     updated_at?: boolean
@@ -9060,12 +9068,13 @@ export namespace Prisma {
     size?: boolean
     tags?: boolean
     visibility?: boolean
+    allowed_users?: boolean
     project_id?: boolean
     created_at?: boolean
     updated_at?: boolean
   }
 
-  export type knowledge_resourcesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "category" | "type" | "file_url" | "href" | "thumbnail" | "size" | "tags" | "visibility" | "project_id" | "created_at" | "updated_at", ExtArgs["result"]["knowledge_resources"]>
+  export type knowledge_resourcesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "category" | "type" | "file_url" | "href" | "thumbnail" | "size" | "tags" | "visibility" | "allowed_users" | "project_id" | "created_at" | "updated_at", ExtArgs["result"]["knowledge_resources"]>
   export type knowledge_resourcesInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     projects?: boolean | knowledge_resources$projectsArgs<ExtArgs>
   }
@@ -9086,6 +9095,7 @@ export namespace Prisma {
       size: string | null
       tags: string | null
       visibility: string
+      allowed_users: string | null
       project_id: bigint | null
       created_at: Date
       updated_at: Date
@@ -9469,6 +9479,7 @@ export namespace Prisma {
     readonly size: FieldRef<"knowledge_resources", 'String'>
     readonly tags: FieldRef<"knowledge_resources", 'String'>
     readonly visibility: FieldRef<"knowledge_resources", 'String'>
+    readonly allowed_users: FieldRef<"knowledge_resources", 'String'>
     readonly project_id: FieldRef<"knowledge_resources", 'BigInt'>
     readonly created_at: FieldRef<"knowledge_resources", 'DateTime'>
     readonly updated_at: FieldRef<"knowledge_resources", 'DateTime'>
@@ -53807,6 +53818,7 @@ export namespace Prisma {
     size: 'size',
     tags: 'tags',
     visibility: 'visibility',
+    allowed_users: 'allowed_users',
     project_id: 'project_id',
     created_at: 'created_at',
     updated_at: 'updated_at'
@@ -54555,7 +54567,8 @@ export namespace Prisma {
     thumbnail: 'thumbnail',
     size: 'size',
     tags: 'tags',
-    visibility: 'visibility'
+    visibility: 'visibility',
+    allowed_users: 'allowed_users'
   };
 
   export type knowledge_resourcesOrderByRelevanceFieldEnum = (typeof knowledge_resourcesOrderByRelevanceFieldEnum)[keyof typeof knowledge_resourcesOrderByRelevanceFieldEnum]
@@ -55390,6 +55403,7 @@ export namespace Prisma {
     size?: StringNullableFilter<"knowledge_resources"> | string | null
     tags?: StringNullableFilter<"knowledge_resources"> | string | null
     visibility?: StringFilter<"knowledge_resources"> | string
+    allowed_users?: StringNullableFilter<"knowledge_resources"> | string | null
     project_id?: BigIntNullableFilter<"knowledge_resources"> | bigint | number | null
     created_at?: DateTimeFilter<"knowledge_resources"> | Date | string
     updated_at?: DateTimeFilter<"knowledge_resources"> | Date | string
@@ -55407,6 +55421,7 @@ export namespace Prisma {
     size?: SortOrderInput | SortOrder
     tags?: SortOrderInput | SortOrder
     visibility?: SortOrder
+    allowed_users?: SortOrderInput | SortOrder
     project_id?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
@@ -55428,6 +55443,7 @@ export namespace Prisma {
     size?: StringNullableFilter<"knowledge_resources"> | string | null
     tags?: StringNullableFilter<"knowledge_resources"> | string | null
     visibility?: StringFilter<"knowledge_resources"> | string
+    allowed_users?: StringNullableFilter<"knowledge_resources"> | string | null
     project_id?: BigIntNullableFilter<"knowledge_resources"> | bigint | number | null
     created_at?: DateTimeFilter<"knowledge_resources"> | Date | string
     updated_at?: DateTimeFilter<"knowledge_resources"> | Date | string
@@ -55445,6 +55461,7 @@ export namespace Prisma {
     size?: SortOrderInput | SortOrder
     tags?: SortOrderInput | SortOrder
     visibility?: SortOrder
+    allowed_users?: SortOrderInput | SortOrder
     project_id?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
@@ -55469,6 +55486,7 @@ export namespace Prisma {
     size?: StringNullableWithAggregatesFilter<"knowledge_resources"> | string | null
     tags?: StringNullableWithAggregatesFilter<"knowledge_resources"> | string | null
     visibility?: StringWithAggregatesFilter<"knowledge_resources"> | string
+    allowed_users?: StringNullableWithAggregatesFilter<"knowledge_resources"> | string | null
     project_id?: BigIntNullableWithAggregatesFilter<"knowledge_resources"> | bigint | number | null
     created_at?: DateTimeWithAggregatesFilter<"knowledge_resources"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"knowledge_resources"> | Date | string
@@ -59445,6 +59463,7 @@ export namespace Prisma {
     size?: string | null
     tags?: string | null
     visibility?: string
+    allowed_users?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     projects?: projectsCreateNestedOneWithoutKnowledge_resourcesInput
@@ -59461,6 +59480,7 @@ export namespace Prisma {
     size?: string | null
     tags?: string | null
     visibility?: string
+    allowed_users?: string | null
     project_id?: bigint | number | null
     created_at?: Date | string
     updated_at?: Date | string
@@ -59477,6 +59497,7 @@ export namespace Prisma {
     size?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: StringFieldUpdateOperationsInput | string
+    allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     projects?: projectsUpdateOneWithoutKnowledge_resourcesNestedInput
@@ -59493,6 +59514,7 @@ export namespace Prisma {
     size?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: StringFieldUpdateOperationsInput | string
+    allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
     project_id?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -59509,6 +59531,7 @@ export namespace Prisma {
     size?: string | null
     tags?: string | null
     visibility?: string
+    allowed_users?: string | null
     project_id?: bigint | number | null
     created_at?: Date | string
     updated_at?: Date | string
@@ -59525,6 +59548,7 @@ export namespace Prisma {
     size?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: StringFieldUpdateOperationsInput | string
+    allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -59540,6 +59564,7 @@ export namespace Prisma {
     size?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: StringFieldUpdateOperationsInput | string
+    allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
     project_id?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64068,6 +64093,7 @@ export namespace Prisma {
     size?: SortOrder
     tags?: SortOrder
     visibility?: SortOrder
+    allowed_users?: SortOrder
     project_id?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
@@ -64088,6 +64114,7 @@ export namespace Prisma {
     size?: SortOrder
     tags?: SortOrder
     visibility?: SortOrder
+    allowed_users?: SortOrder
     project_id?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
@@ -64104,6 +64131,7 @@ export namespace Prisma {
     size?: SortOrder
     tags?: SortOrder
     visibility?: SortOrder
+    allowed_users?: SortOrder
     project_id?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
@@ -71639,6 +71667,7 @@ export namespace Prisma {
     size?: string | null
     tags?: string | null
     visibility?: string
+    allowed_users?: string | null
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -71654,6 +71683,7 @@ export namespace Prisma {
     size?: string | null
     tags?: string | null
     visibility?: string
+    allowed_users?: string | null
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -72010,6 +72040,7 @@ export namespace Prisma {
     size?: StringNullableFilter<"knowledge_resources"> | string | null
     tags?: StringNullableFilter<"knowledge_resources"> | string | null
     visibility?: StringFilter<"knowledge_resources"> | string
+    allowed_users?: StringNullableFilter<"knowledge_resources"> | string | null
     project_id?: BigIntNullableFilter<"knowledge_resources"> | bigint | number | null
     created_at?: DateTimeFilter<"knowledge_resources"> | Date | string
     updated_at?: DateTimeFilter<"knowledge_resources"> | Date | string
@@ -81332,6 +81363,7 @@ export namespace Prisma {
     size?: string | null
     tags?: string | null
     visibility?: string
+    allowed_users?: string | null
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -81662,6 +81694,7 @@ export namespace Prisma {
     size?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: StringFieldUpdateOperationsInput | string
+    allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -81677,6 +81710,7 @@ export namespace Prisma {
     size?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: StringFieldUpdateOperationsInput | string
+    allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -81692,6 +81726,7 @@ export namespace Prisma {
     size?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: StringFieldUpdateOperationsInput | string
+    allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }

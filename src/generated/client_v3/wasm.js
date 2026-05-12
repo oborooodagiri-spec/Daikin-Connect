@@ -160,6 +160,7 @@ exports.Prisma.Knowledge_resourcesScalarFieldEnum = {
   size: 'size',
   tags: 'tags',
   visibility: 'visibility',
+  allowed_users: 'allowed_users',
   project_id: 'project_id',
   created_at: 'created_at',
   updated_at: 'updated_at'
@@ -767,7 +768,8 @@ exports.Prisma.knowledge_resourcesOrderByRelevanceFieldEnum = {
   thumbnail: 'thumbnail',
   size: 'size',
   tags: 'tags',
-  visibility: 'visibility'
+  visibility: 'visibility',
+  allowed_users: 'allowed_users'
 };
 
 exports.Prisma.refresh_tokensOrderByRelevanceFieldEnum = {

@@ -99,3 +99,40 @@ export async function getAttendanceSummary() {
         return { error: "Failed to fetch summary" };
     }
 }
+
+export async function getAttendanceForRoster(params: {
+    userIds: number[];
+    startDate: string;
+    endDate: string;
+}) {
+    unstable_noStore();
+    try {
+        const start = new Date(params.startDate);
+        const end = new Date(params.endDate);
+        end.setHours(23, 59, 59, 999);
+
+        const records = await prisma.vendor_attendance.findMany({
+            where: {
+                user_id: { in: params.userIds },
+                check_in_time: {
+                    gte: start,
+                    lte: end
+                }
+            },
+            select: {
+                user_id: true,
+                check_in_time: true,
+                check_out_time: true,
+                status: true
+            }
+        });
+
+        return serializePrisma({
+            success: true,
+            data: records
+        });
+    } catch (error) {
+        console.error("fetch attendance roster err", error);
+        return { error: "Failed to fetch roster attendance." };
+    }
+}

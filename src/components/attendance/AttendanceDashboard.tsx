@@ -12,8 +12,9 @@ import AttendanceClient from "./AttendanceClient";
 import { getAttendanceHistory, getAttendanceStats } from "@/app/actions/attendance";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function AttendanceDashboard({ projectId }: { projectId: string }) {
+export default function AttendanceDashboard({ projects }: { projects: {id: string, name: string}[] }) {
   const [activeTab, setActiveTab] = useState<"riwayat" | "absensi" | "shift">("riwayat");
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(projects.length === 1 ? projects[0].id : null);
   const [history, setHistory] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -154,9 +155,42 @@ export default function AttendanceDashboard({ projectId }: { projectId: string }
       <main className="max-w-md mx-auto">
          {activeTab === "riwayat" && renderHistory()}
          {activeTab === "absensi" && (
-           <div className="py-4">
-              <AttendanceClient projectId={projectId} />
-           </div>
+            <div className="py-4">
+               {selectedProjectId ? (
+                  <AttendanceClient 
+                    projectId={selectedProjectId} 
+                    onProjectLocked={(id) => setSelectedProjectId(id)}
+                  />
+               ) : (
+                  <div className="p-6 space-y-6">
+                     <div className="bg-blue-50 border border-blue-100 rounded-3xl p-6 text-center">
+                        <MapPin className="mx-auto mb-3 text-blue-600" size={32} />
+                        <h3 className="text-lg font-black text-slate-800">Pilih Lokasi Proyek</h3>
+                        <p className="text-xs font-medium text-slate-500 mt-2">
+                           Anda terdaftar di beberapa lokasi. Silakan pilih lokasi tempat Anda bekerja saat ini.
+                        </p>
+                     </div>
+
+                     <div className="space-y-3">
+                        {projects.map((p) => (
+                           <button
+                              key={p.id}
+                              onClick={() => setSelectedProjectId(p.id)}
+                              className="w-full bg-white border border-slate-100 p-5 rounded-2xl flex items-center justify-between hover:border-blue-500 hover:bg-blue-50/30 transition-all group shadow-sm"
+                           >
+                              <div className="flex items-center gap-4 text-left">
+                                 <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                    <Fingerprint size={20} />
+                                 </div>
+                                 <span className="font-bold text-slate-700 group-hover:text-blue-700">{p.name}</span>
+                              </div>
+                              <ChevronRight size={18} className="text-slate-300 group-hover:text-blue-500" />
+                           </button>
+                        ))}
+                     </div>
+                  </div>
+               )}
+            </div>
          )}
          {activeTab === "shift" && (
            <div className="p-8 text-center text-slate-400">

@@ -2,17 +2,22 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { 
-  Camera, MapPin, MapPinOff, Clock, CheckCircle2, 
-  ChevronRight, Loader2, Play, Square, X, Calendar,
-  ChevronLeft, MoreVertical, Activity
+  Camera, MapPin, Clock, CheckCircle2, 
+  ChevronRight, Loader2, X, Calendar,
+  ChevronLeft, MoreVertical, Fingerprint
 } from "lucide-react";
-import { getActiveAttendance, submitCheckIn, submitCheckOut, verifyFaceMatch } from "@/app/actions/attendance";
+import { getActiveAttendance, submitCheckIn, submitCheckOut } from "@/app/actions/attendance";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
-import { ShieldCheck, ShieldAlert, Fingerprint } from "lucide-react";
+import * as faceapi from "face-api.js";
 
-
-export default function AttendanceClient({ projectId }: { projectId: string }) {
+export default function AttendanceClient({ 
+  projectId, 
+  onProjectLocked 
+}: { 
+  projectId: string,
+  onProjectLocked?: (id: string) => void
+}) {
   const [isMounted, setIsMounted] = useState(false);
   const [activeRecord, setActiveRecord] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -21,8 +26,7 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
   const [locError, setLocError] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [hasFace, setHasFace] = useState(true);
-  const [verifyResult, setVerifyResult] = useState<any>(null);
-  const [projectLocation, setProjectLocation] = useState<{ lat: number; long: number; radius: number } | null>(null);
+  const [projectLocation, setProjectLocation] = useState<{ name: string; lat: number; long: number; radius: number } | null>(null);
   const [distance, setDistance] = useState<number | null>(null);
   
   const [showScanner, setShowScanner] = useState(false);
@@ -30,16 +34,55 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
   const [showSuccess, setShowSuccess] = useState(false);
   const [lastAction, setLastAction] = useState<"in" | "out" | null>(null);
   const [capturedFile, setCapturedFile] = useState<File | null>(null);
+  const [modelsLoaded, setModelsLoaded] = useState(false);
+  const [referenceDescriptor, setReferenceDescriptor] = useState<Float32Array | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
   useEffect(() => {
     setIsMounted(true);
-    fetchStatus();
-    startLocationTracking(); // Trigger prompt immediately
+    loadModelsAndReference();
+    startLocationTracking();
     return () => stopCamera();
   }, [projectId]);
+
+  const loadModelsAndReference = async () => {
+    try {
+      if (!modelsLoaded) {
+        await Promise.all([
+          faceapi.nets.ssdMobilenetv1.loadFromUri("/models"),
+          faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
+          faceapi.nets.faceRecognitionNet.loadFromUri("/models")
+        ]);
+        setModelsLoaded(true);
+      }
+      
+      const res = await getActiveAttendance(projectId);
+      if (res?.data) {
+        setActiveRecord(res.data);
+        if (onProjectLocked && String(res.data.project_id) !== projectId) {
+          onProjectLocked(String(res.data.project_id));
+        }
+      }
+      setHasFace(res?.hasFace ?? true);
+      if (res?.projectLocation) {
+        setProjectLocation(res.projectLocation);
+      }
+
+      if (res?.faceUrl) {
+        const img = await faceapi.fetchImage(res.faceUrl);
+        const detection = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
+        if (detection) {
+          setReferenceDescriptor(detection.descriptor);
+        }
+      }
+    } catch (e) {
+      console.error("Initialization error:", e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const stopCamera = () => {
     if (videoRef.current && videoRef.current.srcObject) {
@@ -56,7 +99,10 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
     }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: { ideal: 1080 }, height: { ideal: 1920 } },
+        video: { 
+          facingMode: "user",
+          resizeMode: "none"
+        },
         audio: false
       });
       setShowScanner(true);
@@ -65,8 +111,14 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
         videoRef.current.play().catch(console.error);
       }
     } catch (err) {
-      console.error("Camera access error:", err);
-      alert("Gagal mengakses kamera.");
+      // Fallback to standard request if 4K ideal fails for some reason
+      try {
+        const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+        setShowScanner(true);
+        if (videoRef.current) videoRef.current.srcObject = fallbackStream;
+      } catch (e) {
+        alert("Gagal mengakses kamera: " + err);
+      }
     }
   };
 
@@ -75,23 +127,6 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
        startScanner();
     }
   }, [showScanner]);
-
-  const fetchStatus = async () => {
-    setLoading(true);
-    const res = await getActiveAttendance(projectId);
-    if (res?.data) {
-      setActiveRecord(res.data);
-    } else {
-      setActiveRecord(null);
-    }
-    setHasFace(res?.hasFace ?? true);
-    if (res?.projectLocation) {
-       setProjectLocation(res.projectLocation);
-    }
-    setLoading(false);
-  };
-
-  // Location tracking is now started directly in useEffect
 
   const startLocationTracking = (useHighAccuracy = true) => {
     if (!navigator.geolocation) {
@@ -173,29 +208,43 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
   const handleFinalSubmit = async () => {
     if (!capturedFile) {
        captureFrame();
+       // Short delay to ensure state is updated before process
+       setTimeout(() => {
+          // Note: we'll use a better approach by using an effect or direct passing
+       }, 500);
        return;
     }
     await processFile(capturedFile);
   };
 
-  const processFile = async (file: File) => {
-    if (!location) { alert("Location is required."); return; }
-    setSubmitting(true);
-    try {
-      const photoUrl = await compressAndUploadFile(file);
-      if (!photoUrl) throw new Error("Failed to upload photo");
+  // Trigger process when capturedFile is set via handleFinalSubmit
+  useEffect(() => {
+     if (capturedFile && showScanner) {
+        processFile(capturedFile);
+     }
+  }, [capturedFile]);
 
-      if (!activeRecord) {
-        setVerifying(true);
-        const faceRes = await verifyFaceMatch(photoUrl);
-        setVerifying(false);
-        if (faceRes.isEnrollment) {
-           // Proceed after enrollment without returning
-           console.log("Face enrolled successfully, proceeding to check-in...");
-        } else if (!faceRes.match) {
-           throw new Error(`Face Mismatch: ${faceRes.reason}`);
+  const processFile = async (file: File) => {
+    if (!location) { alert("Lokasi diperlukan."); return; }
+    setSubmitting(true);
+    setVerifying(true);
+    try {
+      const img = await faceapi.bufferToImage(file);
+      const detection = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
+      
+      if (!detection) {
+        throw new Error("Wajah tidak terdeteksi. Silakan coba lagi.");
+      }
+
+      if (referenceDescriptor) {
+        const dist = faceapi.euclideanDistance(referenceDescriptor, detection.descriptor);
+        if (dist > 0.55) {
+          throw new Error("Wajah tidak cocok dengan profil terdaftar.");
         }
       }
+
+      const photoUrl = await compressAndUploadFile(file);
+      if (!photoUrl) throw new Error("Gagal mengunggah foto.");
 
       if (!activeRecord) {
         const res = await submitCheckIn({ projectId, lat: location.lat, long: location.long, photoUrl, notes });
@@ -210,17 +259,18 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
       setShowScanner(false);
       stopCamera();
       setShowSuccess(true);
-      await fetchStatus();
+      await loadModelsAndReference();
     } catch (error: any) {
-      alert(error.message || "An error occurred");
+      alert(error.message || "Terjadi kesalahan");
     } finally {
       setSubmitting(false);
       setVerifying(false);
+      setCapturedFile(null);
     }
   };
 
   const triggerCamera = () => {
-    if (!location) { alert("Location not found."); startLocationTracking(); return; }
+    if (!location) { alert("Lokasi belum terdeteksi."); startLocationTracking(); return; }
     setCapturedFile(null);
     setNotes("");
     startScanner();
@@ -240,14 +290,12 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
          <h2 className="text-2xl font-black text-slate-800 mb-6">Jam {lastAction === "in" ? "masuk" : "keluar"} berhasil</h2>
          <div className="space-y-1 mb-10 text-slate-500">
             <p className="text-sm font-bold">Jadwal: {format(new Date(), "dd MMM yyyy")}</p>
-            <p className="text-sm font-bold">Engineer</p>
-            <p className="text-sm font-bold text-slate-400">08:30 - 17:30</p>
+            <p className="text-sm font-bold">Officer</p>
          </div>
          <div className="text-5xl font-black text-slate-800 mb-10">{format(new Date(), "HH:mm")}</div>
-         <p className="text-emerald-600 font-bold text-sm mb-12 flex items-center justify-center gap-2">Deteksi wajah: berhasil</p>
+         <p className="text-emerald-600 font-bold text-sm mb-12 flex items-center justify-center gap-2">Verifikasi wajah berhasil</p>
          <div className="w-full space-y-4">
             <button onClick={() => window.location.href = "/home"} className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-200 active:scale-95 transition-all">Kembali ke beranda</button>
-            <button onClick={() => setShowSuccess(false)} className="w-full py-4 text-slate-400 font-bold">Lihat daftar absensi</button>
          </div>
       </div>
     );
@@ -257,7 +305,7 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
-        <p className="text-slate-400 font-black text-xs tracking-widest uppercase animate-pulse">Syncing Status...</p>
+        <p className="text-slate-400 font-black text-xs tracking-widest uppercase animate-pulse">Memuat Sistem Biometrik...</p>
       </div>
     );
   }
@@ -276,15 +324,15 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
                 {!location ? <Loader2 className="animate-spin" /> : <MapPin size={24} />}
              </div>
              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Location Status</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Status Lokasi</p>
                 <p className="text-sm font-black text-slate-700">
-                   {!location ? 'Detecting GPS...' : (distance !== null && projectLocation && distance <= (projectLocation.radius || 100) ? 'Inside Project Area' : 'Outside Project Area')}
+                   {!location ? 'Mendeteksi GPS...' : (distance !== null && projectLocation && distance <= (projectLocation.radius || 100) ? 'Di Dalam Area Proyek' : 'Di Luar Area Proyek')}
                 </p>
              </div>
           </div>
           {location && distance !== null && (
              <div className="text-right">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Distance</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Jarak</p>
                 <p className="text-sm font-black text-slate-700">{Math.round(distance)}m</p>
              </div>
           )}
@@ -299,8 +347,8 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
              <h3 className="text-4xl font-black text-slate-800 tracking-tight mb-2">{format(new Date(), "HH:mm")}</h3>
              <p className="text-slate-400 text-sm font-bold mb-8">{format(new Date(), "EEEE, dd MMMM yyyy", { locale: id })}</p>
              {isWorking && (
-                <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 mb-8">
-                   <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Shift Started At</p>
+                <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 mb-8 text-left">
+                   <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Mulai Bekerja Pada</p>
                    <p className="text-lg font-black text-blue-600">{format(new Date(activeRecord.check_in_time), "HH:mm")}</p>
                 </div>
              )}
@@ -310,7 +358,7 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
                className={`w-full py-5 rounded-2xl font-black text-lg shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3 ${isWorking ? 'bg-rose-500 text-white shadow-rose-200' : 'bg-blue-600 text-white shadow-blue-200'}`}
              >
                 {submitting ? <Loader2 className="animate-spin" /> : <Camera size={24} />}
-                {isWorking ? 'Clock Out Now' : 'Clock In Now'}
+                {isWorking ? 'Clock Out Sekarang' : 'Clock In Sekarang'}
              </button>
           </div>
        </div>
@@ -329,19 +377,29 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
                     </div>
                     <div className="flex-1">
                        <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-0.5">Pendaftaran Wajah</p>
-                       <p className="text-[11px] font-bold leading-snug">Foto ini akan didaftarkan sebagai Master Profile untuk akun Anda. Pastikan wajah terlihat jelas.</p>
+                       <p className="text-[11px] font-bold leading-snug">Foto ini akan didaftarkan sebagai Master Profile untuk akun Anda.</p>
                     </div>
                  </div>
               )}
-             <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover z-0" />
-             <div className="absolute top-6 left-6 right-6 z-20 bg-white rounded-2xl p-4 shadow-xl border-l-4 border-blue-500">
-                <p className="text-[12px] font-bold text-slate-400">Engineer</p>
-                <div className="flex items-center gap-2 mt-1">
-                   <Calendar size={16} className="text-slate-400" />
-                   <p className="text-[13px] font-black text-slate-700">{format(new Date(), "dd MMM yyyy")} (08:30 - 17:30)</p>
-                </div>
-             </div>
-             <div className="relative z-10 w-full h-full flex items-center justify-center pointer-events-none">
+              <video 
+                ref={videoRef} 
+                autoPlay 
+                playsInline 
+                muted 
+                className="absolute inset-0 w-full h-full object-contain bg-black z-0 scale-x-[-1]" 
+              />
+
+              <div className="absolute top-6 left-6 right-6 z-20 bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border-l-4 border-blue-500">
+                 <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-0.5">Lokasi Aktif</p>
+                 <div className="flex items-center gap-2">
+                    <MapPin size={14} className="text-slate-400" />
+                    <p className="text-[13px] font-black text-slate-800 truncate">
+                       {projectLocation?.name || 'Mencari lokasi...'}
+                    </p>
+                 </div>
+              </div>
+
+              <div className="relative z-10 w-full h-full flex items-center justify-center pointer-events-none">
                 <svg width="280" height="350" viewBox="0 0 280 350" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-80">
                    <path 
                      d="M140 40C110 40 85 65 85 95V115C85 145 110 170 140 170C170 170 195 145 195 115V95C195 65 170 40 140 40Z" 
@@ -351,29 +409,22 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
                      d="M40 310C40 260 70 210 140 210C210 210 240 260 240 310" 
                      stroke="white" strokeWidth="4" strokeDasharray="12 12" strokeLinecap="round"
                    />
-                   {/* Centering crosshair or indicator */}
                    <circle cx="140" cy="115" r="4" fill="white" className="animate-pulse" />
                 </svg>
-             </div>
-             <div className="absolute bottom-0 left-0 right-0 z-30 bg-white rounded-t-[2.5rem] p-8 shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
-                <div className="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-8" />
-                <div className="space-y-6 mb-8">
-                   <div className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-colors">
-                      <MoreVertical className="text-slate-400 rotate-90" />
-                      <input value={notes} onChange={e => setNotes(e.target.value)} placeholder="Catatan (opsional)" className="flex-1 bg-transparent border-none outline-none font-bold text-slate-700 placeholder:text-slate-400" />
-                   </div>
-                   <div className="flex items-center justify-between p-4 rounded-2xl hover:bg-slate-50 transition-colors">
-                      <div className="flex items-center gap-4">
-                         <MapPin className="text-slate-400" />
-                         <span className="font-bold text-slate-700">Lihat lokasi</span>
-                      </div>
-                      <ChevronRight className="text-slate-300" />
-                   </div>
-                </div>
-                <button disabled={submitting} onClick={handleFinalSubmit} className="w-full py-5 bg-blue-600 text-white rounded-2xl font-black text-lg shadow-xl shadow-blue-200 active:scale-95 transition-all flex items-center justify-center gap-3">
-                   {submitting ? <Loader2 className="animate-spin" /> : 'Kirim'}
-                </button>
-             </div>
+              </div>
+
+              <div className="absolute bottom-0 left-0 right-0 z-30 bg-white rounded-t-[2.5rem] p-8 shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
+                 <div className="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-8" />
+                 <div className="space-y-6 mb-8">
+                    <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                       <MoreVertical className="text-slate-400 rotate-90" />
+                       <input value={notes} onChange={e => setNotes(e.target.value)} placeholder="Catatan (opsional)" className="flex-1 bg-transparent border-none outline-none font-bold text-slate-700 placeholder:text-slate-400" />
+                    </div>
+                 </div>
+                 <button disabled={submitting || verifying} onClick={handleFinalSubmit} className="w-full py-5 bg-blue-600 text-white rounded-2xl font-black text-lg shadow-xl shadow-blue-200 active:scale-95 transition-all flex items-center justify-center gap-3">
+                    {submitting || verifying ? <Loader2 className="animate-spin" /> : 'Ambil Foto'}
+                 </button>
+              </div>
           </div>
           <canvas ref={canvasRef} className="hidden" />
         </div>

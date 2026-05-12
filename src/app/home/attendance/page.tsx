@@ -8,13 +8,16 @@ export default async function AttendancePage() {
   const session = await getSession();
   if (!session) redirect("/");
 
-  // Get project assigned to user to pass to AttendanceDashboard
-  const userAccess = await prisma.user_project_access.findFirst({
+  // Get all projects assigned to user to pass to AttendanceDashboard
+  const userAccess = await prisma.user_project_access.findMany({
     where: { user_id: parseInt(session.userId) },
-    include: { projects: true }
+    include: { projects: { select: { id: true, name: true } } }
   });
 
-  const projectId = userAccess?.project_id ? String(userAccess.project_id) : "empty";
+  const projects = userAccess.map(ua => ({
+    id: ua.project_id.toString(),
+    name: ua.projects?.name || 'Unknown Project'
+  }));
 
-  return <AttendanceDashboard projectId={projectId} />;
+  return <AttendanceDashboard projects={projects} />;
 }
