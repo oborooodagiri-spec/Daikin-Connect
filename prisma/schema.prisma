@@ -67,9 +67,10 @@ model knowledge_resources {
   href         String?  @db.VarChar(255) // For interactive apps or external links
   thumbnail    String?  @db.VarChar(255)
   size         String?  @db.VarChar(20)
-  tags         String?  @db.Text // Store as comma-separated or JSON
-  visibility   String   @default("Internal") // Internal, Public
-  project_id   BigInt?  @db.UnsignedBigInt // Null means General (Umum)
+  tags           String?  @db.Text // Store as comma-separated or JSON
+  visibility     String   @default("Internal") // Internal, Public
+  allowed_users  String?  @db.Text // Store as comma-separated user IDs or names
+  project_id     BigInt?  @db.UnsignedBigInt // Null means General (Umum)
   created_at   DateTime @default(now()) @db.Timestamp(0)
   updated_at   DateTime @updatedAt
   

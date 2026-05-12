@@ -47,10 +47,10 @@ export async function getResources() {
         SELECT kr.*, p.name as project_name 
         FROM knowledge_resources kr
         LEFT JOIN projects p ON kr.project_id = p.id
-        WHERE kr.visibility = 'Public' 
-           OR kr.project_id IN (${projectIdsStr})
+        WHERE (kr.allowed_users IS NOT NULL AND FIND_IN_SET(?, kr.allowed_users))
+           OR (kr.allowed_users IS NULL AND (kr.visibility = 'Public' OR kr.project_id IN (${projectIdsStr})))
         ORDER BY kr.created_at DESC
-      `);
+      `, userId.toString());
     }
 
     // Map project_name to expected structure for UI
@@ -79,6 +79,7 @@ export async function createResource(formData: {
   size?: string;
   tags?: string;
   visibility: string;
+  allowed_users?: string | null;
   project_id?: string | null;
 }) {
   const session = await getSession();
@@ -91,12 +92,12 @@ export async function createResource(formData: {
     const projectIdVal = formData.project_id ? BigInt(formData.project_id) : null;
 
     await prisma.$executeRawUnsafe(`
-      INSERT INTO knowledge_resources (id, title, category, type, file_url, href, thumbnail, size, tags, visibility, project_id, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+      INSERT INTO knowledge_resources (id, title, category, type, file_url, href, thumbnail, size, tags, visibility, allowed_users, project_id, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
     `, 
       id, formData.title, formData.category, formData.type, formData.file_url, 
       formData.href, formData.thumbnail, formData.size, formData.tags, 
-      formData.visibility, projectIdVal
+      formData.visibility, formData.allowed_users, projectIdVal
     );
 
     revalidatePath("/admin/database");
@@ -120,6 +121,7 @@ export async function updateResource(id: string, formData: {
   size?: string;
   tags?: string;
   visibility: string;
+  allowed_users?: string | null;
   project_id?: string | null;
 }) {
   const session = await getSession();
@@ -133,13 +135,13 @@ export async function updateResource(id: string, formData: {
     await prisma.$executeRawUnsafe(`
       UPDATE knowledge_resources 
       SET title = ?, category = ?, type = ?, file_url = ?, href = ?, 
-          thumbnail = ?, size = ?, tags = ?, visibility = ?, project_id = ?, 
+          thumbnail = ?, size = ?, tags = ?, visibility = ?, allowed_users = ?, project_id = ?, 
           updated_at = NOW()
       WHERE id = ?
     `, 
       formData.title, formData.category, formData.type, formData.file_url, 
       formData.href, formData.thumbnail, formData.size, formData.tags, 
-      formData.visibility, projectIdVal, id
+      formData.visibility, formData.allowed_users, projectIdVal, id
     );
 
     revalidatePath("/admin/database");

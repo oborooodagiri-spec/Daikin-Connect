@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { getResources, createResource, deleteResource, updateResource } from "@/app/actions/database";
+import { getAllUsers } from "@/app/actions/users";
 import { getSession } from "@/app/actions/auth";
 import { getAllProjects } from "@/app/actions/projects";
 import { Plus, X as CloseIcon, Shield, Globe, Trash2, Loader2, Settings as SettingsIcon } from "lucide-react";
@@ -131,23 +132,27 @@ export default function KnowledgeCenterPage() {
   const [editId, setEditId] = useState<string | null>(null);
   const [projects, setProjects] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [allUsers, setAllUsers] = useState<any[]>([]);
+  const [userSearch, setUserSearch] = useState("");
   const [formData, setFormData] = useState({
     title: "", category: "Technical", type: "PDF",
     file_url: "", href: "", thumbnail: "", size: "",
-    tags: "", visibility: "Internal", project_id: ""
+    tags: "", visibility: "Internal", allowed_users: "", project_id: ""
   });
 
   const fetchData = async () => {
     setLoading(true);
-    const [resData, sessData, projData] = await Promise.all([
+    const [resData, sessData, projData, usersData] = await Promise.all([
       getResources(),
       getSession(),
-      getAllProjects()
+      getAllProjects(),
+      getAllUsers()
     ]);
 
     if (resData.success) setResources(resData.data);
     if (sessData) setSession(sessData);
     if (projData.success) setProjects(projData.data);
+    if (usersData?.success) setAllUsers(usersData.data);
     setLoading(false);
   };
 
@@ -179,6 +184,7 @@ export default function KnowledgeCenterPage() {
       size: res.size || "",
       tags: res.tags || "",
       visibility: res.visibility,
+      allowed_users: res.allowed_users || "",
       project_id: res.project_id?.toString() || "General"
     });
     setIsModalOpen(true);
@@ -206,7 +212,7 @@ export default function KnowledgeCenterPage() {
       setFormData({
         title: "", category: "Technical", type: "PDF",
         file_url: "", href: "", thumbnail: "", size: "",
-        tags: "", visibility: "Internal", project_id: ""
+        tags: "", visibility: "Internal", allowed_users: "", project_id: ""
       });
       fetchData();
     } else {
@@ -497,7 +503,7 @@ export default function KnowledgeCenterPage() {
                 <div className="flex justify-between items-start mb-8">
                   <div>
                     <h2 className="text-3xl font-black text-[#323338] tracking-tight uppercase">
-                      {editId ? "Edit Resource" : "Add New Resource"}
+                      {editId ? "Edit Database" : "Add New Database"}
                     </h2>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Database Management</p>
                   </div>
@@ -506,13 +512,81 @@ export default function KnowledgeCenterPage() {
 
                 <form onSubmit={handleCreate} className="space-y-6">
                    <div className="space-y-1.5">
-                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Asset Title</label>
+                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Data Name</label>
                      <input 
                        type="text" required value={formData.title} 
                        onChange={e => setFormData({...formData, title: e.target.value})} 
                        placeholder="e.g. Catalog VRV-X 2026"
                        className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-[#0073ea] transition-all" 
                      />
+                   </div>
+
+                   
+                   <div className="space-y-1.5">
+                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Specific Account Access</label>
+                     <div className="relative">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                        <input 
+                           type="text" 
+                           placeholder="Search account name to grant access..." 
+                           value={userSearch}
+                           onChange={e => setUserSearch(e.target.value)}
+                           className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm outline-none focus:border-[#0073ea] transition-all"
+                        />
+                     </div>
+                     {userSearch && (
+                        <div className="mt-2 bg-white border border-slate-100 rounded-2xl shadow-xl max-h-48 overflow-y-auto p-2 z-50 relative">
+                           {allUsers.filter(u => u.name.toLowerCase().includes(userSearch.toLowerCase()))
+                              .slice(0, 10)
+                              .map(u => (
+                                 <button 
+                                    key={u.id}
+                                    type="button"
+                                    onClick={() => {
+                                       const current = formData.allowed_users ? formData.allowed_users.split(",") : [];
+                                       if (!current.includes(u.id.toString())) {
+                                          setFormData({...formData, allowed_users: [...current, u.id.toString()].filter(Boolean).join(",")});
+                                       }
+                                       setUserSearch("");
+                                    }}
+                                    className="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center justify-between group transition-colors"
+                                 >
+                                    <div>
+                                       <p className="font-bold text-sm text-slate-700">{u.name}</p>
+                                       <p className="text-[9px] text-slate-400 uppercase font-black">{u.roles?.[0] || 'User'}</p>
+                                    </div>
+                                    <Plus size={14} className="text-slate-300 group-hover:text-[#0073ea]" />
+                                 </button>
+                              ))
+                           }
+                           {allUsers.filter(u => u.name.toLowerCase().includes(userSearch.toLowerCase())).length === 0 && (
+                              <p className="p-4 text-center text-xs text-slate-400 font-bold italic">No accounts found matching your search.</p>
+                           )}
+                        </div>
+                     )}
+                     <div className="flex flex-wrap gap-2 mt-3">
+                        {formData.allowed_users?.split(",").filter(Boolean).map(uid => {
+                           const u = allUsers.find(user => user.id.toString() === uid);
+                           return (
+                              <span key={uid} className="px-3 py-1.5 bg-blue-50 text-[#0073ea] rounded-full text-[10px] font-black flex items-center gap-2 border border-blue-100 animate-in zoom-in-95 duration-200">
+                                 {u?.name || `ID: ${uid}`}
+                                 <button 
+                                    type="button" 
+                                    onClick={() => {
+                                       const next = formData.allowed_users.split(",").filter(id => id !== uid).join(",");
+                                       setFormData({...formData, allowed_users: next});
+                                    }}
+                                    className="hover:text-rose-500 transition-colors"
+                                 >
+                                    <CloseIcon size={12} />
+                                 </button>
+                              </span>
+                           )
+                        })}
+                        {(!formData.allowed_users || formData.allowed_users === "") && (
+                           <p className="text-[10px] text-slate-400 font-bold italic ml-1">No specific accounts selected (Inherit visibility scope).</p>
+                        )}
+                     </div>
                    </div>
 
                    <div className="grid grid-cols-2 gap-6">
@@ -541,7 +615,7 @@ export default function KnowledgeCenterPage() {
 
                    <div className="grid grid-cols-2 gap-6">
                       <div className="space-y-1.5">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Visibility Scope</label>
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Visibility</label>
                         <select 
                           value={formData.visibility} onChange={e => setFormData({...formData, visibility: e.target.value})}
                           className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-[#0073ea] transition-all"
