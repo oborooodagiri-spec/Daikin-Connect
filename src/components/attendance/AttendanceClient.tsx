@@ -322,6 +322,17 @@ export default function AttendanceClient({ projectId }: { projectId: string }) {
              <h1 className="text-xl font-black tracking-tight">{isWorking ? 'Clock Out' : 'Clock In'}</h1>
           </div>
           <div className="flex-1 relative flex flex-col items-center justify-center">
+              {!hasFace && (
+                 <div className="absolute top-28 left-6 right-6 z-30 bg-blue-600 text-white p-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-blue-400 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                       <Fingerprint size={24} />
+                    </div>
+                    <div className="flex-1">
+                       <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-0.5">Pendaftaran Wajah</p>
+                       <p className="text-[11px] font-bold leading-snug">Foto ini akan didaftarkan sebagai Master Profile untuk akun Anda. Pastikan wajah terlihat jelas.</p>
+                    </div>
+                 </div>
+              )}
              <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover z-0" />
              <div className="absolute top-6 left-6 right-6 z-20 bg-white rounded-2xl p-4 shadow-xl border-l-4 border-blue-500">
                 <p className="text-[12px] font-bold text-slate-400">Engineer</p>
