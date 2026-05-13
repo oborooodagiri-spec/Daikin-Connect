@@ -296,7 +296,7 @@ export default function BlueprintPresentationClient() {
               <ul className="space-y-4">
                  <li className="flex items-start gap-3 text-xs text-slate-600 font-bold">
                     <Check size={16} className="text-blue-500 mt-0.5" />
-                    Cek Approach Temperature (< 2°C).
+                    Cek Approach Temperature (&lt; 2°C).
                  </li>
                  <li className="flex items-start gap-3 text-xs text-slate-600 font-bold">
                     <Check size={16} className="text-blue-500 mt-0.5" />
