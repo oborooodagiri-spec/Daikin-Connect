@@ -354,22 +354,24 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
               </motion.div>
             )}
 
-            <motion.div 
-              whileHover={{ y: -4 }}
-              onClick={() => router.push("/home/knowledge")}
-              style={adminCardStyle}
-              onMouseEnter={e => handleCardHover(e, true)}
-              onMouseLeave={e => handleCardHover(e, false)}
-            >
-              <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
-                 <div style={{ ...adminIconBox, background: "linear-gradient(135deg, #0073ea 0%, #579bfc 100%)" }}>
-                    <BookOpen size={22} />
-                 </div>
-                 <div>
-                    <h3 style={adminCardTitle}>Pusat Pengetahuan</h3>
-                 </div>
-              </div>
-            </motion.div>
+            {profile.isAdmin && (
+              <motion.div 
+                whileHover={{ y: -4 }}
+                onClick={() => router.push("/home/knowledge")}
+                style={adminCardStyle}
+                onMouseEnter={e => handleCardHover(e, true)}
+                onMouseLeave={e => handleCardHover(e, false)}
+              >
+                <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+                   <div style={{ ...adminIconBox, background: "linear-gradient(135deg, #0073ea 0%, #579bfc 100%)" }}>
+                      <BookOpen size={22} />
+                   </div>
+                   <div>
+                      <h3 style={adminCardTitle}>Pusat Pengetahuan</h3>
+                   </div>
+                </div>
+              </motion.div>
+            )}
           </div>
         </motion.section>
 

@@ -14,6 +14,11 @@ export default async function KnowledgePage() {
     redirect("/");
   }
 
+  // Restrict to Admin only for now
+  if (!session.isAdmin) {
+    redirect("/home");
+  }
+
   const resources = await getKnowledgeResources();
 
   return (
