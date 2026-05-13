@@ -195,8 +195,10 @@ export default function AttendanceClient({
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      // Scale down image to prevent face-api.js from hanging on 4K mobile streams
+      const scale = Math.min(1, 720 / Math.max(video.videoWidth, video.videoHeight));
+      canvas.width = video.videoWidth * scale;
+      canvas.height = video.videoHeight * scale;
       const ctx = canvas.getContext('2d');
       if (ctx) {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -204,7 +206,7 @@ export default function AttendanceClient({
           if (blob) {
             setCapturedFile(new File([blob], "live_capture.jpg", { type: "image/jpeg" }));
           }
-        }, "image/jpeg", 0.85);
+        }, "image/jpeg", 0.7);
       }
     }
   };
@@ -276,7 +278,10 @@ export default function AttendanceClient({
   const triggerCamera = () => {
     if (!location) { alert("Lokasi belum terdeteksi."); startLocationTracking(); return; }
     setCapturedFile(null);
-    setNotes("");
+    
+    const isOutside = distance !== null && projectLocation && distance > (projectLocation.radius || 100);
+    setNotes(isOutside ? "Absen di luar area: " : "");
+    
     startScanner();
   };
 
@@ -393,12 +398,20 @@ export default function AttendanceClient({
                 className="absolute inset-0 w-full h-full object-contain bg-black z-0 scale-x-[-1]" 
               />
 
-              <div className="absolute top-6 left-6 right-6 z-20 bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border-l-4 border-blue-500">
-                 <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-0.5">Lokasi Aktif</p>
-                 <div className="flex items-center gap-2">
-                    <MapPin size={14} className="text-slate-400" />
-                    <p className="text-[13px] font-black text-slate-800 truncate">
-                       {projectLocation?.name || 'Mencari lokasi...'}
+              <div className="absolute top-6 left-6 right-6 z-20 bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border-l-4 border-blue-500 flex justify-between items-center">
+                 <div>
+                    <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-0.5">Area Proyek</p>
+                    <div className="flex items-center gap-2">
+                       <MapPin size={14} className="text-slate-400 shrink-0" />
+                       <p className="text-[13px] font-black text-slate-800 truncate max-w-[150px]">
+                          {projectLocation?.name || 'Mendeteksi...'}
+                       </p>
+                    </div>
+                 </div>
+                 <div className="text-right">
+                    <p className="text-[10px] font-black uppercase tracking-widest mb-0.5 text-slate-400">Status</p>
+                    <p className={`text-[11px] font-black ${distance !== null && projectLocation && distance <= (projectLocation.radius || 100) ? 'text-emerald-600' : 'text-rose-500'}`}>
+                       {distance !== null && projectLocation && distance <= (projectLocation.radius || 100) ? 'Sesuai Area' : 'Di Luar Area'}
                     </p>
                  </div>
               </div>
