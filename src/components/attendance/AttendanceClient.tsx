@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { 
   Camera, MapPin, Clock, CheckCircle2, 
   ChevronRight, Loader2, X, Calendar,
-  ChevronLeft, MoreVertical, Fingerprint
+  ChevronLeft, MoreVertical, Fingerprint, AlertCircle
 } from "lucide-react";
 import { getActiveAttendance, submitCheckIn, submitCheckOut } from "@/app/actions/attendance";
 import { format } from "date-fns";
