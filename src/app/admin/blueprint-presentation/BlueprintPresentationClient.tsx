@@ -8,7 +8,7 @@ import {
   Sparkles, Box, Layout, Award, X,
   Clock, Shield, TrendingUp, Search,
   Database, Fingerprint, Lock, Layers, Target, Calculator,
-  Settings, UserCheck, AlertTriangle
+  Settings, UserCheck, AlertTriangle, DollarSign, Wind, Gauge
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -35,8 +35,39 @@ const SlideWrapper = ({ children, title, subtitle }: { children: React.ReactNode
 
 const TierBadge = ({ level, color }: { level: string, color: string }) => (
   <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest bg-${color}-500/10 border border-${color}-500/30 text-${color}-400`}>
-    TIER {level}
+    {isNaN(Number(level)) ? level : `LEVEL ${level}`}
   </span>
+);
+
+const WorkflowStep = ({ step, title, pic, icon: Icon, desc, isMain = false }: any) => (
+  <div className="flex flex-col items-center text-center relative z-10">
+     <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 border-2 ${isMain ? 'bg-blue-600 border-blue-400 text-white shadow-xl shadow-blue-500/20' : 'bg-slate-900 border-white/5 text-slate-500'}`}>
+        <Icon size={24} />
+     </div>
+     <div className="space-y-1">
+        <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest block">Tahap {step}</span>
+        <h5 className="text-lg font-black uppercase tracking-tight">{title}</h5>
+        <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3">{pic}</p>
+        <p className="text-xs text-slate-400 font-medium max-w-[150px] mx-auto leading-relaxed">{desc}</p>
+     </div>
+  </div>
+);
+
+const JuknisCard = ({ title, icon: Icon, points }: any) => (
+  <div className="p-8 bg-white/5 border border-white/5 rounded-[2.5rem] hover:bg-white/[0.08] transition-all group">
+     <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-slate-400 mb-6 group-hover:text-blue-500 transition-colors">
+        <Icon size={24} />
+     </div>
+     <h4 className="text-xl font-black uppercase mb-6 tracking-tight">{title}</h4>
+     <ul className="space-y-3">
+        {points.map((p: string, i: number) => (
+          <li key={i} className="flex items-start gap-3 text-xs text-slate-400 font-medium leading-relaxed">
+             <div className="w-1 h-1 rounded-full bg-blue-500 mt-2 shrink-0" />
+             {p}
+          </li>
+        ))}
+     </ul>
+  </div>
 );
 
 export default function BlueprintPresentationClient() {
@@ -63,175 +94,266 @@ export default function BlueprintPresentationClient() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00a1e4] via-blue-600 to-indigo-600">Services.</span>
            </h1>
            <p className="text-xl text-slate-400 font-bold max-w-3xl mx-auto uppercase tracking-widest leading-relaxed">
-              Integrasi Operasional Nasional: Tier 1, 2, & 3
+              Petunjuk Pelaksanaan & Teknis (Operasional Nasional)
            </p>
            <div className="mt-16 flex items-center gap-8 opacity-40">
               <img src="/daikin_logo.png" className="h-5 brightness-0 invert" alt="Daikin" />
               <div className="w-px h-6 bg-white/20"></div>
-              <span className="text-[10px] font-black uppercase tracking-[0.4em]">Internal Presentation v2.0</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.4em]">Integrated Scalability Framework</span>
            </div>
         </div>
       )
     },
-    // Slide 2: Tiering Matrix
+    // Slide 2: Service Tiering
     {
-      title: "Tiering Workflow Matrix",
-      subtitle: "Juklak: Level Strategis",
+      title: "Standardisasi Paket Layanan",
+      subtitle: "Juknis: Modular & Universal",
       content: (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
            <TierCard 
-             tier="1" 
-             name="DASAR (Descriptive)" 
+             tier="01" 
+             name="DASAR" 
              color="slate"
-             icon={FileText}
-             input="Logsheet Manual & Visual (Kertas/PDF)"
-             analytics="Kompilasi dokumen Summary Report PDF"
-             output="Rekomendasi Reaktif (Perbaikan Kerusakan)"
-             audience="Teknisi Gedung / Supervisor"
+             icon={Activity}
+             input="Cuci AC Rutin & Visual Inspeksi"
+             analytics="Digitalisasi Laporan Dasar (PDF)"
+             output="Riwayat Aset Terpusat"
+             audience="Preventive Maintenance"
            />
            <TierCard 
-             tier="2" 
-             name="MENENGAH (Proactive)" 
+             tier="02" 
+             name="MENENGAH" 
              color="blue"
-             icon={Activity}
-             input="EPL CONNECT Real-time App Input"
-             analytics="Health Index Scoring (Sistem Digital)"
-             output="Live Dashboard & Alarm Otomatis"
-             audience="Chief Engineer / FM"
+             icon={Gauge}
+             input="Pengukuran Parameter Teknis (Suhu/Ampere)"
+             analytics="Health Index Scoring Per-Unit"
+             output="Engineering Audit Reporting"
+             audience="Performance Control"
              isFeatured
            />
            <TierCard 
-             tier="3" 
-             name="LENGKAP (Predictive)" 
+             tier="03" 
+             name="LENGKAP" 
              color="indigo"
-             icon={Zap}
-             input="kWh Monitoring & Beban Aktual"
-             analytics="Digital Twin & Efisiensi kW/TR"
-             output="ROI & Cost Saving Report (Financial)"
-             audience="BOD / Owner / Finance"
+             icon={Calculator}
+             input="Audit Efisiensi Energi Menyeluruh"
+             analytics="Predictive Analytics & Life Cycle"
+             output="ROI & Cost Saving Analysis"
+             audience="Strategic Value Engineering"
            />
         </div>
       )
     },
-    // Slide 3: Pre-contract & Onboarding
+    // Slide 3: Pre-contract & Pitching
     {
-      title: "Pra-Kontrak & Onboarding",
-      subtitle: "Asesmen & Asset Management",
+      title: "Pra-Kontrak & Pitching",
+      subtitle: "Baseline & Value Justification",
       content: (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-           <div className="space-y-8">
-              <div className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] relative overflow-hidden group">
-                 <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity"><Search size={80} /></div>
-                 <h4 className="text-xl font-black uppercase mb-4 text-blue-400">1. Fase Genba (Site Audit)</h4>
-                 <ul className="space-y-4">
-                    <li className="flex items-start gap-3">
-                       <Check className="text-blue-500 mt-1" size={16} />
-                       <p className="text-sm font-bold text-slate-300">Observasi Energi (Wajib Tier 3): Pengumpulan data tagihan listrik baseline.</p>
-                    </li>
-                    <li className="flex items-start gap-3">
-                       <Check className="text-blue-500 mt-1" size={16} />
-                       <p className="text-sm font-bold text-slate-300">Identifikasi Pemborosan: Audit insulasi, kerak air, dan penurunan efisiensi.</p>
-                    </li>
-                 </ul>
+           <div className="space-y-6">
+              <div className="p-6 bg-white/5 border border-white/10 rounded-3xl group">
+                 <h4 className="text-lg font-black uppercase mb-3 text-blue-400 flex items-center gap-2">
+                    <Search size={20} /> Observasi Energi
+                 </h4>
+                 <p className="text-sm text-slate-400 leading-relaxed font-medium">Data tagihan listrik klien & estimasi konsumsi daya HVAC saat ini untuk menentukan baseline performa.</p>
               </div>
-              <div className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] relative overflow-hidden group">
-                 <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity"><Fingerprint size={80} /></div>
-                 <h4 className="text-xl font-black uppercase mb-4 text-indigo-400">2. Onboarding Aset</h4>
-                 <ul className="space-y-4">
-                    <li className="flex items-start gap-3">
-                       <Check className="text-indigo-500 mt-1" size={16} />
-                       <p className="text-sm font-bold text-slate-300">QR Code Labeling: Pemindaian wajib (In/Out) untuk validasi kehadiran teknisi.</p>
-                    </li>
-                    <li className="flex items-start gap-3">
-                       <Check className="text-indigo-500 mt-1" size={16} />
-                       <p className="text-sm font-bold text-slate-300">Baseline Data Input: Desain Ampere, Flow Rate, & Head sebagai batas toleransi sistem.</p>
-                    </li>
-                 </ul>
+              <div className="p-6 bg-white/5 border border-white/10 rounded-3xl group">
+                 <h4 className="text-lg font-black uppercase mb-3 text-orange-400 flex items-center gap-2">
+                    <TrendingUp size={20} /> Strategi Pitching
+                 </h4>
+                 <p className="text-sm text-slate-400 leading-relaxed font-medium">Justifikasi teknis & potensi ROI, termasuk opsi **Gain-sharing** (Bagi hasil dari penghematan listrik).</p>
+              </div>
+              <div className="p-6 bg-white/5 border border-white/10 rounded-3xl group">
+                 <h4 className="text-lg font-black uppercase mb-3 text-indigo-400 flex items-center gap-2">
+                    <Fingerprint size={20} /> Digital Passport
+                 </h4>
+                 <p className="text-sm text-slate-400 leading-relaxed font-medium">Registrasi unit (Merek, Model, Kapasitas) & Penempelan **QR Code** unik sebagai ID digital unit.</p>
               </div>
            </div>
-           <div className="flex items-center justify-center">
-              <div className="relative w-full aspect-square max-w-sm">
-                 <div className="absolute inset-0 border border-blue-500/20 rounded-full animate-spin-slow" />
-                 <div className="absolute inset-4 border border-indigo-500/20 rounded-full animate-spin-reverse-slow" />
-                 <div className="absolute inset-0 flex items-center justify-center">
-                    <Database size={64} className="text-blue-500" />
+           <div className="bg-slate-900/50 rounded-[3rem] p-12 flex flex-col items-center justify-center text-center border border-white/5">
+              <div className="w-24 h-24 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-500 mb-8 border border-blue-500/20">
+                 <DollarSign size={48} />
+              </div>
+              <h5 className="text-2xl font-black uppercase mb-4 tracking-tighter">Gain-Sharing Model</h5>
+              <p className="text-slate-500 text-sm font-medium leading-relaxed italic">
+                 "Meningkatkan kepercayaan klien melalui model bisnis berbasis hasil penghematan yang terukur secara transparan di platform."
+              </p>
+           </div>
+        </div>
+      )
+    },
+    // Slide 4: Digital Reporting Workflow
+    {
+      title: "Digital Reporting Workflow",
+      subtitle: "End-to-End Data Lifecycle",
+      content: (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 relative py-12">
+           <div className="absolute top-1/2 left-0 w-full h-px bg-white/5 hidden md:block" />
+           <WorkflowStep 
+             step="1" 
+             title="Persiapan" 
+             pic="Helpdesk / Admin" 
+             icon={Clock} 
+             desc="Tiket servis & SIKA (Izin Kerja)" 
+           />
+           <WorkflowStep 
+             step="2" 
+             title="Eksekusi" 
+             pic="Teknisi" 
+             icon={Laptop} 
+             desc="Scan QR, Live Form, e-Sign Klien" 
+             isMain
+           />
+           <WorkflowStep 
+             step="3" 
+             title="Validasi" 
+             pic="Chief Engineer" 
+             icon={ShieldCheck} 
+             desc="Review Data & Health Scoring" 
+           />
+           <WorkflowStep 
+             step="4" 
+             title="Distribusi" 
+             pic="Sistem (Auto)" 
+             icon={Globe} 
+             desc="Kirim PDF via Email/WA" 
+           />
+        </div>
+      )
+    },
+    // Slide 5: SLA Matrix
+    {
+      title: "Matriks SLA Adaptif",
+      subtitle: "Berdasarkan Klasifikasi Area",
+      content: (
+        <div className="space-y-6">
+           <SlaRow 
+             tier="KRITIS" 
+             name="RS (OK/ICU), Data Center" 
+             response="15 Menit" 
+             arrival="Max 2 Jam" 
+             desc="Area operasional kritis dengan toleransi downtime nol." 
+             color="rose" 
+           />
+           <SlaRow 
+             tier="PRIORITAS" 
+             name="Pabrik, Industri Chiller" 
+             response="30 Menit" 
+             arrival="Max 4 Jam" 
+             desc="Proses produksi massal yang bergantung pada suhu stabil." 
+             color="orange" 
+           />
+           <SlaRow 
+             tier="STANDAR" 
+             name="Cabang Ritel, Kantor" 
+             response="1 Jam" 
+             arrival="1x24 Jam" 
+             desc="Kenyamanan komersial atau sesuai kesepakatan regional." 
+             color="slate" 
+           />
+        </div>
+      )
+    },
+    // Slide 6: Juknis Chiller Plant (Module 1)
+    {
+      title: "Modul 1: Chiller Plant",
+      subtitle: "Juknis: Water-Cooled System",
+      content: (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+           <JuknisCard 
+             title="Water Cooled Chiller" 
+             icon={Zap} 
+             points={[
+               "Approach Temp Evap/Cond (< 2°C)",
+               "Cek visual kebocoran freon & oli",
+               "Ukur Ampere kompresor"
+             ]} 
+           />
+           <JuknisCard 
+             title="Pompa Sirkulasi" 
+             icon={Settings} 
+             points={[
+               "Ukur vibrasi bearing",
+               "Cek keseimbangan arus fasa motor",
+               "Inspeksi Mechanical Seal"
+             ]} 
+           />
+           <JuknisCard 
+             title="Cooling Tower" 
+             icon={Wind} 
+             points={[
+               "Bersihkan basin & strainer",
+               "Cek ketegangan V-Belt",
+               "Ukur Ampere motor kipas"
+             ]} 
+           />
+        </div>
+      )
+    },
+    // Slide 7: Juknis VRV/VRF & Commercial DX (Module 2 & 3)
+    {
+      title: "Modul 2 & 3: VRV / DX",
+      subtitle: "Juknis: Air-Cooled & Commercial DX",
+      content: (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+           <div className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] space-y-6">
+              <h4 className="text-xl font-black uppercase text-blue-400">Modul 2: VRV / VRF System</h4>
+              <div className="grid grid-cols-2 gap-4">
+                 <div className="space-y-2">
+                    <span className="text-[9px] font-black text-slate-500 uppercase">Outdoor Unit</span>
+                    <p className="text-xs text-slate-300 font-medium leading-relaxed">Cek tekanan freon tersentralisasi, koil kondensor, & modul inverter.</p>
+                 </div>
+                 <div className="space-y-2">
+                    <span className="text-[9px] font-black text-slate-500 uppercase">Indoor & Control</span>
+                    <p className="text-xs text-slate-300 font-medium leading-relaxed">Ukur Supply/Return Temp, cek motor drain, & baca error code remote.</p>
+                 </div>
+              </div>
+           </div>
+           <div className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] space-y-6">
+              <h4 className="text-xl font-black uppercase text-indigo-400">Modul 3: Commercial DX</h4>
+              <div className="grid grid-cols-2 gap-4">
+                 <div className="space-y-2">
+                    <span className="text-[9px] font-black text-slate-500 uppercase">Preventive</span>
+                    <p className="text-xs text-slate-300 font-medium leading-relaxed">Cuci koil indoor/outdoor dengan pompa tekanan tinggi.</p>
+                 </div>
+                 <div className="space-y-2">
+                    <span className="text-[9px] font-black text-slate-500 uppercase">Inspeksi Teknis</span>
+                    <p className="text-xs text-slate-300 font-medium leading-relaxed">Ukur Ampere kompresor & pastikan jalur drain lancar (No Leak).</p>
                  </div>
               </div>
            </div>
         </div>
       )
     },
-    // Slide 4: SLA Matrix
+    // Slide 8: Executive Review
     {
-      title: "Matriks SLA Adaptif",
-      subtitle: "Service Level Agreement",
+      title: "Executive Review",
+      subtitle: "Financial Reporting & B2B Strategy",
       content: (
-        <div className="space-y-8 py-10">
-           <SlaRow tier="3" name="VIP STRATEGIC" response="15 Menit" arrival="2-4 Jam" desc="Untuk RS, Industri, & Data Center (Operasional Kritis)" color="indigo" />
-           <SlaRow tier="2" name="PROAKTIF" response="30 Menit" arrival="4-8 Jam" desc="Alarm otomatis & mitigasi sebelum breakdown" color="blue" />
-           <SlaRow tier="1" name="STANDAR" response="60 Menit" arrival="24 Jam" desc="Respon reaktif & jadwal reguler" color="slate" />
-        </div>
-      )
-    },
-    // Slide 5: Juknis Operasional
-    {
-      title: "Juknis Lapangan",
-      subtitle: "Standardisasi Pemungutan Data",
-      content: (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-           <div className="bg-slate-900 border border-white/5 p-10 rounded-[3rem] space-y-6">
-              <div className="w-12 h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center text-blue-500"><Laptop size={24} /></div>
-              <h4 className="text-2xl font-black uppercase text-white">Validasi Digital (Tier 2)</h4>
-              <p className="text-slate-400 font-medium text-sm leading-relaxed">
-                 Teknisi WAJIB memindahkan data logsheet secara akurat ke **EPL CONNECT** langsung di lokasi (No Delay).
-              </p>
-              <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-xl">
-                 <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest block mb-1">Status Target</span>
-                 <p className="text-white font-bold text-xs">Live Dashboard Sync 100%</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center py-10">
+           <div className="space-y-8">
+              <div className="flex gap-6 items-start">
+                 <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-blue-400 shrink-0"><BarChart3 /></div>
+                 <div>
+                    <h5 className="text-lg font-black uppercase mb-1">Laporan Nilai Bisnis</h5>
+                    <p className="text-sm text-slate-500 font-medium leading-relaxed">Presentasi perbandingan konsumsi daya riil vs baseline untuk Direksi/BOD klien.</p>
+                 </div>
+              </div>
+              <div className="flex gap-6 items-start">
+                 <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-indigo-400 shrink-0"><Award /></div>
+                 <div>
+                    <h5 className="text-lg font-black uppercase mb-1">Keterlibatan Eksekutif</h5>
+                    <p className="text-sm text-slate-500 font-medium leading-relaxed">Rapat evaluasi strategis dihadiri level manajemen senior guna menjaga hubungan B2B.</p>
+                 </div>
               </div>
            </div>
-           <div className="bg-slate-900 border border-white/5 p-10 rounded-[3rem] space-y-6">
-              <div className="w-12 h-12 bg-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-500"><Calculator size={24} /></div>
-              <h4 className="text-2xl font-black uppercase text-white">Data Finansial (Tier 3)</h4>
-              <p className="text-slate-400 font-medium text-sm leading-relaxed">
-                 Chief Engineer wajib meminta data **kWh Bulanan** panel HVAC dari klien untuk perhitungan Cost Saving.
+           <div className="bg-gradient-to-br from-indigo-600 to-blue-700 p-10 rounded-[3rem] shadow-2xl relative overflow-hidden">
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
+              <h4 className="text-3xl font-black uppercase mb-4 tracking-tighter">Scalable Solution</h4>
+              <p className="text-indigo-100 font-medium leading-relaxed">
+                 "Blueprint ini dirancang untuk dapat diukur di berbagai skala proyek—mulai dari gedung tunggal hingga jaringan ritel nasional."
               </p>
-              <div className="p-4 bg-indigo-500/5 border border-indigo-500/10 rounded-xl">
-                 <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest block mb-1">Output Target</span>
-                 <p className="text-white font-bold text-xs">Monthly ROI Report</p>
-              </div>
            </div>
-        </div>
-      )
-    },
-    // Slide 6: Action Recommendations
-    {
-      title: "Action Strategy Hub",
-      subtitle: "Evaluasi & Rekomendasi",
-      content: (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-8">
-           <ActionCard 
-             type="REAKTIF" 
-             tier="1" 
-             icon={Shield} 
-             example='"Sensor rusak, mohon diganti"' 
-             desc="Berdasarkan kerusakan fisik nyata."
-           />
-           <ActionCard 
-             type="PROAKTIF" 
-             tier="2" 
-             icon={TrendingUp} 
-             example='"Health Index turun (90% -> 75%), cek filter oli."' 
-             desc="Berdasarkan tren data algoritma."
-             isHighlight
-           />
-           <ActionCard 
-             type="STRATEGIS" 
-             tier="3" 
-             icon={Target} 
-             example='"Investasi VFD akan ROI dalam 18 bulan."' 
-             desc="Pertemuan manajemen tingkat BOD."
-           />
         </div>
       )
     }
