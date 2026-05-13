@@ -68,6 +68,7 @@ model knowledge_resources {
   thumbnail    String?  @db.VarChar(255)
   size         String?  @db.VarChar(20)
   tags           String?  @db.Text // Store as comma-separated or JSON
+  content        String?  @db.LongText // For text-based guidelines like Juklak/Juknis
   visibility     String   @default("Internal") // Internal, Public
   allowed_users  String?  @db.Text // Store as comma-separated user IDs or names
   project_id     BigInt?  @db.UnsignedBigInt // Null means General (Umum)

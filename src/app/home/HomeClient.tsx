@@ -7,7 +7,7 @@ import {
   User, Mail, Phone, Building2, Shield, ChevronRight,
   Camera, X, Check, Search, LogOut, Settings, Clock,
   FileText, Calendar, Upload, Download, Activity, Edit3,
-  LayoutDashboard, ExternalLink, Database, Users, Briefcase
+  LayoutDashboard, ExternalLink, Database, Users, Briefcase, BookOpen
 } from "lucide-react";
 import StaticLogo from "@/components/ui/StaticLogo";
 import { updateProfile, saveAvatarUrl } from "@/app/actions/profile";
@@ -356,17 +356,17 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
 
             <motion.div 
               whileHover={{ y: -4 }}
-              onClick={() => setEditOpen(true)}
+              onClick={() => router.push("/home/knowledge")}
               style={adminCardStyle}
               onMouseEnter={e => handleCardHover(e, true)}
               onMouseLeave={e => handleCardHover(e, false)}
             >
               <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
-                 <div style={{ ...adminIconBox, background: "linear-gradient(135deg, #676879 0%, #323338 100%)" }}>
-                    <Settings size={22} />
+                 <div style={{ ...adminIconBox, background: "linear-gradient(135deg, #0073ea 0%, #579bfc 100%)" }}>
+                    <BookOpen size={22} />
                  </div>
                  <div>
-                    <h3 style={adminCardTitle}>Pengaturan Akun</h3>
+                    <h3 style={adminCardTitle}>Pusat Pengetahuan</h3>
                  </div>
               </div>
             </motion.div>
