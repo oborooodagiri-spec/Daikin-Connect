@@ -199,7 +199,8 @@ export async function submitCheckIn(data: {
       const radius = project.radius_meters || 100;
 
       if (distance > radius) {
-        return { error: `Out of Range: Anda berada ${Math.round(distance)}m dari lokasi proyek. (Radius maksimal: ${radius}m).` };
+        // PER USER REQUEST: Allow check-ins outside the area, but the frontend will add a note.
+        console.warn(`[GEOFENCE] User clocked in out of range: ${Math.round(distance)}m`);
       }
     }
 
