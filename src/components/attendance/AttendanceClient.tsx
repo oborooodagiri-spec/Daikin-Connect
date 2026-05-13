@@ -231,7 +231,8 @@ export default function AttendanceClient({
   }, [capturedFile]);
 
   const processFile = async (file: File) => {
-    if (!location) { alert("Lokasi diperlukan."); return; }
+    setErrorMsg(null);
+    if (!location) { setErrorMsg("Lokasi diperlukan."); return; }
     setSubmitting(true);
     setVerifying(true);
     try {
@@ -267,7 +268,8 @@ export default function AttendanceClient({
       setShowSuccess(true);
       await loadModelsAndReference();
     } catch (error: any) {
-      alert(error.message || "Terjadi kesalahan");
+      console.error("Process error:", error);
+      setErrorMsg(error.message || "Terjadi kesalahan sistem. Silakan coba lagi.");
     } finally {
       setSubmitting(false);
       setVerifying(false);
@@ -276,7 +278,8 @@ export default function AttendanceClient({
   };
 
   const triggerCamera = () => {
-    if (!location) { alert("Lokasi belum terdeteksi."); startLocationTracking(); return; }
+    if (!location) { setErrorMsg("Lokasi belum terdeteksi. Pastikan GPS aktif."); startLocationTracking(); return; }
+    setErrorMsg(null);
     setCapturedFile(null);
     
     const isOutside = distance !== null && projectLocation && distance > (projectLocation.radius || 100);
@@ -398,22 +401,33 @@ export default function AttendanceClient({
                 className="absolute inset-0 w-full h-full object-contain bg-black z-0 scale-x-[-1]" 
               />
 
-              <div className="absolute top-6 left-6 right-6 z-20 bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border-l-4 border-blue-500 flex justify-between items-center">
-                 <div>
-                    <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-0.5">Area Proyek</p>
-                    <div className="flex items-center gap-2">
-                       <MapPin size={14} className="text-slate-400 shrink-0" />
-                       <p className="text-[13px] font-black text-slate-800 truncate max-w-[150px]">
-                          {projectLocation?.name || 'Mendeteksi...'}
+              <div className="absolute top-6 left-6 right-6 z-20 space-y-3">
+                 <div className="bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border-l-4 border-blue-500 flex justify-between items-center">
+                    <div>
+                       <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-0.5">Area Proyek</p>
+                       <div className="flex items-center gap-2">
+                          <MapPin size={14} className="text-slate-400 shrink-0" />
+                          <p className="text-[13px] font-black text-slate-800 truncate max-w-[150px]">
+                             {projectLocation?.name || 'Mendeteksi...'}
+                          </p>
+                       </div>
+                    </div>
+                    <div className="text-right">
+                       <p className="text-[10px] font-black uppercase tracking-widest mb-0.5 text-slate-400">Status</p>
+                       <p className={`text-[11px] font-black ${distance !== null && projectLocation && distance <= (projectLocation.radius || 100) ? 'text-emerald-600' : 'text-rose-500'}`}>
+                          {distance !== null && projectLocation && distance <= (projectLocation.radius || 100) ? 'Sesuai Area' : 'Di Luar Area'}
                        </p>
                     </div>
                  </div>
-                 <div className="text-right">
-                    <p className="text-[10px] font-black uppercase tracking-widest mb-0.5 text-slate-400">Status</p>
-                    <p className={`text-[11px] font-black ${distance !== null && projectLocation && distance <= (projectLocation.radius || 100) ? 'text-emerald-600' : 'text-rose-500'}`}>
-                       {distance !== null && projectLocation && distance <= (projectLocation.radius || 100) ? 'Sesuai Area' : 'Di Luar Area'}
-                    </p>
-                 </div>
+
+                 {errorMsg && (
+                    <div className="bg-rose-50/95 backdrop-blur-md border border-rose-200 rounded-xl p-3 shadow-lg flex items-start gap-2">
+                       <AlertCircle size={16} className="text-rose-600 shrink-0 mt-0.5" />
+                       <p className="text-[11px] font-semibold text-rose-700 leading-tight">
+                          {errorMsg}
+                       </p>
+                    </div>
+                 )}
               </div>
 
               <div className="relative z-10 w-full h-full flex items-center justify-center pointer-events-none">

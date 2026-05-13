@@ -19,22 +19,13 @@ export async function getActiveAttendance(projectId: string) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const whereClause: any = {
-      user_id: parseInt(session.userId),
-      check_in_time: { gte: today }
-    };
-
-    if (projectId && projectId !== "empty" && !isNaN(Number(projectId))) {
-      whereClause.project_id = BigInt(projectId);
-    }
-
-    const user = await prisma.users.findUnique({
-      where: { id: parseInt(session.userId) },
-      select: { face_reference_url: true }
-    });
-
+    // Always find the currently active record across ALL projects first
     const activeRecord = await (prisma as any).vendor_attendance.findFirst({
-      where: whereClause,
+      where: {
+        user_id: parseInt(session.userId),
+        check_out_time: null,
+        check_in_time: { gte: today }
+      },
       include: {
         projects: { select: { name: true, latitude: true, longitude: true, radius_meters: true } }
       },
@@ -43,10 +34,16 @@ export async function getActiveAttendance(projectId: string) {
       },
     });
 
-    const targetProject = activeRecord?.projects || (projectId && !isNaN(Number(projectId)) ? await prisma.projects.findUnique({
+    // Determine target project location (either from active record, or the selected project)
+    const targetProject = activeRecord?.projects || (projectId && projectId !== "empty" && !isNaN(Number(projectId)) ? await prisma.projects.findUnique({
       where: { id: BigInt(projectId) },
       select: { name: true, latitude: true, longitude: true, radius_meters: true }
     }) : null);
+
+    const user = await prisma.users.findUnique({
+      where: { id: parseInt(session.userId) },
+      select: { face_reference_url: true }
+    });
 
     // Convert BigInt for JSON serialization
     return serializePrisma({
@@ -55,7 +52,7 @@ export async function getActiveAttendance(projectId: string) {
       hasFace: !!user?.face_reference_url,
       faceUrl: user?.face_reference_url,
       projectLocation: targetProject ? { 
-        name: targetProject.name,
+        name: targetProject.name || 'Proyek Tanpa Nama',
         lat: Number(targetProject.latitude), 
         long: Number(targetProject.longitude), 
         radius: targetProject.radius_meters 
