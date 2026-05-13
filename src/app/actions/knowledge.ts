@@ -67,3 +67,49 @@ export async function createKnowledgeResource(data: {
     return { success: false, error: "Gagal menyimpan resource" };
   }
 }
+
+export async function updateKnowledgeResource(id: string, data: any) {
+  try {
+    const session = await getSession();
+    if (!session || !session.isAdmin) throw new Error("Unauthorized");
+
+    await prisma.knowledge_resources.update({
+      where: { id: id },
+      data: {
+        title: data.title,
+        category: data.category,
+        type: data.type,
+        file_url: data.file_url,
+        href: data.href,
+        thumbnail: data.thumbnail,
+        tags: data.tags,
+        content: data.content,
+        visibility: data.visibility,
+        project_id: data.projectId ? BigInt(data.projectId) : null,
+      }
+    });
+
+    revalidatePath("/home/knowledge");
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating knowledge resource:", error);
+    return { success: false, error: "Gagal memperbarui resource" };
+  }
+}
+
+export async function deleteKnowledgeResource(id: string) {
+  try {
+    const session = await getSession();
+    if (!session || !session.isAdmin) throw new Error("Unauthorized");
+
+    await prisma.knowledge_resources.delete({
+      where: { id: id }
+    });
+
+    revalidatePath("/home/knowledge");
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting knowledge resource:", error);
+    return { success: false, error: "Gagal menghapus resource" };
+  }
+}

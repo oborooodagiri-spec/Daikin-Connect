@@ -9,6 +9,8 @@ import {
 import { useRouter } from "next/navigation";
 import ResourceCard from "@/components/dashboard/ResourceCard";
 import ResourceViewer from "@/components/dashboard/ResourceViewer";
+import ResourceEditorModal from "./ResourceEditorModal";
+import { deleteKnowledgeResource } from "@/app/actions/knowledge";
 
 export default function KnowledgeClient({ 
   resources: initialResources,
@@ -22,6 +24,8 @@ export default function KnowledgeClient({
   const [activeCategory, setActiveCategory] = useState("SEMUA");
   const [selectedResource, setSelectedResource] = useState<any | null>(null);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [editingResource, setEditingResource] = useState<any | null>(null);
 
   const categories = ["SEMUA", "JUKLAK", "JUKNIS", "STRATEGY", "MARKETING"];
 
@@ -39,6 +43,27 @@ export default function KnowledgeClient({
       setSelectedResource(resource);
       setIsViewerOpen(true);
     }
+  };
+
+  const handleEdit = (resource: any) => {
+    setEditingResource(resource);
+    setIsEditorOpen(true);
+  };
+
+  const handleDelete = async (resource: any) => {
+    if (confirm(`Hapus "${resource.title}"?`)) {
+      const res = await deleteKnowledgeResource(resource.id);
+      if (res.success) {
+        router.refresh();
+      } else {
+        alert(res.error);
+      }
+    }
+  };
+
+  const handleAddNew = () => {
+    setEditingResource(null);
+    setIsEditorOpen(true);
   };
 
   return (
@@ -71,6 +96,15 @@ export default function KnowledgeClient({
                    className="w-80 h-12 bg-slate-50 border border-slate-100 rounded-2xl pl-12 pr-4 text-sm font-bold outline-none focus:border-blue-200 transition-all"
                  />
               </div>
+
+              {isAdmin && (
+                <button 
+                  onClick={handleAddNew}
+                  className="h-12 px-6 bg-blue-600 text-white rounded-2xl font-black text-xs flex items-center gap-2 shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95"
+                >
+                  <Sparkles size={16} /> TAMBAH BARU
+                </button>
+              )}
            </div>
         </div>
       </div>
@@ -125,12 +159,14 @@ export default function KnowledgeClient({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
              {filtered.map(resource => (
-               <ResourceCard 
-                 key={resource.id} 
-                 resource={resource} 
-                 onLaunch={handleLaunch}
-                 isAdmin={isAdmin}
-               />
+                <ResourceCard 
+                  key={resource.id} 
+                  resource={resource} 
+                  onLaunch={handleLaunch}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  isAdmin={isAdmin}
+                />
              ))}
           </div>
         )}
@@ -140,6 +176,13 @@ export default function KnowledgeClient({
         resource={selectedResource}
         isOpen={isViewerOpen}
         onClose={() => setIsViewerOpen(false)}
+      />
+
+      <ResourceEditorModal 
+        isOpen={isEditorOpen}
+        onClose={() => setIsEditorOpen(false)}
+        onSuccess={() => router.refresh()}
+        resource={editingResource}
       />
     </div>
   );

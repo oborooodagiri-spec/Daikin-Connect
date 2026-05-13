@@ -3,6 +3,8 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles, FileText, Download, Share2, BookOpen } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export default function ResourceViewer({ 
   resource, 
@@ -54,13 +56,13 @@ export default function ResourceViewer({
 
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto p-8 md:p-12 custom-scrollbar">
-               {resource.content ? (
-                 <div className="prose prose-slate max-w-none">
-                    <pre className="whitespace-pre-wrap font-sans text-slate-700 text-lg leading-relaxed font-medium">
-                      {resource.content}
-                    </pre>
-                 </div>
-               ) : (
+                {resource.content ? (
+                  <div className="prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tight prose-p:text-slate-600 prose-p:leading-relaxed prose-li:text-slate-600">
+                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                       {resource.content}
+                     </ReactMarkdown>
+                  </div>
+                ) : (
                  <div className="h-full flex flex-col items-center justify-center text-center">
                     <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mb-6">
                        <FileText size={48} />

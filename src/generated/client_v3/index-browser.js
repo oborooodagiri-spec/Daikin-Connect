@@ -159,6 +159,7 @@ exports.Prisma.Knowledge_resourcesScalarFieldEnum = {
   thumbnail: 'thumbnail',
   size: 'size',
   tags: 'tags',
+  content: 'content',
   visibility: 'visibility',
   allowed_users: 'allowed_users',
   project_id: 'project_id',
@@ -768,6 +769,7 @@ exports.Prisma.knowledge_resourcesOrderByRelevanceFieldEnum = {
   thumbnail: 'thumbnail',
   size: 'size',
   tags: 'tags',
+  content: 'content',
   visibility: 'visibility',
   allowed_users: 'allowed_users'
 };

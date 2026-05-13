@@ -8812,6 +8812,7 @@ export namespace Prisma {
     thumbnail: string | null
     size: string | null
     tags: string | null
+    content: string | null
     visibility: string | null
     allowed_users: string | null
     project_id: bigint | null
@@ -8829,6 +8830,7 @@ export namespace Prisma {
     thumbnail: string | null
     size: string | null
     tags: string | null
+    content: string | null
     visibility: string | null
     allowed_users: string | null
     project_id: bigint | null
@@ -8846,6 +8848,7 @@ export namespace Prisma {
     thumbnail: number
     size: number
     tags: number
+    content: number
     visibility: number
     allowed_users: number
     project_id: number
@@ -8873,6 +8876,7 @@ export namespace Prisma {
     thumbnail?: true
     size?: true
     tags?: true
+    content?: true
     visibility?: true
     allowed_users?: true
     project_id?: true
@@ -8890,6 +8894,7 @@ export namespace Prisma {
     thumbnail?: true
     size?: true
     tags?: true
+    content?: true
     visibility?: true
     allowed_users?: true
     project_id?: true
@@ -8907,6 +8912,7 @@ export namespace Prisma {
     thumbnail?: true
     size?: true
     tags?: true
+    content?: true
     visibility?: true
     allowed_users?: true
     project_id?: true
@@ -9011,6 +9017,7 @@ export namespace Prisma {
     thumbnail: string | null
     size: string | null
     tags: string | null
+    content: string | null
     visibility: string
     allowed_users: string | null
     project_id: bigint | null
@@ -9047,6 +9054,7 @@ export namespace Prisma {
     thumbnail?: boolean
     size?: boolean
     tags?: boolean
+    content?: boolean
     visibility?: boolean
     allowed_users?: boolean
     project_id?: boolean
@@ -9067,6 +9075,7 @@ export namespace Prisma {
     thumbnail?: boolean
     size?: boolean
     tags?: boolean
+    content?: boolean
     visibility?: boolean
     allowed_users?: boolean
     project_id?: boolean
@@ -9074,7 +9083,7 @@ export namespace Prisma {
     updated_at?: boolean
   }
 
-  export type knowledge_resourcesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "category" | "type" | "file_url" | "href" | "thumbnail" | "size" | "tags" | "visibility" | "allowed_users" | "project_id" | "created_at" | "updated_at", ExtArgs["result"]["knowledge_resources"]>
+  export type knowledge_resourcesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "category" | "type" | "file_url" | "href" | "thumbnail" | "size" | "tags" | "content" | "visibility" | "allowed_users" | "project_id" | "created_at" | "updated_at", ExtArgs["result"]["knowledge_resources"]>
   export type knowledge_resourcesInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     projects?: boolean | knowledge_resources$projectsArgs<ExtArgs>
   }
@@ -9094,6 +9103,7 @@ export namespace Prisma {
       thumbnail: string | null
       size: string | null
       tags: string | null
+      content: string | null
       visibility: string
       allowed_users: string | null
       project_id: bigint | null
@@ -9478,6 +9488,7 @@ export namespace Prisma {
     readonly thumbnail: FieldRef<"knowledge_resources", 'String'>
     readonly size: FieldRef<"knowledge_resources", 'String'>
     readonly tags: FieldRef<"knowledge_resources", 'String'>
+    readonly content: FieldRef<"knowledge_resources", 'String'>
     readonly visibility: FieldRef<"knowledge_resources", 'String'>
     readonly allowed_users: FieldRef<"knowledge_resources", 'String'>
     readonly project_id: FieldRef<"knowledge_resources", 'BigInt'>
@@ -53817,6 +53828,7 @@ export namespace Prisma {
     thumbnail: 'thumbnail',
     size: 'size',
     tags: 'tags',
+    content: 'content',
     visibility: 'visibility',
     allowed_users: 'allowed_users',
     project_id: 'project_id',
@@ -54567,6 +54579,7 @@ export namespace Prisma {
     thumbnail: 'thumbnail',
     size: 'size',
     tags: 'tags',
+    content: 'content',
     visibility: 'visibility',
     allowed_users: 'allowed_users'
   };
@@ -55402,6 +55415,7 @@ export namespace Prisma {
     thumbnail?: StringNullableFilter<"knowledge_resources"> | string | null
     size?: StringNullableFilter<"knowledge_resources"> | string | null
     tags?: StringNullableFilter<"knowledge_resources"> | string | null
+    content?: StringNullableFilter<"knowledge_resources"> | string | null
     visibility?: StringFilter<"knowledge_resources"> | string
     allowed_users?: StringNullableFilter<"knowledge_resources"> | string | null
     project_id?: BigIntNullableFilter<"knowledge_resources"> | bigint | number | null
@@ -55420,6 +55434,7 @@ export namespace Prisma {
     thumbnail?: SortOrderInput | SortOrder
     size?: SortOrderInput | SortOrder
     tags?: SortOrderInput | SortOrder
+    content?: SortOrderInput | SortOrder
     visibility?: SortOrder
     allowed_users?: SortOrderInput | SortOrder
     project_id?: SortOrderInput | SortOrder
@@ -55442,6 +55457,7 @@ export namespace Prisma {
     thumbnail?: StringNullableFilter<"knowledge_resources"> | string | null
     size?: StringNullableFilter<"knowledge_resources"> | string | null
     tags?: StringNullableFilter<"knowledge_resources"> | string | null
+    content?: StringNullableFilter<"knowledge_resources"> | string | null
     visibility?: StringFilter<"knowledge_resources"> | string
     allowed_users?: StringNullableFilter<"knowledge_resources"> | string | null
     project_id?: BigIntNullableFilter<"knowledge_resources"> | bigint | number | null
@@ -55460,6 +55476,7 @@ export namespace Prisma {
     thumbnail?: SortOrderInput | SortOrder
     size?: SortOrderInput | SortOrder
     tags?: SortOrderInput | SortOrder
+    content?: SortOrderInput | SortOrder
     visibility?: SortOrder
     allowed_users?: SortOrderInput | SortOrder
     project_id?: SortOrderInput | SortOrder
@@ -55485,6 +55502,7 @@ export namespace Prisma {
     thumbnail?: StringNullableWithAggregatesFilter<"knowledge_resources"> | string | null
     size?: StringNullableWithAggregatesFilter<"knowledge_resources"> | string | null
     tags?: StringNullableWithAggregatesFilter<"knowledge_resources"> | string | null
+    content?: StringNullableWithAggregatesFilter<"knowledge_resources"> | string | null
     visibility?: StringWithAggregatesFilter<"knowledge_resources"> | string
     allowed_users?: StringNullableWithAggregatesFilter<"knowledge_resources"> | string | null
     project_id?: BigIntNullableWithAggregatesFilter<"knowledge_resources"> | bigint | number | null
@@ -59462,6 +59480,7 @@ export namespace Prisma {
     thumbnail?: string | null
     size?: string | null
     tags?: string | null
+    content?: string | null
     visibility?: string
     allowed_users?: string | null
     created_at?: Date | string
@@ -59479,6 +59498,7 @@ export namespace Prisma {
     thumbnail?: string | null
     size?: string | null
     tags?: string | null
+    content?: string | null
     visibility?: string
     allowed_users?: string | null
     project_id?: bigint | number | null
@@ -59496,6 +59516,7 @@ export namespace Prisma {
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     size?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: StringFieldUpdateOperationsInput | string
     allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -59513,6 +59534,7 @@ export namespace Prisma {
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     size?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: StringFieldUpdateOperationsInput | string
     allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
     project_id?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
@@ -59530,6 +59552,7 @@ export namespace Prisma {
     thumbnail?: string | null
     size?: string | null
     tags?: string | null
+    content?: string | null
     visibility?: string
     allowed_users?: string | null
     project_id?: bigint | number | null
@@ -59547,6 +59570,7 @@ export namespace Prisma {
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     size?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: StringFieldUpdateOperationsInput | string
     allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -59563,6 +59587,7 @@ export namespace Prisma {
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     size?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: StringFieldUpdateOperationsInput | string
     allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
     project_id?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
@@ -64092,6 +64117,7 @@ export namespace Prisma {
     thumbnail?: SortOrder
     size?: SortOrder
     tags?: SortOrder
+    content?: SortOrder
     visibility?: SortOrder
     allowed_users?: SortOrder
     project_id?: SortOrder
@@ -64113,6 +64139,7 @@ export namespace Prisma {
     thumbnail?: SortOrder
     size?: SortOrder
     tags?: SortOrder
+    content?: SortOrder
     visibility?: SortOrder
     allowed_users?: SortOrder
     project_id?: SortOrder
@@ -64130,6 +64157,7 @@ export namespace Prisma {
     thumbnail?: SortOrder
     size?: SortOrder
     tags?: SortOrder
+    content?: SortOrder
     visibility?: SortOrder
     allowed_users?: SortOrder
     project_id?: SortOrder
@@ -71666,6 +71694,7 @@ export namespace Prisma {
     thumbnail?: string | null
     size?: string | null
     tags?: string | null
+    content?: string | null
     visibility?: string
     allowed_users?: string | null
     created_at?: Date | string
@@ -71682,6 +71711,7 @@ export namespace Prisma {
     thumbnail?: string | null
     size?: string | null
     tags?: string | null
+    content?: string | null
     visibility?: string
     allowed_users?: string | null
     created_at?: Date | string
@@ -72039,6 +72069,7 @@ export namespace Prisma {
     thumbnail?: StringNullableFilter<"knowledge_resources"> | string | null
     size?: StringNullableFilter<"knowledge_resources"> | string | null
     tags?: StringNullableFilter<"knowledge_resources"> | string | null
+    content?: StringNullableFilter<"knowledge_resources"> | string | null
     visibility?: StringFilter<"knowledge_resources"> | string
     allowed_users?: StringNullableFilter<"knowledge_resources"> | string | null
     project_id?: BigIntNullableFilter<"knowledge_resources"> | bigint | number | null
@@ -81362,6 +81393,7 @@ export namespace Prisma {
     thumbnail?: string | null
     size?: string | null
     tags?: string | null
+    content?: string | null
     visibility?: string
     allowed_users?: string | null
     created_at?: Date | string
@@ -81693,6 +81725,7 @@ export namespace Prisma {
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     size?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: StringFieldUpdateOperationsInput | string
     allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -81709,6 +81742,7 @@ export namespace Prisma {
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     size?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: StringFieldUpdateOperationsInput | string
     allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -81725,6 +81759,7 @@ export namespace Prisma {
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     size?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: StringFieldUpdateOperationsInput | string
     allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
