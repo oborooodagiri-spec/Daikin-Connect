@@ -43,7 +43,7 @@ export default function RoomDetailModal({
     setLoading(true);
     const res = await getRoomDeepData(Number(unit.id), projectId);
     if (res && res.success) {
-      setData(res.data);
+      setData((res as any).data);
     }
     setLoading(false);
   };

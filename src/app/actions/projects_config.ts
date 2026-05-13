@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
 import { revalidatePath } from "next/cache";
+import { serializePrisma } from "@/lib/serialize";
 
 /**
  * Fetches all projects with their current form configurations and customer names.

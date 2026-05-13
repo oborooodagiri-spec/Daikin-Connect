@@ -66,7 +66,7 @@ export const LogsheetPDFTemplate = ({
               <th rowSpan={2} style={{ border: "1pt solid #003366", padding: "2mm", textAlign: "left", width: "150px" }}>DATE / TIME</th>
               <th rowSpan={2} style={{ border: "1pt solid #003366", padding: "2mm", textAlign: "center", width: "40px" }}>UNIT</th>
               <th rowSpan={2} style={{ border: "1pt solid #003366", padding: "2mm", textAlign: "center", width: "40px", color: "#00a1e4" }}>DESIGN</th>
-              {timeSlots.map(time => (
+              {timeSlots.map((time: string) => (
                 <th key={time} style={{ border: "1pt solid #003366", padding: "2mm", textAlign: "center" }}>{time}</th>
               ))}
             </tr>
@@ -88,7 +88,7 @@ export const LogsheetPDFTemplate = ({
                     <td style={{ border: "1pt solid #003366", padding: "1.5mm", textAlign: "center", fontWeight: 700, backgroundColor: "#eff6ff" }}>
                       {designValues[param.key] ?? "-"}
                     </td>
-                    {timeSlots.map(time => {
+                    {timeSlots.map((time: string) => {
                       const val = entryMap[time]?.values?.[param.key];
                       return (
                         <td key={time} style={{ border: "1pt solid #003366", padding: "1.5mm", textAlign: "center" }}>

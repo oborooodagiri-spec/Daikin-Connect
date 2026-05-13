@@ -23,7 +23,7 @@ interface Project {
 }
 interface ActivityItem {
   id: string; action: string; description: string;
-  icon: string; link: string | null; createdAt: string;
+  icon: string; link: string | null; createdAt: string | Date | null;
 }
 interface Profile {
   id: number; name: string; email: string; phone: string | null;
@@ -33,8 +33,10 @@ interface Profile {
 }
 
 
-function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
+function timeAgo(dateIn: any): string {
+  if (!dateIn) return "-";
+  const dateObj = typeof dateIn === 'string' ? new Date(dateIn) : dateIn;
+  const diff = Date.now() - dateObj.getTime();
   const mins = Math.floor(diff / 60000);
   if (mins < 1) return "baru saja";
   if (mins < 60) return `${mins} menit lalu`;
@@ -42,10 +44,10 @@ function timeAgo(dateStr: string): string {
   if (hrs < 24) return `${hrs} jam lalu`;
   const days = Math.floor(hrs / 24);
   if (days < 7) return `${days} hari lalu`;
-  return new Date(dateStr).toLocaleDateString("id-ID", { day: "numeric", month: "short" });
+  return dateObj.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
 }
 
-function RelativeTime({ date }: { date: string }) {
+function RelativeTime({ date }: { date: any }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);

@@ -26,7 +26,7 @@ export default function LogsheetGrid({ template, date, entries, onEntrySubmit, s
   const designValues = template.design_json ? JSON.parse(template.design_json) : {};
 
   // Map entries by time for easy access
-  const entryMap = entries.reduce((acc: any, entry: any) => {
+  const entryMap = entries.reduce((acc: Record<string, any>, entry: any) => {
     const values = entry.values_json ? JSON.parse(entry.values_json) : {};
     acc[entry.log_time] = { ...entry, values };
     return acc;

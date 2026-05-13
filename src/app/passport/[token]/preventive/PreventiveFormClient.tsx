@@ -177,7 +177,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
   // Scope of Work rows
   const [scope, setScope] = useState<Record<string, { before: string; after: string; remarks: string; done: string }>>(() => {
     if (parsed?.scope) return parsed.scope;
-    const init: any = {};
+    const init: Record<string, { before: string; after: string; remarks: string; done: string }> = {};
     SCOPE_ROWS.forEach(r => {
       init[r.key] = { before: "", after: "", remarks: "", done: "" };
     });
@@ -187,7 +187,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
   // Parts info
   const [parts, setParts] = useState<Record<string, string>>(() => {
     if (parsed?.parts) return parsed.parts;
-    const init: any = {};
+    const init: Record<string, string> = {};
     PARTS_ROWS.forEach(r => { init[r.key] = ""; });
     return init;
   });
@@ -226,7 +226,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
 
   // Media (Photos & Videos)
   const [mediaItems, setMediaItems] = useState<{file: File | null, type: "image" | "video", preview: string}[]>(
-    initialData?.activity_photos?.map((p: any) => ({
+    initialData?.activity_photos?.map((p: { photo_url: string; media_type?: string }) => ({
       file: null,
       type: p.media_type || "image",
       preview: p.photo_url
@@ -374,7 +374,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
             location: header.location,
             technical_json: JSON.stringify({ header, scope, parts, technicalAdvice, engineerName, customerName, serviceStatus, noServiceReason }, (_, v) => typeof v === 'bigint' ? v.toString() : v),
           },
-          photos: mediaItems.map(m => m.file).filter((f): f is File => f !== null)
+          photos: mediaItems.map(m => m.file).filter((f: File | null): f is File => f !== null)
         });
         setIsQueued(true);
         setLoading(false);
@@ -782,13 +782,13 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
 
                 {/* Measurement rows with Categorization support */}
                 {Object.entries(
-                  SCOPE_ROWS.filter(r => r.type === "measure").reduce((acc: any, row) => {
+                  SCOPE_ROWS.filter(r => r.type === "measure").reduce((acc: Record<string, any[]>, row: any) => {
                     const cat = row.category || "General";
                     if (!acc[cat]) acc[cat] = [];
                     acc[cat].push(row);
                     return acc;
                   }, {})
-                ).map(([category, rows]: [string, any]) => (
+                ).map(([category, rows]) => (
                   <div key={category} className="mb-6">
                     {category !== "General" && (
                       <h3 className="text-[10px] font-black uppercase text-blue-500 tracking-widest mb-3 bg-blue-50 p-2 rounded-lg border border-blue-100">

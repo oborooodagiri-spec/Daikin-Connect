@@ -57,7 +57,7 @@ export async function getGlobalAuditLogs(startDate?: string, endDate?: string) {
   
   // Security Layer: Verify Administrative Role
   const rolesArr = session?.roles || [];
-  const roleStrStr = String(session?.role || "").toLowerCase();
+  const roleStrStr = String((session as any)?.role || "").toLowerCase();
   const hasAdminRole = rolesArr.some((r: any) => {
     const val = typeof r === 'string' ? r : (r?.role_name || JSON.stringify(r));
     return val.toLowerCase().includes("admin") || val.toLowerCase().includes("super");

@@ -105,8 +105,8 @@ export default function PassportLandingPage() {
   const loadHistory = async (unitId: string) => {
     setHistoryLoading(true);
     const hRes = await getUnitHistory(unitId);
-    if (hRes && 'success' in hRes) {
-      setUnitHistory(hRes.data as any[]);
+    if (hRes && (hRes as any).success) {
+      setUnitHistory((hRes as any).data as any[]);
     }
     setHistoryLoading(false);
   };

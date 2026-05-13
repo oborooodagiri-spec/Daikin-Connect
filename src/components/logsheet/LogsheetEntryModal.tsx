@@ -60,7 +60,7 @@ export default function LogsheetEntryModal({
       notes: notes
     });
 
-    if (result.success) {
+    if ((result as any).success) {
       onSuccess();
     } else {
       setError(result.error || "Gagal menyimpan data.");

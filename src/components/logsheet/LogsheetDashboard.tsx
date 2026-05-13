@@ -39,8 +39,8 @@ export default function LogsheetDashboard({ projectId, session, initialTemplates
     if (!activeTemplate) return;
     setLoading(true);
     const result = await getLogsheetEntries(activeTemplate.id, selectedDate.toISOString());
-    if (result.success) {
-      setEntries(result.data);
+    if ((result as any).success) {
+      setEntries((result as any).data);
     }
     setLoading(false);
   };

@@ -32,7 +32,7 @@ export default function AttendanceRecordsPage() {
 
   async function loadProjects() {
     const res = await getAllProjects();
-    if (res.success) setProjects(res.data);
+    if ((res as any).success) setProjects((res as any).data);
   }
 
   async function fetchData() {

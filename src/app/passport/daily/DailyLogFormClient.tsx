@@ -279,11 +279,11 @@ export default function DailyLogFormClient({
 
         {/* Filter Section */}
         <Section title={lang === 'ja' ? "メディアフィルタ状態" : "Media Filter Status"} icon={<Filter size={18}/>}>
-           <div className="space-y-4">
-              <FilterToggle lang={lang} label="Pre-Filter" value={formData.filter_pre} onChange={v => setFormData({...formData, filter_pre: v})} />
-              <FilterToggle lang={lang} label="Medium Filter" value={formData.filter_med} onChange={v => setFormData({...formData, filter_med: v})} />
-              <FilterToggle lang={lang} label="HEPA Filter" value={formData.filter_hepa} onChange={v => setFormData({...formData, filter_hepa: v})} />
-           </div>
+            <div className="space-y-4">
+              <FilterToggle lang={lang} label="Pre-Filter" value={formData.filter_pre} onChange={(v: string) => setFormData({...formData, filter_pre: v})} />
+              <FilterToggle lang={lang} label="Medium Filter" value={formData.filter_med} onChange={(v: string) => setFormData({...formData, filter_med: v})} />
+              <FilterToggle lang={lang} label="HEPA Filter" value={formData.filter_hepa} onChange={(v: string) => setFormData({...formData, filter_hepa: v})} />
+            </div>
         </Section>
 
         {/* Room & Spots Section */}
@@ -364,7 +364,7 @@ export default function DailyLogFormClient({
   );
 }
 
-function Section({ title, icon, children }: { title: string; icon: any; children: any }) {
+function Section({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
       <div className="px-6 py-4 bg-slate-100/50 border-b border-slate-100 flex items-center gap-3">
@@ -387,7 +387,19 @@ function Input({ label, value, onChange }: { label: string; value: string; onCha
   );
 }
 
-function DoubleInput({ label, valT, valR, setT, setR }: any) {
+function DoubleInput({ 
+  label, 
+  valT, 
+  valR, 
+  setT, 
+  setR 
+}: { 
+  label: string; 
+  valT: string; 
+  valR: string; 
+  setT: (v: string) => void; 
+  setR: (v: string) => void; 
+}) {
   return (
     <div className="space-y-2">
       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</label>
@@ -415,15 +427,15 @@ function Toggle({ active, onClick }: { active: boolean; onClick: () => void }) {
 
 function FilterToggle({ label, value, onChange, lang }: { label: string; value: string; onChange: (v: string) => void, lang: string }) {
   const options = ["Bersih", "Sedang", "Kotor", "Tidak Ada"];
-  const displayLabels: any = {
+  const displayLabels: Record<string, Record<string, string>> = {
     'ja': { "Bersih": "良好", "Sedang": "普通", "Kotor": "汚れ", "Tidak Ada": "なし" },
     'id': { "Bersih": "Bersih", "Sedang": "Sedang", "Kotor": "Kotor", "Tidak Ada": "Tidak Ada" },
     'en': { "Bersih": "Clean", "Sedang": "Medium", "Kotor": "Dirty", "Tidak Ada": "None" }
   };
   
-  const colors: any = { Bersih: "bg-emerald-500", Sedang: "bg-amber-500", Kotor: "bg-rose-500", "Tidak Ada": "bg-slate-400" };
-  const lightColors: any = { Bersih: "bg-emerald-50", Sedang: "bg-amber-50", Kotor: "bg-rose-50", "Tidak Ada": "bg-slate-50" };
-  const borderColors: any = { Bersih: "border-emerald-200", Sedang: "border-amber-200", Kotor: "border-rose-200", "Tidak Ada": "border-slate-200" };
+  const colors: Record<string, string> = { Bersih: "bg-emerald-500", Sedang: "bg-amber-500", Kotor: "bg-rose-500", "Tidak Ada": "bg-slate-400" };
+  const lightColors: Record<string, string> = { Bersih: "bg-emerald-50", Sedang: "bg-amber-50", Kotor: "bg-rose-50", "Tidak Ada": "bg-slate-50" };
+  const borderColors: Record<string, string> = { Bersih: "border-emerald-200", Sedang: "border-amber-200", Kotor: "border-rose-200", "Tidak Ada": "border-slate-200" };
   
   return (
     <div className="space-y-2">
@@ -445,12 +457,22 @@ function FilterToggle({ label, value, onChange, lang }: { label: string; value: 
   );
 }
 
-function StatusSelect({ label, value, onChange, options }: any) {
+function StatusSelect({ 
+  label, 
+  value, 
+  onChange, 
+  options 
+}: { 
+  label: string; 
+  value: string; 
+  onChange: (v: string) => void; 
+  options: string[]; 
+}) {
   return (
     <div className="space-y-1.5">
        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</label>
        <div className="flex gap-1 p-1 bg-slate-100 rounded-xl">
-          {options.map((opt: any) => (
+          {options.map((opt: string) => (
             <button
               key={opt} type="button"
               onClick={() => onChange(opt)}

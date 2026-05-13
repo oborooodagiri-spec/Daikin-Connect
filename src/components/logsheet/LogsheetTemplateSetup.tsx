@@ -51,7 +51,7 @@ export default function LogsheetTemplateSetup({ projectId, onClose, onSuccess }:
     });
 
     if (result.success) {
-      onSuccess(result.data);
+      onSuccess((result as any).data);
     } else {
       alert("Gagal membuat template.");
       setIsSubmitting(false);
