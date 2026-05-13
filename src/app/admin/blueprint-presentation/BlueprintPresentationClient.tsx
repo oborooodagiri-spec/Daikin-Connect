@@ -314,7 +314,7 @@ export default function BlueprintPresentationClient() {
               <ul className="space-y-4">
                  <li className="flex items-start gap-3 text-xs text-slate-400 font-medium">
                     <Zap size={16} className="text-indigo-500 mt-0.5 shrink-0" />
-                    Hitung kW/TR aktual. Jika > 0.6 kW/TR, ajukan proposal ROI Overhaul.
+                    Hitung kW/TR aktual. Jika &gt; 0.6 kW/TR, ajukan proposal ROI Overhaul.
                  </li>
                  <li className="flex items-start gap-3 text-xs text-slate-400 font-medium">
                     <Activity size={16} className="text-indigo-500 mt-0.5 shrink-0" />
