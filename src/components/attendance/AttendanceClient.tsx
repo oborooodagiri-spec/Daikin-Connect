@@ -117,7 +117,7 @@ export default function AttendanceClient({
         setShowScanner(true);
         if (videoRef.current) videoRef.current.srcObject = fallbackStream;
       } catch (e) {
-        alert("Gagal mengakses kamera: " + err);
+        setErrorMsg("Gagal mengakses kamera: " + (err as Error).message);
       }
     }
   };
@@ -349,6 +349,13 @@ export default function AttendanceClient({
              </div>
           )}
        </div>
+
+       {errorMsg && !showScanner && (
+          <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 mb-6 flex items-start gap-3 shadow-sm">
+             <AlertCircle className="text-rose-600 shrink-0 mt-0.5" size={20} />
+             <p className="text-xs font-semibold text-rose-700 leading-snug">{errorMsg}</p>
+          </div>
+       )}
 
        <div className="bg-white rounded-[2.5rem] border border-slate-100 p-8 text-center shadow-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
