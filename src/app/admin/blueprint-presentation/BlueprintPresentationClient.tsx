@@ -15,10 +15,10 @@ import { useRouter } from "next/navigation";
 // --- Sub-components ---
 
 const SlideWrapper = ({ children, title, subtitle }: { children: React.ReactNode, title: string, subtitle?: string }) => (
-  <div className="w-full h-full flex flex-col p-12 md:p-24 justify-center">
-    <div className="mb-16 space-y-4">
-       <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-none text-slate-900">{title}</h2>
-       {subtitle && <p className="text-slate-500 font-bold text-lg uppercase tracking-widest">{subtitle}</p>}
+  <div className="w-full h-full flex flex-col p-12 md:p-24 pt-32 md:pt-40 justify-center">
+    <div className="mb-12 space-y-2">
+       <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none text-slate-900">{title}</h2>
+       {subtitle && <p className="text-slate-500 font-bold text-sm uppercase tracking-widest">{subtitle}</p>}
     </div>
     <div className="flex-1">
        {children}
@@ -39,9 +39,9 @@ const WorkflowStep = ({ step, title, pic, icon: Icon, desc, isMain = false }: an
      </div>
      <div className="space-y-1">
         <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block">Tahap {step}</span>
-        <h5 className="text-xl font-black uppercase tracking-tight text-slate-900">{title}</h5>
+        <h5 className="text-lg font-black uppercase tracking-tight text-slate-900">{title}</h5>
         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3">{pic}</p>
-        <p className="text-xs text-slate-500 font-medium max-w-[150px] mx-auto leading-relaxed">{desc}</p>
+        <p className="text-[11px] text-slate-500 font-medium max-w-[180px] mx-auto leading-relaxed">{desc}</p>
      </div>
   </div>
 );
@@ -72,16 +72,16 @@ export default function BlueprintPresentationClient() {
     {
       title: "Value Engineering Services",
       content: (
-        <div className="flex flex-col items-center justify-center text-center py-20">
+        <div className="flex flex-col items-center justify-center text-center py-10">
            <motion.div 
              initial={{ scale: 0.8, opacity: 0 }}
              animate={{ scale: 1, opacity: 1 }}
              transition={{ duration: 1.5, ease: "easeOut" }}
              className="relative mb-16 flex items-center gap-6"
            >
-              <img src="/daikin_logo.png" className="h-12 object-contain" alt="Daikin" />
-              <div className="w-px h-12 bg-slate-200" />
-              <img src="/logo_epl_connect_1.png" className="h-16 object-contain" alt="EPL" />
+              <img src="/daikin_logo.png" className="h-10 object-contain" alt="Daikin" />
+              <div className="w-px h-10 bg-slate-200" />
+              <img src="/logo_epl_connect_1.png" className="h-14 object-contain" alt="EPL" />
            </motion.div>
            <h1 className="text-6xl md:text-9xl font-black tracking-tighter uppercase leading-[0.8] mb-12 text-slate-900">
               Value Engineering<br />
@@ -90,17 +90,12 @@ export default function BlueprintPresentationClient() {
            <p className="text-xl text-slate-500 font-bold max-w-3xl mx-auto uppercase tracking-[0.4em] leading-relaxed border-y border-slate-100 py-6">
               Value Engineering Services
            </p>
-           <div className="mt-16 flex items-center gap-4 text-slate-400">
-              <Sparkles size={16} className="text-blue-500" />
-              <span className="text-[10px] font-black uppercase tracking-[0.5em]">Executive Strategy Framework</span>
-           </div>
         </div>
       )
     },
     // Slide 2: Service Tiering
     {
       title: "Standardisasi Paket Layanan",
-      subtitle: "Juknis: Modular & Universal",
       content: (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
            <TierCard 
@@ -140,7 +135,7 @@ export default function BlueprintPresentationClient() {
     // Slide 3: Pre-contract & Pitching
     {
       title: "Strategi Pitching & Justifikasi",
-      subtitle: "Winning The B2B Market",
+      subtitle: "Pitching",
       content: (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
            <div className="space-y-6">
@@ -148,7 +143,7 @@ export default function BlueprintPresentationClient() {
                  <h4 className="text-lg font-black uppercase mb-3 text-blue-600 flex items-center gap-2">
                     <ShieldCheck size={20} /> Asset Life Extension
                  </h4>
-                 <p className="text-sm text-slate-600 leading-relaxed font-medium">Fokus pada pengurangan degradasi komponen untuk menunda investasi CAPEX (pembelian unit baru).</p>
+                 <p className="text-sm text-slate-600 leading-relaxed font-medium">Fokus pada pengurangan degradasi part untuk menunda investasi CAPEX (pembelian unit baru).</p>
               </div>
               <div className="p-6 bg-slate-50 border border-slate-200 rounded-3xl hover:border-blue-500/50 transition-all">
                  <h4 className="text-lg font-black uppercase mb-3 text-indigo-600 flex items-center gap-2">
@@ -189,7 +184,7 @@ export default function BlueprintPresentationClient() {
              title="Persiapan" 
              pic="Helpdesk / Admin" 
              icon={Clock} 
-             desc="Tiket servis & SIKA (Izin Kerja)" 
+             desc="Monitoring operasional, penjadwalan via EPL CONNECT, & manajemen SIKA." 
            />
            <WorkflowStep 
              step="2" 
@@ -202,7 +197,7 @@ export default function BlueprintPresentationClient() {
            <WorkflowStep 
              step="3" 
              title="Validasi" 
-             pic="Chief Engineer" 
+             pic="Engineer" 
              icon={ShieldCheck} 
              desc="Review Data & Health Scoring" 
            />
@@ -219,30 +214,29 @@ export default function BlueprintPresentationClient() {
     // Slide 5: SLA Matrix
     {
       title: "Matriks SLA Adaptif",
-      subtitle: "Berdasarkan Klasifikasi Area",
       content: (
         <div className="space-y-6">
            <SlaRow 
              tier="KRITIS" 
              name="RS (OK/ICU), Data Center" 
-             response="15 Menit" 
-             arrival="Max 2 Jam" 
+             response="-" 
+             arrival="-" 
              desc="Area operasional kritis dengan toleransi downtime nol." 
              color="rose" 
            />
            <SlaRow 
              tier="PRIORITAS" 
              name="Pabrik, Industri Chiller" 
-             response="30 Menit" 
-             arrival="Max 4 Jam" 
+             response="-" 
+             arrival="-" 
              desc="Proses produksi massal yang bergantung pada suhu stabil." 
              color="orange" 
            />
            <SlaRow 
              tier="STANDAR" 
              name="Cabang Ritel, Kantor" 
-             response="1 Jam" 
-             arrival="1x24 Jam" 
+             response="-" 
+             arrival="-" 
              desc="Kenyamanan komersial atau sesuai kesepakatan regional." 
              color="slate" 
            />
@@ -252,7 +246,7 @@ export default function BlueprintPresentationClient() {
     // Slide 6: Juknis Chiller Plant (Module 1)
     {
       title: "Modul 1: Chiller Plant",
-      subtitle: "Juknis: Water-Cooled System",
+      subtitle: "Water-Cooled System",
       content: (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
            <JuknisCard 
@@ -288,7 +282,7 @@ export default function BlueprintPresentationClient() {
     // Slide 7: Juknis VRV/VRF & Commercial DX (Module 2 & 3)
     {
       title: "Modul 2 & 3: VRV / DX",
-      subtitle: "Juknis: Air-Cooled & Commercial DX",
+      subtitle: "Air-Cooled & Commercial DX",
       content: (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
            <div className="p-8 bg-slate-50 border border-slate-200 rounded-[2.5rem] space-y-6">
@@ -354,7 +348,6 @@ export default function BlueprintPresentationClient() {
     // Slide 9: Executive Review
     {
       title: "Executive Review",
-      subtitle: "Financial Reporting & B2B Strategy",
       content: (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center py-10">
            <div className="space-y-8">
@@ -363,13 +356,6 @@ export default function BlueprintPresentationClient() {
                  <div>
                     <h5 className="text-lg font-black uppercase mb-1 text-slate-900">Laporan Nilai Bisnis</h5>
                     <p className="text-sm text-slate-500 font-medium leading-relaxed">Presentasi perbandingan konsumsi daya riil vs baseline untuk Direksi/BOD klien.</p>
-                 </div>
-              </div>
-              <div className="flex gap-6 items-start">
-                 <div className="w-12 h-12 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-center text-indigo-600 shrink-0"><Award /></div>
-                 <div>
-                    <h5 className="text-lg font-black uppercase mb-1 text-slate-900">Keterlibatan Eksekutif</h5>
-                    <p className="text-sm text-slate-500 font-medium leading-relaxed">Rapat evaluasi strategis dihadiri level manajemen senior guna menjaga hubungan B2B.</p>
                  </div>
               </div>
            </div>
