@@ -138,49 +138,129 @@ export const processReportData = (report: any) => {
       { label: "Cleaning body", key: "clean_body" },
       { label: "V-Belt", key: "check_vbelt" },
       { label: "Bearing", key: "check_bearing" },
-      // Chiller Specific
+      // Chiller Specific Checklist
+      { label: "Check Oil & Refrigerant Leaks", key: "check_leak" },
+      { label: "Check Compressor Vibration & Noise", key: "check_vibration" },
+      { label: "Check Oil Level & Color", key: "check_oil_level" },
+      { label: "Check Refrigerant Charge (Sight Glass)", key: "check_refrigerant" },
+      { label: "Clean Condenser Coils / Tubes", key: "clean_condenser" },
+      { label: "Check Water Strainer", key: "check_strainer" },
+      { label: "Check Control Panel & Safety Devices", key: "check_control" },
+      // Indonesian Variations
+      { label: "Cek Kebocoran Oli & Refrigerant", key: "check_leak" },
+      { label: "Cek Getaran & Suara Kompresor", key: "check_vibration" },
+      { label: "Cek Level & Warna Oli", key: "check_oil_level" },
+      { label: "Cek Refrigerant Charge", key: "check_refrigerant" },
+      { label: "Pembersihan Kondensor", key: "clean_condenser" },
+      { label: "Cek Strainer Air", key: "check_strainer" },
+      { label: "Cek Control Panel & Safety", key: "check_control" },
+      // Chiller Specific Operating Condition
       { label: "Voltage RS", key: "voltage_rs" },
       { label: "Voltage RT", key: "voltage_rt" },
       { label: "Voltage ST", key: "voltage_st" },
+      // Short variations for spreadsheet sync
+      { label: "V-RS", key: "voltage_rs" },
+      { label: "V-RT", key: "voltage_rt" },
+      { label: "V-ST", key: "voltage_st" },
+      { label: "Phase RS", key: "voltage_rs" },
+      { label: "Phase RT", key: "voltage_rt" },
+      { label: "Phase ST", key: "voltage_st" },
       { label: "Circuit 1 - Amp R", key: "circuit_1_amp_r" },
       { label: "Circuit 1 - Amp S", key: "circuit_1_amp_s" },
       { label: "Circuit 1 - Amp T", key: "circuit_1_amp_t" },
       { label: "Circuit 1 - LP", key: "circuit_1_pressure_lp" },
       { label: "Circuit 1 - HP", key: "circuit_1_pressure_hp" },
+      { label: "C1 Amp R", key: "circuit_1_amp_r" },
+      { label: "C1 Amp S", key: "circuit_1_amp_s" },
+      { label: "C1 Amp T", key: "circuit_1_amp_t" },
+      { label: "C1 LP", key: "circuit_1_pressure_lp" },
+      { label: "C1 HP", key: "circuit_1_pressure_hp" },
       { label: "Circuit 2 - Amp R", key: "circuit_2_amp_r" },
       { label: "Circuit 2 - Amp S", key: "circuit_2_amp_s" },
       { label: "Circuit 2 - Amp T", key: "circuit_2_amp_t" },
       { label: "Circuit 2 - LP", key: "circuit_2_pressure_lp" },
       { label: "Circuit 2 - HP", key: "circuit_2_pressure_hp" },
+      { label: "C2 Amp R", key: "circuit_2_amp_r" },
+      { label: "C2 Amp S", key: "circuit_2_amp_s" },
+      { label: "C2 Amp T", key: "circuit_2_amp_t" },
+      { label: "C2 LP", key: "circuit_2_pressure_lp" },
+      { label: "C2 HP", key: "circuit_2_pressure_hp" },
       { label: "Circuit 3 - Amp R", key: "circuit_3_amp_r" },
       { label: "Circuit 3 - Amp S", key: "circuit_3_amp_s" },
       { label: "Circuit 3 - Amp T", key: "circuit_3_amp_t" },
       { label: "Circuit 3 - LP", key: "circuit_3_pressure_lp" },
       { label: "Circuit 3 - HP", key: "circuit_3_pressure_hp" },
+      { label: "C3 Amp R", key: "circuit_3_amp_r" },
+      { label: "C3 Amp S", key: "circuit_3_amp_s" },
+      { label: "C3 Amp T", key: "circuit_3_amp_t" },
+      { label: "C3 LP", key: "circuit_3_pressure_lp" },
+      { label: "C3 HP", key: "circuit_3_pressure_hp" },
       { label: "Circuit 4 - Amp R", key: "circuit_4_amp_r" },
       { label: "Circuit 4 - Amp S", key: "circuit_4_amp_s" },
       { label: "Circuit 4 - Amp T", key: "circuit_4_amp_t" },
       { label: "Circuit 4 - LP", key: "circuit_4_pressure_lp" },
       { label: "Circuit 4 - HP", key: "circuit_4_pressure_hp" },
+      { label: "C4 Amp R", key: "circuit_4_amp_r" },
+      { label: "C4 Amp S", key: "circuit_4_amp_s" },
+      { label: "C4 Amp T", key: "circuit_4_amp_t" },
+      { label: "C4 LP", key: "circuit_4_pressure_lp" },
+      { label: "C4 HP", key: "circuit_4_pressure_hp" },
       { label: "Circuit 5 - Amp R", key: "circuit_5_amp_r" },
       { label: "Circuit 5 - Amp S", key: "circuit_5_amp_s" },
       { label: "Circuit 5 - Amp T", key: "circuit_5_amp_t" },
       { label: "Circuit 5 - LP", key: "circuit_5_pressure_lp" },
       { label: "Circuit 5 - HP", key: "circuit_5_pressure_hp" },
+      { label: "C5 Amp R", key: "circuit_5_amp_r" },
+      { label: "C5 Amp S", key: "circuit_5_amp_s" },
+      { label: "C5 Amp T", key: "circuit_5_amp_t" },
+      { label: "C5 LP", key: "circuit_5_pressure_lp" },
+      { label: "C5 HP", key: "circuit_5_pressure_hp" },
       { label: "Fan Indoor R", key: "fan_indoor_r" },
       { label: "Fan Indoor S", key: "fan_indoor_s" },
       { label: "Fan Indoor T", key: "fan_indoor_t" },
+      { label: "Fan R", key: "fan_indoor_r" },
+      { label: "Fan S", key: "fan_indoor_s" },
+      { label: "Fan T", key: "fan_indoor_t" },
       { label: "Water Inlet Temp", key: "water_inlet_temp" },
       { label: "Water Outlet Temp", key: "water_outlet_temp" },
       { label: "Water Inlet Pressure", key: "water_inlet_pressure" },
       { label: "Water Outlet Pressure", key: "water_outlet_pressure" },
+      { label: "Inlet Temp", key: "water_inlet_temp" },
+      { label: "Outlet Temp", key: "water_outlet_temp" },
+      { label: "Inlet Press", key: "water_inlet_pressure" },
+      { label: "Outlet Press", key: "water_outlet_pressure" },
       { label: "Setting Temp EWT", key: "setting_temp_ewt" },
+      { label: "EWT Setting", key: "setting_temp_ewt" },
     ];
 
     const scope: any = {};
 
     const processVal = (dbLabel: string, val: any) => {
-      const found = labels.find(l => dbLabel.toLowerCase().includes(l.label.toLowerCase()));
+      // 1. Clean labels for better fuzzy matching
+      const cleanLabel = (s: string) => {
+        let cleaned = s.toLowerCase().replace(/[^a-z0-9]/g, '');
+        // Normalize abbreviations common in spreadsheets
+        cleaned = cleaned.replace(/^c([1-5])/, 'circuit$1'); // c1 -> circuit1
+        cleaned = cleaned.replace(/press$/, 'pressure');
+        cleaned = cleaned.replace(/temp$/, 'temperature');
+        return cleaned;
+      };
+      const targetLabel = cleanLabel(dbLabel);
+
+      const found = labels.find(l => {
+        const lClean = cleanLabel(l.label);
+        // Direct match or one contains the other
+        return targetLabel === lClean || targetLabel.includes(lClean) || lClean.includes(targetLabel) || 
+               // Special case for Voltage
+               (targetLabel === 'rs' && lClean === 'voltagers') ||
+               (targetLabel === 'rt' && lClean === 'voltagert') ||
+               (targetLabel === 'st' && lClean === 'voltagest') ||
+               // Special case for Phase
+               (targetLabel.includes('phasers') && lClean === 'voltagers') ||
+               (targetLabel.includes('phasert') && lClean === 'voltagert') ||
+               (targetLabel.includes('phasest') && lClean === 'voltagest');
+      });
+
       if (found) {
         if (typeof val === 'object' && val !== null) {
           const before = val.before ?? val.Before ?? val.b ?? "-";
@@ -260,9 +340,12 @@ export const processReportData = (report: any) => {
     }
     
     // 3. Post-Process Chiller Structure
-    const uType = (report.units?.unit_type || "").toUpperCase().trim();
+    const uType = (report.unit_type || report.units?.unit_type || "").toUpperCase().trim();
     const isChiller = uType.includes('CHILL') || uType.includes('WCP');
+    
+    let reportTitle = "PREVENTIVE MAINTENANCE REPORT";
     if (isChiller) {
+      reportTitle = "PREVENTIVE MAINTENANCE CHILLER";
       scope.voltage = {
         rs: scope.voltage_rs?.after || scope.voltage_rs?.before || "-",
         rt: scope.voltage_rt?.after || scope.voltage_rt?.before || "-",
@@ -316,7 +399,7 @@ export const processReportData = (report: any) => {
         location: report.units?.area || report.unit_area,
         so_number: report.reference_id || "PM-" + report.id,
         nominal_capacity: report.units?.capacity || report.units?.capacity_pk || t.header?.nominal_capacity || "-",
-        category: report.units?.unit_type || report.units?.category || "-",
+        category: report.unit_type || report.units?.unit_type || report.units?.category || "-",
         floor: report.units?.building_floor || report.location || "-",
         area: report.units?.area || report.unit_area || "-",
         tenant: report.units?.room_tenant || "-",
@@ -330,7 +413,7 @@ export const processReportData = (report: any) => {
       customerName: t.customerName || "-",
       activity_photos: photos,
       reportCode: report.reference_id || `REPORT-${report.id}`,
-      reportTitle: "PREVENTIVE MAINTENANCE REPORT",
+      reportTitle: reportTitle,
       isBulkSync: !!isBulkSync
     };
   }

@@ -71,16 +71,16 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
           </table>
         </div>
 
-        {/* Other Parameters Section */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5mm" }}>
-          <div>
+        {/* Other Parameters Section - Stacked for better A4 fit with inline styles */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "4mm", pageBreakInside: "avoid" }}>
+          <div style={{ width: "100%" }}>
             <div style={subHeaderStyle}>C. CHECK RUNNING AMP FAN UNIT</div>
             <table style={mainTableStyle}>
               <tbody>
                 <tr>
-                  <td style={{ ...tdStyle, width: "15%", fontWeight: 700 }}>R</td>
-                  <td style={{ ...tdStyle, width: "15%", fontWeight: 700 }}>S</td>
-                  <td style={{ ...tdStyle, width: "15%", fontWeight: 700 }}>T</td>
+                  <td style={{ ...tdStyle, width: "33.3%", fontWeight: 700, textAlign: "center", backgroundColor: "#f8fafc", fontSize: "7pt" }}>R</td>
+                  <td style={{ ...tdStyle, width: "33.3%", fontWeight: 700, textAlign: "center", backgroundColor: "#f8fafc", fontSize: "7pt" }}>S</td>
+                  <td style={{ ...tdStyle, width: "33.4%", fontWeight: 700, textAlign: "center", backgroundColor: "#f8fafc", fontSize: "7pt" }}>T</td>
                 </tr>
                 <tr>
                   <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{fan.r || "-"}</td>
@@ -90,33 +90,30 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
               </tbody>
             </table>
           </div>
-          <div>
+          
+          <div style={{ width: "100%" }}>
             <div style={subHeaderStyle}>WATER & SETTING</div>
             <table style={mainTableStyle}>
               <tbody>
                 <tr>
-                  <td style={{ ...tdStyle, fontSize: "7pt" }}>Water INLET Temp</td>
-                  <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{water.inlet_temp || "-"} °C</td>
-                  <td style={{ ...tdStyle, fontSize: "7pt" }}>Water OUTLET Temp</td>
-                  <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{water.outlet_temp || "-"} °C</td>
+                  <td style={{ ...tdStyle, width: "20%", fontSize: "6.5pt", backgroundColor: "#f8fafc" }}>Inlet Temp</td>
+                  <td style={{ ...tdStyle, width: "15%", textAlign: "center", color: "#003366", fontWeight: 800 }}>{water.inlet_temp || "-"} °C</td>
+                  <td style={{ ...tdStyle, width: "20%", fontSize: "6.5pt", backgroundColor: "#f8fafc" }}>Outlet Temp</td>
+                  <td style={{ ...tdStyle, width: "15%", textAlign: "center", color: "#003366", fontWeight: 800 }}>{water.outlet_temp || "-"} °C</td>
+                  <td style={{ ...tdStyle, width: "15%", fontSize: "6.5pt", backgroundColor: "#eff6ff", fontWeight: 900, color: "#2563eb" }}>DELTA T</td>
+                  <td style={{ ...tdStyle, width: "15%", textAlign: "center", color: "#2563eb", fontWeight: 900 }}>{water.delta_t || "-"} °C</td>
                 </tr>
                 <tr>
-                  <td style={{ ...tdStyle, fontSize: "7pt", fontWeight: 900, color: "#2563eb" }}>DELTA T (In - Out)</td>
-                  <td colSpan={3} style={{ ...tdStyle, textAlign: "center", color: "#2563eb", fontWeight: 900, fontSize: "10pt" }}>{water.delta_t || "-"} °C</td>
-                </tr>
-                <tr>
-                  <td style={{ ...tdStyle, fontSize: "7pt" }}>Pressure Water INLET</td>
+                  <td style={{ ...tdStyle, fontSize: "6.5pt", backgroundColor: "#f8fafc" }}>Inlet Press</td>
                   <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{water.inlet_pressure || "-"} bar</td>
-                  <td style={{ ...tdStyle, fontSize: "7pt" }}>Pressure Water OUTLET</td>
+                  <td style={{ ...tdStyle, fontSize: "6.5pt", backgroundColor: "#f8fafc" }}>Outlet Press</td>
                   <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{water.outlet_pressure || "-"} bar</td>
+                  <td style={{ ...tdStyle, fontSize: "6.5pt", backgroundColor: "#eff6ff", fontWeight: 900, color: "#2563eb" }}>DELTA P</td>
+                  <td style={{ ...tdStyle, textAlign: "center", color: "#2563eb", fontWeight: 900 }}>{water.delta_p || "-"} bar</td>
                 </tr>
                 <tr>
-                  <td style={{ ...tdStyle, fontSize: "7pt", fontWeight: 900, color: "#2563eb" }}>DELTA P (In - Out)</td>
-                  <td colSpan={3} style={{ ...tdStyle, textAlign: "center", color: "#2563eb", fontWeight: 900, fontSize: "10pt" }}>{water.delta_p || "-"} bar</td>
-                </tr>
-                <tr>
-                  <td colSpan={2} style={{ ...tdStyle, fontWeight: 700 }}>Setting Temp EWT</td>
-                  <td colSpan={2} style={{ ...tdStyle, textAlign: "center", color: "#16a34a", fontWeight: 900, fontSize: "10pt" }}>{scope?.setting_temp_ewt || "-"} °C</td>
+                  <td colSpan={3} style={{ ...tdStyle, fontWeight: 700, backgroundColor: "#f8fafc", fontSize: "7.5pt", textAlign: "right", paddingRight: "4mm" }}>Setting Temp EWT</td>
+                  <td colSpan={3} style={{ ...tdStyle, textAlign: "center", color: "#16a34a", fontWeight: 900, fontSize: "9pt" }}>{scope?.setting_temp_ewt || "-"} °C</td>
                 </tr>
               </tbody>
             </table>

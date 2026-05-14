@@ -499,6 +499,7 @@ export default function ReportHubPage() {
   // Prepare standardized report data using helper (handles photo URL resolution & JSON flattening)
   const activityData = processReportData({
     ...data.activity,
+    unit_type: data.unit?.unit_type,
     activity_photos: data.photos,
     type: type.charAt(0).toUpperCase() + type.slice(1).toLowerCase() // Normalize type for folder matching
   });
@@ -557,7 +558,7 @@ export default function ReportHubPage() {
 
   // SMART PAGINATION ENGINE: Dynamic Height Scaling
   const pages: React.ReactNode[][] = [];
-  const MAX_PAGE_HEIGHT = 760; // Safe height in px for A4 to avoid footer overlap
+  const MAX_PAGE_HEIGHT = 720; // Safe height in px for A4 to avoid footer overlap
 
   if (sectionHeights.length > 0 && techSections.length === sectionHeights.length) {
     let currentPage: React.ReactNode[] = [];

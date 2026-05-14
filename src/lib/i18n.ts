@@ -137,6 +137,7 @@ export const DICTIONARY: Record<string, Record<Language, string>> = {
   "Preventive": { id: "Preventive", en: "Preventive", ja: "予防" },
   "Preventive AHU": { id: "Preventive AHU", en: "Preventive AHU", ja: "予防 (AHU)" },
   "Preventive FCU": { id: "Preventive FCU", en: "Preventive FCU", ja: "予防 (FCU)" },
+  "Preventive Chiller": { id: "Preventive Chiller", en: "Preventive Chiller", ja: "予防 (Chiller)" },
   "Preventive Split Duct": { id: "Preventive Split Duct", en: "Preventive Split Duct", ja: "予防 (Split Duct)" },
   "Corrective": { id: "Corrective", en: "Corrective", ja: "是正" },
   "ID": { id: "ID", en: "ID", ja: "ID" },

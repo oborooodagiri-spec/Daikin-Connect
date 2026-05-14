@@ -173,11 +173,14 @@ export default function UnitHistoryTimeline({ history, session, unit, lang = 'id
                   }
 
                   if (item.type === 'Preventive') {
-                    const isFCU = unit?.unit_type?.toUpperCase() === 'FCU';
-                    const isAHU = unit?.unit_type?.toUpperCase() === 'AHU';
+                    const uType = unit?.unit_type?.toUpperCase() || "";
+                    const isFCU = uType === 'FCU';
+                    const isAHU = uType === 'AHU';
+                    const isChiller = uType.includes('CHILL') || uType.includes('WCP');
+                    
                     return (
                       <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md border text-blue-600 border-blue-100 bg-blue-50">
-                        {t(isFCU ? 'Preventive FCU' : isAHU ? 'Preventive AHU' : 'Preventive Split Duct', lang)}
+                        {t(isFCU ? 'Preventive FCU' : isAHU ? 'Preventive AHU' : isChiller ? 'Preventive Chiller' : 'Preventive Split Duct', lang)}
                       </span>
                     );
                   }
