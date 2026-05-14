@@ -218,7 +218,7 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
               <motion.div 
                 whileHover={{ y: -4 }}
-                onClick={() => router.push("/admin/database")}
+                onClick={() => window.open("/admin/database", "_blank")}
                 style={adminCardStyle}
                 onMouseEnter={e => handleCardHover(e, true)}
                 onMouseLeave={e => handleCardHover(e, false)}

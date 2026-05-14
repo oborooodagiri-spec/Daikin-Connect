@@ -410,7 +410,8 @@ exports.Prisma.Corrective_maintenancesScalarFieldEnum = {
   finding: 'finding',
   advise: 'advise',
   report_pdf: 'report_pdf',
-  technical_json: 'technical_json'
+  technical_json: 'technical_json',
+  deleted_at: 'deleted_at'
 };
 
 exports.Prisma.Maintenance_contractsScalarFieldEnum = {
@@ -657,7 +658,8 @@ exports.Prisma.Daily_ops_logsScalarFieldEnum = {
   static_pressure: 'static_pressure',
   vibration_status: 'vibration_status',
   drainage_status: 'drainage_status',
-  notes: 'notes'
+  notes: 'notes',
+  deleted_at: 'deleted_at'
 };
 
 exports.Prisma.Vendor_attendanceScalarFieldEnum = {
@@ -727,6 +729,19 @@ exports.Prisma.Logsheet_entriesScalarFieldEnum = {
   values_json: 'values_json',
   notes: 'notes',
   created_at: 'created_at'
+};
+
+exports.Prisma.Shopping_listScalarFieldEnum = {
+  id: 'id',
+  category: 'category',
+  work_type: 'work_type',
+  item_name: 'item_name',
+  capacity_unit: 'capacity_unit',
+  capacity_range: 'capacity_range',
+  price: 'price',
+  description: 'description',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
 };
 
 exports.Prisma.SortOrder = {
@@ -1049,6 +1064,15 @@ exports.Prisma.logsheet_entriesOrderByRelevanceFieldEnum = {
   values_json: 'values_json',
   notes: 'notes'
 };
+
+exports.Prisma.shopping_listOrderByRelevanceFieldEnum = {
+  category: 'category',
+  work_type: 'work_type',
+  item_name: 'item_name',
+  capacity_unit: 'capacity_unit',
+  capacity_range: 'capacity_range',
+  description: 'description'
+};
 exports.customers_customer_type = exports.$Enums.customers_customer_type = {
   Corporate: 'Corporate',
   Individual: 'Individual'
@@ -1210,7 +1234,8 @@ exports.Prisma.ModelName = {
   project_intelligence: 'project_intelligence',
   project_issues: 'project_issues',
   logsheet_templates: 'logsheet_templates',
-  logsheet_entries: 'logsheet_entries'
+  logsheet_entries: 'logsheet_entries',
+  shopping_list: 'shopping_list'
 };
 
 /**

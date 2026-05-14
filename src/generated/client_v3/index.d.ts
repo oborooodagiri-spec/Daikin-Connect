@@ -238,6 +238,11 @@ export type logsheet_templates = $Result.DefaultSelection<Prisma.$logsheet_templ
  * 
  */
 export type logsheet_entries = $Result.DefaultSelection<Prisma.$logsheet_entriesPayload>
+/**
+ * Model shopping_list
+ * 
+ */
+export type shopping_list = $Result.DefaultSelection<Prisma.$shopping_listPayload>
 
 /**
  * Enums
@@ -1060,6 +1065,16 @@ export class PrismaClient<
     * ```
     */
   get logsheet_entries(): Prisma.logsheet_entriesDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.shopping_list`: Exposes CRUD operations for the **shopping_list** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Shopping_lists
+    * const shopping_lists = await prisma.shopping_list.findMany()
+    * ```
+    */
+  get shopping_list(): Prisma.shopping_listDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1544,7 +1559,8 @@ export namespace Prisma {
     project_intelligence: 'project_intelligence',
     project_issues: 'project_issues',
     logsheet_templates: 'logsheet_templates',
-    logsheet_entries: 'logsheet_entries'
+    logsheet_entries: 'logsheet_entries',
+    shopping_list: 'shopping_list'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1560,7 +1576,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "customers" | "permissions" | "projects" | "knowledge_resources" | "refresh_tokens" | "role_permissions" | "roles" | "units" | "user_project_access" | "user_roles" | "user_unit_access" | "users" | "audit_logs" | "password_reset_tokens" | "activities" | "activity_photos" | "ahu_audits" | "audit_tickets" | "audit_velocity_points" | "audits" | "contracts" | "corrective" | "corrective_maintenances" | "maintenance_contracts" | "service_activities" | "service_logs" | "service_photos" | "sites" | "tickets" | "unit_comments" | "schedules" | "schedule_attendance" | "schedule_mom" | "schedule_messages" | "schedule_targets" | "complaints" | "unit_edit_requests" | "user_push_tokens" | "notifications" | "daily_ops_logs" | "vendor_attendance" | "project_intelligence" | "project_issues" | "logsheet_templates" | "logsheet_entries"
+      modelProps: "customers" | "permissions" | "projects" | "knowledge_resources" | "refresh_tokens" | "role_permissions" | "roles" | "units" | "user_project_access" | "user_roles" | "user_unit_access" | "users" | "audit_logs" | "password_reset_tokens" | "activities" | "activity_photos" | "ahu_audits" | "audit_tickets" | "audit_velocity_points" | "audits" | "contracts" | "corrective" | "corrective_maintenances" | "maintenance_contracts" | "service_activities" | "service_logs" | "service_photos" | "sites" | "tickets" | "unit_comments" | "schedules" | "schedule_attendance" | "schedule_mom" | "schedule_messages" | "schedule_targets" | "complaints" | "unit_edit_requests" | "user_push_tokens" | "notifications" | "daily_ops_logs" | "vendor_attendance" | "project_intelligence" | "project_issues" | "logsheet_templates" | "logsheet_entries" | "shopping_list"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4534,6 +4550,72 @@ export namespace Prisma {
           }
         }
       }
+      shopping_list: {
+        payload: Prisma.$shopping_listPayload<ExtArgs>
+        fields: Prisma.shopping_listFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.shopping_listFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$shopping_listPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.shopping_listFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$shopping_listPayload>
+          }
+          findFirst: {
+            args: Prisma.shopping_listFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$shopping_listPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.shopping_listFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$shopping_listPayload>
+          }
+          findMany: {
+            args: Prisma.shopping_listFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$shopping_listPayload>[]
+          }
+          create: {
+            args: Prisma.shopping_listCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$shopping_listPayload>
+          }
+          createMany: {
+            args: Prisma.shopping_listCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.shopping_listDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$shopping_listPayload>
+          }
+          update: {
+            args: Prisma.shopping_listUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$shopping_listPayload>
+          }
+          deleteMany: {
+            args: Prisma.shopping_listDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.shopping_listUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.shopping_listUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$shopping_listPayload>
+          }
+          aggregate: {
+            args: Prisma.Shopping_listAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateShopping_list>
+          }
+          groupBy: {
+            args: Prisma.shopping_listGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Shopping_listGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.shopping_listCountArgs<ExtArgs>
+            result: $Utils.Optional<Shopping_listCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -4663,6 +4745,7 @@ export namespace Prisma {
     project_issues?: project_issuesOmit
     logsheet_templates?: logsheet_templatesOmit
     logsheet_entries?: logsheet_entriesOmit
+    shopping_list?: shopping_listOmit
   }
 
   /* Types for Logging */
@@ -29319,6 +29402,7 @@ export namespace Prisma {
     advise: string | null
     report_pdf: string | null
     technical_json: string | null
+    deleted_at: Date | null
   }
 
   export type Corrective_maintenancesMaxAggregateOutputType = {
@@ -29333,6 +29417,7 @@ export namespace Prisma {
     advise: string | null
     report_pdf: string | null
     technical_json: string | null
+    deleted_at: Date | null
   }
 
   export type Corrective_maintenancesCountAggregateOutputType = {
@@ -29347,6 +29432,7 @@ export namespace Prisma {
     advise: number
     report_pdf: number
     technical_json: number
+    deleted_at: number
     _all: number
   }
 
@@ -29373,6 +29459,7 @@ export namespace Prisma {
     advise?: true
     report_pdf?: true
     technical_json?: true
+    deleted_at?: true
   }
 
   export type Corrective_maintenancesMaxAggregateInputType = {
@@ -29387,6 +29474,7 @@ export namespace Prisma {
     advise?: true
     report_pdf?: true
     technical_json?: true
+    deleted_at?: true
   }
 
   export type Corrective_maintenancesCountAggregateInputType = {
@@ -29401,6 +29489,7 @@ export namespace Prisma {
     advise?: true
     report_pdf?: true
     technical_json?: true
+    deleted_at?: true
     _all?: true
   }
 
@@ -29502,6 +29591,7 @@ export namespace Prisma {
     advise: string | null
     report_pdf: string | null
     technical_json: string | null
+    deleted_at: Date | null
     _count: Corrective_maintenancesCountAggregateOutputType | null
     _avg: Corrective_maintenancesAvgAggregateOutputType | null
     _sum: Corrective_maintenancesSumAggregateOutputType | null
@@ -29535,6 +29625,7 @@ export namespace Prisma {
     advise?: boolean
     report_pdf?: boolean
     technical_json?: boolean
+    deleted_at?: boolean
   }, ExtArgs["result"]["corrective_maintenances"]>
 
 
@@ -29551,9 +29642,10 @@ export namespace Prisma {
     advise?: boolean
     report_pdf?: boolean
     technical_json?: boolean
+    deleted_at?: boolean
   }
 
-  export type corrective_maintenancesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "unit_id" | "tech_name" | "issue_description" | "created_at" | "inspector_name" | "repair_date" | "finding" | "advise" | "report_pdf" | "technical_json", ExtArgs["result"]["corrective_maintenances"]>
+  export type corrective_maintenancesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "unit_id" | "tech_name" | "issue_description" | "created_at" | "inspector_name" | "repair_date" | "finding" | "advise" | "report_pdf" | "technical_json" | "deleted_at", ExtArgs["result"]["corrective_maintenances"]>
 
   export type $corrective_maintenancesPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "corrective_maintenances"
@@ -29570,6 +29662,7 @@ export namespace Prisma {
       advise: string | null
       report_pdf: string | null
       technical_json: string | null
+      deleted_at: Date | null
     }, ExtArgs["result"]["corrective_maintenances"]>
     composites: {}
   }
@@ -29950,6 +30043,7 @@ export namespace Prisma {
     readonly advise: FieldRef<"corrective_maintenances", 'String'>
     readonly report_pdf: FieldRef<"corrective_maintenances", 'String'>
     readonly technical_json: FieldRef<"corrective_maintenances", 'String'>
+    readonly deleted_at: FieldRef<"corrective_maintenances", 'DateTime'>
   }
     
 
@@ -47173,6 +47267,7 @@ export namespace Prisma {
     vibration_status: string | null
     drainage_status: string | null
     notes: string | null
+    deleted_at: Date | null
   }
 
   export type Daily_ops_logsMaxAggregateOutputType = {
@@ -47217,6 +47312,7 @@ export namespace Prisma {
     vibration_status: string | null
     drainage_status: string | null
     notes: string | null
+    deleted_at: Date | null
   }
 
   export type Daily_ops_logsCountAggregateOutputType = {
@@ -47261,6 +47357,7 @@ export namespace Prisma {
     vibration_status: number
     drainage_status: number
     notes: number
+    deleted_at: number
     _all: number
   }
 
@@ -47373,6 +47470,7 @@ export namespace Prisma {
     vibration_status?: true
     drainage_status?: true
     notes?: true
+    deleted_at?: true
   }
 
   export type Daily_ops_logsMaxAggregateInputType = {
@@ -47417,6 +47515,7 @@ export namespace Prisma {
     vibration_status?: true
     drainage_status?: true
     notes?: true
+    deleted_at?: true
   }
 
   export type Daily_ops_logsCountAggregateInputType = {
@@ -47461,6 +47560,7 @@ export namespace Prisma {
     vibration_status?: true
     drainage_status?: true
     notes?: true
+    deleted_at?: true
     _all?: true
   }
 
@@ -47592,6 +47692,7 @@ export namespace Prisma {
     vibration_status: string | null
     drainage_status: string | null
     notes: string | null
+    deleted_at: Date | null
     _count: Daily_ops_logsCountAggregateOutputType | null
     _avg: Daily_ops_logsAvgAggregateOutputType | null
     _sum: Daily_ops_logsSumAggregateOutputType | null
@@ -47655,6 +47756,7 @@ export namespace Prisma {
     vibration_status?: boolean
     drainage_status?: boolean
     notes?: boolean
+    deleted_at?: boolean
     units?: boolean | unitsDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["daily_ops_logs"]>
 
@@ -47702,9 +47804,10 @@ export namespace Prisma {
     vibration_status?: boolean
     drainage_status?: boolean
     notes?: boolean
+    deleted_at?: boolean
   }
 
-  export type daily_ops_logsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "unit_id" | "inspector_name" | "service_date" | "created_at" | "fan_on" | "fan_speed" | "fan_curr_r" | "fan_curr_s" | "fan_curr_t" | "fan_volt_r" | "fan_volt_s" | "fan_volt_t" | "heater_on" | "heater_curr_r" | "heater_curr_s" | "heater_curr_t" | "heater_volt_r" | "heater_volt_s" | "heater_volt_t" | "valve_opening" | "supply_temp" | "supply_rh" | "return_temp" | "return_rh" | "fresh_temp" | "fresh_rh" | "filter_pre" | "filter_med" | "filter_hepa" | "room_temp" | "room_diff_press" | "temp_s1" | "temp_s2" | "temp_s3" | "temp_s4" | "temp_s5" | "static_pressure" | "vibration_status" | "drainage_status" | "notes", ExtArgs["result"]["daily_ops_logs"]>
+  export type daily_ops_logsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "unit_id" | "inspector_name" | "service_date" | "created_at" | "fan_on" | "fan_speed" | "fan_curr_r" | "fan_curr_s" | "fan_curr_t" | "fan_volt_r" | "fan_volt_s" | "fan_volt_t" | "heater_on" | "heater_curr_r" | "heater_curr_s" | "heater_curr_t" | "heater_volt_r" | "heater_volt_s" | "heater_volt_t" | "valve_opening" | "supply_temp" | "supply_rh" | "return_temp" | "return_rh" | "fresh_temp" | "fresh_rh" | "filter_pre" | "filter_med" | "filter_hepa" | "room_temp" | "room_diff_press" | "temp_s1" | "temp_s2" | "temp_s3" | "temp_s4" | "temp_s5" | "static_pressure" | "vibration_status" | "drainage_status" | "notes" | "deleted_at", ExtArgs["result"]["daily_ops_logs"]>
   export type daily_ops_logsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     units?: boolean | unitsDefaultArgs<ExtArgs>
   }
@@ -47756,6 +47859,7 @@ export namespace Prisma {
       vibration_status: string | null
       drainage_status: string | null
       notes: string | null
+      deleted_at: Date | null
     }, ExtArgs["result"]["daily_ops_logs"]>
     composites: {}
   }
@@ -48167,6 +48271,7 @@ export namespace Prisma {
     readonly vibration_status: FieldRef<"daily_ops_logs", 'String'>
     readonly drainage_status: FieldRef<"daily_ops_logs", 'String'>
     readonly notes: FieldRef<"daily_ops_logs", 'String'>
+    readonly deleted_at: FieldRef<"daily_ops_logs", 'DateTime'>
   }
     
 
@@ -53764,6 +53869,981 @@ export namespace Prisma {
 
 
   /**
+   * Model shopping_list
+   */
+
+  export type AggregateShopping_list = {
+    _count: Shopping_listCountAggregateOutputType | null
+    _avg: Shopping_listAvgAggregateOutputType | null
+    _sum: Shopping_listSumAggregateOutputType | null
+    _min: Shopping_listMinAggregateOutputType | null
+    _max: Shopping_listMaxAggregateOutputType | null
+  }
+
+  export type Shopping_listAvgAggregateOutputType = {
+    id: number | null
+    price: Decimal | null
+  }
+
+  export type Shopping_listSumAggregateOutputType = {
+    id: bigint | null
+    price: Decimal | null
+  }
+
+  export type Shopping_listMinAggregateOutputType = {
+    id: bigint | null
+    category: string | null
+    work_type: string | null
+    item_name: string | null
+    capacity_unit: string | null
+    capacity_range: string | null
+    price: Decimal | null
+    description: string | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type Shopping_listMaxAggregateOutputType = {
+    id: bigint | null
+    category: string | null
+    work_type: string | null
+    item_name: string | null
+    capacity_unit: string | null
+    capacity_range: string | null
+    price: Decimal | null
+    description: string | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type Shopping_listCountAggregateOutputType = {
+    id: number
+    category: number
+    work_type: number
+    item_name: number
+    capacity_unit: number
+    capacity_range: number
+    price: number
+    description: number
+    created_at: number
+    updated_at: number
+    _all: number
+  }
+
+
+  export type Shopping_listAvgAggregateInputType = {
+    id?: true
+    price?: true
+  }
+
+  export type Shopping_listSumAggregateInputType = {
+    id?: true
+    price?: true
+  }
+
+  export type Shopping_listMinAggregateInputType = {
+    id?: true
+    category?: true
+    work_type?: true
+    item_name?: true
+    capacity_unit?: true
+    capacity_range?: true
+    price?: true
+    description?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type Shopping_listMaxAggregateInputType = {
+    id?: true
+    category?: true
+    work_type?: true
+    item_name?: true
+    capacity_unit?: true
+    capacity_range?: true
+    price?: true
+    description?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type Shopping_listCountAggregateInputType = {
+    id?: true
+    category?: true
+    work_type?: true
+    item_name?: true
+    capacity_unit?: true
+    capacity_range?: true
+    price?: true
+    description?: true
+    created_at?: true
+    updated_at?: true
+    _all?: true
+  }
+
+  export type Shopping_listAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which shopping_list to aggregate.
+     */
+    where?: shopping_listWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of shopping_lists to fetch.
+     */
+    orderBy?: shopping_listOrderByWithRelationInput | shopping_listOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: shopping_listWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` shopping_lists from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` shopping_lists.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned shopping_lists
+    **/
+    _count?: true | Shopping_listCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Shopping_listAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Shopping_listSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Shopping_listMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Shopping_listMaxAggregateInputType
+  }
+
+  export type GetShopping_listAggregateType<T extends Shopping_listAggregateArgs> = {
+        [P in keyof T & keyof AggregateShopping_list]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateShopping_list[P]>
+      : GetScalarType<T[P], AggregateShopping_list[P]>
+  }
+
+
+
+
+  export type shopping_listGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: shopping_listWhereInput
+    orderBy?: shopping_listOrderByWithAggregationInput | shopping_listOrderByWithAggregationInput[]
+    by: Shopping_listScalarFieldEnum[] | Shopping_listScalarFieldEnum
+    having?: shopping_listScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Shopping_listCountAggregateInputType | true
+    _avg?: Shopping_listAvgAggregateInputType
+    _sum?: Shopping_listSumAggregateInputType
+    _min?: Shopping_listMinAggregateInputType
+    _max?: Shopping_listMaxAggregateInputType
+  }
+
+  export type Shopping_listGroupByOutputType = {
+    id: bigint
+    category: string
+    work_type: string
+    item_name: string
+    capacity_unit: string
+    capacity_range: string
+    price: Decimal
+    description: string | null
+    created_at: Date
+    updated_at: Date
+    _count: Shopping_listCountAggregateOutputType | null
+    _avg: Shopping_listAvgAggregateOutputType | null
+    _sum: Shopping_listSumAggregateOutputType | null
+    _min: Shopping_listMinAggregateOutputType | null
+    _max: Shopping_listMaxAggregateOutputType | null
+  }
+
+  type GetShopping_listGroupByPayload<T extends shopping_listGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Shopping_listGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Shopping_listGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Shopping_listGroupByOutputType[P]>
+            : GetScalarType<T[P], Shopping_listGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type shopping_listSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    category?: boolean
+    work_type?: boolean
+    item_name?: boolean
+    capacity_unit?: boolean
+    capacity_range?: boolean
+    price?: boolean
+    description?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }, ExtArgs["result"]["shopping_list"]>
+
+
+
+  export type shopping_listSelectScalar = {
+    id?: boolean
+    category?: boolean
+    work_type?: boolean
+    item_name?: boolean
+    capacity_unit?: boolean
+    capacity_range?: boolean
+    price?: boolean
+    description?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }
+
+  export type shopping_listOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "category" | "work_type" | "item_name" | "capacity_unit" | "capacity_range" | "price" | "description" | "created_at" | "updated_at", ExtArgs["result"]["shopping_list"]>
+
+  export type $shopping_listPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "shopping_list"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: bigint
+      category: string
+      work_type: string
+      item_name: string
+      capacity_unit: string
+      capacity_range: string
+      price: Prisma.Decimal
+      description: string | null
+      created_at: Date
+      updated_at: Date
+    }, ExtArgs["result"]["shopping_list"]>
+    composites: {}
+  }
+
+  type shopping_listGetPayload<S extends boolean | null | undefined | shopping_listDefaultArgs> = $Result.GetResult<Prisma.$shopping_listPayload, S>
+
+  type shopping_listCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<shopping_listFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Shopping_listCountAggregateInputType | true
+    }
+
+  export interface shopping_listDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['shopping_list'], meta: { name: 'shopping_list' } }
+    /**
+     * Find zero or one Shopping_list that matches the filter.
+     * @param {shopping_listFindUniqueArgs} args - Arguments to find a Shopping_list
+     * @example
+     * // Get one Shopping_list
+     * const shopping_list = await prisma.shopping_list.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends shopping_listFindUniqueArgs>(args: SelectSubset<T, shopping_listFindUniqueArgs<ExtArgs>>): Prisma__shopping_listClient<$Result.GetResult<Prisma.$shopping_listPayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one Shopping_list that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {shopping_listFindUniqueOrThrowArgs} args - Arguments to find a Shopping_list
+     * @example
+     * // Get one Shopping_list
+     * const shopping_list = await prisma.shopping_list.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends shopping_listFindUniqueOrThrowArgs>(args: SelectSubset<T, shopping_listFindUniqueOrThrowArgs<ExtArgs>>): Prisma__shopping_listClient<$Result.GetResult<Prisma.$shopping_listPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Shopping_list that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {shopping_listFindFirstArgs} args - Arguments to find a Shopping_list
+     * @example
+     * // Get one Shopping_list
+     * const shopping_list = await prisma.shopping_list.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends shopping_listFindFirstArgs>(args?: SelectSubset<T, shopping_listFindFirstArgs<ExtArgs>>): Prisma__shopping_listClient<$Result.GetResult<Prisma.$shopping_listPayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Shopping_list that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {shopping_listFindFirstOrThrowArgs} args - Arguments to find a Shopping_list
+     * @example
+     * // Get one Shopping_list
+     * const shopping_list = await prisma.shopping_list.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends shopping_listFindFirstOrThrowArgs>(args?: SelectSubset<T, shopping_listFindFirstOrThrowArgs<ExtArgs>>): Prisma__shopping_listClient<$Result.GetResult<Prisma.$shopping_listPayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more Shopping_lists that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {shopping_listFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Shopping_lists
+     * const shopping_lists = await prisma.shopping_list.findMany()
+     * 
+     * // Get first 10 Shopping_lists
+     * const shopping_lists = await prisma.shopping_list.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const shopping_listWithIdOnly = await prisma.shopping_list.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends shopping_listFindManyArgs>(args?: SelectSubset<T, shopping_listFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$shopping_listPayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a Shopping_list.
+     * @param {shopping_listCreateArgs} args - Arguments to create a Shopping_list.
+     * @example
+     * // Create one Shopping_list
+     * const Shopping_list = await prisma.shopping_list.create({
+     *   data: {
+     *     // ... data to create a Shopping_list
+     *   }
+     * })
+     * 
+     */
+    create<T extends shopping_listCreateArgs>(args: SelectSubset<T, shopping_listCreateArgs<ExtArgs>>): Prisma__shopping_listClient<$Result.GetResult<Prisma.$shopping_listPayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many Shopping_lists.
+     * @param {shopping_listCreateManyArgs} args - Arguments to create many Shopping_lists.
+     * @example
+     * // Create many Shopping_lists
+     * const shopping_list = await prisma.shopping_list.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends shopping_listCreateManyArgs>(args?: SelectSubset<T, shopping_listCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Shopping_list.
+     * @param {shopping_listDeleteArgs} args - Arguments to delete one Shopping_list.
+     * @example
+     * // Delete one Shopping_list
+     * const Shopping_list = await prisma.shopping_list.delete({
+     *   where: {
+     *     // ... filter to delete one Shopping_list
+     *   }
+     * })
+     * 
+     */
+    delete<T extends shopping_listDeleteArgs>(args: SelectSubset<T, shopping_listDeleteArgs<ExtArgs>>): Prisma__shopping_listClient<$Result.GetResult<Prisma.$shopping_listPayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one Shopping_list.
+     * @param {shopping_listUpdateArgs} args - Arguments to update one Shopping_list.
+     * @example
+     * // Update one Shopping_list
+     * const shopping_list = await prisma.shopping_list.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends shopping_listUpdateArgs>(args: SelectSubset<T, shopping_listUpdateArgs<ExtArgs>>): Prisma__shopping_listClient<$Result.GetResult<Prisma.$shopping_listPayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more Shopping_lists.
+     * @param {shopping_listDeleteManyArgs} args - Arguments to filter Shopping_lists to delete.
+     * @example
+     * // Delete a few Shopping_lists
+     * const { count } = await prisma.shopping_list.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends shopping_listDeleteManyArgs>(args?: SelectSubset<T, shopping_listDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Shopping_lists.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {shopping_listUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Shopping_lists
+     * const shopping_list = await prisma.shopping_list.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends shopping_listUpdateManyArgs>(args: SelectSubset<T, shopping_listUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Shopping_list.
+     * @param {shopping_listUpsertArgs} args - Arguments to update or create a Shopping_list.
+     * @example
+     * // Update or create a Shopping_list
+     * const shopping_list = await prisma.shopping_list.upsert({
+     *   create: {
+     *     // ... data to create a Shopping_list
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Shopping_list we want to update
+     *   }
+     * })
+     */
+    upsert<T extends shopping_listUpsertArgs>(args: SelectSubset<T, shopping_listUpsertArgs<ExtArgs>>): Prisma__shopping_listClient<$Result.GetResult<Prisma.$shopping_listPayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of Shopping_lists.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {shopping_listCountArgs} args - Arguments to filter Shopping_lists to count.
+     * @example
+     * // Count the number of Shopping_lists
+     * const count = await prisma.shopping_list.count({
+     *   where: {
+     *     // ... the filter for the Shopping_lists we want to count
+     *   }
+     * })
+    **/
+    count<T extends shopping_listCountArgs>(
+      args?: Subset<T, shopping_listCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Shopping_listCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Shopping_list.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Shopping_listAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Shopping_listAggregateArgs>(args: Subset<T, Shopping_listAggregateArgs>): Prisma.PrismaPromise<GetShopping_listAggregateType<T>>
+
+    /**
+     * Group by Shopping_list.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {shopping_listGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends shopping_listGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: shopping_listGroupByArgs['orderBy'] }
+        : { orderBy?: shopping_listGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, shopping_listGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetShopping_listGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the shopping_list model
+   */
+  readonly fields: shopping_listFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for shopping_list.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__shopping_listClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the shopping_list model
+   */ 
+  interface shopping_listFieldRefs {
+    readonly id: FieldRef<"shopping_list", 'BigInt'>
+    readonly category: FieldRef<"shopping_list", 'String'>
+    readonly work_type: FieldRef<"shopping_list", 'String'>
+    readonly item_name: FieldRef<"shopping_list", 'String'>
+    readonly capacity_unit: FieldRef<"shopping_list", 'String'>
+    readonly capacity_range: FieldRef<"shopping_list", 'String'>
+    readonly price: FieldRef<"shopping_list", 'Decimal'>
+    readonly description: FieldRef<"shopping_list", 'String'>
+    readonly created_at: FieldRef<"shopping_list", 'DateTime'>
+    readonly updated_at: FieldRef<"shopping_list", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * shopping_list findUnique
+   */
+  export type shopping_listFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the shopping_list
+     */
+    select?: shopping_listSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the shopping_list
+     */
+    omit?: shopping_listOmit<ExtArgs> | null
+    /**
+     * Filter, which shopping_list to fetch.
+     */
+    where: shopping_listWhereUniqueInput
+  }
+
+  /**
+   * shopping_list findUniqueOrThrow
+   */
+  export type shopping_listFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the shopping_list
+     */
+    select?: shopping_listSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the shopping_list
+     */
+    omit?: shopping_listOmit<ExtArgs> | null
+    /**
+     * Filter, which shopping_list to fetch.
+     */
+    where: shopping_listWhereUniqueInput
+  }
+
+  /**
+   * shopping_list findFirst
+   */
+  export type shopping_listFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the shopping_list
+     */
+    select?: shopping_listSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the shopping_list
+     */
+    omit?: shopping_listOmit<ExtArgs> | null
+    /**
+     * Filter, which shopping_list to fetch.
+     */
+    where?: shopping_listWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of shopping_lists to fetch.
+     */
+    orderBy?: shopping_listOrderByWithRelationInput | shopping_listOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for shopping_lists.
+     */
+    cursor?: shopping_listWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` shopping_lists from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` shopping_lists.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of shopping_lists.
+     */
+    distinct?: Shopping_listScalarFieldEnum | Shopping_listScalarFieldEnum[]
+  }
+
+  /**
+   * shopping_list findFirstOrThrow
+   */
+  export type shopping_listFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the shopping_list
+     */
+    select?: shopping_listSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the shopping_list
+     */
+    omit?: shopping_listOmit<ExtArgs> | null
+    /**
+     * Filter, which shopping_list to fetch.
+     */
+    where?: shopping_listWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of shopping_lists to fetch.
+     */
+    orderBy?: shopping_listOrderByWithRelationInput | shopping_listOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for shopping_lists.
+     */
+    cursor?: shopping_listWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` shopping_lists from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` shopping_lists.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of shopping_lists.
+     */
+    distinct?: Shopping_listScalarFieldEnum | Shopping_listScalarFieldEnum[]
+  }
+
+  /**
+   * shopping_list findMany
+   */
+  export type shopping_listFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the shopping_list
+     */
+    select?: shopping_listSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the shopping_list
+     */
+    omit?: shopping_listOmit<ExtArgs> | null
+    /**
+     * Filter, which shopping_lists to fetch.
+     */
+    where?: shopping_listWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of shopping_lists to fetch.
+     */
+    orderBy?: shopping_listOrderByWithRelationInput | shopping_listOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing shopping_lists.
+     */
+    cursor?: shopping_listWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` shopping_lists from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` shopping_lists.
+     */
+    skip?: number
+    distinct?: Shopping_listScalarFieldEnum | Shopping_listScalarFieldEnum[]
+  }
+
+  /**
+   * shopping_list create
+   */
+  export type shopping_listCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the shopping_list
+     */
+    select?: shopping_listSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the shopping_list
+     */
+    omit?: shopping_listOmit<ExtArgs> | null
+    /**
+     * The data needed to create a shopping_list.
+     */
+    data: XOR<shopping_listCreateInput, shopping_listUncheckedCreateInput>
+  }
+
+  /**
+   * shopping_list createMany
+   */
+  export type shopping_listCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many shopping_lists.
+     */
+    data: shopping_listCreateManyInput | shopping_listCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * shopping_list update
+   */
+  export type shopping_listUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the shopping_list
+     */
+    select?: shopping_listSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the shopping_list
+     */
+    omit?: shopping_listOmit<ExtArgs> | null
+    /**
+     * The data needed to update a shopping_list.
+     */
+    data: XOR<shopping_listUpdateInput, shopping_listUncheckedUpdateInput>
+    /**
+     * Choose, which shopping_list to update.
+     */
+    where: shopping_listWhereUniqueInput
+  }
+
+  /**
+   * shopping_list updateMany
+   */
+  export type shopping_listUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update shopping_lists.
+     */
+    data: XOR<shopping_listUpdateManyMutationInput, shopping_listUncheckedUpdateManyInput>
+    /**
+     * Filter which shopping_lists to update
+     */
+    where?: shopping_listWhereInput
+    /**
+     * Limit how many shopping_lists to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * shopping_list upsert
+   */
+  export type shopping_listUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the shopping_list
+     */
+    select?: shopping_listSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the shopping_list
+     */
+    omit?: shopping_listOmit<ExtArgs> | null
+    /**
+     * The filter to search for the shopping_list to update in case it exists.
+     */
+    where: shopping_listWhereUniqueInput
+    /**
+     * In case the shopping_list found by the `where` argument doesn't exist, create a new shopping_list with this data.
+     */
+    create: XOR<shopping_listCreateInput, shopping_listUncheckedCreateInput>
+    /**
+     * In case the shopping_list was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<shopping_listUpdateInput, shopping_listUncheckedUpdateInput>
+  }
+
+  /**
+   * shopping_list delete
+   */
+  export type shopping_listDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the shopping_list
+     */
+    select?: shopping_listSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the shopping_list
+     */
+    omit?: shopping_listOmit<ExtArgs> | null
+    /**
+     * Filter which shopping_list to delete.
+     */
+    where: shopping_listWhereUniqueInput
+  }
+
+  /**
+   * shopping_list deleteMany
+   */
+  export type shopping_listDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which shopping_lists to delete
+     */
+    where?: shopping_listWhereInput
+    /**
+     * Limit how many shopping_lists to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * shopping_list without action
+   */
+  export type shopping_listDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the shopping_list
+     */
+    select?: shopping_listSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the shopping_list
+     */
+    omit?: shopping_listOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -54136,7 +55216,8 @@ export namespace Prisma {
     finding: 'finding',
     advise: 'advise',
     report_pdf: 'report_pdf',
-    technical_json: 'technical_json'
+    technical_json: 'technical_json',
+    deleted_at: 'deleted_at'
   };
 
   export type Corrective_maintenancesScalarFieldEnum = (typeof Corrective_maintenancesScalarFieldEnum)[keyof typeof Corrective_maintenancesScalarFieldEnum]
@@ -54434,7 +55515,8 @@ export namespace Prisma {
     static_pressure: 'static_pressure',
     vibration_status: 'vibration_status',
     drainage_status: 'drainage_status',
-    notes: 'notes'
+    notes: 'notes',
+    deleted_at: 'deleted_at'
   };
 
   export type Daily_ops_logsScalarFieldEnum = (typeof Daily_ops_logsScalarFieldEnum)[keyof typeof Daily_ops_logsScalarFieldEnum]
@@ -54522,6 +55604,22 @@ export namespace Prisma {
   };
 
   export type Logsheet_entriesScalarFieldEnum = (typeof Logsheet_entriesScalarFieldEnum)[keyof typeof Logsheet_entriesScalarFieldEnum]
+
+
+  export const Shopping_listScalarFieldEnum: {
+    id: 'id',
+    category: 'category',
+    work_type: 'work_type',
+    item_name: 'item_name',
+    capacity_unit: 'capacity_unit',
+    capacity_range: 'capacity_range',
+    price: 'price',
+    description: 'description',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
+  };
+
+  export type Shopping_listScalarFieldEnum = (typeof Shopping_listScalarFieldEnum)[keyof typeof Shopping_listScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -54966,6 +56064,18 @@ export namespace Prisma {
   };
 
   export type logsheet_entriesOrderByRelevanceFieldEnum = (typeof logsheet_entriesOrderByRelevanceFieldEnum)[keyof typeof logsheet_entriesOrderByRelevanceFieldEnum]
+
+
+  export const shopping_listOrderByRelevanceFieldEnum: {
+    category: 'category',
+    work_type: 'work_type',
+    item_name: 'item_name',
+    capacity_unit: 'capacity_unit',
+    capacity_range: 'capacity_range',
+    description: 'description'
+  };
+
+  export type shopping_listOrderByRelevanceFieldEnum = (typeof shopping_listOrderByRelevanceFieldEnum)[keyof typeof shopping_listOrderByRelevanceFieldEnum]
 
 
   /**
@@ -57105,6 +58215,7 @@ export namespace Prisma {
     advise?: StringNullableFilter<"corrective_maintenances"> | string | null
     report_pdf?: StringNullableFilter<"corrective_maintenances"> | string | null
     technical_json?: StringNullableFilter<"corrective_maintenances"> | string | null
+    deleted_at?: DateTimeNullableFilter<"corrective_maintenances"> | Date | string | null
   }
 
   export type corrective_maintenancesOrderByWithRelationInput = {
@@ -57119,6 +58230,7 @@ export namespace Prisma {
     advise?: SortOrderInput | SortOrder
     report_pdf?: SortOrderInput | SortOrder
     technical_json?: SortOrderInput | SortOrder
+    deleted_at?: SortOrderInput | SortOrder
     _relevance?: corrective_maintenancesOrderByRelevanceInput
   }
 
@@ -57137,6 +58249,7 @@ export namespace Prisma {
     advise?: StringNullableFilter<"corrective_maintenances"> | string | null
     report_pdf?: StringNullableFilter<"corrective_maintenances"> | string | null
     technical_json?: StringNullableFilter<"corrective_maintenances"> | string | null
+    deleted_at?: DateTimeNullableFilter<"corrective_maintenances"> | Date | string | null
   }, "id">
 
   export type corrective_maintenancesOrderByWithAggregationInput = {
@@ -57151,6 +58264,7 @@ export namespace Prisma {
     advise?: SortOrderInput | SortOrder
     report_pdf?: SortOrderInput | SortOrder
     technical_json?: SortOrderInput | SortOrder
+    deleted_at?: SortOrderInput | SortOrder
     _count?: corrective_maintenancesCountOrderByAggregateInput
     _avg?: corrective_maintenancesAvgOrderByAggregateInput
     _max?: corrective_maintenancesMaxOrderByAggregateInput
@@ -57173,6 +58287,7 @@ export namespace Prisma {
     advise?: StringNullableWithAggregatesFilter<"corrective_maintenances"> | string | null
     report_pdf?: StringNullableWithAggregatesFilter<"corrective_maintenances"> | string | null
     technical_json?: StringNullableWithAggregatesFilter<"corrective_maintenances"> | string | null
+    deleted_at?: DateTimeNullableWithAggregatesFilter<"corrective_maintenances"> | Date | string | null
   }
 
   export type maintenance_contractsWhereInput = {
@@ -58556,6 +59671,7 @@ export namespace Prisma {
     vibration_status?: StringNullableFilter<"daily_ops_logs"> | string | null
     drainage_status?: StringNullableFilter<"daily_ops_logs"> | string | null
     notes?: StringNullableFilter<"daily_ops_logs"> | string | null
+    deleted_at?: DateTimeNullableFilter<"daily_ops_logs"> | Date | string | null
     units?: XOR<UnitsScalarRelationFilter, unitsWhereInput>
   }
 
@@ -58601,6 +59717,7 @@ export namespace Prisma {
     vibration_status?: SortOrderInput | SortOrder
     drainage_status?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
+    deleted_at?: SortOrderInput | SortOrder
     units?: unitsOrderByWithRelationInput
     _relevance?: daily_ops_logsOrderByRelevanceInput
   }
@@ -58650,6 +59767,7 @@ export namespace Prisma {
     vibration_status?: StringNullableFilter<"daily_ops_logs"> | string | null
     drainage_status?: StringNullableFilter<"daily_ops_logs"> | string | null
     notes?: StringNullableFilter<"daily_ops_logs"> | string | null
+    deleted_at?: DateTimeNullableFilter<"daily_ops_logs"> | Date | string | null
     units?: XOR<UnitsScalarRelationFilter, unitsWhereInput>
   }, "id">
 
@@ -58695,6 +59813,7 @@ export namespace Prisma {
     vibration_status?: SortOrderInput | SortOrder
     drainage_status?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
+    deleted_at?: SortOrderInput | SortOrder
     _count?: daily_ops_logsCountOrderByAggregateInput
     _avg?: daily_ops_logsAvgOrderByAggregateInput
     _max?: daily_ops_logsMaxOrderByAggregateInput
@@ -58747,6 +59866,7 @@ export namespace Prisma {
     vibration_status?: StringNullableWithAggregatesFilter<"daily_ops_logs"> | string | null
     drainage_status?: StringNullableWithAggregatesFilter<"daily_ops_logs"> | string | null
     notes?: StringNullableWithAggregatesFilter<"daily_ops_logs"> | string | null
+    deleted_at?: DateTimeNullableWithAggregatesFilter<"daily_ops_logs"> | Date | string | null
   }
 
   export type vendor_attendanceWhereInput = {
@@ -59192,6 +60312,86 @@ export namespace Prisma {
     values_json?: StringWithAggregatesFilter<"logsheet_entries"> | string
     notes?: StringNullableWithAggregatesFilter<"logsheet_entries"> | string | null
     created_at?: DateTimeWithAggregatesFilter<"logsheet_entries"> | Date | string
+  }
+
+  export type shopping_listWhereInput = {
+    AND?: shopping_listWhereInput | shopping_listWhereInput[]
+    OR?: shopping_listWhereInput[]
+    NOT?: shopping_listWhereInput | shopping_listWhereInput[]
+    id?: BigIntFilter<"shopping_list"> | bigint | number
+    category?: StringFilter<"shopping_list"> | string
+    work_type?: StringFilter<"shopping_list"> | string
+    item_name?: StringFilter<"shopping_list"> | string
+    capacity_unit?: StringFilter<"shopping_list"> | string
+    capacity_range?: StringFilter<"shopping_list"> | string
+    price?: DecimalFilter<"shopping_list"> | Decimal | DecimalJsLike | number | string
+    description?: StringNullableFilter<"shopping_list"> | string | null
+    created_at?: DateTimeFilter<"shopping_list"> | Date | string
+    updated_at?: DateTimeFilter<"shopping_list"> | Date | string
+  }
+
+  export type shopping_listOrderByWithRelationInput = {
+    id?: SortOrder
+    category?: SortOrder
+    work_type?: SortOrder
+    item_name?: SortOrder
+    capacity_unit?: SortOrder
+    capacity_range?: SortOrder
+    price?: SortOrder
+    description?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    _relevance?: shopping_listOrderByRelevanceInput
+  }
+
+  export type shopping_listWhereUniqueInput = Prisma.AtLeast<{
+    id?: bigint | number
+    AND?: shopping_listWhereInput | shopping_listWhereInput[]
+    OR?: shopping_listWhereInput[]
+    NOT?: shopping_listWhereInput | shopping_listWhereInput[]
+    category?: StringFilter<"shopping_list"> | string
+    work_type?: StringFilter<"shopping_list"> | string
+    item_name?: StringFilter<"shopping_list"> | string
+    capacity_unit?: StringFilter<"shopping_list"> | string
+    capacity_range?: StringFilter<"shopping_list"> | string
+    price?: DecimalFilter<"shopping_list"> | Decimal | DecimalJsLike | number | string
+    description?: StringNullableFilter<"shopping_list"> | string | null
+    created_at?: DateTimeFilter<"shopping_list"> | Date | string
+    updated_at?: DateTimeFilter<"shopping_list"> | Date | string
+  }, "id">
+
+  export type shopping_listOrderByWithAggregationInput = {
+    id?: SortOrder
+    category?: SortOrder
+    work_type?: SortOrder
+    item_name?: SortOrder
+    capacity_unit?: SortOrder
+    capacity_range?: SortOrder
+    price?: SortOrder
+    description?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    _count?: shopping_listCountOrderByAggregateInput
+    _avg?: shopping_listAvgOrderByAggregateInput
+    _max?: shopping_listMaxOrderByAggregateInput
+    _min?: shopping_listMinOrderByAggregateInput
+    _sum?: shopping_listSumOrderByAggregateInput
+  }
+
+  export type shopping_listScalarWhereWithAggregatesInput = {
+    AND?: shopping_listScalarWhereWithAggregatesInput | shopping_listScalarWhereWithAggregatesInput[]
+    OR?: shopping_listScalarWhereWithAggregatesInput[]
+    NOT?: shopping_listScalarWhereWithAggregatesInput | shopping_listScalarWhereWithAggregatesInput[]
+    id?: BigIntWithAggregatesFilter<"shopping_list"> | bigint | number
+    category?: StringWithAggregatesFilter<"shopping_list"> | string
+    work_type?: StringWithAggregatesFilter<"shopping_list"> | string
+    item_name?: StringWithAggregatesFilter<"shopping_list"> | string
+    capacity_unit?: StringWithAggregatesFilter<"shopping_list"> | string
+    capacity_range?: StringWithAggregatesFilter<"shopping_list"> | string
+    price?: DecimalWithAggregatesFilter<"shopping_list"> | Decimal | DecimalJsLike | number | string
+    description?: StringNullableWithAggregatesFilter<"shopping_list"> | string | null
+    created_at?: DateTimeWithAggregatesFilter<"shopping_list"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"shopping_list"> | Date | string
   }
 
   export type customersCreateInput = {
@@ -61303,6 +62503,7 @@ export namespace Prisma {
     advise?: string | null
     report_pdf?: string | null
     technical_json?: string | null
+    deleted_at?: Date | string | null
   }
 
   export type corrective_maintenancesUncheckedCreateInput = {
@@ -61317,6 +62518,7 @@ export namespace Prisma {
     advise?: string | null
     report_pdf?: string | null
     technical_json?: string | null
+    deleted_at?: Date | string | null
   }
 
   export type corrective_maintenancesUpdateInput = {
@@ -61330,6 +62532,7 @@ export namespace Prisma {
     advise?: NullableStringFieldUpdateOperationsInput | string | null
     report_pdf?: NullableStringFieldUpdateOperationsInput | string | null
     technical_json?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type corrective_maintenancesUncheckedUpdateInput = {
@@ -61344,6 +62547,7 @@ export namespace Prisma {
     advise?: NullableStringFieldUpdateOperationsInput | string | null
     report_pdf?: NullableStringFieldUpdateOperationsInput | string | null
     technical_json?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type corrective_maintenancesCreateManyInput = {
@@ -61358,6 +62562,7 @@ export namespace Prisma {
     advise?: string | null
     report_pdf?: string | null
     technical_json?: string | null
+    deleted_at?: Date | string | null
   }
 
   export type corrective_maintenancesUpdateManyMutationInput = {
@@ -61371,6 +62576,7 @@ export namespace Prisma {
     advise?: NullableStringFieldUpdateOperationsInput | string | null
     report_pdf?: NullableStringFieldUpdateOperationsInput | string | null
     technical_json?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type corrective_maintenancesUncheckedUpdateManyInput = {
@@ -61385,6 +62591,7 @@ export namespace Prisma {
     advise?: NullableStringFieldUpdateOperationsInput | string | null
     report_pdf?: NullableStringFieldUpdateOperationsInput | string | null
     technical_json?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type maintenance_contractsCreateInput = {
@@ -62810,6 +64017,7 @@ export namespace Prisma {
     vibration_status?: string | null
     drainage_status?: string | null
     notes?: string | null
+    deleted_at?: Date | string | null
     units: unitsCreateNestedOneWithoutDaily_ops_logsInput
   }
 
@@ -62855,6 +64063,7 @@ export namespace Prisma {
     vibration_status?: string | null
     drainage_status?: string | null
     notes?: string | null
+    deleted_at?: Date | string | null
   }
 
   export type daily_ops_logsUpdateInput = {
@@ -62897,6 +64106,7 @@ export namespace Prisma {
     vibration_status?: NullableStringFieldUpdateOperationsInput | string | null
     drainage_status?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     units?: unitsUpdateOneRequiredWithoutDaily_ops_logsNestedInput
   }
 
@@ -62942,6 +64152,7 @@ export namespace Prisma {
     vibration_status?: NullableStringFieldUpdateOperationsInput | string | null
     drainage_status?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type daily_ops_logsCreateManyInput = {
@@ -62986,6 +64197,7 @@ export namespace Prisma {
     vibration_status?: string | null
     drainage_status?: string | null
     notes?: string | null
+    deleted_at?: Date | string | null
   }
 
   export type daily_ops_logsUpdateManyMutationInput = {
@@ -63028,6 +64240,7 @@ export namespace Prisma {
     vibration_status?: NullableStringFieldUpdateOperationsInput | string | null
     drainage_status?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type daily_ops_logsUncheckedUpdateManyInput = {
@@ -63072,6 +64285,7 @@ export namespace Prisma {
     vibration_status?: NullableStringFieldUpdateOperationsInput | string | null
     drainage_status?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type vendor_attendanceCreateInput = {
@@ -63543,6 +64757,97 @@ export namespace Prisma {
     values_json?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type shopping_listCreateInput = {
+    id?: bigint | number
+    category: string
+    work_type: string
+    item_name: string
+    capacity_unit: string
+    capacity_range: string
+    price: Decimal | DecimalJsLike | number | string
+    description?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type shopping_listUncheckedCreateInput = {
+    id?: bigint | number
+    category: string
+    work_type: string
+    item_name: string
+    capacity_unit: string
+    capacity_range: string
+    price: Decimal | DecimalJsLike | number | string
+    description?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type shopping_listUpdateInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    category?: StringFieldUpdateOperationsInput | string
+    work_type?: StringFieldUpdateOperationsInput | string
+    item_name?: StringFieldUpdateOperationsInput | string
+    capacity_unit?: StringFieldUpdateOperationsInput | string
+    capacity_range?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type shopping_listUncheckedUpdateInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    category?: StringFieldUpdateOperationsInput | string
+    work_type?: StringFieldUpdateOperationsInput | string
+    item_name?: StringFieldUpdateOperationsInput | string
+    capacity_unit?: StringFieldUpdateOperationsInput | string
+    capacity_range?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type shopping_listCreateManyInput = {
+    id?: bigint | number
+    category: string
+    work_type: string
+    item_name: string
+    capacity_unit: string
+    capacity_range: string
+    price: Decimal | DecimalJsLike | number | string
+    description?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type shopping_listUpdateManyMutationInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    category?: StringFieldUpdateOperationsInput | string
+    work_type?: StringFieldUpdateOperationsInput | string
+    item_name?: StringFieldUpdateOperationsInput | string
+    capacity_unit?: StringFieldUpdateOperationsInput | string
+    capacity_range?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type shopping_listUncheckedUpdateManyInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    category?: StringFieldUpdateOperationsInput | string
+    work_type?: StringFieldUpdateOperationsInput | string
+    item_name?: StringFieldUpdateOperationsInput | string
+    capacity_unit?: StringFieldUpdateOperationsInput | string
+    capacity_range?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -65607,6 +66912,7 @@ export namespace Prisma {
     advise?: SortOrder
     report_pdf?: SortOrder
     technical_json?: SortOrder
+    deleted_at?: SortOrder
   }
 
   export type corrective_maintenancesAvgOrderByAggregateInput = {
@@ -65626,6 +66932,7 @@ export namespace Prisma {
     advise?: SortOrder
     report_pdf?: SortOrder
     technical_json?: SortOrder
+    deleted_at?: SortOrder
   }
 
   export type corrective_maintenancesMinOrderByAggregateInput = {
@@ -65640,6 +66947,7 @@ export namespace Prisma {
     advise?: SortOrder
     report_pdf?: SortOrder
     technical_json?: SortOrder
+    deleted_at?: SortOrder
   }
 
   export type corrective_maintenancesSumOrderByAggregateInput = {
@@ -66875,6 +68183,7 @@ export namespace Prisma {
     vibration_status?: SortOrder
     drainage_status?: SortOrder
     notes?: SortOrder
+    deleted_at?: SortOrder
   }
 
   export type daily_ops_logsAvgOrderByAggregateInput = {
@@ -66952,6 +68261,7 @@ export namespace Prisma {
     vibration_status?: SortOrder
     drainage_status?: SortOrder
     notes?: SortOrder
+    deleted_at?: SortOrder
   }
 
   export type daily_ops_logsMinOrderByAggregateInput = {
@@ -66996,6 +68306,7 @@ export namespace Prisma {
     vibration_status?: SortOrder
     drainage_status?: SortOrder
     notes?: SortOrder
+    deleted_at?: SortOrder
   }
 
   export type daily_ops_logsSumOrderByAggregateInput = {
@@ -67366,6 +68677,88 @@ export namespace Prisma {
   export type logsheet_entriesSumOrderByAggregateInput = {
     id?: SortOrder
     template_id?: SortOrder
+  }
+
+  export type DecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type shopping_listOrderByRelevanceInput = {
+    fields: shopping_listOrderByRelevanceFieldEnum | shopping_listOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type shopping_listCountOrderByAggregateInput = {
+    id?: SortOrder
+    category?: SortOrder
+    work_type?: SortOrder
+    item_name?: SortOrder
+    capacity_unit?: SortOrder
+    capacity_range?: SortOrder
+    price?: SortOrder
+    description?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type shopping_listAvgOrderByAggregateInput = {
+    id?: SortOrder
+    price?: SortOrder
+  }
+
+  export type shopping_listMaxOrderByAggregateInput = {
+    id?: SortOrder
+    category?: SortOrder
+    work_type?: SortOrder
+    item_name?: SortOrder
+    capacity_unit?: SortOrder
+    capacity_range?: SortOrder
+    price?: SortOrder
+    description?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type shopping_listMinOrderByAggregateInput = {
+    id?: SortOrder
+    category?: SortOrder
+    work_type?: SortOrder
+    item_name?: SortOrder
+    capacity_unit?: SortOrder
+    capacity_range?: SortOrder
+    price?: SortOrder
+    description?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type shopping_listSumOrderByAggregateInput = {
+    id?: SortOrder
+    price?: SortOrder
+  }
+
+  export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
   }
 
   export type contractsCreateNestedManyWithoutCustomersInput = {
@@ -70402,6 +71795,14 @@ export namespace Prisma {
     update?: XOR<XOR<logsheet_templatesUpdateToOneWithWhereWithoutEntriesInput, logsheet_templatesUpdateWithoutEntriesInput>, logsheet_templatesUncheckedUpdateWithoutEntriesInput>
   }
 
+  export type DecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
+  }
+
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -71021,6 +72422,33 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumLogsheetTypeFilter<$PrismaModel>
     _max?: NestedEnumLogsheetTypeFilter<$PrismaModel>
+  }
+
+  export type NestedDecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
   }
 
   export type contractsCreateWithoutCustomersInput = {
@@ -72840,6 +74268,7 @@ export namespace Prisma {
     vibration_status?: string | null
     drainage_status?: string | null
     notes?: string | null
+    deleted_at?: Date | string | null
   }
 
   export type daily_ops_logsUncheckedCreateWithoutUnitsInput = {
@@ -72883,6 +74312,7 @@ export namespace Prisma {
     vibration_status?: string | null
     drainage_status?: string | null
     notes?: string | null
+    deleted_at?: Date | string | null
   }
 
   export type daily_ops_logsCreateOrConnectWithoutUnitsInput = {
@@ -73462,6 +74892,7 @@ export namespace Prisma {
     vibration_status?: StringNullableFilter<"daily_ops_logs"> | string | null
     drainage_status?: StringNullableFilter<"daily_ops_logs"> | string | null
     notes?: StringNullableFilter<"daily_ops_logs"> | string | null
+    deleted_at?: DateTimeNullableFilter<"daily_ops_logs"> | Date | string | null
   }
 
   export type schedulesUpsertWithWhereUniqueWithoutUnitsInput = {
@@ -82020,6 +83451,7 @@ export namespace Prisma {
     vibration_status?: string | null
     drainage_status?: string | null
     notes?: string | null
+    deleted_at?: Date | string | null
   }
 
   export type schedulesCreateManyUnitsInput = {
@@ -82367,6 +83799,7 @@ export namespace Prisma {
     vibration_status?: NullableStringFieldUpdateOperationsInput | string | null
     drainage_status?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type daily_ops_logsUncheckedUpdateWithoutUnitsInput = {
@@ -82410,6 +83843,7 @@ export namespace Prisma {
     vibration_status?: NullableStringFieldUpdateOperationsInput | string | null
     drainage_status?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type daily_ops_logsUncheckedUpdateManyWithoutUnitsInput = {
@@ -82453,6 +83887,7 @@ export namespace Prisma {
     vibration_status?: NullableStringFieldUpdateOperationsInput | string | null
     drainage_status?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type schedulesUpdateWithoutUnitsInput = {

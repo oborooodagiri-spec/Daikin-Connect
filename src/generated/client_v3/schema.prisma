@@ -409,6 +409,7 @@ model corrective_maintenances {
   advise            String?   @db.Text
   report_pdf        String?   @db.VarChar(255)
   technical_json    String?   @db.LongText
+  deleted_at        DateTime? @db.DateTime(0)
 }
 
 model maintenance_contracts {
@@ -682,48 +683,49 @@ model notifications {
 }
 
 model daily_ops_logs {
-  id               Int      @id @default(autoincrement())
+  id               Int       @id @default(autoincrement())
   unit_id          Int
-  inspector_name   String   @db.VarChar(150)
-  service_date     DateTime @db.Date
-  created_at       DateTime @default(now()) @db.Timestamp(0)
-  fan_on           Boolean  @default(true)
-  fan_speed        Decimal? @db.Decimal(5, 2)
-  fan_curr_r       Decimal? @db.Decimal(5, 2)
-  fan_curr_s       Decimal? @db.Decimal(5, 2)
-  fan_curr_t       Decimal? @db.Decimal(5, 2)
+  inspector_name   String    @db.VarChar(150)
+  service_date     DateTime  @db.Date
+  created_at       DateTime  @default(now()) @db.Timestamp(0)
+  fan_on           Boolean   @default(true)
+  fan_speed        Decimal?  @db.Decimal(5, 2)
+  fan_curr_r       Decimal?  @db.Decimal(5, 2)
+  fan_curr_s       Decimal?  @db.Decimal(5, 2)
+  fan_curr_t       Decimal?  @db.Decimal(5, 2)
   fan_volt_r       Int?
   fan_volt_s       Int?
   fan_volt_t       Int?
-  heater_on        Boolean  @default(false)
-  heater_curr_r    Decimal? @db.Decimal(5, 2)
-  heater_curr_s    Decimal? @db.Decimal(5, 2)
-  heater_curr_t    Decimal? @db.Decimal(5, 2)
+  heater_on        Boolean   @default(false)
+  heater_curr_r    Decimal?  @db.Decimal(5, 2)
+  heater_curr_s    Decimal?  @db.Decimal(5, 2)
+  heater_curr_t    Decimal?  @db.Decimal(5, 2)
   heater_volt_r    Int?
   heater_volt_s    Int?
   heater_volt_t    Int?
-  valve_opening    Decimal? @db.Decimal(5, 2)
-  supply_temp      Decimal? @db.Decimal(5, 2)
-  supply_rh        Decimal? @db.Decimal(5, 2)
-  return_temp      Decimal? @db.Decimal(5, 2)
-  return_rh        Decimal? @db.Decimal(5, 2)
-  fresh_temp       Decimal? @db.Decimal(5, 2)
-  fresh_rh         Decimal? @db.Decimal(5, 2)
-  filter_pre       String?  @db.VarChar(20)
-  filter_med       String?  @db.VarChar(20)
-  filter_hepa      String?  @db.VarChar(20)
-  room_temp        Decimal? @db.Decimal(5, 2)
-  room_diff_press  Decimal? @db.Decimal(5, 2)
-  temp_s1          Decimal? @db.Decimal(5, 2)
-  temp_s2          Decimal? @db.Decimal(5, 2)
-  temp_s3          Decimal? @db.Decimal(5, 2)
-  temp_s4          Decimal? @db.Decimal(5, 2)
-  temp_s5          Decimal? @db.Decimal(5, 2)
-  static_pressure  Decimal? @db.Decimal(10, 2)
-  vibration_status String?  @db.VarChar(50)
-  drainage_status  String?  @db.VarChar(50)
-  notes            String?  @db.Text
-  units            units    @relation(fields: [unit_id], references: [id], onDelete: Cascade)
+  valve_opening    Decimal?  @db.Decimal(5, 2)
+  supply_temp      Decimal?  @db.Decimal(5, 2)
+  supply_rh        Decimal?  @db.Decimal(5, 2)
+  return_temp      Decimal?  @db.Decimal(5, 2)
+  return_rh        Decimal?  @db.Decimal(5, 2)
+  fresh_temp       Decimal?  @db.Decimal(5, 2)
+  fresh_rh         Decimal?  @db.Decimal(5, 2)
+  filter_pre       String?   @db.VarChar(20)
+  filter_med       String?   @db.VarChar(20)
+  filter_hepa      String?   @db.VarChar(20)
+  room_temp        Decimal?  @db.Decimal(5, 2)
+  room_diff_press  Decimal?  @db.Decimal(5, 2)
+  temp_s1          Decimal?  @db.Decimal(5, 2)
+  temp_s2          Decimal?  @db.Decimal(5, 2)
+  temp_s3          Decimal?  @db.Decimal(5, 2)
+  temp_s4          Decimal?  @db.Decimal(5, 2)
+  temp_s5          Decimal?  @db.Decimal(5, 2)
+  static_pressure  Decimal?  @db.Decimal(10, 2)
+  vibration_status String?   @db.VarChar(50)
+  drainage_status  String?   @db.VarChar(50)
+  notes            String?   @db.Text
+  deleted_at       DateTime? @db.DateTime(0)
+  units            units     @relation(fields: [unit_id], references: [id], onDelete: Cascade)
 
   @@index([unit_id], map: "idx_daily_ops_unit")
   @@index([service_date], map: "idx_daily_ops_date")
@@ -933,4 +935,17 @@ enum LogsheetType {
   AHU
   FCU
   CRAC
+}
+
+model shopping_list {
+  id             BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  category       String   @db.VarChar(100)
+  work_type      String   @db.VarChar(100)
+  item_name      String   @db.VarChar(255)
+  capacity_unit  String   @db.VarChar(50)
+  capacity_range String   @db.VarChar(100)
+  price          Decimal  @db.Decimal(15, 2)
+  description    String?  @db.Text
+  created_at     DateTime @default(now()) @db.Timestamp(0)
+  updated_at     DateTime @updatedAt
 }

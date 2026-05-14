@@ -20,7 +20,8 @@ import {
   Grid,
   List as ListIcon,
   Tag,
-  Sparkles
+  Sparkles,
+  Info
 } from "lucide-react";
 import Link from "next/link";
 import { getResources, createResource, deleteResource, updateResource } from "@/app/actions/database";
@@ -242,12 +243,20 @@ export default function KnowledgeCenterPage() {
 
           <div className="flex items-center gap-3">
              {isAdmin && (
-               <button 
-                 onClick={() => setIsModalOpen(true)}
-                 className="flex items-center gap-2 px-6 py-3 bg-[#323338] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-slate-200"
-               >
-                 <Plus size={16} /> Add Resource
-               </button>
+               <div className="flex gap-2">
+                 <Link 
+                   href="/admin/database/shopping-list"
+                   className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-[#323338] rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all shadow-xl shadow-slate-100"
+                 >
+                   <Tag size={16} className="text-[#0073ea]" /> Shopping List
+                 </Link>
+                 <button 
+                   onClick={() => setIsModalOpen(true)}
+                   className="flex items-center gap-2 px-6 py-3 bg-[#323338] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-slate-200"
+                 >
+                   <Plus size={16} /> Add Resource
+                 </button>
+               </div>
              )}
              <div className="flex items-center gap-1 bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
                 <button 
