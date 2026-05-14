@@ -179,6 +179,14 @@ export default function RateCardClient() {
     }
   };
 
+  const [clauses, setClauses] = useState([
+    "1. Cakupan Harga: Termasuk jasa teknisi, alat kerja standar, dan transportasi (Area Kerja).",
+    "2. Pengecualian: Tidak termasuk penggantian sparepart berat, kompresor, atau overhaul.",
+    "3. Laporan: Pekerjaan dianggap selesai setelah penyerahan Checklist PM yang ditandatangani.",
+    "4. Overtime: Pekerjaan di luar jam operasional akan dikenakan biaya tambahan sesuai kesepakatan."
+  ]);
+  const [isEditingClauses, setIsEditingClauses] = useState(false);
+
   const exportPDF = () => {
     const doc = new jsPDF();
     const tableColumn = ["Kategori", "Pekerjaan", "Deskripsi", "Satuan", "Harga Satuan (IDR)"];
@@ -427,20 +435,43 @@ export default function RateCardClient() {
            <div className="bg-white border border-slate-100 rounded-[2.5rem] p-10 shadow-sm relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-8 text-slate-50 group-hover:text-blue-50 transition-colors"><FileText size={80} strokeWidth={1} /></div>
               <div className="relative z-10">
-                 <h4 className="text-xs font-black text-[#0073ea] uppercase tracking-[0.2em] mb-4">Cakupan Harga (Inclusions)</h4>
-                 <ul className="space-y-4">
-                    {[
-                      "Biaya jasa teknisi (Manpower) tersertifikasi.",
-                      "Peralatan kerja standar (Jet Cleaner, Manifold, Tools).",
-                      "Bahan habis pakai standar (Kain majun, pembersih drain).",
-                      "Transportasi teknisi dalam area jangkauan operasional."
-                    ].map((text, i) => (
-                      <li key={i} className="flex items-start gap-3 text-sm text-slate-600 font-medium">
-                        <CheckCircle2 size={16} className="text-emerald-500 mt-0.5 shrink-0" />
-                        {text}
-                      </li>
-                    ))}
-                 </ul>
+                 <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-xs font-black text-[#0073ea] uppercase tracking-[0.2em]">Syarat & Ketentuan (Klausul)</h4>
+                    {isAdmin && (
+                       <button 
+                          onClick={() => setIsEditingClauses(!isEditingClauses)}
+                          className="p-2 bg-slate-50 text-slate-400 rounded-lg hover:text-[#0073ea] transition-all"
+                       >
+                          <Edit3 size={14} />
+                       </button>
+                    )}
+                 </div>
+                 
+                 {isEditingClauses ? (
+                    <div className="space-y-3">
+                       {clauses.map((clause, i) => (
+                          <input 
+                             key={i} value={clause} 
+                             onChange={(e) => {
+                                const next = [...clauses];
+                                next[i] = e.target.value;
+                                setClauses(next);
+                             }}
+                             className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:border-blue-500 outline-none"
+                          />
+                       ))}
+                       <button onClick={() => setIsEditingClauses(false)} className="mt-2 w-full py-2 bg-[#0073ea] text-white text-[10px] font-black uppercase rounded-xl">Simpan Klausul</button>
+                    </div>
+                 ) : (
+                    <ul className="space-y-4">
+                       {clauses.map((text, i) => (
+                         <li key={i} className="flex items-start gap-3 text-sm text-slate-600 font-medium">
+                           <CheckCircle2 size={16} className="text-emerald-500 mt-0.5 shrink-0" />
+                           {text}
+                         </li>
+                       ))}
+                    </ul>
+                 )}
               </div>
            </div>
 
