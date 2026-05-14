@@ -153,7 +153,6 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
       window.removeEventListener('online', handleStatus);
       window.removeEventListener('offline', handleStatus);
     };
-    };
   }, []);
 
   // --- DRAFT STATE & LOGIC ---

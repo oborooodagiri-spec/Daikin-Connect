@@ -38,7 +38,6 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
       window.removeEventListener('online', handleStatus);
       window.removeEventListener('offline', handleStatus);
     };
-    };
   }, []);
 
   // --- DRAFT STATE & LOGIC ---
