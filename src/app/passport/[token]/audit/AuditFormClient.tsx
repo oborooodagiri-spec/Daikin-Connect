@@ -127,11 +127,12 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
     }
   }, [initialData]);
 
-  const [mediaItems, setMediaItems] = useState<{file: File | null, type: "image" | "video", preview: string}[]>(
+  const [mediaItems, setMediaItems] = useState<{file: File | null, type: "image" | "video", preview: string, caption: string}[]>(
     initialData?.activity_photos?.map((p: any) => ({
       file: null, // Existing files don't have a File object
       type: p.media_type || "image",
-      preview: p.photo_url
+      preview: p.photo_url,
+      caption: p.description || ""
     })) || []
   );
 
@@ -251,7 +252,8 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
         setMediaItems(prev => [...prev, {
           file: finalFile,
           type: isVideo ? "video" : "image",
-          preview: URL.createObjectURL(finalFile)
+          preview: URL.createObjectURL(finalFile),
+          caption: ""
         }]);
       } catch (err) { console.error(err); }
     }
@@ -326,7 +328,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
           uploadedMedia.push({
             photo_url: item.preview,
             media_type: item.type,
-            description: "Audit Documentation"
+            description: item.caption || "Audit Documentation"
           });
           continue;
         }
@@ -342,7 +344,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
           uploadedMedia.push({ 
             photo_url: mData.url, 
             media_type: item.type,
-            description: "Audit Documentation" 
+            description: item.caption || "Audit Documentation" 
           });
         }
       }
@@ -842,27 +844,36 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
                     <span className="text-[#00a1e4]">{mediaItems.length}/10</span>
                   </h3>
                   
-                  <div className="grid grid-cols-3 gap-2 mb-4">
+                  <div className="grid grid-cols-2 gap-3 mb-4">
                     {mediaItems.map((item, i) => (
-                      <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-900 flex items-center justify-center">
-                        {item.type === "video" ? (
-                          <>
-                            <video src={item.preview} className="w-full h-full object-cover opacity-50" muted />
-                            <div className="absolute inset-0 flex items-center justify-center">
-                               <Play size={24} className="text-white fill-white" />
-                            </div>
-                            <div className="absolute top-1 left-1 px-1 py-0.5 bg-amber-500 text-white text-[7px] font-black uppercase rounded shadow-lg">Video</div>
-                          </>
-                        ) : (
-                          <img src={item.preview} alt={`Media ${i}`} className="w-full h-full object-cover" />
-                        )}
-                        <button onClick={() => removeMedia(i)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-80 hover:opacity-100">
-                          <X size={12} />
-                        </button>
+                      <div key={i} className="rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white">
+                        <div className="relative aspect-[4/3] bg-slate-900 flex items-center justify-center">
+                          {item.type === "video" ? (
+                            <>
+                              <video src={item.preview} className="w-full h-full object-cover opacity-50" muted />
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                 <Play size={24} className="text-white fill-white" />
+                              </div>
+                              <div className="absolute top-1 left-1 px-1 py-0.5 bg-amber-500 text-white text-[7px] font-black uppercase rounded shadow-lg">Video</div>
+                            </>
+                          ) : (
+                            <img src={item.preview} alt={`Media ${i}`} className="w-full h-full object-cover" />
+                          )}
+                          <button onClick={() => removeMedia(i)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-80 hover:opacity-100">
+                            <X size={12} />
+                          </button>
+                        </div>
+                        <input
+                          type="text"
+                          placeholder={lang === 'ja' ? `写真${i+1}の説明...` : `Keterangan foto ${i+1}...`}
+                          value={item.caption}
+                          onChange={(e) => setMediaItems(prev => prev.map((m, idx) => idx === i ? { ...m, caption: e.target.value } : m))}
+                          className="w-full px-3 py-2 text-xs border-t border-slate-200 bg-slate-50 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-[#00a1e4]"
+                        />
                       </div>
                     ))}
                     {mediaItems.length < 10 && (
-                      <label className="aspect-square rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400 hover:text-[#00a1e4] hover:bg-blue-50 hover:border-[#00a1e4] cursor-pointer transition-colors">
+                      <label className="aspect-[4/3] rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400 hover:text-[#00a1e4] hover:bg-blue-50 hover:border-[#00a1e4] cursor-pointer transition-colors">
                         <Camera size={24} className="mb-1" />
                         <span className="text-[10px] font-bold uppercase">{lang === 'ja' ? '追加' : 'Tambah'}</span>
                         <input type="file" multiple accept="image/*,video/*" onChange={handleMediaUpload} className="hidden" />

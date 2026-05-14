@@ -323,7 +323,7 @@ export const getAuditSections = (data: any, unit: any, lang: Language = 'id') =>
             <div key={i} style={{ border: "1px solid #ddd", padding: "1.5mm", borderRadius: "1.5mm" }}>
               <img src={getPhotoUrl(p.photo_url)} alt={`Audit ${i}`} style={{ width: "100%", height: "55mm", objectFit: "cover", borderRadius: "1mm" }} />
               <p style={{ fontSize: "7pt", margin: "1mm 0 0 0", textAlign: "center", color: "#666", fontWeight: 700 }}>
-                Photo {chunkIdx * 6 + i + 1}
+                {p.label || p.description || `Photo ${chunkIdx * 6 + i + 1}`}
               </p>
             </div>
           ))}

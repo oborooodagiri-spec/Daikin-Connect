@@ -129,7 +129,7 @@ export const getCorrectiveSections = (data: any, unit: any, lang: Language = 'id
                      {isBefore ? "BEFORE" : "AFTER"}
                    </div>
                  )}
-                 <p style={{ fontSize: "7pt", marginTop: "1mm", textAlign: "center", fontWeight: 700 }}>{p.label || `Photo ${i+1}`}</p>
+                 <p style={{ fontSize: "7pt", marginTop: "1mm", textAlign: "center", fontWeight: 700 }}>{p.label || p.description || `Photo ${i+1}`}</p>
                </div>
              );
           })}
@@ -173,7 +173,7 @@ export const getCorrectiveSections = (data: any, unit: any, lang: Language = 'id
                     </div>
                   )}
                   <p style={{ fontSize: "7pt", margin: "1mm 0 0 0", textAlign: "center", color: "#444", fontWeight: 700 }}>
-                    {p.label || `Photo ${chunkIdx * 6 + i + 1}`}
+                    {p.label || p.description || `Photo ${chunkIdx * 6 + i + 1}`}
                   </p>
                 </div>
               );
