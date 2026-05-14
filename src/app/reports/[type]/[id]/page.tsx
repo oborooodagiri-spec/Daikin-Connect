@@ -144,6 +144,7 @@ export default function ReportHubPage() {
           <ReportBase 
             reportTitle={reportTitle} 
             reportCode={reportCode}
+            projectName={projectName}
             unit={data.unit}
             date={data.activity.service_date}
             inputDate={type.toLowerCase() !== 'ba' ? data.activity.created_at : undefined}
@@ -382,6 +383,7 @@ export default function ReportHubPage() {
           <ReportBase 
             reportTitle={reportTitle} 
             reportCode={reportCode}
+            projectName={projectName}
             unit={data.unit}
             date={data.activity.service_date}
             inputDate={type.toLowerCase() !== 'ba' ? data.activity.created_at : undefined}
@@ -495,6 +497,7 @@ export default function ReportHubPage() {
   let sections: React.ReactNode[] = [];
   let reportTitle = "Service Report";
   let reportCode = `DOC-${data.unit?.id}-${format(new Date(data.activity.service_date || Date.now()), "yyyyMMdd")}`;
+  const projectName = data.project?.name || data.unit?.projects?.name || "";
 
   // Prepare standardized report data using helper (handles photo URL resolution & JSON flattening)
   const activityData = processReportData({
@@ -757,6 +760,7 @@ export default function ReportHubPage() {
             <ReportBase 
               reportTitle={reportTitle} 
               reportCode={reportCode}
+              projectName={projectName}
               unit={data.unit}
               date={data.activity.service_date}
               inputDate={type.toLowerCase() !== 'ba' ? data.activity.created_at : undefined}

@@ -5,6 +5,7 @@ interface ReportBaseProps {
   children: ReactNode;
   reportTitle: string;
   reportCode?: string;
+  projectName?: string;
   unit?: any;
   date?: string;
   inputDate?: string | Date; // Added for the precise input timestamp
@@ -18,6 +19,7 @@ export const ReportBase = ({
   children, 
   reportTitle, 
   reportCode, 
+  projectName,
   unit, 
   date,
   inputDate,
@@ -71,7 +73,24 @@ export const ReportBase = ({
             }}>
               {reportTitle}
             </h1>
-            {reportCode && (
+            {projectName && (
+              <div style={{ 
+                fontSize: "11pt", 
+                fontWeight: 800, 
+                color: "#003366", 
+                backgroundColor: "#e0f2fe",
+                border: "1px solid #7dd3fc", 
+                padding: "3px 20px", 
+                marginTop: "6px", 
+                display: "inline-block",
+                borderRadius: "6px",
+                textTransform: "uppercase",
+                letterSpacing: "1px"
+              }}>
+                {projectName}
+              </div>
+            )}
+            {!projectName && reportCode && (
               <div style={{ 
                 fontSize: "11pt", 
                 fontWeight: 800, 

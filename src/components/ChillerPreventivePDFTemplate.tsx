@@ -242,30 +242,11 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
 
     renderChecklistTable(),
 
-    // PAGE 2+: DOCUMENTATION
-    <div key="doc-header" style={{ ...categoryHeader, marginTop: "10mm" }}>DOCUMENTATION & ADVICE</div>,
-    
-    // PHOTOS
-    ...(photoChunks.length > 0 ? (
-      photoChunks.map((chunk, chunkIdx) => (
-        <div key={`photos-${chunkIdx}`} style={{ width: "100%", marginBottom: "5mm" }}>
-          <div style={subHeaderStyle}>
-            {t("Maintenance Documentation Photos", lang)} {photoChunks.length > 1 ? `(Set ${chunkIdx + 1})` : ''}
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3mm" }}>
-            {chunk.map((p: any, i: number) => (
-              <div key={i} style={photoWrapperStyle}>
-                <img src={getPhotoUrl(p.photo_url)} alt={`Photo ${i}`} style={photoImgStyle} />
-                <p style={photoCaptionStyle}>{p.label || p.description || 'Maintenance Documentation'}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))
-    ) : null),
-
-    // TECHNICAL ADVICE & SIGNATURE
-    <div key="final-advice" style={{ marginTop: "5mm" }}>
+    // PAGE: DOCUMENTATION & ADVICE (Force new page, keep header+content together)
+    <div key="force-break-documentation" style={{ width: "100%" }}>
+      <div style={{ ...categoryHeader, marginBottom: "5mm" }}>DOCUMENTATION & ADVICE</div>
+      
+      <div style={{ marginBottom: "5mm" }}>
         <div style={subHeaderStyle}>TECHNICAL ADVICE & SUMMARY</div>
         <table style={mainTableStyle}>
           <tbody>
@@ -289,7 +270,27 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
              isBulkSync={data.isBulkSync}
            />
         </div>
-    </div>
+      </div>
+    </div>,
+
+    // PHOTOS (each chunk gets its own page)
+    ...(photoChunks.length > 0 ? (
+      photoChunks.map((chunk, chunkIdx) => (
+        <div key={`photos-${chunkIdx}`} style={{ width: "100%", marginBottom: "5mm" }}>
+          <div style={subHeaderStyle}>
+            {t("Maintenance Documentation Photos", lang)} {photoChunks.length > 1 ? `(Set ${chunkIdx + 1})` : ''}
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3mm" }}>
+            {chunk.map((p: any, i: number) => (
+              <div key={i} style={photoWrapperStyle}>
+                <img src={getPhotoUrl(p.photo_url)} alt={`Photo ${i}`} style={photoImgStyle} />
+                <p style={photoCaptionStyle}>{p.label || p.description || 'Maintenance Documentation'}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))
+    ) : null),
   ].filter(Boolean);
 };
 
