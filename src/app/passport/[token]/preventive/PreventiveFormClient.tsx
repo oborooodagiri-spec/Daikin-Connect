@@ -84,9 +84,13 @@ const getScopeRows = (unitType: string) => {
       { key: "water_outlet_pressure", label: "Water OUTLET Pressure (bar)", type: "measure", category: "D. Water Parameters" },
       { key: "water_delta_p", label: "Water Delta P (bar)", type: "measure", category: "D. Water Parameters" },
       { key: "setting_temp_ewt", label: "Setting Temp EWT (°C)", type: "measure", category: "E. Setting" },
-      { key: "clean_condenser", label: "Clean Condenser Coils", type: "action", category: "Maintenance Checklist" },
       { key: "check_leak", label: "Check Oil & Refrigerant Leaks", type: "action", category: "Maintenance Checklist" },
-      { key: "check_control", label: "Check Control Panel", type: "action", category: "Maintenance Checklist" }
+      { key: "check_vibration", label: "Check Compressor Vibration & Noise", type: "action", category: "Maintenance Checklist" },
+      { key: "check_oil_level", label: "Check Oil Level & Color", type: "action", category: "Maintenance Checklist" },
+      { key: "check_refrigerant", label: "Check Refrigerant Charge (Sight Glass)", type: "action", category: "Maintenance Checklist" },
+      { key: "clean_condenser", label: "Clean Condenser Coils / Tubes", type: "action", category: "Maintenance Checklist" },
+      { key: "check_strainer", label: "Check Water Strainer", type: "action", category: "Maintenance Checklist" },
+      { key: "check_control", label: "Check Control Panel & Safety Devices", type: "action", category: "Maintenance Checklist" }
     );
     return rows;
   }
