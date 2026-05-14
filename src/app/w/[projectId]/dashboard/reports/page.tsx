@@ -164,7 +164,7 @@ function ReportsContent({ lang }: { lang: Language }) {
         setPrintData({ type: "SUMMARY", reference_id: `SR-${Date.now()}` }); 
 
         const PX_PER_MM = 3.78;
-        const SAFE_CONTENT_MM = 220;
+        const SAFE_CONTENT_MM = 190;
         const SAFE_PX = SAFE_CONTENT_MM * PX_PER_MM;
 
         const sections = getSummarySections(summaryData, lang);

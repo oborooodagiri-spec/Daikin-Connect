@@ -332,11 +332,13 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
       const currentRows = getScopeRows(unit.unit_type);
       const rowDef = currentRows.find(r => r.key === key);
       if (rowDef?.type === 'measure' && (field === 'before' || field === 'after')) {
-        const b = parseFloat(updatedRow.before);
-        const a = parseFloat(updatedRow.after);
+        const b = parseFloat(String(updatedRow.before).replace(',', '.'));
+        const a = parseFloat(String(updatedRow.after).replace(',', '.'));
         if (!isNaN(b) && !isNaN(a)) {
           const margin = (a - b).toFixed(2);
           updatedRow.remarks = margin;
+        } else {
+          updatedRow.remarks = ""; // Clear margin if one input is invalid/empty
         }
       }
 
@@ -495,7 +497,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
       
       // 2. Generate PDF (TECH CHECKSHEET)
       const A4_HEIGHT_MM = 297;
-      const SAFE_CONTENT_MM = 220; 
+      const SAFE_CONTENT_MM = 190; 
       const PX_PER_MM = 3.78; 
       const SAFE_PX = SAFE_CONTENT_MM * PX_PER_MM;
 

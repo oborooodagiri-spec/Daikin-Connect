@@ -307,7 +307,7 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
       
       // 2. Generate PDF (TECH REPORT)
       const A4_HEIGHT_MM = 297;
-      const SAFE_CONTENT_MM = 215; 
+      const SAFE_CONTENT_MM = 190; 
       const PX_PER_MM = 3.78; 
       const SAFE_PX = SAFE_CONTENT_MM * PX_PER_MM;
 

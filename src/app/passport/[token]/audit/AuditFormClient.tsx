@@ -409,7 +409,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
       
       // 2. GENERATE PDF (TECH CHECKSHEET)
       const A4_HEIGHT_MM = 297;
-      const SAFE_CONTENT_MM = 220; 
+      const SAFE_CONTENT_MM = 190; 
       const PX_PER_MM = 3.78; 
       const SAFE_PX = SAFE_CONTENT_MM * PX_PER_MM;
 
