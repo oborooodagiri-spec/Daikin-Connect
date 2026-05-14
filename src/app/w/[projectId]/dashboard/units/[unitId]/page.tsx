@@ -18,6 +18,7 @@ import MediaGallery from "@/components/dashboard/MediaGallery";
 import QRCode from "react-qr-code";
 import { getUnitMediaHistory } from "@/app/actions/media";
 import { getUnitComplaints, deleteComplaint } from "@/app/actions/complaints";
+import HealthExplanationModal from "@/components/HealthExplanationModal";
 
 export default function UnitDetailPage() {
   const router = useRouter();
@@ -42,6 +43,7 @@ export default function UnitDetailPage() {
   // New UI states
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [showCopied, setShowCopied] = useState(false);
+  const [showHealthModal, setShowHealthModal] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
 
   const isInternal = session?.isInternal;
@@ -350,13 +352,15 @@ export default function UnitDetailPage() {
                
                {/* Quick Insights Cards */}
                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-                  <InsightCard 
-                     label="Health Score" 
-                     value={`${unit.health_score || 0}%`} 
-                     color={unit.health_score >= 80 ? "emerald" : unit.health_score >= 50 ? "amber" : "rose"} 
-                     icon={ShieldCheck}
-                     progress={unit.health_score}
-                  />
+                  <div onClick={() => setShowHealthModal(true)} className="cursor-pointer active:scale-95 transition-transform">
+                    <InsightCard 
+                       label="Health Score" 
+                       value={`${unit.health_score || 0}%`} 
+                       color={unit.health_score >= 80 ? "emerald" : unit.health_score >= 50 ? "amber" : "rose"} 
+                       icon={ShieldCheck}
+                       progress={unit.health_score}
+                    />
+                  </div>
                   <InsightCard 
                      label="Last Activity" 
                      value={unit.last_service_date ? new Date(unit.last_service_date).toLocaleDateString('id-ID', { month: 'short', day: 'numeric', year: 'numeric' }) : "None"} 
@@ -550,6 +554,14 @@ export default function UnitDetailPage() {
             </div>
          )}
       </AnimatePresence>
+
+      <HealthExplanationModal 
+        isOpen={showHealthModal} 
+        onClose={() => setShowHealthModal(false)} 
+        ahi={unit.ahi} 
+        metrics={unit.metrics}
+        score={unit.health_score}
+      />
     </div>
   );
 }

@@ -201,6 +201,14 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
         return;
       }
 
+      // 0. Validation: Ensure all photos have captions
+      const missingCaptions = mediaItems.some(item => !item.caption?.trim());
+      if (mediaItems.length > 0 && missingCaptions) {
+        alert(lang === 'ja' ? "すべての写真に説明を入力してください。" : "Mohon lengkapi keterangan/caption untuk setiap foto dokumentasi.");
+        setLoading(false);
+        return;
+      }
+
       // 0. Build latest data snapshot for PDF & DB
       // We do this INSIDE handleSubmit to ensure we capture variables as of this exact moment.
       const freshRenderData = {
@@ -329,6 +337,7 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
             <ReportBase 
               reportTitle={category ? "COMPLAINT REPORT" : "CORRECTIVE MAINTENANCE REPORT"} 
               reportCode={finalRenderData.personnel?.wo_number || `CR-${unit.id}`} 
+              projectName={unit.projects?.name}
               unit={unit}
               pageNumber={i + 1}
               totalPages={totalPages}
@@ -392,7 +401,12 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
       
       await new Promise<void>((resolve) => {
         baRoot.render(
-          <BA_ReportBase reportTitle="BERITA ACARA PEKERJAAN" reportCode={`BA-CR-${unit.id}-${Date.now()}`} unit={unit}>
+          <BA_ReportBase 
+            reportTitle="BERITA ACARA PEKERJAAN" 
+            reportCode={`BA-CR-${unit.id}-${Date.now()}`} 
+            projectName={unit.projects?.name}
+            unit={unit}
+          >
             <BeritaAcaraPDFTemplate 
               data={{ ...finalRenderData, engineer_note: engineerNote, type: "Corrective Maintenance" }} 
               unit={unit} 

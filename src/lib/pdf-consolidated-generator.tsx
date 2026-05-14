@@ -184,6 +184,7 @@ export async function generateConsolidatedPDF(data: any) {
       root.render(
         <ReportBase 
           reportTitle="MONTHLY OPERATIONS CONSOLIDATED REPORT" reportCode={reportCode}
+          projectName={data.project?.name}
           pageNumber={i + 1} totalPages={totalPages}
         >
           {portraitPages[i]}
@@ -222,6 +223,7 @@ export async function generateConsolidatedPDF(data: any) {
       root.render(
         <ReportBaseLandscape 
           reportTitle="SITE TECHNICAL LOGSHEETS" reportCode={reportCode}
+          projectName={data.project?.name}
           pageNumber={portraitPages.length + i + 1} totalPages={totalPages}
         >
           {technicalPages[i]}

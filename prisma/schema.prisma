@@ -409,6 +409,7 @@ model corrective_maintenances {
   advise            String?   @db.Text
   report_pdf        String?   @db.VarChar(255)
   technical_json    String?   @db.LongText
+  deleted_at       DateTime? @db.DateTime(0)
 }
 
 model maintenance_contracts {
@@ -723,6 +724,7 @@ model daily_ops_logs {
   vibration_status String?  @db.VarChar(50)
   drainage_status  String?  @db.VarChar(50)
   notes            String?  @db.Text
+  deleted_at       DateTime? @db.DateTime(0)
   units            units    @relation(fields: [unit_id], references: [id], onDelete: Cascade)
 
   @@index([unit_id], map: "idx_daily_ops_unit")

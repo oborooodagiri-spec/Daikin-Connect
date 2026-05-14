@@ -187,6 +187,7 @@ export async function generateComprehensivePDF(data: any, startDate: string, end
         <ReportBase 
           reportTitle="COMPREHENSIVE DASHBOARD STATUS REPORT" 
           reportCode={`DBR-${data.project?.id || 'GLB'}-${format(new Date(), 'yyyyMMdd')}`}
+          projectName={data.project?.name}
           pageNumber={i + 1}
           totalPages={totalPages}
           isFixedHeight={true}

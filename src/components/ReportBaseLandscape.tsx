@@ -4,6 +4,7 @@ interface ReportBaseLandscapeProps {
   children: ReactNode;
   reportTitle: string;
   reportCode?: string;
+  projectName?: string;
   pageNumber?: number;
   totalPages?: number;
 }
@@ -12,6 +13,7 @@ export const ReportBaseLandscape = ({
   children, 
   reportTitle, 
   reportCode, 
+  projectName,
   pageNumber = 1,
   totalPages = 1
 }: ReportBaseLandscapeProps) => {
@@ -47,6 +49,11 @@ export const ReportBaseLandscape = ({
                <h1 style={{ fontSize: "16pt", fontWeight: 900, color: "#003366", margin: 0, textTransform: "uppercase", letterSpacing: "1.5px" }}>
                  {reportTitle}
                </h1>
+               {projectName && (
+                 <p style={{ fontSize: "8pt", fontWeight: 800, color: "#00a1e4", margin: "2px 0 0 0", textTransform: "uppercase" }}>
+                   {projectName}
+                 </p>
+               )}
             </div>
             <div style={{ textAlign: "right" }}>
               <img src="/logo_epl_connect_1.png" alt="EPL Connect" style={{ height: "12mm", objectFit: "contain" }} />

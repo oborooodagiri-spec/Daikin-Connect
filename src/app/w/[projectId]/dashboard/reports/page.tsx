@@ -507,6 +507,7 @@ function ReportsContent({ lang }: { lang: Language }) {
             <ReportBase 
               reportTitle={printData?.type === "SUMMARY" ? t("SUMMARY REPORT", lang) : (t(printData?.type || "Report", lang)) + " REPORT"} 
               reportCode={printData?.reference_id} 
+              projectName={reports[0]?.projects?.name || reports[0]?.units?.projects?.name}
               unit={printData?.units} 
               pageNumber={i + 1} 
               totalPages={printPages.length} 

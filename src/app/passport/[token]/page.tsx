@@ -23,6 +23,7 @@ import PreventiveFormClient from "./preventive/PreventiveFormClient";
 import CorrectiveFormClient from "./corrective/CorrectiveFormClient";
 import AuditFormClient from "./audit/AuditFormClient";
 import DailyLogFormClient from "../daily/DailyLogFormClient";
+import HealthExplanationModal from "@/components/HealthExplanationModal";
 
 export default function PassportLandingPage() {
   const params = useParams();
@@ -363,7 +364,13 @@ export default function PassportLandingPage() {
       </div>
       
       {/* Modals */}
-      <HealthExplanationModal isOpen={showHealthModal} onClose={() => setShowHealthModal(false)} metrics={unit.healthMetrics} />
+      <HealthExplanationModal 
+        isOpen={showHealthModal} 
+        onClose={() => setShowHealthModal(false)} 
+        ahi={unit.ahi} 
+        metrics={unit.healthMetrics} 
+        score={unit.healthMetrics?.healthScore} 
+      />
       
       {/* EXPANDED EDIT MODAL */}
       <EditInfoModal 
@@ -511,24 +518,14 @@ function InputField({ label, value, onChange }: any) {
 
 function LoadingSpinner() { return <div className="py-20 flex justify-center"><div className="w-8 h-8 border-4 border-[#f5f6f8] border-t-[#0073ea] rounded-full animate-spin" /></div>; }
 
-function HealthExplanationModal({ isOpen, onClose, metrics }: any) {
-  if (!metrics || !isOpen) return null;
-  return (
-    <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" />
-      <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} className="bg-white w-full max-w-sm rounded-[40px] overflow-hidden shadow-2xl relative z-10">
-        <div className="p-8 bg-[#003366] text-white">
-          <h1 className="text-xl font-black italic uppercase">Health <span className="text-[#00a1e4] not-italic">Analytics</span></h1>
-        </div>
-        <div className="p-8 space-y-6 max-h-[60vh] overflow-y-auto no-scrollbar bg-[#f5f6f8]">
-           <div className="p-5 bg-white border border-[#e6e9ef] rounded-3xl space-y-4 shadow-sm text-center">
-              <span className="text-2xl font-black text-[#323338]">{metrics.healthScore}%</span>
-              <div className="h-2 w-full bg-[#f5f6f8] rounded-full overflow-hidden"><div className="h-full bg-[#0073ea]" style={{ width: `${metrics.healthScore}%` }}></div></div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Efficiency vs Design</p>
-           </div>
-        </div>
-        <div className="p-8 pt-0 bg-[#f5f6f8]"><button onClick={onClose} className="w-full py-4 bg-[#323338] text-white rounded-3xl text-xs font-black uppercase">Understood</button></div>
-      </motion.div>
-    </div>
-  );
+
+
+function BreakdownItem({ label, value, sub, color }: any) {
+   return (
+      <div className="p-4 bg-white border border-[#e6e9ef] rounded-3xl space-y-1">
+         <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">{label}</p>
+         <p className="text-sm font-black italic" style={{ color }}>{value}</p>
+         <p className="text-[7px] font-bold text-slate-400 uppercase">{sub}</p>
+      </div>
+   );
 }

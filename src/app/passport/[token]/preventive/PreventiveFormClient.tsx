@@ -383,6 +383,14 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
         return;
       }
 
+      // 0. Validation: Ensure all photos have captions
+      const missingCaptions = mediaItems.some(item => !item.caption?.trim());
+      if (mediaItems.length > 0 && missingCaptions) {
+        alert(lang === 'ja' ? "すべての写真に説明を入力してください。" : "Mohon lengkapi keterangan/caption untuk setiap foto dokumentasi.");
+        setLoading(false);
+        return;
+      }
+
       // 0. Build latest data snapshot for PDF & DB
       // Built INSIDE handleSubmit to ensure it uses state as of clicking the button.
       const freshRenderData = {
@@ -511,6 +519,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
             <ReportBase 
               reportTitle="MAINTENANCE CHECKSHEET" 
               reportCode={header?.so_number || `PM-${unit.id}`} 
+              projectName={unit.projects?.name}
               unit={unit}
               pageNumber={i + 1}
               totalPages={totalPages}
@@ -573,7 +582,12 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
       
       await new Promise<void>((resolve) => {
         baRoot.render(
-          <BA_ReportBase reportTitle="BERITA ACARA PEKERJAAN" reportCode={`BA-PM-${unit.id}-${Date.now()}`} unit={unit}>
+          <BA_ReportBase 
+            reportTitle="BERITA ACARA PEKERJAAN" 
+            reportCode={`BA-PM-${unit.id}-${Date.now()}`} 
+            projectName={unit.projects?.name}
+            unit={unit}
+          >
             <BeritaAcaraPDFTemplate 
               data={finalRenderData} 
               unit={unit} 

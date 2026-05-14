@@ -1185,30 +1185,68 @@ export async function softDeleteActivity(id: number | string, type: 'formal' | '
   try {
     const activityIdRaw = id.toString();
     const isDailyLog = activityIdRaw.startsWith("DL-");
-    const numericId = isDailyLog ? parseInt(activityIdRaw.replace("DL-", "")) : Number(id);
+    const numericId = isDailyLog ? parseInt(activityIdRaw.replace("DL-", ""), 10) : Number(id);
 
-    let table = "";
-    if (isDailyLog) table = "daily_ops_logs";
-    else table = type === 'formal' ? 'service_activities' : 'activities';
-    
-    await (prisma as any)[table].update({
-      where: { id: numericId },
-      data: { deleted_at: new Date() }
-    });
+    if (isNaN(numericId)) {
+      return { error: "Invalid Report ID format." };
+    }
+
+    let success = false;
+    const now = new Date();
+
+    // 1. Handle Daily Logs
+    if (isDailyLog) {
+      const res = await (prisma as any).daily_ops_logs.updateMany({
+        where: { id: numericId },
+        data: { deleted_at: now }
+      });
+      if (res.count > 0) success = true;
+    } 
+    else {
+      // 2. Try Primary Tables based on Type
+      const primaryTable = type === 'formal' ? 'service_activities' : 'activities';
+      const res = await (prisma as any)[primaryTable].updateMany({
+        where: { id: numericId },
+        data: { deleted_at: now }
+      });
+      
+      if (res.count > 0) {
+        success = true;
+      } else {
+        // 3. Fallback: Try other report tables (Cross-table redundancy)
+        const otherTables = ['service_activities', 'activities', 'corrective', 'audits'].filter(t => t !== primaryTable);
+        for (const table of otherTables) {
+          const fallbackRes = await (prisma as any)[table].updateMany({
+            where: { id: numericId },
+            data: { deleted_at: now }
+          });
+          if (fallbackRes.count > 0) {
+            success = true;
+            break;
+          }
+        }
+      }
+    }
+
+    if (!success) {
+      return { error: "Report not found or already removed." };
+    }
 
     await notifyInternalStaff(
       "Report Removed",
-      `${session.name} deleted a ${type} report (ID: ${numericId}) from the system.`,
+      `${session.name} deleted a report (ID: ${numericId}) from the system.`,
       "warning",
       "/admin/security"
     );
 
     revalidatePath("/dashboard");
     revalidatePath("/passport");
+    revalidatePath("/reports");
+    
     return serializePrisma({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Soft delete error:", error);
-    return { error: "Failed to remove report." };
+    return { error: "Failed to remove report: " + (error.message || "Unknown error") };
   }
 }
 
