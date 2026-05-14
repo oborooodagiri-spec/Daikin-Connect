@@ -19,31 +19,32 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
     const v = scope?.voltage || {};
     const fan = scope?.fan_unit || {};
     const water = scope?.water || {};
+    const circuits = scope?.circuits || [];
 
     return (
-      <div key="operating-condition" style={{ marginBottom: "5mm" }}>
+      <div key="operating-condition">
         <div style={categoryHeader}>OPERATING CONDITION</div>
         
-        {/* Voltage Section */}
-        <div style={{ marginBottom: "3mm" }}>
+        {/* A. VOLTAGE */}
+        <div style={{ marginBottom: "4mm" }}>
           <div style={subHeaderStyle}>A. VOLTAGE</div>
           <table style={mainTableStyle}>
             <tbody>
               <tr>
-                <td style={{ ...tdStyle, width: "10%", fontWeight: 700 }}>RS</td>
-                <td style={{ ...tdStyle, width: "23%", textAlign: "center", color: "#003366", fontWeight: 800 }}>{v.rs || "-"}</td>
-                <td style={{ ...tdStyle, width: "10%", fontWeight: 700 }}>RT</td>
-                <td style={{ ...tdStyle, width: "23%", textAlign: "center", color: "#003366", fontWeight: 800 }}>{v.rt || "-"}</td>
-                <td style={{ ...tdStyle, width: "10%", fontWeight: 700 }}>ST</td>
-                <td style={{ ...tdStyle, width: "24%", textAlign: "center", color: "#003366", fontWeight: 800 }}>{v.st || "-"}</td>
+                <td style={cellLabelSmall}>RS</td>
+                <td style={{ ...cellValSmall, textAlign: "center" }}>{v.rs || "-"}</td>
+                <td style={cellLabelSmall}>RT</td>
+                <td style={{ ...cellValSmall, textAlign: "center" }}>{v.rt || "-"}</td>
+                <td style={cellLabelSmall}>ST</td>
+                <td style={{ ...cellValSmall, textAlign: "center" }}>{v.st || "-"}</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        {/* Check Running Section */}
-        <div style={{ marginBottom: "3mm" }}>
-          <div style={subHeaderStyle}>B. CHECK RUNNING</div>
+        {/* B. CHECK RUNNING */}
+        <div style={{ marginBottom: "4mm" }}>
+          <div style={subHeaderStyle}>B. CHECK RUNNING (COMPRESSOR)</div>
           <table style={mainTableStyle}>
             <thead>
               <tr style={tableHeaderRow}>
@@ -55,15 +56,15 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
             </thead>
             <tbody>
               {[1, 2, 3, 4, 5].map((num) => {
-                const c = scope?.circuits?.[num - 1] || {};
+                const c = circuits[num - 1] || {};
                 return (
                   <tr key={num} style={{ height: "8mm" }}>
-                    <td style={{ ...tdStyle, textAlign: "center", fontWeight: 700 }}>Circuit {num}</td>
+                    <td style={{ ...tdStyle, textAlign: "center", fontWeight: 700, backgroundColor: "#f8fafc" }}>Circuit {num}</td>
                     <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>
                       {c.amp_r || "-" } / {c.amp_s || "-" } / {c.amp_t || "-" }
                     </td>
-                    <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{c.pressure_lp || "-"}</td>
-                    <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{c.pressure_hp || "-"}</td>
+                    <td style={{ ...tdStyle, textAlign: "center" }}>{c.lp || "-"}</td>
+                    <td style={{ ...tdStyle, textAlign: "center" }}>{c.hp || "-"}</td>
                   </tr>
                 );
               })}
@@ -71,53 +72,54 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
           </table>
         </div>
 
-        {/* Other Parameters Section - Stacked for better A4 fit with inline styles */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "4mm", pageBreakInside: "avoid" }}>
-          <div style={{ width: "100%" }}>
-            <div style={subHeaderStyle}>C. CHECK RUNNING AMP FAN UNIT</div>
-            <table style={mainTableStyle}>
-              <tbody>
-                <tr>
-                  <td style={{ ...tdStyle, width: "33.3%", fontWeight: 700, textAlign: "center", backgroundColor: "#f8fafc", fontSize: "7pt" }}>R</td>
-                  <td style={{ ...tdStyle, width: "33.3%", fontWeight: 700, textAlign: "center", backgroundColor: "#f8fafc", fontSize: "7pt" }}>S</td>
-                  <td style={{ ...tdStyle, width: "33.4%", fontWeight: 700, textAlign: "center", backgroundColor: "#f8fafc", fontSize: "7pt" }}>T</td>
-                </tr>
-                <tr>
-                  <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{fan.r || "-"}</td>
-                  <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{fan.s || "-"}</td>
-                  <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{fan.t || "-"}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          
-          <div style={{ width: "100%" }}>
-            <div style={subHeaderStyle}>WATER & SETTING</div>
-            <table style={mainTableStyle}>
-              <tbody>
-                <tr>
-                  <td style={{ ...tdStyle, width: "20%", fontSize: "6.5pt", backgroundColor: "#f8fafc" }}>Inlet Temp</td>
-                  <td style={{ ...tdStyle, width: "15%", textAlign: "center", color: "#003366", fontWeight: 800 }}>{water.inlet_temp || "-"} °C</td>
-                  <td style={{ ...tdStyle, width: "20%", fontSize: "6.5pt", backgroundColor: "#f8fafc" }}>Outlet Temp</td>
-                  <td style={{ ...tdStyle, width: "15%", textAlign: "center", color: "#003366", fontWeight: 800 }}>{water.outlet_temp || "-"} °C</td>
-                  <td style={{ ...tdStyle, width: "15%", fontSize: "6.5pt", backgroundColor: "#eff6ff", fontWeight: 900, color: "#2563eb" }}>DELTA T</td>
-                  <td style={{ ...tdStyle, width: "15%", textAlign: "center", color: "#2563eb", fontWeight: 900 }}>{water.delta_t || "-"} °C</td>
-                </tr>
-                <tr>
-                  <td style={{ ...tdStyle, fontSize: "6.5pt", backgroundColor: "#f8fafc" }}>Inlet Press</td>
-                  <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{water.inlet_pressure || "-"} bar</td>
-                  <td style={{ ...tdStyle, fontSize: "6.5pt", backgroundColor: "#f8fafc" }}>Outlet Press</td>
-                  <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{water.outlet_pressure || "-"} bar</td>
-                  <td style={{ ...tdStyle, fontSize: "6.5pt", backgroundColor: "#eff6ff", fontWeight: 900, color: "#2563eb" }}>DELTA P</td>
-                  <td style={{ ...tdStyle, textAlign: "center", color: "#2563eb", fontWeight: 900 }}>{water.delta_p || "-"} bar</td>
-                </tr>
-                <tr>
-                  <td colSpan={3} style={{ ...tdStyle, fontWeight: 700, backgroundColor: "#f8fafc", fontSize: "7.5pt", textAlign: "right", paddingRight: "4mm" }}>Setting Temp EWT</td>
-                  <td colSpan={3} style={{ ...tdStyle, textAlign: "center", color: "#16a34a", fontWeight: 900, fontSize: "9pt" }}>{scope?.setting_temp_ewt || "-"} °C</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        {/* C. CHECK RUNNING AMP FAN UNIT */}
+        <div style={{ marginBottom: "4mm" }}>
+          <div style={subHeaderStyle}>C. CHECK RUNNING AMP FAN UNIT</div>
+          <table style={mainTableStyle}>
+            <thead>
+              <tr>
+                <th style={thStyle}>R</th>
+                <th style={thStyle}>S</th>
+                <th style={thStyle}>T</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{fan.r || "-"}</td>
+                <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{fan.s || "-"}</td>
+                <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{fan.t || "-"}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* WATER & SETTING */}
+        <div style={{ marginBottom: "4mm" }}>
+          <div style={subHeaderStyle}>WATER & SETTING</div>
+          <table style={mainTableStyle}>
+            <tbody>
+              <tr>
+                <td style={cellLabelSmall}>Inlet Temp</td>
+                <td style={{ ...cellValSmall, textAlign: "center" }}>{water.inlet_temp || "-"} °C</td>
+                <td style={cellLabelSmall}>Outlet Temp</td>
+                <td style={{ ...cellValSmall, textAlign: "center" }}>{water.outlet_temp || "-"} °C</td>
+                <td style={{ ...cellLabelSmall, color: "#2563eb", backgroundColor: "#eff6ff" }}>DELTA T</td>
+                <td style={{ ...cellValSmall, textAlign: "center", color: "#2563eb" }}>{water.delta_t || "-"} °C</td>
+              </tr>
+              <tr>
+                <td style={cellLabelSmall}>Inlet Press</td>
+                <td style={{ ...cellValSmall, textAlign: "center" }}>{water.inlet_pressure || "-"} bar</td>
+                <td style={cellLabelSmall}>Outlet Press</td>
+                <td style={{ ...cellValSmall, textAlign: "center" }}>{water.outlet_pressure || "-"} bar</td>
+                <td style={{ ...cellLabelSmall, color: "#2563eb", backgroundColor: "#eff6ff" }}>DELTA P</td>
+                <td style={{ ...cellValSmall, textAlign: "center", color: "#2563eb" }}>{water.delta_p || "-"} bar</td>
+              </tr>
+              <tr>
+                <td colSpan={3} style={{ ...cellLabelSmall, textAlign: "right", paddingRight: "4mm" }}>Setting Temp EWT</td>
+                <td colSpan={3} style={{ ...cellValSmall, textAlign: "center", color: "#16a34a", fontSize: "10pt" }}>{scope?.setting_temp_ewt || "-"} °C</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     );
@@ -136,7 +138,7 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
   const renderChecklistTable = (key: string, title: string, rows: any[]) => {
     return (
       <div key={key} style={{ marginBottom: "5mm" }}>
-        <div style={categoryHeader}>{title}</div>
+        <div style={categoryHeader}>D. {title}</div>
         <table style={mainTableStyle}>
           <thead>
             <tr style={tableHeaderRow}>
@@ -149,7 +151,7 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
               const s = scope?.[row.key] || {};
               const isDone = s.done?.toLowerCase().includes("done") || s.done?.toLowerCase().includes("selesai") || s.before?.toLowerCase().includes("done");
               return (
-                <tr style={{ height: "7mm" }}>
+                <tr key={row.key} style={{ height: "7mm" }}>
                   <td style={{ ...tdStyle, textAlign: "left", paddingLeft: "4mm" }}>{row.label}</td>
                   <td style={{ ...tdStyle, textAlign: "center" }}>
                      <span style={{ 
@@ -227,7 +229,7 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
     // FINDINGS & RECOMMENDATIONS
     (scope?.finding || scope?.recommendation || technicalAdvice) ? (
       <div key="findings-section" style={{ marginBottom: "5mm" }}>
-        <div style={categoryHeader}>{t("Findings & Recommendations", lang)}</div>
+        <div style={categoryHeader}>E. FINDINGS & RECOMMENDATIONS</div>
         <table style={mainTableStyle}>
           <tbody>
             {(scope?.finding || technicalAdvice) && (

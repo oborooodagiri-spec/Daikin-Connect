@@ -215,12 +215,12 @@ export const processReportData = (report: any) => {
       { label: "C5 Amp T", key: "circuit_5_amp_t" },
       { label: "C5 LP", key: "circuit_5_pressure_lp" },
       { label: "C5 HP", key: "circuit_5_pressure_hp" },
-      { label: "Fan Indoor R", key: "fan_indoor_r" },
-      { label: "Fan Indoor S", key: "fan_indoor_s" },
-      { label: "Fan Indoor T", key: "fan_indoor_t" },
-      { label: "Fan R", key: "fan_indoor_r" },
-      { label: "Fan S", key: "fan_indoor_s" },
-      { label: "Fan T", key: "fan_indoor_t" },
+      { label: "Fan Unit R", key: "fan_unit_r" },
+      { label: "Fan Unit S", key: "fan_unit_s" },
+      { label: "Fan Unit T", key: "fan_unit_t" },
+      { label: "Fan R", key: "fan_unit_r" },
+      { label: "Fan S", key: "fan_unit_s" },
+      { label: "Fan T", key: "fan_unit_t" },
       { label: "Water Inlet Temp", key: "water_inlet_temp" },
       { label: "Water Outlet Temp", key: "water_outlet_temp" },
       { label: "Water Inlet Pressure", key: "water_inlet_pressure" },
@@ -243,6 +243,9 @@ export const processReportData = (report: any) => {
         cleaned = cleaned.replace(/^c([1-5])/, 'circuit$1'); // c1 -> circuit1
         cleaned = cleaned.replace(/press$/, 'pressure');
         cleaned = cleaned.replace(/temp$/, 'temperature');
+        cleaned = cleaned.replace(/amperer$/, 'ampr');
+        cleaned = cleaned.replace(/amperes$/, 'amps');
+        cleaned = cleaned.replace(/amperet$/, 'ampt');
         return cleaned;
       };
       const targetLabel = cleanLabel(dbLabel);
