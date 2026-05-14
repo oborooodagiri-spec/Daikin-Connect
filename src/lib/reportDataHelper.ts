@@ -370,24 +370,24 @@ export const processReportData = (report: any) => {
     if (isChiller) {
       reportTitle = "PREVENTIVE MAINTENANCE CHILLER";
       scope.voltage = {
-        rs: scope.voltage_rs?.after || scope.voltage_rs?.before || "-",
-        rt: scope.voltage_rt?.after || scope.voltage_rt?.before || "-",
-        st: scope.voltage_st?.after || scope.voltage_st?.before || "-"
+        rs: scope.voltage_rs || { before: "-", after: "-", remarks: "-" },
+        rt: scope.voltage_rt || { before: "-", after: "-", remarks: "-" },
+        st: scope.voltage_st || { before: "-", after: "-", remarks: "-" }
       };
       scope.fan_unit = {
-        r: scope.fan_unit_r?.after || scope.fan_unit_r?.before || "-",
-        s: scope.fan_unit_s?.after || scope.fan_unit_s?.before || "-",
-        t: scope.fan_unit_t?.after || scope.fan_unit_t?.before || "-"
+        r: scope.fan_unit_r || { before: "-", after: "-", remarks: "-" },
+        s: scope.fan_unit_s || { before: "-", after: "-", remarks: "-" },
+        t: scope.fan_unit_t || { before: "-", after: "-", remarks: "-" }
       };
       scope.water = {
-        inlet_temp: scope.water_inlet_temp?.after || scope.water_inlet_temp?.before || "-",
-        outlet_temp: scope.water_outlet_temp?.after || scope.water_outlet_temp?.before || "-",
-        delta_t: scope.water_delta_t?.after || scope.water_delta_t?.before || "-",
-        inlet_pressure: scope.water_inlet_pressure?.after || scope.water_inlet_pressure?.before || "-",
-        outlet_pressure: scope.water_outlet_pressure?.after || scope.water_outlet_pressure?.before || "-",
-        delta_p: scope.water_delta_p?.after || scope.water_delta_p?.before || "-"
+        inlet_temp: scope.water_inlet_temp || { before: "-", after: "-", remarks: "-" },
+        outlet_temp: scope.water_outlet_temp || { before: "-", after: "-", remarks: "-" },
+        delta_t: scope.water_delta_t || { before: "-", after: "-", remarks: "-" },
+        inlet_pressure: scope.water_inlet_pressure || { before: "-", after: "-", remarks: "-" },
+        outlet_pressure: scope.water_outlet_pressure || { before: "-", after: "-", remarks: "-" },
+        delta_p: scope.water_delta_p || { before: "-", after: "-", remarks: "-" }
       };
-      scope.setting_temp_ewt = scope.setting_temp_ewt?.after || scope.setting_temp_ewt?.before || "-";
+      scope.setting_temp_ewt = scope.setting_temp_ewt || { before: "-", after: "-", remarks: "-" };
       
       // Circuits (Handle mapping from technical_json directly if possible, or flattened keys)
       if (t.circuits) {
@@ -395,11 +395,11 @@ export const processReportData = (report: any) => {
       } else {
         // Fallback or mapped from spreadsheet keys if any
         scope.circuits = [1, 2, 3, 4, 5].map(i => ({
-          amp_r: scope[`circuit_${i}_amp_r`]?.before || scope[`circuit_${i}_amp_r`]?.after || "-",
-          amp_s: scope[`circuit_${i}_amp_s`]?.before || scope[`circuit_${i}_amp_s`]?.after || "-",
-          amp_t: scope[`circuit_${i}_amp_t`]?.before || scope[`circuit_${i}_amp_t`]?.after || "-",
-          lp: scope[`circuit_${i}_pressure_lp`]?.before || scope[`circuit_${i}_pressure_lp`]?.after || "-",
-          hp: scope[`circuit_${i}_pressure_hp`]?.before || scope[`circuit_${i}_pressure_hp`]?.after || "-"
+          amp_r: scope[`circuit_${i}_amp_r`] || { before: "-", after: "-", remarks: "-" },
+          amp_s: scope[`circuit_${i}_amp_s`] || { before: "-", after: "-", remarks: "-" },
+          amp_t: scope[`circuit_${i}_amp_t`] || { before: "-", after: "-", remarks: "-" },
+          lp: scope[`circuit_${i}_pressure_lp`] || { before: "-", after: "-", remarks: "-" },
+          hp: scope[`circuit_${i}_pressure_hp`] || { before: "-", after: "-", remarks: "-" }
         }));
       }
     }

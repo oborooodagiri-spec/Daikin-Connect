@@ -15,6 +15,21 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
 
   const photoChunks = chunkArray(activity_photos, 6);
 
+  const formatMeasurement = (val: any) => {
+    if (typeof val === "object" && val !== null) {
+      const b = val.before && val.before !== "-" && val.before !== "" ? val.before : "";
+      const a = val.after && val.after !== "-" && val.after !== "" ? val.after : "";
+      const r = val.remarks && val.remarks !== "-" && val.remarks !== "" ? val.remarks : "";
+
+      if (b && a) {
+        if (r) return `${b} ➔ ${a} [${r}]`;
+        return `${b} ➔ ${a}`;
+      }
+      return a || b || "-";
+    }
+    return val || "-";
+  };
+
   const renderVoltage = () => {
     const v = scope?.voltage || {};
     return (
@@ -24,11 +39,11 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
           <tbody>
             <tr>
               <td style={cellLabelSmall}>RS</td>
-              <td style={{ ...cellValSmall, textAlign: "center" }}>{v.rs || "-"}</td>
+              <td style={{ ...cellValSmall, textAlign: "center" }}>{formatMeasurement(v.rs)}</td>
               <td style={cellLabelSmall}>RT</td>
-              <td style={{ ...cellValSmall, textAlign: "center" }}>{v.rt || "-"}</td>
+              <td style={{ ...cellValSmall, textAlign: "center" }}>{formatMeasurement(v.rt)}</td>
               <td style={cellLabelSmall}>ST</td>
-              <td style={{ ...cellValSmall, textAlign: "center" }}>{v.st || "-"}</td>
+              <td style={{ ...cellValSmall, textAlign: "center" }}>{formatMeasurement(v.st)}</td>
             </tr>
           </tbody>
         </table>
@@ -55,10 +70,14 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
               <tr key={i} style={{ height: "8mm" }}>
                 <td style={{ ...tdStyle, textAlign: "center", fontWeight: 700, backgroundColor: "#f8fafc" }}>Circuit {i + 1}</td>
                 <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>
-                  {c.amp_r || "-" } / {c.amp_s || "-" } / {c.amp_t || "-" }
+                  <div style={{ display: "flex", flexDirection: "column", gap: "2px", fontSize: "7pt" }}>
+                    <span>R: {formatMeasurement(c.amp_r)}</span>
+                    <span>S: {formatMeasurement(c.amp_s)}</span>
+                    <span>T: {formatMeasurement(c.amp_t)}</span>
+                  </div>
                 </td>
-                <td style={{ ...tdStyle, textAlign: "center" }}>{c.lp || "-"}</td>
-                <td style={{ ...tdStyle, textAlign: "center" }}>{c.hp || "-"}</td>
+                <td style={{ ...tdStyle, textAlign: "center", fontSize: "8pt" }}>{formatMeasurement(c.lp)}</td>
+                <td style={{ ...tdStyle, textAlign: "center", fontSize: "8pt" }}>{formatMeasurement(c.hp)}</td>
               </tr>
             ))}
           </tbody>
@@ -82,9 +101,9 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
           </thead>
           <tbody>
             <tr>
-              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{fan.r || "-"}</td>
-              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{fan.s || "-"}</td>
-              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>{fan.t || "-"}</td>
+              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800, fontSize: "9pt" }}>{formatMeasurement(fan.r)}</td>
+              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800, fontSize: "9pt" }}>{formatMeasurement(fan.s)}</td>
+              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800, fontSize: "9pt" }}>{formatMeasurement(fan.t)}</td>
             </tr>
           </tbody>
         </table>
@@ -101,19 +120,19 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
           <tbody>
             <tr>
               <td style={cellLabelSmall}>Inlet Temp</td>
-              <td style={{ ...cellValSmall, textAlign: "center" }}>{water.inlet_temp || "-"} °C</td>
+              <td style={{ ...cellValSmall, textAlign: "center" }}>{formatMeasurement(water.inlet_temp)} °C</td>
               <td style={cellLabelSmall}>Outlet Temp</td>
-              <td style={{ ...cellValSmall, textAlign: "center" }}>{water.outlet_temp || "-"} °C</td>
+              <td style={{ ...cellValSmall, textAlign: "center" }}>{formatMeasurement(water.outlet_temp)} °C</td>
               <td style={{ ...cellLabelSmall, color: "#2563eb", backgroundColor: "#eff6ff" }}>DELTA T</td>
-              <td style={{ ...cellValSmall, textAlign: "center", color: "#2563eb" }}>{water.delta_t || "-"} °C</td>
+              <td style={{ ...cellValSmall, textAlign: "center", color: "#2563eb" }}>{formatMeasurement(water.delta_t)} °C</td>
             </tr>
             <tr>
               <td style={cellLabelSmall}>Inlet Press</td>
-              <td style={{ ...cellValSmall, textAlign: "center" }}>{water.inlet_pressure || "-"} bar</td>
+              <td style={{ ...cellValSmall, textAlign: "center" }}>{formatMeasurement(water.inlet_pressure)} bar</td>
               <td style={cellLabelSmall}>Outlet Press</td>
-              <td style={{ ...cellValSmall, textAlign: "center" }}>{water.outlet_pressure || "-"} bar</td>
+              <td style={{ ...cellValSmall, textAlign: "center" }}>{formatMeasurement(water.outlet_pressure)} bar</td>
               <td style={{ ...cellLabelSmall, color: "#2563eb", backgroundColor: "#eff6ff" }}>DELTA P</td>
-              <td style={{ ...cellValSmall, textAlign: "center", color: "#2563eb" }}>{water.delta_p || "-"} bar</td>
+              <td style={{ ...cellValSmall, textAlign: "center", color: "#2563eb" }}>{formatMeasurement(water.delta_p)} bar</td>
             </tr>
           </tbody>
         </table>
@@ -129,7 +148,7 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
           <tbody>
             <tr>
               <td style={{ ...cellLabelSmall, width: "50%", textAlign: "right", paddingRight: "4mm" }}>Setting Temp EWT</td>
-              <td style={{ ...cellValSmall, width: "50%", textAlign: "center", color: "#16a34a", fontSize: "10pt" }}>{scope?.setting_temp_ewt || "-"} °C</td>
+              <td style={{ ...cellValSmall, width: "50%", textAlign: "center", color: "#16a34a", fontSize: "10pt" }}>{formatMeasurement(scope?.setting_temp_ewt)} °C</td>
             </tr>
           </tbody>
         </table>
