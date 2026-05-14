@@ -59,11 +59,12 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
     );
   };
 
-  const renderCheckRunning = () => {
-    const circuits = scope?.circuits || [1, 2, 3, 4, 5].map(i => ({ amp_r: "-", amp_s: "-", amp_t: "-", lp: "-", hp: "-" }));
+  const renderCheckRunning = (startIdx: number, endIdx: number, isContinuation: boolean = false) => {
+    const allCircuits = scope?.circuits || [1, 2, 3, 4, 5].map(i => ({ amp_r: "-", amp_s: "-", amp_t: "-", lp: "-", hp: "-" }));
+    const circuits = allCircuits.slice(startIdx, endIdx);
     return (
-      <div key="section-b" style={{ marginBottom: "5mm" }}>
-        <div style={subHeaderStyle}>B. CHECK RUNNING (COMPRESSOR)</div>
+      <div key={`section-b-${startIdx}`} style={{ marginBottom: "5mm" }}>
+        <div style={subHeaderStyle}>{isContinuation ? "B. CHECK RUNNING (CONT.)" : "B. CHECK RUNNING (COMPRESSOR)"}</div>
         <table style={mainTableStyle}>
           <thead>
             <tr style={tableHeaderRow}>
@@ -75,8 +76,8 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
           </thead>
           <tbody>
             {circuits.map((c: any, i: number) => (
-              <tr key={i} style={{ height: "8mm" }}>
-                <td style={{ ...tdStyle, textAlign: "center", fontWeight: 700, backgroundColor: "#f8fafc" }}>Circuit {i + 1}</td>
+              <tr key={startIdx + i} style={{ height: "8mm" }}>
+                <td style={{ ...tdStyle, textAlign: "center", fontWeight: 700, backgroundColor: "#f8fafc" }}>Circuit {startIdx + i + 1}</td>
                 <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "2px", fontSize: "7pt" }}>
                     <span>R: {formatMeasurement(c.amp_r)}</span>
@@ -258,10 +259,11 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
 
     <div key="op-header" style={categoryHeader}>OPERATING CONDITION</div>,
     renderVoltage(),
-    renderCheckRunning(),
+    renderCheckRunning(0, 4),
     
     // Force page break before C/D/E to prevent footer truncation
     <div key="force-break-cde" style={{ width: "100%" }}>
+      {renderCheckRunning(4, 5, true)}
       {renderFanUnit()}
       {renderWaterParameters()}
       {renderSetting()}
