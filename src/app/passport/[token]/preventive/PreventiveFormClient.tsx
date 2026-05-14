@@ -506,7 +506,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
 
       // Measurement Layer
       const measureDiv = document.createElement("div");
-      measureDiv.style.width = "794px";
+      measureDiv.style.width = "680px";
       measureDiv.style.position = "fixed";
       measureDiv.style.top = "0";
       measureDiv.style.left = "0";

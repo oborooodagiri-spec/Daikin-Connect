@@ -173,7 +173,7 @@ function ReportsContent({ lang }: { lang: Language }) {
 
         const { createRoot } = await import("react-dom/client");
         const measureDiv = document.createElement("div");
-        measureDiv.style.width = "794px";
+        measureDiv.style.width = "680px";
         measureDiv.style.position = "fixed";
         measureDiv.style.top = "0";
         measureDiv.style.left = "0";

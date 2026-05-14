@@ -17,15 +17,23 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
 
   const formatMeasurement = (val: any) => {
     if (typeof val === "object" && val !== null) {
-      const b = val.before && val.before !== "-" && val.before !== "" ? val.before : "";
-      const a = val.after && val.after !== "-" && val.after !== "" ? val.after : "";
-      const r = val.remarks && val.remarks !== "-" && val.remarks !== "" ? val.remarks : "";
+      const bStr = val.before && val.before !== "-" && val.before !== "" ? val.before : "";
+      const aStr = val.after && val.after !== "-" && val.after !== "" ? val.after : "";
+      let r = val.remarks && val.remarks !== "-" && val.remarks !== "" ? val.remarks : "";
 
-      if (b && a) {
-        if (r) return `${b} ➔ ${a} [${r}]`;
-        return `${b} ➔ ${a}`;
+      if (bStr && aStr) {
+        const bNum = parseFloat(String(bStr).replace(',', '.'));
+        const aNum = parseFloat(String(aStr).replace(',', '.'));
+        
+        if (!isNaN(bNum) && !isNaN(aNum)) {
+            const diff = aNum - bNum;
+            r = diff === 0 ? "0.00" : diff > 0 ? `+${diff.toFixed(2)}` : diff.toFixed(2);
+        }
+
+        if (r) return `${bStr} ➔ ${aStr} [${r}]`;
+        return `${bStr} ➔ ${aStr}`;
       }
-      return a || b || "-";
+      return aStr || bStr || "-";
     }
     return val || "-";
   };
