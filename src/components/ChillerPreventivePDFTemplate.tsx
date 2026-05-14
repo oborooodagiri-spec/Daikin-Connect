@@ -59,12 +59,13 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
     );
   };
 
-  const renderCheckRunning = (startIdx: number, endIdx: number, isContinuation: boolean = false) => {
-    const allCircuits = scope?.circuits || [1, 2, 3, 4, 5].map(i => ({ amp_r: "-", amp_s: "-", amp_t: "-", lp: "-", hp: "-" }));
-    const circuits = allCircuits.slice(startIdx, endIdx);
+  const renderCheckRunning = (title: string, startIndex: number, endIndex: number) => {
+    const circuits = scope?.circuits || [1, 2, 3, 4, 5].map(i => ({ amp_r: "-", amp_s: "-", amp_t: "-", lp: "-", hp: "-" }));
+    const slicedCircuits = circuits.slice(startIndex, endIndex);
+
     return (
-      <div key={`section-b-${startIdx}`} style={{ marginBottom: "5mm" }}>
-        <div style={subHeaderStyle}>{isContinuation ? "B. CHECK RUNNING (CONT.)" : "B. CHECK RUNNING (COMPRESSOR)"}</div>
+      <div key={`section-b-${startIndex}`} style={{ marginBottom: "5mm" }}>
+        <div style={subHeaderStyle}>{title}</div>
         <table style={mainTableStyle}>
           <thead>
             <tr style={tableHeaderRow}>
@@ -75,20 +76,23 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
             </tr>
           </thead>
           <tbody>
-            {circuits.map((c: any, i: number) => (
-              <tr key={startIdx + i} style={{ height: "8mm" }}>
-                <td style={{ ...tdStyle, textAlign: "center", fontWeight: 700, backgroundColor: "#f8fafc" }}>Circuit {startIdx + i + 1}</td>
-                <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "2px", fontSize: "7pt" }}>
-                    <span>R: {formatMeasurement(c.amp_r)}</span>
-                    <span>S: {formatMeasurement(c.amp_s)}</span>
-                    <span>T: {formatMeasurement(c.amp_t)}</span>
-                  </div>
-                </td>
-                <td style={{ ...tdStyle, textAlign: "center", fontSize: "8pt" }}>{formatMeasurement(c.lp)}</td>
-                <td style={{ ...tdStyle, textAlign: "center", fontSize: "8pt" }}>{formatMeasurement(c.hp)}</td>
-              </tr>
-            ))}
+            {slicedCircuits.map((c: any, index: number) => {
+              const i = startIndex + index;
+              return (
+                <tr key={i} style={{ height: "8mm" }}>
+                  <td style={{ ...tdStyle, textAlign: "center", fontWeight: 700, backgroundColor: "#f8fafc" }}>Circuit {i + 1}</td>
+                  <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "2px", fontSize: "7pt" }}>
+                      <span>R: {formatMeasurement(c.amp_r)}</span>
+                      <span>S: {formatMeasurement(c.amp_s)}</span>
+                      <span>T: {formatMeasurement(c.amp_t)}</span>
+                    </div>
+                  </td>
+                  <td style={{ ...tdStyle, textAlign: "center", fontSize: "8pt" }}>{formatMeasurement(c.lp)}</td>
+                  <td style={{ ...tdStyle, textAlign: "center", fontSize: "8pt" }}>{formatMeasurement(c.hp)}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -259,11 +263,11 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
 
     <div key="op-header" style={categoryHeader}>OPERATING CONDITION</div>,
     renderVoltage(),
-    renderCheckRunning(0, 4),
+    renderCheckRunning("B. CHECK RUNNING (COMPRESSOR) - PART 1", 0, 4),
     
     // Force page break before C/D/E to prevent footer truncation
     <div key="force-break-cde" style={{ width: "100%" }}>
-      {renderCheckRunning(4, 5, true)}
+      {renderCheckRunning("B. CHECK RUNNING (COMPRESSOR) - PART 2", 4, 5)}
       {renderFanUnit()}
       {renderWaterParameters()}
       {renderSetting()}
