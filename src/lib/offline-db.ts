@@ -2,7 +2,8 @@ import { openDB, IDBPDatabase } from 'idb';
 
 const DB_NAME = 'daikin_offline_db';
 const STORE_NAME = 'pending_submissions';
-const DB_VERSION = 1;
+const DRAFTS_STORE = 'form_drafts';
+const DB_VERSION = 2; // Incremented for new drafts store
 
 export interface PendingSubmission {
   id?: number;
@@ -10,6 +11,12 @@ export interface PendingSubmission {
   data: any;
   photos: Blob[];
   createdAt: number;
+}
+
+export interface FormDraft {
+  draftId: string; // e.g. "AUDIT_123"
+  data: any;
+  updatedAt: number;
 }
 
 let dbPromise: Promise<IDBPDatabase<any>> | null = null;
@@ -21,6 +28,9 @@ function getDB() {
       upgrade(db) {
         if (!db.objectStoreNames.contains(STORE_NAME)) {
           db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+        }
+        if (!db.objectStoreNames.contains(DRAFTS_STORE)) {
+          db.createObjectStore(DRAFTS_STORE, { keyPath: 'draftId' });
         }
       },
     });
@@ -82,4 +92,24 @@ export async function deletePendingSubmission(id: number) {
 export async function getPendingSubmissionCount(): Promise<number> {
   const count = await withDB(db => db.count(STORE_NAME));
   return count || 0;
+}
+
+// --- DRAFTS API ---
+
+export async function saveDraft(draft: Omit<FormDraft, 'updatedAt'>) {
+  return withDB(db => 
+    db.put(DRAFTS_STORE, {
+      ...draft,
+      updatedAt: Date.now(),
+    })
+  );
+}
+
+export async function loadDraft(draftId: string): Promise<FormDraft | null> {
+  const draft = await withDB(db => db.get(DRAFTS_STORE, draftId));
+  return draft || null;
+}
+
+export async function deleteDraft(draftId: string) {
+  return withDB(db => db.delete(DRAFTS_STORE, draftId));
 }

@@ -24,10 +24,6 @@ export async function getAllReports(filters?: {
   try {
     const where: any = { deleted_at: null };
     
-    // Check total count before any filters
-    const debugCount = await (prisma.service_activities as any).count();
-    console.log("DIAGNOSTIC: Total service_activities in DB:", debugCount);
-
     if (filters?.type && filters.type !== "all") {
       if (filters.type === "Complaint") {
         where.type = "Corrective";
@@ -62,7 +58,7 @@ export async function getAllReports(filters?: {
     
     // WORKSPACE ISOLATION: FILTER BY PROJECT ID
     if (filters?.projectId && filters.projectId !== "empty") {
-      where.units = { ...where.units, project_ref_id: Number(filters.projectId) };
+      where.units = { ...where.units, project_ref_id: BigInt(filters.projectId) };
     }
 
     // DAILY OPS LOG
@@ -71,9 +67,9 @@ export async function getAllReports(filters?: {
     const includeDailyLog = !filters?.type || filters.type === "all" || filters.type === "DailyLog";
     
     if (includeDailyLog) {
-       const logWhere: any = {};
+       const logWhere: any = { deleted_at: null };
        if (filters?.projectId && filters.projectId !== "empty") {
-         logWhere.units = { project_ref_id: Number(filters.projectId) };
+         logWhere.units = { project_ref_id: BigInt(filters.projectId) };
        }
        if (filters?.dateFrom) { logWhere.service_date = logWhere.service_date || {}; logWhere.service_date.gte = new Date(filters.dateFrom); }
        if (filters?.dateTo) { logWhere.service_date = logWhere.service_date || {}; logWhere.service_date.lte = new Date(filters.dateTo); }

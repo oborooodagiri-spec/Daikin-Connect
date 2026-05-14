@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { checkDailyLogStatus, submitDailyLog } from "@/app/actions/daily_logs";
+import { savePendingSubmission, saveDraft, loadDraft, deleteDraft } from "@/lib/offline-db";
 import { t, Language } from "@/lib/i18n";
 
 export default function DailyLogFormClient({ 
@@ -26,6 +27,7 @@ export default function DailyLogFormClient({
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [lang, setLang] = useState<Language>('id');
+  const [draftStatus, setDraftStatus] = useState<string>('');
 
   const [formData, setFormData] = useState({
     inspectorName: initialData?.inspector_name || "",
@@ -79,11 +81,34 @@ export default function DailyLogFormClient({
       const res = await checkDailyLogStatus(unitId) as any;
       if (res && "success" in res && res.success && res.exists) {
         setExistingLog(res.data);
+      } else {
+        // Only load draft if there is no existing log submitted today
+        const draft = await loadDraft(`DAILYLOG_${unitId}`);
+        if (draft) {
+          if (confirm(lang === 'ja' ? '保存された下書きがあります。復元しますか？' : 'Draft tersimpan ditemukan. Apakah Anda ingin melanjutkan dari draft?')) {
+            setFormData(draft.data.formData);
+          }
+        }
       }
       setLoading(false);
     }
     checkStatus();
-  }, [unitId]);
+  }, [unitId, isMounted, lang]);
+
+  const handleSaveDraft = async () => {
+    try {
+      setDraftStatus('saving');
+      await saveDraft({
+        draftId: `DAILYLOG_${unitId}`,
+        data: { formData }
+      });
+      setDraftStatus('saved');
+      setTimeout(() => setDraftStatus(''), 3000);
+    } catch (err) {
+      console.error(err);
+      setDraftStatus('error');
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,8 +118,22 @@ export default function DailyLogFormClient({
     }
 
     startTransition(async () => {
+      // --- OFFLINE CHECK ---
+      if (!navigator.onLine) {
+        await savePendingSubmission({
+          type: 'CORRECTIVE', // Just to use existing offline queue, might need mapping if backend expects different
+          data: { ...formData, unit_id: unitId, type: 'DAILY_LOG' },
+          photos: []
+        });
+        await deleteDraft(`DAILYLOG_${unitId}`);
+        setSubmitSuccess(true);
+        setTimeout(() => { if (onSuccess) onSuccess(); }, 1500);
+        return;
+      }
+
       const res = await submitDailyLog(initialData ? initialData.unit_id : unitId, formData) as any;
       if (res && "success" in res && res.success) {
+        await deleteDraft(`DAILYLOG_${unitId}`);
         setSubmitSuccess(true);
         if (onSuccess) {
            setTimeout(() => onSuccess(), 1500);
@@ -323,13 +362,22 @@ export default function DailyLogFormClient({
 
         {/* Submit */}
         <div className="fixed bottom-6 left-0 right-0 px-6 flex justify-center z-50">
-          <button 
-            type="submit" disabled={isPending}
-            className="w-full max-w-sm bg-[#003366] text-white py-4 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50"
-          >
-            {isPending ? <Loader2 className="animate-spin w-5 h-5" /> : <Save size={20} />}
-            <span>{lang === 'ja' ? '日報を保存' : (lang === 'id' ? 'Simpan Log Operasional' : 'Save Operational Log')}</span>
-          </button>
+          <div className="w-full max-w-sm flex gap-2">
+            <button 
+              type="button" onClick={handleSaveDraft}
+              className="flex-1 bg-amber-100 text-amber-700 py-4 rounded-2xl font-black uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2 active:scale-95 transition-all text-xs"
+            >
+              <Save size={16} />
+              <span>{draftStatus === 'saving' ? '...' : draftStatus === 'saved' ? (lang === 'ja' ? '保存済' : 'Tersimpan') : 'Draft'}</span>
+            </button>
+            <button 
+              type="submit" disabled={isPending}
+              className="flex-[2] bg-[#003366] text-white py-4 rounded-2xl font-black uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2 active:scale-95 transition-all disabled:opacity-50 text-xs"
+            >
+              {isPending ? <Loader2 className="animate-spin w-4 h-4" /> : <CheckCircle2 size={16} />}
+              <span>{lang === 'ja' ? '日報を保存' : (lang === 'id' ? 'Submit Log' : 'Submit Log')}</span>
+            </button>
+          </div>
         </div>
       </form>
 

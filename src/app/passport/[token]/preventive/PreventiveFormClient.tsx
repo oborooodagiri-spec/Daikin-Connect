@@ -6,9 +6,9 @@ import imageCompression from "browser-image-compression";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
 import { createPreventiveActivity, updatePreventiveActivity } from "@/app/actions/preventive";
-import { savePendingSubmission } from "@/lib/offline-db";
+import { savePendingSubmission, saveDraft, loadDraft, deleteDraft } from "@/lib/offline-db";
 import {
-  ChevronRight, ChevronLeft, FileText, Camera,
+  ChevronRight, ChevronLeft, FileText, Camera, Save,
   CheckCircle2, AlertCircle, MapPin, X, Printer, Wrench, WifiOff,
   FileVideo, Play
 } from "lucide-react";
@@ -153,7 +153,55 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
       window.removeEventListener('online', handleStatus);
       window.removeEventListener('offline', handleStatus);
     };
+    };
   }, []);
+
+  // --- DRAFT STATE & LOGIC ---
+  const [draftStatus, setDraftStatus] = useState<string>('');
+
+  React.useEffect(() => {
+    if (!initialData && isMounted) {
+      loadDraft(`PREVENTIVE_${unit.id}`).then((draft) => {
+        if (draft) {
+          if (confirm(lang === 'ja' ? '保存された下書きがあります。復元しますか？' : 'Draft tersimpan ditemukan. Apakah Anda ingin melanjutkan dari draft?')) {
+            setHeader(draft.data.header);
+            setScope(draft.data.scope);
+            setParts(draft.data.parts);
+            setTechnicalAdvice(draft.data.technicalAdvice);
+            setEngineerName(draft.data.engineerName);
+            setCustomerName(draft.data.customerName);
+            setServiceStatus(draft.data.serviceStatus);
+            setNoServiceReason(draft.data.noServiceReason);
+            setMediaItems(draft.data.mediaItems.map((m: any) => ({
+              ...m,
+              preview: m.file ? URL.createObjectURL(m.file) : m.preview
+            })));
+          }
+        }
+      });
+    }
+  }, [isMounted, unit.id, initialData, lang]);
+
+  const handleSaveDraft = async () => {
+    try {
+      setDraftStatus('saving');
+      await saveDraft({
+        draftId: `PREVENTIVE_${unit.id}`,
+        data: {
+          header, scope, parts, technicalAdvice, engineerName, customerName, serviceStatus, noServiceReason,
+          mediaItems: mediaItems.map(m => ({
+            ...m,
+            preview: m.file ? "" : m.preview // Skip object URL for local files
+          }))
+        }
+      });
+      setDraftStatus('saved');
+      setTimeout(() => setDraftStatus(''), 3000);
+    } catch (err) {
+      console.error(err);
+      setDraftStatus('error');
+    }
+  };
 
   // Extract initial data if editing
   const parsed = initialData?.technical_json ? (typeof initialData.technical_json === 'string' ? JSON.parse(initialData.technical_json) : initialData.technical_json) : null;
@@ -378,6 +426,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
           },
           photos: mediaItems.map(m => m.file).filter((f: File | null): f is File => f !== null)
         });
+        await deleteDraft(`PREVENTIVE_${unit.id}`);
         setIsQueued(true);
         setLoading(false);
         return;
@@ -644,6 +693,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
         : await createPreventiveActivity(dbPayload) as any;
 
       if (dbRes && "success" in dbRes && dbRes.success) {
+        await deleteDraft(`PREVENTIVE_${unit.id}`);
         if (onSuccess) {
           onSuccess();
         } else {
@@ -1005,7 +1055,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
 
       {/* FIXED BOTTOM NAV */}
       <div className="fixed bottom-0 inset-x-0 p-5 bg-white border-t border-slate-100 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)] z-40">
-        <div className="max-w-lg mx-auto flex justify-between gap-4">
+        <div className="max-w-lg mx-auto flex justify-between gap-2 sm:gap-4">
           {step > 1 ? (
             <button 
               onClick={() => {
@@ -1017,9 +1067,13 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
               }} 
               className="flex-1 py-4 bg-slate-100 text-slate-600 font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-slate-200 transition-colors uppercase text-xs tracking-widest"
             >
-              <ChevronLeft size={16} /> {t("Back", lang)}
+              <ChevronLeft size={16} /> <span className="hidden sm:inline">{t("Back", lang)}</span>
             </button>
           ) : <div className="flex-1"></div>}
+
+          <button onClick={handleSaveDraft} className="flex-1 py-4 bg-amber-100 text-amber-700 font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-amber-200 transition-colors uppercase text-xs tracking-widest whitespace-nowrap">
+            <Save size={16}/> <span className="hidden sm:inline">{draftStatus === 'saving' ? '...' : draftStatus === 'saved' ? (lang === 'ja' ? '保存済' : 'Tersimpan') : 'Draft'}</span>
+          </button>
 
           {step < 4 ? (
             <button 
@@ -1037,12 +1091,12 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
               }} 
               className="flex-1 py-4 bg-[#00a1e4] text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-[#008cc6] transition-colors shadow-lg shadow-blue-200 uppercase text-xs tracking-widest"
             >
-              {t("Next", lang)} <ChevronRight size={16} />
+              <span className="hidden sm:inline">{t("Next", lang)}</span> <ChevronRight size={16} />
             </button>
           ) : (
-            <button onClick={handleSubmit} disabled={loading} className="flex-[2] py-4 bg-emerald-500 text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-200 uppercase text-xs tracking-widest disabled:opacity-50">
+            <button onClick={handleSubmit} disabled={loading} className="flex-[2] py-4 bg-emerald-500 text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-200 uppercase text-xs tracking-widest disabled:opacity-50 whitespace-nowrap">
               {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <Printer size={18} />}
-              {loading ? (lang === 'ja' ? '生成中...' : "Generating...") : t("Generate PDF & Submit", lang)}
+              <span className="hidden sm:inline">{loading ? (lang === 'ja' ? '生成中...' : "Generating...") : t("Generate PDF & Submit", lang)}</span>
             </button>
           )}
         </div>
