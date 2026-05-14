@@ -20,11 +20,7 @@ export async function translateReportStringsAction(
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // Using v1beta for advanced preview models
-    const model = genAI.getGenerativeModel(
-      { model: "gemini-1.5-flash" }, 
-      { apiVersion: 'v1beta' }
-    );
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
     const systemPrompt = `You are a Senior Daikin HVAC Technical Specialist and Professional Japanese Translator. 
     Your task is to translate technical maintenance notes into ${targetLang === 'en' ? 'Technical English' : targetLang === 'ja' ? 'Technical Japanese' : 'Bahasa Indonesia'}.
