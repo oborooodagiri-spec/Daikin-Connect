@@ -946,6 +946,8 @@ model shopping_list {
   capacity_range String   @db.VarChar(100)
   price          Decimal  @db.Decimal(15, 2)
   description    String?  @db.Text
+  visibility     String   @default("Internal") // Internal (Admin Only), Public
+  allowed_users  String?  @db.Text // Comma separated user IDs
   created_at     DateTime @default(now()) @db.Timestamp(0)
   updated_at     DateTime @updatedAt
 }

@@ -740,6 +740,8 @@ exports.Prisma.Shopping_listScalarFieldEnum = {
   capacity_range: 'capacity_range',
   price: 'price',
   description: 'description',
+  visibility: 'visibility',
+  allowed_users: 'allowed_users',
   created_at: 'created_at',
   updated_at: 'updated_at'
 };
@@ -1071,7 +1073,9 @@ exports.Prisma.shopping_listOrderByRelevanceFieldEnum = {
   item_name: 'item_name',
   capacity_unit: 'capacity_unit',
   capacity_range: 'capacity_range',
-  description: 'description'
+  description: 'description',
+  visibility: 'visibility',
+  allowed_users: 'allowed_users'
 };
 exports.customers_customer_type = exports.$Enums.customers_customer_type = {
   Corporate: 'Corporate',

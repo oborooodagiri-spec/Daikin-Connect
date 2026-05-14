@@ -81,7 +81,7 @@ function TierDetailCard({ tier, name, color, input, analytics, output, audience,
   );
 }
 
-function ShoppingTable({ category, items }: { category: string, items: any[] }) {
+function RateCardTable({ category, items }: { category: string, items: any[] }) {
   return (
     <div className="bg-white border border-slate-200 rounded-[2rem] overflow-hidden shadow-sm mb-6">
        <div className="bg-slate-900 px-6 py-3 text-white text-[10px] font-black uppercase tracking-widest">
@@ -358,11 +358,11 @@ export default function BlueprintPresentationClient() {
     },
     // Slide 8: Shopping List Kategori A & B
     {
-      title: "Shopping List Vendor (1/2)",
+      title: "Rate Card Vendor (1/2)",
       subtitle: "Kategori A: Chiller & Kategori B: VRV/VRF",
       content: (
         <div className="space-y-6 overflow-y-auto max-h-[60vh] pr-4 custom-scrollbar">
-           <ShoppingTable 
+           <RateCardTable 
              category="KATEGORI A: CHILLER PLANT"
              items={[
                { scope: "Cuci Kondensor (Tube Brushing)", unit: "WC Chiller (>150 TR)", price: "" },
@@ -372,7 +372,7 @@ export default function BlueprintPresentationClient() {
                { scope: "Jasa Ganti Mechanical Seal", unit: "Pompa Sentral", price: "" },
              ]}
            />
-           <ShoppingTable 
+           <RateCardTable 
              category="KATEGORI B: CENTRALIZED AIR-COOLED (VRV / VRF)"
              items={[
                { scope: "Cuci & Cek Parameter", unit: "Outdoor VRV (8-20 PK)", price: "" },
@@ -386,11 +386,11 @@ export default function BlueprintPresentationClient() {
     },
     // Slide 9: Shopping List Kategori C, D & E
     {
-      title: "Shopping List Vendor (2/2)",
+      title: "Rate Card Vendor (2/2)",
       subtitle: "Kategori C, D & Kategori E: Ad-Hoc",
       content: (
         <div className="space-y-6 overflow-y-auto max-h-[60vh] pr-4 custom-scrollbar">
-           <ShoppingTable 
+           <RateCardTable 
              category="KATEGORI C & D: COMMERCIAL & LIGHT"
              items={[
                { scope: "Cuci Besar & Flushing Drain", unit: "Ceiling Duct (>3 PK)", price: "" },
@@ -398,7 +398,7 @@ export default function BlueprintPresentationClient() {
                { scope: "Cuci Standar & Cek Freon", unit: "Split Wall (1.5-2.5 PK)", price: "" },
              ]}
            />
-           <ShoppingTable 
+           <RateCardTable 
              category="KATEGORI E: JASA AD-HOC (Corrective)"
              items={[
                { scope: "Call-Out Fee (Troubleshoot)", unit: "Per Kunjungan", price: "" },
@@ -408,7 +408,7 @@ export default function BlueprintPresentationClient() {
              ]}
            />
            <div className="p-6 bg-blue-50 border border-blue-100 rounded-3xl mt-4">
-              <h5 className="text-xs font-black uppercase text-blue-600 mb-2">Syarat & Ketentuan Vendor:</h5>
+              <h5 className="text-xs font-black uppercase text-blue-600 mb-2">Syarat & Ketentuan (Rate Card):</h5>
               <div className="grid grid-cols-2 gap-4 text-[10px] text-slate-500 font-bold">
                  <p>• Harga mengikat selama 1 tahun anggaran.</p>
                  <p>• Wajib menggunakan aplikasi EPL CONNECT.</p>

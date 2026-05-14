@@ -11,7 +11,7 @@ import { getUnitsByProject } from "@/app/actions/units";
 import { submitCorrectiveMaintenanceForm } from "@/app/actions/corrective_maintenance";
 import imageCompression from "browser-image-compression";
 
-const SHOPPING_LIST_ITEMS = [
+const RATE_CARD_ITEMS = [
   "Penggantian Motor FCU & AHU",
   "Penggantian Fan Blower AHU",
   "Penggantian Fan Blower FCU",
@@ -56,8 +56,8 @@ export default function CorrectiveMaintenancePage() {
     lain_lain_desc: "",
   });
 
-  // Shopping List State
-  const [shoppingList, setShoppingList] = useState<Record<string, number>>({});
+  // Rate Card State
+  const [rateCardList, setRateCardList] = useState<Record<string, number>>({});
 
   // Media (Before & After)
   const [beforePhotos, setBeforePhotos] = useState<{file: File | null, preview: string}[]>([]);
@@ -77,7 +77,7 @@ export default function CorrectiveMaintenancePage() {
   }, [siteProjectId]);
 
   const handleToggleShopping = (item: string) => {
-    setShoppingList(prev => {
+    setRateCardList(prev => {
       const next = { ...prev };
       if (next[item]) {
         delete next[item];
@@ -90,7 +90,7 @@ export default function CorrectiveMaintenancePage() {
 
   const handleQtyChange = (item: string, qty: number) => {
     if (qty < 1) return;
-    setShoppingList(prev => ({ ...prev, [item]: qty }));
+    setRateCardList(prev => ({ ...prev, [item]: qty }));
   };
 
   const handleMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: "before" | "after") => {
@@ -176,7 +176,7 @@ export default function CorrectiveMaintenancePage() {
           service_action: formData.service_action,
           sparepart_tambahan: formData.sparepart_tambahan,
           lain_lain_desc: formData.lain_lain_desc,
-          shopping_list: shoppingList,
+          shopping_list: rateCardList,
           photos: {
             before: uploadedBefore,
             after: uploadedAfter
@@ -324,14 +324,14 @@ export default function CorrectiveMaintenancePage() {
           {/* STEP 2: SHOPPING LIST */}
           {step === 2 && (
             <motion.div key="s2" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} className="space-y-6">
-              <h2 className="text-lg font-black text-slate-800 border-b pb-3 uppercase tracking-widest">2. Labour / Shopping List</h2>
+              <h2 className="text-lg font-black text-slate-800 border-b pb-3 uppercase tracking-widest">2. Labour / Rate Card</h2>
               <div className="bg-blue-50/50 rounded-2xl border border-blue-100 p-4 mb-4">
                 <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Pilih item pekerjaan dan masukkan Quantity (Qty) untuk dasar penagihan.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto pr-2">
-                {SHOPPING_LIST_ITEMS.map((item, idx) => {
-                  const isChecked = !!shoppingList[item];
+                {RATE_CARD_ITEMS.map((item, idx) => {
+                  const isChecked = !!rateCardList[item];
                   return (
                     <div key={idx} className={`flex flex-col p-3 border rounded-xl transition-all ${isChecked ? 'bg-orange-50 border-orange-200' : 'bg-slate-50 border-slate-200'}`}>
                       <div className="flex items-center justify-between w-full">
@@ -349,7 +349,7 @@ export default function CorrectiveMaintenancePage() {
                             <span className="text-[10px] font-black text-orange-400">QTY:</span>
                             <input 
                               type="number" min="1" 
-                              value={shoppingList[item] || 1} 
+                              value={rateCardList[item] || 1} 
                               onChange={(e) => handleQtyChange(item, parseInt(e.target.value) || 1)}
                               className="w-16 p-1.5 text-center text-xs font-black border border-orange-200 rounded-lg bg-white"
                             />

@@ -53899,6 +53899,8 @@ export namespace Prisma {
     capacity_range: string | null
     price: Decimal | null
     description: string | null
+    visibility: string | null
+    allowed_users: string | null
     created_at: Date | null
     updated_at: Date | null
   }
@@ -53912,6 +53914,8 @@ export namespace Prisma {
     capacity_range: string | null
     price: Decimal | null
     description: string | null
+    visibility: string | null
+    allowed_users: string | null
     created_at: Date | null
     updated_at: Date | null
   }
@@ -53925,6 +53929,8 @@ export namespace Prisma {
     capacity_range: number
     price: number
     description: number
+    visibility: number
+    allowed_users: number
     created_at: number
     updated_at: number
     _all: number
@@ -53950,6 +53956,8 @@ export namespace Prisma {
     capacity_range?: true
     price?: true
     description?: true
+    visibility?: true
+    allowed_users?: true
     created_at?: true
     updated_at?: true
   }
@@ -53963,6 +53971,8 @@ export namespace Prisma {
     capacity_range?: true
     price?: true
     description?: true
+    visibility?: true
+    allowed_users?: true
     created_at?: true
     updated_at?: true
   }
@@ -53976,6 +53986,8 @@ export namespace Prisma {
     capacity_range?: true
     price?: true
     description?: true
+    visibility?: true
+    allowed_users?: true
     created_at?: true
     updated_at?: true
     _all?: true
@@ -54076,6 +54088,8 @@ export namespace Prisma {
     capacity_range: string
     price: Decimal
     description: string | null
+    visibility: string
+    allowed_users: string | null
     created_at: Date
     updated_at: Date
     _count: Shopping_listCountAggregateOutputType | null
@@ -54108,6 +54122,8 @@ export namespace Prisma {
     capacity_range?: boolean
     price?: boolean
     description?: boolean
+    visibility?: boolean
+    allowed_users?: boolean
     created_at?: boolean
     updated_at?: boolean
   }, ExtArgs["result"]["shopping_list"]>
@@ -54123,11 +54139,13 @@ export namespace Prisma {
     capacity_range?: boolean
     price?: boolean
     description?: boolean
+    visibility?: boolean
+    allowed_users?: boolean
     created_at?: boolean
     updated_at?: boolean
   }
 
-  export type shopping_listOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "category" | "work_type" | "item_name" | "capacity_unit" | "capacity_range" | "price" | "description" | "created_at" | "updated_at", ExtArgs["result"]["shopping_list"]>
+  export type shopping_listOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "category" | "work_type" | "item_name" | "capacity_unit" | "capacity_range" | "price" | "description" | "visibility" | "allowed_users" | "created_at" | "updated_at", ExtArgs["result"]["shopping_list"]>
 
   export type $shopping_listPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "shopping_list"
@@ -54141,6 +54159,8 @@ export namespace Prisma {
       capacity_range: string
       price: Prisma.Decimal
       description: string | null
+      visibility: string
+      allowed_users: string | null
       created_at: Date
       updated_at: Date
     }, ExtArgs["result"]["shopping_list"]>
@@ -54520,6 +54540,8 @@ export namespace Prisma {
     readonly capacity_range: FieldRef<"shopping_list", 'String'>
     readonly price: FieldRef<"shopping_list", 'Decimal'>
     readonly description: FieldRef<"shopping_list", 'String'>
+    readonly visibility: FieldRef<"shopping_list", 'String'>
+    readonly allowed_users: FieldRef<"shopping_list", 'String'>
     readonly created_at: FieldRef<"shopping_list", 'DateTime'>
     readonly updated_at: FieldRef<"shopping_list", 'DateTime'>
   }
@@ -55615,6 +55637,8 @@ export namespace Prisma {
     capacity_range: 'capacity_range',
     price: 'price',
     description: 'description',
+    visibility: 'visibility',
+    allowed_users: 'allowed_users',
     created_at: 'created_at',
     updated_at: 'updated_at'
   };
@@ -56072,7 +56096,9 @@ export namespace Prisma {
     item_name: 'item_name',
     capacity_unit: 'capacity_unit',
     capacity_range: 'capacity_range',
-    description: 'description'
+    description: 'description',
+    visibility: 'visibility',
+    allowed_users: 'allowed_users'
   };
 
   export type shopping_listOrderByRelevanceFieldEnum = (typeof shopping_listOrderByRelevanceFieldEnum)[keyof typeof shopping_listOrderByRelevanceFieldEnum]
@@ -60326,6 +60352,8 @@ export namespace Prisma {
     capacity_range?: StringFilter<"shopping_list"> | string
     price?: DecimalFilter<"shopping_list"> | Decimal | DecimalJsLike | number | string
     description?: StringNullableFilter<"shopping_list"> | string | null
+    visibility?: StringFilter<"shopping_list"> | string
+    allowed_users?: StringNullableFilter<"shopping_list"> | string | null
     created_at?: DateTimeFilter<"shopping_list"> | Date | string
     updated_at?: DateTimeFilter<"shopping_list"> | Date | string
   }
@@ -60339,6 +60367,8 @@ export namespace Prisma {
     capacity_range?: SortOrder
     price?: SortOrder
     description?: SortOrderInput | SortOrder
+    visibility?: SortOrder
+    allowed_users?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     _relevance?: shopping_listOrderByRelevanceInput
@@ -60356,6 +60386,8 @@ export namespace Prisma {
     capacity_range?: StringFilter<"shopping_list"> | string
     price?: DecimalFilter<"shopping_list"> | Decimal | DecimalJsLike | number | string
     description?: StringNullableFilter<"shopping_list"> | string | null
+    visibility?: StringFilter<"shopping_list"> | string
+    allowed_users?: StringNullableFilter<"shopping_list"> | string | null
     created_at?: DateTimeFilter<"shopping_list"> | Date | string
     updated_at?: DateTimeFilter<"shopping_list"> | Date | string
   }, "id">
@@ -60369,6 +60401,8 @@ export namespace Prisma {
     capacity_range?: SortOrder
     price?: SortOrder
     description?: SortOrderInput | SortOrder
+    visibility?: SortOrder
+    allowed_users?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     _count?: shopping_listCountOrderByAggregateInput
@@ -60390,6 +60424,8 @@ export namespace Prisma {
     capacity_range?: StringWithAggregatesFilter<"shopping_list"> | string
     price?: DecimalWithAggregatesFilter<"shopping_list"> | Decimal | DecimalJsLike | number | string
     description?: StringNullableWithAggregatesFilter<"shopping_list"> | string | null
+    visibility?: StringWithAggregatesFilter<"shopping_list"> | string
+    allowed_users?: StringNullableWithAggregatesFilter<"shopping_list"> | string | null
     created_at?: DateTimeWithAggregatesFilter<"shopping_list"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"shopping_list"> | Date | string
   }
@@ -64768,6 +64804,8 @@ export namespace Prisma {
     capacity_range: string
     price: Decimal | DecimalJsLike | number | string
     description?: string | null
+    visibility?: string
+    allowed_users?: string | null
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -64781,6 +64819,8 @@ export namespace Prisma {
     capacity_range: string
     price: Decimal | DecimalJsLike | number | string
     description?: string | null
+    visibility?: string
+    allowed_users?: string | null
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -64794,6 +64834,8 @@ export namespace Prisma {
     capacity_range?: StringFieldUpdateOperationsInput | string
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
+    allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -64807,6 +64849,8 @@ export namespace Prisma {
     capacity_range?: StringFieldUpdateOperationsInput | string
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
+    allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -64820,6 +64864,8 @@ export namespace Prisma {
     capacity_range: string
     price: Decimal | DecimalJsLike | number | string
     description?: string | null
+    visibility?: string
+    allowed_users?: string | null
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -64833,6 +64879,8 @@ export namespace Prisma {
     capacity_range?: StringFieldUpdateOperationsInput | string
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
+    allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -64846,6 +64894,8 @@ export namespace Prisma {
     capacity_range?: StringFieldUpdateOperationsInput | string
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
+    allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -68705,6 +68755,8 @@ export namespace Prisma {
     capacity_range?: SortOrder
     price?: SortOrder
     description?: SortOrder
+    visibility?: SortOrder
+    allowed_users?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }
@@ -68723,6 +68775,8 @@ export namespace Prisma {
     capacity_range?: SortOrder
     price?: SortOrder
     description?: SortOrder
+    visibility?: SortOrder
+    allowed_users?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }
@@ -68736,6 +68790,8 @@ export namespace Prisma {
     capacity_range?: SortOrder
     price?: SortOrder
     description?: SortOrder
+    visibility?: SortOrder
+    allowed_users?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }
