@@ -99,15 +99,15 @@ export default function HealthExplanationModal({ isOpen, onClose, ahi, metrics, 
               <div className="space-y-3">
                 <AHIBreakdownRow 
                     label="Physical Integrity" 
-                    score={ahi.conditionScore} 
+                    score={ahi.conditionScore ?? 0} 
                     weight={40} 
                     icon={ShieldCheck} 
                     color="#0073ea" 
-                    subtext={`${ahi.breakdown.physical.count} inspection points verified`}
+                    subtext={ahi.breakdown?.condition ? "Components integrity audit verified" : "Visual condition assessment"}
                 />
                 <AHIBreakdownRow 
                     label="Thermal Efficiency" 
-                    score={ahi.performanceScore} 
+                    score={ahi.performanceScore ?? 0} 
                     weight={40} 
                     icon={Zap} 
                     color="#f59e0b" 
@@ -115,11 +115,11 @@ export default function HealthExplanationModal({ isOpen, onClose, ahi, metrics, 
                 />
                 <AHIBreakdownRow 
                     label="Reliability Factor" 
-                    score={ahi.reliabilityScore} 
+                    score={ahi.reliabilityScore ?? 0} 
                     weight={20} 
                     icon={Clock} 
                     color="#64748b" 
-                    subtext={`Unit Age: ${ahi.breakdown.reliability.age} Years`}
+                    subtext={ahi.breakdown?.reliability?.age !== undefined ? `Unit Age: ${ahi.breakdown.reliability.age} Years` : "Reliability metadata analysis"}
                 />
               </div>
             </div>
@@ -130,10 +130,10 @@ export default function HealthExplanationModal({ isOpen, onClose, ahi, metrics, 
             <div className="space-y-4">
                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#003366] px-2">Performance Telemetry</h3>
                <div className="grid grid-cols-2 gap-3">
-                  <MetricBox label="Actual Cap." value={`${(ahi?.physics || metrics).actualCapacitykW} kW`} color="#0073ea" icon={<Activity size={12}/>} />
-                  <MetricBox label="Design Cap." value={`${(ahi?.physics || metrics).designCapacitykW} kW`} color="#64748b" icon={<Settings2 size={12}/>} />
-                  <MetricBox label="Airflow" value={`${(ahi?.physics || metrics).airflow} m³/h`} color="#323338" icon={<Activity size={12}/>} />
-                  <MetricBox label="Efficiency" value={`${(ahi?.physics || metrics).healthScore}%`} color="#00c875" icon={<Zap size={12}/>} />
+                  <MetricBox label="Actual Cap." value={`${(ahi?.physics || metrics)?.actualCapacitykW ?? 0} kW`} color="#0073ea" icon={<Activity size={12}/>} />
+                  <MetricBox label="Design Cap." value={`${(ahi?.physics || metrics)?.designCapacitykW ?? 0} kW`} color="#64748b" icon={<Settings2 size={12}/>} />
+                  <MetricBox label="Airflow" value={`${(ahi?.physics || metrics)?.airflow ?? 0} m³/h`} color="#323338" icon={<Activity size={12}/>} />
+                  <MetricBox label="Efficiency" value={`${(ahi?.physics || metrics)?.healthScore ?? 0}%`} color="#00c875" icon={<Zap size={12}/>} />
                </div>
             </div>
           )}
