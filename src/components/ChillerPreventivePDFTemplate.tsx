@@ -232,9 +232,13 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
     <div key="op-header" style={categoryHeader}>OPERATING CONDITION</div>,
     renderVoltage(),
     renderCheckRunning(),
-    renderFanUnit(),
-    renderWaterParameters(),
-    renderSetting(),
+    
+    // Force page break before C/D/E to prevent footer truncation
+    <div key="force-break-cde" style={{ width: "100%" }}>
+      {renderFanUnit()}
+      {renderWaterParameters()}
+      {renderSetting()}
+    </div>,
 
     renderChecklistTable(),
 

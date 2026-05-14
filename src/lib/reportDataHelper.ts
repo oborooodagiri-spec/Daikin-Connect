@@ -297,6 +297,26 @@ export const processReportData = (report: any) => {
     // 1. Process root keys
     Object.keys(t).forEach(dbLabel => processVal(dbLabel, t[dbLabel]));
 
+    // 1.5. CRITICAL: Merge pre-existing scope from web form submission
+    // The web form (PreventiveFormClient) stores technical data as:
+    // { header: {...}, scope: { voltage_rs: {before, after}, circuit_1_amp_r: {before, after}, ... }, parts: [...] }
+    // The processVal loop above only processes root keys ('header', 'scope', 'parts') which don't match any labels.
+    // We must merge t.scope into our local scope variable so Chiller post-processing can find the data.
+    if (t.scope && typeof t.scope === 'object' && !Array.isArray(t.scope)) {
+      Object.keys(t.scope).forEach(key => {
+        if (!scope[key]) {
+          const val = t.scope[key];
+          if (val && typeof val === 'object' && (val.before !== undefined || val.after !== undefined)) {
+            // Already in {before, after, remarks} format from the web form
+            scope[key] = val;
+          } else if (val !== null && val !== undefined) {
+            // Simple value
+            scope[key] = { before: String(val), after: "-", remarks: "" };
+          }
+        }
+      });
+    }
+
     // 2. Process nested parameters or metrics (Bulk Sync)
     if (t.parameters || t.metrics) {
       const p = t.parameters || t.metrics || {};
