@@ -324,12 +324,6 @@ export default function DashboardWrapper() {
                         <Clock size={16} className="text-[#0073ea]" /> Recent History
                       </h2>
                     </div>
-                    <button 
-                      onClick={() => handleOpenReports("all")}
-                      className="text-[10px] font-black text-[#0073ea] uppercase hover:underline underline-offset-4 decoration-2"
-                    >
-                      View All
-                    </button>
                   </div>
                    <ActivityFeed activities={recentActivities} onItemClick={(e, unitId) => handleActivityClick(e, unitId)} />
                 </div>

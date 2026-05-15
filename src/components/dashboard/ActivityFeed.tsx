@@ -59,7 +59,7 @@ export default function ActivityFeed({
                   {act.engineer} <span className="text-slate-400 font-bold uppercase text-[9px]">Submitted a {act.type || 'Service'} Report</span>
                 </p>
                 <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter whitespace-nowrap ml-4">
-                  {new Date(act.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
+                  {new Date(act.at).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short' })} - {new Date(act.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }).replace(':', '.')}
                 </span>
               </div>
               <p className="text-sm font-black text-[#003366] truncate">{act.unit_tag}{act.room_tenant ? ` — ${act.room_tenant}` : ''}</p>
