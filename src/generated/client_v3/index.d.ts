@@ -53984,6 +53984,7 @@ export namespace Prisma {
     description: string | null
     visibility: string | null
     allowed_users: string | null
+    vendor_name: string | null
     created_at: Date | null
     updated_at: Date | null
   }
@@ -53999,6 +54000,7 @@ export namespace Prisma {
     description: string | null
     visibility: string | null
     allowed_users: string | null
+    vendor_name: string | null
     created_at: Date | null
     updated_at: Date | null
   }
@@ -54014,6 +54016,7 @@ export namespace Prisma {
     description: number
     visibility: number
     allowed_users: number
+    vendor_name: number
     created_at: number
     updated_at: number
     _all: number
@@ -54041,6 +54044,7 @@ export namespace Prisma {
     description?: true
     visibility?: true
     allowed_users?: true
+    vendor_name?: true
     created_at?: true
     updated_at?: true
   }
@@ -54056,6 +54060,7 @@ export namespace Prisma {
     description?: true
     visibility?: true
     allowed_users?: true
+    vendor_name?: true
     created_at?: true
     updated_at?: true
   }
@@ -54071,6 +54076,7 @@ export namespace Prisma {
     description?: true
     visibility?: true
     allowed_users?: true
+    vendor_name?: true
     created_at?: true
     updated_at?: true
     _all?: true
@@ -54173,6 +54179,7 @@ export namespace Prisma {
     description: string | null
     visibility: string
     allowed_users: string | null
+    vendor_name: string | null
     created_at: Date
     updated_at: Date
     _count: Shopping_listCountAggregateOutputType | null
@@ -54207,6 +54214,7 @@ export namespace Prisma {
     description?: boolean
     visibility?: boolean
     allowed_users?: boolean
+    vendor_name?: boolean
     created_at?: boolean
     updated_at?: boolean
   }, ExtArgs["result"]["shopping_list"]>
@@ -54224,11 +54232,12 @@ export namespace Prisma {
     description?: boolean
     visibility?: boolean
     allowed_users?: boolean
+    vendor_name?: boolean
     created_at?: boolean
     updated_at?: boolean
   }
 
-  export type shopping_listOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "category" | "work_type" | "item_name" | "capacity_unit" | "capacity_range" | "price" | "description" | "visibility" | "allowed_users" | "created_at" | "updated_at", ExtArgs["result"]["shopping_list"]>
+  export type shopping_listOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "category" | "work_type" | "item_name" | "capacity_unit" | "capacity_range" | "price" | "description" | "visibility" | "allowed_users" | "vendor_name" | "created_at" | "updated_at", ExtArgs["result"]["shopping_list"]>
 
   export type $shopping_listPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "shopping_list"
@@ -54244,6 +54253,7 @@ export namespace Prisma {
       description: string | null
       visibility: string
       allowed_users: string | null
+      vendor_name: string | null
       created_at: Date
       updated_at: Date
     }, ExtArgs["result"]["shopping_list"]>
@@ -54625,6 +54635,7 @@ export namespace Prisma {
     readonly description: FieldRef<"shopping_list", 'String'>
     readonly visibility: FieldRef<"shopping_list", 'String'>
     readonly allowed_users: FieldRef<"shopping_list", 'String'>
+    readonly vendor_name: FieldRef<"shopping_list", 'String'>
     readonly created_at: FieldRef<"shopping_list", 'DateTime'>
     readonly updated_at: FieldRef<"shopping_list", 'DateTime'>
   }
@@ -56627,6 +56638,7 @@ export namespace Prisma {
     description: 'description',
     visibility: 'visibility',
     allowed_users: 'allowed_users',
+    vendor_name: 'vendor_name',
     created_at: 'created_at',
     updated_at: 'updated_at'
   };
@@ -57096,7 +57108,8 @@ export namespace Prisma {
     capacity_range: 'capacity_range',
     description: 'description',
     visibility: 'visibility',
-    allowed_users: 'allowed_users'
+    allowed_users: 'allowed_users',
+    vendor_name: 'vendor_name'
   };
 
   export type shopping_listOrderByRelevanceFieldEnum = (typeof shopping_listOrderByRelevanceFieldEnum)[keyof typeof shopping_listOrderByRelevanceFieldEnum]
@@ -61360,6 +61373,7 @@ export namespace Prisma {
     description?: StringNullableFilter<"shopping_list"> | string | null
     visibility?: StringFilter<"shopping_list"> | string
     allowed_users?: StringNullableFilter<"shopping_list"> | string | null
+    vendor_name?: StringNullableFilter<"shopping_list"> | string | null
     created_at?: DateTimeFilter<"shopping_list"> | Date | string
     updated_at?: DateTimeFilter<"shopping_list"> | Date | string
   }
@@ -61375,6 +61389,7 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     visibility?: SortOrder
     allowed_users?: SortOrderInput | SortOrder
+    vendor_name?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     _relevance?: shopping_listOrderByRelevanceInput
@@ -61394,6 +61409,7 @@ export namespace Prisma {
     description?: StringNullableFilter<"shopping_list"> | string | null
     visibility?: StringFilter<"shopping_list"> | string
     allowed_users?: StringNullableFilter<"shopping_list"> | string | null
+    vendor_name?: StringNullableFilter<"shopping_list"> | string | null
     created_at?: DateTimeFilter<"shopping_list"> | Date | string
     updated_at?: DateTimeFilter<"shopping_list"> | Date | string
   }, "id">
@@ -61409,6 +61425,7 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     visibility?: SortOrder
     allowed_users?: SortOrderInput | SortOrder
+    vendor_name?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     _count?: shopping_listCountOrderByAggregateInput
@@ -61432,6 +61449,7 @@ export namespace Prisma {
     description?: StringNullableWithAggregatesFilter<"shopping_list"> | string | null
     visibility?: StringWithAggregatesFilter<"shopping_list"> | string
     allowed_users?: StringNullableWithAggregatesFilter<"shopping_list"> | string | null
+    vendor_name?: StringNullableWithAggregatesFilter<"shopping_list"> | string | null
     created_at?: DateTimeWithAggregatesFilter<"shopping_list"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"shopping_list"> | Date | string
   }
@@ -65862,6 +65880,7 @@ export namespace Prisma {
     description?: string | null
     visibility?: string
     allowed_users?: string | null
+    vendor_name?: string | null
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -65877,6 +65896,7 @@ export namespace Prisma {
     description?: string | null
     visibility?: string
     allowed_users?: string | null
+    vendor_name?: string | null
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -65892,6 +65912,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: StringFieldUpdateOperationsInput | string
     allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
+    vendor_name?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -65907,6 +65928,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: StringFieldUpdateOperationsInput | string
     allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
+    vendor_name?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -65922,6 +65944,7 @@ export namespace Prisma {
     description?: string | null
     visibility?: string
     allowed_users?: string | null
+    vendor_name?: string | null
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -65937,6 +65960,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: StringFieldUpdateOperationsInput | string
     allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
+    vendor_name?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -65952,6 +65976,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: StringFieldUpdateOperationsInput | string
     allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
+    vendor_name?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -69859,6 +69884,7 @@ export namespace Prisma {
     description?: SortOrder
     visibility?: SortOrder
     allowed_users?: SortOrder
+    vendor_name?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }
@@ -69879,6 +69905,7 @@ export namespace Prisma {
     description?: SortOrder
     visibility?: SortOrder
     allowed_users?: SortOrder
+    vendor_name?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }
@@ -69894,6 +69921,7 @@ export namespace Prisma {
     description?: SortOrder
     visibility?: SortOrder
     allowed_users?: SortOrder
+    vendor_name?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }

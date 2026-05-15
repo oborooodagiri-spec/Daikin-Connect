@@ -21,7 +21,9 @@ export async function getRateCardSettings() {
       success: true,
       data: {
         vendors: config.vendors || ["Daikin Certified Partner"],
-        period: config.period || "Jan 2026 - Des 2026",
+        period_start: config.period_start || "2026-01-01",
+        period_end: config.period_end || "2026-12-31",
+        selected_vendor: config.selected_vendor || (config.vendors?.[0] || "Daikin Certified Partner"),
         allowed_users: config.allowed_users || []
       }
     };

@@ -948,6 +948,7 @@ model shopping_list {
   description     String?  @db.Text
   visibility      String   @default("Internal") // Internal (Admin Only), Public
   allowed_users   String?  @db.Text            // Comma separated user IDs
+  vendor_name     String?  @default("Daikin Certified Partner") @db.VarChar(100)
   created_at      DateTime @default(now()) @db.Timestamp(0)
   updated_at      DateTime @updatedAt
 }

@@ -742,6 +742,7 @@ exports.Prisma.Shopping_listScalarFieldEnum = {
   description: 'description',
   visibility: 'visibility',
   allowed_users: 'allowed_users',
+  vendor_name: 'vendor_name',
   created_at: 'created_at',
   updated_at: 'updated_at'
 };
@@ -1082,7 +1083,8 @@ exports.Prisma.shopping_listOrderByRelevanceFieldEnum = {
   capacity_range: 'capacity_range',
   description: 'description',
   visibility: 'visibility',
-  allowed_users: 'allowed_users'
+  allowed_users: 'allowed_users',
+  vendor_name: 'vendor_name'
 };
 
 exports.Prisma.rate_card_settingsOrderByRelevanceFieldEnum = {

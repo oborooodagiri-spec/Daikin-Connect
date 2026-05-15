@@ -54,6 +54,7 @@ export async function createShoppingItem(data: any) {
         description: data.description,
         visibility: data.visibility || "Internal",
         allowed_users: data.allowed_users || null,
+        vendor_name: data.vendor_name || "Daikin Certified Partner",
       },
     });
     revalidatePath("/admin/database/rate-card");
@@ -78,6 +79,7 @@ export async function updateShoppingItem(id: string, data: any) {
         description: data.description,
         visibility: data.visibility,
         allowed_users: data.allowed_users,
+        vendor_name: data.vendor_name,
       },
     });
     revalidatePath("/admin/database/rate-card");

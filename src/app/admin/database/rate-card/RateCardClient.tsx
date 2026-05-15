@@ -84,7 +84,9 @@ export default function RateCardClient() {
   // Settings States
   const [settings, setSettings] = useState({
     vendors: ["Daikin Certified Partner"],
-    period: "Jan 2026 - Des 2026",
+    period_start: "2026-01-01",
+    period_end: "2026-12-31",
+    selected_vendor: "Daikin Certified Partner",
     allowed_users: [] as any[]
   });
   const [isVendorModalOpen, setIsVendorModalOpen] = useState(false);
@@ -119,12 +121,34 @@ export default function RateCardClient() {
 
   const filteredItems = useMemo(() => {
     return items.filter(item => {
+      const matchesVendor = item.vendor_name === settings.selected_vendor;
       const matchesSearch = item.item_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            item.description?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
-      return matchesSearch && matchesCategory;
+      return matchesVendor && matchesSearch && matchesCategory;
     });
-  }, [items, searchQuery, selectedCategory]);
+  }, [items, searchQuery, selectedCategory, settings.selected_vendor]);
+
+  // Comparison Logic
+  const getPriceAnalysis = (item: any) => {
+    const identicalItems = items.filter(i => 
+      i.item_name === item.item_name && 
+      i.category === item.category && 
+      i.capacity_range === item.capacity_range
+    );
+
+    if (identicalItems.length <= 1) return null;
+
+    const prices = identicalItems.map(i => parseFloat(i.price));
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+    const currentPrice = parseFloat(item.price);
+
+    if (currentPrice === minPrice && minPrice !== maxPrice) return { type: 'cheapest', label: 'Termurah' };
+    if (currentPrice === maxPrice && minPrice !== maxPrice) return { type: 'expensive', label: 'Termahal' };
+    
+    return null;
+  };
 
   const notify = (type: 'success' | 'error', message: string) => {
     setNotification({ type, message });
@@ -153,7 +177,8 @@ export default function RateCardClient() {
     
     const payload = {
       ...formData,
-      price: parseFloat(formData.price) || 0
+      price: parseFloat(formData.price) || 0,
+      vendor_name: settings.selected_vendor
     };
 
     let res;
@@ -216,9 +241,15 @@ export default function RateCardClient() {
     }
   };
 
-  const handleUpdatePeriod = async (period: string) => {
-    setSettings({...settings, period});
-    await updateRateCardSetting('period', period);
+  const handleUpdatePeriod = async (key: 'period_start' | 'period_end', value: string) => {
+    setSettings({...settings, [key]: value});
+    await updateRateCardSetting(key, value);
+  };
+
+  const handleSelectVendor = async (vendor: string) => {
+    setSettings({...settings, selected_vendor: vendor});
+    await updateRateCardSetting('selected_vendor', vendor);
+    setIsVendorModalOpen(false);
   };
 
   const handleAddUserAccess = async (user: any) => {
@@ -275,8 +306,9 @@ export default function RateCardClient() {
     
     doc.setFontSize(10);
     doc.setTextColor(100);
-    doc.text(`Periode: ${settings.period}`, 14, 38);
-    doc.text(`Dicetak pada: ${new Date().toLocaleString()}`, 14, 43);
+    doc.text(`Vendor: ${settings.selected_vendor}`, 14, 38);
+    doc.text(`Periode: ${new Date(settings.period_start).toLocaleDateString('id-ID')} - ${new Date(settings.period_end).toLocaleDateString('id-ID')}`, 14, 43);
+    doc.text(`Dicetak pada: ${new Date().toLocaleString()}`, 14, 48);
     
     doc.autoTable({
       head: [tableColumn],
@@ -371,10 +403,10 @@ export default function RateCardClient() {
                  <Building2 size={24} />
               </div>
               <div className="flex-1">
-                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Nama Vendor</p>
-                 <p className="text-sm font-bold text-slate-700 truncate">{settings.vendors.join(", ") || "Belum ada vendor"}</p>
+                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Vendor Terpilih</p>
+                 <p className="text-sm font-bold text-slate-700 truncate">{settings.selected_vendor}</p>
               </div>
-              {isAdmin && <Plus size={16} className="text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />}
+              {isAdmin && <ChevronRight size={16} className="text-slate-300 group-hover:translate-x-1 transition-all" />}
            </button>
 
            <button 
@@ -386,9 +418,11 @@ export default function RateCardClient() {
               </div>
               <div className="flex-1">
                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Periode Berlaku</p>
-                 <p className="text-sm font-bold text-slate-700">{settings.period}</p>
+                 <p className="text-[10px] font-bold text-slate-700">
+                    {new Date(settings.period_start).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })} - {new Date(settings.period_end).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}
+                 </p>
               </div>
-              {isAdmin && <Edit3 size={16} className="text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />}
+              {isAdmin && <Calendar size={16} className="text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />}
            </button>
 
            <button 
@@ -486,9 +520,21 @@ export default function RateCardClient() {
                               </div>
                            </td>
                            <td className="px-8 py-6">
-                              <div className="flex items-center gap-1.5 font-black text-emerald-600 text-sm">
-                                 <span className="text-[10px] opacity-60">Rp</span>
-                                 {new Intl.NumberFormat('id-ID').format(item.price)}
+                              <div className="flex flex-col">
+                                 <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-1.5 font-black text-emerald-600 text-sm">
+                                       <span className="text-[10px] opacity-60">Rp</span>
+                                       {new Intl.NumberFormat('id-ID').format(item.price)}
+                                    </div>
+                                    {getPriceAnalysis(item) && (
+                                      <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${
+                                        getPriceAnalysis(item)?.type === 'cheapest' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'
+                                      }`}>
+                                        {getPriceAnalysis(item)?.label}
+                                      </span>
+                                    )}
+                                 </div>
+                                 <span className="text-[10px] text-slate-400 font-bold mt-1">Estimasi Unit Price</span>
                               </div>
                            </td>
                            {isAdmin && (
@@ -752,24 +798,47 @@ export default function RateCardClient() {
                     <button onClick={() => setIsVendorModalOpen(false)} className="p-2 hover:bg-slate-50 rounded-full transition-colors"><CloseIcon size={20} /></button>
                   </div>
                   <div className="p-8 space-y-6">
-                    <div className="flex gap-2">
-                        <input 
-                          type="text" 
-                          placeholder="Masukkan nama vendor..." 
-                          value={newVendor}
-                          onChange={(e) => setNewVendor(e.target.value)}
-                          onKeyPress={(e) => e.key === 'Enter' && handleAddVendor()}
-                          className="flex-1 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all" 
-                        />
-                        <button onClick={handleAddVendor} className="px-6 py-4 bg-[#323338] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all">Tambah</button>
+                    <div className="space-y-4">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Pilih Vendor Aktif</label>
+                        <div className="grid grid-cols-1 gap-2">
+                           {settings.vendors.map((vendor, idx) => (
+                             <button 
+                               key={idx} 
+                               onClick={() => handleSelectVendor(vendor)}
+                               className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left ${
+                                 settings.selected_vendor === vendor 
+                                 ? 'bg-blue-50 border-blue-200 ring-2 ring-blue-500/10' 
+                                 : 'bg-white border-slate-100 hover:border-blue-100'
+                               }`}
+                             >
+                                <span className={`text-sm font-bold ${settings.selected_vendor === vendor ? 'text-[#0073ea]' : 'text-slate-700'}`}>{vendor}</span>
+                                {settings.selected_vendor === vendor && <CheckCircle2 size={18} className="text-[#0073ea]" />}
+                             </button>
+                           ))}
+                        </div>
                     </div>
-                    <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-2">
-                        {settings.vendors.map((vendor, idx) => (
-                          <div key={idx} className="flex items-center justify-between p-4 bg-white border border-slate-50 rounded-2xl group hover:border-blue-100 transition-all">
-                              <span className="text-sm font-bold text-slate-700">{vendor}</span>
-                              <button onClick={() => handleRemoveVendor(vendor)} className="p-2 text-slate-300 hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100"><Trash2 size={16} /></button>
-                          </div>
-                        ))}
+
+                    <div className="pt-4 border-t border-slate-50">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-3">Kelola Daftar Vendor</label>
+                        <div className="flex gap-2 mb-4">
+                            <input 
+                              type="text" 
+                              placeholder="Tambah vendor baru..." 
+                              value={newVendor}
+                              onChange={(e) => setNewVendor(e.target.value)}
+                              onKeyPress={(e) => e.key === 'Enter' && handleAddVendor()}
+                              className="flex-1 px-5 py-3 bg-slate-50 border border-slate-100 rounded-xl font-bold text-xs focus:outline-none focus:border-[#0073ea] transition-all" 
+                            />
+                            <button onClick={handleAddVendor} className="px-5 py-3 bg-[#323338] text-white rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-black transition-all">Tambah</button>
+                        </div>
+                        <div className="space-y-2 max-h-40 overflow-y-auto custom-scrollbar pr-2">
+                            {settings.vendors.map((vendor, idx) => (
+                              <div key={idx} className="flex items-center justify-between p-3 bg-slate-50/50 border border-slate-100 rounded-xl group">
+                                  <span className="text-[11px] font-bold text-slate-500">{vendor}</span>
+                                  <button onClick={() => handleRemoveVendor(vendor)} className="p-1.5 text-slate-300 hover:text-rose-500 transition-colors"><Trash2 size={14} /></button>
+                              </div>
+                            ))}
+                        </div>
                     </div>
                   </div>
               </motion.div>
@@ -794,17 +863,27 @@ export default function RateCardClient() {
                     <button onClick={() => setIsPeriodModalOpen(false)} className="p-2 hover:bg-slate-50 rounded-full transition-colors"><CloseIcon size={20} /></button>
                   </div>
                   <div className="p-8 space-y-6">
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Rentang Waktu</label>
-                        <input 
-                          type="text" 
-                          value={settings.period}
-                          onChange={(e) => handleUpdatePeriod(e.target.value)}
-                          placeholder="e.g. Jan 2026 - Des 2026"
-                          className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-indigo-500 transition-all" 
-                        />
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tanggal Mulai</label>
+                            <input 
+                              type="date" 
+                              value={settings.period_start}
+                              onChange={(e) => handleUpdatePeriod('period_start', e.target.value)}
+                              className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-indigo-500 transition-all" 
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tanggal Berakhir</label>
+                            <input 
+                              type="date" 
+                              value={settings.period_end}
+                              onChange={(e) => handleUpdatePeriod('period_end', e.target.value)}
+                              className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-indigo-500 transition-all" 
+                            />
+                        </div>
                     </div>
-                    <button onClick={() => setIsPeriodModalOpen(false)} className="w-full py-4 bg-indigo-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-600 transition-all">Simpan Perubahan</button>
+                    <button onClick={() => setIsPeriodModalOpen(false)} className="w-full py-4 bg-indigo-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-100">Simpan Periode</button>
                   </div>
               </motion.div>
             </div>
