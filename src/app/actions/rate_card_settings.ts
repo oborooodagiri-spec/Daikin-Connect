@@ -20,10 +20,10 @@ export async function getRateCardSettings() {
     return {
       success: true,
       data: {
-        vendors: config.vendors || ["Daikin Certified Partner"],
-        period_start: config.period_start || "2026-01-01",
-        period_end: config.period_end || "2026-12-31",
-        selected_vendor: config.selected_vendor || (config.vendors?.[0] || "Daikin Certified Partner"),
+        vendors: config.vendors || [],
+        period_year: config.period_year || new Date().getFullYear().toString(),
+        selected_vendor: config.selected_vendor || "",
+        vendor_prices: config.vendor_prices || {},
         allowed_users: config.allowed_users || []
       }
     };

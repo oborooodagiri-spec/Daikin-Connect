@@ -91,12 +91,14 @@ export default function RateCardClient() {
 
   // Settings States
   const [settings, setSettings] = useState({
-    vendors: ["Daikin Certified Partner"],
-    period_start: "2026-01-01",
-    period_end: "2026-12-31",
-    selected_vendor: "Daikin Certified Partner",
+    vendors: [] as string[],
+    period_year: new Date().getFullYear().toString(),
+    selected_vendor: "",
+    vendor_prices: {} as Record<string, Record<string, number>>,
     allowed_users: [] as any[]
   });
+  const [editingPriceId, setEditingPriceId] = useState<string | null>(null);
+  const [editingPriceValue, setEditingPriceValue] = useState("");
   const [isVendorModalOpen, setIsVendorModalOpen] = useState(false);
   const [isPeriodModalOpen, setIsPeriodModalOpen] = useState(false);
   const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
@@ -146,12 +148,17 @@ export default function RateCardClient() {
   };
 
   const selectedCount = Object.keys(selectedItems).length;
+  const getVendorPrice = (itemId: string): number | null => {
+    if (!settings.selected_vendor) return null;
+    return settings.vendor_prices?.[settings.selected_vendor]?.[itemId] ?? null;
+  };
+
   const selectedTotalValue = useMemo(() => {
     return Object.entries(selectedItems).reduce((sum, [id, data]) => {
-      const item = items.find(i => i.id.toString() === id);
-      return sum + (item ? parseFloat(item.price) * data.qty : 0);
+      const price = getVendorPrice(id);
+      return sum + (price ? price * data.qty : 0);
     }, 0);
-  }, [selectedItems, items]);
+  }, [selectedItems, items, settings.vendor_prices, settings.selected_vendor]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -180,28 +187,29 @@ export default function RateCardClient() {
 
   const filteredItems = useMemo(() => {
     return items.filter(item => {
-      const matchesVendor = item.vendor_name === settings.selected_vendor;
       const matchesSearch = item.item_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            item.description?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
-      return matchesVendor && matchesSearch && matchesCategory;
+      return matchesSearch && matchesCategory;
     });
-  }, [items, searchQuery, selectedCategory, settings.selected_vendor]);
+  }, [items, searchQuery, selectedCategory]);
 
-  // Comparison Logic
-  const getPriceAnalysis = (item: any) => {
-    const identicalItems = items.filter(i => 
-      i.item_name === item.item_name && 
-      i.category === item.category && 
-      i.capacity_range === item.capacity_range
-    );
+  // Comparison Logic - compare price of current vendor against all other vendors
+  const getPriceAnalysis = (itemId: string) => {
+    if (!settings.selected_vendor) return null;
+    const currentPrice = getVendorPrice(itemId);
+    if (!currentPrice) return null;
 
-    if (identicalItems.length <= 1) return null;
+    const allVendorPrices = Object.entries(settings.vendor_prices)
+      .filter(([vendor]) => vendor !== settings.selected_vendor)
+      .map(([, prices]) => prices[itemId])
+      .filter(p => p && p > 0);
 
-    const prices = identicalItems.map(i => parseFloat(i.price));
-    const minPrice = Math.min(...prices);
-    const maxPrice = Math.max(...prices);
-    const currentPrice = parseFloat(item.price);
+    if (allVendorPrices.length === 0) return null;
+
+    const allPrices = [currentPrice, ...allVendorPrices];
+    const minPrice = Math.min(...allPrices);
+    const maxPrice = Math.max(...allPrices);
 
     if (currentPrice === minPrice && minPrice !== maxPrice) return { type: 'cheapest', label: 'Termurah' };
     if (currentPrice === maxPrice && minPrice !== maxPrice) return { type: 'expensive', label: 'Termahal' };
@@ -236,8 +244,8 @@ export default function RateCardClient() {
     
     const payload = {
       ...formData,
-      price: parseFloat(formData.price) || 0,
-      vendor_name: settings.selected_vendor
+      price: 0,
+      vendor_name: null
     };
 
     let res;
@@ -300,15 +308,32 @@ export default function RateCardClient() {
     }
   };
 
-  const handleUpdatePeriod = async (key: 'period_start' | 'period_end', value: string) => {
-    setSettings({...settings, [key]: value});
-    await updateRateCardSetting(key, value);
+  const handleUpdatePeriodYear = async (year: string) => {
+    setSettings({...settings, period_year: year});
+    await updateRateCardSetting('period_year', year);
   };
 
   const handleSelectVendor = async (vendor: string) => {
     setSettings({...settings, selected_vendor: vendor});
     await updateRateCardSetting('selected_vendor', vendor);
     setIsVendorModalOpen(false);
+  };
+
+  const handleDeselectVendor = async () => {
+    setSettings({...settings, selected_vendor: ""});
+    await updateRateCardSetting('selected_vendor', "");
+    setIsVendorModalOpen(false);
+  };
+
+  const handleSaveVendorPrice = async (itemId: string, price: number) => {
+    if (!settings.selected_vendor) return;
+    const updatedPrices = { ...settings.vendor_prices };
+    if (!updatedPrices[settings.selected_vendor]) updatedPrices[settings.selected_vendor] = {};
+    updatedPrices[settings.selected_vendor][itemId] = price;
+    setSettings({...settings, vendor_prices: updatedPrices});
+    await updateRateCardSetting('vendor_prices', updatedPrices);
+    setEditingPriceId(null);
+    setEditingPriceValue("");
   };
 
   const handleAddUserAccess = async (user: any) => {
@@ -345,12 +370,13 @@ export default function RateCardClient() {
     const tableRows: any[] = [];
 
     filteredItems.forEach(item => {
+      const vendorPrice = getVendorPrice(item.id.toString());
       const itemData = [
         item.category,
         item.work_type,
         item.item_name,
         `${item.capacity_range} ${item.capacity_unit}`,
-        new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(item.price)
+        vendorPrice ? new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(vendorPrice) : '-'
       ];
       tableRows.push(itemData);
     });
@@ -365,8 +391,8 @@ export default function RateCardClient() {
     
     doc.setFontSize(10);
     doc.setTextColor(100);
-    doc.text(`Vendor: ${settings.selected_vendor}`, 14, 38);
-    doc.text(`Periode: ${new Date(settings.period_start).toLocaleDateString('id-ID')} - ${new Date(settings.period_end).toLocaleDateString('id-ID')}`, 14, 43);
+    doc.text(`Vendor: ${settings.selected_vendor || 'N/A'}`, 14, 38);
+    doc.text(`Periode: ${settings.period_year}`, 14, 43);
     doc.text(`Dicetak pada: ${new Date().toLocaleString()}`, 14, 48);
     
     doc.autoTable({
@@ -435,13 +461,13 @@ export default function RateCardClient() {
     
     const infoLeft = [
       ["Tanggal", new Date(woForm.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })],
-      ["Vendor", settings.selected_vendor],
+      ["Vendor", settings.selected_vendor || 'N/A'],
       ["Proyek", woForm.project_name || "-"],
     ];
     const infoRight = [
       ["Lokasi", woForm.location || "-"],
       ["PIC / Pengaju", woForm.pic_name || "-"],
-      ["Periode Kontrak", `${new Date(settings.period_start).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })} - ${new Date(settings.period_end).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}`],
+      ["Periode Kontrak", settings.period_year],
     ];
 
     infoLeft.forEach(([label, val], i) => {
@@ -467,7 +493,8 @@ export default function RateCardClient() {
     Object.entries(selectedItems).forEach(([id, data], idx) => {
       const item = items.find(i => i.id.toString() === id);
       if (!item) return;
-      const subtotal = parseFloat(item.price) * data.qty;
+      const vendorPrice = getVendorPrice(id) || 0;
+      const subtotal = vendorPrice * data.qty;
       grandTotal += subtotal;
       tableBody.push([
         idx + 1,
@@ -475,7 +502,7 @@ export default function RateCardClient() {
         item.category,
         `${item.capacity_range} ${item.capacity_unit}`,
         data.qty,
-        fmt(parseFloat(item.price)),
+        fmt(vendorPrice),
         fmt(subtotal)
       ]);
     });
@@ -562,7 +589,7 @@ export default function RateCardClient() {
     doc.text("Disetujui oleh,", pageWidth - 80, afterTableY);
     doc.line(pageWidth - 80, afterTableY + 28, pageWidth - 14, afterTableY + 28);
     doc.setTextColor(50);
-    doc.text(settings.selected_vendor, pageWidth - 80, afterTableY + 33);
+    doc.text(settings.selected_vendor || "(Nama Vendor)", pageWidth - 80, afterTableY + 33);
     doc.setTextColor(130);
     doc.text("Vendor / Kontraktor", pageWidth - 80, afterTableY + 38);
 
@@ -637,9 +664,11 @@ export default function RateCardClient() {
               <div className="p-4 bg-blue-50 text-[#0073ea] rounded-2xl group-hover:bg-[#0073ea] group-hover:text-white transition-colors">
                  <Building2 size={24} />
               </div>
-              <div className="flex-1">
+               <div className="flex-1">
                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Vendor Terpilih</p>
-                 <p className="text-sm font-bold text-slate-700 truncate">{settings.selected_vendor}</p>
+                 <p className={`text-sm font-bold truncate ${settings.selected_vendor ? 'text-slate-700' : 'text-slate-300 italic'}`}>
+                    {settings.selected_vendor || "Belum ada vendor yang dipilih"}
+                 </p>
               </div>
               {isAdmin && <ChevronRight size={16} className="text-slate-300 group-hover:translate-x-1 transition-all" />}
            </button>
@@ -653,9 +682,7 @@ export default function RateCardClient() {
               </div>
               <div className="flex-1">
                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Periode Berlaku</p>
-                 <p className="text-[10px] font-bold text-slate-700">
-                    {new Date(settings.period_start).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })} - {new Date(settings.period_end).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}
-                 </p>
+                 <p className="text-sm font-bold text-slate-700">Tahun {settings.period_year}</p>
               </div>
               {isAdmin && <Calendar size={16} className="text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />}
            </button>
@@ -773,22 +800,58 @@ export default function RateCardClient() {
                               </div>
                            </td>
                            <td className="px-8 py-6">
-                              <div className="flex flex-col">
-                                 <div className="flex items-center gap-2">
-                                    <div className="flex items-center gap-1.5 font-black text-emerald-600 text-sm">
-                                       <span className="text-[10px] opacity-60">Rp</span>
-                                       {new Intl.NumberFormat('id-ID').format(item.price)}
+                              {(() => {
+                                const itemId = item.id.toString();
+                                const vendorPrice = getVendorPrice(itemId);
+                                const analysis = getPriceAnalysis(itemId);
+                                
+                                if (!settings.selected_vendor) {
+                                  return <span className="text-xs text-slate-300 italic font-bold">Pilih vendor</span>;
+                                }
+
+                                if (editingPriceId === itemId && isAdmin) {
+                                  return (
+                                    <div className="flex items-center gap-1">
+                                      <span className="text-[10px] text-emerald-600 font-black">Rp</span>
+                                      <input 
+                                        autoFocus
+                                        type="number" 
+                                        value={editingPriceValue}
+                                        onChange={e => setEditingPriceValue(e.target.value)}
+                                        onKeyDown={e => { if (e.key === 'Enter') handleSaveVendorPrice(itemId, parseFloat(editingPriceValue) || 0); if (e.key === 'Escape') setEditingPriceId(null); }}
+                                        onBlur={() => handleSaveVendorPrice(itemId, parseFloat(editingPriceValue) || 0)}
+                                        className="w-28 px-2 py-1 bg-white border border-emerald-300 rounded-lg text-xs font-black text-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                                      />
                                     </div>
-                                    {getPriceAnalysis(item) && (
-                                      <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${
-                                        getPriceAnalysis(item)?.type === 'cheapest' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'
-                                      }`}>
-                                        {getPriceAnalysis(item)?.label}
-                                      </span>
+                                  );
+                                }
+
+                                return (
+                                  <div className="flex flex-col">
+                                    <div className="flex items-center gap-2">
+                                      <button 
+                                        onClick={() => { if (isAdmin) { setEditingPriceId(itemId); setEditingPriceValue(vendorPrice?.toString() || "0"); } }}
+                                        className={`flex items-center gap-1.5 font-black text-sm ${vendorPrice ? 'text-emerald-600' : 'text-slate-300'} ${isAdmin ? 'hover:bg-emerald-50 px-2 py-1 -mx-2 -my-1 rounded-lg transition-colors cursor-text' : ''}`}
+                                      >
+                                        <span className="text-[10px] opacity-60">Rp</span>
+                                        {vendorPrice ? new Intl.NumberFormat('id-ID').format(vendorPrice) : '0'}
+                                      </button>
+                                      {analysis && (
+                                        <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${
+                                          analysis.type === 'cheapest' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'
+                                        }`}>
+                                          {analysis.label}
+                                        </span>
+                                      )}
+                                    </div>
+                                    {vendorPrice ? (
+                                      <span className="text-[10px] text-slate-400 font-bold mt-1">Unit Price</span>
+                                    ) : (
+                                      <span className="text-[10px] text-amber-500 font-bold mt-1">{isAdmin ? 'Klik untuk isi harga' : 'Belum diisi'}</span>
                                     )}
-                                 </div>
-                                 <span className="text-[10px] text-slate-400 font-bold mt-1">Estimasi Unit Price</span>
-                              </div>
+                                  </div>
+                                );
+                              })()}
                            </td>
                            {isAdmin && (
                               <td className="px-8 py-6 text-right">
@@ -995,12 +1058,13 @@ export default function RateCardClient() {
                        </div>
                     </div>
 
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 text-emerald-600">Harga Satuan (IDR)</label>
-                       <div className="relative">
-                          <div className="absolute left-6 top-1/2 -translate-y-1/2 font-black text-emerald-600 text-sm">Rp</div>
-                          <input required type="number" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full pl-14 pr-6 py-4 bg-emerald-50/30 border border-emerald-100 rounded-2xl font-black text-emerald-700 text-lg focus:outline-none focus:border-emerald-500 transition-all" />
-                       </div>
+                    <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4">
+                       <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest flex items-center gap-2">
+                         <Info size={14} /> Harga diatur per vendor
+                       </p>
+                       <p className="text-[10px] text-amber-600 font-medium mt-1">
+                         Harga satuan diisi langsung di tabel setelah memilih vendor. Klik kolom harga pada tabel untuk mengisi.
+                       </p>
                     </div>
 
                     <div className="space-y-2">
@@ -1054,6 +1118,17 @@ export default function RateCardClient() {
                     <div className="space-y-4">
                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Pilih Vendor Aktif</label>
                         <div className="grid grid-cols-1 gap-2">
+                           <button 
+                             onClick={handleDeselectVendor}
+                             className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left ${
+                               !settings.selected_vendor 
+                               ? 'bg-slate-50 border-slate-200 ring-2 ring-slate-300/20' 
+                               : 'bg-white border-slate-100 hover:border-slate-200'
+                             }`}
+                           >
+                              <span className={`text-sm font-bold ${!settings.selected_vendor ? 'text-slate-500' : 'text-slate-400'}`}>Tanpa Vendor (Lihat List Saja)</span>
+                              {!settings.selected_vendor && <CheckCircle2 size={18} className="text-slate-400" />}
+                           </button>
                            {settings.vendors.map((vendor, idx) => (
                              <button 
                                key={idx} 
@@ -1116,25 +1191,17 @@ export default function RateCardClient() {
                     <button onClick={() => setIsPeriodModalOpen(false)} className="p-2 hover:bg-slate-50 rounded-full transition-colors"><CloseIcon size={20} /></button>
                   </div>
                   <div className="p-8 space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tanggal Mulai</label>
-                            <input 
-                              type="date" 
-                              value={settings.period_start}
-                              onChange={(e) => handleUpdatePeriod('period_start', e.target.value)}
-                              className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-indigo-500 transition-all" 
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tanggal Berakhir</label>
-                            <input 
-                              type="date" 
-                              value={settings.period_end}
-                              onChange={(e) => handleUpdatePeriod('period_end', e.target.value)}
-                              className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-indigo-500 transition-all" 
-                            />
-                        </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tahun Berlaku</label>
+                        <select 
+                          value={settings.period_year}
+                          onChange={(e) => handleUpdatePeriodYear(e.target.value)}
+                          className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-indigo-500 transition-all appearance-none cursor-pointer"
+                        >
+                          {Array.from({length: 10}, (_, i) => (new Date().getFullYear() - 2 + i).toString()).map(year => (
+                            <option key={year} value={year}>{year}</option>
+                          ))}
+                        </select>
                     </div>
                     <button onClick={() => setIsPeriodModalOpen(false)} className="w-full py-4 bg-indigo-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-100">Simpan Periode</button>
                   </div>
@@ -1314,7 +1381,8 @@ export default function RateCardClient() {
                           {Object.entries(selectedItems).map(([id, data], idx) => {
                             const item = items.find(i => i.id.toString() === id);
                             if (!item) return null;
-                            const subtotal = parseFloat(item.price) * data.qty;
+                            const vendorPrice = getVendorPrice(id) || 0;
+                            const subtotal = vendorPrice * data.qty;
                             return (
                               <tr key={id} className="bg-white hover:bg-blue-50/30 transition-colors">
                                 <td className="px-5 py-4 text-xs font-bold text-slate-400">{idx + 1}</td>
@@ -1331,7 +1399,7 @@ export default function RateCardClient() {
                                     <button type="button" onClick={() => updateSelectedQty(id, data.qty + 1)} className="p-1 bg-slate-100 rounded hover:bg-slate-200 transition-colors"><Plus size={12} /></button>
                                   </div>
                                 </td>
-                                <td className="px-5 py-4 text-xs font-bold text-slate-600 text-right">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(item.price)}</td>
+                                <td className="px-5 py-4 text-xs font-bold text-slate-600 text-right">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(vendorPrice)}</td>
                                 <td className="px-5 py-4 text-xs font-black text-emerald-600 text-right">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(subtotal)}</td>
                               </tr>
                             );
