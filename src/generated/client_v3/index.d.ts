@@ -243,6 +243,11 @@ export type logsheet_entries = $Result.DefaultSelection<Prisma.$logsheet_entries
  * 
  */
 export type shopping_list = $Result.DefaultSelection<Prisma.$shopping_listPayload>
+/**
+ * Model rate_card_settings
+ * 
+ */
+export type rate_card_settings = $Result.DefaultSelection<Prisma.$rate_card_settingsPayload>
 
 /**
  * Enums
@@ -1075,6 +1080,16 @@ export class PrismaClient<
     * ```
     */
   get shopping_list(): Prisma.shopping_listDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.rate_card_settings`: Exposes CRUD operations for the **rate_card_settings** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Rate_card_settings
+    * const rate_card_settings = await prisma.rate_card_settings.findMany()
+    * ```
+    */
+  get rate_card_settings(): Prisma.rate_card_settingsDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1560,7 +1575,8 @@ export namespace Prisma {
     project_issues: 'project_issues',
     logsheet_templates: 'logsheet_templates',
     logsheet_entries: 'logsheet_entries',
-    shopping_list: 'shopping_list'
+    shopping_list: 'shopping_list',
+    rate_card_settings: 'rate_card_settings'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1576,7 +1592,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "customers" | "permissions" | "projects" | "knowledge_resources" | "refresh_tokens" | "role_permissions" | "roles" | "units" | "user_project_access" | "user_roles" | "user_unit_access" | "users" | "audit_logs" | "password_reset_tokens" | "activities" | "activity_photos" | "ahu_audits" | "audit_tickets" | "audit_velocity_points" | "audits" | "contracts" | "corrective" | "corrective_maintenances" | "maintenance_contracts" | "service_activities" | "service_logs" | "service_photos" | "sites" | "tickets" | "unit_comments" | "schedules" | "schedule_attendance" | "schedule_mom" | "schedule_messages" | "schedule_targets" | "complaints" | "unit_edit_requests" | "user_push_tokens" | "notifications" | "daily_ops_logs" | "vendor_attendance" | "project_intelligence" | "project_issues" | "logsheet_templates" | "logsheet_entries" | "shopping_list"
+      modelProps: "customers" | "permissions" | "projects" | "knowledge_resources" | "refresh_tokens" | "role_permissions" | "roles" | "units" | "user_project_access" | "user_roles" | "user_unit_access" | "users" | "audit_logs" | "password_reset_tokens" | "activities" | "activity_photos" | "ahu_audits" | "audit_tickets" | "audit_velocity_points" | "audits" | "contracts" | "corrective" | "corrective_maintenances" | "maintenance_contracts" | "service_activities" | "service_logs" | "service_photos" | "sites" | "tickets" | "unit_comments" | "schedules" | "schedule_attendance" | "schedule_mom" | "schedule_messages" | "schedule_targets" | "complaints" | "unit_edit_requests" | "user_push_tokens" | "notifications" | "daily_ops_logs" | "vendor_attendance" | "project_intelligence" | "project_issues" | "logsheet_templates" | "logsheet_entries" | "shopping_list" | "rate_card_settings"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4616,6 +4632,72 @@ export namespace Prisma {
           }
         }
       }
+      rate_card_settings: {
+        payload: Prisma.$rate_card_settingsPayload<ExtArgs>
+        fields: Prisma.rate_card_settingsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.rate_card_settingsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$rate_card_settingsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.rate_card_settingsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$rate_card_settingsPayload>
+          }
+          findFirst: {
+            args: Prisma.rate_card_settingsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$rate_card_settingsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.rate_card_settingsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$rate_card_settingsPayload>
+          }
+          findMany: {
+            args: Prisma.rate_card_settingsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$rate_card_settingsPayload>[]
+          }
+          create: {
+            args: Prisma.rate_card_settingsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$rate_card_settingsPayload>
+          }
+          createMany: {
+            args: Prisma.rate_card_settingsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.rate_card_settingsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$rate_card_settingsPayload>
+          }
+          update: {
+            args: Prisma.rate_card_settingsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$rate_card_settingsPayload>
+          }
+          deleteMany: {
+            args: Prisma.rate_card_settingsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.rate_card_settingsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.rate_card_settingsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$rate_card_settingsPayload>
+          }
+          aggregate: {
+            args: Prisma.Rate_card_settingsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRate_card_settings>
+          }
+          groupBy: {
+            args: Prisma.rate_card_settingsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Rate_card_settingsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.rate_card_settingsCountArgs<ExtArgs>
+            result: $Utils.Optional<Rate_card_settingsCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -4746,6 +4828,7 @@ export namespace Prisma {
     logsheet_templates?: logsheet_templatesOmit
     logsheet_entries?: logsheet_entriesOmit
     shopping_list?: shopping_listOmit
+    rate_card_settings?: rate_card_settingsOmit
   }
 
   /* Types for Logging */
@@ -54866,6 +54949,911 @@ export namespace Prisma {
 
 
   /**
+   * Model rate_card_settings
+   */
+
+  export type AggregateRate_card_settings = {
+    _count: Rate_card_settingsCountAggregateOutputType | null
+    _avg: Rate_card_settingsAvgAggregateOutputType | null
+    _sum: Rate_card_settingsSumAggregateOutputType | null
+    _min: Rate_card_settingsMinAggregateOutputType | null
+    _max: Rate_card_settingsMaxAggregateOutputType | null
+  }
+
+  export type Rate_card_settingsAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type Rate_card_settingsSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type Rate_card_settingsMinAggregateOutputType = {
+    id: number | null
+    setting_key: string | null
+    setting_value: string | null
+    updated_at: Date | null
+  }
+
+  export type Rate_card_settingsMaxAggregateOutputType = {
+    id: number | null
+    setting_key: string | null
+    setting_value: string | null
+    updated_at: Date | null
+  }
+
+  export type Rate_card_settingsCountAggregateOutputType = {
+    id: number
+    setting_key: number
+    setting_value: number
+    updated_at: number
+    _all: number
+  }
+
+
+  export type Rate_card_settingsAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type Rate_card_settingsSumAggregateInputType = {
+    id?: true
+  }
+
+  export type Rate_card_settingsMinAggregateInputType = {
+    id?: true
+    setting_key?: true
+    setting_value?: true
+    updated_at?: true
+  }
+
+  export type Rate_card_settingsMaxAggregateInputType = {
+    id?: true
+    setting_key?: true
+    setting_value?: true
+    updated_at?: true
+  }
+
+  export type Rate_card_settingsCountAggregateInputType = {
+    id?: true
+    setting_key?: true
+    setting_value?: true
+    updated_at?: true
+    _all?: true
+  }
+
+  export type Rate_card_settingsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which rate_card_settings to aggregate.
+     */
+    where?: rate_card_settingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of rate_card_settings to fetch.
+     */
+    orderBy?: rate_card_settingsOrderByWithRelationInput | rate_card_settingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: rate_card_settingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` rate_card_settings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` rate_card_settings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned rate_card_settings
+    **/
+    _count?: true | Rate_card_settingsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Rate_card_settingsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Rate_card_settingsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Rate_card_settingsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Rate_card_settingsMaxAggregateInputType
+  }
+
+  export type GetRate_card_settingsAggregateType<T extends Rate_card_settingsAggregateArgs> = {
+        [P in keyof T & keyof AggregateRate_card_settings]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRate_card_settings[P]>
+      : GetScalarType<T[P], AggregateRate_card_settings[P]>
+  }
+
+
+
+
+  export type rate_card_settingsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: rate_card_settingsWhereInput
+    orderBy?: rate_card_settingsOrderByWithAggregationInput | rate_card_settingsOrderByWithAggregationInput[]
+    by: Rate_card_settingsScalarFieldEnum[] | Rate_card_settingsScalarFieldEnum
+    having?: rate_card_settingsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Rate_card_settingsCountAggregateInputType | true
+    _avg?: Rate_card_settingsAvgAggregateInputType
+    _sum?: Rate_card_settingsSumAggregateInputType
+    _min?: Rate_card_settingsMinAggregateInputType
+    _max?: Rate_card_settingsMaxAggregateInputType
+  }
+
+  export type Rate_card_settingsGroupByOutputType = {
+    id: number
+    setting_key: string
+    setting_value: string | null
+    updated_at: Date
+    _count: Rate_card_settingsCountAggregateOutputType | null
+    _avg: Rate_card_settingsAvgAggregateOutputType | null
+    _sum: Rate_card_settingsSumAggregateOutputType | null
+    _min: Rate_card_settingsMinAggregateOutputType | null
+    _max: Rate_card_settingsMaxAggregateOutputType | null
+  }
+
+  type GetRate_card_settingsGroupByPayload<T extends rate_card_settingsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Rate_card_settingsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Rate_card_settingsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Rate_card_settingsGroupByOutputType[P]>
+            : GetScalarType<T[P], Rate_card_settingsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type rate_card_settingsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    setting_key?: boolean
+    setting_value?: boolean
+    updated_at?: boolean
+  }, ExtArgs["result"]["rate_card_settings"]>
+
+
+
+  export type rate_card_settingsSelectScalar = {
+    id?: boolean
+    setting_key?: boolean
+    setting_value?: boolean
+    updated_at?: boolean
+  }
+
+  export type rate_card_settingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "setting_key" | "setting_value" | "updated_at", ExtArgs["result"]["rate_card_settings"]>
+
+  export type $rate_card_settingsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "rate_card_settings"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      setting_key: string
+      setting_value: string | null
+      updated_at: Date
+    }, ExtArgs["result"]["rate_card_settings"]>
+    composites: {}
+  }
+
+  type rate_card_settingsGetPayload<S extends boolean | null | undefined | rate_card_settingsDefaultArgs> = $Result.GetResult<Prisma.$rate_card_settingsPayload, S>
+
+  type rate_card_settingsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<rate_card_settingsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Rate_card_settingsCountAggregateInputType | true
+    }
+
+  export interface rate_card_settingsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['rate_card_settings'], meta: { name: 'rate_card_settings' } }
+    /**
+     * Find zero or one Rate_card_settings that matches the filter.
+     * @param {rate_card_settingsFindUniqueArgs} args - Arguments to find a Rate_card_settings
+     * @example
+     * // Get one Rate_card_settings
+     * const rate_card_settings = await prisma.rate_card_settings.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends rate_card_settingsFindUniqueArgs>(args: SelectSubset<T, rate_card_settingsFindUniqueArgs<ExtArgs>>): Prisma__rate_card_settingsClient<$Result.GetResult<Prisma.$rate_card_settingsPayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one Rate_card_settings that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {rate_card_settingsFindUniqueOrThrowArgs} args - Arguments to find a Rate_card_settings
+     * @example
+     * // Get one Rate_card_settings
+     * const rate_card_settings = await prisma.rate_card_settings.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends rate_card_settingsFindUniqueOrThrowArgs>(args: SelectSubset<T, rate_card_settingsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__rate_card_settingsClient<$Result.GetResult<Prisma.$rate_card_settingsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Rate_card_settings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {rate_card_settingsFindFirstArgs} args - Arguments to find a Rate_card_settings
+     * @example
+     * // Get one Rate_card_settings
+     * const rate_card_settings = await prisma.rate_card_settings.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends rate_card_settingsFindFirstArgs>(args?: SelectSubset<T, rate_card_settingsFindFirstArgs<ExtArgs>>): Prisma__rate_card_settingsClient<$Result.GetResult<Prisma.$rate_card_settingsPayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Rate_card_settings that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {rate_card_settingsFindFirstOrThrowArgs} args - Arguments to find a Rate_card_settings
+     * @example
+     * // Get one Rate_card_settings
+     * const rate_card_settings = await prisma.rate_card_settings.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends rate_card_settingsFindFirstOrThrowArgs>(args?: SelectSubset<T, rate_card_settingsFindFirstOrThrowArgs<ExtArgs>>): Prisma__rate_card_settingsClient<$Result.GetResult<Prisma.$rate_card_settingsPayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more Rate_card_settings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {rate_card_settingsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Rate_card_settings
+     * const rate_card_settings = await prisma.rate_card_settings.findMany()
+     * 
+     * // Get first 10 Rate_card_settings
+     * const rate_card_settings = await prisma.rate_card_settings.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const rate_card_settingsWithIdOnly = await prisma.rate_card_settings.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends rate_card_settingsFindManyArgs>(args?: SelectSubset<T, rate_card_settingsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$rate_card_settingsPayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a Rate_card_settings.
+     * @param {rate_card_settingsCreateArgs} args - Arguments to create a Rate_card_settings.
+     * @example
+     * // Create one Rate_card_settings
+     * const Rate_card_settings = await prisma.rate_card_settings.create({
+     *   data: {
+     *     // ... data to create a Rate_card_settings
+     *   }
+     * })
+     * 
+     */
+    create<T extends rate_card_settingsCreateArgs>(args: SelectSubset<T, rate_card_settingsCreateArgs<ExtArgs>>): Prisma__rate_card_settingsClient<$Result.GetResult<Prisma.$rate_card_settingsPayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many Rate_card_settings.
+     * @param {rate_card_settingsCreateManyArgs} args - Arguments to create many Rate_card_settings.
+     * @example
+     * // Create many Rate_card_settings
+     * const rate_card_settings = await prisma.rate_card_settings.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends rate_card_settingsCreateManyArgs>(args?: SelectSubset<T, rate_card_settingsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Rate_card_settings.
+     * @param {rate_card_settingsDeleteArgs} args - Arguments to delete one Rate_card_settings.
+     * @example
+     * // Delete one Rate_card_settings
+     * const Rate_card_settings = await prisma.rate_card_settings.delete({
+     *   where: {
+     *     // ... filter to delete one Rate_card_settings
+     *   }
+     * })
+     * 
+     */
+    delete<T extends rate_card_settingsDeleteArgs>(args: SelectSubset<T, rate_card_settingsDeleteArgs<ExtArgs>>): Prisma__rate_card_settingsClient<$Result.GetResult<Prisma.$rate_card_settingsPayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one Rate_card_settings.
+     * @param {rate_card_settingsUpdateArgs} args - Arguments to update one Rate_card_settings.
+     * @example
+     * // Update one Rate_card_settings
+     * const rate_card_settings = await prisma.rate_card_settings.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends rate_card_settingsUpdateArgs>(args: SelectSubset<T, rate_card_settingsUpdateArgs<ExtArgs>>): Prisma__rate_card_settingsClient<$Result.GetResult<Prisma.$rate_card_settingsPayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more Rate_card_settings.
+     * @param {rate_card_settingsDeleteManyArgs} args - Arguments to filter Rate_card_settings to delete.
+     * @example
+     * // Delete a few Rate_card_settings
+     * const { count } = await prisma.rate_card_settings.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends rate_card_settingsDeleteManyArgs>(args?: SelectSubset<T, rate_card_settingsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Rate_card_settings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {rate_card_settingsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Rate_card_settings
+     * const rate_card_settings = await prisma.rate_card_settings.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends rate_card_settingsUpdateManyArgs>(args: SelectSubset<T, rate_card_settingsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Rate_card_settings.
+     * @param {rate_card_settingsUpsertArgs} args - Arguments to update or create a Rate_card_settings.
+     * @example
+     * // Update or create a Rate_card_settings
+     * const rate_card_settings = await prisma.rate_card_settings.upsert({
+     *   create: {
+     *     // ... data to create a Rate_card_settings
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Rate_card_settings we want to update
+     *   }
+     * })
+     */
+    upsert<T extends rate_card_settingsUpsertArgs>(args: SelectSubset<T, rate_card_settingsUpsertArgs<ExtArgs>>): Prisma__rate_card_settingsClient<$Result.GetResult<Prisma.$rate_card_settingsPayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of Rate_card_settings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {rate_card_settingsCountArgs} args - Arguments to filter Rate_card_settings to count.
+     * @example
+     * // Count the number of Rate_card_settings
+     * const count = await prisma.rate_card_settings.count({
+     *   where: {
+     *     // ... the filter for the Rate_card_settings we want to count
+     *   }
+     * })
+    **/
+    count<T extends rate_card_settingsCountArgs>(
+      args?: Subset<T, rate_card_settingsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Rate_card_settingsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Rate_card_settings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Rate_card_settingsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Rate_card_settingsAggregateArgs>(args: Subset<T, Rate_card_settingsAggregateArgs>): Prisma.PrismaPromise<GetRate_card_settingsAggregateType<T>>
+
+    /**
+     * Group by Rate_card_settings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {rate_card_settingsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends rate_card_settingsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: rate_card_settingsGroupByArgs['orderBy'] }
+        : { orderBy?: rate_card_settingsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, rate_card_settingsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRate_card_settingsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the rate_card_settings model
+   */
+  readonly fields: rate_card_settingsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for rate_card_settings.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__rate_card_settingsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the rate_card_settings model
+   */ 
+  interface rate_card_settingsFieldRefs {
+    readonly id: FieldRef<"rate_card_settings", 'Int'>
+    readonly setting_key: FieldRef<"rate_card_settings", 'String'>
+    readonly setting_value: FieldRef<"rate_card_settings", 'String'>
+    readonly updated_at: FieldRef<"rate_card_settings", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * rate_card_settings findUnique
+   */
+  export type rate_card_settingsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the rate_card_settings
+     */
+    select?: rate_card_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the rate_card_settings
+     */
+    omit?: rate_card_settingsOmit<ExtArgs> | null
+    /**
+     * Filter, which rate_card_settings to fetch.
+     */
+    where: rate_card_settingsWhereUniqueInput
+  }
+
+  /**
+   * rate_card_settings findUniqueOrThrow
+   */
+  export type rate_card_settingsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the rate_card_settings
+     */
+    select?: rate_card_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the rate_card_settings
+     */
+    omit?: rate_card_settingsOmit<ExtArgs> | null
+    /**
+     * Filter, which rate_card_settings to fetch.
+     */
+    where: rate_card_settingsWhereUniqueInput
+  }
+
+  /**
+   * rate_card_settings findFirst
+   */
+  export type rate_card_settingsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the rate_card_settings
+     */
+    select?: rate_card_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the rate_card_settings
+     */
+    omit?: rate_card_settingsOmit<ExtArgs> | null
+    /**
+     * Filter, which rate_card_settings to fetch.
+     */
+    where?: rate_card_settingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of rate_card_settings to fetch.
+     */
+    orderBy?: rate_card_settingsOrderByWithRelationInput | rate_card_settingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for rate_card_settings.
+     */
+    cursor?: rate_card_settingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` rate_card_settings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` rate_card_settings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of rate_card_settings.
+     */
+    distinct?: Rate_card_settingsScalarFieldEnum | Rate_card_settingsScalarFieldEnum[]
+  }
+
+  /**
+   * rate_card_settings findFirstOrThrow
+   */
+  export type rate_card_settingsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the rate_card_settings
+     */
+    select?: rate_card_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the rate_card_settings
+     */
+    omit?: rate_card_settingsOmit<ExtArgs> | null
+    /**
+     * Filter, which rate_card_settings to fetch.
+     */
+    where?: rate_card_settingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of rate_card_settings to fetch.
+     */
+    orderBy?: rate_card_settingsOrderByWithRelationInput | rate_card_settingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for rate_card_settings.
+     */
+    cursor?: rate_card_settingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` rate_card_settings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` rate_card_settings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of rate_card_settings.
+     */
+    distinct?: Rate_card_settingsScalarFieldEnum | Rate_card_settingsScalarFieldEnum[]
+  }
+
+  /**
+   * rate_card_settings findMany
+   */
+  export type rate_card_settingsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the rate_card_settings
+     */
+    select?: rate_card_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the rate_card_settings
+     */
+    omit?: rate_card_settingsOmit<ExtArgs> | null
+    /**
+     * Filter, which rate_card_settings to fetch.
+     */
+    where?: rate_card_settingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of rate_card_settings to fetch.
+     */
+    orderBy?: rate_card_settingsOrderByWithRelationInput | rate_card_settingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing rate_card_settings.
+     */
+    cursor?: rate_card_settingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` rate_card_settings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` rate_card_settings.
+     */
+    skip?: number
+    distinct?: Rate_card_settingsScalarFieldEnum | Rate_card_settingsScalarFieldEnum[]
+  }
+
+  /**
+   * rate_card_settings create
+   */
+  export type rate_card_settingsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the rate_card_settings
+     */
+    select?: rate_card_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the rate_card_settings
+     */
+    omit?: rate_card_settingsOmit<ExtArgs> | null
+    /**
+     * The data needed to create a rate_card_settings.
+     */
+    data: XOR<rate_card_settingsCreateInput, rate_card_settingsUncheckedCreateInput>
+  }
+
+  /**
+   * rate_card_settings createMany
+   */
+  export type rate_card_settingsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many rate_card_settings.
+     */
+    data: rate_card_settingsCreateManyInput | rate_card_settingsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * rate_card_settings update
+   */
+  export type rate_card_settingsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the rate_card_settings
+     */
+    select?: rate_card_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the rate_card_settings
+     */
+    omit?: rate_card_settingsOmit<ExtArgs> | null
+    /**
+     * The data needed to update a rate_card_settings.
+     */
+    data: XOR<rate_card_settingsUpdateInput, rate_card_settingsUncheckedUpdateInput>
+    /**
+     * Choose, which rate_card_settings to update.
+     */
+    where: rate_card_settingsWhereUniqueInput
+  }
+
+  /**
+   * rate_card_settings updateMany
+   */
+  export type rate_card_settingsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update rate_card_settings.
+     */
+    data: XOR<rate_card_settingsUpdateManyMutationInput, rate_card_settingsUncheckedUpdateManyInput>
+    /**
+     * Filter which rate_card_settings to update
+     */
+    where?: rate_card_settingsWhereInput
+    /**
+     * Limit how many rate_card_settings to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * rate_card_settings upsert
+   */
+  export type rate_card_settingsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the rate_card_settings
+     */
+    select?: rate_card_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the rate_card_settings
+     */
+    omit?: rate_card_settingsOmit<ExtArgs> | null
+    /**
+     * The filter to search for the rate_card_settings to update in case it exists.
+     */
+    where: rate_card_settingsWhereUniqueInput
+    /**
+     * In case the rate_card_settings found by the `where` argument doesn't exist, create a new rate_card_settings with this data.
+     */
+    create: XOR<rate_card_settingsCreateInput, rate_card_settingsUncheckedCreateInput>
+    /**
+     * In case the rate_card_settings was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<rate_card_settingsUpdateInput, rate_card_settingsUncheckedUpdateInput>
+  }
+
+  /**
+   * rate_card_settings delete
+   */
+  export type rate_card_settingsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the rate_card_settings
+     */
+    select?: rate_card_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the rate_card_settings
+     */
+    omit?: rate_card_settingsOmit<ExtArgs> | null
+    /**
+     * Filter which rate_card_settings to delete.
+     */
+    where: rate_card_settingsWhereUniqueInput
+  }
+
+  /**
+   * rate_card_settings deleteMany
+   */
+  export type rate_card_settingsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which rate_card_settings to delete
+     */
+    where?: rate_card_settingsWhereInput
+    /**
+     * Limit how many rate_card_settings to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * rate_card_settings without action
+   */
+  export type rate_card_settingsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the rate_card_settings
+     */
+    select?: rate_card_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the rate_card_settings
+     */
+    omit?: rate_card_settingsOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -55646,6 +56634,16 @@ export namespace Prisma {
   export type Shopping_listScalarFieldEnum = (typeof Shopping_listScalarFieldEnum)[keyof typeof Shopping_listScalarFieldEnum]
 
 
+  export const Rate_card_settingsScalarFieldEnum: {
+    id: 'id',
+    setting_key: 'setting_key',
+    setting_value: 'setting_value',
+    updated_at: 'updated_at'
+  };
+
+  export type Rate_card_settingsScalarFieldEnum = (typeof Rate_card_settingsScalarFieldEnum)[keyof typeof Rate_card_settingsScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -56102,6 +57100,14 @@ export namespace Prisma {
   };
 
   export type shopping_listOrderByRelevanceFieldEnum = (typeof shopping_listOrderByRelevanceFieldEnum)[keyof typeof shopping_listOrderByRelevanceFieldEnum]
+
+
+  export const rate_card_settingsOrderByRelevanceFieldEnum: {
+    setting_key: 'setting_key',
+    setting_value: 'setting_value'
+  };
+
+  export type rate_card_settingsOrderByRelevanceFieldEnum = (typeof rate_card_settingsOrderByRelevanceFieldEnum)[keyof typeof rate_card_settingsOrderByRelevanceFieldEnum]
 
 
   /**
@@ -60428,6 +61434,56 @@ export namespace Prisma {
     allowed_users?: StringNullableWithAggregatesFilter<"shopping_list"> | string | null
     created_at?: DateTimeWithAggregatesFilter<"shopping_list"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"shopping_list"> | Date | string
+  }
+
+  export type rate_card_settingsWhereInput = {
+    AND?: rate_card_settingsWhereInput | rate_card_settingsWhereInput[]
+    OR?: rate_card_settingsWhereInput[]
+    NOT?: rate_card_settingsWhereInput | rate_card_settingsWhereInput[]
+    id?: IntFilter<"rate_card_settings"> | number
+    setting_key?: StringFilter<"rate_card_settings"> | string
+    setting_value?: StringNullableFilter<"rate_card_settings"> | string | null
+    updated_at?: DateTimeFilter<"rate_card_settings"> | Date | string
+  }
+
+  export type rate_card_settingsOrderByWithRelationInput = {
+    id?: SortOrder
+    setting_key?: SortOrder
+    setting_value?: SortOrderInput | SortOrder
+    updated_at?: SortOrder
+    _relevance?: rate_card_settingsOrderByRelevanceInput
+  }
+
+  export type rate_card_settingsWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    setting_key?: string
+    AND?: rate_card_settingsWhereInput | rate_card_settingsWhereInput[]
+    OR?: rate_card_settingsWhereInput[]
+    NOT?: rate_card_settingsWhereInput | rate_card_settingsWhereInput[]
+    setting_value?: StringNullableFilter<"rate_card_settings"> | string | null
+    updated_at?: DateTimeFilter<"rate_card_settings"> | Date | string
+  }, "id" | "setting_key">
+
+  export type rate_card_settingsOrderByWithAggregationInput = {
+    id?: SortOrder
+    setting_key?: SortOrder
+    setting_value?: SortOrderInput | SortOrder
+    updated_at?: SortOrder
+    _count?: rate_card_settingsCountOrderByAggregateInput
+    _avg?: rate_card_settingsAvgOrderByAggregateInput
+    _max?: rate_card_settingsMaxOrderByAggregateInput
+    _min?: rate_card_settingsMinOrderByAggregateInput
+    _sum?: rate_card_settingsSumOrderByAggregateInput
+  }
+
+  export type rate_card_settingsScalarWhereWithAggregatesInput = {
+    AND?: rate_card_settingsScalarWhereWithAggregatesInput | rate_card_settingsScalarWhereWithAggregatesInput[]
+    OR?: rate_card_settingsScalarWhereWithAggregatesInput[]
+    NOT?: rate_card_settingsScalarWhereWithAggregatesInput | rate_card_settingsScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"rate_card_settings"> | number
+    setting_key?: StringWithAggregatesFilter<"rate_card_settings"> | string
+    setting_value?: StringNullableWithAggregatesFilter<"rate_card_settings"> | string | null
+    updated_at?: DateTimeWithAggregatesFilter<"rate_card_settings"> | Date | string
   }
 
   export type customersCreateInput = {
@@ -64900,6 +65956,52 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type rate_card_settingsCreateInput = {
+    setting_key: string
+    setting_value?: string | null
+    updated_at?: Date | string
+  }
+
+  export type rate_card_settingsUncheckedCreateInput = {
+    id?: number
+    setting_key: string
+    setting_value?: string | null
+    updated_at?: Date | string
+  }
+
+  export type rate_card_settingsUpdateInput = {
+    setting_key?: StringFieldUpdateOperationsInput | string
+    setting_value?: NullableStringFieldUpdateOperationsInput | string | null
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type rate_card_settingsUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    setting_key?: StringFieldUpdateOperationsInput | string
+    setting_value?: NullableStringFieldUpdateOperationsInput | string | null
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type rate_card_settingsCreateManyInput = {
+    id?: number
+    setting_key: string
+    setting_value?: string | null
+    updated_at?: Date | string
+  }
+
+  export type rate_card_settingsUpdateManyMutationInput = {
+    setting_key?: StringFieldUpdateOperationsInput | string
+    setting_value?: NullableStringFieldUpdateOperationsInput | string | null
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type rate_card_settingsUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    setting_key?: StringFieldUpdateOperationsInput | string
+    setting_value?: NullableStringFieldUpdateOperationsInput | string | null
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -68815,6 +69917,41 @@ export namespace Prisma {
     _sum?: NestedDecimalFilter<$PrismaModel>
     _min?: NestedDecimalFilter<$PrismaModel>
     _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
+  export type rate_card_settingsOrderByRelevanceInput = {
+    fields: rate_card_settingsOrderByRelevanceFieldEnum | rate_card_settingsOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type rate_card_settingsCountOrderByAggregateInput = {
+    id?: SortOrder
+    setting_key?: SortOrder
+    setting_value?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type rate_card_settingsAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type rate_card_settingsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    setting_key?: SortOrder
+    setting_value?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type rate_card_settingsMinOrderByAggregateInput = {
+    id?: SortOrder
+    setting_key?: SortOrder
+    setting_value?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type rate_card_settingsSumOrderByAggregateInput = {
+    id?: SortOrder
   }
 
   export type contractsCreateNestedManyWithoutCustomersInput = {

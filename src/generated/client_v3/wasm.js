@@ -746,6 +746,13 @@ exports.Prisma.Shopping_listScalarFieldEnum = {
   updated_at: 'updated_at'
 };
 
+exports.Prisma.Rate_card_settingsScalarFieldEnum = {
+  id: 'id',
+  setting_key: 'setting_key',
+  setting_value: 'setting_value',
+  updated_at: 'updated_at'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1077,6 +1084,11 @@ exports.Prisma.shopping_listOrderByRelevanceFieldEnum = {
   visibility: 'visibility',
   allowed_users: 'allowed_users'
 };
+
+exports.Prisma.rate_card_settingsOrderByRelevanceFieldEnum = {
+  setting_key: 'setting_key',
+  setting_value: 'setting_value'
+};
 exports.customers_customer_type = exports.$Enums.customers_customer_type = {
   Corporate: 'Corporate',
   Individual: 'Individual'
@@ -1239,7 +1251,8 @@ exports.Prisma.ModelName = {
   project_issues: 'project_issues',
   logsheet_templates: 'logsheet_templates',
   logsheet_entries: 'logsheet_entries',
-  shopping_list: 'shopping_list'
+  shopping_list: 'shopping_list',
+  rate_card_settings: 'rate_card_settings'
 };
 
 /**

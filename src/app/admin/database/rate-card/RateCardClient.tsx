@@ -36,6 +36,10 @@ import {
   updateShoppingItem, 
   deleteShoppingItem 
 } from "@/app/actions/rate_card";
+import { 
+  getRateCardSettings, 
+  updateRateCardSetting 
+} from "@/app/actions/rate_card_settings";
 import { getAllUsers } from "@/app/actions/users";
 import { getSession } from "@/app/actions/auth";
 import jsPDF from "jspdf";
@@ -77,17 +81,30 @@ export default function RateCardClient() {
     allowed_users: ""
   });
 
+  // Settings States
+  const [settings, setSettings] = useState({
+    vendors: ["Daikin Certified Partner"],
+    period: "Jan 2026 - Des 2026",
+    allowed_users: [] as any[]
+  });
+  const [isVendorModalOpen, setIsVendorModalOpen] = useState(false);
+  const [isPeriodModalOpen, setIsPeriodModalOpen] = useState(false);
+  const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
+  const [newVendor, setNewVendor] = useState("");
+
   const fetchData = async () => {
     setLoading(true);
-    const [res, sess, users] = await Promise.all([
+    const [res, sess, users, settingsRes] = await Promise.all([
       getShoppingList(),
       getSession(),
-      getAllUsers()
+      getAllUsers(),
+      getRateCardSettings()
     ]);
     
     if (res.success) setItems(res.data);
     if (sess) setSession(sess);
     if (users?.success) setAllUsers(users.data);
+    if (settingsRes.success) setSettings(settingsRes.data);
     
     setLoading(false);
   };
@@ -179,6 +196,51 @@ export default function RateCardClient() {
     }
   };
 
+  const handleAddVendor = async () => {
+    if (!newVendor.trim()) return;
+    const updatedVendors = [...settings.vendors, newVendor.trim()];
+    const res = await updateRateCardSetting('vendors', updatedVendors);
+    if (res.success) {
+      setSettings({...settings, vendors: updatedVendors});
+      setNewVendor("");
+      notify('success', 'Vendor added successfully');
+    }
+  };
+
+  const handleRemoveVendor = async (vendor: string) => {
+    const updatedVendors = settings.vendors.filter(v => v !== vendor);
+    const res = await updateRateCardSetting('vendors', updatedVendors);
+    if (res.success) {
+      setSettings({...settings, vendors: updatedVendors});
+      notify('success', 'Vendor removed');
+    }
+  };
+
+  const handleUpdatePeriod = async (period: string) => {
+    setSettings({...settings, period});
+    await updateRateCardSetting('period', period);
+  };
+
+  const handleAddUserAccess = async (user: any) => {
+    if (settings.allowed_users.find(u => u.id === user.id)) return;
+    const updatedUsers = [...settings.allowed_users, {id: user.id, name: user.name, email: user.email}];
+    const res = await updateRateCardSetting('allowed_users', updatedUsers);
+    if (res.success) {
+      setSettings({...settings, allowed_users: updatedUsers});
+      setUserSearch("");
+      notify('success', `Access granted to ${user.name}`);
+    }
+  };
+
+  const handleRemoveUserAccess = async (userId: any) => {
+    const updatedUsers = settings.allowed_users.filter(u => u.id !== userId);
+    const res = await updateRateCardSetting('allowed_users', updatedUsers);
+    if (res.success) {
+      setSettings({...settings, allowed_users: updatedUsers});
+      notify('success', 'Access removed');
+    }
+  };
+
   const [clauses, setClauses] = useState([
     "1. Cakupan Harga: Termasuk jasa teknisi, alat kerja standar, dan transportasi (Area Kerja).",
     "2. Pengecualian: Tidak termasuk penggantian sparepart berat, kompresor, atau overhaul.",
@@ -213,7 +275,7 @@ export default function RateCardClient() {
     
     doc.setFontSize(10);
     doc.setTextColor(100);
-    doc.text(`Periode: 1 Januari 2026 - 31 Desember 2026`, 14, 38);
+    doc.text(`Periode: ${settings.period}`, 14, 38);
     doc.text(`Dicetak pada: ${new Date().toLocaleString()}`, 14, 43);
     
     doc.autoTable({
@@ -301,33 +363,50 @@ export default function RateCardClient() {
 
         {/* Contract Info Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-           <div className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm flex items-center gap-5">
-              <div className="p-4 bg-blue-50 text-[#0073ea] rounded-2xl">
+           <button 
+             onClick={() => isAdmin && setIsVendorModalOpen(true)}
+             className={`bg-white border border-slate-100 p-6 rounded-3xl shadow-sm flex items-center gap-5 text-left transition-all ${isAdmin ? 'hover:border-blue-200 hover:shadow-md cursor-pointer group' : ''}`}
+           >
+              <div className="p-4 bg-blue-50 text-[#0073ea] rounded-2xl group-hover:bg-[#0073ea] group-hover:text-white transition-colors">
                  <Building2 size={24} />
               </div>
-              <div>
-                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Status Vendor</p>
-                 <p className="text-sm font-bold text-slate-700">Daikin Certified Partner</p>
+              <div className="flex-1">
+                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Nama Vendor</p>
+                 <p className="text-sm font-bold text-slate-700 truncate">{settings.vendors.join(", ") || "Belum ada vendor"}</p>
               </div>
-           </div>
-           <div className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm flex items-center gap-5">
-              <div className="p-4 bg-indigo-50 text-indigo-500 rounded-2xl">
+              {isAdmin && <Plus size={16} className="text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />}
+           </button>
+
+           <button 
+             onClick={() => isAdmin && setIsPeriodModalOpen(true)}
+             className={`bg-white border border-slate-100 p-6 rounded-3xl shadow-sm flex items-center gap-5 text-left transition-all ${isAdmin ? 'hover:border-indigo-200 hover:shadow-md cursor-pointer group' : ''}`}
+           >
+              <div className="p-4 bg-indigo-50 text-indigo-500 rounded-2xl group-hover:bg-indigo-500 group-hover:text-white transition-colors">
                  <Calendar size={24} />
               </div>
-              <div>
+              <div className="flex-1">
                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Periode Berlaku</p>
-                 <p className="text-sm font-bold text-slate-700">Jan 2026 - Des 2026</p>
+                 <p className="text-sm font-bold text-slate-700">{settings.period}</p>
               </div>
-           </div>
-           <div className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm flex items-center gap-5">
-              <div className="p-4 bg-emerald-50 text-emerald-600 rounded-2xl">
+              {isAdmin && <Edit3 size={16} className="text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />}
+           </button>
+
+           <button 
+             onClick={() => isAdmin && setIsAccessModalOpen(true)}
+             className={`bg-white border border-slate-100 p-6 rounded-3xl shadow-sm flex items-center gap-5 text-left transition-all ${isAdmin ? 'hover:border-emerald-200 hover:shadow-md cursor-pointer group' : ''}`}
+           >
+              <div className="p-4 bg-emerald-50 text-emerald-600 rounded-2xl group-hover:bg-emerald-600 group-hover:text-white transition-colors">
                  <Lock size={24} />
               </div>
-              <div>
-                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Security Scope</p>
-                 <p className="text-sm font-bold text-slate-700">{isAdmin ? "Admin Full Access" : "Authorized View Only"}</p>
+              <div className="flex-1">
+                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Security Access</p>
+                 <p className="text-sm font-bold text-slate-700 truncate">
+                    {isAdmin ? "Admin Full Access" : "Authorized View Only"}
+                    {settings.allowed_users.length > 0 && ` (+${settings.allowed_users.length} Users)`}
+                 </p>
               </div>
-           </div>
+              {isAdmin && <Shield size={16} className="text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />}
+           </button>
         </div>
 
         {/* Action Bar */}
@@ -653,6 +732,150 @@ export default function RateCardClient() {
                   <p className="text-sm font-bold">{notification.message}</p>
                </div>
             </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Vendor Management Modal */}
+        <AnimatePresence>
+          {isVendorModalOpen && (
+            <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsVendorModalOpen(false)} className="absolute inset-0 bg-[#323338]/40 backdrop-blur-sm" />
+              <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100">
+                  <div className="p-8 border-b border-slate-50 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-blue-50 text-[#0073ea] rounded-xl"><Building2 size={24} /></div>
+                        <div>
+                          <h3 className="text-xl font-black text-[#323338] uppercase tracking-tight">Manajemen Vendor</h3>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Daftar Partner Tersertifikasi</p>
+                        </div>
+                    </div>
+                    <button onClick={() => setIsVendorModalOpen(false)} className="p-2 hover:bg-slate-50 rounded-full transition-colors"><CloseIcon size={20} /></button>
+                  </div>
+                  <div className="p-8 space-y-6">
+                    <div className="flex gap-2">
+                        <input 
+                          type="text" 
+                          placeholder="Masukkan nama vendor..." 
+                          value={newVendor}
+                          onChange={(e) => setNewVendor(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && handleAddVendor()}
+                          className="flex-1 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all" 
+                        />
+                        <button onClick={handleAddVendor} className="px-6 py-4 bg-[#323338] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all">Tambah</button>
+                    </div>
+                    <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-2">
+                        {settings.vendors.map((vendor, idx) => (
+                          <div key={idx} className="flex items-center justify-between p-4 bg-white border border-slate-50 rounded-2xl group hover:border-blue-100 transition-all">
+                              <span className="text-sm font-bold text-slate-700">{vendor}</span>
+                              <button onClick={() => handleRemoveVendor(vendor)} className="p-2 text-slate-300 hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100"><Trash2 size={16} /></button>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* Period Management Modal */}
+        <AnimatePresence>
+          {isPeriodModalOpen && (
+            <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsPeriodModalOpen(false)} className="absolute inset-0 bg-[#323338]/40 backdrop-blur-sm" />
+              <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100">
+                  <div className="p-8 border-b border-slate-50 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-indigo-50 text-indigo-500 rounded-xl"><Calendar size={24} /></div>
+                        <div>
+                          <h3 className="text-xl font-black text-[#323338] uppercase tracking-tight">Periode Berlaku</h3>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Update Masa Berlaku Tarif</p>
+                        </div>
+                    </div>
+                    <button onClick={() => setIsPeriodModalOpen(false)} className="p-2 hover:bg-slate-50 rounded-full transition-colors"><CloseIcon size={20} /></button>
+                  </div>
+                  <div className="p-8 space-y-6">
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Rentang Waktu</label>
+                        <input 
+                          type="text" 
+                          value={settings.period}
+                          onChange={(e) => handleUpdatePeriod(e.target.value)}
+                          placeholder="e.g. Jan 2026 - Des 2026"
+                          className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-indigo-500 transition-all" 
+                        />
+                    </div>
+                    <button onClick={() => setIsPeriodModalOpen(false)} className="w-full py-4 bg-indigo-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-600 transition-all">Simpan Perubahan</button>
+                  </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* Access Management Modal */}
+        <AnimatePresence>
+          {isAccessModalOpen && (
+            <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsAccessModalOpen(false)} className="absolute inset-0 bg-[#323338]/40 backdrop-blur-sm" />
+              <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100">
+                  <div className="p-8 border-b border-slate-50 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl"><Lock size={24} /></div>
+                        <div>
+                          <h3 className="text-xl font-black text-[#323338] uppercase tracking-tight">Security Access</h3>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Manajemen Izin Akses Akun</p>
+                        </div>
+                    </div>
+                    <button onClick={() => setIsAccessModalOpen(false)} className="p-2 hover:bg-slate-50 rounded-full transition-colors"><CloseIcon size={20} /></button>
+                  </div>
+                  <div className="p-8 space-y-6">
+                    <div className="relative">
+                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                        <input 
+                          type="text" 
+                          placeholder="Cari nama atau email akun..." 
+                          value={userSearch}
+                          onChange={(e) => setUserSearch(e.target.value)}
+                          className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-emerald-500 transition-all" 
+                        />
+                        {userSearch && (
+                          <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-100 rounded-2xl shadow-xl z-10 max-h-48 overflow-y-auto custom-scrollbar">
+                              {allUsers.filter(u => u.name.toLowerCase().includes(userSearch.toLowerCase()) || u.email.toLowerCase().includes(userSearch.toLowerCase()))
+                                      .map(user => (
+                                <button 
+                                  key={user.id} 
+                                  onClick={() => handleAddUserAccess(user)}
+                                  className="w-full px-5 py-3 text-left hover:bg-slate-50 flex items-center justify-between border-b border-slate-50 last:border-0"
+                                >
+                                  <div>
+                                    <p className="text-xs font-bold text-slate-700">{user.name}</p>
+                                    <p className="text-[10px] text-slate-400 font-medium">{user.email}</p>
+                                  </div>
+                                  <Plus size={14} className="text-slate-300" />
+                                </button>
+                              ))}
+                          </div>
+                        )}
+                    </div>
+                    <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-2">
+                        <div className="p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Akun Terotorisasi</p>
+                        </div>
+                        {settings.allowed_users.map((user, idx) => (
+                          <div key={idx} className="flex items-center justify-between p-4 bg-white border border-slate-50 rounded-2xl group hover:border-emerald-100 transition-all">
+                              <div>
+                                <p className="text-sm font-bold text-slate-700">{user.name}</p>
+                                <p className="text-[10px] text-slate-400 font-medium">{user.email}</p>
+                              </div>
+                              <button onClick={() => handleRemoveUserAccess(user.id)} className="p-2 text-slate-300 hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100"><Trash2 size={16} /></button>
+                          </div>
+                        ))}
+                        {settings.allowed_users.length === 0 && (
+                          <p className="text-[10px] text-slate-300 text-center py-4 italic">Belum ada akun tambahan yang ditambahkan secara manual</p>
+                        )}
+                    </div>
+                  </div>
+              </motion.div>
+            </div>
           )}
         </AnimatePresence>
 
