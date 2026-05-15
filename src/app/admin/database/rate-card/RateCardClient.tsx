@@ -143,6 +143,10 @@ export default function RateCardClient() {
     setSelectedItems(prev => ({ ...prev, [id]: { ...prev[id], qty: Math.max(1, qty) } }));
   };
 
+  const updateSelectedPK = (id: string, pk: number) => {
+    setSelectedItems(prev => ({ ...prev, [id]: { ...prev[id], capacity_pk: Math.max(0, pk) } }));
+  };
+
   const updateSelectedNotes = (id: string, notes: string) => {
     setSelectedItems(prev => ({ ...prev, [id]: { ...prev[id], notes } }));
   };
@@ -155,8 +159,10 @@ export default function RateCardClient() {
 
   const selectedTotalValue = useMemo(() => {
     return Object.entries(selectedItems).reduce((sum, [id, data]) => {
+      const item = items.find(i => i.id.toString() === id);
       const price = getVendorPrice(id);
-      return sum + (price ? price * data.qty : 0);
+      const capacityMultiplier = (item?.capacity_unit === "PK") ? (data.capacity_pk || 1) : 1;
+      return sum + (price ? price * capacityMultiplier * data.qty : 0);
     }, 0);
   }, [selectedItems, items, settings.vendor_prices, settings.selected_vendor]);
 
@@ -486,7 +492,7 @@ export default function RateCardClient() {
     y += 24;
 
     // === ITEM TABLE ===
-    const tableHead = [["No", "Uraian Pekerjaan", "Kategori", "Satuan", "Qty", "Harga Satuan (Rp)", "Subtotal (Rp)"]];
+    const tableHead = [["No", "Uraian Pekerjaan", "Kategori", "Kapasitas", "Unit Qty", "Harga Satuan (Rp)", "Subtotal (Rp)"]];
     const tableBody: any[] = [];
     let grandTotal = 0;
 
@@ -494,13 +500,19 @@ export default function RateCardClient() {
       const item = items.find(i => i.id.toString() === id);
       if (!item) return;
       const vendorPrice = getVendorPrice(id) || 0;
-      const subtotal = vendorPrice * data.qty;
+      const capacityMultiplier = (item.capacity_unit === "PK") ? (data.capacity_pk || 1) : 1;
+      const subtotal = vendorPrice * capacityMultiplier * data.qty;
       grandTotal += subtotal;
+      
+      const capacityDisplay = item.capacity_unit === "PK" 
+        ? `${data.capacity_pk || 0} PK` 
+        : `${item.capacity_range} ${item.capacity_unit}`;
+
       tableBody.push([
         idx + 1,
         `${item.item_name}${data.notes ? `\n(${data.notes})` : ''}`,
         item.category,
-        `${item.capacity_range} ${item.capacity_unit}`,
+        capacityDisplay,
         data.qty,
         fmt(vendorPrice),
         fmt(subtotal)
@@ -1371,9 +1383,9 @@ export default function RateCardClient() {
                           <tr className="border-b border-slate-100">
                             <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">No</th>
                             <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Pekerjaan</th>
-                            <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Satuan</th>
-                            <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest w-24">Qty</th>
-                            <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">Harga</th>
+                            <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Kapasitas (PK)</th>
+                            <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest w-24">Unit Qty</th>
+                            <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">Harga Satuan</th>
                             <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">Subtotal</th>
                           </tr>
                         </thead>
@@ -1391,7 +1403,23 @@ export default function RateCardClient() {
                                   <p className="text-[10px] text-[#0073ea] font-bold">{item.category} &bull; {item.work_type}</p>
                                   <input type="text" placeholder="Catatan tambahan..." value={data.notes} onChange={e => updateSelectedNotes(id, e.target.value)} className="mt-2 w-full px-3 py-1.5 bg-slate-50 border border-slate-100 rounded-lg text-[10px] font-medium focus:outline-none focus:border-blue-300" />
                                 </td>
-                                <td className="px-5 py-4 text-[10px] font-bold text-slate-500">{item.capacity_range} {item.capacity_unit}</td>
+                                <td className="px-5 py-4">
+                                  {item.capacity_unit === "PK" ? (
+                                    <div className="flex items-center gap-2">
+                                      <input 
+                                        type="number" 
+                                        step="0.1" 
+                                        placeholder="PK..." 
+                                        value={data.capacity_pk || ""} 
+                                        onChange={e => updateSelectedPK(id, parseFloat(e.target.value) || 0)} 
+                                        className="w-20 px-3 py-2 bg-slate-50 border border-slate-100 rounded-xl text-xs font-black focus:outline-none focus:border-blue-300" 
+                                      />
+                                      <span className="text-[9px] font-black text-slate-400 uppercase">PK</span>
+                                    </div>
+                                  ) : (
+                                    <p className="text-[10px] font-bold text-slate-500">{item.capacity_range} {item.capacity_unit}</p>
+                                  )}
+                                </td>
                                 <td className="px-5 py-4 w-24">
                                   <div className="flex items-center gap-1">
                                     <button type="button" onClick={() => updateSelectedQty(id, data.qty - 1)} className="p-1 bg-slate-100 rounded hover:bg-slate-200 transition-colors"><Minus size={12} /></button>
@@ -1400,7 +1428,9 @@ export default function RateCardClient() {
                                   </div>
                                 </td>
                                 <td className="px-5 py-4 text-xs font-bold text-slate-600 text-right">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(vendorPrice)}</td>
-                                <td className="px-5 py-4 text-xs font-black text-emerald-600 text-right">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(subtotal)}</td>
+                                <td className="px-5 py-4 text-xs font-black text-emerald-600 text-right">
+                                  {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(vendorPrice * (item.capacity_unit === "PK" ? (data.capacity_pk || 1) : 1) * data.qty)}
+                                </td>
                               </tr>
                             );
                           })}
