@@ -101,24 +101,33 @@ export default function ReportHubPage() {
     init();
   }, [id, type]);
 
-  const waitForImages = async (element: HTMLElement) => {
+  const waitForImages = async (element: HTMLElement, timeoutMs = 5000) => {
     const imgs = Array.from(element.getElementsByTagName('img'));
+    if (imgs.length === 0) return;
+
     const promises = imgs.map(img => {
       return new Promise((resolve) => {
         if (img.complete) resolve(true);
         else {
           img.onload = () => resolve(true);
           img.onerror = () => resolve(false);
+          // Safety timeout for each image
+          setTimeout(() => resolve(false), timeoutMs);
         }
       });
     });
-    await Promise.all(promises);
+
+    // Overall timeout for the whole set of images
+    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(false), timeoutMs + 1000));
+    await Promise.race([Promise.all(promises), timeoutPromise]);
   };
 
   const handleDownloadPDF = async () => {
     if (!reportRef.current || !data) return;
     
+    console.log("🚀 Starting PDF Generation for:", type, id);
     setDownloading(true);
+    
     try {
       const { createRoot } = await import("react-dom/client");
       const pdf = new jsPDF("p", "mm", "a4");
@@ -129,6 +138,7 @@ export default function ReportHubPage() {
 
       // CAPTURE SANDBOX: Create a hidden unscaled container for high-fidelity capture
       const sandbox = document.createElement("div");
+      sandbox.id = "pdf-capture-sandbox";
       sandbox.style.position = "absolute";
       sandbox.style.top = "-9999px";
       sandbox.style.left = "-9999px";
@@ -136,67 +146,76 @@ export default function ReportHubPage() {
       document.body.appendChild(sandbox);
 
       const renderPage = async (pageIndex: number) => {
+        console.log(`📄 Processing Page ${pageIndex + 1} of ${pages.length}...`);
         const pageContainer = document.createElement("div");
         sandbox.appendChild(pageContainer);
         const root = createRoot(pageContainer);
         
-        root.render(
-          <ReportBase 
-            reportTitle={reportTitle} 
-            reportCode={reportCode}
-            projectName={projectName}
-            unit={data.unit}
-            date={data.activity.service_date}
-            inputDate={type.toLowerCase() !== 'ba' ? data.activity.created_at : undefined}
-            pageNumber={pageIndex + 1}
-            totalPages={pages.length}
-            isFixedHeight={true}
-            lang={activeLang}
-          >
-            <div 
-              className="flex-1 flex flex-col w-full"
-              style={{ 
-                justifyContent: pageIndex >= (pages.length - photoSections.length) ? 'center' : 'flex-start',
-                paddingTop: pageIndex >= (pages.length - photoSections.length) ? '0' : '4mm'
-              }}
+        try {
+          root.render(
+            <ReportBase 
+              reportTitle={reportTitle} 
+              reportCode={reportCode}
+              projectName={projectName}
+              unit={data.unit}
+              date={data.activity.service_date}
+              inputDate={type.toLowerCase() !== 'ba' ? data.activity.created_at : undefined}
+              pageNumber={pageIndex + 1}
+              totalPages={pages.length}
+              isFixedHeight={true}
+              lang={activeLang}
             >
-              {pages[pageIndex]}
-            </div>
-          </ReportBase>
-        );
+              <div 
+                className="flex-1 flex flex-col w-full"
+                style={{ 
+                  justifyContent: pageIndex >= (pages.length - photoSections.length) ? 'center' : 'flex-start',
+                  paddingTop: pageIndex >= (pages.length - photoSections.length) ? '0' : '4mm'
+                }}
+              >
+                {pages[pageIndex]}
+              </div>
+            </ReportBase>
+          );
 
-        // Wait for render and images
-        await new Promise(r => setTimeout(r, 1000));
-        await waitForImages(pageContainer);
+          // Wait for render and images with extra safety
+          await new Promise(r => setTimeout(r, 1200));
+          await waitForImages(pageContainer, 7000); // 7s per page timeout
 
-        const canvas = await html2canvas(pageContainer, {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: "#ffffff",
-          windowWidth: 794
-        });
-        
-        const imgData = canvas.toDataURL("image/jpeg", 0.95);
-        if (pageIndex > 0) pdf.addPage();
-        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
-        
-        root.unmount();
-        sandbox.removeChild(pageContainer);
+          const canvas = await html2canvas(pageContainer, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: "#ffffff",
+            windowWidth: 794
+          });
+          
+          const imgData = canvas.toDataURL("image/jpeg", 0.92); // Slightly lower quality to save memory
+          if (pageIndex > 0) pdf.addPage();
+          pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+          
+          console.log(`✅ Captured Page ${pageIndex + 1}`);
+        } catch (pageErr) {
+          console.error(`❌ Error rendering page ${pageIndex + 1}:`, pageErr);
+        } finally {
+          root.unmount();
+          sandbox.removeChild(pageContainer);
+        }
       };
 
       for (let i = 0; i < pages.length; i++) {
         await renderPage(i);
       }
       
+      console.log("💾 Saving PDF File...");
       pdf.save(fileName);
       document.body.removeChild(sandbox);
+      console.log("✨ PDF Generation Complete!");
 
       // Log activity
       await logUserActivity("REPORT_DOWNLOAD", `Downloaded ${type} report for ${data.unit?.tag_number || 'Unknown'}`);
     } catch (err) {
-      console.error("Download error:", err);
-      alert("Failed to generate PDF. Please try again.");
+      console.error("Critical Download error:", err);
+      alert("Gagal membuat PDF. Pastikan koneksi internet stabil dan coba lagi.");
     } finally {
       setDownloading(false);
     }
