@@ -64,22 +64,25 @@ export async function approveUnitRequest(requestId: number, adminNote?: string) 
     const details = JSON.parse(request.details_json);
 
     // 1. Update the actual unit
+    // Ensure data types are correct (yoi must be Int, etc.)
     await prisma.units.update({
       where: { id: request.unit_id },
       data: {
-        tag_number: details.tag_number,
-        unit_type: details.unit_type,
-        brand: details.brand,
-        model: details.model,
-        capacity: details.capacity,
-        location: details.location,
-        area: details.area,
-        building_floor: details.building_floor,
-        room_tenant: details.room_tenant,
-        yoi: details.yoi,
-        serial_number: details.serial_number,
-        status: details.status,
-        code: details.code
+        tag_number: details.tag_number || undefined,
+        unit_type: details.unit_type || undefined,
+        brand: details.brand || undefined,
+        model: details.model || undefined,
+        capacity: details.capacity || undefined,
+        location: details.location || undefined,
+        area: details.area || undefined,
+        building_floor: details.building_floor || undefined,
+        room_tenant: details.room_tenant || undefined,
+        yoi: details.yoi ? parseInt(details.yoi.toString()) : undefined,
+        serial_number: details.serial_number || undefined,
+        status: (details.status && ["Normal", "Warning", "Critical", "Problem", "Pending", "On_Progress"].includes(details.status)) 
+                ? details.status 
+                : undefined,
+        code: details.code || undefined
       }
     });
 
