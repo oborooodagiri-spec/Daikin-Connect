@@ -201,15 +201,16 @@ export async function generateComprehensivePDF(data: any, startDate: string, end
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     
     const canvas = await html2canvas(pageDiv, { 
-      scale: isMobile ? 1.5 : 2, 
+      scale: isMobile ? 1.2 : 1.6, // Optimized scale
       useCORS: true, 
       windowWidth: 794,
       height: 1123,
-      logging: false
+      logging: false,
+      backgroundColor: "#ffffff"
     });
 
-    const imgData = canvas.toDataURL("image/jpeg", 1.0);
-    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, A4_HEIGHT_MM);
+    const imgData = canvas.toDataURL("image/jpeg", 0.75); // Reduced quality for speed/size
+    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, A4_HEIGHT_MM, undefined, 'FAST');
 
     root.unmount();
     document.body.removeChild(pageDiv);
