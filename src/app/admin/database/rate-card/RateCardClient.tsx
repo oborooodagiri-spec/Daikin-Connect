@@ -27,7 +27,15 @@ import {
   Calendar,
   Building2,
   Lock,
-  Eye
+  Eye,
+  ClipboardList,
+  Hash,
+  MapPin,
+  Send,
+  CheckSquare,
+  Square,
+  FileDown,
+  Minus
 } from "lucide-react";
 import Link from "next/link";
 import { 
@@ -93,6 +101,57 @@ export default function RateCardClient() {
   const [isPeriodModalOpen, setIsPeriodModalOpen] = useState(false);
   const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
   const [newVendor, setNewVendor] = useState("");
+
+  // Work Order States
+  const [selectedItems, setSelectedItems] = useState<Record<string, { qty: number; notes: string }>>({}); 
+  const [isWOModalOpen, setIsWOModalOpen] = useState(false);
+  const [woForm, setWoForm] = useState({
+    wo_number: `WO-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`,
+    date: new Date().toISOString().split('T')[0],
+    project_name: "",
+    location: "",
+    pic_name: "",
+    notes: ""
+  });
+
+  const toggleSelectItem = (item: any) => {
+    const id = item.id.toString();
+    setSelectedItems(prev => {
+      const next = { ...prev };
+      if (next[id]) {
+        delete next[id];
+      } else {
+        next[id] = { qty: 1, notes: "" };
+      }
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (Object.keys(selectedItems).length === filteredItems.length) {
+      setSelectedItems({});
+    } else {
+      const all: Record<string, { qty: number; notes: string }> = {};
+      filteredItems.forEach(item => { all[item.id.toString()] = { qty: 1, notes: "" }; });
+      setSelectedItems(all);
+    }
+  };
+
+  const updateSelectedQty = (id: string, qty: number) => {
+    setSelectedItems(prev => ({ ...prev, [id]: { ...prev[id], qty: Math.max(1, qty) } }));
+  };
+
+  const updateSelectedNotes = (id: string, notes: string) => {
+    setSelectedItems(prev => ({ ...prev, [id]: { ...prev[id], notes } }));
+  };
+
+  const selectedCount = Object.keys(selectedItems).length;
+  const selectedTotalValue = useMemo(() => {
+    return Object.entries(selectedItems).reduce((sum, [id, data]) => {
+      const item = items.find(i => i.id.toString() === id);
+      return sum + (item ? parseFloat(item.price) * data.qty : 0);
+    }, 0);
+  }, [selectedItems, items]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -340,6 +399,182 @@ export default function RateCardClient() {
     doc.save(`Rate_Card_${new Date().getTime()}.pdf`);
   };
 
+  const generateWorkOrderPDF = () => {
+    const doc = new jsPDF();
+    const fmt = (n: number) => new Intl.NumberFormat('id-ID').format(n);
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // === HEADER / KOP SURAT ===
+    doc.setFillColor(0, 115, 234);
+    doc.rect(0, 0, pageWidth, 3, 'F');
+    
+    doc.setFontSize(20);
+    doc.setTextColor(0, 115, 234);
+    doc.text("DAIKIN CONNECT", 14, 18);
+    
+    doc.setFontSize(9);
+    doc.setTextColor(100);
+    doc.text("HVAC Maintenance & Engineering Services", 14, 24);
+    
+    doc.setFontSize(14);
+    doc.setTextColor(50);
+    doc.text("WORK ORDER", pageWidth - 14, 18, { align: 'right' });
+    
+    doc.setFontSize(9);
+    doc.setTextColor(0, 115, 234);
+    doc.text(woForm.wo_number, pageWidth - 14, 24, { align: 'right' });
+
+    // Separator
+    doc.setDrawColor(220);
+    doc.line(14, 28, pageWidth - 14, 28);
+
+    // === PROJECT INFO ===
+    let y = 36;
+    doc.setFontSize(8);
+    doc.setTextColor(130);
+    
+    const infoLeft = [
+      ["Tanggal", new Date(woForm.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })],
+      ["Vendor", settings.selected_vendor],
+      ["Proyek", woForm.project_name || "-"],
+    ];
+    const infoRight = [
+      ["Lokasi", woForm.location || "-"],
+      ["PIC / Pengaju", woForm.pic_name || "-"],
+      ["Periode Kontrak", `${new Date(settings.period_start).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })} - ${new Date(settings.period_end).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}`],
+    ];
+
+    infoLeft.forEach(([label, val], i) => {
+      doc.setTextColor(130);
+      doc.text(`${label}:`, 14, y + (i * 6));
+      doc.setTextColor(50);
+      doc.text(val, 50, y + (i * 6));
+    });
+    infoRight.forEach(([label, val], i) => {
+      doc.setTextColor(130);
+      doc.text(`${label}:`, pageWidth / 2 + 10, y + (i * 6));
+      doc.setTextColor(50);
+      doc.text(val, pageWidth / 2 + 50, y + (i * 6));
+    });
+
+    y += 24;
+
+    // === ITEM TABLE ===
+    const tableHead = [["No", "Uraian Pekerjaan", "Kategori", "Satuan", "Qty", "Harga Satuan (Rp)", "Subtotal (Rp)"]];
+    const tableBody: any[] = [];
+    let grandTotal = 0;
+
+    Object.entries(selectedItems).forEach(([id, data], idx) => {
+      const item = items.find(i => i.id.toString() === id);
+      if (!item) return;
+      const subtotal = parseFloat(item.price) * data.qty;
+      grandTotal += subtotal;
+      tableBody.push([
+        idx + 1,
+        `${item.item_name}${data.notes ? `\n(${data.notes})` : ''}`,
+        item.category,
+        `${item.capacity_range} ${item.capacity_unit}`,
+        data.qty,
+        fmt(parseFloat(item.price)),
+        fmt(subtotal)
+      ]);
+    });
+
+    doc.autoTable({
+      head: tableHead,
+      body: tableBody,
+      startY: y,
+      theme: 'grid',
+      headStyles: { fillColor: [0, 115, 234], textColor: 255, fontStyle: 'bold', fontSize: 8, cellPadding: 4 },
+      bodyStyles: { fontSize: 8, cellPadding: 3, textColor: [50, 50, 50] },
+      alternateRowStyles: { fillColor: [249, 250, 251] },
+      columnStyles: {
+        0: { halign: 'center', cellWidth: 10 },
+        1: { cellWidth: 'auto' },
+        2: { cellWidth: 22 },
+        3: { cellWidth: 22 },
+        4: { halign: 'center', cellWidth: 12 },
+        5: { halign: 'right', cellWidth: 30 },
+        6: { halign: 'right', cellWidth: 30 },
+      },
+    });
+
+    // Grand Total Row
+    let afterTableY = (doc as any).lastAutoTable.finalY;
+    doc.setFillColor(50, 51, 56);
+    doc.rect(14, afterTableY, pageWidth - 28, 10, 'F');
+    doc.setFontSize(9);
+    doc.setTextColor(255);
+    doc.text("GRAND TOTAL", pageWidth - 50, afterTableY + 7, { align: 'right' });
+    doc.setFontSize(11);
+    doc.text(`Rp ${fmt(grandTotal)}`, pageWidth - 14, afterTableY + 7, { align: 'right' });
+
+    afterTableY += 18;
+
+    // === NOTES ===
+    if (woForm.notes) {
+      doc.setFontSize(8);
+      doc.setTextColor(130);
+      doc.text("Catatan:", 14, afterTableY);
+      doc.setTextColor(50);
+      doc.text(woForm.notes, 14, afterTableY + 5);
+      afterTableY += 14;
+    }
+
+    // === TERMS & CONDITIONS ===
+    doc.setFontSize(8);
+    doc.setTextColor(0, 115, 234);
+    doc.text("Syarat & Ketentuan:", 14, afterTableY);
+    doc.setTextColor(100);
+    const terms = [
+      "1. Harga sudah termasuk jasa teknisi, alat kerja standar, dan transportasi.",
+      "2. Tidak termasuk penggantian sparepart, material tambahan, dan pekerjaan diluar scope.",
+      "3. Pekerjaan dianggap selesai setelah penyerahan laporan yang ditandatangani kedua belah pihak.",
+      "4. Berlaku sesuai periode kontrak yang tertera pada dokumen ini."
+    ];
+    terms.forEach((t, i) => {
+      doc.text(t, 14, afterTableY + 5 + (i * 4));
+    });
+
+    afterTableY += 28;
+
+    // Check if we need a new page for signatures
+    if (afterTableY > 250) {
+      doc.addPage();
+      afterTableY = 20;
+    }
+
+    // === SIGNATURE BLOCKS ===
+    doc.setDrawColor(200);
+    doc.setFontSize(8);
+    doc.setTextColor(100);
+
+    // Left: Pengaju
+    doc.text("Diajukan oleh,", 14, afterTableY);
+    doc.line(14, afterTableY + 28, 80, afterTableY + 28);
+    doc.setTextColor(50);
+    doc.text(woForm.pic_name || "(Nama Pengaju)", 14, afterTableY + 33);
+    doc.setTextColor(130);
+    doc.text("PIC / Project Manager", 14, afterTableY + 38);
+
+    // Right: Vendor
+    doc.setTextColor(100);
+    doc.text("Disetujui oleh,", pageWidth - 80, afterTableY);
+    doc.line(pageWidth - 80, afterTableY + 28, pageWidth - 14, afterTableY + 28);
+    doc.setTextColor(50);
+    doc.text(settings.selected_vendor, pageWidth - 80, afterTableY + 33);
+    doc.setTextColor(130);
+    doc.text("Vendor / Kontraktor", pageWidth - 80, afterTableY + 38);
+
+    // Footer line
+    doc.setFillColor(0, 115, 234);
+    doc.rect(0, doc.internal.pageSize.getHeight() - 3, pageWidth, 3, 'F');
+
+    doc.save(`Work_Order_${woForm.wo_number}_${new Date().getTime()}.pdf`);
+    notify('success', `Work Order ${woForm.wo_number} berhasil di-generate!`);
+    setIsWOModalOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f9fc] p-6 md:p-12 font-sans text-[#323338] selection:bg-blue-100">
       <div className="max-w-7xl mx-auto">
@@ -483,6 +718,15 @@ export default function RateCardClient() {
               <table className="w-full text-left border-collapse">
                  <thead>
                     <tr className="bg-slate-50/50 border-b border-slate-100">
+                       {isAdmin && (
+                         <th className="px-4 py-6 w-12">
+                           <button onClick={toggleSelectAll} className="p-1 hover:bg-blue-50 rounded-lg transition-colors">
+                             {selectedCount === filteredItems.length && filteredItems.length > 0 
+                               ? <CheckSquare size={18} className="text-[#0073ea]" /> 
+                               : <Square size={18} className="text-slate-300" />}
+                           </button>
+                         </th>
+                       )}
                        <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Kategori</th>
                        <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Pekerjaan</th>
                        <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Keterangan (Inclusions)</th>
@@ -498,7 +742,16 @@ export default function RateCardClient() {
                       ))
                     ) : filteredItems.length > 0 ? (
                       filteredItems.map((item) => (
-                        <tr key={item.id.toString()} className="group hover:bg-blue-50/30 transition-colors">
+                        <tr key={item.id.toString()} className={`group transition-colors ${selectedItems[item.id.toString()] ? 'bg-blue-50/50' : 'hover:bg-blue-50/30'}`}>
+                           {isAdmin && (
+                             <td className="px-4 py-6 w-12">
+                               <button onClick={() => toggleSelectItem(item)} className="p-1 hover:bg-blue-100 rounded-lg transition-colors">
+                                 {selectedItems[item.id.toString()] 
+                                   ? <CheckSquare size={18} className="text-[#0073ea]" /> 
+                                   : <Square size={18} className="text-slate-300" />}
+                               </button>
+                             </td>
+                           )}
                            <td className="px-8 py-6">
                               <span className="px-3 py-1 bg-slate-50 text-slate-600 text-[9px] font-black rounded-lg border border-slate-100 uppercase tracking-widest">
                                 {item.category}
@@ -953,6 +1206,165 @@ export default function RateCardClient() {
                         )}
                     </div>
                   </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* Floating Selection Bar */}
+        <AnimatePresence>
+          {selectedCount > 0 && isAdmin && (
+            <motion.div 
+              initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }}
+              className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-[#323338] text-white px-8 py-5 rounded-[2rem] shadow-2xl flex items-center gap-6 border border-slate-600"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-[#0073ea] rounded-xl"><ClipboardList size={20} /></div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Item Terpilih</p>
+                  <p className="text-sm font-black">{selectedCount} Item &bull; {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(selectedTotalValue)}</p>
+                </div>
+              </div>
+              <div className="h-8 w-px bg-slate-600" />
+              <button 
+                onClick={() => {
+                  setWoForm(prev => ({...prev, wo_number: `WO-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`}));
+                  setIsWOModalOpen(true);
+                }}
+                className="flex items-center gap-2 px-6 py-3 bg-[#0073ea] text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#0060c5] transition-all shadow-lg"
+              >
+                <FileDown size={16} /> Buat Work Order
+              </button>
+              <button 
+                onClick={() => setSelectedItems({})}
+                className="p-2.5 bg-slate-700 rounded-xl hover:bg-rose-600 transition-colors"
+              >
+                <CloseIcon size={16} />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Work Order Builder Modal */}
+        <AnimatePresence>
+          {isWOModalOpen && (
+            <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[#323338]/60 backdrop-blur-md" onClick={() => setIsWOModalOpen(false)} />
+              <motion.div 
+                initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                className="bg-white rounded-[2.5rem] shadow-2xl relative z-10 w-full max-w-4xl max-h-[90vh] overflow-y-auto custom-scrollbar"
+              >
+                {/* WO Header */}
+                <div className="sticky top-0 bg-white/95 backdrop-blur-sm z-20 px-10 pt-10 pb-6 border-b border-slate-100">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-4">
+                      <div className="p-4 bg-gradient-to-br from-[#0073ea] to-indigo-600 text-white rounded-2xl shadow-lg shadow-blue-200">
+                        <ClipboardList size={28} />
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-black text-[#323338] tracking-tight uppercase">Work Order</h2>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Dokumen Pengajuan Pekerjaan</p>
+                      </div>
+                    </div>
+                    <button onClick={() => setIsWOModalOpen(false)} className="p-2.5 bg-slate-50 text-slate-400 rounded-xl hover:bg-slate-100 transition-all"><CloseIcon size={20}/></button>
+                  </div>
+                </div>
+
+                <div className="px-10 py-8 space-y-8">
+                  {/* WO Form Details */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5"><Hash size={12} /> No. Work Order</label>
+                      <input type="text" value={woForm.wo_number} onChange={e => setWoForm({...woForm, wo_number: e.target.value})} className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5"><Calendar size={12} /> Tanggal</label>
+                      <input type="date" value={woForm.date} onChange={e => setWoForm({...woForm, date: e.target.value})} className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5"><Briefcase size={12} /> PIC / Pengaju</label>
+                      <input type="text" placeholder="Nama pengaju..." value={woForm.pic_name} onChange={e => setWoForm({...woForm, pic_name: e.target.value})} className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all" />
+                    </div>
+                    <div className="col-span-2 space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5"><Building2 size={12} /> Nama Proyek</label>
+                      <input type="text" placeholder="Nama proyek..." value={woForm.project_name} onChange={e => setWoForm({...woForm, project_name: e.target.value})} className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5"><MapPin size={12} /> Lokasi</label>
+                      <input type="text" placeholder="Alamat lokasi..." value={woForm.location} onChange={e => setWoForm({...woForm, location: e.target.value})} className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all" />
+                    </div>
+                  </div>
+
+                  {/* Selected Items Table */}
+                  <div>
+                    <h3 className="text-xs font-black text-[#0073ea] uppercase tracking-[0.2em] mb-4">Rincian Pekerjaan ({selectedCount} Item)</h3>
+                    <div className="bg-slate-50/50 border border-slate-100 rounded-2xl overflow-hidden">
+                      <table className="w-full text-left">
+                        <thead>
+                          <tr className="border-b border-slate-100">
+                            <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">No</th>
+                            <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Pekerjaan</th>
+                            <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Satuan</th>
+                            <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest w-24">Qty</th>
+                            <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">Harga</th>
+                            <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">Subtotal</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {Object.entries(selectedItems).map(([id, data], idx) => {
+                            const item = items.find(i => i.id.toString() === id);
+                            if (!item) return null;
+                            const subtotal = parseFloat(item.price) * data.qty;
+                            return (
+                              <tr key={id} className="bg-white hover:bg-blue-50/30 transition-colors">
+                                <td className="px-5 py-4 text-xs font-bold text-slate-400">{idx + 1}</td>
+                                <td className="px-5 py-4">
+                                  <p className="text-xs font-black text-[#323338] uppercase">{item.item_name}</p>
+                                  <p className="text-[10px] text-[#0073ea] font-bold">{item.category} &bull; {item.work_type}</p>
+                                  <input type="text" placeholder="Catatan tambahan..." value={data.notes} onChange={e => updateSelectedNotes(id, e.target.value)} className="mt-2 w-full px-3 py-1.5 bg-slate-50 border border-slate-100 rounded-lg text-[10px] font-medium focus:outline-none focus:border-blue-300" />
+                                </td>
+                                <td className="px-5 py-4 text-[10px] font-bold text-slate-500">{item.capacity_range} {item.capacity_unit}</td>
+                                <td className="px-5 py-4 w-24">
+                                  <div className="flex items-center gap-1">
+                                    <button type="button" onClick={() => updateSelectedQty(id, data.qty - 1)} className="p-1 bg-slate-100 rounded hover:bg-slate-200 transition-colors"><Minus size={12} /></button>
+                                    <input type="number" min={1} value={data.qty} onChange={e => updateSelectedQty(id, parseInt(e.target.value) || 1)} className="w-12 text-center px-1 py-1 bg-white border border-slate-100 rounded text-xs font-black focus:outline-none focus:border-blue-300" />
+                                    <button type="button" onClick={() => updateSelectedQty(id, data.qty + 1)} className="p-1 bg-slate-100 rounded hover:bg-slate-200 transition-colors"><Plus size={12} /></button>
+                                  </div>
+                                </td>
+                                <td className="px-5 py-4 text-xs font-bold text-slate-600 text-right">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(item.price)}</td>
+                                <td className="px-5 py-4 text-xs font-black text-emerald-600 text-right">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(subtotal)}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                        <tfoot>
+                          <tr className="bg-[#323338]">
+                            <td colSpan={5} className="px-5 py-5 text-right text-[10px] font-black text-white uppercase tracking-widest">Grand Total</td>
+                            <td className="px-5 py-5 text-right text-lg font-black text-white">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(selectedTotalValue)}</td>
+                          </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* General Notes */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Catatan Umum</label>
+                    <textarea rows={2} placeholder="Catatan tambahan untuk Work Order ini..." value={woForm.notes} onChange={e => setWoForm({...woForm, notes: e.target.value})} className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all resize-none" />
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-4 pt-4">
+                    <button type="button" onClick={() => setIsWOModalOpen(false)} className="flex-1 px-8 py-4 rounded-2xl bg-slate-50 text-slate-500 font-black text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all">Batal</button>
+                    <button 
+                      type="button" 
+                      onClick={generateWorkOrderPDF}
+                      className="flex-[2] bg-gradient-to-r from-[#0073ea] to-indigo-600 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:shadow-lg hover:shadow-blue-200 transition-all flex items-center justify-center gap-2"
+                    >
+                      <FileDown size={16} /> Generate & Download PDF
+                    </button>
+                  </div>
+                </div>
               </motion.div>
             </div>
           )}
