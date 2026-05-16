@@ -90,7 +90,8 @@ export default function MapPicker({ lat, lng, onChange }: MapPickerProps) {
                {searching ? <Loader2 size={16} className="animate-spin text-blue-500" /> : <Search size={16} />}
             </div>
             <button 
-              type="submit"
+              type="button"
+              onClick={handleSearch}
               disabled={searching}
               className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 bg-[#003366] text-white text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-blue-600 transition-all"
             >
