@@ -19,17 +19,27 @@ export async function getActiveAttendance(projectId: string) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // AGGRESSIVE CLEANUP: Permanently delete any active records for this user
+    // SMART CLEANUP: Only delete sessions that are older than 5 minutes and have no check-out.
+    // This allows the NEWLY created session to stay alive while purging the "stuck" ones.
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    
     await (prisma as any).vendor_attendance.deleteMany({
       where: {
         user_id: parseInt(session.userId),
-        check_out_time: null
+        check_out_time: null,
+        check_in_time: { lt: fiveMinutesAgo }
       }
     });
     
-    console.log(`[FORCE_CLEAN] All active sessions for user ${session.userId} have been purged.`);
-
-    let activeRecord = null;
+    const activeRecord = await (prisma as any).vendor_attendance.findFirst({
+      where: {
+        user_id: parseInt(session.userId),
+        check_out_time: null
+      },
+      include: {
+        projects: { select: { name: true, latitude: true, longitude: true, radius_meters: true } }
+      }
+    });
 
     // Determine target project location (either from active record, or the selected project)
     const targetProject = activeRecord?.projects || (projectId && projectId !== "empty" && !isNaN(Number(projectId)) ? await prisma.projects.findUnique({
@@ -81,9 +91,6 @@ export async function getAttendanceHistory(month?: number, year?: number) {
           gte: startDate,
           lte: endDate,
         },
-        NOT: {
-          check_out_time: null
-        }
       },
       include: {
         projects: {
