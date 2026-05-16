@@ -50,16 +50,8 @@ export default function AttendanceClient({
   }, [projectId]);
 
   const loadModelsAndReference = async () => {
+    // 1. Always fetch attendance status first (unblocked by models)
     try {
-      if (!modelsLoaded) {
-        await Promise.all([
-          faceapi.nets.ssdMobilenetv1.loadFromUri("/models"),
-          faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
-          faceapi.nets.faceRecognitionNet.loadFromUri("/models")
-        ]);
-        setModelsLoaded(true);
-      }
-      
       const res = await getActiveAttendance(projectId);
       if (res?.data) {
         setActiveRecord(res.data);
@@ -72,8 +64,31 @@ export default function AttendanceClient({
         setProjectLocation(res.projectLocation);
       }
 
+      // If we have a face reference, we'll try to load it later
       if (res?.faceUrl) {
-        const img = await faceapi.fetchImage(res.faceUrl);
+         // Store faceUrl for later loading
+         (window as any)._faceUrl = res.faceUrl;
+      }
+    } catch (e) {
+      console.error("Failed to fetch initial status:", e);
+    } finally {
+      setLoading(false);
+    }
+
+    // 2. Load Biometric Models in background
+    try {
+      if (!modelsLoaded) {
+        await Promise.all([
+          faceapi.nets.ssdMobilenetv1.loadFromUri("/models"),
+          faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
+          faceapi.nets.faceRecognitionNet.loadFromUri("/models")
+        ]);
+        setModelsLoaded(true);
+      }
+      
+      const faceUrl = (window as any)._faceUrl;
+      if (faceUrl) {
+        const img = await faceapi.fetchImage(faceUrl);
         const detection = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
         if (detection) {
           setReferenceDescriptor(detection.descriptor);
@@ -81,10 +96,6 @@ export default function AttendanceClient({
       }
     } catch (e: any) {
       console.error("Biometric init error (skipping client-side check):", e);
-      // We don't set errorMsg here to allow fallback to manual photo
-      setModelsLoaded(false); 
-    } finally {
-      setLoading(false);
     }
   };
 
