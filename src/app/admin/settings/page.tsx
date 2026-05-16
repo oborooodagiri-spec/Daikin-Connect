@@ -14,6 +14,7 @@ import {
   getAllCustomersForFilter,
   updateProjectLocation
 } from "@/app/actions/projects_config";
+import { useRouter } from "next/navigation";
 import { getSession } from "@/app/actions/auth";
 import dynamic from "next/dynamic";
 
