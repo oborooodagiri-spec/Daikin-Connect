@@ -85,36 +85,36 @@ export default function AttendanceDashboard({ projects }: { projects: {id: strin
              </div>
            ) : (
              history.map((item, idx) => (
-               <div 
-                 key={idx} 
-                 onClick={() => setSelectedHistory(item)}
-                 className="bg-white rounded-2xl border border-slate-100 p-4 flex items-center justify-between hover:border-blue-200 transition-colors cursor-pointer group"
-               >
-                  <div className="flex items-center gap-4">
-                     <div className="text-left">
-                        <p className="text-[13px] font-black text-slate-700">
-                           {format(new Date(item.check_in_time), "dd MMM")}
-                        </p>
-                        <p className="text-[11px] text-slate-400 font-bold uppercase tracking-tight">
-                           {item.projects?.name || 'Jam kerja'}
-                        </p>
-                     </div>
-                     <div className="h-8 w-[1px] bg-slate-100 mx-2" />
-                     <div className="flex items-center gap-6">
-                        <div className="text-center">
-                           <p className="text-sm font-bold text-slate-800">
-                              {format(new Date(item.check_in_time), "HH:mm")}
-                           </p>
-                        </div>
-                        <div className="text-center">
-                           <p className="text-sm font-bold text-slate-800">
-                              {item.check_out_time ? format(new Date(item.check_out_time), "HH:mm") : "-"}
-                           </p>
-                        </div>
-                     </div>
-                  </div>
-                  <ChevronRight size={18} className="text-slate-300 group-hover:text-blue-500 transition-colors" />
-               </div>
+                <div 
+                  key={idx} 
+                  onClick={() => setSelectedHistory(item)}
+                  className="bg-white rounded-2xl border border-slate-100 p-4 flex items-center justify-between hover:border-blue-200 transition-colors cursor-pointer group"
+                >
+                   <div className="flex items-center gap-4">
+                      <div className="text-left">
+                         <p className="text-[13px] font-black text-slate-700">
+                            {item.check_in_time ? format(new Date(item.check_in_time), "dd MMM") : "-"}
+                         </p>
+                         <p className="text-[11px] text-slate-400 font-bold uppercase tracking-tight">
+                            {item.projects?.name || 'Jam kerja'}
+                         </p>
+                      </div>
+                      <div className="h-8 w-[1px] bg-slate-100 mx-2" />
+                      <div className="flex items-center gap-6">
+                         <div className="text-center">
+                            <p className="text-sm font-bold text-slate-800">
+                               {item.check_in_time ? format(new Date(item.check_in_time), "HH:mm") : "-"}
+                            </p>
+                         </div>
+                         <div className="text-center">
+                            <p className="text-sm font-bold text-slate-800">
+                               {item.check_out_time ? format(new Date(item.check_out_time), "HH:mm") : "-"}
+                            </p>
+                         </div>
+                      </div>
+                   </div>
+                   <ChevronRight size={18} className="text-slate-300 group-hover:text-blue-500 transition-colors" />
+                </div>
              ))
            )}
         </div>
@@ -254,7 +254,7 @@ function HistoryDetailModal({ item, onClose }: { item: any; onClose: () => void 
              <div>
                 <h3 className="text-2xl font-black text-slate-800 tracking-tight">Attendance Information</h3>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
-                   {format(new Date(item.check_in_time), "EEEE, dd MMMM yyyy", { locale: id })}
+                   {item.check_in_time ? format(new Date(item.check_in_time), "EEEE, dd MMMM yyyy", { locale: id }) : "-"}
                 </p>
              </div>
              <button onClick={onClose} className="p-3 bg-slate-50 rounded-2xl text-slate-400 hover:text-rose-500 transition-colors">

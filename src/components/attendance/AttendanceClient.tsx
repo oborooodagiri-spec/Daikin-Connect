@@ -323,6 +323,7 @@ export default function AttendanceClient({
   }
 
   const isWorking = activeRecord && !activeRecord.check_out_time;
+  const currentTime = new Date();
 
   if (!isMounted) return <div className="min-h-[400px]" />;
 
@@ -363,9 +364,9 @@ export default function AttendanceClient({
              <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Clock size={40} />
              </div>
-             <h3 className="text-4xl font-black text-slate-800 tracking-tight mb-2">{format(new Date(), "HH:mm")}</h3>
-             <p className="text-slate-400 text-sm font-bold mb-8">{format(new Date(), "EEEE, dd MMMM yyyy", { locale: id })}</p>
-             {isWorking && (
+             <h3 className="text-4xl font-black text-slate-800 tracking-tight mb-2">{format(currentTime, "HH:mm")}</h3>
+             <p className="text-slate-400 text-sm font-bold mb-8">{format(currentTime, "EEEE, dd MMMM yyyy", { locale: id })}</p>
+             {isWorking && activeRecord?.check_in_time && (
                 <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 mb-8 text-left">
                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Mulai Bekerja Pada</p>
                    <p className="text-lg font-black text-blue-600">{format(new Date(activeRecord.check_in_time), "HH:mm")}</p>
