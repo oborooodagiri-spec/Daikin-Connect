@@ -78,8 +78,9 @@ export default function AttendanceClient({
           setReferenceDescriptor(detection.descriptor);
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error("Initialization error:", e);
+      setErrorMsg("Gagal memuat sistem biometrik: " + (e.message || "Unknown error"));
     } finally {
       setLoading(false);
     }
@@ -239,11 +240,15 @@ export default function AttendanceClient({
     setSubmitting(true);
     setVerifying(true);
     try {
+      if (!modelsLoaded) {
+        throw new Error("Sistem biometrik belum siap. Silakan tunggu sebentar.");
+      }
+      
       const img = await faceapi.bufferToImage(file);
       const detection = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
       
       if (!detection) {
-        throw new Error("Wajah tidak terdeteksi. Pastikan wajah terlihat jelas di depan kamera.");
+        throw new Error("Wajah tidak terdeteksi. Pastikan wajah terlihat jelas di dalam lingkaran dan pencahayaan cukup.");
       }
 
       if (referenceDescriptor) {
@@ -285,8 +290,9 @@ export default function AttendanceClient({
     setErrorMsg(null);
     setCapturedFile(null);
     
-    const isOutside = distance !== null && projectLocation && distance > (projectLocation.radius || 100);
-    setNotes(isOutside ? "Absen di luar area: " : "");
+    const isOutside = distance !== null && projectLocation?.lat && distance > (projectLocation.radius || 100);
+    const outsideNote = isOutside ? `[OUTSIDE_AREA: ${Math.round(distance!)}m] ` : "";
+    setNotes(outsideNote);
     
     startScanner();
   };
@@ -376,7 +382,7 @@ export default function AttendanceClient({
                 </div>
              )}
              <button
-               disabled={submitting || !location}
+               disabled={submitting}
                onClick={triggerCamera}
                className={`w-full py-5 rounded-2xl font-black text-lg shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3 ${isWorking ? 'bg-rose-500 text-white shadow-rose-200' : 'bg-blue-600 text-white shadow-blue-200'}`}
              >
