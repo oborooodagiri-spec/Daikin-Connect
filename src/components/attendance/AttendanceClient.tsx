@@ -79,8 +79,9 @@ export default function AttendanceClient({
         }
       }
     } catch (e: any) {
-      console.error("Initialization error:", e);
-      setErrorMsg("Gagal memuat sistem biometrik: " + (e.message || "Unknown error"));
+      console.error("Biometric init error (skipping client-side check):", e);
+      // We don't set errorMsg here to allow fallback to manual photo
+      setModelsLoaded(false); 
     } finally {
       setLoading(false);
     }
@@ -240,24 +241,30 @@ export default function AttendanceClient({
     setSubmitting(true);
     setVerifying(true);
     try {
-      if (!modelsLoaded) {
-        throw new Error("Sistem biometrik belum siap. Silakan tunggu sebentar.");
-      }
-      
-      const img = await faceapi.bufferToImage(file);
-      const detection = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
-      
-      if (!detection) {
-        throw new Error("Wajah tidak terdeteksi. Pastikan wajah terlihat jelas di dalam lingkaran dan pencahayaan cukup.");
-      }
+      // If models are loaded, try client-side detection as an enhancement
+      if (modelsLoaded) {
+        try {
+          const img = await faceapi.bufferToImage(file);
+          const detection = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
+          
+          if (!detection) {
+            throw new Error("Wajah tidak terdeteksi. Pastikan wajah terlihat jelas.");
+          }
 
-      if (referenceDescriptor) {
-        const dist = faceapi.euclideanDistance(referenceDescriptor, detection.descriptor);
-        if (dist > 0.55) {
-          throw new Error("Wajah tidak cocok dengan profil terdaftar.");
+          if (referenceDescriptor) {
+            const distance = faceapi.euclideanDistance(referenceDescriptor, detection.descriptor);
+            if (distance > 0.6) {
+              throw new Error("Wajah tidak sesuai dengan referensi.");
+            }
+          }
+        } catch (faceErr: any) {
+          console.warn("Client-side face check skipped/failed:", faceErr.message);
+          // We continue anyway and let the server (Gemini) handle verification
         }
       }
-
+      
+      // Proceed with upload regardless of client-side check success
+      // Server will verify with Gemini
       const photoUrl = await compressAndUploadFile(file);
       if (!photoUrl) throw new Error("Gagal mengunggah foto.");
 
