@@ -19,8 +19,8 @@ export async function getActiveAttendance(projectId: string) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Always find the currently active record across ALL projects first
-    const activeRecord = await (prisma as any).vendor_attendance.findFirst({
+    // SELF-HEALING: If multiple active records exist, find them all
+    const allActive = await (prisma as any).vendor_attendance.findMany({
       where: {
         user_id: parseInt(session.userId),
         check_out_time: null
@@ -28,10 +28,27 @@ export async function getActiveAttendance(projectId: string) {
       include: {
         projects: { select: { name: true, latitude: true, longitude: true, radius_meters: true } }
       },
-      orderBy: {
-        check_in_time: "desc",
-      },
+      orderBy: { check_in_time: "desc" }
     });
+
+    let activeRecord = null;
+
+    if (allActive.length > 1) {
+      // Keep the newest one, close the rest automatically
+      const [newest, ...stale] = allActive;
+      activeRecord = newest;
+      
+      await (prisma as any).vendor_attendance.updateMany({
+        where: { id: { in: stale.map((s: any) => s.id) } },
+        data: { 
+          check_out_time: new Date(),
+          check_out_notes: "(System Auto-Healing: Closed redundant session)"
+        }
+      });
+      console.log(`[HEAL] Closed ${stale.length} redundant sessions for user ${session.userId}`);
+    } else {
+      activeRecord = allActive[0] || null;
+    }
 
     // Determine target project location (either from active record, or the selected project)
     const targetProject = activeRecord?.projects || (projectId && projectId !== "empty" && !isNaN(Number(projectId)) ? await prisma.projects.findUnique({
