@@ -19,17 +19,15 @@ export async function getActiveAttendance(projectId: string) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // TOTAL RESET: Delete ALL active sessions for this user to allow a fresh start
-    const stale = await (prisma as any).vendor_attendance.deleteMany({
+    // AGGRESSIVE CLEANUP: Permanently delete any active records for this user
+    await (prisma as any).vendor_attendance.deleteMany({
       where: {
         user_id: parseInt(session.userId),
         check_out_time: null
       }
     });
     
-    if (stale.count > 0) {
-      console.log(`[RESET] Permanently DELETED ${stale.count} active sessions for user ${session.userId}`);
-    }
+    console.log(`[FORCE_CLEAN] All active sessions for user ${session.userId} have been purged.`);
 
     let activeRecord = null;
 
@@ -83,6 +81,9 @@ export async function getAttendanceHistory(month?: number, year?: number) {
           gte: startDate,
           lte: endDate,
         },
+        NOT: {
+          check_out_time: null
+        }
       },
       include: {
         projects: {
@@ -165,20 +166,13 @@ export async function submitCheckIn(data: {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // 1. Strict Single-Lock: Prevent simultaneous active shifts
-    const activeShift = await (prisma as any).vendor_attendance.findFirst({
+    // Clean up any remaining ghosts before check-in
+    await (prisma as any).vendor_attendance.deleteMany({
       where: {
         user_id: parseInt(session.userId),
         check_out_time: null
-      },
-      include: {
-        projects: { select: { name: true } }
       }
     });
-
-    if (activeShift) {
-       return { error: `System Locked: Anda masih berstatus AKTIF di lokasi "${activeShift.projects?.name}". Silakan Check-out terlebih dahulu sebelum melakukan Check-in baru.` };
-    }
 
     // 1b. Time-Throttle: Prevent rapid double submission (within 1 minute)
     const recentRecord = await (prisma as any).vendor_attendance.findFirst({
