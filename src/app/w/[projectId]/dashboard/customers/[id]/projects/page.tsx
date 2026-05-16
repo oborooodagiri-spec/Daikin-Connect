@@ -533,7 +533,15 @@ export default function ProjectsPage() {
                        <MapPicker 
                           lat={formData.latitude} 
                           lng={formData.longitude} 
-                          onChange={(lat, lng) => setFormData({...formData, latitude: lat, longitude: lng})} 
+                          onChange={(lat, lng, name) => {
+                             const updates: any = { latitude: lat, longitude: lng };
+                             if (name) {
+                                // Take the first 3 parts of the address for the code
+                                const shortName = name.split(',').slice(0, 3).join(',').trim();
+                                updates.code = shortName;
+                             }
+                             setFormData({...formData, ...updates});
+                          }} 
                        />
 
                        <div className="grid grid-cols-2 gap-4">

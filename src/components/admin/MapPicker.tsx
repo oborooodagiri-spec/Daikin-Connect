@@ -19,7 +19,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 interface MapPickerProps {
   lat: number | null;
   lng: number | null;
-  onChange: (lat: number, lng: number) => void;
+  onChange: (lat: number, lng: number, name?: string) => void;
 }
 
 function LocationMarker({ lat, lng, onChange }: MapPickerProps) {
@@ -68,7 +68,7 @@ export default function MapPicker({ lat, lng, onChange }: MapPickerProps) {
   const selectLocation = (item: any) => {
     const newLat = parseFloat(item.lat);
     const newLng = parseFloat(item.lon);
-    onChange(newLat, newLng);
+    onChange(newLat, newLng, item.display_name);
     setCenter([newLat, newLng]);
     setSearchResults([]);
     setSearchQuery("");
