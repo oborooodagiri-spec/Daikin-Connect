@@ -52,7 +52,7 @@ export default function AttendanceClient({
     try {
       if (!modelsLoaded) {
         await Promise.all([
-          faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
+          faceapi.nets.ssdMobilenetv1.loadFromUri("/models"),
           faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
           faceapi.nets.faceRecognitionNet.loadFromUri("/models")
         ]);
@@ -73,7 +73,7 @@ export default function AttendanceClient({
 
       if (res?.faceUrl) {
         const img = await faceapi.fetchImage(res.faceUrl);
-        const detection = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+        const detection = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
         if (detection) {
           setReferenceDescriptor(detection.descriptor);
         }
@@ -245,7 +245,7 @@ export default function AttendanceClient({
       }
       
       const img = await faceapi.bufferToImage(file);
-      const detection = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+      const detection = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
       
       if (!detection) {
         throw new Error("Wajah tidak terdeteksi. Pastikan wajah terlihat jelas di dalam lingkaran dan pencahayaan cukup.");
