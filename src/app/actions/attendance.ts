@@ -38,14 +38,10 @@ export async function getActiveAttendance(projectId: string) {
       const [newest, ...stale] = allActive;
       activeRecord = newest;
       
-      await (prisma as any).vendor_attendance.updateMany({
-        where: { id: { in: stale.map((s: any) => s.id) } },
-        data: { 
-          check_out_time: new Date(),
-          check_out_notes: "(System Auto-Healing: Closed redundant session)"
-        }
+      await (prisma as any).vendor_attendance.deleteMany({
+        where: { id: { in: stale.map((s: any) => s.id) } }
       });
-      console.log(`[HEAL] Closed ${stale.length} redundant sessions for user ${session.userId}`);
+      console.log(`[HEAL] Permanently DELETED ${stale.length} redundant sessions for user ${session.userId}`);
     } else {
       activeRecord = allActive[0] || null;
     }
