@@ -36,6 +36,7 @@ export default function AttendanceClient({
   const [capturedFile, setCapturedFile] = useState<File | null>(null);
   const [modelsLoaded, setModelsLoaded] = useState(false);
   const [referenceDescriptor, setReferenceDescriptor] = useState<Float32Array | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
