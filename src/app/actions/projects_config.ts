@@ -56,6 +56,9 @@ export async function updateProjectSettings(
     enabled_forms?: string; 
     enabled_unit_types?: string; 
     monitoring_focus?: string;
+    latitude?: number | null;
+    longitude?: number | null;
+    radius_meters?: number | null;
   }
 ) {
   const session = await getSession();
@@ -70,6 +73,9 @@ export async function updateProjectSettings(
         ...(data.enabled_forms !== undefined && { enabled_forms: data.enabled_forms }),
         ...(data.enabled_unit_types !== undefined && { enabled_unit_types: data.enabled_unit_types }),
         ...(data.monitoring_focus !== undefined && { monitoring_focus: data.monitoring_focus }),
+        ...(data.latitude !== undefined && { latitude: data.latitude }),
+        ...(data.longitude !== undefined && { longitude: data.longitude }),
+        ...(data.radius_meters !== undefined && { radius_meters: data.radius_meters }),
       }
     });
 

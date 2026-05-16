@@ -166,8 +166,8 @@ export async function submitCheckIn(data: {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Strict Single-Lock: Prevent simultaneous active shifts in multiple projects
-    const activeOtherProject = await (prisma as any).vendor_attendance.findFirst({
+    // 1. Strict Single-Lock: Prevent simultaneous active shifts
+    const activeShift = await (prisma as any).vendor_attendance.findFirst({
       where: {
         user_id: parseInt(session.userId),
         check_out_time: null,
@@ -180,8 +180,22 @@ export async function submitCheckIn(data: {
       }
     });
 
-    if (activeOtherProject) {
-       return { error: `System Locked: Anda masih berstatus AKTIF di lokasi "${activeOtherProject.projects?.name}". Silakan Check-out terlebih dahulu sebelum melakukan Check-in baru.` };
+    if (activeShift) {
+       return { error: `System Locked: Anda masih berstatus AKTIF di lokasi "${activeShift.projects?.name}". Silakan Check-out terlebih dahulu sebelum melakukan Check-in baru.` };
+    }
+
+    // 1b. Time-Throttle: Prevent rapid double submission (within 1 minute)
+    const recentRecord = await (prisma as any).vendor_attendance.findFirst({
+      where: {
+        user_id: parseInt(session.userId),
+        check_in_time: {
+          gte: new Date(Date.now() - 60000) // Within last 1 minute
+        }
+      }
+    });
+
+    if (recentRecord) {
+      return { error: "Terdeteksi pengiriman ganda. Mohon tunggu 1 menit sebelum mencoba lagi." };
     }
 
     // 2. Geofencing Enforcement

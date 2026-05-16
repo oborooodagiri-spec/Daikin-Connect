@@ -218,7 +218,10 @@ export default function AttendanceClient({
   };
 
   const handleFinalSubmit = async () => {
-    if (submitting || isProcessingRef.current) return;
+    if (submitting || isProcessingRef.current) {
+      console.warn("Submission blocked: Already processing.");
+      return;
+    }
     
     if (!capturedFile) {
        captureFrame();
@@ -283,6 +286,11 @@ export default function AttendanceClient({
       setShowScanner(false);
       stopCamera();
       setShowSuccess(true);
+      
+      // Force reload active record to prevent double actions
+      const refreshRes = await getActiveAttendance(projectId);
+      if (refreshRes?.data) setActiveRecord(refreshRes.data);
+      
       await loadModelsAndReference();
     } catch (error: any) {
       console.error("Process error:", error);
@@ -429,9 +437,9 @@ export default function AttendanceClient({
               />
 
               <div className="absolute top-6 left-6 right-6 z-20 space-y-3">
-                 <div className="bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border-l-4 border-blue-500 flex justify-between items-center">
+                 <div className={`bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-xl border-l-4 flex justify-between items-center transition-all ${distance !== null && projectLocation?.lat && distance <= (projectLocation.radius || 100) ? 'border-emerald-500' : 'border-rose-500 animate-pulse'}`}>
                     <div>
-                       <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-0.5">Area Proyek</p>
+                       <p className={`text-[10px] font-black uppercase tracking-widest mb-0.5 ${distance !== null && projectLocation?.lat && distance <= (projectLocation.radius || 100) ? 'text-emerald-600' : 'text-rose-600'}`}>Area Proyek</p>
                        <div className="flex items-center gap-2">
                           <MapPin size={14} className="text-slate-400 shrink-0" />
                           <p className="text-[13px] font-black text-slate-800 truncate max-w-[150px]">
@@ -442,10 +450,19 @@ export default function AttendanceClient({
                     <div className="text-right">
                        <p className="text-[10px] font-black uppercase tracking-widest mb-0.5 text-slate-400">Status</p>
                        <p className={`text-[11px] font-black ${distance !== null && projectLocation?.lat && distance <= (projectLocation.radius || 100) ? 'text-emerald-600' : 'text-rose-500'}`}>
-                          {distance !== null && projectLocation?.lat && distance <= (projectLocation.radius || 100) ? 'Sesuai Area' : 'Di Luar Area'}
+                          {distance !== null && projectLocation?.lat && distance <= (projectLocation.radius || 100) ? 'Sesuai Area' : 'DI LUAR AREA'}
                        </p>
                     </div>
                  </div>
+
+                 {distance !== null && projectLocation?.lat && distance > (projectLocation.radius || 100) && (
+                    <div className="bg-rose-600 text-white rounded-xl p-3 shadow-lg flex items-center gap-3 animate-bounce">
+                       <AlertCircle size={18} className="shrink-0" />
+                       <p className="text-[11px] font-black uppercase tracking-wider">
+                          Peringatan: Anda berada {Math.round(distance)}m di luar area proyek!
+                       </p>
+                    </div>
+                 )}
 
                  {errorMsg && (
                     <div className="bg-rose-50/95 backdrop-blur-md border border-rose-200 rounded-xl p-3 shadow-lg flex items-start gap-2">

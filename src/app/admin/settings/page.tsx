@@ -88,15 +88,12 @@ export default function AdminSettingsPage() {
     });
   };
 
-  const handleUpdateAdvanced = async (projectId: string, unitTypes: string, focus: string) => {
+  const handleUpdateAdvanced = async (projectId: string, payload: any) => {
     setUpdatingId(`adv-${projectId}`);
-    const res = await updateProjectSettings(projectId, { 
-      enabled_unit_types: unitTypes, 
-      monitoring_focus: focus 
-    });
+    const res = await updateProjectSettings(projectId, payload);
     if ("success" in res && res.success) {
       setProjects(prev => prev.map(p => 
-        p.id === projectId ? { ...p, enabled_unit_types: unitTypes, monitoring_focus: focus } : p
+        p.id === projectId ? { ...p, ...payload } : p
       ));
       setIsOptionsOpen(false);
     } else {
@@ -171,7 +168,6 @@ export default function AdminSettingsPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
-            {/* Customer Filter */}
             <div className="relative w-full sm:w-72 group">
               <Filter className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
               <select 
@@ -186,7 +182,6 @@ export default function AdminSettingsPage() {
               </select>
             </div>
 
-            {/* Search Bar */}
             <div className="relative w-full sm:w-80 group">
               <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 transition-colors group-focus-within:text-blue-600" />
               <input 
@@ -303,7 +298,6 @@ export default function AdminSettingsPage() {
                           );
                         })}
 
-                        {/* Geo-Lock Column */}
                         <td className="px-6 py-8 text-center">
                            <button 
                              onClick={() => handlePinLocation(project.id)}
@@ -359,7 +353,6 @@ export default function AdminSettingsPage() {
           </div>
         </div>
 
-        {/* Options Modal */}
         <AnimatePresence>
           {isOptionsOpen && selectedProject && (
             <div className="fixed inset-0 z-[200] flex items-center justify-center p-6">
@@ -387,6 +380,9 @@ export default function AdminSettingsPage() {
 function ProjectOptionsModal({ project, onClose, onSave, isUpdating }: any) {
   const [unitTypes, setUnitTypes] = useState<string[]>((project?.enabled_unit_types || "").split(",").filter(Boolean));
   const [focus, setFocus] = useState(project?.monitoring_focus || 'UNIT');
+  const [lat, setLat] = useState(project?.latitude?.toString() || "");
+  const [lng, setLng] = useState(project?.longitude?.toString() || "");
+  const [radius, setRadius] = useState(project?.radius_meters?.toString() || "100");
 
   const OPTIONS = ["Chiller", "AHU", "FCU", "Split Duct", "Cooling Tower"];
 
@@ -441,6 +437,39 @@ function ProjectOptionsModal({ project, onClose, onSave, isUpdating }: any) {
 
          <div className="space-y-6">
             <label className="text-[11px] font-black text-[#003366] uppercase tracking-[0.2em] flex items-center gap-3">
+              <MapPin size={16} className="text-[#00a1e4]" /> Geofencing Data
+            </label>
+            <div className="grid grid-cols-2 gap-4">
+               <div className="space-y-2">
+                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Latitude</label>
+                  <input 
+                    type="number" step="any" value={lat} onChange={e => setLat(e.target.value)}
+                    placeholder="-6.1754"
+                    className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-xl font-bold text-xs focus:ring-2 focus:ring-blue-100 outline-none"
+                  />
+               </div>
+               <div className="space-y-2">
+                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Longitude</label>
+                  <input 
+                    type="number" step="any" value={lng} onChange={e => setLng(e.target.value)}
+                    placeholder="106.8272"
+                    className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-xl font-bold text-xs focus:ring-2 focus:ring-blue-100 outline-none"
+                  />
+               </div>
+            </div>
+            <div className="space-y-2">
+               <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Radius (Meters)</label>
+               <input 
+                 type="number" value={radius} onChange={e => setRadius(e.target.value)}
+                 placeholder="100"
+                 className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-xl font-bold text-xs focus:ring-2 focus:ring-blue-100 outline-none"
+               />
+               <p className="text-[9px] text-slate-400 font-medium italic">* Jarak toleransi maksimal untuk absensi.</p>
+            </div>
+         </div>
+
+         <div className="space-y-6">
+            <label className="text-[11px] font-black text-[#003366] uppercase tracking-[0.2em] flex items-center gap-3">
               <Map size={16} className="text-[#00a1e4]" /> Monitoring Focus
             </label>
             <div className="flex bg-slate-50 p-2 rounded-[2rem] border border-slate-100 gap-2">
@@ -473,7 +502,13 @@ function ProjectOptionsModal({ project, onClose, onSave, isUpdating }: any) {
             Discard
          </button>
          <button 
-           onClick={() => onSave(project.id, unitTypes.join(","), focus)}
+           onClick={() => onSave(project.id, {
+             enabled_unit_types: unitTypes.join(","),
+             monitoring_focus: focus,
+             latitude: lat ? parseFloat(lat) : null,
+             longitude: lng ? parseFloat(lng) : null,
+             radius_meters: radius ? parseInt(radius) : 100
+           })}
            disabled={isUpdating || unitTypes.length === 0}
            className="flex-[2] py-4 bg-[#003366] text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-2xl shadow-blue-900/30 hover:bg-[#00a1e4] transition-all disabled:opacity-50"
          >
