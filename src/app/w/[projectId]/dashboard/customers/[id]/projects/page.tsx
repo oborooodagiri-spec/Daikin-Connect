@@ -503,8 +503,8 @@ export default function ProjectsPage() {
                   </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="flex flex-col">
-                  <div className="p-6 space-y-4 bg-white">
+                <form onSubmit={handleSubmit} className="flex flex-col max-h-[85vh]">
+                  <div className="p-8 space-y-8 bg-white overflow-y-auto custom-scrollbar flex-1">
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Project Name <span className="text-rose-500">*</span></label>
                       <input 
