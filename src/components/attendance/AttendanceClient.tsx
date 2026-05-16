@@ -40,6 +40,7 @@ export default function AttendanceClient({
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const isProcessingRef = useRef(false);
   
   useEffect(() => {
     setIsMounted(true);
@@ -217,12 +218,10 @@ export default function AttendanceClient({
   };
 
   const handleFinalSubmit = async () => {
+    if (submitting || isProcessingRef.current) return;
+    
     if (!capturedFile) {
        captureFrame();
-       // Short delay to ensure state is updated before process
-       setTimeout(() => {
-          // Note: we'll use a better approach by using an effect or direct passing
-       }, 500);
        return;
     }
     await processFile(capturedFile);
@@ -236,10 +235,13 @@ export default function AttendanceClient({
   }, [capturedFile]);
 
   const processFile = async (file: File) => {
+    if (isProcessingRef.current) return;
+    isProcessingRef.current = true;
     setErrorMsg(null);
-    if (!location) { setErrorMsg("Lokasi diperlukan."); return; }
+    if (!location) { setErrorMsg("Lokasi diperlukan."); isProcessingRef.current = false; return; }
     setSubmitting(true);
     setVerifying(true);
+    setCapturedFile(null); // Clear immediately
     try {
       // If models are loaded, try client-side detection as an enhancement
       if (modelsLoaded) {
@@ -289,6 +291,7 @@ export default function AttendanceClient({
       setSubmitting(false);
       setVerifying(false);
       setCapturedFile(null);
+      isProcessingRef.current = false;
     }
   };
 

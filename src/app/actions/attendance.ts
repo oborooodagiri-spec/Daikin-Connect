@@ -181,9 +181,7 @@ export async function submitCheckIn(data: {
     });
 
     if (activeOtherProject) {
-      if (Number(activeOtherProject.project_id) !== Number(data.projectId)) {
-         return { error: `System Locked: Anda masih berstatus AKTIF di lokasi "${activeOtherProject.projects?.name}". Silakan Check-out dari lokasi tersebut terlebih dahulu sebelum Check-in di lokasi baru.` };
-      }
+       return { error: `System Locked: Anda masih berstatus AKTIF di lokasi "${activeOtherProject.projects?.name}". Silakan Check-out terlebih dahulu sebelum melakukan Check-in baru.` };
     }
 
     // 2. Geofencing Enforcement
