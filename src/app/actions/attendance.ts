@@ -19,32 +19,19 @@ export async function getActiveAttendance(projectId: string) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // SELF-HEALING: If multiple active records exist, find them all
-    const allActive = await (prisma as any).vendor_attendance.findMany({
+    // TOTAL RESET: Delete ALL active sessions for this user to allow a fresh start
+    const stale = await (prisma as any).vendor_attendance.deleteMany({
       where: {
         user_id: parseInt(session.userId),
         check_out_time: null
-      },
-      include: {
-        projects: { select: { name: true, latitude: true, longitude: true, radius_meters: true } }
-      },
-      orderBy: { check_in_time: "desc" }
+      }
     });
+    
+    if (stale.count > 0) {
+      console.log(`[RESET] Permanently DELETED ${stale.count} active sessions for user ${session.userId}`);
+    }
 
     let activeRecord = null;
-
-    if (allActive.length > 1) {
-      // Keep the newest one, close the rest automatically
-      const [newest, ...stale] = allActive;
-      activeRecord = newest;
-      
-      await (prisma as any).vendor_attendance.deleteMany({
-        where: { id: { in: stale.map((s: any) => s.id) } }
-      });
-      console.log(`[HEAL] Permanently DELETED ${stale.length} redundant sessions for user ${session.userId}`);
-    } else {
-      activeRecord = allActive[0] || null;
-    }
 
     // Determine target project location (either from active record, or the selected project)
     const targetProject = activeRecord?.projects || (projectId && projectId !== "empty" && !isNaN(Number(projectId)) ? await prisma.projects.findUnique({
