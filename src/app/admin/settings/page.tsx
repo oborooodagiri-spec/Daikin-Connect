@@ -431,8 +431,7 @@ function ProjectOptionsModal({ project, onClose, onSave, isUpdating }: any) {
             </div>
          </div>
 
-            </div>
-         </div>
+
 
          <div className="space-y-6">
             <label className="text-[11px] font-black text-[#003366] uppercase tracking-[0.2em] flex items-center gap-3">
