@@ -422,7 +422,7 @@ function ProjectOptionsModal({ project, onClose, onSave, isUpdating }: any) {
         </button>
       </div>
 
-      <div className="p-12 space-y-12">
+      <div className="max-h-[60vh] overflow-y-auto p-12 space-y-12 custom-scrollbar">
          <div className="space-y-6">
             <label className="text-[11px] font-black text-[#003366] uppercase tracking-[0.2em] flex items-center gap-3">
               <LayoutGrid size={16} className="text-[#00a1e4]" /> Active Unit Types
