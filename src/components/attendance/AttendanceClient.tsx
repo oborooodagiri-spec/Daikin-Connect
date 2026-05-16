@@ -418,6 +418,7 @@ export default function AttendanceClient({
                        <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-0.5">Area Proyek</p>
                        <div className="flex items-center gap-2">
                           <MapPin size={14} className="text-slate-400 shrink-0" />
+                          <p className="text-[13px] font-black text-slate-800 truncate max-w-[150px]">
                              {projectLocation ? (projectLocation.lat ? projectLocation.name : 'Lokasi Proyek Belum Diset') : 'Memuat Data...'}
                           </p>
                        </div>
