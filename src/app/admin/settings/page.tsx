@@ -14,8 +14,13 @@ import {
   getAllCustomersForFilter,
   updateProjectLocation
 } from "@/app/actions/projects_config";
-import { useRouter } from "next/navigation";
 import { getSession } from "@/app/actions/auth";
+import dynamic from "next/dynamic";
+
+const MapPicker = dynamic(() => import("@/components/admin/MapPicker"), { 
+  ssr: false,
+  loading: () => <div className="w-full h-[300px] bg-slate-50 rounded-2xl animate-pulse flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-slate-400">Loading Map Interface...</div>
+});
 
 const FORM_TYPES = [
   { id: "Audit", label: "Audit", icon: ClipboardCheck, color: "text-blue-500", bg: "bg-blue-50" },
@@ -457,6 +462,16 @@ function ProjectOptionsModal({ project, onClose, onSave, isUpdating }: any) {
                   />
                </div>
             </div>
+
+            <MapPicker 
+               lat={lat ? parseFloat(lat) : null} 
+               lng={lng ? parseFloat(lng) : null} 
+               onChange={(newLat, newLng) => {
+                  setLat(newLat.toString());
+                  setLng(newLng.toString());
+               }} 
+            />
+
             <div className="space-y-2">
                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Radius (Meters)</label>
                <input 
