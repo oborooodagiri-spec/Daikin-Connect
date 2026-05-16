@@ -19,15 +19,15 @@ export async function getActiveAttendance(projectId: string) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // SMART CLEANUP: Only delete sessions that are older than 5 minutes and have no check-out.
-    // This allows the NEWLY created session to stay alive while purging the "stuck" ones.
-    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    // SMART CLEANUP: Delete sessions that are older than 30 minutes and have no check-out.
+    // This purges the "stuck" sessions from hours ago while keeping the FRESH session alive.
+    const threshold = new Date(Date.now() - 30 * 60 * 1000); // 30 minutes
     
     await (prisma as any).vendor_attendance.deleteMany({
       where: {
         user_id: parseInt(session.userId),
         check_out_time: null,
-        check_in_time: { lt: fiveMinutesAgo }
+        check_in_time: { lt: threshold }
       }
     });
     
@@ -173,13 +173,30 @@ export async function submitCheckIn(data: {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Clean up any remaining ghosts before check-in
+    // 1. SMART CLEANUP: Only delete sessions that are truly "ghosts" (e.g., from yesterday or > 12h ago)
+    const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000);
     await (prisma as any).vendor_attendance.deleteMany({
       where: {
         user_id: parseInt(session.userId),
-        check_out_time: null
+        check_out_time: null,
+        check_in_time: { lt: twelveHoursAgo }
       }
     });
+
+    // 2. Prevent simultaneous active shifts (Current Day)
+    const activeShift = await (prisma as any).vendor_attendance.findFirst({
+      where: {
+        user_id: parseInt(session.userId),
+        check_out_time: null
+      },
+      include: {
+        projects: { select: { name: true } }
+      }
+    });
+
+    if (activeShift) {
+       return { error: `System Locked: Anda masih berstatus AKTIF di lokasi "${activeShift.projects?.name}". Silakan Check-out terlebih dahulu.` };
+    }
 
     // 1b. Time-Throttle: Prevent rapid double submission (within 1 minute)
     const recentRecord = await (prisma as any).vendor_attendance.findFirst({
