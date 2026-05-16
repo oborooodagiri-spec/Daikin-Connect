@@ -19,18 +19,7 @@ export async function getActiveAttendance(projectId: string) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // SMART CLEANUP: Delete sessions that are older than 30 minutes and have no check-out.
-    // This purges the "stuck" sessions from hours ago while keeping the FRESH session alive.
-    const threshold = new Date(Date.now() - 30 * 60 * 1000); // 30 minutes
-    
-    await (prisma as any).vendor_attendance.deleteMany({
-      where: {
-        user_id: parseInt(session.userId),
-        check_out_time: null,
-        check_in_time: { lt: threshold }
-      }
-    });
-    
+    // 1. Find the active record (no check-out time)
     const activeRecord = await (prisma as any).vendor_attendance.findFirst({
       where: {
         user_id: parseInt(session.userId),
@@ -38,7 +27,8 @@ export async function getActiveAttendance(projectId: string) {
       },
       include: {
         projects: { select: { name: true, latitude: true, longitude: true, radius_meters: true } }
-      }
+      },
+      orderBy: { check_in_time: "desc" }
     });
 
     // Determine target project location (either from active record, or the selected project)
@@ -173,17 +163,7 @@ export async function submitCheckIn(data: {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // 1. SMART CLEANUP: Only delete sessions that are truly "ghosts" (e.g., from yesterday or > 12h ago)
-    const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000);
-    await (prisma as any).vendor_attendance.deleteMany({
-      where: {
-        user_id: parseInt(session.userId),
-        check_out_time: null,
-        check_in_time: { lt: twelveHoursAgo }
-      }
-    });
-
-    // 2. Prevent simultaneous active shifts (Current Day)
+    // 1. Prevent simultaneous active shifts
     const activeShift = await (prisma as any).vendor_attendance.findFirst({
       where: {
         user_id: parseInt(session.userId),
@@ -195,7 +175,7 @@ export async function submitCheckIn(data: {
     });
 
     if (activeShift) {
-       return { error: `System Locked: Anda masih berstatus AKTIF di lokasi "${activeShift.projects?.name}". Silakan Check-out terlebih dahulu.` };
+       return { error: `System Locked: Anda masih berstatus AKTIF di lokasi "${activeShift.projects?.name}". Silakan Check-out terlebih dahulu sebelum melakukan Check-in baru.` };
     }
 
     // 1b. Time-Throttle: Prevent rapid double submission (within 1 minute)
@@ -277,25 +257,15 @@ export async function submitCheckOut(data: {
     const session = await getSession();
     if (!session) return { error: "Unauthorized" };
 
-    // RECOVERY LOGIC: If there are multiple active records (due to race conditions), 
-    // close ALL of them to clean up the user's state.
-    const updateResult = await (prisma as any).vendor_attendance.updateMany({
-      where: { 
-        user_id: parseInt(session.userId),
-        check_out_time: null
-      },
+    const record = await (prisma as any).vendor_attendance.update({
+      where: { id: data.attendanceId },
       data: {
-        check_out_time: new Date(),
+        check_out_time: new Date(), // Enforced Server Time
         check_out_lat: data.lat,
         check_out_long: data.long,
         check_out_photo: data.photoUrl,
-        check_out_notes: data.notes ? `${data.notes} (Auto-closed concurrent sessions)` : "(Auto-closed concurrent sessions)",
+        check_out_notes: data.notes,
       },
-    });
-
-    // Fetch the primary record to return its project info for sync
-    const record = await (prisma as any).vendor_attendance.findUnique({
-      where: { id: data.attendanceId }
     });
 
     // --- SMART BRIDGE INTEGRATION ---
