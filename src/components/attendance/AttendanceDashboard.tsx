@@ -7,10 +7,19 @@ import {
   MoreVertical, Download, X, FileImage
 } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from "date-fns";
-import { id } from "date-fns/locale";
-import AttendanceClient from "./AttendanceClient";
+import { id } from "date-fns/locale/id";
+import dynamic from "next/dynamic";
 import { getAttendanceHistory, getAttendanceStats } from "@/app/actions/attendance";
 import { motion, AnimatePresence } from "framer-motion";
+
+const AttendanceClient = dynamic(() => import("./AttendanceClient"), { 
+  ssr: false,
+  loading: () => (
+    <div className="flex justify-center p-12">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+    </div>
+  )
+});
 
 export default function AttendanceDashboard({ projects }: { projects: {id: string, name: string}[] }) {
   const [activeTab, setActiveTab] = useState<"riwayat" | "absensi" | "shift">("riwayat");
@@ -216,8 +225,7 @@ function TabItem({ children, active, onClick }: { children: React.ReactNode; act
     >
       {children}
       {active && (
-        <motion.div 
-          layoutId="activeTab" 
+        <div 
           className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 rounded-t-full"
         />
       )}

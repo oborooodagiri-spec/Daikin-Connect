@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { getActiveAttendance, submitCheckIn, submitCheckOut } from "@/app/actions/attendance";
 import { format } from "date-fns";
-import { id } from "date-fns/locale";
+import { id } from "date-fns/locale/id";
 import * as faceapi from "face-api.js";
 
 export default function AttendanceClient({ 
