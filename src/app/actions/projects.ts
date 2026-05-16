@@ -33,6 +33,9 @@ export async function getProjectsByCustomer(customerId: string) {
         code: p.code || "N/A",
         status: p.status,
         enabled_forms: p.enabled_forms || "Audit,Preventive,Corrective",
+        latitude: p.latitude,
+        longitude: p.longitude,
+        radius_meters: p.radius_meters,
         units_count: p._count.units,
         schedules_count: p._count.schedules
       }))
@@ -58,7 +61,14 @@ export async function getAllProjects() {
 }
 
 // 2. CREATE PROJECT
-export async function createProject(customerId: string, data: { name: string; code?: string; enabled_forms?: string }) {
+export async function createProject(customerId: string, data: { 
+  name: string; 
+  code?: string; 
+  enabled_forms?: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  radius_meters?: number | null;
+}) {
   try {
     await prisma.projects.create({
       data: {
@@ -66,7 +76,10 @@ export async function createProject(customerId: string, data: { name: string; co
         name: data.name,
         code: data.code,
         status: "active",
-        enabled_forms: data.enabled_forms || "Audit,Preventive,Corrective"
+        enabled_forms: data.enabled_forms || "Audit,Preventive,Corrective",
+        latitude: data.latitude,
+        longitude: data.longitude,
+        radius_meters: data.radius_meters
       }
     });
     revalidatePath(`/dashboard/customers/${customerId}/projects`);
@@ -78,14 +91,24 @@ export async function createProject(customerId: string, data: { name: string; co
 }
 
 // 3. UPDATE PROJECT
-export async function updateProject(customerId: string, projectId: string, data: { name: string; code?: string; enabled_forms?: string }) {
+export async function updateProject(customerId: string, projectId: string, data: { 
+  name: string; 
+  code?: string; 
+  enabled_forms?: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  radius_meters?: number | null;
+}) {
   try {
     await prisma.projects.update({
       where: { id: BigInt(projectId) },
       data: {
         name: data.name,
         code: data.code,
-        enabled_forms: data.enabled_forms
+        enabled_forms: data.enabled_forms,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        radius_meters: data.radius_meters
       }
     });
     revalidatePath(`/dashboard/customers/${customerId}/projects`);

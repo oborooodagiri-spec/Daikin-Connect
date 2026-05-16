@@ -17,6 +17,12 @@ import ProjectTargetModal from "@/components/ProjectTargetModal";
 import ScheduleCalendarModal from "@/components/ScheduleCalendarModal";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import Portal from "@/components/Portal";
+import dynamic from "next/dynamic";
+
+const MapPicker = dynamic(() => import("@/components/admin/MapPicker"), { 
+  ssr: false,
+  loading: () => <div className="w-full h-[200px] bg-slate-50 rounded-2xl animate-pulse flex items-center justify-center text-[9px] font-black uppercase tracking-widest text-slate-400">Loading Map Interface...</div>
+});
 
 export default function ProjectsPage() {
   const params = useParams();
@@ -37,10 +43,13 @@ export default function ProjectsPage() {
   const [editId, setEditId] = useState<string | null>(null);
 
   // Form State
-  const [formData, setFormData] = useState({ 
+  const [formData, setFormData] = useState<any>({ 
     name: "", 
     code: "",
-    enabled_forms: "Audit,Preventive,Corrective"
+    enabled_forms: "Audit,Preventive,Corrective",
+    latitude: null,
+    longitude: null,
+    radius_meters: 100
   });
 
   // Progress & Modal State for Targets/Schedules
@@ -99,7 +108,14 @@ export default function ProjectsPage() {
   const openCreateModal = () => {
     setModalMode("create");
     setEditId(null);
-    setFormData({ name: "", code: "", enabled_forms: "Audit,Preventive,Corrective" });
+    setFormData({ 
+      name: "", 
+      code: "", 
+      enabled_forms: "Audit,Preventive,Corrective",
+      latitude: null,
+      longitude: null,
+      radius_meters: 100
+    });
     setIsModalOpen(true);
   };
 
@@ -109,7 +125,10 @@ export default function ProjectsPage() {
     setFormData({ 
       name: project.name, 
       code: project.code || "",
-      enabled_forms: project.enabled_forms || "Audit,Preventive,Corrective"
+      enabled_forms: project.enabled_forms || "Audit,Preventive,Corrective",
+      latitude: project.latitude,
+      longitude: project.longitude,
+      radius_meters: project.radius_meters || 100
     });
     setIsModalOpen(true);
   };
@@ -464,7 +483,7 @@ export default function ProjectsPage() {
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="bg-white border border-slate-200 rounded-3xl shadow-2xl relative z-10 w-full max-w-md overflow-hidden flex flex-col"
+                className="bg-white border border-slate-200 rounded-3xl shadow-2xl relative z-10 w-full max-w-xl overflow-hidden flex flex-col"
               >
                 <div className="p-6 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
                   {/* ... rest of the code remains the same ... */}
@@ -504,8 +523,46 @@ export default function ProjectsPage() {
                         placeholder="e.g. PRJ-001"
                       />
                     </div>
-                    <div className="pt-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">
-                       Advanced capabilities are managed in the Settings Hub
+
+                    <div className="pt-4 space-y-4">
+                       <div className="flex items-center gap-3">
+                          <MapPin size={16} className="text-indigo-500" />
+                          <label className="text-[11px] font-black text-[#003366] uppercase tracking-[0.2em]">Tag Lokasi</label>
+                       </div>
+                       
+                       <MapPicker 
+                          lat={formData.latitude} 
+                          lng={formData.longitude} 
+                          onChange={(lat, lng) => setFormData({...formData, latitude: lat, longitude: lng})} 
+                       />
+
+                       <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-1.5">
+                             <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Latitude</label>
+                             <input 
+                               type="number" step="any" value={formData.latitude || ""} onChange={e => setFormData({...formData, latitude: e.target.value ? parseFloat(e.target.value) : null})}
+                               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl font-bold text-xs outline-none"
+                               placeholder="-6.2088"
+                             />
+                          </div>
+                          <div className="space-y-1.5">
+                             <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Longitude</label>
+                             <input 
+                               type="number" step="any" value={formData.longitude || ""} onChange={e => setFormData({...formData, longitude: e.target.value ? parseFloat(e.target.value) : null})}
+                               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl font-bold text-xs outline-none"
+                               placeholder="106.8456"
+                             />
+                          </div>
+                       </div>
+
+                       <div className="space-y-1.5">
+                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Radius Toleransi (Meters)</label>
+                          <input 
+                            type="number" value={formData.radius_meters || ""} onChange={e => setFormData({...formData, radius_meters: e.target.value ? parseInt(e.target.value) : 100})}
+                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl font-bold text-xs outline-none"
+                            placeholder="100"
+                          />
+                       </div>
                     </div>
                   </div>
                   <div className="p-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
