@@ -23,8 +23,7 @@ export async function getActiveAttendance(projectId: string) {
     const activeRecord = await (prisma as any).vendor_attendance.findFirst({
       where: {
         user_id: parseInt(session.userId),
-        check_out_time: null,
-        check_in_time: { gte: today }
+        check_out_time: null
       },
       include: {
         projects: { select: { name: true, latitude: true, longitude: true, radius_meters: true } }
@@ -170,10 +169,7 @@ export async function submitCheckIn(data: {
     const activeShift = await (prisma as any).vendor_attendance.findFirst({
       where: {
         user_id: parseInt(session.userId),
-        check_out_time: null,
-        check_in_time: {
-           gte: today
-        }
+        check_out_time: null
       },
       include: {
         projects: { select: { name: true } }
@@ -263,36 +259,25 @@ export async function submitCheckOut(data: {
     const session = await getSession();
     if (!session) return { error: "Unauthorized" };
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // 1. Update the primary record
-    const record = await (prisma as any).vendor_attendance.update({
-      where: { id: data.attendanceId },
-      data: {
-        check_out_time: new Date(), // Enforced Server Time
-        check_out_lat: data.lat,
-        check_out_long: data.long,
-        check_out_photo: data.photoUrl,
-        check_out_notes: data.notes,
-      },
-    });
-
-    // 2. AUTO-CLEANUP: If there are other "stray" open records for this user today, close them too
-    // This fixes the "Double Clock-in" legacy data issue
-    await (prisma as any).vendor_attendance.updateMany({
-      where: {
+    // RECOVERY LOGIC: If there are multiple active records (due to race conditions), 
+    // close ALL of them to clean up the user's state.
+    const updateResult = await (prisma as any).vendor_attendance.updateMany({
+      where: { 
         user_id: parseInt(session.userId),
-        check_out_time: null,
-        check_in_time: { gte: today },
-        id: { not: data.attendanceId } // Don't try to update the one we just did
+        check_out_time: null
       },
       data: {
         check_out_time: new Date(),
         check_out_lat: data.lat,
         check_out_long: data.long,
-        check_out_notes: "[AUTO_CLEANUP] Closed stray simultaneous session"
-      }
+        check_out_photo: data.photoUrl,
+        check_out_notes: data.notes ? `${data.notes} (Auto-closed concurrent sessions)` : "(Auto-closed concurrent sessions)",
+      },
+    });
+
+    // Fetch the primary record to return its project info for sync
+    const record = await (prisma as any).vendor_attendance.findUnique({
+      where: { id: data.attendanceId }
     });
 
     // --- SMART BRIDGE INTEGRATION ---
