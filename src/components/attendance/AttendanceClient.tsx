@@ -52,7 +52,7 @@ export default function AttendanceClient({
     try {
       if (!modelsLoaded) {
         await Promise.all([
-          faceapi.nets.ssdMobilenetv1.loadFromUri("/models"),
+          faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
           faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
           faceapi.nets.faceRecognitionNet.loadFromUri("/models")
         ]);
@@ -73,7 +73,7 @@ export default function AttendanceClient({
 
       if (res?.faceUrl) {
         const img = await faceapi.fetchImage(res.faceUrl);
-        const detection = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
+        const detection = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
         if (detection) {
           setReferenceDescriptor(detection.descriptor);
         }
@@ -167,9 +167,11 @@ export default function AttendanceClient({
   };
 
   useEffect(() => {
-    if (location && projectLocation) {
+    if (location && projectLocation && projectLocation.lat && projectLocation.long) {
        const d = calculateDistance(location.lat, location.long, projectLocation.lat, projectLocation.long);
        setDistance(d);
+    } else {
+       setDistance(null);
     }
   }, [location, projectLocation]);
 
@@ -238,10 +240,10 @@ export default function AttendanceClient({
     setVerifying(true);
     try {
       const img = await faceapi.bufferToImage(file);
-      const detection = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
+      const detection = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
       
       if (!detection) {
-        throw new Error("Wajah tidak terdeteksi. Silakan coba lagi.");
+        throw new Error("Wajah tidak terdeteksi. Pastikan wajah terlihat jelas di depan kamera.");
       }
 
       if (referenceDescriptor) {
@@ -416,15 +418,14 @@ export default function AttendanceClient({
                        <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-0.5">Area Proyek</p>
                        <div className="flex items-center gap-2">
                           <MapPin size={14} className="text-slate-400 shrink-0" />
-                          <p className="text-[13px] font-black text-slate-800 truncate max-w-[150px]">
-                             {projectLocation?.name || 'Mendeteksi...'}
+                             {projectLocation ? (projectLocation.lat ? projectLocation.name : 'Lokasi Proyek Belum Diset') : 'Memuat Data...'}
                           </p>
                        </div>
                     </div>
                     <div className="text-right">
                        <p className="text-[10px] font-black uppercase tracking-widest mb-0.5 text-slate-400">Status</p>
-                       <p className={`text-[11px] font-black ${distance !== null && projectLocation && distance <= (projectLocation.radius || 100) ? 'text-emerald-600' : 'text-rose-500'}`}>
-                          {distance !== null && projectLocation && distance <= (projectLocation.radius || 100) ? 'Sesuai Area' : 'Di Luar Area'}
+                       <p className={`text-[11px] font-black ${distance !== null && projectLocation?.lat && distance <= (projectLocation.radius || 100) ? 'text-emerald-600' : 'text-rose-500'}`}>
+                          {distance !== null && projectLocation?.lat && distance <= (projectLocation.radius || 100) ? 'Sesuai Area' : 'Di Luar Area'}
                        </p>
                     </div>
                  </div>
