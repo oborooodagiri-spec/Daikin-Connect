@@ -50,6 +50,29 @@ export default function AttendanceClient({
   }, [projectId]);
 
   const loadModelsAndReference = async () => {
+    // 1. Always load active attendance record first, completely isolated
+    let activeRes: any = null;
+    try {
+      setLoading(true);
+      activeRes = await getActiveAttendance(projectId);
+      setActiveRecord(activeRes?.data || null);
+      if (activeRes?.data) {
+        if (onProjectLocked && String(activeRes.data.project_id) !== projectId) {
+          onProjectLocked(String(activeRes.data.project_id));
+        }
+      }
+      setHasFace(activeRes?.hasFace ?? true);
+      if (activeRes?.projectLocation) {
+        setProjectLocation(activeRes.projectLocation);
+      }
+    } catch (err) {
+      console.error("Failed to load active attendance record:", err);
+      // We don't set errorMsg here to keep UI resilient
+    } finally {
+      setLoading(false);
+    }
+
+    // 2. Load face-api models and reference descriptors in a separate, isolated try-catch
     try {
       if (!modelsLoaded) {
         await Promise.all([
@@ -59,21 +82,9 @@ export default function AttendanceClient({
         ]);
         setModelsLoaded(true);
       }
-      
-      const res = await getActiveAttendance(projectId);
-      setActiveRecord(res?.data || null);
-      if (res?.data) {
-        if (onProjectLocked && String(res.data.project_id) !== projectId) {
-          onProjectLocked(String(res.data.project_id));
-        }
-      }
-      setHasFace(res?.hasFace ?? true);
-      if (res?.projectLocation) {
-        setProjectLocation(res.projectLocation);
-      }
 
-      if (res?.faceUrl) {
-        const img = await faceapi.fetchImage(res.faceUrl);
+      if (activeRes?.faceUrl) {
+        const img = await faceapi.fetchImage(activeRes.faceUrl);
         const detection = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
         if (detection) {
           setReferenceDescriptor(detection.descriptor);
@@ -81,10 +92,7 @@ export default function AttendanceClient({
       }
     } catch (e: any) {
       console.error("Biometric init error (skipping client-side check):", e);
-      // We don't set errorMsg here to allow fallback to manual photo
       setModelsLoaded(false); 
-    } finally {
-      setLoading(false);
     }
   };
 
