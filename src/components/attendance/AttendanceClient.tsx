@@ -309,7 +309,7 @@ export default function AttendanceClient({
     setCapturedFile(null);
     
     const isOutside = distance !== null && projectLocation?.lat && distance > (projectLocation.radius || 100);
-    const outsideNote = isOutside ? `[OUTSIDE_AREA: ${Math.round(distance!)}m] ` : "";
+    const outsideNote = isOutside ? `[DI LUAR AREA: ${Math.round(distance!)}m] ` : "";
     setNotes(outsideNote);
     
     startScanner();

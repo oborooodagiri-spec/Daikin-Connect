@@ -197,6 +197,8 @@ export async function submitCheckIn(data: {
       where: { id: BigInt(data.projectId) }
     });
 
+    let finalNotes = data.notes || "";
+
     if (project?.latitude && project?.longitude) {
       const distance = calculateDistance(
         data.lat, data.long, 
@@ -207,6 +209,9 @@ export async function submitCheckIn(data: {
       if (distance > radius) {
         // PER USER REQUEST: Allow check-ins outside the area, but the frontend will add a note.
         console.warn(`[GEOFENCE] User clocked in out of range: ${Math.round(distance)}m`);
+        if (!finalNotes.includes("DI LUAR AREA") && !finalNotes.includes("OUTSIDE_AREA")) {
+          finalNotes = `[DI LUAR AREA: ${Math.round(distance)}m] ${finalNotes}`.trim();
+        }
       }
     }
 
@@ -218,7 +223,8 @@ export async function submitCheckIn(data: {
         check_in_lat: data.lat,
         check_in_long: data.long,
         check_in_photo: data.photoUrl,
-        check_in_notes: data.notes,
+        check_in_notes: finalNotes,
+        check_out_time: null, // Mencegah MySQL auto-populating default timestamp
       },
     });
 
@@ -257,6 +263,31 @@ export async function submitCheckOut(data: {
     const session = await getSession();
     if (!session) return { error: "Unauthorized" };
 
+    const attendanceRecord = await (prisma as any).vendor_attendance.findUnique({
+      where: { id: data.attendanceId },
+      include: { projects: true }
+    });
+
+    if (!attendanceRecord) return { error: "Sesi absensi tidak ditemukan" };
+
+    let finalNotes = data.notes || "";
+    const project = attendanceRecord.projects;
+
+    if (project?.latitude && project?.longitude) {
+      const distance = calculateDistance(
+        data.lat, data.long, 
+        Number(project.latitude), Number(project.longitude)
+      );
+      const radius = project.radius_meters || 100;
+
+      if (distance > radius) {
+        console.warn(`[GEOFENCE] User clocked out out of range: ${Math.round(distance)}m`);
+        if (!finalNotes.includes("DI LUAR AREA") && !finalNotes.includes("OUTSIDE_AREA")) {
+          finalNotes = `[DI LUAR AREA: ${Math.round(distance)}m] ${finalNotes}`.trim();
+        }
+      }
+    }
+
     const record = await (prisma as any).vendor_attendance.update({
       where: { id: data.attendanceId },
       data: {
@@ -264,7 +295,7 @@ export async function submitCheckOut(data: {
         check_out_lat: data.lat,
         check_out_long: data.long,
         check_out_photo: data.photoUrl,
-        check_out_notes: data.notes,
+        check_out_notes: finalNotes,
       },
     });
 
@@ -275,7 +306,7 @@ export async function submitCheckOut(data: {
         projectId: record.project_id.toString(),
         action: "OUT",
         photoUrl: data.photoUrl,
-        notes: data.notes
+        notes: finalNotes
       });
     } catch (e: any) {
       console.warn("[SYNC_ERR] Schedule checkout sync failed:", e.message);

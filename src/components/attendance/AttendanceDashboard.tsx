@@ -9,7 +9,7 @@ import {
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from "date-fns";
 import { id } from "date-fns/locale/id";
 import dynamic from "next/dynamic";
-import { getAttendanceHistory, getAttendanceStats } from "@/app/actions/attendance";
+import { getAttendanceHistory, getAttendanceStats, getActiveAttendance } from "@/app/actions/attendance";
 import { motion, AnimatePresence } from "framer-motion";
 
 const AttendanceClient = dynamic(() => import("./AttendanceClient"), { 
@@ -34,6 +34,23 @@ export default function AttendanceDashboard({ projects }: { projects: {id: strin
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    async function autoSelectActiveProject() {
+      try {
+        const res = await getActiveAttendance("empty");
+        if (res && "success" in res && res.success && res.data) {
+          setSelectedProjectId(String(res.data.project_id));
+          setActiveTab("absensi"); // Langsung ke tab absensi jika ada sesi aktif
+        }
+      } catch (err) {
+        console.error("Auto-select active project error:", err);
+      }
+    }
+    if (isMounted) {
+      autoSelectActiveProject();
+    }
+  }, [isMounted]);
 
   useEffect(() => {
     fetchData();
