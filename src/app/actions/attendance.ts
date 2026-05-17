@@ -389,8 +389,6 @@ export async function verifyFaceMatch(photoUrl: string) {
       return { error: `Gagal memproses foto absensi saat ini. Silakan coba memotret ulang.` };
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
-
     const prompt = `
       Act as a high-precision biometric facial recognition auditor for an enterprise attendance system.
       Compare the identity of the person in Image 1 (Authorized Reference) with the person in Image 2 (Current Live Capture).
@@ -406,17 +404,34 @@ export async function verifyFaceMatch(photoUrl: string) {
       {"match": boolean, "confidence": number (0-100), "reason": "concise technical explanation"}
     `;
 
-    const result = await model.generateContent([
-      prompt,
-      { inlineData: { data: refImageBase64, mimeType: "image/jpeg" } },
-      { inlineData: { data: currentImageBase64, mimeType: "image/jpeg" } },
-    ]);
-
-    const response = result.response.text();
-    const jsonMatch = response.match(/\{.*\}/s);
-    
-    if (!jsonMatch) throw new Error("Format respon AI tidak valid.");
-    const aiResult = JSON.parse(jsonMatch[0]);
+    let aiResult;
+    try {
+      // 1. Try gemini-1.5-flash (super fast, general purpose, highly available)
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const result = await model.generateContent([
+        prompt,
+        { inlineData: { data: refImageBase64, mimeType: "image/jpeg" } },
+        { inlineData: { data: currentImageBase64, mimeType: "image/jpeg" } },
+      ]);
+      const response = result.response.text();
+      const jsonMatch = response.match(/\{.*\}/s);
+      if (!jsonMatch) throw new Error("Format respon AI tidak valid.");
+      aiResult = JSON.parse(jsonMatch[0]);
+    } catch (flashErr: any) {
+      console.warn("Gemini 1.5 Flash failed, attempting Gemini 1.5 Pro fallback:", flashErr.message);
+      
+      // 2. Fallback to gemini-1.5-pro
+      const modelPro = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+      const result = await modelPro.generateContent([
+        prompt,
+        { inlineData: { data: refImageBase64, mimeType: "image/jpeg" } },
+        { inlineData: { data: currentImageBase64, mimeType: "image/jpeg" } },
+      ]);
+      const response = result.response.text();
+      const jsonMatch = response.match(/\{.*\}/s);
+      if (!jsonMatch) throw new Error("Format respon AI tidak valid.");
+      aiResult = JSON.parse(jsonMatch[0]);
+    }
 
     if (aiResult.match && aiResult.confidence >= 75) {
        return { success: true, match: true, confidence: aiResult.confidence };
