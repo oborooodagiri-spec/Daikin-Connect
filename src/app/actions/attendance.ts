@@ -382,6 +382,13 @@ export async function verifyFaceMatch(photoUrl: string) {
        imageUrlToBase64(photoUrl)
     ]);
 
+    if (!refImageBase64) {
+      return { error: `Gagal memproses foto referensi wajah terdaftar. (URL: ${user.face_reference_url}). Silakan hubungi admin untuk mendaftarkan ulang wajah.` };
+    }
+    if (!currentImageBase64) {
+      return { error: `Gagal memproses foto absensi saat ini. Silakan coba memotret ulang.` };
+    }
+
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
     const prompt = `
@@ -401,14 +408,14 @@ export async function verifyFaceMatch(photoUrl: string) {
 
     const result = await model.generateContent([
       prompt,
-      { inlineData: { data: refImageBase64!, mimeType: "image/jpeg" } },
-      { inlineData: { data: currentImageBase64!, mimeType: "image/jpeg" } },
+      { inlineData: { data: refImageBase64, mimeType: "image/jpeg" } },
+      { inlineData: { data: currentImageBase64, mimeType: "image/jpeg" } },
     ]);
 
     const response = result.response.text();
     const jsonMatch = response.match(/\{.*\}/s);
     
-    if (!jsonMatch) throw new Error("Invalid AI response");
+    if (!jsonMatch) throw new Error("Format respon AI tidak valid.");
     const aiResult = JSON.parse(jsonMatch[0]);
 
     if (aiResult.match && aiResult.confidence >= 75) {
@@ -418,13 +425,13 @@ export async function verifyFaceMatch(photoUrl: string) {
          success: true, 
          match: false, 
          confidence: aiResult.confidence, 
-         reason: aiResult.reason || "Face mismatch detected." 
+         reason: aiResult.reason || "Wajah tidak cocok dengan referensi." 
        };
     }
 
-  } catch (err) {
+  } catch (err: any) {
     console.error("AI Verification Error:", err);
-    return { error: "Security check failed. Please ensure good lighting." };
+    return { error: `Keamanan Gagal: ${err.message || err}` };
   }
 }
 
@@ -464,14 +471,37 @@ async function imageUrlToBase64(url: string) {
         const buffer = fs.readFileSync(filePath);
         return buffer.toString('base64');
       }
+
+      // Alt path resolution fallback
+      const altPath = path.join(__dirname, '..', '..', '..', '..', 'public', 'uploads', folder, filename);
+      if (fs.existsSync(altPath)) {
+        const buffer = fs.readFileSync(altPath);
+        return buffer.toString('base64');
+      }
     }
 
-    // Fallback to fetch for absolute external URLs
-    const response = await fetch(url);
+    // Fallback to fetch with absolute URL construction
+    let fetchUrl = url;
+    if (url.startsWith('/')) {
+      try {
+        const { headers } = require("next/headers");
+        const headersList = await headers();
+        const host = headersList.get("host") || "localhost:3000";
+        const protocol = host.includes("localhost") || host.includes("127.0.0.1") ? "http" : "https";
+        fetchUrl = `${protocol}://${host}${url}`;
+      } catch (err) {
+        fetchUrl = `http://localhost:3000${url}`;
+      }
+    }
+
+    const response = await fetch(fetchUrl);
+    if (!response.ok) {
+      throw new Error(`Fetch failed with status ${response.status}`);
+    }
     const arrayBuffer = await response.arrayBuffer();
     return Buffer.from(arrayBuffer).toString('base64');
-  } catch (e) {
-    console.error("Base64 conversion failed", e);
+  } catch (e: any) {
+    console.error("Base64 conversion failed for URL:", url, e.message);
     return null;
   }
 }
