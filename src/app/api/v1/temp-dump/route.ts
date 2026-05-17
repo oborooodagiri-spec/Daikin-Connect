@@ -4,7 +4,12 @@ import { getActiveAttendance } from "@/app/actions/attendance";
 import { getSession } from "@/app/actions/auth";
 import { serializePrisma } from "@/lib/serialize";
 
+import { unstable_noStore } from "next/cache";
+
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
+  unstable_noStore();
   try {
     const session = await getSession();
     const apiKey = process.env.GEMINI_API_KEY || "";
