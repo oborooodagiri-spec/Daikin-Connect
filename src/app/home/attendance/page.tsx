@@ -19,5 +19,5 @@ export default async function AttendancePage() {
     name: ua.projects?.name || 'Unknown Project'
   }));
 
-  return <AttendanceDashboard projects={projects} />;
+  return <AttendanceDashboard projects={projects} session={session} />;
 }
