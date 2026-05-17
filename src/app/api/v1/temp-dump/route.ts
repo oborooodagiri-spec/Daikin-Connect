@@ -23,22 +23,22 @@ export async function GET(req: NextRequest) {
         const { GoogleGenerativeAI } = require("@google/generative-ai");
         const genAI = new GoogleGenerativeAI(apiKey);
         
-        // Test 1: Simple text generation with gemini-1.5-flash
+        // Test 1: Simple text generation with gemini-2.5-flash (Modern)
         try {
-          const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+          const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }, { apiVersion: "v1" });
           const result = await model.generateContent("Hello! Are you working?");
-          geminiTest.flashTextGen = result.response.text();
+          geminiTest.flash25TextGen = result.response.text();
         } catch (e: any) {
-          geminiTest.flashTextGenError = e.message || String(e);
+          geminiTest.flash25TextGenError = e.message || String(e);
         }
 
-        // Test 2: Simple text generation with gemini-1.5-pro
+        // Test 2: Simple text generation with gemini-2.0-flash (Fallback)
         try {
-          const modelPro = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+          const modelPro = genAI.getGenerativeModel({ model: "gemini-2.0-flash" }, { apiVersion: "v1" });
           const result = await modelPro.generateContent("Hello! Are you working?");
-          geminiTest.proTextGen = result.response.text();
+          geminiTest.flash20TextGen = result.response.text();
         } catch (e: any) {
-          geminiTest.proTextGenError = e.message || String(e);
+          geminiTest.flash20TextGenError = e.message || String(e);
         }
 
         // Test 3: List models if possible (some keys don't support listing but let's try)

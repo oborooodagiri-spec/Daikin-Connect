@@ -408,28 +408,22 @@ export async function verifyFaceMatch(photoUrl: string) {
       {"match": boolean, "confidence": number (0-100), "reason": "concise technical explanation"}
     `;
 
-    let aiResult;
-    let flashErrorMsg = "";
-    try {
-      // 1. Try gemini-1.5-flash with explicit apiVersion: v1
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }, { apiVersion: "v1" });
-      const result = await model.generateContent([
-        prompt,
-        { inlineData: { data: refImageBase64, mimeType: "image/jpeg" } },
-        { inlineData: { data: currentImageBase64, mimeType: "image/jpeg" } },
-      ]);
-      const response = result.response.text();
-      const jsonMatch = response.match(/\{.*\}/s);
-      if (!jsonMatch) throw new Error("Format respon AI tidak valid.");
-      aiResult = JSON.parse(jsonMatch[0]);
-    } catch (flashErr: any) {
-      console.warn("Gemini 1.5 Flash failed, trying Gemini 1.5 Pro fallback:", flashErr.message);
-      flashErrorMsg = flashErr.message || String(flashErr);
-      
-      // 2. Fallback to gemini-1.5-pro with explicit apiVersion: v1
+    const candidateModels = [
+      "gemini-2.5-flash",
+      "gemini-2.0-flash",
+      "gemini-2.5-pro",
+      "gemini-1.5-flash",
+      "gemini-1.5-pro"
+    ];
+
+    let aiResult = null;
+    let errors: string[] = [];
+
+    for (const modelName of candidateModels) {
       try {
-        const modelPro = genAI.getGenerativeModel({ model: "gemini-1.5-pro" }, { apiVersion: "v1" });
-        const result = await modelPro.generateContent([
+        console.log(`[verifyFaceMatch] Attempting facial comparison with model: ${modelName}`);
+        const model = genAI.getGenerativeModel({ model: modelName }, { apiVersion: "v1" });
+        const result = await model.generateContent([
           prompt,
           { inlineData: { data: refImageBase64, mimeType: "image/jpeg" } },
           { inlineData: { data: currentImageBase64, mimeType: "image/jpeg" } },
@@ -438,10 +432,16 @@ export async function verifyFaceMatch(photoUrl: string) {
         const jsonMatch = response.match(/\{.*\}/s);
         if (!jsonMatch) throw new Error("Format respon AI tidak valid.");
         aiResult = JSON.parse(jsonMatch[0]);
-      } catch (proErr: any) {
-        console.error("Gemini 1.5 Pro fallback also failed:", proErr.message);
-        throw new Error(`[Flash Error]: ${flashErrorMsg} | [Pro Error]: ${proErr.message || String(proErr)}`);
+        console.log(`[verifyFaceMatch] Success with model: ${modelName}`);
+        break;
+      } catch (err: any) {
+        console.warn(`[verifyFaceMatch] Model ${modelName} failed:`, err.message || err);
+        errors.push(`[${modelName}]: ${err.message || String(err)}`);
       }
+    }
+
+    if (!aiResult) {
+      throw new Error(`Seluruh model AI gagal dipanggil. Detail kesalahan:\n${errors.join("\n")}`);
     }
 
     if (aiResult.match && aiResult.confidence >= 75) {

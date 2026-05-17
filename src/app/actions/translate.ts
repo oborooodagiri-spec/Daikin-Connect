@@ -20,8 +20,6 @@ export async function translateReportStringsAction(
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
-
     const systemPrompt = `You are a Senior Daikin HVAC Technical Specialist and Professional Japanese Translator. 
     Your task is to translate technical maintenance notes into ${targetLang === 'en' ? 'Technical English' : targetLang === 'ja' ? 'Technical Japanese' : 'Bahasa Indonesia'}.
     
@@ -38,9 +36,37 @@ export async function translateReportStringsAction(
 
     const prompt = `${systemPrompt}\n\nTranslate the following report fields into ${targetLang}. Return ONLY the translated JSON object:\n${JSON.stringify(translatableMap, null, 2)}`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    let text = response.text();
+    const candidateModels = [
+      "gemini-2.5-flash",
+      "gemini-2.0-flash",
+      "gemini-2.5-pro",
+      "gemini-1.5-flash",
+      "gemini-1.5-pro"
+    ];
+
+    let resultText = "";
+    let errors: string[] = [];
+
+    for (const modelName of candidateModels) {
+      try {
+        console.log(`[translateReportStringsAction] Attempting translation with model: ${modelName}`);
+        const model = genAI.getGenerativeModel({ model: modelName }, { apiVersion: "v1" });
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        resultText = response.text();
+        console.log(`[translateReportStringsAction] Success with model: ${modelName}`);
+        break;
+      } catch (err: any) {
+        console.warn(`[translateReportStringsAction] Model ${modelName} failed:`, err.message || err);
+        errors.push(`[${modelName}]: ${err.message || String(err)}`);
+      }
+    }
+
+    if (!resultText) {
+      throw new Error(`Seluruh model AI gagal dipanggil untuk penerjemahan. Detail kesalahan:\n${errors.join("\n")}`);
+    }
+
+    let text = resultText;
     
     // Robust cleaning: extract first { to last }
     const jsonMatch = text.match(/\{[\s\S]*\}/);
