@@ -353,6 +353,10 @@ export async function submitCheckOut(data: {
  */
 export async function verifyFaceMatch(photoUrl: string) {
   try {
+    if (!process.env.GEMINI_API_KEY) {
+      return { error: "Keamanan Gagal: API Key Gemini belum dikonfigurasi di server (.env)." };
+    }
+
     const session = await getSession();
     if (!session) return { error: "Unauthorized" };
 
@@ -405,9 +409,10 @@ export async function verifyFaceMatch(photoUrl: string) {
     `;
 
     let aiResult;
+    let flashErrorMsg = "";
     try {
-      // 1. Try gemini-1.5-flash (super fast, general purpose, highly available)
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      // 1. Try gemini-1.5-flash with explicit apiVersion: v1
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }, { apiVersion: "v1" });
       const result = await model.generateContent([
         prompt,
         { inlineData: { data: refImageBase64, mimeType: "image/jpeg" } },
@@ -418,19 +423,25 @@ export async function verifyFaceMatch(photoUrl: string) {
       if (!jsonMatch) throw new Error("Format respon AI tidak valid.");
       aiResult = JSON.parse(jsonMatch[0]);
     } catch (flashErr: any) {
-      console.warn("Gemini 1.5 Flash failed, attempting Gemini 1.5 Pro fallback:", flashErr.message);
+      console.warn("Gemini 1.5 Flash failed, trying Gemini 1.5 Pro fallback:", flashErr.message);
+      flashErrorMsg = flashErr.message || String(flashErr);
       
-      // 2. Fallback to gemini-1.5-pro
-      const modelPro = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
-      const result = await modelPro.generateContent([
-        prompt,
-        { inlineData: { data: refImageBase64, mimeType: "image/jpeg" } },
-        { inlineData: { data: currentImageBase64, mimeType: "image/jpeg" } },
-      ]);
-      const response = result.response.text();
-      const jsonMatch = response.match(/\{.*\}/s);
-      if (!jsonMatch) throw new Error("Format respon AI tidak valid.");
-      aiResult = JSON.parse(jsonMatch[0]);
+      // 2. Fallback to gemini-1.5-pro with explicit apiVersion: v1
+      try {
+        const modelPro = genAI.getGenerativeModel({ model: "gemini-1.5-pro" }, { apiVersion: "v1" });
+        const result = await modelPro.generateContent([
+          prompt,
+          { inlineData: { data: refImageBase64, mimeType: "image/jpeg" } },
+          { inlineData: { data: currentImageBase64, mimeType: "image/jpeg" } },
+        ]);
+        const response = result.response.text();
+        const jsonMatch = response.match(/\{.*\}/s);
+        if (!jsonMatch) throw new Error("Format respon AI tidak valid.");
+        aiResult = JSON.parse(jsonMatch[0]);
+      } catch (proErr: any) {
+        console.error("Gemini 1.5 Pro fallback also failed:", proErr.message);
+        throw new Error(`[Flash Error]: ${flashErrorMsg} | [Pro Error]: ${proErr.message || String(proErr)}`);
+      }
     }
 
     if (aiResult.match && aiResult.confidence >= 75) {
