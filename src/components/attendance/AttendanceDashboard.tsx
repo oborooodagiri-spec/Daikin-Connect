@@ -134,7 +134,7 @@ export default function AttendanceDashboard({ projects }: { projects: {id: strin
                          </div>
                          <div className="text-center">
                             <p className="text-sm font-bold text-slate-800">
-                               {item.check_out_time ? format(new Date(item.check_out_time), "HH:mm") : "-"}
+                                {item.check_out_photo ? format(new Date(item.check_out_time), "HH:mm") : "-"}
                             </p>
                          </div>
                       </div>
@@ -290,7 +290,7 @@ function HistoryDetailModal({ item, onClose }: { item: any; onClose: () => void 
           <div className="p-8 space-y-8 overflow-y-auto max-h-[70vh]">
              <div className="grid grid-cols-2 gap-4">
                 <PhotoCard label="Clock In" url={item.check_in_photo} time={item.check_in_time} color="emerald" />
-                <PhotoCard label="Clock Out" url={item.check_out_photo} time={item.check_out_time} color="rose" />
+                <PhotoCard label="Clock Out" url={item.check_out_photo} time={item.check_out_photo ? item.check_out_time : null} color="rose" />
              </div>
 
              <div className="space-y-4">
@@ -311,7 +311,7 @@ function HistoryDetailModal({ item, onClose }: { item: any; onClose: () => void 
                    <div>
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Durasi Kerja</p>
                       <p className="text-sm font-bold text-slate-700">
-                         {item.check_out_time ? 
+                         {item.check_out_photo ? 
                             `${Math.round((new Date(item.check_out_time).getTime() - new Date(item.check_in_time).getTime()) / 3600000)} Jam` 
                             : 'Sedang berlangsung'}
                       </p>

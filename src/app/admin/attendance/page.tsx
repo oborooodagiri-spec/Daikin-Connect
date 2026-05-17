@@ -76,7 +76,7 @@ export default function AttendanceRecordsPage() {
     const header = "Name,Email,Company,Project,Check In,Check In Loc,Check Out,Check Out Loc,Notes\n";
     const csv = records.map(r => {
       const checkInStr = r.check_in_time ? new Date(r.check_in_time).toLocaleString() : "";
-      const checkOutStr = r.check_out_time ? new Date(r.check_out_time).toLocaleString() : "";
+      const checkOutStr = r.check_out_photo ? new Date(r.check_out_time).toLocaleString() : "";
       return `"${r.users?.name}","${r.users?.email}","${r.users?.company_name || 'Independent'}","${r.projects?.name}","${checkInStr}","${r.check_in_lat},${r.check_in_long}","${checkOutStr}","${r.check_out_lat},${r.check_out_long}","${r.check_in_notes || ''}"`;
     }).join("\n");
     
@@ -251,8 +251,8 @@ export default function AttendanceRecordsPage() {
                            <div className="flex items-center gap-2 text-[13px] font-black text-slate-700">
                               <span className="text-emerald-500">{formatDate(r.check_in_time)}</span>
                               <span className="text-slate-300">—</span>
-                              <span className={r.check_out_time ? "text-rose-500" : "text-amber-500 animate-pulse"}>
-                                 {r.check_out_time ? formatDate(r.check_out_time) : "ON SITE"}
+                              <span className={r.check_out_photo ? "text-rose-500" : "text-amber-500 animate-pulse"}>
+                                 {r.check_out_photo ? formatDate(r.check_out_time) : "ON SITE"}
                               </span>
                            </div>
                            <div className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-widest">

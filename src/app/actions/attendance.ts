@@ -19,11 +19,11 @@ export async function getActiveAttendance(projectId: string) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // 1. Find the active record (no check-out time)
+    // 1. Find the active record (no check-out photo)
     const activeRecord = await (prisma as any).vendor_attendance.findFirst({
       where: {
         user_id: parseInt(session.userId),
-        check_out_time: null
+        check_out_photo: null
       },
       include: {
         projects: { select: { name: true, latitude: true, longitude: true, radius_meters: true } }
@@ -131,12 +131,12 @@ export async function getAttendanceStats(month?: number, year?: number) {
         return checkIn.getHours() > 8 || (checkIn.getHours() === 8 && checkIn.getMinutes() > 30);
       }).length,
       earlyOut: records.filter((r: any) => {
-        if (!r.check_out_time) return false;
+        if (!r.check_out_photo) return false;
         const checkOut = new Date(r.check_out_time);
         return checkOut.getHours() < 17 || (checkOut.getHours() === 17 && checkOut.getMinutes() < 30);
       }).length,
       noClockIn: 0,
-      noClockOut: records.filter((r: any) => !r.check_out_time).length
+      noClockOut: records.filter((r: any) => !r.check_out_photo).length
     };
 
     return { success: true, data: stats };
@@ -167,7 +167,7 @@ export async function submitCheckIn(data: {
     const activeShift = await (prisma as any).vendor_attendance.findFirst({
       where: {
         user_id: parseInt(session.userId),
-        check_out_time: null
+        check_out_photo: null
       },
       include: {
         projects: { select: { name: true } }
