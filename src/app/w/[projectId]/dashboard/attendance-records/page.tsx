@@ -100,7 +100,7 @@ export default function AttendanceRecordsPage() {
                       </div>
                     </td>
                     <td className="p-4">
-                      {r.check_out_photo ? (
+                      {r.check_out_photo && r.check_out_photo !== "" ? (
                         <>
                           <div className="flex items-center gap-2 text-xs font-bold text-rose-600">
                              <Clock size={12} /> {formatDate(r.check_out_time)}

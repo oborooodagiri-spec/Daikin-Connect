@@ -349,7 +349,7 @@ export default function AttendanceClient({
     );
   }
 
-  const isWorking = activeRecord && !activeRecord.check_out_photo;
+  const isWorking = activeRecord && (!activeRecord.check_out_photo || activeRecord.check_out_photo === "");
   const currentTime = new Date();
 
   if (!isMounted) return <div className="min-h-[400px]" />;

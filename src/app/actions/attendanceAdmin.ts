@@ -83,7 +83,13 @@ export async function getAttendanceSummary() {
                 where: { check_in_time: { gte: today } }
             }),
             prisma.vendor_attendance.count({
-                where: { check_out_photo: null, check_in_time: { gte: today } }
+                where: {
+                    check_in_time: { gte: today },
+                    OR: [
+                        { check_out_photo: null },
+                        { check_out_photo: "" }
+                    ]
+                }
             })
         ]);
 

@@ -163,7 +163,7 @@ export default function AttendanceDetail({ record, onClose }: AttendanceDetailPr
                  </div>
               </div>
 
-              {record.check_out_photo && (
+              {record.check_out_photo && record.check_out_photo !== "" && (
                  <div className="flex gap-4">
                     <div className="w-1 bg-rose-100 rounded-full" />
                     <div className="space-y-1">
