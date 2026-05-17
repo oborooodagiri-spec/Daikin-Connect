@@ -266,13 +266,16 @@ export default function AttendanceClient({
 
           if (referenceDescriptor) {
             const distance = faceapi.euclideanDistance(referenceDescriptor, detection.descriptor);
-            if (distance > 0.6) {
+            if (distance > 0.5) { // 0.5 standard strict matching threshold
               throw new Error("Wajah tidak sesuai dengan referensi.");
             }
           }
         } catch (faceErr: any) {
-          console.warn("Client-side face check skipped/failed:", faceErr.message);
-          // We continue anyway and let the server (Gemini) handle verification
+          console.warn("Client-side face check failed:", faceErr.message);
+          // If it is a clear mismatch or face not detected error, block submission immediately!
+          if (faceErr.message.includes("tidak sesuai") || faceErr.message.includes("tidak terdeteksi")) {
+             throw faceErr;
+          }
         }
       }
       

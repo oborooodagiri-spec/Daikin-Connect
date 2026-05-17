@@ -221,6 +221,15 @@ export async function submitCheckIn(data: {
       }
     }
 
+    // 2b. AI Face verification check
+    const faceCheck = await verifyFaceMatch(data.photoUrl);
+    if (faceCheck.error) {
+      return { error: faceCheck.error };
+    }
+    if (!faceCheck.match) {
+      return { error: `Verifikasi Wajah Gagal: Wajah Anda tidak sesuai dengan referensi terdaftar. (${faceCheck.reason || "Silakan hubungi administrator."})` };
+    }
+
     const record = await (prisma as any).vendor_attendance.create({
       data: {
         user_id: parseInt(session.userId),
@@ -292,6 +301,15 @@ export async function submitCheckOut(data: {
           finalNotes = `[DI LUAR AREA: ${Math.round(distance)}m] ${finalNotes}`.trim();
         }
       }
+    }
+
+    // AI Face verification check
+    const faceCheck = await verifyFaceMatch(data.photoUrl);
+    if (faceCheck.error) {
+      return { error: faceCheck.error };
+    }
+    if (!faceCheck.match) {
+      return { error: `Verifikasi Wajah Gagal: Wajah Anda tidak sesuai dengan referensi terdaftar. (${faceCheck.reason || "Silakan hubungi administrator."})` };
     }
 
     const record = await (prisma as any).vendor_attendance.update({
