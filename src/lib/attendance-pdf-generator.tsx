@@ -46,15 +46,28 @@ export async function generateAttendancePDF(
 
   const monthName = format(selectedMonth, "MMMM yyyy", { locale: id });
   
-  // Calculate total hours
+  // Calculate total hours and overtime
   let totalMinutes = 0;
+  let totalOvertimeMinutes = 0;
+  
   records.forEach((r) => {
     if (r.check_in_time && r.check_out_time) {
       const diff = new Date(r.check_out_time).getTime() - new Date(r.check_in_time).getTime();
-      totalMinutes += Math.floor(diff / 60000);
+      const diffMins = Math.floor(diff / 60000);
+      totalMinutes += diffMins;
+      
+      // Standard work hours: 8 hours = 480 minutes
+      const overtime = diffMins - 480;
+      if (overtime > 0) {
+        totalOvertimeMinutes += overtime;
+      }
     }
   });
+
   const totalHoursStr = `${Math.floor(totalMinutes / 60)} Jam ${totalMinutes % 60} Menit`;
+  const totalOvertimeStr = totalOvertimeMinutes > 0 
+    ? `${Math.floor(totalOvertimeMinutes / 60)} Jam ${totalOvertimeMinutes % 60} Menit`
+    : "0 Jam 0 Menit";
 
   // Format date helper
   const formatDateFull = (dateStr: string) => {
@@ -67,10 +80,21 @@ export async function generateAttendancePDF(
   };
 
   const getDuration = (r: AttendanceRecord) => {
-    if (!r.check_out_time) return "Sedang Berlangsung";
+    if (!r.check_out_time) return "Sesi Aktif";
     const diffMs = new Date(r.check_out_time).getTime() - new Date(r.check_in_time).getTime();
     const hrs = Math.floor(diffMs / 3600000);
     const mins = Math.round((diffMs % 3600000) / 60000);
+    return `${hrs}j ${mins}m`;
+  };
+
+  const getOvertimeStr = (r: AttendanceRecord) => {
+    if (!r.check_out_time) return "-";
+    const diffMs = new Date(r.check_out_time).getTime() - new Date(r.check_in_time).getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const overtime = diffMins - 480;
+    if (overtime <= 0) return "-";
+    const hrs = Math.floor(overtime / 60);
+    const mins = overtime % 60;
     return `${hrs}j ${mins}m`;
   };
 
@@ -80,8 +104,6 @@ export async function generateAttendancePDF(
   };
 
   // Split records across pages to prevent overflow
-  // Page 1 can fit around 14 records along with the User Information & Summary cards.
-  // Subsequent pages can fit around 20 records.
   const pageChunks: AttendanceRecord[][] = [];
   let tempRecords = [...records];
   
@@ -143,7 +165,7 @@ export async function generateAttendancePDF(
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div className="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 text-center">
                     <p className="text-[9px] font-black text-emerald-700 uppercase tracking-widest mb-1">Total Hari Hadir</p>
                     <p className="text-xl font-black text-emerald-800">{records.length} Hari</p>
@@ -151,6 +173,10 @@ export async function generateAttendancePDF(
                   <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 text-center">
                     <p className="text-[9px] font-black text-blue-700 uppercase tracking-widest mb-1">Total Durasi Kerja</p>
                     <p className="text-xl font-black text-blue-800">{totalHoursStr}</p>
+                  </div>
+                  <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100 text-center">
+                    <p className="text-[9px] font-black text-amber-700 uppercase tracking-widest mb-1">Total Kelebihan Kerja (OT)</p>
+                    <p className="text-xl font-black text-amber-800">{totalOvertimeStr}</p>
                   </div>
                 </div>
               </>
@@ -161,12 +187,13 @@ export async function generateAttendancePDF(
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200 text-[9px] font-black text-slate-400 uppercase tracking-wider">
-                    <th className="p-3 w-[25%]">Tanggal</th>
-                    <th className="p-3 w-[15%]">Masuk</th>
-                    <th className="p-3 w-[20%]">Lokasi Masuk</th>
-                    <th className="p-3 w-[15%]">Keluar</th>
-                    <th className="p-3 w-[20%]">Lokasi Keluar</th>
+                    <th className="p-3 w-[20%]">Tanggal</th>
+                    <th className="p-3 w-[12%]">Masuk</th>
+                    <th className="p-3 w-[18%]">Lokasi Masuk</th>
+                    <th className="p-3 w-[12%]">Keluar</th>
+                    <th className="p-3 w-[18%]">Lokasi Keluar</th>
                     <th className="p-3 w-[10%] text-center">Durasi</th>
+                    <th className="p-3 w-[10%] text-center">Kelebihan</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -211,6 +238,9 @@ export async function generateAttendancePDF(
                       </td>
                       <td className="p-3 font-black text-slate-800 text-center">
                         {getDuration(r)}
+                      </td>
+                      <td className="p-3 font-black text-amber-700 text-center">
+                        {getOvertimeStr(r)}
                       </td>
                     </tr>
                   ))}
