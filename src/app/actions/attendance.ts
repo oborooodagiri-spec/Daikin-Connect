@@ -394,18 +394,16 @@ export async function verifyFaceMatch(photoUrl: string) {
     }
 
     const prompt = `
-      Act as a high-precision biometric facial recognition auditor for an enterprise attendance system.
+      Act as a high-security, high-precision biometric facial recognition auditor for an enterprise attendance system.
       Compare the identity of the person in Image 1 (Authorized Reference) with the person in Image 2 (Current Live Capture).
 
-      EVALUATION GUIDELINES:
-      - PRIMARY FOCUS: Bone structure, eye shape, nose bridge, and facial proportions.
-      - TOLERANCE: Allow for changes in lighting, background, hair length, facial hair (beard/mustache), and minor skin blemishes.
-      - ACCESSORIES: Do not reject if the user is wearing glasses or a mask unless it completely obscures identity.
-      - ANTI-SPOOFING: Reject if Image 2 appears to be a photo of a screen, a printed photo, or a digital manipulation.
-      - CONFIDENCE: Provide a percentage based on structural similarity.
+      CRITICAL SECURITY RULES (MANDATORY REJECTION CRITERIA):
+      1. FACE OCCLUSION/COVERAGE: You MUST REJECT (match: false, confidence: < 50) if the face in Image 2 is partially or fully covered by hands, fingers, clothing, a mask, or any other objects. The entire face structure (both eyes, nose, cheeks, mouth, and jawline) must be fully visible and unobstructed. Covering parts of the face with a hand or fingers is a direct security violation.
+      2. ANTI-SPOOFING / LIVENESS CHECK: You MUST REJECT (match: false) if Image 2 appears to be a photo of a screen (laptop, phone), a printed paper photo, or displays obvious borders, screen glare, or digital manipulation. It must be a real, live-captured photo.
+      3. PERSON MATCHING: Compare bone structure, eye shape, nose bridge, facial proportions, and relative distances. Allow for minor variations in lighting, expression, hair length, or background.
 
       OUTPUT FORMAT (JSON ONLY):
-      {"match": boolean, "confidence": number (0-100), "reason": "concise technical explanation"}
+      {"match": boolean, "confidence": number (0-100), "reason": "concise technical explanation of the match, or specific reason for security rejection"}
     `;
 
     const candidateModels = [
