@@ -60,9 +60,6 @@ declare module "jspdf" {
   }
 }
 
-const CATEGORIES = ["All", "Chiller", "VRV", "Split Duct", "AHU", "FCU", "Cooling Tower", "Pump", "Accessories", "Material Tambahan"];
-const WORK_TYPES = ["Preventive Maintenance", "Corrective Maintenance", "Overhaul", "Installation", "Freon Charging", "Chemical Cleaning", "Others"];
-const CAPACITY_UNITS = ["Unit", "Visit", "Lot", "Meter", "Kg", "Liter", "TR", "PK", "Cell", "HP", "kW"];
 
 export default function RateCardClient() {
   const [items, setItems] = useState<any[]>([]);
@@ -95,7 +92,10 @@ export default function RateCardClient() {
     period_year: new Date().getFullYear().toString(),
     selected_vendor: "",
     vendor_prices: {} as Record<string, Record<string, number>>,
-    allowed_users: [] as any[]
+    allowed_users: [] as any[],
+    categories: ["Chiller", "VRV", "Split Duct", "AHU", "FCU", "Cooling Tower", "Pump", "Accessories", "Material Tambahan"] as string[],
+    work_types: ["Preventive Maintenance", "Corrective Maintenance", "Overhaul", "Installation", "Freon Charging", "Chemical Cleaning", "Others"] as string[],
+    capacity_units: ["Unit", "Visit", "Lot", "Meter", "Kg", "Liter", "TR", "PK", "Cell", "HP", "kW"] as string[]
   });
   const [editingPriceId, setEditingPriceId] = useState<string | null>(null);
   const [editingPriceValue, setEditingPriceValue] = useState("");
@@ -103,6 +103,15 @@ export default function RateCardClient() {
   const [isPeriodModalOpen, setIsPeriodModalOpen] = useState(false);
   const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
   const [newVendor, setNewVendor] = useState("");
+
+  // Dynamic Option Editing States
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [isAddingWorkType, setIsAddingWorkType] = useState(false);
+  const [newWorkTypeName, setNewWorkTypeName] = useState("");
+  const [isAddingCapacityUnit, setIsAddingCapacityUnit] = useState(false);
+  const [newCapacityUnitName, setNewCapacityUnitName] = useState("");
+
 
   // Work Order States
   const [selectedItems, setSelectedItems] = useState<Record<string, { qty: number; notes: string }>>({}); 
@@ -293,6 +302,109 @@ export default function RateCardClient() {
       notify('error', res.error || 'Delete failed');
     }
   };
+
+  const handleAddCategory = async (newCat: string) => {
+    if (!newCat.trim()) return;
+    const catName = newCat.trim();
+    if (settings.categories.includes(catName)) {
+      notify('error', 'Kategori sudah ada!');
+      return;
+    }
+    const updated = [...settings.categories, catName];
+    const res = await updateRateCardSetting('categories', updated);
+    if (res.success) {
+      setSettings(prev => ({ ...prev, categories: updated }));
+      setFormData(prev => ({ ...prev, category: catName }));
+      notify('success', `Kategori "${catName}" berhasil ditambahkan!`);
+    } else {
+      notify('error', 'Gagal menambahkan kategori');
+    }
+  };
+
+  const handleRemoveCategory = async (catToRemove: string) => {
+    if (settings.categories.length <= 1) {
+      notify('error', 'Harus ada minimal satu kategori!');
+      return;
+    }
+    const updated = settings.categories.filter(c => c !== catToRemove);
+    const res = await updateRateCardSetting('categories', updated);
+    if (res.success) {
+      setSettings(prev => ({ ...prev, categories: updated }));
+      setFormData(prev => ({ ...prev, category: updated[0] }));
+      notify('success', `Kategori "${catToRemove}" berhasil dihapus!`);
+    } else {
+      notify('error', 'Gagal menghapus kategori');
+    }
+  };
+
+  const handleAddWorkType = async (newType: string) => {
+    if (!newType.trim()) return;
+    const typeName = newType.trim();
+    if (settings.work_types.includes(typeName)) {
+      notify('error', 'Jenis pekerjaan sudah ada!');
+      return;
+    }
+    const updated = [...settings.work_types, typeName];
+    const res = await updateRateCardSetting('work_types', updated);
+    if (res.success) {
+      setSettings(prev => ({ ...prev, work_types: updated }));
+      setFormData(prev => ({ ...prev, work_type: typeName }));
+      notify('success', `Jenis pekerjaan "${typeName}" berhasil ditambahkan!`);
+    } else {
+      notify('error', 'Gagal menambahkan jenis pekerjaan');
+    }
+  };
+
+  const handleRemoveWorkType = async (typeToRemove: string) => {
+    if (settings.work_types.length <= 1) {
+      notify('error', 'Harus ada minimal satu jenis pekerjaan!');
+      return;
+    }
+    const updated = settings.work_types.filter(t => t !== typeToRemove);
+    const res = await updateRateCardSetting('work_types', updated);
+    if (res.success) {
+      setSettings(prev => ({ ...prev, work_types: updated }));
+      setFormData(prev => ({ ...prev, work_type: updated[0] }));
+      notify('success', `Jenis pekerjaan "${typeToRemove}" berhasil dihapus!`);
+    } else {
+      notify('error', 'Gagal menghapus jenis pekerjaan');
+    }
+  };
+
+  const handleAddCapacityUnit = async (newUnit: string) => {
+    if (!newUnit.trim()) return;
+    const unitName = newUnit.trim();
+    if (settings.capacity_units.includes(unitName)) {
+      notify('error', 'Satuan sudah ada!');
+      return;
+    }
+    const updated = [...settings.capacity_units, unitName];
+    const res = await updateRateCardSetting('capacity_units', updated);
+    if (res.success) {
+      setSettings(prev => ({ ...prev, capacity_units: updated }));
+      setFormData(prev => ({ ...prev, capacity_unit: unitName }));
+      notify('success', `Satuan "${unitName}" berhasil ditambahkan!`);
+    } else {
+      notify('error', 'Gagal menambahkan satuan');
+    }
+  };
+
+  const handleRemoveCapacityUnit = async (unitToRemove: string) => {
+    if (settings.capacity_units.length <= 1) {
+      notify('error', 'Harus ada minimal satu satuan!');
+      return;
+    }
+    const updated = settings.capacity_units.filter(u => u !== unitToRemove);
+    const res = await updateRateCardSetting('capacity_units', updated);
+    if (res.success) {
+      setSettings(prev => ({ ...prev, capacity_units: updated }));
+      setFormData(prev => ({ ...prev, capacity_unit: updated[0] }));
+      notify('success', `Satuan "${unitToRemove}" berhasil dihapus!`);
+    } else {
+      notify('error', 'Gagal menghapus satuan');
+    }
+  };
+
 
   const handleAddVendor = async () => {
     if (!newVendor.trim()) return;
@@ -737,7 +849,7 @@ export default function RateCardClient() {
                onChange={(e) => setSelectedCategory(e.target.value)}
                className="w-full h-full bg-white border border-slate-200 rounded-[1.5rem] py-5 px-16 text-xs font-black uppercase tracking-widest outline-none focus:border-[#0073ea] transition-all cursor-pointer appearance-none shadow-sm"
              >
-               {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+               {["All", ...settings.categories].map(cat => <option key={cat} value={cat}>{cat}</option>)}
              </select>
           </div>
         </div>
@@ -967,108 +1079,172 @@ export default function RateCardClient() {
                  </div>
 
                  <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Permissions Section */}
-                    <div className="bg-indigo-50/50 border border-indigo-100 rounded-[2rem] p-6 mb-8">
-                       <div className="flex items-center gap-3 mb-6">
-                          <Shield className="text-indigo-500" size={18} />
-                          <h4 className="text-[10px] font-black text-indigo-900 uppercase tracking-widest">Hak Akses & Visibilitas</h4>
-                       </div>
-                       
-                       <div className="grid grid-cols-2 gap-6 mb-6">
-                          <div className="space-y-1.5">
-                             <label className="text-[9px] font-black text-indigo-400 uppercase tracking-widest ml-1">Scope</label>
-                             <select 
-                                value={formData.visibility} 
-                                onChange={e => setFormData({...formData, visibility: e.target.value})}
-                                className="w-full px-4 py-3 bg-white border border-indigo-100 rounded-xl font-bold text-xs outline-none focus:border-indigo-500 transition-all"
-                             >
-                                <option value="Internal">Internal (Admin Only)</option>
-                                <option value="Public">Public (Authorized Users)</option>
-                             </select>
-                          </div>
-                          <div className="space-y-1.5">
-                             <label className="text-[9px] font-black text-indigo-400 uppercase tracking-widest ml-1">Grant Specific Access</label>
-                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-indigo-300" />
-                                <input 
-                                   type="text" 
-                                   placeholder="Cari akun..." 
-                                   value={userSearch}
-                                   onChange={e => setUserSearch(e.target.value)}
-                                   className="w-full pl-9 pr-4 py-3 bg-white border border-indigo-100 rounded-xl font-bold text-xs outline-none focus:border-indigo-500 transition-all"
-                                />
-                             </div>
-                          </div>
-                       </div>
+                     {/* Data Fields */}
+                     <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                           <div className="flex justify-between items-center ml-1">
+                              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kategori Unit</label>
+                              <div className="flex gap-2">
+                                 <button type="button" onClick={() => setIsAddingCategory(true)} className="text-[9px] font-bold text-[#0073ea] hover:underline uppercase tracking-wider flex items-center gap-1"><Plus size={10} /> Tambah</button>
+                                 <button type="button" onClick={() => handleRemoveCategory(formData.category)} className="text-[9px] font-bold text-rose-500 hover:underline uppercase tracking-wider flex items-center gap-1"><Trash2 size={10} /> Hapus</button>
+                              </div>
+                           </div>
+                           {isAddingCategory ? (
+                              <div className="flex gap-2 w-full">
+                                 <input 
+                                    autoFocus
+                                    type="text" 
+                                    placeholder="Nama kategori..." 
+                                    value={newCategoryName} 
+                                    onChange={e => setNewCategoryName(e.target.value)} 
+                                    className="flex-1 px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold focus:outline-none focus:border-[#0073ea]"
+                                    onKeyDown={async e => {
+                                       if (e.key === 'Enter') {
+                                          e.preventDefault();
+                                          if (newCategoryName.trim()) {
+                                             await handleAddCategory(newCategoryName.trim());
+                                             setNewCategoryName("");
+                                             setIsAddingCategory(false);
+                                          }
+                                       }
+                                       if (e.key === 'Escape') setIsAddingCategory(false);
+                                    }}
+                                 />
+                                 <button 
+                                    type="button" 
+                                    onClick={async () => {
+                                       if (newCategoryName.trim()) {
+                                          await handleAddCategory(newCategoryName.trim());
+                                          setNewCategoryName("");
+                                          setIsAddingCategory(false);
+                                       }
+                                    }}
+                                    className="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-xs font-black uppercase hover:bg-emerald-100"
+                                 >
+                                    Save
+                                 </button>
+                                 <button type="button" onClick={() => setIsAddingCategory(false)} className="px-4 py-2 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase hover:bg-slate-200">Cancel</button>
+                              </div>
+                           ) : (
+                              <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all">
+                                 {settings.categories.map(c => <option key={c} value={c}>{c}</option>)}
+                              </select>
+                           )}
+                        </div>
 
-                       {userSearch && (
-                          <div className="mb-4 bg-white border border-indigo-100 rounded-xl shadow-lg max-h-40 overflow-y-auto p-2 relative z-50">
-                             {allUsers.filter(u => u.name.toLowerCase().includes(userSearch.toLowerCase())).map(u => (
-                                <button 
-                                   key={u.id} type="button"
-                                   onClick={() => {
-                                      const current = formData.allowed_users ? formData.allowed_users.split(",") : [];
-                                      if (!current.includes(u.id.toString())) {
-                                         setFormData({...formData, allowed_users: [...current, u.id.toString()].filter(Boolean).join(",")});
-                                      }
-                                      setUserSearch("");
-                                   }}
-                                   className="w-full text-left p-2.5 hover:bg-indigo-50 rounded-lg flex items-center justify-between group transition-colors"
-                                >
-                                   <span className="text-xs font-bold text-slate-700">{u.name}</span>
-                                   <Plus size={12} className="text-indigo-300 group-hover:text-indigo-500" />
-                                </button>
-                             ))}
-                          </div>
-                       )}
+                        <div className="space-y-2">
+                           <div className="flex justify-between items-center ml-1">
+                              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Jenis Pekerjaan</label>
+                              <div className="flex gap-2">
+                                 <button type="button" onClick={() => setIsAddingWorkType(true)} className="text-[9px] font-bold text-[#0073ea] hover:underline uppercase tracking-wider flex items-center gap-1"><Plus size={10} /> Tambah</button>
+                                 <button type="button" onClick={() => handleRemoveWorkType(formData.work_type)} className="text-[9px] font-bold text-rose-500 hover:underline uppercase tracking-wider flex items-center gap-1"><Trash2 size={10} /> Hapus</button>
+                              </div>
+                           </div>
+                           {isAddingWorkType ? (
+                              <div className="flex gap-2 w-full">
+                                 <input 
+                                    autoFocus
+                                    type="text" 
+                                    placeholder="Nama pekerjaan..." 
+                                    value={newWorkTypeName} 
+                                    onChange={e => setNewWorkTypeName(e.target.value)} 
+                                    className="flex-1 px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold focus:outline-none focus:border-[#0073ea]"
+                                    onKeyDown={async e => {
+                                       if (e.key === 'Enter') {
+                                          e.preventDefault();
+                                          if (newWorkTypeName.trim()) {
+                                             await handleAddWorkType(newWorkTypeName.trim());
+                                             setNewWorkTypeName("");
+                                             setIsAddingWorkType(false);
+                                          }
+                                       }
+                                       if (e.key === 'Escape') setIsAddingWorkType(false);
+                                    }}
+                                 />
+                                 <button 
+                                    type="button" 
+                                    onClick={async () => {
+                                       if (newWorkTypeName.trim()) {
+                                          await handleAddWorkType(newWorkTypeName.trim());
+                                          setNewWorkTypeName("");
+                                          setIsAddingWorkType(false);
+                                       }
+                                    }}
+                                    className="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-xs font-black uppercase hover:bg-emerald-100"
+                                 >
+                                    Save
+                                 </button>
+                                 <button type="button" onClick={() => setIsAddingWorkType(false)} className="px-4 py-2 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase hover:bg-slate-200">Cancel</button>
+                              </div>
+                           ) : (
+                              <select value={formData.work_type} onChange={e => setFormData({...formData, work_type: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all">
+                                 {settings.work_types.map(t => <option key={t} value={t}>{t}</option>)}
+                              </select>
+                           )}
+                        </div>
+                     </div>
 
-                       <div className="flex flex-wrap gap-2">
-                          {formData.allowed_users?.split(",").filter(Boolean).map(uid => {
-                             const u = allUsers.find(user => user.id.toString() === uid);
-                             return (
-                                <span key={uid} className="px-3 py-1.5 bg-white text-indigo-600 rounded-full text-[9px] font-black flex items-center gap-2 border border-indigo-100">
-                                   {u?.name || uid}
-                                   <button type="button" onClick={() => setFormData({...formData, allowed_users: formData.allowed_users.split(",").filter(id => id !== uid).join(",")})} className="hover:text-rose-500"><CloseIcon size={10}/></button>
-                                </span>
-                             )
-                          })}
-                          {!formData.allowed_users && <p className="text-[9px] text-indigo-300 font-bold italic">Belum ada akun khusus yang diberikan akses.</p>}
-                       </div>
-                    </div>
+                     <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Deskripsi Pekerjaan / Nama Item</label>
+                        <input required type="text" value={formData.item_name} onChange={e => setFormData({...formData, item_name: e.target.value})} placeholder="Contoh: PM AC Split Wall (0.5 - 2 PK)" className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all" />
+                     </div>
 
-                    {/* Data Fields */}
-                    <div className="grid grid-cols-2 gap-6">
-                       <div className="space-y-2">
-                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Kategori Unit</label>
-                          <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all">
-                             {CATEGORIES.filter(c => c !== "All").map(c => <option key={c} value={c}>{c}</option>)}
-                          </select>
-                       </div>
-                       <div className="space-y-2">
-                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Jenis Pekerjaan</label>
-                          <select value={formData.work_type} onChange={e => setFormData({...formData, work_type: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all">
-                             {WORK_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                          </select>
-                       </div>
-                    </div>
-
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Deskripsi Pekerjaan / Nama Item</label>
-                       <input required type="text" value={formData.item_name} onChange={e => setFormData({...formData, item_name: e.target.value})} placeholder="Contoh: PM AC Split Wall (0.5 - 2 PK)" className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all" />
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-6">
-                       <div className="col-span-2 space-y-2">
-                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Rentang Kapasitas / Detail</label>
-                          <input type="text" value={formData.capacity_range} onChange={e => setFormData({...formData, capacity_range: e.target.value})} placeholder="e.g. 0.5 - 2" className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all" />
-                       </div>
-                       <div className="space-y-2">
-                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Satuan</label>
-                          <select value={formData.capacity_unit} onChange={e => setFormData({...formData, capacity_unit: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all">
-                             {CAPACITY_UNITS.map(u => <option key={u} value={u}>{u}</option>)}
-                          </select>
-                       </div>
-                    </div>
+                     <div className="grid grid-cols-3 gap-6">
+                        <div className="col-span-2 space-y-2">
+                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Rentang Kapasitas / Detail</label>
+                           <input type="text" value={formData.capacity_range} onChange={e => setFormData({...formData, capacity_range: e.target.value})} placeholder="e.g. 0.5 - 2" className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all" />
+                        </div>
+                        <div className="space-y-2">
+                           <div className="flex justify-between items-center ml-1">
+                              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Satuan</label>
+                              <div className="flex gap-2">
+                                 <button type="button" onClick={() => setIsAddingCapacityUnit(true)} className="text-[9px] font-bold text-[#0073ea] hover:underline uppercase tracking-wider flex items-center gap-1"><Plus size={10} /> Tambah</button>
+                                 <button type="button" onClick={() => handleRemoveCapacityUnit(formData.capacity_unit)} className="text-[9px] font-bold text-rose-500 hover:underline uppercase tracking-wider flex items-center gap-1"><Trash2 size={10} /> Hapus</button>
+                              </div>
+                           </div>
+                           {isAddingCapacityUnit ? (
+                              <div className="flex gap-2 w-full">
+                                 <input 
+                                    autoFocus
+                                    type="text" 
+                                    placeholder="Nama satuan..." 
+                                    value={newCapacityUnitName} 
+                                    onChange={e => setNewCapacityUnitName(e.target.value)} 
+                                    className="flex-1 px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold focus:outline-none focus:border-[#0073ea]"
+                                    onKeyDown={async e => {
+                                       if (e.key === 'Enter') {
+                                          e.preventDefault();
+                                          if (newCapacityUnitName.trim()) {
+                                             await handleAddCapacityUnit(newCapacityUnitName.trim());
+                                             setNewCapacityUnitName("");
+                                             setIsAddingCapacityUnit(false);
+                                          }
+                                       }
+                                       if (e.key === 'Escape') setIsAddingCapacityUnit(false);
+                                    }}
+                                 />
+                                 <button 
+                                    type="button" 
+                                    onClick={async () => {
+                                       if (newCapacityUnitName.trim()) {
+                                          await handleAddCapacityUnit(newCapacityUnitName.trim());
+                                          setNewCapacityUnitName("");
+                                          setIsAddingCapacityUnit(false);
+                                       }
+                                    }}
+                                    className="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-xs font-black uppercase hover:bg-emerald-100"
+                                 >
+                                    Save
+                                 </button>
+                                 <button type="button" onClick={() => setIsAddingCapacityUnit(false)} className="px-4 py-2 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase hover:bg-slate-200">Cancel</button>
+                              </div>
+                           ) : (
+                              <select value={formData.capacity_unit} onChange={e => setFormData({...formData, capacity_unit: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all">
+                                 {settings.capacity_units.map(u => <option key={u} value={u}>{u}</option>)}
+                              </select>
+                           )}
+                        </div>
+                     </div>
 
                     <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4">
                        <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest flex items-center gap-2">

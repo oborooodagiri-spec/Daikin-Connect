@@ -24,7 +24,10 @@ export async function getRateCardSettings() {
         period_year: config.period_year || new Date().getFullYear().toString(),
         selected_vendor: config.selected_vendor || "",
         vendor_prices: config.vendor_prices || {},
-        allowed_users: config.allowed_users || []
+        allowed_users: config.allowed_users || [],
+        categories: config.categories || ["Chiller", "VRV", "Split Duct", "AHU", "FCU", "Cooling Tower", "Pump", "Accessories", "Material Tambahan"],
+        work_types: config.work_types || ["Preventive Maintenance", "Corrective Maintenance", "Overhaul", "Installation", "Freon Charging", "Chemical Cleaning", "Others"],
+        capacity_units: config.capacity_units || ["Unit", "Visit", "Lot", "Meter", "Kg", "Liter", "TR", "PK", "Cell", "HP", "kW"]
       }
     };
   } catch (error) {
