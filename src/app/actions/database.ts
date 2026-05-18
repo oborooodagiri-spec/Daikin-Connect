@@ -19,6 +19,39 @@ export async function getResources() {
   if (!session) return { error: "Not authenticated" };
 
   try {
+    // Ensure "internal-rate-card" exists in the database unless explicitly deleted
+    try {
+      const isDeletedSetting: any[] = await prisma.$queryRawUnsafe(`
+        SELECT setting_value FROM rate_card_settings WHERE setting_key = 'rate_card_resource_deleted' LIMIT 1
+      `);
+      if (isDeletedSetting.length === 0 || isDeletedSetting[0].setting_value !== 'true') {
+        const rateCardExists: any[] = await prisma.$queryRawUnsafe(`
+          SELECT id FROM knowledge_resources WHERE id = 'internal-rate-card' LIMIT 1
+        `);
+        if (rateCardExists.length === 0) {
+          await prisma.$executeRawUnsafe(`
+            INSERT INTO knowledge_resources (id, title, category, type, file_url, href, thumbnail, size, tags, visibility, allowed_users, project_id, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+          `,
+            "internal-rate-card",
+            "Rate Card Pemeliharaan (Buku Tarif)",
+            "Rate Card",
+            "DATABASE",
+            null,
+            "/admin/database/rate-card",
+            "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600",
+            "LIVE",
+            "Contract, Pricing, Official",
+            "Internal",
+            null,
+            null
+          );
+        }
+      }
+    } catch (e) {
+      console.error("Error ensuring default rate card resource:", e);
+    }
+
     const isInternal = session.isInternal;
     const userId = parseInt(session.userId);
 
@@ -162,6 +195,14 @@ export async function deleteResource(id: string) {
   if (!isAdmin) return { error: "Unauthorized" };
 
   try {
+    if (id === "internal-rate-card") {
+      // Mark as deleted so it won't auto-seed again
+      await prisma.$executeRawUnsafe(`
+        INSERT INTO rate_card_settings (setting_key, setting_value, updated_at)
+        VALUES ('rate_card_resource_deleted', 'true', NOW())
+        ON DUPLICATE KEY UPDATE setting_value = 'true', updated_at = NOW()
+      `);
+    }
     await prisma.$executeRawUnsafe(`DELETE FROM knowledge_resources WHERE id = ?`, id);
     revalidatePath("/admin/database");
     return { success: true };

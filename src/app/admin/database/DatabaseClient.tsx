@@ -84,30 +84,8 @@ export default function KnowledgeCenterPage() {
 
   const isAdmin = session?.roles?.some((r: string) => ["Admin", "Super Admin"].includes(r));
 
-  // Rate Card Virtual Asset (Agar muncul sebagai card)
-  const rateCardAsset = {
-    id: "internal-rate-card",
-    title: "Rate Card Pemeliharaan (Buku Tarif)",
-    category: "Rate Card",
-    type: "DATABASE",
-    size: "LIVE",
-    created_at: new Date().toISOString(),
-    tags: "Contract, Pricing, Official",
-    thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600",
-    href: "/admin/database/rate-card",
-    visibility: "Internal",
-    projects: { name: "OFFICIAL" }
-  };
-
   const filteredResources = useMemo(() => {
-    let baseResources = [...resources];
-    
-    // Selalu tambahkan Rate Card di awal jika kategori sesuai atau "All"
-    if (selectedCategory === "All" || selectedCategory === "Rate Card") {
-       baseResources = [rateCardAsset, ...baseResources];
-    }
-
-    return baseResources.filter(res => {
+    return resources.filter(res => {
       const tagsArray = res.tags ? res.tags.split(",").map((t: string) => t.trim()) : [];
       const matchesSearch = res.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                            tagsArray.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -117,10 +95,6 @@ export default function KnowledgeCenterPage() {
   }, [searchQuery, selectedCategory, resources]);
 
   const handleOpenEdit = (res: any) => {
-    if (res.id === "internal-rate-card") {
-      router.push("/admin/database/rate-card");
-      return;
-    }
     setEditId(res.id);
     setFormData({
       title: res.title,
@@ -170,7 +144,6 @@ export default function KnowledgeCenterPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (id === "internal-rate-card") return;
     if (!confirm("Are you sure you want to delete this resource?")) return;
     const res = await deleteResource(id);
     if (res.success) fetchData();
@@ -294,19 +267,17 @@ export default function KnowledgeCenterPage() {
                         <button 
                           onClick={() => handleOpenEdit(res)}
                           className="p-2 bg-indigo-50 text-indigo-500 rounded-xl hover:bg-indigo-500 hover:text-white transition-all shadow-sm"
-                          title={res.id === 'internal-rate-card' ? "Manage Rates" : "Edit"}
+                          title="Edit"
                         >
                           <SettingsIcon size={16} />
                         </button>
-                        {res.id !== 'internal-rate-card' && (
-                          <button 
-                            onClick={() => handleDelete(res.id)}
-                            className="p-2 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all shadow-sm"
-                            title="Delete"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        )}
+                        <button 
+                          onClick={() => handleDelete(res.id)}
+                          className="p-2 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all shadow-sm"
+                          title="Delete"
+                        >
+                          <Trash2 size={16} />
+                        </button>
                       </div>
                     )}
                   </div>
@@ -393,14 +364,12 @@ export default function KnowledgeCenterPage() {
                           >
                             <SettingsIcon size={16} />
                           </button>
-                          {res.id !== "internal-rate-card" && (
-                            <button 
-                              onClick={() => handleDelete(res.id)}
-                              className="p-2.5 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          )}
+                          <button 
+                            onClick={() => handleDelete(res.id)}
+                            className="p-2.5 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white"
+                          >
+                            <Trash2 size={16} />
+                          </button>
                         </div>
                      )}
                      <Link 
