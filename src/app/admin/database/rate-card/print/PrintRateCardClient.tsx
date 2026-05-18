@@ -223,8 +223,8 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
 
   // Component-specific Page Footer to keep code DRY and consistent
   const PageFooter = ({ pageNum }: { pageNum: number }) => (
-    <div className="pt-4 border-t-2 border-[#003366] bg-white w-full shrink-0">
-      <div className="flex items-center gap-4 mb-2 text-left">
+    <div className="pt-3 border-t-2 border-[#003366] bg-white w-full shrink-0">
+      <div className="flex items-center gap-4 px-[15mm] mb-2 text-left">
         <div className="w-[18mm] shrink-0">
           <img src="/TUVnord-.png" alt="TUV Nord" className="w-full h-auto object-contain" />
         </div>
@@ -242,7 +242,7 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
         </div>
       </div>
       <div 
-        className="h-8 w-full flex items-center justify-between px-6 box-border rounded-b-md text-white"
+        className="h-[8mm] w-full flex items-center justify-between px-[15mm] box-border text-white"
         style={{ background: "linear-gradient(to right, #009ce1 0%, #003366 100%)" }}
       >
         <span className="text-[7pt] font-black text-white/95">
@@ -504,70 +504,75 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
       <div className="flex-1 overflow-y-auto h-screen p-12 flex flex-col items-center custom-scrollbar bg-slate-200 no-print">
         
         {/* PAGE 1: PREAMBLE & GENERAL CLAUSES (PASAL 1) */}
-        <div className="a4-sheet bg-white p-[2cm] shadow-2xl relative border border-slate-300 flex flex-col justify-between shrink-0 text-left font-sans text-slate-800 mb-8">
+        <div className="a4-sheet bg-white shadow-2xl relative border border-slate-300 flex flex-col justify-between shrink-0 text-left font-sans text-slate-800 mb-8 p-0">
           
           {/* Header & Body Section */}
-          <div>
-            {/* Kop Surat / Letterhead */}
-            <div className="flex justify-between items-center border-b-[3px] border-[#003366] pb-5 mb-8">
-              <div className="flex items-center gap-4">
-                <img src="/daikin_logo.png" alt="Daikin" className="h-10 object-contain" />
-                <div className="h-8 w-px bg-[#003366]"></div>
-                <div className="text-[9px] font-black text-[#003366] uppercase leading-tight max-w-[170px] text-left">
-                  PT DAIKIN APPLIED SOLUTIONS INDONESIA
-                </div>
-              </div>
-              <div className="text-right">
-                <img src="/logo_epl_connect_1.png" alt="EPL Connect" className="h-12 object-contain" />
-              </div>
-            </div>
-
-            {/* Document Title */}
-            <div className="text-center space-y-2 mb-8">
-              <h3 className="text-lg font-bold tracking-normal uppercase underline text-slate-900">SURAT KESEPAKATAN BERSAMA (KONTRAK PAYUNG)</h3>
-              <p className="text-xs font-extrabold text-slate-700 tracking-wide">Nomor: {docNumber || "..........................."}</p>
-            </div>
-
-            {/* Paragraph 1 - Parties */}
-            <div className="text-xs text-slate-800 leading-relaxed text-justify space-y-4 mb-6">
-              <p>
-                Pada hari ini, <strong className="capitalize">{indonesianDate.dayName}</strong>, tanggal <strong>{indonesianDate.fullDateStr}</strong>, bertempat di Jakarta, kami yang bertanda tangan di bawah ini sepakat untuk mengadakan Perjanjian Kerja Sama Kontrak Payung Tarif Harga Satuan Pemeliharaan Unit HVAC antara:
-              </p>
-              
-              <div className="pl-6 space-y-3">
-                <div className="flex">
-                  <span className="w-24 shrink-0 font-bold">Pihak Pertama:</span>
-                  <div className="flex-1">
-                    <strong>{pihak1Company}</strong>, dalam hal ini diwakili oleh <strong>{pihak1Pic || "..........................."}</strong> selaku <strong>{pihak1Title || "..........................."}</strong>, yang bertindak untuk dan atas nama PT Daikin Applied Solutions Indonesia.
+          <div className="flex-1 flex flex-col justify-between overflow-hidden">
+            {/* Kop Surat / Letterhead with horizontal padding */}
+            <div className="pt-[10mm] px-[15mm] shrink-0">
+              <div className="flex justify-between items-center border-b-[3px] border-[#003366] pb-5 mb-6">
+                <div className="flex items-center gap-4">
+                  <img src="/daikin_logo.png" alt="Daikin" className="h-[12mm] object-contain" />
+                  <div className="h-8 w-px bg-[#003366]"></div>
+                  <div className="text-[9px] font-black text-[#003366] uppercase leading-tight max-w-[170px] text-left">
+                    PT DAIKIN APPLIED SOLUTIONS INDONESIA
                   </div>
                 </div>
-                <div className="flex">
-                  <span className="w-24 shrink-0 font-bold">Pihak Kedua:</span>
-                  <div className="flex-1">
-                    <strong>{pihak2Company}</strong>, dalam hal ini diwakili oleh <strong>{pihak2Pic || "..........................."}</strong> selaku <strong>{pihak2Title || "..........................."}</strong>, yang bertindak untuk dan atas nama {selectedVendor || "Vendor Rekanan"}.
-                  </div>
+                <div className="text-right">
+                  <img src="/logo_epl_connect_1.png" alt="EPL Connect" className="h-[14mm] object-contain" />
                 </div>
               </div>
-
-              <p className="mt-4">
-                Kedua belah pihak dengan ini sepakat dan saling mengikatkan diri untuk mematuhi seluruh syarat, ketentuan, serta daftar tarif pemeliharaan terlampir yang disepakati bersama.
-              </p>
             </div>
 
-            {/* Pasal 1 - General Terms */}
-            <div className="mb-6 space-y-2 mt-6">
-              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider text-center">PASAL 1 - KETENTUAN UMUM</h4>
-              <div className="text-xs text-slate-800 leading-relaxed space-y-2 pl-4">
-                {clauses.length === 0 ? (
-                  <p className="italic text-slate-400">Belum ada ketentuan umum yang ditambahkan.</p>
-                ) : (
-                  clauses.map((clause, idx) => (
-                    <div key={idx} className="flex gap-2">
-                      <span className="font-bold w-4 shrink-0">{idx+1}.</span>
-                      <p className="text-justify flex-1">{clause}</p>
+            {/* Preamble Content Area with standard padding */}
+            <div className="flex-1 px-[15mm] pb-4 overflow-y-auto custom-scrollbar">
+              {/* Document Title */}
+              <div className="text-center space-y-2 mb-6">
+                <h3 className="text-lg font-bold tracking-normal uppercase underline text-slate-900">SURAT KESEPAKATAN BERSAMA (KONTRAK PAYUNG)</h3>
+                <p className="text-xs font-extrabold text-slate-700 tracking-wide">Nomor: {docNumber || "..........................."}</p>
+              </div>
+
+              {/* Paragraph 1 - Parties */}
+              <div className="text-[10px] text-slate-800 leading-relaxed text-justify space-y-3 mb-4">
+                <p>
+                  Pada hari ini, <strong className="capitalize">{indonesianDate.dayName}</strong>, tanggal <strong>{indonesianDate.fullDateStr}</strong>, bertempat di Jakarta, kami yang bertanda tangan di bawah ini sepakat untuk mengadakan Perjanjian Kerja Sama Kontrak Payung Tarif Harga Satuan Pemeliharaan Unit HVAC antara:
+                </p>
+                
+                <div className="pl-6 space-y-2">
+                  <div className="flex">
+                    <span className="w-24 shrink-0 font-bold">Pihak Pertama:</span>
+                    <div className="flex-1">
+                      <strong>{pihak1Company}</strong>, dalam hal ini diwakili oleh <strong>{pihak1Pic || "..........................."}</strong> selaku <strong>{pihak1Title || "..........................."}</strong>, yang bertindak untuk dan atas nama PT Daikin Applied Solutions Indonesia.
                     </div>
-                  ))
-                )}
+                  </div>
+                  <div className="flex">
+                    <span className="w-24 shrink-0 font-bold">Pihak Kedua:</span>
+                    <div className="flex-1">
+                      <strong>{pihak2Company}</strong>, dalam hal ini diwakili oleh <strong>{pihak2Pic || "..........................."}</strong> selaku <strong>{pihak2Title || "..........................."}</strong>, yang bertindak untuk dan atas nama {selectedVendor || "Vendor Rekanan"}.
+                    </div>
+                  </div>
+                </div>
+
+                <p className="mt-2">
+                  Kedua belah pihak dengan ini sepakat dan saling mengikatkan diri untuk mematuhi seluruh syarat, ketentuan, serta daftar tarif pemeliharaan terlampir yang disepakati bersama.
+                </p>
+              </div>
+
+              {/* Pasal 1 - General Terms */}
+              <div className="space-y-2 mt-4">
+                <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider text-center">PASAL 1 - KETENTUAN UMUM</h4>
+                <div className="text-[10px] text-slate-800 leading-relaxed space-y-1.5 pl-4">
+                  {clauses.length === 0 ? (
+                    <p className="italic text-slate-400">Belum ada ketentuan umum yang ditambahkan.</p>
+                  ) : (
+                    clauses.map((clause, idx) => (
+                      <div key={idx} className="flex gap-2">
+                        <span className="font-bold w-4 shrink-0">{idx+1}.</span>
+                        <p className="text-justify flex-1">{clause}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -579,22 +584,30 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
         {/* PAGES 2 to (N-1): TARIFF CARD TABLES GROUPED DYNAMICALLY */}
         {tablePages.length === 0 ? (
           /* Fallback Page 2 if no categories are active */
-          <div className="a4-sheet bg-white p-[2cm] shadow-2xl relative border border-slate-300 flex flex-col justify-between shrink-0 text-left font-sans text-slate-800 mb-8">
-            <div>
-              <div className="w-full flex justify-between items-center text-[8px] font-bold text-slate-400 border-b border-slate-200 pb-2 mb-6 uppercase">
-                <div className="flex items-center gap-2">
-                  <img src="/daikin_logo.png" alt="Daikin" className="h-3.5 object-contain" />
-                  <span className="text-[#003366] font-black">PT DAIKIN APPLIED SOLUTIONS INDONESIA</span>
+          <div className="a4-sheet bg-white shadow-2xl relative border border-slate-300 flex flex-col justify-between shrink-0 text-left font-sans text-slate-800 mb-8 p-0">
+            <div className="flex-1 flex flex-col justify-between overflow-hidden">
+              
+              {/* Mini Header with full bleed background but padded content */}
+              <div className="pt-[10mm] px-[15mm] shrink-0">
+                <div className="w-full flex justify-between items-center text-[8px] font-bold text-slate-400 border-b border-slate-200 pb-2 mb-6 uppercase">
+                  <div className="flex items-center gap-2">
+                    <img src="/daikin_logo.png" alt="Daikin" className="h-3.5 object-contain" />
+                    <span className="text-[#003366] font-black">PT DAIKIN APPLIED SOLUTIONS INDONESIA</span>
+                  </div>
+                  <span>No: {docNumber || "..........................."}</span>
                 </div>
-                <span>No: {docNumber || "..........................."}</span>
+                <div className="text-center space-y-2 mb-6">
+                  <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">PASAL 2 - DAFTAR TARIF HARGA SATUAN</h4>
+                </div>
               </div>
-              <div className="text-center space-y-2 mb-6">
-                <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">PASAL 2 - DAFTAR TARIF HARGA SATUAN</h4>
-              </div>
-              <div className="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center bg-slate-50/50 mt-12">
-                <Info size={24} className="text-slate-300 mx-auto mb-2" />
-                <p className="text-xs text-slate-400 font-bold">Tidak ada item tarif yang aktif/terpilih.</p>
-                <p className="text-[10px] text-slate-400 mt-1">Centang kategori atau opsi pekerjaan di panel kontrol sebelah kiri untuk menampilkan daftar harga satuan.</p>
+
+              {/* Table content area */}
+              <div className="flex-1 px-[15mm] pb-4">
+                <div className="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center bg-slate-50/50 mt-12">
+                  <Info size={24} className="text-slate-300 mx-auto mb-2" />
+                  <p className="text-xs text-slate-400 font-bold">Tidak ada item tarif yang aktif/terpilih.</p>
+                  <p className="text-[10px] text-slate-400 mt-1">Centang kategori atau opsi pekerjaan di panel kontrol sebelah kiri untuk menampilkan daftar harga satuan.</p>
+                </div>
               </div>
             </div>
             <PageFooter pageNum={2} />
@@ -603,59 +616,66 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
           tablePages.map((catGroups, pageIdx) => {
             const pageNum = 2 + pageIdx;
             return (
-              <div key={pageIdx} className="a4-sheet bg-white p-[2cm] shadow-2xl relative border border-slate-300 flex flex-col justify-between shrink-0 text-left font-sans text-slate-800 mb-8">
+              <div key={pageIdx} className="a4-sheet bg-white shadow-2xl relative border border-slate-300 flex flex-col justify-between shrink-0 text-left font-sans text-slate-800 mb-8 p-0">
                 
                 {/* Content Wrapper */}
-                <div>
-                  <div className="w-full flex justify-between items-center text-[8px] font-bold text-slate-400 border-b border-slate-200 pb-2 mb-6 uppercase">
-                    <div className="flex items-center gap-2">
-                      <img src="/daikin_logo.png" alt="Daikin" className="h-3.5 object-contain" />
-                      <span className="text-[#003366] font-black">PT DAIKIN APPLIED SOLUTIONS INDONESIA</span>
+                <div className="flex-1 flex flex-col justify-between overflow-hidden">
+                  
+                  {/* Top Mini-Header with vertical/horizontal padding */}
+                  <div className="pt-[10mm] px-[15mm] shrink-0">
+                    <div className="w-full flex justify-between items-center text-[8px] font-bold text-slate-400 border-b border-slate-200 pb-2 mb-6 uppercase">
+                      <div className="flex items-center gap-2">
+                        <img src="/daikin_logo.png" alt="Daikin" className="h-3.5 object-contain" />
+                        <span className="text-[#003366] font-black">PT DAIKIN APPLIED SOLUTIONS INDONESIA</span>
+                      </div>
+                      <span>No: {docNumber || "..........................."}</span>
                     </div>
-                    <span>No: {docNumber || "..........................."}</span>
+
+                    {pageIdx === 0 && (
+                      <div className="text-center space-y-2 mb-6">
+                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">PASAL 2 - DAFTAR TARIF HARGA SATUAN</h4>
+                      </div>
+                    )}
                   </div>
 
-                  {pageIdx === 0 && (
-                    <div className="text-center space-y-2 mb-6">
-                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">PASAL 2 - DAFTAR TARIF HARGA SATUAN</h4>
+                  {/* Table area with content margin */}
+                  <div className="flex-1 px-[15mm] pb-4 overflow-y-auto custom-scrollbar">
+                    <div className="space-y-6">
+                      {catGroups.map(({ category, items }) => (
+                        <div key={category} className="space-y-2">
+                          <span className="text-[10px] font-black text-[#003366] uppercase tracking-wider pl-1">{category}</span>
+                          <table className="w-full text-left border border-slate-200 text-[10px] font-sans rate-table">
+                            <thead>
+                              <tr className="bg-slate-50 font-bold text-slate-700 border-b border-slate-200">
+                                <th className="px-3 py-2 w-8 text-center border-r border-slate-200">No</th>
+                                <th className="px-4 py-2 border-r border-slate-200">Deskripsi Pekerjaan</th>
+                                <th className="px-4 py-2 border-r border-slate-200">Rentang Kapasitas / Detail</th>
+                                <th className="px-3 py-2 w-16 text-center border-r border-slate-200">Satuan</th>
+                                <th className="px-4 py-2 text-right w-36">Harga Satuan (IDR)</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {items.map((item, idx) => {
+                                const vendorPrice = initialSettings.vendor_prices?.[selectedVendor]?.[item.id.toString()] ?? 0;
+                                return (
+                                  <tr key={item.id} className="border-b border-slate-200 text-slate-800 hover:bg-slate-50/50">
+                                    <td className="px-3 py-2 text-center border-r border-slate-200">{idx+1}</td>
+                                    <td className="px-4 py-2 font-bold border-r border-slate-200">{item.item_name}</td>
+                                    <td className="px-4 py-2 border-r border-slate-200">{item.capacity_range || "-"}</td>
+                                    <td className="px-3 py-2 text-center border-r border-slate-200 font-bold uppercase">{item.capacity_unit}</td>
+                                    <td className="px-4 py-2 text-right font-black text-[#003366]">
+                                      {vendorPrice > 0 
+                                        ? `Rp ${new Intl.NumberFormat("id-ID").format(vendorPrice)}`
+                                        : "Belum Diatur"}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      ))}
                     </div>
-                  )}
-
-                  <div className="space-y-6">
-                    {catGroups.map(({ category, items }) => (
-                      <div key={category} className="space-y-2">
-                        <span className="text-[10px] font-black text-[#003366] uppercase tracking-wider pl-1">{category}</span>
-                        <table className="w-full text-left border border-slate-200 text-[10px] font-sans rate-table">
-                          <thead>
-                            <tr className="bg-slate-50 font-bold text-slate-700 border-b border-slate-200">
-                              <th className="px-3 py-2 w-8 text-center border-r border-slate-200">No</th>
-                              <th className="px-4 py-2 border-r border-slate-200">Deskripsi Pekerjaan</th>
-                              <th className="px-4 py-2 border-r border-slate-200">Rentang Kapasitas / Detail</th>
-                              <th className="px-3 py-2 w-16 text-center border-r border-slate-200">Satuan</th>
-                              <th className="px-4 py-2 text-right w-36">Harga Satuan (IDR)</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {items.map((item, idx) => {
-                              const vendorPrice = initialSettings.vendor_prices?.[selectedVendor]?.[item.id.toString()] ?? 0;
-                              return (
-                                <tr key={item.id} className="border-b border-slate-200 text-slate-800 hover:bg-slate-50/50">
-                                  <td className="px-3 py-2 text-center border-r border-slate-200">{idx+1}</td>
-                                  <td className="px-4 py-2 font-bold border-r border-slate-200">{item.item_name}</td>
-                                  <td className="px-4 py-2 border-r border-slate-200">{item.capacity_range || "-"}</td>
-                                  <td className="px-3 py-2 text-center border-r border-slate-200 font-bold uppercase">{item.capacity_unit}</td>
-                                  <td className="px-4 py-2 text-right font-black text-[#003366]">
-                                    {vendorPrice > 0 
-                                      ? `Rp ${new Intl.NumberFormat("id-ID").format(vendorPrice)}`
-                                      : "Belum Diatur"}
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
-                    ))}
                   </div>
                 </div>
 
@@ -666,54 +686,61 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
         )}
 
         {/* LAST PAGE: CLOSING & BINDING SIGNATURES */}
-        <div className="a4-sheet bg-white p-[2cm] shadow-2xl relative border border-slate-300 flex flex-col justify-between shrink-0 text-left font-sans text-slate-800 mb-8">
+        <div className="a4-sheet bg-white shadow-2xl relative border border-slate-300 flex flex-col justify-between shrink-0 text-left font-sans text-slate-800 mb-8 p-0">
           
           {/* Header & Body wrapper */}
-          <div>
-            <div className="w-full flex justify-between items-center text-[8px] font-bold text-slate-400 border-b border-slate-200 pb-2 mb-6 uppercase">
-              <div className="flex items-center gap-2">
-                <img src="/daikin_logo.png" alt="Daikin" className="h-3.5 object-contain" />
-                <span className="text-[#003366] font-black">PT DAIKIN APPLIED SOLUTIONS INDONESIA</span>
+          <div className="flex-1 flex flex-col justify-between overflow-hidden">
+            
+            {/* Top Mini-Header with vertical/horizontal padding */}
+            <div className="pt-[10mm] px-[15mm] shrink-0">
+              <div className="w-full flex justify-between items-center text-[8px] font-bold text-slate-400 border-b border-slate-200 pb-2 mb-6 uppercase">
+                <div className="flex items-center gap-2">
+                  <img src="/daikin_logo.png" alt="Daikin" className="h-3.5 object-contain" />
+                  <span className="text-[#003366] font-black">PT DAIKIN APPLIED SOLUTIONS INDONESIA</span>
+                </div>
+                <span>No: {docNumber || "..........................."}</span>
               </div>
-              <span>No: {docNumber || "..........................."}</span>
             </div>
 
-            {/* Pasal 3 - Penutup */}
-            <div className="mb-12 space-y-4 mt-6">
-              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider text-center">PASAL 3 - MASA BERLAKU & PENUTUP</h4>
-              <p className="text-xs text-slate-800 leading-relaxed text-justify">
-                Demikian Surat Kesepakatan Bersama Kontrak Payung ini dibuat dalam rangkap 2 (dua) bermaterai cukup dan masing-masing mempunyai kekuatan hukum yang sama setelah ditandatangani oleh kedua belah pihak. Kesepakatan ini berlaku sejak ditandatangani dan mengikat tarif pemeliharaan untuk tahun anggaran <strong>{indonesianDate.year}</strong>.
-              </p>
-            </div>
+            {/* Content area with standard padding */}
+            <div className="flex-1 px-[15mm] pb-4 overflow-y-auto custom-scrollbar">
+              {/* Pasal 3 - Penutup */}
+              <div className="mb-12 space-y-4 mt-6">
+                <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider text-center">PASAL 3 - MASA BERLAKU & PENUTUP</h4>
+                <p className="text-xs text-slate-800 leading-relaxed text-justify">
+                  Demikian Surat Kesepakatan Bersama Kontrak Payung ini dibuat dalam rangkap 2 (dua) bermaterai cukup dan masing-masing mempunyai kekuatan hukum yang sama setelah ditandatangani oleh kedua belah pihak. Kesepakatan ini berlaku sejak ditandatangani dan mengikat tarif pemeliharaan untuk tahun anggaran <strong>{indonesianDate.year}</strong>.
+                </p>
+              </div>
 
-            {/* Signature Blocks */}
-            <div className="mt-16">
-              <div className="grid grid-cols-2 text-center text-xs">
-                
-                {/* Pihak Pertama Signature */}
-                <div className="space-y-20">
-                  <div className="space-y-1">
-                    <p className="font-bold uppercase text-slate-900">PIHAK PERTAMA</p>
-                    <p className="font-black text-[#003366] uppercase tracking-widest text-[9px]">{pihak1Company}</p>
+              {/* Signature Blocks */}
+              <div className="mt-16">
+                <div className="grid grid-cols-2 text-center text-xs">
+                  
+                  {/* Pihak Pertama Signature */}
+                  <div className="space-y-20">
+                    <div className="space-y-1">
+                      <p className="font-bold uppercase text-slate-900">PIHAK PERTAMA</p>
+                      <p className="font-black text-[#003366] uppercase tracking-widest text-[9px]">{pihak1Company}</p>
+                    </div>
+                    <div className="space-y-0.5">
+                      <p className="font-extrabold underline text-slate-900">({pihak1Pic || "..........................."})</p>
+                      <p className="text-slate-450 font-bold uppercase text-[9px]">{pihak1Title || "..........................."}</p>
+                    </div>
                   </div>
-                  <div className="space-y-0.5">
-                    <p className="font-extrabold underline text-slate-900">({pihak1Pic || "..........................."})</p>
-                    <p className="text-slate-450 font-bold uppercase text-[9px]">{pihak1Title || "..........................."}</p>
+
+                  {/* Pihak Kedua Signature */}
+                  <div className="space-y-20">
+                    <div className="space-y-1">
+                      <p className="font-bold uppercase text-slate-900">PIHAK KEDUA</p>
+                      <p className="font-black text-amber-800 uppercase tracking-widest text-[9px]">{pihak2Company}</p>
+                    </div>
+                    <div className="space-y-0.5">
+                      <p className="font-extrabold underline text-slate-900">({pihak2Pic || "..........................."})</p>
+                      <p className="text-slate-450 font-bold uppercase text-[9px]">{pihak2Title || "..........................."}</p>
+                    </div>
                   </div>
+
                 </div>
-
-                {/* Pihak Kedua Signature */}
-                <div className="space-y-20">
-                  <div className="space-y-1">
-                    <p className="font-bold uppercase text-slate-900">PIHAK KEDUA</p>
-                    <p className="font-black text-amber-800 uppercase tracking-widest text-[9px]">{pihak2Company}</p>
-                  </div>
-                  <div className="space-y-0.5">
-                    <p className="font-extrabold underline text-slate-900">({pihak2Pic || "..........................."})</p>
-                    <p className="text-slate-450 font-bold uppercase text-[9px]">{pihak2Title || "..........................."}</p>
-                  </div>
-                </div>
-
               </div>
             </div>
           </div>
@@ -761,7 +788,7 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
             height: 29.7cm !important;
             box-shadow: none !important;
             border: none !important;
-            padding: 2cm !important;
+            padding: 0 !important;
             margin: 0 auto !important;
             display: flex !important;
             flex-direction: column !important;
