@@ -38,6 +38,7 @@ import {
   Minus
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { 
   getShoppingList, 
   createShoppingItem, 
@@ -62,6 +63,7 @@ declare module "jspdf" {
 
 
 export default function RateCardClient() {
+  const router = useRouter();
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -762,18 +764,11 @@ export default function RateCardClient() {
              )}
              <div className="flex gap-2">
                 <button 
-                  onClick={exportPDF}
-                  className="p-4 bg-white border border-slate-200 text-slate-600 rounded-2xl hover:bg-slate-50 transition-all shadow-sm group"
-                  title="Unduh Buku Tarif (PDF)"
+                  onClick={() => router.push("/admin/database/rate-card/print")}
+                  className="flex items-center gap-2 px-6 py-4 bg-white border border-slate-200 text-[#323338] hover:text-[#0073ea] hover:border-[#0073ea] rounded-2xl transition-all shadow-sm group font-black text-[10px] uppercase tracking-widest"
+                  title="Cetak & Kustomisasi Kontrak Payung"
                 >
-                  <Download size={20} className="group-hover:translate-y-0.5 transition-transform" />
-                </button>
-                <button 
-                  onClick={() => window.print()}
-                  className="p-4 bg-white border border-slate-200 text-slate-600 rounded-2xl hover:bg-slate-50 transition-all shadow-sm group"
-                  title="Cetak Cepat"
-                >
-                  <Printer size={20} />
+                  <Printer size={16} /> Cetak Kontrak Payung
                 </button>
              </div>
           </div>
