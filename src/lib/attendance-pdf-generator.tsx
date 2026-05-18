@@ -124,12 +124,10 @@ export async function generateAttendancePDF(
     const pageDiv = document.createElement("div");
     pageDiv.style.width = "210mm";
     pageDiv.style.height = "297mm";
-    pageDiv.style.position = "fixed";
-    pageDiv.style.top = "0";
-    pageDiv.style.left = "0";
-    pageDiv.style.zIndex = "-1000";
-    pageDiv.style.opacity = "0";
-    pageDiv.style.pointerEvents = "none";
+    pageDiv.style.position = "absolute";
+    pageDiv.style.left = "-9999px";
+    pageDiv.style.top = "-9999px";
+    pageDiv.style.background = "#ffffff";
     document.body.appendChild(pageDiv);
 
     const root = createRoot(pageDiv);

@@ -220,7 +220,6 @@ export default function AttendanceRecordsPage() {
                   </div>
                   <div>
                      <h1 className="text-3xl font-black text-[#003366] tracking-tight uppercase">Attendance Record</h1>
-                     <p className="text-xs font-bold text-slate-400 mt-1">Unique personnel directory, overtime auditor and print-ready logs.</p>
                   </div>
                </div>
           </div>
@@ -364,7 +363,7 @@ export default function AttendanceRecordsPage() {
               </div>
               <div className="p-10 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] flex items-center gap-2">
-                  <CheckCircle2 size={14} className="text-emerald-500" /> Administrative Directory Active
+                  <CheckCircle2 size={14} className="text-emerald-500" /> EPL Connect Management Portal
                 </p>
                 <p className="text-[10px] font-bold text-slate-300">Displaying {filteredUsers.length} active personnel</p>
               </div>
