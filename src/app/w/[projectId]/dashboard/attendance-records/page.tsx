@@ -131,6 +131,12 @@ export default function AttendanceRecordsPage() {
     return `${hrs}j ${mins}m`;
   };
 
+  const getProjectName = () => {
+    if (timesheetRecords.length === 0) return "Global Project";
+    const withProj = timesheetRecords.find(r => r.projects?.name);
+    return withProj ? withProj.projects.name : "Daikin Project";
+  };
+
   const handleExportPDF = async () => {
     if (!selectedUserId || timesheetRecords.length === 0) return;
     setExportingPDF(true);
@@ -445,8 +451,8 @@ export default function AttendanceRecordsPage() {
                       <p className="font-black text-slate-800 uppercase text-xs">{selectedUserObject?.company_name || 'Independent / Internal'}</p>
                     </div>
                     <div>
-                      <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Project Workspace</p>
-                      <p className="font-bold text-[#00a1e4] uppercase text-xs tracking-wider">ADMINISTRATIVE PORTAL</p>
+                      <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Nama Project</p>
+                      <p className="font-bold text-[#00a1e4] uppercase text-xs tracking-wider">{getProjectName()}</p>
                     </div>
                   </div>
                 </div>
