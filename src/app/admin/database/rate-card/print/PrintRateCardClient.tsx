@@ -427,165 +427,265 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
       <div className="flex-1 overflow-y-auto h-screen p-12 flex justify-center custom-scrollbar bg-slate-200 no-print">
         
         {/* The Paper Sheet Container */}
-        <div className="a4-sheet bg-white p-[2.5cm] shadow-2xl relative border border-slate-300 flex flex-col justify-between">
+        <div className="a4-sheet bg-white p-[2.5cm] shadow-2xl relative border border-slate-300">
           
-          {/* Main content of the agreement */}
-          <div>
-            {/* Kop Surat / Letterhead */}
-            <div className="text-center border-b-[3px] border-[#323338] pb-6 mb-8 relative">
-              <h2 className="text-2xl font-extrabold tracking-tight text-[#0073ea] uppercase">PT DAIKIN CONNECT INDONESIA</h2>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1">HVAC Maintenance & Engineering Services</p>
-              <p className="text-[8px] font-bold text-slate-500 mt-2">Daikin Tower Lt. 12, Jl. Jend. Sudirman Kav. 10, Jakarta Selatan | Telp: (021) 5088-8888 | www.daikin-connect.co.id</p>
-              <div className="absolute bottom-0.5 left-0 right-0 h-0.5 bg-[#0073ea]/30" />
-            </div>
-
-            {/* Document Title */}
-            <div className="text-center space-y-2 mb-8">
-              <h3 className="text-lg font-bold tracking-normal uppercase underline">SURAT KESEPAKATAN BERSAMA (KONTRAK PAYUNG)</h3>
-              <p className="text-xs font-extrabold text-slate-700 tracking-wide">Nomor: {docNumber || "..........................."}</p>
-            </div>
-
-            {/* Paragraph 1 - Parties */}
-            <div className="text-xs text-slate-800 leading-relaxed text-justify space-y-4 mb-6">
-              <p>
-                Pada hari ini, <strong className="capitalize">{indonesianDate.dayName}</strong>, tanggal <strong>{indonesianDate.fullDateStr}</strong>, bertempat di Jakarta, kami yang bertanda tangan di bawah ini sepakat untuk mengadakan Perjanjian Kerja Sama Kontrak Payung Tarif Harga Satuan Pemeliharaan Unit HVAC antara:
-              </p>
-              
-              <div className="pl-6 space-y-3">
-                <div className="flex">
-                  <span className="w-24 shrink-0 font-bold">Pihak Pertama:</span>
-                  <div className="flex-1">
-                    <strong>{pihak1Company}</strong>, dalam hal ini diwakili oleh <strong>{pihak1Pic || "..........................."}</strong> selaku <strong>{pihak1Title || "..........................."}</strong>, yang bertindak untuk dan atas nama PT Daikin Connect Indonesia.
-                  </div>
-                </div>
-                <div className="flex">
-                  <span className="w-24 shrink-0 font-bold">Pihak Kedua:</span>
-                  <div className="flex-1">
-                    <strong>{pihak2Company}</strong>, dalam hal ini diwakili oleh <strong>{pihak2Pic || "..........................."}</strong> selaku <strong>{pihak2Title || "..........................."}</strong>, yang bertindak untuk dan atas nama {selectedVendor || "Vendor Rekanan"}.
-                  </div>
-                </div>
-              </div>
-
-              <p>
-                Kedua belah pihak dengan ini sepakat dan saling mengikatkan diri untuk mematuhi seluruh syarat, ketentuan, serta daftar tarif pemeliharaan terlampir yang disepakati bersama.
-              </p>
-            </div>
-
-            {/* Pasal 1 - General Terms */}
-            <div className="mb-6 space-y-2">
-              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider text-center">PASAL 1 - KETENTUAN UMUM</h4>
-              <div className="text-xs text-slate-800 leading-relaxed space-y-2 pl-4">
-                {clauses.length === 0 ? (
-                  <p className="italic text-slate-400">Belum ada ketentuan umum yang ditambahkan.</p>
-                ) : (
-                  clauses.map((clause, idx) => (
-                    <div key={idx} className="flex gap-2">
-                      <span className="font-bold w-4 shrink-0">{idx+1}.</span>
-                      <p className="text-justify flex-1">{clause}</p>
+          <table className="w-full border-collapse">
+            
+            {/* A. PRINT ONLY DYNAMIC HEADER (Repeated at top of pages 2+) */}
+            <thead className="print-only-header">
+              <tr>
+                <td>
+                  <div className="w-full flex justify-between items-center text-[8px] font-bold text-slate-400 border-b border-slate-200 pb-2 mb-6 uppercase">
+                    <div className="flex items-center gap-2">
+                      <img src="/daikin_logo.png" alt="Daikin" className="h-3.5 object-contain" />
+                      <span className="text-[#003366] font-black">PT DAIKIN APPLIED SOLUTIONS INDONESIA</span>
                     </div>
-                  ))
-                )}
-              </div>
-            </div>
+                    <span>No: {docNumber || "..........................."}</span>
+                  </div>
+                </td>
+              </tr>
+            </thead>
 
-            {/* Pasal 2 - The Dynamic Table */}
-            <div className="space-y-4 mb-8">
-              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider text-center">PASAL 2 - DAFTAR TARIF HARGA SATUAN</h4>
-              
-              {!hasActiveItems ? (
-                <div className="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center bg-slate-50/50">
-                  <Info size={24} className="text-slate-300 mx-auto mb-2" />
-                  <p className="text-xs text-slate-400 font-bold">Tidak ada item tarif yang aktif/terpilih.</p>
-                  <p className="text-[10px] text-slate-400 mt-1">Centang kategori atau opsi pekerjaan di panel kontrol sebelah kiri untuk menampilkan daftar harga satuan.</p>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {Object.entries(groupedItems).map(([cat, list]) => {
-                    const isCatExcluded = excludedCategories[cat];
-                    const activeItems = list.filter(item => !excludedItems[item.id.toString()]);
+            {/* B. MAIN DOCUMENT CONTENT */}
+            <tbody>
+              <tr>
+                <td>
+                  <div className="print-content-flow">
                     
-                    if (isCatExcluded || activeItems.length === 0) return null;
-
-                    return (
-                      <div key={cat} className="space-y-2">
-                        <span className="text-[10px] font-black text-[#0073ea] uppercase tracking-wider pl-1">{cat}</span>
-                        <table className="w-full text-left border border-slate-200 text-[10px] font-sans">
-                          <thead>
-                            <tr className="bg-slate-50 font-bold text-slate-700 border-b border-slate-200">
-                              <th className="px-3 py-2 w-8 text-center border-r border-slate-200">No</th>
-                              <th className="px-4 py-2 border-r border-slate-200">Deskripsi Pekerjaan</th>
-                              <th className="px-4 py-2 border-r border-slate-200">Rentang Kapasitas / Detail</th>
-                              <th className="px-3 py-2 w-16 text-center border-r border-slate-200">Satuan</th>
-                              <th className="px-4 py-2 text-right w-36">Harga Satuan (IDR)</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {activeItems.map((item, idx) => {
-                              // Get price for selected vendor
-                              const vendorPrice = initialSettings.vendor_prices?.[selectedVendor]?.[item.id.toString()] ?? 0;
-                              return (
-                                <tr key={item.id} className="border-b border-slate-200 text-slate-800 hover:bg-slate-50/50">
-                                  <td className="px-3 py-2 text-center border-r border-slate-200">{idx+1}</td>
-                                  <td className="px-4 py-2 font-bold border-r border-slate-200">{item.item_name}</td>
-                                  <td className="px-4 py-2 border-r border-slate-200">{item.capacity_range || "-"}</td>
-                                  <td className="px-3 py-2 text-center border-r border-slate-200 font-bold uppercase">{item.capacity_unit}</td>
-                                  <td className="px-4 py-2 text-right font-black text-[#0073ea]">
-                                    {vendorPrice > 0 
-                                      ? `Rp ${new Intl.NumberFormat("id-ID").format(vendorPrice)}`
-                                      : "Belum Diatur"}
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
+                    {/* Kop Surat / Letterhead (First Page Only, inside standard flow) */}
+                    <div className="flex justify-between items-center border-b-[3px] border-[#003366] pb-5 mb-8">
+                      <div className="flex items-center gap-4">
+                        <img src="/daikin_logo.png" alt="Daikin" className="h-10 object-contain" />
+                        <div className="h-8 w-px bg-[#003366]"></div>
+                        <div className="text-[9px] font-black text-[#003366] uppercase leading-tight max-w-[170px] text-left">
+                          PT DAIKIN APPLIED SOLUTIONS INDONESIA
+                        </div>
                       </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+                      <div className="text-right">
+                        <img src="/logo_epl_connect_1.png" alt="EPL Connect" className="h-12 object-contain" />
+                      </div>
+                    </div>
 
-            {/* Pasal 3 - Penutup */}
-            <div className="mb-12 space-y-2">
-              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider text-center">PASAL 3 - MASA BERLAKU & PENUTUP</h4>
-              <p className="text-xs text-slate-800 leading-relaxed text-justify">
-                Demikian Surat Kesepakatan Bersama Kontrak Payung ini dibuat dalam rangkap 2 (dua) bermaterai cukup dan masing-masing mempunyai kekuatan hukum yang sama setelah ditandatangani oleh kedua belah pihak. Kesepakatan ini berlaku sejak ditandatangani dan mengikat tarif pemeliharaan untuk tahun anggaran <strong>{indonesianDate.year}</strong>.
-              </p>
-            </div>
+                    {/* Document Title */}
+                    <div className="text-center space-y-2 mb-8">
+                      <h3 className="text-lg font-bold tracking-normal uppercase underline text-slate-900">SURAT KESEPAKATAN BERSAMA (KONTRAK PAYUNG)</h3>
+                      <p className="text-xs font-extrabold text-slate-700 tracking-wide">Nomor: {docNumber || "..........................."}</p>
+                    </div>
 
-          </div>
+                    {/* Paragraph 1 - Parties */}
+                    <div className="text-xs text-slate-800 leading-relaxed text-justify space-y-4 mb-6">
+                      <p>
+                        Pada hari ini, <strong className="capitalize">{indonesianDate.dayName}</strong>, tanggal <strong>{indonesianDate.fullDateStr}</strong>, bertempat di Jakarta, kami yang bertanda tangan di bawah ini sepakat untuk mengadakan Perjanjian Kerja Sama Kontrak Payung Tarif Harga Satuan Pemeliharaan Unit HVAC antara:
+                      </p>
+                      
+                      <div className="pl-6 space-y-3">
+                        <div className="flex">
+                          <span className="w-24 shrink-0 font-bold">Pihak Pertama:</span>
+                          <div className="flex-1">
+                            <strong>{pihak1Company}</strong>, dalam hal ini diwakili oleh <strong>{pihak1Pic || "..........................."}</strong> selaku <strong>{pihak1Title || "..........................."}</strong>, yang bertindak untuk dan atas nama PT Daikin Applied Solutions Indonesia.
+                          </div>
+                        </div>
+                        <div className="flex">
+                          <span className="w-24 shrink-0 font-bold">Pihak Kedua:</span>
+                          <div className="flex-1">
+                            <strong>{pihak2Company}</strong>, dalam hal ini diwakili oleh <strong>{pihak2Pic || "..........................."}</strong> selaku <strong>{pihak2Title || "..........................."}</strong>, yang bertindak untuk dan atas nama {selectedVendor || "Vendor Rekanan"}.
+                          </div>
+                        </div>
+                      </div>
 
-          {/* Signature Blocks */}
-          <div className="mt-12">
-            <div className="grid grid-cols-2 text-center text-xs">
-              
-              {/* Pihak Pertama Signature */}
-              <div className="space-y-16">
-                <div className="space-y-1">
-                  <p className="font-bold uppercase">PIHAK PERTAMA</p>
-                  <p className="font-black text-slate-500 uppercase tracking-widest text-[9px]">{pihak1Company}</p>
-                </div>
-                <div className="space-y-0.5">
-                  <p className="font-extrabold underline text-slate-900">({pihak1Pic || "..........................."})</p>
-                  <p className="text-slate-400 font-bold uppercase text-[9px]">{pihak1Title || "..........................."}</p>
-                </div>
-              </div>
+                      <p>
+                        Kedua belah pihak dengan ini sepakat dan saling mengikatkan diri untuk mematuhi seluruh syarat, ketentuan, serta daftar tarif pemeliharaan terlampir yang disepakati bersama.
+                      </p>
+                    </div>
 
-              {/* Pihak Kedua Signature */}
-              <div className="space-y-16">
-                <div className="space-y-1">
-                  <p className="font-bold uppercase">PIHAK KEDUA</p>
-                  <p className="font-black text-slate-500 uppercase tracking-widest text-[9px]">{pihak2Company}</p>
-                </div>
-                <div className="space-y-0.5">
-                  <p className="font-extrabold underline text-slate-900">({pihak2Pic || "..........................."})</p>
-                  <p className="text-slate-400 font-bold uppercase text-[9px]">{pihak2Title || "..........................."}</p>
-                </div>
-              </div>
+                    {/* Pasal 1 - General Terms */}
+                    <div className="mb-6 space-y-2 clauses-container">
+                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider text-center">PASAL 1 - KETENTUAN UMUM</h4>
+                      <div className="text-xs text-slate-800 leading-relaxed space-y-2 pl-4">
+                        {clauses.length === 0 ? (
+                          <p className="italic text-slate-400">Belum ada ketentuan umum yang ditambahkan.</p>
+                        ) : (
+                          clauses.map((clause, idx) => (
+                            <div key={idx} className="flex gap-2">
+                              <span className="font-bold w-4 shrink-0">{idx+1}.</span>
+                              <p className="text-justify flex-1">{clause}</p>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
 
-            </div>
-          </div>
+                    {/* Pasal 2 - The Dynamic Table */}
+                    <div className="space-y-4 mb-8">
+                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider text-center">PASAL 2 - DAFTAR TARIF HARGA SATUAN</h4>
+                      
+                      {!hasActiveItems ? (
+                        <div className="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center bg-slate-50/50">
+                          <Info size={24} className="text-slate-300 mx-auto mb-2" />
+                          <p className="text-xs text-slate-400 font-bold">Tidak ada item tarif yang aktif/terpilih.</p>
+                          <p className="text-[10px] text-slate-400 mt-1">Centang kategori atau opsi pekerjaan di panel kontrol sebelah kiri untuk menampilkan daftar harga satuan.</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-6">
+                          {Object.entries(groupedItems).map(([cat, list]) => {
+                            const isCatExcluded = excludedCategories[cat];
+                            const activeItems = list.filter(item => !excludedItems[item.id.toString()]);
+                            
+                            if (isCatExcluded || activeItems.length === 0) return null;
+
+                            return (
+                              <div key={cat} className="space-y-2 category-container">
+                                <span className="text-[10px] font-black text-[#003366] uppercase tracking-wider pl-1 category-header">{cat}</span>
+                                <table className="w-full text-left border border-slate-200 text-[10px] font-sans rate-table">
+                                  <thead>
+                                    <tr className="bg-slate-50 font-bold text-slate-700 border-b border-slate-200">
+                                      <th className="px-3 py-2 w-8 text-center border-r border-slate-200">No</th>
+                                      <th className="px-4 py-2 border-r border-slate-200">Deskripsi Pekerjaan</th>
+                                      <th className="px-4 py-2 border-r border-slate-200">Rentang Kapasitas / Detail</th>
+                                      <th className="px-3 py-2 w-16 text-center border-r border-slate-200">Satuan</th>
+                                      <th className="px-4 py-2 text-right w-36">Harga Satuan (IDR)</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {activeItems.map((item, idx) => {
+                                      // Get price for selected vendor
+                                      const vendorPrice = initialSettings.vendor_prices?.[selectedVendor]?.[item.id.toString()] ?? 0;
+                                      return (
+                                        <tr key={item.id} className="border-b border-slate-200 text-slate-800 hover:bg-slate-50/50">
+                                          <td className="px-3 py-2 text-center border-r border-slate-200">{idx+1}</td>
+                                          <td className="px-4 py-2 font-bold border-r border-slate-200">{item.item_name}</td>
+                                          <td className="px-4 py-2 border-r border-slate-200">{item.capacity_range || "-"}</td>
+                                          <td className="px-3 py-2 text-center border-r border-slate-200 font-bold uppercase">{item.capacity_unit}</td>
+                                          <td className="px-4 py-2 text-right font-black text-[#003366]">
+                                            {vendorPrice > 0 
+                                              ? `Rp ${new Intl.NumberFormat("id-ID").format(vendorPrice)}`
+                                              : "Belum Diatur"}
+                                          </td>
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+                                </table>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Pasal 3 - Penutup */}
+                    <div className="mb-12 space-y-2 clauses-container">
+                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider text-center">PASAL 3 - MASA BERLAKU & PENUTUP</h4>
+                      <p className="text-xs text-slate-800 leading-relaxed text-justify">
+                        Demikian Surat Kesepakatan Bersama Kontrak Payung ini dibuat dalam rangkap 2 (dua) bermaterai cukup dan masing-masing mempunyai kekuatan hukum yang sama setelah ditandatangani oleh kedua belah pihak. Kesepakatan ini berlaku sejak ditandatangani dan mengikat tarif pemeliharaan untuk tahun anggaran <strong>{indonesianDate.year}</strong>.
+                      </p>
+                    </div>
+
+                    {/* Signature Blocks */}
+                    <div className="mt-12 signature-container">
+                      <div className="grid grid-cols-2 text-center text-xs">
+                        
+                        {/* Pihak Pertama Signature */}
+                        <div className="space-y-16">
+                          <div className="space-y-1">
+                            <p className="font-bold uppercase">PIHAK PERTAMA</p>
+                            <p className="font-black text-slate-500 uppercase tracking-widest text-[9px]">{pihak1Company}</p>
+                          </div>
+                          <div className="space-y-0.5">
+                            <p className="font-extrabold underline text-slate-900">({pihak1Pic || "..........................."})</p>
+                            <p className="text-slate-400 font-bold uppercase text-[9px]">{pihak1Title || "..........................."}</p>
+                          </div>
+                        </div>
+
+                        {/* Pihak Kedua Signature */}
+                        <div className="space-y-16">
+                          <div className="space-y-1">
+                            <p className="font-bold uppercase">PIHAK KEDUA</p>
+                            <p className="font-black text-slate-500 uppercase tracking-widest text-[9px]">{pihak2Company}</p>
+                          </div>
+                          <div className="space-y-0.5">
+                            <p className="font-extrabold underline text-slate-900">({pihak2Pic || "..........................."})</p>
+                            <p className="text-slate-400 font-bold uppercase text-[9px]">{pihak2Title || "..........................."}</p>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+
+                    {/* Screen Only Footer for Previewing in WYSIWYG */}
+                    <div className="mt-16 pt-4 border-t-2 border-[#003366] bg-white w-full screen-only">
+                      <div className="flex items-center gap-4 mb-2 text-left">
+                        <div className="w-[18mm] shrink-0">
+                          <img src="/TUVnord-.png" alt="TUV Nord" className="w-full h-auto object-contain" />
+                        </div>
+                        <div className="flex-1 text-[5px] leading-relaxed text-[#333]">
+                          <p className="margin-0 font-extrabold text-slate-800">Head Office : <span className="font-semibold text-slate-500">Surabaya. Jl. Opak No. 33 Darmo Wonokromo Kota Surabaya Jawa Timur 60241. P. +62-31-9953 9777 F. +62 31 9953 9222</span></p>
+                          <p className="margin-0 font-extrabold text-slate-800 mt-1">Branch Office : <span className="font-semibold text-slate-500">Jakarta. L'Avenue Office Building 25th Floor Jl. Raya Pasar Minggu Kav.16 Pancoran, Jakarta Selatan 12780. P. +62-21 - 8066-7118</span></p>
+                        </div>
+                        <div className="flex-1.2 text-[5px] leading-relaxed text-[#333]">
+                          <p className="margin-0 font-extrabold text-slate-800">Medan. <span className="font-semibold text-slate-500">Komplek Karya Makkur, Jl. Karya No. A4 Kelurahan Sei Agul Kecamatan Medan Barat, Medan.</span></p>
+                          <p className="margin-0 font-extrabold text-slate-800 mt-0.5">Semarang. <span className="font-semibold text-slate-500">Jl. Jendral Sudirman 75A, Krobokan, Semarang Barat.</span></p>
+                          <p className="margin-0 font-extrabold text-slate-800 mt-0.5">Timika. <span className="font-semibold text-slate-500">Jl. Cendrawasih SP 2 Ruko Segitiga Emas No.9, Timika Papua 99910.</span></p>
+                        </div>
+                        <div className="w-[24mm] shrink-0">
+                          <img src="/green-building-council-1.png" alt="GBCI" className="w-full h-auto object-contain" />
+                        </div>
+                      </div>
+                      <div 
+                        className="h-8 w-full flex items-center justify-between px-6 box-border rounded-b-md text-white"
+                        style={{ background: "linear-gradient(to right, #009ce1 0%, #003366 100%)" }}
+                      >
+                        <span className="text-[7pt] font-black text-white/95">
+                          Halaman Kesepakatan Utama
+                        </span>
+                        <span className="text-[9px] font-extrabold italic text-white">
+                          www.daikin-connect.com
+                        </span>
+                      </div>
+                    </div>
+
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+
+            {/* C. PRINT ONLY DYNAMIC FOOTER (Repeated at bottom of all pages in print) */}
+            <tfoot className="print-only-footer">
+              <tr>
+                <td>
+                  <div className="pt-4 border-t-2 border-[#003366] bg-white w-full">
+                    <div className="flex items-center gap-4 mb-2 text-left">
+                      <div className="w-[18mm] shrink-0">
+                        <img src="/TUVnord-.png" alt="TUV Nord" className="w-full h-auto object-contain" />
+                      </div>
+                      <div className="flex-1 text-[5px] leading-relaxed text-[#333]">
+                        <p className="margin-0 font-extrabold text-slate-800">Head Office : <span className="font-semibold text-slate-500">Surabaya. Jl. Opak No. 33 Darmo Wonokromo Kota Surabaya Jawa Timur 60241. P. +62-31-9953 9777 F. +62 31 9953 9222</span></p>
+                        <p className="margin-0 font-extrabold text-slate-800 mt-1">Branch Office : <span className="font-semibold text-slate-500">Jakarta. L'Avenue Office Building 25th Floor Jl. Raya Pasar Minggu Kav.16 Pancoran, Jakarta Selatan 12780. P. +62-21 - 8066-7118</span></p>
+                      </div>
+                      <div className="flex-1.2 text-[5px] leading-relaxed text-[#333]">
+                        <p className="margin-0 font-extrabold text-slate-800">Medan. <span className="font-semibold text-slate-500">Komplek Karya Makkur, Jl. Karya No. A4 Kelurahan Sei Agul Kecamatan Medan Barat, Medan.</span></p>
+                        <p className="margin-0 font-extrabold text-slate-800 mt-0.5">Semarang. <span className="font-semibold text-slate-500">Jl. Jendral Sudirman 75A, Krobokan, Semarang Barat.</span></p>
+                        <p className="margin-0 font-extrabold text-slate-800 mt-0.5">Timika. <span className="font-semibold text-slate-500">Jl. Cendrawasih SP 2 Ruko Segitiga Emas No.9, Timika Papua 99910.</span></p>
+                      </div>
+                      <div className="w-[24mm] shrink-0">
+                        <img src="/green-building-council-1.png" alt="GBCI" className="w-full h-auto object-contain" />
+                      </div>
+                    </div>
+                    <div 
+                      className="h-8 w-full flex items-center justify-between px-6 box-border rounded-b-md text-white"
+                      style={{ background: "linear-gradient(to right, #009ce1 0%, #003366 100%)" }}
+                    >
+                      <span className="text-[7pt] font-black text-white/95 page-number-print"></span>
+                      <span className="text-[9px] font-extrabold italic text-white">
+                        www.daikin-connect.com
+                      </span>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tfoot>
+
+          </table>
 
         </div>
 
@@ -612,6 +712,11 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
           border-radius: 6px;
         }
 
+        /* Screen only header/footer hidden status */
+        .print-only-header, .print-only-footer {
+          display: none;
+        }
+
         /* 3. PRINT ONLY MEDIA LAYOUT CSS STYLINGS */
         @media print {
           /* Hide all non-printable components */
@@ -628,22 +733,46 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
             min-height: auto !important;
             box-shadow: none !important;
             border: none !important;
-            padding: 1.5cm !important;
+            padding: 0 !important;
             margin: 0 auto !important;
             display: block !important;
-            page-break-after: avoid !important;
           }
           
-          /* Force page break rules for pristine layouting */
-          table {
-            page-break-inside: avoid !important;
+          /* Hide screen-only previews */
+          .screen-only {
+            display: none !important;
           }
-          tr {
+
+          /* Force dynamic print elements to appear in tabular page format */
+          .print-only-header {
+            display: table-header-group !important;
+          }
+          .print-only-footer {
+            display: table-footer-group !important;
+          }
+          
+          /* Enforce dynamic printed page numbering */
+          .page-number-print::after {
+            content: "Halaman " counter(page);
+          }
+
+          /* Enforce clean page breaks and prevent orphans */
+          .category-container, .signature-container, .clauses-container {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+          
+          .category-header {
+            page-break-after: avoid !important;
+            break-after: avoid !important;
+          }
+
+          table.rate-table {
+            page-break-inside: auto !important;
+          }
+          table.rate-table tr {
             page-break-inside: avoid !important;
             page-break-after: auto !important;
-          }
-          thead {
-            display: table-header-group !important;
           }
           
           /* Adjust layout styling for printing */
@@ -656,6 +785,12 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
           * {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
+          }
+
+          /* Define exact paged margins */
+          @page {
+            size: A4;
+            margin: 2cm 1.5cm 2.5cm 1.5cm;
           }
         }
       `}</style>
