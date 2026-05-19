@@ -738,6 +738,26 @@ export default function RateCardClient() {
                                 );
                               })()}
                            </td>
+                           {isAdmin && (
+                             <td className="px-8 py-6 text-right">
+                               <div className="flex items-center justify-end gap-2">
+                                 <button
+                                   onClick={() => handleOpenEdit(item)}
+                                   className="p-2 bg-slate-50 border border-slate-200 text-slate-500 hover:text-[#0073ea] hover:border-[#0073ea] hover:bg-[#0073ea]/5 rounded-xl transition-all"
+                                   title="Edit Item"
+                                 >
+                                   <Edit3 size={14} />
+                                 </button>
+                                 <button
+                                   onClick={() => handleDelete(item.id.toString())}
+                                   className="p-2 bg-slate-50 border border-slate-200 text-slate-450 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50 rounded-xl transition-all"
+                                   title="Hapus Item"
+                                 >
+                                   <Trash2 size={14} />
+                                 </button>
+                               </div>
+                             </td>
+                           )}
     
                         </tr>
                       ))
