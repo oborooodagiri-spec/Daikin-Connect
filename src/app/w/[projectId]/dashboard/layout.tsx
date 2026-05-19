@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { getUserAssignedProjects } from "@/app/actions/complaints";
 import DashboardSidebarClient from "./DashboardSidebarClient";
+import { prisma } from "@/lib/prisma";
 import NotificationCenter from "@/components/NotificationCenter";
 import NotificationManager from "@/components/dashboard/NotificationManager";
 import AppViewWrapper from "@/components/dashboard/AppViewWrapper";
