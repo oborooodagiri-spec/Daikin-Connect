@@ -51,7 +51,15 @@ export async function getAllProjects() {
   try {
     const projects = await prisma.projects.findMany({
       where: { status: "active" },
-      select: { id: true, name: true },
+      select: { 
+        id: true, 
+        name: true,
+        customers: {
+          select: {
+            address: true
+          }
+        }
+      },
       orderBy: { name: "asc" }
     });
     return serializePrisma({ success: true, data: projects });

@@ -50,6 +50,7 @@ import {
   updateRateCardSetting 
 } from "@/app/actions/rate_card_settings";
 import { getAllUsers } from "@/app/actions/users";
+import { getAllProjects } from "@/app/actions/projects";
 import { getSession } from "@/app/actions/auth";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -74,6 +75,7 @@ export default function RateCardClient() {
   const [notification, setNotification] = useState<{type: 'success' | 'error', message: string} | null>(null);
   const [session, setSession] = useState<any>(null);
   const [allUsers, setAllUsers] = useState<any[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
   const [userSearch, setUserSearch] = useState("");
 
   const [formData, setFormData] = useState({
@@ -179,17 +181,19 @@ export default function RateCardClient() {
 
   const fetchData = async () => {
     setLoading(true);
-    const [res, sess, users, settingsRes] = await Promise.all([
+    const [res, sess, users, settingsRes, projectsRes] = await Promise.all([
       getShoppingList(),
       getSession(),
       getAllUsers(),
-      getRateCardSettings()
+      getRateCardSettings(),
+      getAllProjects()
     ]);
     
     if (res.success) setItems(res.data);
     if (sess) setSession(sess);
     if (users?.success) setAllUsers(users.data);
     if (settingsRes.success) setSettings(settingsRes.data);
+    if (projectsRes?.success) setProjects(projectsRes.data);
     
     setLoading(false);
   };
@@ -210,6 +214,34 @@ export default function RateCardClient() {
       return matchesSearch && matchesCategory;
     });
   }, [items, searchQuery, selectedCategory]);
+
+  const picOptions = useMemo(() => {
+    return allUsers.filter(user => {
+      const roles = Array.isArray(user.roles) 
+        ? user.roles.map((r: string) => r.toLowerCase()) 
+        : [String(user.primaryRole || "").toLowerCase()];
+      return roles.some((role: string) => 
+        role.includes("sales engineer") || role.includes("management")
+      );
+    });
+  }, [allUsers]);
+
+  const handleProjectSelect = (projectIdStr: string) => {
+    const selectedProj = projects.find(p => p.id.toString() === projectIdStr);
+    if (selectedProj) {
+      setWoForm(prev => ({
+        ...prev,
+        project_name: selectedProj.name,
+        location: selectedProj.customers?.address || ""
+      }));
+    } else {
+      setWoForm(prev => ({
+        ...prev,
+        project_name: "",
+        location: ""
+      }));
+    }
+  };
 
   // Comparison Logic - compare price of current vendor against all other vendors
   const getPriceAnalysis = (itemId: string) => {
@@ -1535,11 +1567,33 @@ export default function RateCardClient() {
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5"><Briefcase size={12} /> PIC / Pengaju</label>
-                      <input type="text" placeholder="Nama pengaju..." value={woForm.pic_name} onChange={e => setWoForm({...woForm, pic_name: e.target.value})} className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all" />
+                      <select 
+                        value={woForm.pic_name} 
+                        onChange={e => setWoForm({...woForm, pic_name: e.target.value})} 
+                        className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all cursor-pointer"
+                      >
+                        <option value="">Pilih pengaju...</option>
+                        {picOptions.map(user => (
+                          <option key={user.id} value={user.name}>
+                            {user.name} ({user.roles?.join(", ") || user.primaryRole})
+                          </option>
+                        ))}
+                      </select>
                     </div>
                     <div className="col-span-2 space-y-2">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5"><Building2 size={12} /> Nama Proyek</label>
-                      <input type="text" placeholder="Nama proyek..." value={woForm.project_name} onChange={e => setWoForm({...woForm, project_name: e.target.value})} className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all" />
+                      <select 
+                        value={projects.find(p => p.name === woForm.project_name)?.id?.toString() || ""}
+                        onChange={e => handleProjectSelect(e.target.value)}
+                        className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all cursor-pointer"
+                      >
+                        <option value="">Pilih proyek...</option>
+                        {projects.map(proj => (
+                          <option key={proj.id.toString()} value={proj.id.toString()}>
+                            {proj.name}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5"><MapPin size={12} /> Lokasi</label>
