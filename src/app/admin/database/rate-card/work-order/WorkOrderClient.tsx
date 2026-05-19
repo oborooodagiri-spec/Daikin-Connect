@@ -503,7 +503,7 @@ export default function WorkOrderClient({
       </div>
 
       {/* RIGHT PREVIEW WORKSPACE (LIGHT PREMIUM GREY CONTAINER) */}
-      <div className="flex-1 p-6 md:p-12 overflow-y-auto max-h-screen bg-slate-100 flex flex-col items-center custom-scrollbar print:bg-white print:p-0 print:overflow-visible print:max-h-none">
+      <div className="flex-1 p-6 md:p-12 overflow-y-auto max-h-screen bg-slate-100 flex flex-col items-center custom-scrollbar print:bg-white print:p-0 print:overflow-visible print:max-h-none print-safe">
         
         {/* A4 sheet preview loop */}
         {partitionedPages.map((pageItems, pageIdx) => {
@@ -513,7 +513,7 @@ export default function WorkOrderClient({
           return (
             <div 
               key={pageIdx} 
-              className="a4-sheet relative bg-white text-black shadow-[0_10px_40px_rgba(0,0,0,0.06)] mb-8 flex flex-col justify-between overflow-hidden print:shadow-none print:m-0 print:page-break-after-always"
+              className="a4-sheet relative bg-white text-black shadow-[0_10px_40px_rgba(0,0,0,0.06)] mb-8 flex flex-col justify-between overflow-hidden print:shadow-none print:m-0 print:page-break-after-always print-safe"
             >
               
               {/* FULL BLEED HEADER (ON ALL PAGES) */}
@@ -726,6 +726,7 @@ export default function WorkOrderClient({
                         <ul className="list-decimal pl-3 text-[7px] font-medium text-slate-400 space-y-0.5 mt-1 leading-relaxed">
                           <li>Harga sudah termasuk jasa teknisi, alat kerja standar, dan transportasi.</li>
                           <li>Tidak termasuk penggantian suku cadang berat atau perbaikan komponen berat.</li>
+                          <li>Sistem dokumentasi dan pelaporan harus melalui portal EPL CONNECT.</li>
                           <li>Pekerjaan dinyatakan selesai setelah Check-Sheet ditandatangani kedua pihak.</li>
                         </ul>
                       </div>
