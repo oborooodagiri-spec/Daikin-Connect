@@ -289,7 +289,7 @@ export default function QuotationClient({
   }, [calculatedItems, ppnEnabled, serviceFrequency]);
 
   // Pagination partitioner (A4 multi-page system)
-  const itemsPerPage = 8;
+  const itemsPerPage = 12;
   const partitionedPages = useMemo(() => {
     const pages: any[][] = [];
     for (let i = 0; i < calculatedItems.length; i += itemsPerPage) {

@@ -56,7 +56,8 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
     "Tarif Harga Satuan yang disepakati adalah tarif resmi yang mengikat kedua belah pihak untuk periode tahun berjalan sesuai Lampiran Lampiran.",
     "Harga yang tercantum sudah termasuk jasa teknisi ahli, penyediaan peralatan kerja standar, alat keselamatan kerja (K3), serta biaya mobilisasi operasional ke lokasi proyek.",
     "Pengecualian biaya pemeliharaan di luar kontrak payung ini mencakup pengadaan sparepart mayor, penggantian kompresor unit, atau pekerjaan overhaul total, yang mana wajib dituangkan dalam Work Order (WO) terpisah.",
-    "Pekerjaan dianggap selesai secara sah dan dapat ditagihkan apabila Pihak Kedua menyerahkan laporan hasil pekerjaan (Checklist PM/CM) yang ditandatangani oleh PIC Pihak Pertama di lapangan."
+    "Pihak Kedua berkewajiban untuk melakukan dokumentasi dan pelaporan (reporting) seluruh aktivitas pemeliharaan secara berkala dan sistematis melalui portal EPL CONNECT.",
+    "Pekerjaan dianggap selesai secara sah dan dapat ditagihkan apabila Pihak Kedua menyerahkan laporan hasil pekerjaan (Checklist PM/CM) yang ditandatangani oleh PIC Pihak Pertama di lapangan serta melakukan konfirmasi penyelesaian pekerjaan melalui portal EPL CONNECT."
   ]);
   const [newClause, setNewClause] = useState("");
 
