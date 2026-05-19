@@ -521,9 +521,13 @@ export default function WorkOrderClient({
                 {/* Daikin Top Blue Banner Line */}
                 <div className="h-[4mm] bg-gradient-to-r from-[#009ce1] to-[#003366] w-full" />
                 
-                <div className="px-[15mm] pt-[10mm] pb-[4mm] flex justify-between items-start">
+                <div className="px-[15mm] pt-[8mm] pb-[4mm] flex justify-between items-start">
                   <div className="flex flex-col gap-1">
-                    <StaticLogo size={22} className="h-6" />
+                    <img 
+                      src="/logo_epl_connect_1.png" 
+                      alt="EPL Connect" 
+                      className="h-[10mm] w-auto object-contain self-start" 
+                    />
                     <p className="text-[7px] font-black text-[#003366] uppercase tracking-[0.05em] leading-none mt-1">PT. Daikin Applied Solutions Indonesia</p>
                   </div>
                   <div className="text-right">
