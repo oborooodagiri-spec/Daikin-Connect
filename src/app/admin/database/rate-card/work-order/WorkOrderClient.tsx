@@ -540,22 +540,50 @@ export default function WorkOrderClient({
                 
                 {/* Project Details Panel (First Page Only) */}
                 {isFirstPage && (
-                  <div className="mb-[6mm] p-[4mm] bg-slate-50/70 border border-slate-100 rounded-xl grid grid-cols-2 gap-y-[2.5mm] gap-x-[5mm]">
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-[7.5px] font-black text-slate-400 uppercase tracking-wider">Tanggal Dikeluarkan</span>
-                      <span className="text-[10px] font-bold text-slate-800">{fmtDate(woForm.date)}</span>
+                  <div className="mb-[6mm] p-[4.5mm] bg-slate-50 border border-slate-150 rounded-2xl grid grid-cols-3 gap-[4.5mm]">
+                    {/* Column 1: Pihak I & II (Contracting Parties) */}
+                    <div className="flex flex-col gap-1.5 border-r border-slate-200 pr-[4.5mm]">
+                      <div>
+                        <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest block">Pemberi Tugas (Pihak I)</span>
+                        <span className="text-[9.5px] font-black text-[#005aab] uppercase leading-none block mt-0.5">DAIKIN CONNECT</span>
+                        {woForm.pic_name && (
+                          <span className="text-[8px] font-bold text-slate-500 mt-1 block">PIC: {woForm.pic_name}</span>
+                        )}
+                      </div>
+                      <div className="mt-1">
+                        <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest block">Penerima Tugas (Pihak II)</span>
+                        <span className="text-[9.5px] font-black text-slate-800 uppercase leading-none block mt-0.5 truncate" title={initialSettings.selected_vendor || "Vendor Kontraktor"}>
+                          {initialSettings.selected_vendor || "Belum ada vendor terpilih"}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-[7.5px] font-black text-slate-400 uppercase tracking-wider">PIC Pengaju (Pihak I)</span>
-                      <span className="text-[10px] font-bold text-slate-800">{woForm.pic_name || "..................................................."}</span>
+
+                    {/* Column 2: Project & Execution Location */}
+                    <div className="flex flex-col gap-1.5 border-r border-slate-200 pr-[4.5mm]">
+                      <div>
+                        <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest block">Nama Proyek / Instalasi</span>
+                        <span className="text-[9.5px] font-bold text-slate-800 leading-tight block mt-0.5 truncate" title={woForm.project_name || "N/A"}>
+                          {woForm.project_name || "-"}
+                        </span>
+                      </div>
+                      <div className="mt-1">
+                        <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest block">Lokasi / Alamat Pekerjaan</span>
+                        <span className="text-[9.5px] font-bold text-slate-800 leading-snug block mt-0.5 line-clamp-2" title={woForm.location || "N/A"}>
+                          {woForm.location || "-"}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-[7.5px] font-black text-slate-400 uppercase tracking-wider">Proyek Target</span>
-                      <span className="text-[10px] font-bold text-slate-800 truncate">{woForm.project_name || "..................................................."}</span>
-                    </div>
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-[7.5px] font-black text-slate-400 uppercase tracking-wider">Lokasi Pekerjaan</span>
-                      <span className="text-[10px] font-bold text-slate-800 truncate" title={woForm.location}>{woForm.location || "..................................................."}</span>
+
+                    {/* Column 3: Document Tracking */}
+                    <div className="flex flex-col gap-1.5 pl-0.5">
+                      <div>
+                        <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest block">No. Work Order (SPK)</span>
+                        <span className="text-[9.5px] font-black text-[#0073ea] uppercase block mt-0.5 tracking-wider">{woForm.wo_number || "-"}</span>
+                      </div>
+                      <div className="mt-1">
+                        <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest block">Tanggal Diterbitkan</span>
+                        <span className="text-[9.5px] font-bold text-slate-800 block mt-0.5">{fmtDate(woForm.date)}</span>
+                      </div>
                     </div>
                   </div>
                 )}
