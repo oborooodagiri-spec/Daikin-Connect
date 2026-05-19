@@ -662,7 +662,7 @@ export default function RateCardClient() {
                       ))
                     ) : filteredItems.length > 0 ? (
                       filteredItems.map((item) => (
-                        <tr key={item.id.toString()} className={`group transition-colors ${selectedItems[item.id.toString()] ? 'bg-blue-50/50' : 'hover:bg-blue-50/30'}`}>
+                        <tr key={item.id.toString()} className="group transition-colors hover:bg-blue-50/30">
     
                            <td className="px-8 py-6">
                               <span className="px-3 py-1 bg-slate-50 text-slate-600 text-[9px] font-black rounded-lg border border-slate-100 uppercase tracking-widest">
