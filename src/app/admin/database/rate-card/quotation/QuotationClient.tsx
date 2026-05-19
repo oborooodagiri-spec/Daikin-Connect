@@ -188,7 +188,7 @@ export default function QuotationClient({
         work_type: defaultCatalogItem.work_type,
         capacity_unit: defaultCatalogItem.capacity_unit,
         capacity_range: defaultCatalogItem.capacity_range,
-        capacity_pk: 0,
+        capacity_pk: (defaultCatalogItem.capacity_unit === "PK" || defaultCatalogItem.capacity_unit === "Cell") ? 1 : 0,
         qty: 1,
         notes: "Item manual penawaran",
         original_price: price,
@@ -217,6 +217,7 @@ export default function QuotationClient({
             updated.work_type = catalogItem.work_type;
             updated.capacity_unit = catalogItem.capacity_unit;
             updated.capacity_range = catalogItem.capacity_range;
+            updated.capacity_pk = (catalogItem.capacity_unit === "PK" || catalogItem.capacity_unit === "Cell") ? 1 : 0;
             updated.original_price = getVendorPrice(catalogItem.id.toString());
           }
         }
@@ -235,10 +236,17 @@ export default function QuotationClient({
         : globalMargin;
       
       const marginCoeff = 1 + (resolvedMargin / 100);
-      const customerUnitPrice = Math.round(item.original_price * marginCoeff);
+
+      // Determine capacity multiplier (e.g. standard PK rate contracts are per-PK)
+      const multiplier = (item.capacity_unit === "PK" || item.capacity_unit === "Cell") 
+        ? (item.capacity_pk || 1) 
+        : 1;
+
+      const vendorUnitPrice = item.original_price * multiplier;
+      const customerUnitPrice = Math.round(vendorUnitPrice * marginCoeff);
       const customerSubtotal = customerUnitPrice * item.qty;
 
-      const vendorSubtotal = item.original_price * item.qty;
+      const vendorSubtotal = vendorUnitPrice * item.qty;
       const marginProfit = customerSubtotal - vendorSubtotal;
 
       return {
@@ -513,16 +521,42 @@ export default function QuotationClient({
                         className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-[10px] font-bold text-center focus:outline-none"
                       />
                     </div>
-                    <div className="space-y-0.5 col-span-2">
-                      <label className="text-[7px] text-slate-400 uppercase font-bold block">Custom Margin % (Opsional)</label>
-                      <input 
-                        type="number" 
-                        placeholder={`${globalMargin}%`} 
-                        value={item.margin_override === null ? "" : item.margin_override} 
-                        onChange={e => handleUpdateItemProp(item.id, "margin_override", e.target.value === "" ? null : parseInt(e.target.value))}
-                        className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-[10px] font-bold focus:outline-none"
-                      />
-                    </div>
+                    
+                    {(item.capacity_unit === "PK" || item.capacity_unit === "Cell") ? (
+                      <>
+                        <div className="space-y-0.5">
+                          <label className="text-[7px] text-slate-400 uppercase font-bold block">Kapasitas ({item.capacity_unit})</label>
+                          <input 
+                            type="number" 
+                            step="any"
+                            value={item.capacity_pk} 
+                            onChange={e => handleUpdateItemProp(item.id, "capacity_pk", parseFloat(e.target.value) || 0)}
+                            className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-[10px] font-bold text-center focus:outline-none"
+                          />
+                        </div>
+                        <div className="space-y-0.5">
+                          <label className="text-[7px] text-slate-400 uppercase font-bold block">Margin % (Opt)</label>
+                          <input 
+                            type="number" 
+                            placeholder={`${globalMargin}%`} 
+                            value={item.margin_override === null ? "" : item.margin_override} 
+                            onChange={e => handleUpdateItemProp(item.id, "margin_override", e.target.value === "" ? null : parseInt(e.target.value))}
+                            className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-[10px] font-bold focus:outline-none"
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      <div className="space-y-0.5 col-span-2">
+                        <label className="text-[7px] text-slate-400 uppercase font-bold block">Custom Margin % (Opsional)</label>
+                        <input 
+                          type="number" 
+                          placeholder={`${globalMargin}%`} 
+                          value={item.margin_override === null ? "" : item.margin_override} 
+                          onChange={e => handleUpdateItemProp(item.id, "margin_override", e.target.value === "" ? null : parseInt(e.target.value))}
+                          className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-[10px] font-bold focus:outline-none"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <input 
@@ -709,7 +743,9 @@ export default function QuotationClient({
                                 {item.notes && <span className="text-[7px] text-slate-400 font-bold block mt-0.5 italic">{item.notes}</span>}
                               </td>
                               <td className="py-2 text-center text-slate-700 font-extrabold uppercase">
-                                {item.capacity_range} <span className="text-[7.5px] text-slate-400">{item.capacity_unit}</span>
+                                {String(item.capacity_range || "").toUpperCase().includes(String(item.capacity_unit || "").toUpperCase())
+                                  ? item.capacity_range
+                                  : `${item.capacity_range} ${item.capacity_unit}`}
                               </td>
                               <td className="py-2 text-center font-extrabold text-slate-800">{item.qty}</td>
                               <td className="py-2 text-right font-extrabold text-slate-700">{fmtCurrency(item.customerUnitPrice)}</td>
