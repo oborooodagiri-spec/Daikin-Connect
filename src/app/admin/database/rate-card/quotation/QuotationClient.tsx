@@ -156,10 +156,10 @@ export default function QuotationClient({
           category: matchedItem.category,
           work_type: matchedItem.work_type,
           capacity_unit: matchedItem.capacity_unit,
-          capacity_range: matchedItem.capacity_range,
+          capacity_range: unit.capacity || matchedItem.capacity_range || "-",
           capacity_pk: (matchedItem.capacity_unit === "PK" || matchedItem.capacity_unit === "Cell") ? capacityVal : 0,
           qty: 1,
-          notes: `Unit: ${unit.tag_number || "-"} (Model: ${unit.model || "-"})`,
+          notes: `Lokasi: ${unit.location || "-"} (Model: ${unit.model || "-"})`,
           original_price: price,
           margin_override: null // Uses global margin by default
         });
