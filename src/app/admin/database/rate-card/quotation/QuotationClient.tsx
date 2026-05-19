@@ -800,59 +800,65 @@ export default function QuotationClient({
 
                 {/* Terms and Financial Recaps (Last Page of the Table Suite) */}
                 {isLastPage && (
-                  <div className="mt-[5mm] pt-[4mm] border-t border-slate-200 grid grid-cols-12 gap-[5mm] items-start">
+                  <div className="mt-[5mm] pt-[4mm] border-t border-slate-200 grid grid-cols-12 gap-[5mm] items-stretch">
                     
                     {/* Notes & payment terms on left */}
-                    <div className="col-span-7 space-y-3">
+                    <div className="col-span-6 h-full">
                       {/* Scope of Work Summary Box */}
-                      <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl grid grid-cols-3 gap-x-3 gap-y-2 text-[7.5px] leading-tight">
-                        <div className="col-span-3 pb-1 border-b border-slate-200/60 flex items-center justify-between">
+                      <div className="bg-slate-50 border border-slate-200 p-[4mm] rounded-xl text-[7.5px] leading-tight h-full flex flex-col justify-between">
+                        <div className="pb-1.5 border-b border-slate-200/60 flex items-center justify-between">
                           <span className="font-black text-[#003366] uppercase tracking-widest text-[8px]">Ringkasan Kontrak Pekerjaan (Summary)</span>
                           <span className="text-[7px] font-bold text-slate-400 uppercase">EPL B2B Proposal</span>
                         </div>
-                        <div>
-                          <span className="font-bold text-slate-450 block uppercase tracking-widest text-[6px]">Total Volume:</span>
-                          <span className="font-black text-[#0073ea] text-[10px] mt-0.5 block">
-                            {calculatedItems.reduce((sum, item) => sum + item.qty, 0)} Unit AC
-                          </span>
-                        </div>
-                        <div>
-                          <span className="font-bold text-slate-450 block uppercase tracking-widest text-[6px]">Frekuensi Jasa:</span>
-                          <span className="font-black text-emerald-600 text-[10px] mt-0.5 block">
-                            {serviceFrequency}x / Tahun
-                          </span>
-                        </div>
-                        <div>
-                          <span className="font-bold text-slate-450 block uppercase tracking-widest text-[6px]">Tahun Berlaku:</span>
-                          <span className="font-black text-slate-800 text-[10px] mt-0.5 block">
-                            {parseInt(contractDuration) > 1 
-                              ? `Periode ${initialSettings.period_year} - ${parseInt(initialSettings.period_year) + (parseInt(contractDuration) || 1) - 1}` 
-                              : `Periode ${initialSettings.period_year}`}
-                          </span>
+                        <div className="grid grid-cols-3 gap-x-3 gap-y-2 mt-4 flex-1 items-center">
+                          <div>
+                            <span className="font-bold text-slate-450 block uppercase tracking-widest text-[6px]">Total Volume:</span>
+                            <span className="font-black text-[#0073ea] text-[10px] mt-0.5 block">
+                              {calculatedItems.reduce((sum, item) => sum + item.qty, 0)} Unit AC
+                            </span>
+                          </div>
+                          <div>
+                            <span className="font-bold text-slate-450 block uppercase tracking-widest text-[6px]">Frekuensi Jasa:</span>
+                            <span className="font-black text-emerald-600 text-[10px] mt-0.5 block">
+                              {serviceFrequency}x / Tahun
+                            </span>
+                          </div>
+                          <div>
+                            <span className="font-bold text-slate-450 block uppercase tracking-widest text-[6px]">Tahun Berlaku:</span>
+                            <span className="font-black text-slate-800 text-[10px] mt-0.5 block">
+                              {parseInt(contractDuration) > 1 
+                                ? `Periode ${initialSettings.period_year} - ${parseInt(initialSettings.period_year) + (parseInt(contractDuration) || 1) - 1}` 
+                                : `Periode ${initialSettings.period_year}`}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
 
                     {/* Totals panel on right */}
-                    <div className="col-span-5 bg-slate-50 border border-slate-100 p-[3mm] rounded-xl space-y-1.5">
-                      <div className="flex justify-between items-center text-[7.5px]">
-                        <span className="font-bold text-slate-500">Subtotal per Kunjungan</span>
-                        <span className="font-bold text-slate-700">{fmtCurrency(financialTotals.subtotalPenawaranPerVisit)}</span>
-                      </div>
-                      
-                      <div className="flex justify-between items-center text-[7.5px]">
-                        <span className="font-bold text-slate-500">Frekuensi Kunjungan</span>
-                        <span className="font-black text-[#0073ea]">{serviceFrequency}x / Tahun</span>
-                      </div>
+                    <div className="col-span-6 h-full">
+                      <div className="bg-slate-50 border border-slate-200 p-[4mm] rounded-xl space-y-2.5 h-full flex flex-col justify-between">
+                        <div className="space-y-1.5 flex-1 justify-center flex flex-col">
+                          <div className="flex justify-between items-center text-[7.5px]">
+                            <span className="font-bold text-slate-500">Subtotal per Kunjungan</span>
+                            <span className="font-bold text-slate-700">{fmtCurrency(financialTotals.subtotalPenawaranPerVisit)}</span>
+                          </div>
+                          
+                          <div className="flex justify-between items-center text-[7.5px]">
+                            <span className="font-bold text-slate-500">Frekuensi Kunjungan</span>
+                            <span className="font-black text-[#0073ea]">{serviceFrequency}x / Tahun</span>
+                          </div>
 
-                      <div className="flex justify-between items-center text-[7.5px] border-t border-slate-200/50 pt-1.5">
-                        <span className="font-bold text-slate-500">Total Jasa Jangka {contractDuration}</span>
-                        <span className="font-bold text-slate-700">{fmtCurrency(financialTotals.subtotalPenawaranTahun)}</span>
-                      </div>
+                          <div className="flex justify-between items-center text-[7.5px] border-t border-slate-200/50 pt-1.5">
+                            <span className="font-bold text-slate-500">Total Jasa Jangka {contractDuration}</span>
+                            <span className="font-bold text-slate-700">{fmtCurrency(financialTotals.subtotalPenawaranTahun)}</span>
+                          </div>
+                        </div>
 
-                      <div className="flex justify-between items-center text-[9px] border-t-2 border-slate-800/80 pt-2 mt-1">
-                        <span className="font-black text-[#003366] uppercase">GRAND TOTAL KONTRAK</span>
-                        <span className="font-black text-[#0073ea] text-[10px]">{fmtCurrency(financialTotals.grandTotalPenawaran)}</span>
+                        <div className="flex justify-between items-center text-[9px] border-t-2 border-slate-800/80 pt-2 mt-1">
+                          <span className="font-black text-[#003366] uppercase">GRAND TOTAL KONTRAK</span>
+                          <span className="font-black text-[#0073ea] text-[10px]">{fmtCurrency(financialTotals.grandTotalPenawaran)}</span>
+                        </div>
                       </div>
                     </div>
 
