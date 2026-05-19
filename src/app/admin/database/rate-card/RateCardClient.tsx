@@ -117,67 +117,13 @@ export default function RateCardClient() {
   const [newCapacityUnitName, setNewCapacityUnitName] = useState("");
 
 
-  // Work Order States
-  const [selectedItems, setSelectedItems] = useState<Record<string, { qty: number; notes: string }>>({}); 
-  const [isWOModalOpen, setIsWOModalOpen] = useState(false);
-  const [woForm, setWoForm] = useState({
-    wo_number: `WO-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`,
-    date: new Date().toISOString().split('T')[0],
-    project_name: "",
-    location: "",
-    pic_name: "",
-    notes: ""
-  });
 
-  const toggleSelectItem = (item: any) => {
-    const id = item.id.toString();
-    setSelectedItems(prev => {
-      const next = { ...prev };
-      if (next[id]) {
-        delete next[id];
-      } else {
-        next[id] = { qty: 1, notes: "" };
-      }
-      return next;
-    });
-  };
-
-  const toggleSelectAll = () => {
-    if (Object.keys(selectedItems).length === filteredItems.length) {
-      setSelectedItems({});
-    } else {
-      const all: Record<string, { qty: number; notes: string }> = {};
-      filteredItems.forEach(item => { all[item.id.toString()] = { qty: 1, notes: "" }; });
-      setSelectedItems(all);
-    }
-  };
-
-  const updateSelectedQty = (id: string, qty: number) => {
-    setSelectedItems(prev => ({ ...prev, [id]: { ...prev[id], qty: Math.max(1, qty) } }));
-  };
-
-  const updateSelectedPK = (id: string, pk: number) => {
-    setSelectedItems(prev => ({ ...prev, [id]: { ...prev[id], capacity_pk: Math.max(0, pk) } }));
-  };
-
-  const updateSelectedNotes = (id: string, notes: string) => {
-    setSelectedItems(prev => ({ ...prev, [id]: { ...prev[id], notes } }));
-  };
-
-  const selectedCount = Object.keys(selectedItems).length;
   const getVendorPrice = (itemId: string): number | null => {
     if (!settings.selected_vendor) return null;
     return settings.vendor_prices?.[settings.selected_vendor]?.[itemId] ?? null;
   };
 
-  const selectedTotalValue = useMemo(() => {
-    return Object.entries(selectedItems).reduce((sum, [id, data]) => {
-      const item = items.find(i => i.id.toString() === id);
-      const price = getVendorPrice(id);
-      const multiplier = (item?.capacity_unit === "PK" || item?.capacity_unit === "Cell") ? (data.capacity_pk || 1) : 1;
-      return sum + (price ? price * multiplier * data.qty : 0);
-    }, 0);
-  }, [selectedItems, items, settings.vendor_prices, settings.selected_vendor]);
+
 
   const fetchData = async () => {
     setLoading(true);
@@ -215,33 +161,8 @@ export default function RateCardClient() {
     });
   }, [items, searchQuery, selectedCategory]);
 
-  const picOptions = useMemo(() => {
-    return allUsers.filter(user => {
-      const roles = Array.isArray(user.roles) 
-        ? user.roles.map((r: string) => r.toLowerCase()) 
-        : [String(user.primaryRole || "").toLowerCase()];
-      return roles.some((role: string) => 
-        role.includes("sales engineer") || role.includes("management")
-      );
-    });
-  }, [allUsers]);
 
-  const handleProjectSelect = (projectIdStr: string) => {
-    const selectedProj = projects.find(p => p.id.toString() === projectIdStr);
-    if (selectedProj) {
-      setWoForm(prev => ({
-        ...prev,
-        project_name: selectedProj.name,
-        location: selectedProj.customers?.address || ""
-      }));
-    } else {
-      setWoForm(prev => ({
-        ...prev,
-        project_name: "",
-        location: ""
-      }));
-    }
-  };
+
 
   // Comparison Logic - compare price of current vendor against all other vendors
   const getPriceAnalysis = (itemId: string) => {
@@ -577,188 +498,6 @@ export default function RateCardClient() {
     doc.save(`Rate_Card_${new Date().getTime()}.pdf`);
   };
 
-  const generateWorkOrderPDF = () => {
-    const doc = new jsPDF();
-    const fmt = (n: number) => new Intl.NumberFormat('id-ID').format(n);
-    const pageWidth = doc.internal.pageSize.getWidth();
-
-    // === HEADER / KOP SURAT ===
-    doc.setFillColor(0, 115, 234);
-    doc.rect(0, 0, pageWidth, 3, 'F');
-    
-    doc.setFontSize(20);
-    doc.setTextColor(0, 115, 234);
-    doc.text("DAIKIN CONNECT", 14, 18);
-    
-    doc.setFontSize(9);
-    doc.setTextColor(100);
-    doc.text("HVAC Maintenance & Engineering Services", 14, 24);
-    
-    doc.setFontSize(14);
-    doc.setTextColor(50);
-    doc.text("WORK ORDER", pageWidth - 14, 18, { align: 'right' });
-    
-    doc.setFontSize(9);
-    doc.setTextColor(0, 115, 234);
-    doc.text(woForm.wo_number, pageWidth - 14, 24, { align: 'right' });
-
-    // Separator
-    doc.setDrawColor(220);
-    doc.line(14, 28, pageWidth - 14, 28);
-
-    // === PROJECT INFO ===
-    let y = 36;
-    doc.setFontSize(8);
-    doc.setTextColor(130);
-    
-    const infoLeft = [
-      ["Tanggal", new Date(woForm.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })],
-      ["Vendor", settings.selected_vendor || 'N/A'],
-      ["Proyek", woForm.project_name || "-"],
-    ];
-    const infoRight = [
-      ["Lokasi", woForm.location || "-"],
-      ["PIC / Pengaju", woForm.pic_name || "-"],
-      ["Periode Kontrak", settings.period_year],
-    ];
-
-    infoLeft.forEach(([label, val], i) => {
-      doc.setTextColor(130);
-      doc.text(`${label}:`, 14, y + (i * 6));
-      doc.setTextColor(50);
-      doc.text(val, 50, y + (i * 6));
-    });
-    infoRight.forEach(([label, val], i) => {
-      doc.setTextColor(130);
-      doc.text(`${label}:`, pageWidth / 2 + 10, y + (i * 6));
-      doc.setTextColor(50);
-      doc.text(val, pageWidth / 2 + 50, y + (i * 6));
-    });
-
-    y += 24;
-
-    // === ITEM TABLE ===
-    const tableHead = [["No", "Uraian Pekerjaan", "Kategori", "Kapasitas", "Unit Qty", "Harga Satuan (Rp)", "Subtotal (Rp)"]];
-    const tableBody: any[] = [];
-    let grandTotal = 0;
-
-    Object.entries(selectedItems).forEach(([id, data], idx) => {
-      const item = items.find(i => i.id.toString() === id);
-      if (!item) return;
-      const vendorPrice = getVendorPrice(id) || 0;
-      const capacityMultiplier = (item.capacity_unit === "PK") ? (data.capacity_pk || 1) : 1;
-      const subtotal = vendorPrice * capacityMultiplier * data.qty;
-      grandTotal += subtotal;
-      
-      const capacityDisplay = (item.capacity_unit === "PK" || item.capacity_unit === "Cell")
-        ? `${data.capacity_pk || 0} ${item.capacity_unit}` 
-        : `${item.capacity_range} ${item.capacity_unit}`;
-
-      tableBody.push([
-        idx + 1,
-        `${item.item_name}${data.notes ? `\n(${data.notes})` : ''}`,
-        item.category,
-        capacityDisplay,
-        data.qty,
-        fmt(vendorPrice),
-        fmt(subtotal)
-      ]);
-    });
-
-    doc.autoTable({
-      head: tableHead,
-      body: tableBody,
-      startY: y,
-      theme: 'grid',
-      headStyles: { fillColor: [0, 115, 234], textColor: 255, fontStyle: 'bold', fontSize: 8, cellPadding: 4 },
-      bodyStyles: { fontSize: 8, cellPadding: 3, textColor: [50, 50, 50] },
-      alternateRowStyles: { fillColor: [249, 250, 251] },
-      columnStyles: {
-        0: { halign: 'center', cellWidth: 10 },
-        1: { cellWidth: 'auto' },
-        2: { cellWidth: 22 },
-        3: { cellWidth: 22 },
-        4: { halign: 'center', cellWidth: 12 },
-        5: { halign: 'right', cellWidth: 30 },
-        6: { halign: 'right', cellWidth: 30 },
-      },
-    });
-
-    // Grand Total Row
-    let afterTableY = (doc as any).lastAutoTable.finalY;
-    doc.setFillColor(50, 51, 56);
-    doc.rect(14, afterTableY, pageWidth - 28, 10, 'F');
-    doc.setFontSize(9);
-    doc.setTextColor(255);
-    doc.text("GRAND TOTAL", pageWidth - 50, afterTableY + 7, { align: 'right' });
-    doc.setFontSize(11);
-    doc.text(`Rp ${fmt(grandTotal)}`, pageWidth - 14, afterTableY + 7, { align: 'right' });
-
-    afterTableY += 18;
-
-    // === NOTES ===
-    if (woForm.notes) {
-      doc.setFontSize(8);
-      doc.setTextColor(130);
-      doc.text("Catatan:", 14, afterTableY);
-      doc.setTextColor(50);
-      doc.text(woForm.notes, 14, afterTableY + 5);
-      afterTableY += 14;
-    }
-
-    // === TERMS & CONDITIONS ===
-    doc.setFontSize(8);
-    doc.setTextColor(0, 115, 234);
-    doc.text("Syarat & Ketentuan:", 14, afterTableY);
-    doc.setTextColor(100);
-    const terms = [
-      "1. Harga sudah termasuk jasa teknisi, alat kerja standar, dan transportasi.",
-      "2. Tidak termasuk penggantian sparepart, material tambahan, dan pekerjaan diluar scope.",
-      "3. Pekerjaan dianggap selesai setelah penyerahan laporan yang ditandatangani kedua belah pihak.",
-      "4. Berlaku sesuai periode kontrak yang tertera pada dokumen ini."
-    ];
-    terms.forEach((t, i) => {
-      doc.text(t, 14, afterTableY + 5 + (i * 4));
-    });
-
-    afterTableY += 28;
-
-    // Check if we need a new page for signatures
-    if (afterTableY > 250) {
-      doc.addPage();
-      afterTableY = 20;
-    }
-
-    // === SIGNATURE BLOCKS ===
-    doc.setDrawColor(200);
-    doc.setFontSize(8);
-    doc.setTextColor(100);
-
-    // Left: Pengaju
-    doc.text("Diajukan oleh,", 14, afterTableY);
-    doc.line(14, afterTableY + 28, 80, afterTableY + 28);
-    doc.setTextColor(50);
-    doc.text(woForm.pic_name || "(Nama Pengaju)", 14, afterTableY + 33);
-    doc.setTextColor(130);
-    doc.text("PIC / Project Manager", 14, afterTableY + 38);
-
-    // Right: Vendor
-    doc.setTextColor(100);
-    doc.text("Disetujui oleh,", pageWidth - 80, afterTableY);
-    doc.line(pageWidth - 80, afterTableY + 28, pageWidth - 14, afterTableY + 28);
-    doc.setTextColor(50);
-    doc.text(settings.selected_vendor || "(Nama Vendor)", pageWidth - 80, afterTableY + 33);
-    doc.setTextColor(130);
-    doc.text("Vendor / Kontraktor", pageWidth - 80, afterTableY + 38);
-
-    // Footer line
-    doc.setFillColor(0, 115, 234);
-    doc.rect(0, doc.internal.pageSize.getHeight() - 3, pageWidth, 3, 'F');
-
-    doc.save(`Work_Order_${woForm.wo_number}_${new Date().getTime()}.pdf`);
-    notify('success', `Work Order ${woForm.wo_number} berhasil di-generate!`);
-    setIsWOModalOpen(false);
-  };
 
   return (
     <div className="min-h-screen bg-[#f8f9fc] p-6 md:p-12 font-sans text-[#323338] selection:bg-blue-100">
@@ -803,6 +542,15 @@ export default function RateCardClient() {
                   title="Cetak & Kustomisasi Kontrak Payung"
                 >
                   <Printer size={16} /> Print
+                </Link>
+                <Link 
+                  href="/admin/database/rate-card/work-order"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-6 py-4 bg-[#0073ea] text-white hover:bg-[#0060c5] rounded-2xl transition-all shadow-sm group font-black text-[10px] uppercase tracking-widest"
+                  title="Buat & Kustomisasi Surat Perintah Kerja (Work Order)"
+                >
+                  <ClipboardList size={16} /> WO
                 </Link>
              </div>
           </div>
@@ -898,15 +646,7 @@ export default function RateCardClient() {
               <table className="w-full text-left border-collapse">
                  <thead>
                     <tr className="bg-slate-50/50 border-b border-slate-100">
-                       {isAdmin && (
-                         <th className="px-4 py-6 w-12">
-                           <button onClick={toggleSelectAll} className="p-1 hover:bg-blue-50 rounded-lg transition-colors">
-                             {selectedCount === filteredItems.length && filteredItems.length > 0 
-                               ? <CheckSquare size={18} className="text-[#0073ea]" /> 
-                               : <Square size={18} className="text-slate-300" />}
-                           </button>
-                         </th>
-                       )}
+
                        <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Kategori</th>
                        <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Pekerjaan</th>
                        <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Keterangan (Inclusions)</th>
@@ -923,15 +663,7 @@ export default function RateCardClient() {
                     ) : filteredItems.length > 0 ? (
                       filteredItems.map((item) => (
                         <tr key={item.id.toString()} className={`group transition-colors ${selectedItems[item.id.toString()] ? 'bg-blue-50/50' : 'hover:bg-blue-50/30'}`}>
-                           {isAdmin && (
-                             <td className="px-4 py-6 w-12">
-                               <button onClick={() => toggleSelectItem(item)} className="p-1 hover:bg-blue-100 rounded-lg transition-colors">
-                                 {selectedItems[item.id.toString()] 
-                                   ? <CheckSquare size={18} className="text-[#0073ea]" /> 
-                                   : <Square size={18} className="text-slate-300" />}
-                               </button>
-                             </td>
-                           )}
+    
                            <td className="px-8 py-6">
                               <span className="px-3 py-1 bg-slate-50 text-slate-600 text-[9px] font-black rounded-lg border border-slate-100 uppercase tracking-widest">
                                 {item.category}
@@ -1006,14 +738,7 @@ export default function RateCardClient() {
                                 );
                               })()}
                            </td>
-                           {isAdmin && (
-                              <td className="px-8 py-6 text-right">
-                                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button onClick={() => handleOpenEdit(item)} className="p-2.5 bg-indigo-50 text-indigo-500 rounded-xl hover:bg-indigo-500 hover:text-white transition-all shadow-sm"><Edit3 size={16} /></button>
-                                    <button onClick={() => handleDelete(item.id.toString())} className="p-2.5 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all shadow-sm"><Trash2 size={16} /></button>
-                                 </div>
-                              </td>
-                           )}
+    
                         </tr>
                       ))
                     ) : (
@@ -1495,205 +1220,7 @@ export default function RateCardClient() {
           )}
         </AnimatePresence>
 
-        {/* Floating Selection Bar */}
-        <AnimatePresence>
-          {selectedCount > 0 && isAdmin && (
-            <motion.div 
-              initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }}
-              className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-[#323338] text-white px-8 py-5 rounded-[2rem] shadow-2xl flex items-center gap-6 border border-slate-600"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-[#0073ea] rounded-xl"><ClipboardList size={20} /></div>
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Item Terpilih</p>
-                  <p className="text-sm font-black">{selectedCount} Item &bull; {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(selectedTotalValue)}</p>
-                </div>
-              </div>
-              <div className="h-8 w-px bg-slate-600" />
-              <button 
-                onClick={() => {
-                  setWoForm(prev => ({...prev, wo_number: `WO-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`}));
-                  setIsWOModalOpen(true);
-                }}
-                className="flex items-center gap-2 px-6 py-3 bg-[#0073ea] text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#0060c5] transition-all shadow-lg"
-              >
-                <FileDown size={16} /> Buat Work Order
-              </button>
-              <button 
-                onClick={() => setSelectedItems({})}
-                className="p-2.5 bg-slate-700 rounded-xl hover:bg-rose-600 transition-colors"
-              >
-                <CloseIcon size={16} />
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
-        {/* Work Order Builder Modal */}
-        <AnimatePresence>
-          {isWOModalOpen && (
-            <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[#323338]/60 backdrop-blur-md" onClick={() => setIsWOModalOpen(false)} />
-              <motion.div 
-                initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                className="bg-white rounded-[2.5rem] shadow-2xl relative z-10 w-full max-w-4xl max-h-[90vh] overflow-y-auto custom-scrollbar"
-              >
-                {/* WO Header */}
-                <div className="sticky top-0 bg-white/95 backdrop-blur-sm z-20 px-10 pt-10 pb-6 border-b border-slate-100">
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-center gap-4">
-                      <div className="p-4 bg-gradient-to-br from-[#0073ea] to-indigo-600 text-white rounded-2xl shadow-lg shadow-blue-200">
-                        <ClipboardList size={28} />
-                      </div>
-                      <div>
-                        <h2 className="text-2xl font-black text-[#323338] tracking-tight uppercase">Work Order</h2>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Dokumen Pengajuan Pekerjaan</p>
-                      </div>
-                    </div>
-                    <button onClick={() => setIsWOModalOpen(false)} className="p-2.5 bg-slate-50 text-slate-400 rounded-xl hover:bg-slate-100 transition-all"><CloseIcon size={20}/></button>
-                  </div>
-                </div>
-
-                <div className="px-10 py-8 space-y-8">
-                  {/* WO Form Details */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5"><Hash size={12} /> No. Work Order</label>
-                      <input type="text" value={woForm.wo_number} onChange={e => setWoForm({...woForm, wo_number: e.target.value})} className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all" />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5"><Calendar size={12} /> Tanggal</label>
-                      <input type="date" value={woForm.date} onChange={e => setWoForm({...woForm, date: e.target.value})} className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all" />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5"><Briefcase size={12} /> PIC / Pengaju</label>
-                      <select 
-                        value={woForm.pic_name} 
-                        onChange={e => setWoForm({...woForm, pic_name: e.target.value})} 
-                        className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all cursor-pointer"
-                      >
-                        <option value="">Pilih pengaju...</option>
-                        {picOptions.map(user => (
-                          <option key={user.id} value={user.name}>
-                            {user.name} ({user.roles?.join(", ") || user.primaryRole})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="col-span-2 space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5"><Building2 size={12} /> Nama Proyek</label>
-                      <select 
-                        value={projects.find(p => p.name === woForm.project_name)?.id?.toString() || ""}
-                        onChange={e => handleProjectSelect(e.target.value)}
-                        className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all cursor-pointer"
-                      >
-                        <option value="">Pilih proyek...</option>
-                        {projects.map(proj => (
-                          <option key={proj.id.toString()} value={proj.id.toString()}>
-                            {proj.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5"><MapPin size={12} /> Lokasi</label>
-                      <input type="text" placeholder="Alamat lokasi..." value={woForm.location} onChange={e => setWoForm({...woForm, location: e.target.value})} className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all" />
-                    </div>
-                  </div>
-
-                  {/* Selected Items Table */}
-                  <div>
-                    <h3 className="text-xs font-black text-[#0073ea] uppercase tracking-[0.2em] mb-4">Rincian Pekerjaan ({selectedCount} Item)</h3>
-                    <div className="bg-slate-50/50 border border-slate-100 rounded-2xl overflow-hidden">
-                      <table className="w-full text-left">
-                        <thead>
-                          <tr className="border-b border-slate-100">
-                            <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">No</th>
-                            <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Pekerjaan</th>
-                            <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Kapasitas (PK/Cell)</th>
-                            <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest w-24">Unit Qty</th>
-                            <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">Harga Satuan</th>
-                            <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">Subtotal</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                          {Object.entries(selectedItems).map(([id, data], idx) => {
-                            const item = items.find(i => i.id.toString() === id);
-                            if (!item) return null;
-                            const vendorPrice = getVendorPrice(id) || 0;
-                            const subtotal = vendorPrice * data.qty;
-                            return (
-                              <tr key={id} className="bg-white hover:bg-blue-50/30 transition-colors">
-                                <td className="px-5 py-4 text-xs font-bold text-slate-400">{idx + 1}</td>
-                                <td className="px-5 py-4">
-                                  <p className="text-xs font-black text-[#323338] uppercase">{item.item_name}</p>
-                                  <p className="text-[10px] text-[#0073ea] font-bold">{item.category} &bull; {item.work_type}</p>
-                                  <input type="text" placeholder="Catatan tambahan..." value={data.notes} onChange={e => updateSelectedNotes(id, e.target.value)} className="mt-2 w-full px-3 py-1.5 bg-slate-50 border border-slate-100 rounded-lg text-[10px] font-medium focus:outline-none focus:border-blue-300" />
-                                </td>
-                                <td className="px-5 py-4">
-                                  {(item.capacity_unit === "PK" || item.capacity_unit === "Cell") ? (
-                                    <div className="flex items-center gap-2">
-                                      <input 
-                                        type="number" 
-                                        step="0.1" 
-                                        placeholder={item.capacity_unit === "PK" ? "PK..." : "Cell..."} 
-                                        value={data.capacity_pk || ""} 
-                                        onChange={e => updateSelectedPK(id, parseFloat(e.target.value) || 0)} 
-                                        className="w-20 px-3 py-2 bg-slate-50 border border-slate-100 rounded-xl text-xs font-black focus:outline-none focus:border-blue-300" 
-                                      />
-                                      <span className="text-[9px] font-black text-slate-400 uppercase">{item.capacity_unit}</span>
-                                    </div>
-                                  ) : (
-                                    <p className="text-[10px] font-bold text-slate-500">{item.capacity_range} {item.capacity_unit}</p>
-                                  )}
-                                </td>
-                                <td className="px-5 py-4 w-24">
-                                  <div className="flex items-center gap-1">
-                                    <button type="button" onClick={() => updateSelectedQty(id, data.qty - 1)} className="p-1 bg-slate-100 rounded hover:bg-slate-200 transition-colors"><Minus size={12} /></button>
-                                    <input type="number" min={1} value={data.qty} onChange={e => updateSelectedQty(id, parseInt(e.target.value) || 1)} className="w-12 text-center px-1 py-1 bg-white border border-slate-100 rounded text-xs font-black focus:outline-none focus:border-blue-300" />
-                                    <button type="button" onClick={() => updateSelectedQty(id, data.qty + 1)} className="p-1 bg-slate-100 rounded hover:bg-slate-200 transition-colors"><Plus size={12} /></button>
-                                  </div>
-                                </td>
-                                <td className="px-5 py-4 text-xs font-bold text-slate-600 text-right">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(vendorPrice)}</td>
-                                <td className="px-5 py-4 text-xs font-black text-emerald-600 text-right">
-                                  {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(vendorPrice * (["PK", "Cell"].includes(item.capacity_unit) ? (data.capacity_pk || 1) : 1) * data.qty)}
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                        <tfoot>
-                          <tr className="bg-[#323338]">
-                            <td colSpan={5} className="px-5 py-5 text-right text-[10px] font-black text-white uppercase tracking-widest">Grand Total</td>
-                            <td className="px-5 py-5 text-right text-lg font-black text-white">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(selectedTotalValue)}</td>
-                          </tr>
-                        </tfoot>
-                      </table>
-                    </div>
-                  </div>
-
-                  {/* General Notes */}
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Catatan Umum</label>
-                    <textarea rows={2} placeholder="Catatan tambahan untuk Work Order ini..." value={woForm.notes} onChange={e => setWoForm({...woForm, notes: e.target.value})} className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:border-[#0073ea] transition-all resize-none" />
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex gap-4 pt-4">
-                    <button type="button" onClick={() => setIsWOModalOpen(false)} className="flex-1 px-8 py-4 rounded-2xl bg-slate-50 text-slate-500 font-black text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all">Batal</button>
-                    <button 
-                      type="button" 
-                      onClick={generateWorkOrderPDF}
-                      className="flex-[2] bg-gradient-to-r from-[#0073ea] to-indigo-600 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:shadow-lg hover:shadow-blue-200 transition-all flex items-center justify-center gap-2"
-                    >
-                      <FileDown size={16} /> Generate & Download PDF
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
 
       </div>
 
