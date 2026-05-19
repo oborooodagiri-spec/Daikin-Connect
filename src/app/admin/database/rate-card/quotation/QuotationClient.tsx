@@ -59,6 +59,7 @@ export default function QuotationClient({
   // Pricing configuration states
   const [globalMargin, setGlobalMargin] = useState<number>(20); // Default profit margin markup (20%)
   const [ppnEnabled, setPpnEnabled] = useState(true);
+  const [serviceFrequency, setServiceFrequency] = useState<number>(4); // Default to 4x per year
 
   // Document details state
   const [woForm, setWoForm] = useState({
@@ -149,6 +150,9 @@ export default function QuotationClient({
           }
         }
 
+        const locParts = [unit.building_floor, unit.area].filter(Boolean);
+        const resolvedLocation = locParts.length > 0 ? locParts.join(" - ") : (unit.location || "-");
+
         newItems.push({
           id: `local-${Date.now()}-${Math.random()}`,
           item_ref_id: matchedItem.id.toString(),
@@ -159,7 +163,7 @@ export default function QuotationClient({
           capacity_range: unit.capacity || matchedItem.capacity_range || "-",
           capacity_pk: (matchedItem.capacity_unit === "PK" || matchedItem.capacity_unit === "Cell") ? capacityVal : 0,
           qty: 1,
-          notes: `Lokasi: ${unit.location || "-"} (Model: ${unit.model || "-"})`,
+          notes: `Lokasi: ${resolvedLocation} (Model: ${unit.model || "-"})`,
           original_price: price,
           margin_override: null // Uses global margin by default
         });
@@ -262,21 +266,26 @@ export default function QuotationClient({
 
   // Overall financial aggregates
   const financialTotals = useMemo(() => {
-    const totalVendorCost = calculatedItems.reduce((sum, item) => sum + item.vendorSubtotal, 0);
-    const subtotalPenawaran = calculatedItems.reduce((sum, item) => sum + item.customerSubtotal, 0);
-    const totalMarginProfit = subtotalPenawaran - totalVendorCost;
+    const totalVendorCostPerVisit = calculatedItems.reduce((sum, item) => sum + item.vendorSubtotal, 0);
+    const subtotalPenawaranPerVisit = calculatedItems.reduce((sum, item) => sum + item.customerSubtotal, 0);
     
-    const ppnVal = ppnEnabled ? Math.round(subtotalPenawaran * 0.11) : 0;
-    const grandTotalPenawaran = subtotalPenawaran + ppnVal;
+    const subtotalPenawaranTahun = subtotalPenawaranPerVisit * serviceFrequency;
+    const totalVendorCostTahun = totalVendorCostPerVisit * serviceFrequency;
+    const totalMarginProfit = subtotalPenawaranTahun - totalVendorCostTahun;
+    
+    const ppnVal = ppnEnabled ? Math.round(subtotalPenawaranTahun * 0.11) : 0;
+    const grandTotalPenawaran = subtotalPenawaranTahun + ppnVal;
 
     return {
-      totalVendorCost,
-      subtotalPenawaran,
+      totalVendorCostPerVisit,
+      subtotalPenawaranPerVisit,
+      subtotalPenawaranTahun,
+      totalVendorCostTahun,
       totalMarginProfit,
       ppnVal,
       grandTotalPenawaran
     };
-  }, [calculatedItems, ppnEnabled]);
+  }, [calculatedItems, ppnEnabled, serviceFrequency]);
 
   // Pagination partitioner (A4 multi-page system)
   const itemsPerPage = 8;
@@ -359,6 +368,23 @@ export default function QuotationClient({
           </select>
         </div>
 
+        {/* Contract Service Frequency Dropdown */}
+        <div className="space-y-2">
+          <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Sliders size={12}/> Frekuensi Jasa Kontrak</label>
+          <select 
+            value={serviceFrequency} 
+            onChange={e => setServiceFrequency(parseInt(e.target.value) || 1)}
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-xs focus:outline-none focus:border-[#0073ea] transition-all"
+          >
+            <option value={1}>1x Setahun (Tahunan)</option>
+            <option value={2}>2x Setahun (Semesteran)</option>
+            <option value={3}>3x Setahun (Caturwulan)</option>
+            <option value={4}>4x Setahun (Triwulan / Quarterly)</option>
+            <option value={6}>6x Setahun (Dwi-bulanan)</option>
+            <option value={12}>12x Setahun (Bulanan / Monthly)</option>
+          </select>
+        </div>
+
         {/* Dynamic Margin Adjustment Section (Highly requested by user) */}
         <div className="bg-blue-50/30 border border-blue-100 rounded-2xl p-4 space-y-4">
           <div className="flex items-center justify-between">
@@ -386,7 +412,7 @@ export default function QuotationClient({
           <div className="grid grid-cols-3 gap-2 pt-2 border-t border-blue-100/40 text-[9px] font-bold text-slate-500">
             <div>
               <span className="block text-[7px] text-slate-400 uppercase tracking-wider">Vendor Cost (Base):</span>
-              <span className="text-slate-700 font-extrabold">{fmtCurrency(financialTotals.totalVendorCost)}</span>
+              <span className="text-slate-700 font-extrabold">{fmtCurrency(financialTotals.totalVendorCostTahun)}</span>
             </div>
             <div>
               <span className="block text-[7px] text-slate-400 uppercase tracking-wider">Profit Margin:</span>
@@ -394,7 +420,7 @@ export default function QuotationClient({
             </div>
             <div>
               <span className="block text-[7px] text-slate-400 uppercase tracking-wider">Harga Customer:</span>
-              <span className="text-[#0073ea] font-extrabold">{fmtCurrency(financialTotals.subtotalPenawaran)}</span>
+              <span className="text-[#0073ea] font-extrabold">{fmtCurrency(financialTotals.subtotalPenawaranTahun)}</span>
             </div>
           </div>
         </div>
@@ -769,20 +795,26 @@ export default function QuotationClient({
                     {/* Notes & payment terms on left */}
                     <div className="col-span-7 space-y-3">
                       {/* Scope of Work Summary Box */}
-                      <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl grid grid-cols-2 gap-x-4 gap-y-2 text-[7.5px] leading-tight">
-                        <div className="col-span-2 pb-1 border-b border-slate-200/60 flex items-center justify-between">
-                          <span className="font-black text-[#003366] uppercase tracking-widest text-[8px]">Ringkasan Pekerjaan (Summary)</span>
-                          <span className="text-[7px] font-bold text-slate-400 uppercase">EPL B2C Proposal</span>
+                      <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl grid grid-cols-3 gap-x-3 gap-y-2 text-[7.5px] leading-tight">
+                        <div className="col-span-3 pb-1 border-b border-slate-200/60 flex items-center justify-between">
+                          <span className="font-black text-[#003366] uppercase tracking-widest text-[8px]">Ringkasan Kontrak Pekerjaan (Summary)</span>
+                          <span className="text-[7px] font-bold text-slate-400 uppercase">EPL B2B Proposal</span>
                         </div>
                         <div>
-                          <span className="font-bold text-slate-450 block uppercase tracking-widest text-[6px]">Total Volume Kerja:</span>
-                          <span className="font-black text-[#0073ea] text-[11px] mt-0.5 block">
-                            {calculatedItems.reduce((sum, item) => sum + item.qty, 0)} Item / Unit
+                          <span className="font-bold text-slate-450 block uppercase tracking-widest text-[6px]">Total Volume:</span>
+                          <span className="font-black text-[#0073ea] text-[10px] mt-0.5 block">
+                            {calculatedItems.reduce((sum, item) => sum + item.qty, 0)} Unit AC
+                          </span>
+                        </div>
+                        <div>
+                          <span className="font-bold text-slate-450 block uppercase tracking-widest text-[6px]">Frekuensi Jasa:</span>
+                          <span className="font-black text-emerald-600 text-[10px] mt-0.5 block">
+                            {serviceFrequency}x / Tahun
                           </span>
                         </div>
                         <div>
                           <span className="font-bold text-slate-450 block uppercase tracking-widest text-[6px]">Tahun Berlaku:</span>
-                          <span className="font-black text-slate-800 text-[11px] mt-0.5 block">
+                          <span className="font-black text-slate-800 text-[10px] mt-0.5 block">
                             Periode {initialSettings.period_year}
                           </span>
                         </div>
@@ -803,22 +835,27 @@ export default function QuotationClient({
                     {/* Totals panel on right */}
                     <div className="col-span-5 bg-slate-50 border border-slate-100 p-[3mm] rounded-xl space-y-1.5">
                       <div className="flex justify-between items-center text-[7.5px]">
-                        <span className="font-bold text-slate-500">Subtotal Penawaran</span>
-                        <span className="font-bold text-slate-700">{fmtCurrency(financialTotals.subtotalPenawaran)}</span>
+                        <span className="font-bold text-slate-500">Subtotal per Kunjungan</span>
+                        <span className="font-bold text-slate-700">{fmtCurrency(financialTotals.subtotalPenawaranPerVisit)}</span>
                       </div>
                       
                       <div className="flex justify-between items-center text-[7.5px]">
-                        <span className="font-bold text-slate-500">Diskon / Negosiasi</span>
-                        <span className="font-medium text-slate-400 italic">Nego B2B</span>
+                        <span className="font-bold text-slate-500">Frekuensi Kunjungan</span>
+                        <span className="font-black text-[#0073ea]">{serviceFrequency}x / Tahun</span>
                       </div>
 
                       <div className="flex justify-between items-center text-[7.5px] border-t border-slate-200/50 pt-1.5">
+                        <span className="font-bold text-slate-500">Total Jasa Jangka 1 Tahun</span>
+                        <span className="font-bold text-slate-700">{fmtCurrency(financialTotals.subtotalPenawaranTahun)}</span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[7.5px]">
                         <span className="font-bold text-slate-500">PPN (11%)</span>
                         <span className="font-bold text-slate-700">{fmtCurrency(financialTotals.ppnVal)}</span>
                       </div>
 
                       <div className="flex justify-between items-center text-[9px] border-t-2 border-slate-800/80 pt-2 mt-1">
-                        <span className="font-black text-[#003366] uppercase">GRAND TOTAL (RP)</span>
+                        <span className="font-black text-[#003366] uppercase">GRAND TOTAL KONTRAK</span>
                         <span className="font-black text-[#0073ea] text-[10px]">{fmtCurrency(financialTotals.grandTotalPenawaran)}</span>
                       </div>
                     </div>
