@@ -270,12 +270,14 @@ export default function QuotationClient({
     const totalVendorCostPerVisit = calculatedItems.reduce((sum, item) => sum + item.vendorSubtotal, 0);
     const subtotalPenawaranPerVisit = calculatedItems.reduce((sum, item) => sum + item.customerSubtotal, 0);
     
-    const subtotalPenawaranTahun = subtotalPenawaranPerVisit * serviceFrequency;
-    const totalVendorCostTahun = totalVendorCostPerVisit * serviceFrequency;
+    // Parse contract duration years
+    const years = parseInt(contractDuration) || 1;
+    const subtotalPenawaranTahun = subtotalPenawaranPerVisit * serviceFrequency * years;
+    const totalVendorCostTahun = totalVendorCostPerVisit * serviceFrequency * years;
     const totalMarginProfit = subtotalPenawaranTahun - totalVendorCostTahun;
     
-    const ppnVal = ppnEnabled ? Math.round(subtotalPenawaranTahun * 0.11) : 0;
-    const grandTotalPenawaran = subtotalPenawaranTahun + ppnVal;
+    const ppnVal = 0; // PPN completely removed
+    const grandTotalPenawaran = subtotalPenawaranTahun;
 
     return {
       totalVendorCostPerVisit,
@@ -286,7 +288,7 @@ export default function QuotationClient({
       ppnVal,
       grandTotalPenawaran
     };
-  }, [calculatedItems, ppnEnabled, serviceFrequency]);
+  }, [calculatedItems, serviceFrequency, contractDuration]);
 
   // Pagination partitioner (A4 multi-page system)
   const itemsPerPage = 12;
@@ -618,16 +620,6 @@ export default function QuotationClient({
 
         {/* Global Controls & print */}
         <div className="pt-4 border-t border-slate-100 space-y-3 bg-white no-print">
-          <label className="flex items-center justify-between cursor-pointer select-none text-[10px] font-black text-slate-400 uppercase tracking-wider">
-            <span>Kenakan PPN 11%</span>
-            <input 
-              type="checkbox" 
-              checked={ppnEnabled} 
-              onChange={e => setPpnEnabled(e.target.checked)} 
-              className="w-4 h-4 text-[#0073ea] rounded border-slate-350 focus:ring-[#0073ea] transition-all cursor-pointer"
-            />
-          </label>
-
           <button 
             onClick={handlePrint}
             className="w-full flex items-center justify-center gap-2 py-4 bg-[#0073ea] hover:bg-[#0060c5] text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-500/10 group"
@@ -833,20 +825,11 @@ export default function QuotationClient({
                         <div>
                           <span className="font-bold text-slate-450 block uppercase tracking-widest text-[6px]">Tahun Berlaku:</span>
                           <span className="font-black text-slate-800 text-[10px] mt-0.5 block">
-                            Periode {initialSettings.period_year}
+                            {parseInt(contractDuration) > 1 
+                              ? `Periode ${initialSettings.period_year} - ${parseInt(initialSettings.period_year) + (parseInt(contractDuration) || 1) - 1}` 
+                              : `Periode ${initialSettings.period_year}`}
                           </span>
                         </div>
-                      </div>
-
-                      <div>
-                        <h4 className="text-[8px] font-black text-[#0073ea] uppercase tracking-widest">Syarat Pembayaran & Ketentuan Teknis:</h4>
-                        <ul className="list-decimal pl-3 text-[7px] font-medium text-slate-400 space-y-0.5 mt-1 leading-relaxed text-justify">
-                          <li>Masa Berlaku Penawaran Harga ini adalah selama <strong>{woForm.validity_days}</strong> terhitung sejak tanggal diterbitkan.</li>
-                          <li>Harga Penawaran sudah mencakup jasa tenaga ahli tersertifikasi, peralatan kerja standar, serta kepatuhan K3 keselamatan kerja.</li>
-                          <li>Syarat Pembayaran: Down Payment (DP) 30% setelah persetujuan kontrak, Pelunasan 70% setelah Berita Acara Penyelesaian Pekerjaan (BAPP) disetujui.</li>
-                          <li>Pembayaran ditransfer secara resmi ke rekening Bank Mandiri a.n <strong>PT. DAIKIN APPLIED SOLUTIONS INDONESIA</strong>.</li>
-                          <li>Sistem pelaporan dan dokumentasi lengkap akan diserahkan melalui portal EPL CONNECT.</li>
-                        </ul>
                       </div>
                     </div>
 
@@ -863,13 +846,8 @@ export default function QuotationClient({
                       </div>
 
                       <div className="flex justify-between items-center text-[7.5px] border-t border-slate-200/50 pt-1.5">
-                        <span className="font-bold text-slate-500">Total Jasa Jangka 1 Tahun</span>
+                        <span className="font-bold text-slate-500">Total Jasa Jangka {contractDuration}</span>
                         <span className="font-bold text-slate-700">{fmtCurrency(financialTotals.subtotalPenawaranTahun)}</span>
-                      </div>
-                      
-                      <div className="flex justify-between items-center text-[7.5px]">
-                        <span className="font-bold text-slate-500">PPN (11%)</span>
-                        <span className="font-bold text-slate-700">{fmtCurrency(financialTotals.ppnVal)}</span>
                       </div>
 
                       <div className="flex justify-between items-center text-[9px] border-t-2 border-slate-800/80 pt-2 mt-1">
