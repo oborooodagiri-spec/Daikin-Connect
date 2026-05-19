@@ -40,15 +40,15 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
   
   // State for Document Customization
   const [selectedVendor, setSelectedVendor] = useState(initialSettings.selected_vendor || initialSettings.vendors[0] || "");
-  const [docNumber, setDocNumber] = useState(`DC-KP/FY26/${(selectedVendor || "VENDOR").toUpperCase().replace(/\s+/g, "-")}/${new Date().getFullYear()}`);
+  const [docNumber, setDocNumber] = useState("");
   const [docDate, setDocDate] = useState(new Date().toISOString().split("T")[0]);
   
-  const [pihak1Pic, setPihak1Pic] = useState("Odo Odagiri");
-  const [pihak1Title, setPihak1Title] = useState("Direktur Utama");
+  const [pihak1Pic, setPihak1Pic] = useState("");
+  const [pihak1Title, setPihak1Title] = useState("");
   const [pihak1Company, setPihak1Company] = useState("PT Daikin Connect Indonesia");
   
-  const [pihak2Pic, setPihak2Pic] = useState("Ahmad Fauzi");
-  const [pihak2Title, setPihak2Title] = useState("Direktur Utama");
+  const [pihak2Pic, setPihak2Pic] = useState("");
+  const [pihak2Title, setPihak2Title] = useState("");
   const [pihak2Company, setPihak2Company] = useState(selectedVendor || "Vendor Rekanan");
 
   // Dynamic Clauses State
@@ -70,7 +70,6 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
   // When vendor changes, update related doc fields
   const handleVendorChange = (vendor: string) => {
     setSelectedVendor(vendor);
-    setDocNumber(`DC-KP/FY26/${vendor.toUpperCase().replace(/\s+/g, "-")}/${new Date().getFullYear()}`);
     setPihak2Company(vendor);
   };
 
