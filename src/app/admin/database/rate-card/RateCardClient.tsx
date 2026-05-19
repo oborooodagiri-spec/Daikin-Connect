@@ -547,10 +547,19 @@ export default function RateCardClient() {
                   href="/admin/database/rate-card/work-order"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-6 py-4 bg-[#0073ea] text-white hover:bg-[#0060c5] rounded-2xl transition-all shadow-sm group font-black text-[10px] uppercase tracking-widest"
+                  className="flex items-center gap-2 px-6 py-4 bg-[#323338] text-white hover:bg-black rounded-2xl transition-all shadow-sm group font-black text-[10px] uppercase tracking-widest"
                   title="Buat & Kustomisasi Surat Perintah Kerja (Work Order)"
                 >
                   <ClipboardList size={16} /> WO
+                </Link>
+                <Link 
+                  href="/admin/database/rate-card/quotation"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-6 py-4 bg-emerald-600 text-white hover:bg-emerald-700 rounded-2xl transition-all shadow-sm group font-black text-[10px] uppercase tracking-widest"
+                  title="Buat & Kustomisasi Surat Penawaran Harga (Quotation) untuk Customer"
+                >
+                  <FileText size={16} /> Penawaran
                 </Link>
              </div>
           </div>
