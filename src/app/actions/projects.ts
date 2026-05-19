@@ -65,7 +65,10 @@ export async function getAllProjects() {
             unit_type: true,
             tag_number: true,
             model: true,
-            capacity: true
+            capacity: true,
+            building_floor: true,
+            area: true,
+            location: true
           }
         }
       },

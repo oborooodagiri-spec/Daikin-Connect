@@ -60,6 +60,7 @@ export default function QuotationClient({
   const [globalMargin, setGlobalMargin] = useState<number>(20); // Default profit margin markup (20%)
   const [ppnEnabled, setPpnEnabled] = useState(true);
   const [serviceFrequency, setServiceFrequency] = useState<number>(4); // Default to 4x per year
+  const [contractDuration, setContractDuration] = useState<string>("1 Tahun"); // Default contract duration
 
   // Document details state
   const [woForm, setWoForm] = useState({
@@ -73,7 +74,7 @@ export default function QuotationClient({
     recipient_pic: "",
     recipient_address: "",
     notes: "",
-    intro_message: "Sehubungan dengan permohonan penawaran harga pemeliharaan unit pendingin ruangan (HVAC) pada lokasi proyek Anda, bersama ini kami PT. Daikin Applied Solutions Indonesia mengajukan proposal teknis beserta rincian penawaran harga sebagai berikut:"
+    intro_message: "Merujuk pada permohonan pengadaan jasa Preventive Maintenance AC untuk fasilitas Anda, dengan hormat kami, PT Daikin Applied Solutions Indonesia, menyampaikan proposal penawaran teknis beserta rincian komersial sebagai berikut:"
   });
 
   // 2. Memoized options
@@ -368,21 +369,38 @@ export default function QuotationClient({
           </select>
         </div>
 
-        {/* Contract Service Frequency Dropdown */}
-        <div className="space-y-2">
-          <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Sliders size={12}/> Frekuensi Jasa Kontrak</label>
-          <select 
-            value={serviceFrequency} 
-            onChange={e => setServiceFrequency(parseInt(e.target.value) || 1)}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-xs focus:outline-none focus:border-[#0073ea] transition-all"
-          >
-            <option value={1}>1x Setahun (Tahunan)</option>
-            <option value={2}>2x Setahun (Semesteran)</option>
-            <option value={3}>3x Setahun (Caturwulan)</option>
-            <option value={4}>4x Setahun (Triwulan / Quarterly)</option>
-            <option value={6}>6x Setahun (Dwi-bulanan)</option>
-            <option value={12}>12x Setahun (Bulanan / Monthly)</option>
-          </select>
+        {/* Contract Service Parameters */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2">
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Sliders size={12}/> Frekuensi Jasa</label>
+            <select 
+              value={serviceFrequency} 
+              onChange={e => setServiceFrequency(parseInt(e.target.value) || 1)}
+              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-xs focus:outline-none focus:border-[#0073ea] transition-all"
+            >
+              <option value={1}>1x Setahun (Tahunan)</option>
+              <option value={2}>2x Setahun (Semesteran)</option>
+              <option value={3}>3x Setahun (Caturwulan)</option>
+              <option value={4}>4x Setahun (Triwulan)</option>
+              <option value={6}>6x Setahun (Dwi-bulanan)</option>
+              <option value={12}>12x Setahun (Bulanan)</option>
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Sliders size={12}/> Durasi Kontrak</label>
+            <select 
+              value={contractDuration} 
+              onChange={e => setContractDuration(e.target.value)}
+              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-xs focus:outline-none focus:border-[#0073ea] transition-all"
+            >
+              <option value="1 Tahun">1 Tahun</option>
+              <option value="2 Tahun">2 Tahun</option>
+              <option value="3 Tahun">3 Tahun</option>
+              <option value="4 Tahun">4 Tahun</option>
+              <option value="5 Tahun">5 Tahun</option>
+            </select>
+          </div>
         </div>
 
         {/* Dynamic Margin Adjustment Section (Highly requested by user) */}
@@ -677,18 +695,18 @@ export default function QuotationClient({
                 <div className="font-black text-[#003366] text-[8.5px] uppercase tracking-wider">Ringkasan Lingkup Jasa:</div>
                 <div className="grid grid-cols-2 gap-4 text-[9px] font-bold text-slate-600">
                   <div className="space-y-1">
-                    <div>• Total unit tercover: <span className="text-slate-800 font-extrabold">{activeItems.reduce((sum, item) => sum + item.qty, 0)} Unit</span></div>
-                    <div>• Rencana Periode: <span className="text-slate-800 font-extrabold">Tahun {initialSettings.period_year}</span></div>
+                    <div>• Total Populasi Unit: <span className="text-slate-800 font-extrabold">{activeItems.reduce((sum, item) => sum + item.qty, 0)} Unit AC</span></div>
+                    <div>• Periode Pelaksanaan: <span className="text-slate-800 font-extrabold">{contractDuration}</span></div>
                   </div>
                   <div className="space-y-1">
                     <div>• Skema Pekerjaan: <span className="text-slate-800 font-extrabold">Unit Price Contract</span></div>
-                    <div>• Keamanan K3 & Teknisi: <span className="text-emerald-600 font-extrabold">Sudah Termasuk</span></div>
+                    <div>• Kepatuhan K3 & Tenaga Ahli: <span className="text-emerald-600 font-extrabold">Sudah Termasuk</span></div>
                   </div>
                 </div>
               </div>
 
               <p className="font-medium text-slate-650 leading-relaxed">
-                Rincian pekerjaan lengkap beserta breakdown harga satuan untuk masing-masing tipe unit pendingin ruangan tercantum pada lampiran halaman berikutnya dari dokumen penawaran resmi ini.
+                Rincian komprehensif mengenai lingkup pekerjaan (Scope of Work) beserta struktur harga satuan untuk setiap tipe AC telah kami lampirkan pada halaman berikutnya dalam dokumen kelengkapan ini.
               </p>
             </div>
 
@@ -824,7 +842,7 @@ export default function QuotationClient({
                         <h4 className="text-[8px] font-black text-[#0073ea] uppercase tracking-widest">Syarat Pembayaran & Ketentuan Teknis:</h4>
                         <ul className="list-decimal pl-3 text-[7px] font-medium text-slate-400 space-y-0.5 mt-1 leading-relaxed text-justify">
                           <li>Masa Berlaku Penawaran Harga ini adalah selama <strong>{woForm.validity_days}</strong> terhitung sejak tanggal diterbitkan.</li>
-                          <li>Harga Penawaran sudah mencakup jasa teknisi tersertifikasi, peralatan kerja standar, serta penjaminan K3 keselamatan kerja.</li>
+                          <li>Harga Penawaran sudah mencakup jasa tenaga ahli tersertifikasi, peralatan kerja standar, serta kepatuhan K3 keselamatan kerja.</li>
                           <li>Syarat Pembayaran: Down Payment (DP) 30% setelah persetujuan kontrak, Pelunasan 70% setelah Berita Acara Penyelesaian Pekerjaan (BAPP) disetujui.</li>
                           <li>Pembayaran ditransfer secara resmi ke rekening Bank Mandiri a.n <strong>PT. DAIKIN APPLIED SOLUTIONS INDONESIA</strong>.</li>
                           <li>Sistem pelaporan dan dokumentasi lengkap akan diserahkan melalui portal EPL CONNECT.</li>
