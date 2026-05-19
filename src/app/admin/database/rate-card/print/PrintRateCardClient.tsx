@@ -254,8 +254,25 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
     </div>
   );
 
+  const handlePrint = () => {
+    const originalTitle = document.title;
+    const vendorName = selectedVendor?.trim() || "Vendor";
+    const periodYear = initialSettings.period_year || new Date().getFullYear().toString();
+    
+    // Format: "Surat Kesepakatan Bersama_Nama Vendor_Tahun"
+    const rawFilename = `Surat Kesepakatan Bersama_${vendorName}_${periodYear}`;
+    const cleanFilename = rawFilename.replace(/[\/\\:\*\?"<>\|]/g, '-');
+
+    document.title = cleanFilename;
+    window.print();
+
+    setTimeout(() => {
+      document.title = originalTitle;
+    }, 1000);
+  };
+
   return (
-    <div className="min-h-screen bg-[#f1f3f7] font-sans flex text-[#323338] no-print">
+    <div className="min-h-screen bg-[#f1f3f7] font-sans flex text-[#323338] print-safe">
       
       {/* 1. LEFT CONTROL PANEL (SIDEBAR) */}
       <div className="w-[450px] bg-white border-r border-slate-200 h-screen overflow-y-auto p-8 flex flex-col justify-between shrink-0 custom-scrollbar no-print">
@@ -486,7 +503,7 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
         {/* Footer print action buttons */}
         <div className="pt-6 border-t border-slate-100 space-y-3 bg-white no-print">
           <button 
-            onClick={() => window.print()}
+            onClick={handlePrint}
             className="w-full flex items-center justify-center gap-2.5 py-4 bg-[#0073ea] hover:bg-[#0060c5] text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-lg shadow-blue-100 hover:shadow-xl transition-all"
             title="Download PDF atau Cetak dengan format A4"
           >
@@ -500,7 +517,7 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
       </div>
 
       {/* 2. RIGHT PREVIEW WINDOW (WYSIWYG STACKED DISCRETE A4 PAGES) */}
-      <div className="flex-1 overflow-y-auto h-screen p-12 flex flex-col items-center custom-scrollbar bg-slate-200 no-print">
+      <div className="flex-1 overflow-y-auto h-screen p-12 flex flex-col items-center custom-scrollbar bg-slate-200 print:bg-white print:p-0 print:overflow-visible print:h-auto">
         
         {/* PAGE 1: PREAMBLE & GENERAL CLAUSES (PASAL 1) */}
         <div className="a4-sheet bg-white shadow-2xl relative border border-slate-300 flex flex-col justify-between shrink-0 text-left font-sans text-slate-800 mb-8 p-0">
