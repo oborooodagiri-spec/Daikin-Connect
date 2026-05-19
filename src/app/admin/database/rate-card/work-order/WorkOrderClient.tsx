@@ -16,7 +16,9 @@ import {
   Sparkles, 
   Minus, 
   FileText,
-  Building
+  Building,
+  RefreshCw,
+  X
 } from "lucide-react";
 import Link from "next/link";
 
@@ -52,7 +54,11 @@ export default function WorkOrderClient({
   // 3. Negotiation State
   const [negotiationDiscount, setNegotiationDiscount] = useState<number>(0);
 
-  // 4. Memoized Dropdown Options
+  // 4. Project Asset Synchronization States
+  const [syncPromptOpen, setSyncPromptOpen] = useState(false);
+  const [pendingProject, setPendingProject] = useState<any>(null);
+
+  // 5. Memoized Dropdown Options for PIC
   const picOptions = useMemo(() => {
     return users.filter(user => {
       const roles = Array.isArray(user.roles) 
@@ -64,37 +70,99 @@ export default function WorkOrderClient({
     });
   }, [users]);
 
-  // 5. Get price of item in selected vendor pricing
+  // 6. Get price of item in selected vendor pricing
   const getVendorPrice = (itemId: string): number => {
     if (!initialSettings.selected_vendor) return 0;
     return initialSettings.vendor_prices?.[initialSettings.selected_vendor]?.[itemId] ?? 0;
   };
 
-  // 6. Handle Project Selection and Auto-fill Location Address
+  // 7. Handle Project Selection and Auto-fill Location Address & Sync Units Prompt
   const handleProjectChange = (projectIdStr: string) => {
     const selectedProj = projects.find(p => p.id.toString() === projectIdStr);
     if (selectedProj) {
+      const address = selectedProj.customers?.address?.trim() || "";
+      const locationText = address !== "" ? address : "Belum ada alamat terdaftar";
+      
       setWoForm(prev => ({
         ...prev,
         project_name: selectedProj.name,
-        location: selectedProj.customers?.address || ""
+        location: locationText
       }));
+
+      // Check if project has associated units to sync
+      if (selectedProj.units && selectedProj.units.length > 0) {
+        setPendingProject(selectedProj);
+        setSyncPromptOpen(true);
+      }
     } else {
       setWoForm(prev => ({
         ...prev,
         project_name: "",
         location: ""
       }));
+      setPendingProject(null);
     }
   };
 
-  // 7. Add Catalog Item to Active Items List
+  // 8. Confirm Synchronization of Project Units to Work Order List
+  const handleConfirmSyncUnits = () => {
+    if (!pendingProject?.units) return;
+
+    const newItems: any[] = [];
+    pendingProject.units.forEach((unit: any) => {
+      // Find matching catalog item in initialItems (case insensitive category match or item name include)
+      const matchedItem = initialItems.find(item => 
+        item.category.toLowerCase() === unit.unit_type?.toLowerCase() ||
+        item.item_name.toLowerCase().includes(unit.unit_type?.toLowerCase() || "")
+      );
+
+      if (matchedItem) {
+        const price = getVendorPrice(matchedItem.id.toString());
+        
+        // Parse unit capacity (e.g., "2 PK" or "2.5 PK" or "3 Cell")
+        let capacityVal = 1;
+        if (unit.capacity) {
+          const parsed = parseFloat(unit.capacity.replace(/[^0-9.]/g, ''));
+          if (!isNaN(parsed) && parsed > 0) {
+            capacityVal = parsed;
+          }
+        }
+
+        newItems.push({
+          id: `local-${Date.now()}-${Math.random()}`,
+          item_ref_id: matchedItem.id.toString(),
+          item_name: matchedItem.item_name,
+          category: matchedItem.category,
+          work_type: matchedItem.work_type,
+          capacity_unit: matchedItem.capacity_unit,
+          capacity_range: matchedItem.capacity_range,
+          capacity_pk: (matchedItem.capacity_unit === "PK" || matchedItem.capacity_unit === "Cell") ? capacityVal : 0,
+          qty: 1,
+          notes: `Unit: ${unit.tag_number || "-"} (Model: ${unit.model || "-"})`,
+          original_price: price
+        });
+      }
+    });
+
+    if (newItems.length > 0) {
+      setActiveItems(prev => [...prev, ...newItems]);
+    }
+
+    setSyncPromptOpen(false);
+    setPendingProject(null);
+  };
+
+  const handleCancelSyncUnits = () => {
+    setSyncPromptOpen(false);
+    setPendingProject(null);
+  };
+
+  // 9. Add Catalog Item to Active Items List
   const handleAddCatalogItem = (itemIdStr: string) => {
     if (!itemIdStr) return;
     const item = initialItems.find(i => i.id.toString() === itemIdStr);
     if (!item) return;
 
-    // Check if already exists in activeItems list to prevent duplication, increment instead
     const existingIdx = activeItems.findIndex(ai => ai.item_ref_id === item.id.toString());
     if (existingIdx > -1) {
       const updated = [...activeItems];
@@ -121,7 +189,7 @@ export default function WorkOrderClient({
     setSearchItemQuery("");
   };
 
-  // 8. Filtered Catalog Items based on Search query
+  // 10. Filtered Catalog Items based on Search query
   const filteredCatalogItems = useMemo(() => {
     if (!searchItemQuery.trim()) return initialItems;
     return initialItems.filter(item => 
@@ -130,7 +198,7 @@ export default function WorkOrderClient({
     );
   }, [initialItems, searchItemQuery]);
 
-  // 9. Update Active Item Parameters
+  // 11. Update Active Item Parameters
   const updateActiveItemQty = (id: string, qty: number) => {
     setActiveItems(prev => prev.map(item => 
       item.id === id ? { ...item, qty: Math.max(1, qty) } : item
@@ -153,7 +221,7 @@ export default function WorkOrderClient({
     setActiveItems(prev => prev.filter(item => item.id !== id));
   };
 
-  // 10. Financial Calculations & Summary
+  // 12. Financial Calculations & Summary
   const financialRecap = useMemo(() => {
     let subtotalSebelumNegosiasi = 0;
     let subtotalSetelahNegosiasi = 0;
@@ -165,14 +233,13 @@ export default function WorkOrderClient({
       const originalItemCost = item.original_price * multiplier * item.qty;
       subtotalSebelumNegosiasi += originalItemCost;
 
-      // Apply negotiation percentage discount to unit price
       const negotiatedUnitPrice = item.original_price * (1 - negotiationDiscount / 100);
       const negotiatedItemCost = negotiatedUnitPrice * multiplier * item.qty;
       subtotalSetelahNegosiasi += negotiatedItemCost;
     });
 
     const discountAmount = subtotalSebelumNegosiasi - subtotalSetelahNegosiasi;
-    const ppn = subtotalSetelahNegosiasi * 0.11; // 11% standard Indonesian VAT
+    const ppn = subtotalSetelahNegosiasi * 0.11;
     const grandTotal = subtotalSetelahNegosiasi + ppn;
 
     return {
@@ -184,7 +251,7 @@ export default function WorkOrderClient({
     };
   }, [activeItems, negotiationDiscount]);
 
-  // 11. Pagination / Partitioning of Active Items for A4 sheet rendering
+  // 13. Partitioning of Active Items for A4 sheet rendering
   const partitionedPages = useMemo(() => {
     const pages: any[][] = [];
     const MAX_ITEMS_PER_PAGE = 7;
@@ -193,7 +260,6 @@ export default function WorkOrderClient({
       pages.push(activeItems.slice(i, i + MAX_ITEMS_PER_PAGE));
     }
     
-    // Ensure we have at least one empty state page if no items
     if (pages.length === 0) {
       pages.push([]);
     }
@@ -219,29 +285,29 @@ export default function WorkOrderClient({
   };
 
   return (
-    <div className="min-h-screen bg-[#1e2229] font-sans text-slate-200 flex flex-col lg:flex-row print:bg-white print:text-black">
+    <div className="min-h-screen bg-[#f8f9fc] font-sans text-slate-700 flex flex-col lg:flex-row print:bg-white print:text-black">
       
-      {/* LEFT SIDEBAR CONTROLS */}
-      <div className="w-full lg:w-[450px] lg:border-r border-slate-800 bg-[#14171c] p-6 md:p-8 flex flex-col gap-8 flex-shrink-0 lg:max-h-screen lg:overflow-y-auto custom-scrollbar no-print">
+      {/* LEFT SIDEBAR CONTROLS (LIGHT MODE COHESIVE SYSTEM) */}
+      <div className="w-full lg:w-[450px] lg:border-r border-slate-200 bg-white p-6 md:p-8 flex flex-col gap-8 flex-shrink-0 lg:max-h-screen lg:overflow-y-auto custom-scrollbar no-print shadow-sm">
         
         {/* Back navigation */}
         <div className="flex items-center justify-between">
           <Link 
             href="/admin/database/rate-card" 
-            className="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-[#0073ea] transition-all"
+            className="flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-[#0073ea] transition-all"
           >
             <ChevronLeft size={16} /> Kembali ke Rate Card
           </Link>
-          <div className="flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-            <Sparkles size={12} className="text-blue-400 animate-pulse" />
-            <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">WO Builder v2</span>
+          <div className="flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-100 rounded-lg">
+            <Sparkles size={12} className="text-blue-500 animate-pulse" />
+            <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest">WO Builder v2</span>
           </div>
         </div>
 
         {/* Section: WO Information */}
         <div className="space-y-5">
           <div>
-            <h2 className="text-lg font-black text-white uppercase tracking-wider flex items-center gap-2">
+            <h2 className="text-lg font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
               <FileText size={20} className="text-[#0073ea]" /> Informasi WO
             </h2>
             <p className="text-[10px] text-slate-400 font-bold tracking-wider uppercase mt-1">Konfigurasi Lembar Kerja Surat Perintah Kerja</p>
@@ -254,7 +320,7 @@ export default function WorkOrderClient({
                 type="text" 
                 value={woForm.wo_number} 
                 onChange={e => setWoForm({...woForm, wo_number: e.target.value})} 
-                className="w-full px-5 py-4 bg-slate-900 border border-slate-800 rounded-2xl font-bold text-sm text-white focus:outline-none focus:border-[#0073ea] transition-all"
+                className="w-full px-5 py-4 bg-slate-50 border border-slate-250 rounded-2xl font-bold text-sm text-slate-800 focus:outline-none focus:border-[#0073ea] focus:ring-4 focus:ring-blue-500/5 transition-all"
               />
             </div>
 
@@ -264,7 +330,7 @@ export default function WorkOrderClient({
                 type="date" 
                 value={woForm.date} 
                 onChange={e => setWoForm({...woForm, date: e.target.value})} 
-                className="w-full px-5 py-4 bg-slate-900 border border-slate-800 rounded-2xl font-bold text-sm text-white focus:outline-none focus:border-[#0073ea] transition-all"
+                className="w-full px-5 py-4 bg-slate-50 border border-slate-250 rounded-2xl font-bold text-sm text-slate-800 focus:outline-none focus:border-[#0073ea] focus:ring-4 focus:ring-blue-500/5 transition-all"
               />
             </div>
 
@@ -273,7 +339,7 @@ export default function WorkOrderClient({
               <select 
                 value={woForm.pic_name} 
                 onChange={e => setWoForm({...woForm, pic_name: e.target.value})} 
-                className="w-full px-5 py-4 bg-slate-900 border border-slate-800 rounded-2xl font-bold text-sm text-white focus:outline-none focus:border-[#0073ea] transition-all cursor-pointer"
+                className="w-full px-5 py-4 bg-slate-50 border border-slate-250 rounded-2xl font-bold text-sm text-slate-800 focus:outline-none focus:border-[#0073ea] focus:ring-4 focus:ring-blue-500/5 transition-all cursor-pointer"
               >
                 <option value="">Pilih pengaju...</option>
                 {picOptions.map(user => (
@@ -289,7 +355,7 @@ export default function WorkOrderClient({
               <select 
                 value={projects.find(p => p.name === woForm.project_name)?.id?.toString() || ""}
                 onChange={e => handleProjectChange(e.target.value)}
-                className="w-full px-5 py-4 bg-slate-900 border border-slate-800 rounded-2xl font-bold text-sm text-white focus:outline-none focus:border-[#0073ea] transition-all cursor-pointer"
+                className="w-full px-5 py-4 bg-slate-50 border border-slate-250 rounded-2xl font-bold text-sm text-slate-800 focus:outline-none focus:border-[#0073ea] focus:ring-4 focus:ring-blue-500/5 transition-all cursor-pointer"
               >
                 <option value="">Pilih proyek...</option>
                 {projects.map(proj => (
@@ -307,32 +373,32 @@ export default function WorkOrderClient({
                 value={woForm.location} 
                 onChange={e => setWoForm({...woForm, location: e.target.value})}
                 placeholder="Alamat lokasi lengkap..."
-                className="w-full px-5 py-4 bg-slate-900 border border-slate-800 rounded-2xl font-bold text-sm text-white focus:outline-none focus:border-[#0073ea] transition-all resize-none"
+                className="w-full px-5 py-4 bg-slate-50 border border-slate-250 rounded-2xl font-bold text-sm text-slate-800 focus:outline-none focus:border-[#0073ea] focus:ring-4 focus:ring-blue-500/5 transition-all resize-none"
               />
             </div>
           </div>
         </div>
 
-        <div className="h-px bg-slate-800" />
+        <div className="h-px bg-slate-100" />
 
         {/* Section: Catalog Ingestion */}
         <div className="space-y-5">
           <div>
-            <h2 className="text-lg font-black text-white uppercase tracking-wider flex items-center gap-2">
-              <Plus size={20} className="text-emerald-500" /> Tambah Item Kerja
+            <h2 className="text-lg font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+              <Plus size={20} className="text-emerald-600" /> Tambah Item Kerja
             </h2>
             <p className="text-[10px] text-slate-400 font-bold tracking-wider uppercase mt-1">Tambahkan item dari database katalog rate card</p>
           </div>
 
           <div className="space-y-3">
             <div className="relative group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-500" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500" />
               <input 
                 type="text" 
                 placeholder="Cari item dalam katalog..." 
                 value={searchItemQuery}
                 onChange={e => setSearchItemQuery(e.target.value)}
-                className="w-full pl-11 pr-5 py-3.5 bg-slate-900 border border-slate-800 rounded-2xl font-bold text-xs text-white focus:outline-none focus:border-blue-500"
+                className="w-full pl-11 pr-5 py-3.5 bg-slate-50 border border-slate-250 rounded-2xl font-bold text-xs text-slate-800 focus:outline-none focus:border-blue-500"
               />
             </div>
 
@@ -340,7 +406,7 @@ export default function WorkOrderClient({
               <select 
                 value={selectedCatalogItem}
                 onChange={e => handleAddCatalogItem(e.target.value)}
-                className="w-full px-5 py-4 bg-slate-900 border border-slate-800 rounded-2xl font-bold text-xs text-white focus:outline-none focus:border-blue-500 cursor-pointer"
+                className="w-full px-5 py-4 bg-slate-50 border border-slate-250 rounded-2xl font-bold text-xs text-slate-800 focus:outline-none focus:border-blue-500 cursor-pointer"
               >
                 <option value="">Pilih & masukkan item ({filteredCatalogItems.length} opsi)...</option>
                 {filteredCatalogItems.map(item => {
@@ -356,20 +422,20 @@ export default function WorkOrderClient({
           </div>
         </div>
 
-        <div className="h-px bg-slate-800" />
+        <div className="h-px bg-slate-100" />
 
         {/* Section: Negotiation Simulation */}
         <div className="space-y-5">
           <div>
-            <h2 className="text-lg font-black text-white uppercase tracking-wider flex items-center gap-2">
-              <Sliders size={20} className="text-indigo-400" /> Simulasi Negosiasi
+            <h2 className="text-lg font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+              <Sliders size={20} className="text-indigo-600" /> Simulasi Negosiasi
             </h2>
             <p className="text-[10px] text-slate-400 font-bold tracking-wider uppercase mt-1">Sesuaikan persentase diskon penawaran</p>
           </div>
 
-          <div className="space-y-4 p-5 bg-slate-900/50 border border-slate-800 rounded-3xl">
+          <div className="space-y-4 p-5 bg-[#f8f9fc] border border-slate-200 rounded-3xl">
             <div className="flex justify-between items-center">
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Diskon Penawaran</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Diskon Penawaran</span>
               <div className="flex items-center gap-1.5">
                 <input 
                   type="number" 
@@ -377,9 +443,9 @@ export default function WorkOrderClient({
                   max={50} 
                   value={negotiationDiscount} 
                   onChange={e => setNegotiationDiscount(Math.min(50, Math.max(0, parseFloat(e.target.value) || 0)))}
-                  className="w-16 px-2 py-1 text-center bg-slate-950 border border-slate-800 rounded-xl text-xs font-black text-white focus:outline-none focus:border-indigo-400"
+                  className="w-16 px-2 py-1 text-center bg-white border border-slate-200 rounded-xl text-xs font-black text-slate-800 focus:outline-none focus:border-indigo-400"
                 />
-                <span className="text-xs font-black text-indigo-400">%</span>
+                <span className="text-xs font-black text-indigo-600">%</span>
               </div>
             </div>
             
@@ -390,29 +456,29 @@ export default function WorkOrderClient({
               step={1}
               value={negotiationDiscount}
               onChange={e => setNegotiationDiscount(parseInt(e.target.value))}
-              className="w-full accent-indigo-500 h-1.5 bg-slate-950 rounded-lg appearance-none cursor-pointer"
+              className="w-full accent-indigo-500 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer"
             />
 
-            <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-800/80">
+            <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-200">
               <div>
-                <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Sebelum</p>
-                <p className="text-xs font-black text-slate-300">{fmtCurrency(financialRecap.subtotalSebelumNegosiasi)}</p>
+                <p className="text-[9px] font-black text-slate-450 uppercase tracking-widest">Sebelum</p>
+                <p className="text-xs font-black text-slate-650">{fmtCurrency(financialRecap.subtotalSebelumNegosiasi)}</p>
               </div>
               <div className="text-right">
-                <p className="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Setelah</p>
-                <p className="text-xs font-black text-indigo-400">{fmtCurrency(financialRecap.subtotalSetelahNegosiasi)}</p>
+                <p className="text-[9px] font-black text-indigo-600 uppercase tracking-widest">Setelah</p>
+                <p className="text-xs font-black text-indigo-600">{fmtCurrency(financialRecap.subtotalSetelahNegosiasi)}</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="h-px bg-slate-800" />
+        <div className="h-px bg-slate-100" />
 
         {/* Action Controls */}
         <div className="flex flex-col gap-3 pt-2">
           <button 
             onClick={() => window.print()}
-            className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-500/10 group"
+            className="w-full flex items-center justify-center gap-2 py-4 bg-[#0073ea] hover:bg-[#0060c5] text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-500/10 group"
           >
             <Printer size={16} className="group-hover:scale-110 transition-transform" /> Cetak / Download PDF
           </button>
@@ -420,8 +486,8 @@ export default function WorkOrderClient({
 
       </div>
 
-      {/* RIGHT PREVIEW WORKSPACE */}
-      <div className="flex-1 p-6 md:p-12 overflow-y-auto max-h-screen bg-[#181a1f] flex flex-col items-center custom-scrollbar print:bg-white print:p-0 print:overflow-visible print:max-h-none">
+      {/* RIGHT PREVIEW WORKSPACE (LIGHT PREMIUM GREY CONTAINER) */}
+      <div className="flex-1 p-6 md:p-12 overflow-y-auto max-h-screen bg-slate-100 flex flex-col items-center custom-scrollbar print:bg-white print:p-0 print:overflow-visible print:max-h-none">
         
         {/* A4 sheet preview loop */}
         {partitionedPages.map((pageItems, pageIdx) => {
@@ -431,7 +497,7 @@ export default function WorkOrderClient({
           return (
             <div 
               key={pageIdx} 
-              className="a4-sheet relative bg-white text-black shadow-[0_10px_40px_rgba(0,0,0,0.4)] mb-8 flex flex-col justify-between overflow-hidden print:shadow-none print:m-0 print:page-break-after-always"
+              className="a4-sheet relative bg-white text-black shadow-[0_10px_40px_rgba(0,0,0,0.06)] mb-8 flex flex-col justify-between overflow-hidden print:shadow-none print:m-0 print:page-break-after-always"
             >
               
               {/* FULL BLEED HEADER (ON ALL PAGES) */}
@@ -442,11 +508,11 @@ export default function WorkOrderClient({
                 <div className="px-[15mm] pt-[10mm] pb-[4mm] flex justify-between items-start">
                   <div>
                     <h1 className="text-[20px] font-black tracking-tight text-[#005aab]">DAIKIN CONNECT</h1>
-                    <p className="text-[7.5px] font-black text-slate-400 uppercase tracking-[0.2em] mt-0.5">HVAC Engineering & Maintenance Services</p>
+                    <p className="text-[7.5px] font-black text-slate-450 uppercase tracking-[0.2em] mt-0.5">HVAC Engineering & Maintenance Services</p>
                   </div>
                   <div className="text-right">
                     <h2 className="text-[12px] font-black text-[#1e2229] uppercase tracking-wider">Surat Perintah Kerja (WO)</h2>
-                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1">{woForm.wo_number || "WO-.................."}</p>
+                    <p className="text-[8px] font-black text-[#0073ea] uppercase tracking-widest mt-1">{woForm.wo_number || "WO-.................."}</p>
                   </div>
                 </div>
                 
@@ -500,7 +566,6 @@ export default function WorkOrderClient({
                             ? (item.capacity_pk || 1) 
                             : 1;
 
-                          // Apply negotiation discount to this row's price
                           const negotiatedUnitPrice = item.original_price * (1 - negotiationDiscount / 100);
                           const totalItemCost = negotiatedUnitPrice * multiplier * item.qty;
 
@@ -523,7 +588,7 @@ export default function WorkOrderClient({
                                       placeholder="Catatan pengerjaan..." 
                                       value={item.notes} 
                                       onChange={e => updateActiveItemNotes(item.id, e.target.value)} 
-                                      className="w-full px-2.5 py-1 bg-slate-50 border border-slate-100 rounded-lg text-[8px] font-bold text-slate-700 focus:outline-none focus:border-blue-300"
+                                      className="w-full px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-[8px] font-bold text-slate-700 focus:outline-none focus:border-blue-355"
                                     />
                                   </div>
                                   {item.notes && (
@@ -541,9 +606,9 @@ export default function WorkOrderClient({
                                         step="0.1" 
                                         value={item.capacity_pk || ""} 
                                         onChange={e => updateActiveItemPK(item.id, parseFloat(e.target.value) || 0)} 
-                                        className="w-10 text-center px-1 py-0.5 bg-slate-50 border border-slate-100 rounded text-[9px] font-black text-slate-800 focus:outline-none focus:border-blue-300" 
+                                        className="w-10 text-center px-1 py-0.5 bg-slate-50 border border-slate-200 rounded text-[9px] font-black text-slate-850 focus:outline-none focus:border-blue-300" 
                                       />
-                                      <span className="text-[7px] font-black text-slate-400">{item.capacity_unit}</span>
+                                      <span className="text-[7px] font-black text-slate-450">{item.capacity_unit}</span>
                                     </div>
                                     <span className="hidden print:inline font-bold text-slate-700">{capacityDisplay}</span>
                                   </div>
@@ -587,7 +652,7 @@ export default function WorkOrderClient({
                         })
                       ) : (
                         <tr>
-                          <td colSpan={6} className="py-12 text-center text-slate-300 italic text-[10px]">
+                          <td colSpan={6} className="py-12 text-center text-slate-350 italic text-[10px]">
                             Belum ada pekerjaan terpilih. Silakan cari & tambahkan item di panel kiri.
                           </td>
                         </tr>
@@ -625,7 +690,7 @@ export default function WorkOrderClient({
                         <span className="font-bold text-slate-700">{fmtCurrency(financialRecap.subtotalSebelumNegosiasi)}</span>
                       </div>
                       {negotiationDiscount > 0 && (
-                        <div className="flex justify-between items-center text-[7.5px] text-indigo-600 font-bold">
+                        <div className="flex justify-between items-center text-[7.5px] text-indigo-655 font-bold">
                           <span>Diskon Negosiasi (-{negotiationDiscount}%)</span>
                           <span>-{fmtCurrency(financialRecap.discountAmount)}</span>
                         </div>
@@ -656,14 +721,14 @@ export default function WorkOrderClient({
                       <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-12">Diajukan oleh (Pihak I),</p>
                       <div className="w-[40mm] h-[0.5px] bg-slate-800" />
                       <p className="text-[9px] font-black text-slate-800 mt-1 uppercase leading-none">{woForm.pic_name || "..................................................."}</p>
-                      <p className="text-[7.5px] font-bold text-slate-400 uppercase mt-0.5 leading-none">PIC / Project Manager</p>
+                      <p className="text-[7.5px] font-bold text-slate-450 uppercase mt-0.5 leading-none">PIC / Project Manager</p>
                     </div>
 
                     <div className="flex flex-col items-center text-center">
                       <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-12">Disetujui oleh (Pihak II),</p>
                       <div className="w-[40mm] h-[0.5px] bg-slate-800" />
                       <p className="text-[9px] font-black text-slate-800 mt-1 uppercase leading-none">{initialSettings.selected_vendor || "..................................................."}</p>
-                      <p className="text-[7.5px] font-bold text-slate-400 uppercase mt-0.5 leading-none">Vendor / Kontraktor</p>
+                      <p className="text-[7.5px] font-bold text-slate-450 uppercase mt-0.5 leading-none">Vendor / Kontraktor</p>
                     </div>
                   </div>
                 )}
@@ -674,7 +739,7 @@ export default function WorkOrderClient({
               <div className="w-full flex-shrink-0">
                 <div className="px-[15mm] py-[3mm] border-t border-slate-100 flex justify-between items-center text-[7px] text-slate-400">
                   <div className="flex items-center gap-1">
-                    <Building size={10} className="text-slate-300" />
+                    <Building size={10} className="text-slate-350" />
                     <span>Daikin Connect &bull; Service & Engineering Department</span>
                   </div>
                   <div className="font-bold text-slate-500 uppercase tracking-widest">
@@ -691,6 +756,45 @@ export default function WorkOrderClient({
         })}
 
       </div>
+
+      {/* SYNC ASSET DIALOG MODAL (PREMIUM & Wow UI) */}
+      {syncPromptOpen && pendingProject && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-[#323338]/30 backdrop-blur-md no-print">
+          <div className="bg-white rounded-[2rem] shadow-2xl p-8 max-w-md w-full border border-slate-150 animate-in fade-in zoom-in duration-200 text-center">
+            
+            <div className="w-16 h-16 bg-blue-50 text-[#0073ea] rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-inner">
+              <RefreshCw size={32} className="animate-spin duration-3000" />
+            </div>
+
+            <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight">Sinkronisasi Unit Proyek?</h3>
+            <p className="text-xs font-semibold text-slate-500 mt-2.5 leading-relaxed">
+              Terdeteksi <strong className="text-[#0073ea]">{pendingProject.units.length} unit</strong> terdaftar di proyek <strong>{pendingProject.name}</strong>.
+            </p>
+            <p className="text-[10px] text-slate-400 font-medium mt-1 leading-normal">
+              Apakah Anda ingin menyinkronkan aset ini secara otomatis ke dalam lembar kerja Work Order baru Anda?
+            </p>
+
+            <div className="grid grid-cols-2 gap-4 mt-8">
+              <button 
+                type="button" 
+                onClick={handleCancelSyncUnits}
+                className="w-full py-4 bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all"
+              >
+                Tidak, Lewati
+              </button>
+              
+              <button 
+                type="button" 
+                onClick={handleConfirmSyncUnits}
+                className="w-full py-4 bg-[#0073ea] hover:bg-[#0060c5] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-blue-500/20"
+              >
+                Ya, Sinkronkan
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
       <style jsx global>{`
         /* Dynamic A4 print sheet container layout system */
@@ -732,11 +836,11 @@ export default function WorkOrderClient({
           background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #334155;
+          background: #cbd5e1;
           border-radius: 9999px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #475569;
+          background: #94a3b8;
         }
       `}</style>
 

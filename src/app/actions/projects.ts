@@ -58,6 +58,15 @@ export async function getAllProjects() {
           select: {
             address: true
           }
+        },
+        units: {
+          select: {
+            id: true,
+            unit_type: true,
+            tag_number: true,
+            model: true,
+            capacity: true
+          }
         }
       },
       orderBy: { name: "asc" }
