@@ -714,23 +714,59 @@ export default function WorkOrderClient({
                   <div className="mt-[5mm] pt-[4mm] border-t border-slate-200 grid grid-cols-12 gap-[5mm] items-start">
                     
                     {/* Notes & Terms on left */}
-                    <div className="col-span-7 space-y-3">
-                      <div>
-                        <h4 className="text-[8px] font-black text-[#0073ea] uppercase tracking-widest">Catatan Umum:</h4>
-                        <p className="text-[7.5px] font-bold text-slate-500 mt-1 leading-relaxed">
-                          {woForm.notes || "1. Seluruh pekerjaan mengikuti kesepakatan B2B.\n2. Laporan diserahkan setelah PM disetujui."}
-                        </p>
-                      </div>
-                      <div>
-                        <h4 className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Syarat & Ketentuan SPK:</h4>
-                        <ul className="list-decimal pl-3 text-[7px] font-medium text-slate-400 space-y-0.5 mt-1 leading-relaxed">
-                          <li>Harga sudah termasuk jasa teknisi, alat kerja standar, dan transportasi.</li>
-                          <li>Tidak termasuk penggantian suku cadang berat atau perbaikan komponen berat.</li>
-                          <li>Sistem dokumentasi dan pelaporan harus melalui portal EPL CONNECT.</li>
-                          <li>Pekerjaan dinyatakan selesai setelah Check-Sheet ditandatangani kedua pihak.</li>
-                        </ul>
-                      </div>
-                    </div>
+                    {(() => {
+                      const totalQty = activeItems.reduce((sum, item) => sum + item.qty, 0);
+                      const totalPK = activeItems.reduce((sum, item) => sum + ((item.capacity_pk || 0) * item.qty), 0);
+                      const scopes = Array.from(new Set(activeItems.map(item => item.category || "Jasa Service"))).join(", ");
+
+                      return (
+                        <div className="col-span-7 space-y-3">
+                          {/* Scope of Work Summary Box */}
+                          <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl grid grid-cols-2 gap-x-4 gap-y-2 text-[7.5px] leading-tight">
+                            <div className="col-span-2 pb-1 border-b border-slate-200/60 flex items-center justify-between">
+                              <span className="font-black text-[#003366] uppercase tracking-widest text-[8px]">Ringkasan Pekerjaan (Summary)</span>
+                              <span className="text-[7px] font-bold text-slate-400 uppercase">EPL B2B Portal</span>
+                            </div>
+                            <div>
+                              <span className="font-bold text-slate-450 block uppercase tracking-widest text-[6px]">Total Volume Kerja:</span>
+                              <span className="font-black text-[#0073ea] text-[11px] mt-0.5 block">
+                                {totalQty} Item / Unit
+                              </span>
+                            </div>
+                            {totalPK > 0 && (
+                              <div>
+                                <span className="font-bold text-slate-450 block uppercase tracking-widest text-[6px]">Total Kapasitas Ter-cover:</span>
+                                <span className="font-black text-slate-800 text-[11px] mt-0.5 block">
+                                  {totalPK.toFixed(1).replace('.0', '')} PK
+                                </span>
+                              </div>
+                            )}
+                            <div className="col-span-2 border-t border-slate-200/40 pt-1.5 mt-0.5">
+                              <span className="font-bold text-slate-450 block uppercase tracking-widest text-[6px]">Lingkup Pekerjaan:</span>
+                              <span className="font-black text-slate-700 mt-0.5 block capitalize text-[7.5px] leading-snug">
+                                {scopes.toLowerCase()}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div>
+                            <h4 className="text-[8px] font-black text-[#0073ea] uppercase tracking-widest">Catatan Umum:</h4>
+                            <p className="text-[7.5px] font-bold text-slate-500 mt-1 leading-relaxed">
+                              {woForm.notes || "1. Seluruh pekerjaan mengikuti kesepakatan B2B.\n2. Laporan diserahkan setelah PM disetujui."}
+                            </p>
+                          </div>
+                          <div>
+                            <h4 className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Syarat & Ketentuan SPK:</h4>
+                            <ul className="list-decimal pl-3 text-[7px] font-medium text-slate-400 space-y-0.5 mt-1 leading-relaxed">
+                              <li>Harga sudah termasuk jasa teknisi, alat kerja standar, dan transportasi.</li>
+                              <li>Tidak termasuk penggantian suku cadang berat atau perbaikan komponen berat.</li>
+                              <li>Sistem dokumentasi dan pelaporan harus melalui portal EPL CONNECT.</li>
+                              <li>Pekerjaan dinyatakan selesai setelah Check-Sheet ditandatangani kedua pihak.</li>
+                            </ul>
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     {/* Totals panel on right */}
                     <div className="col-span-5 bg-slate-50 border border-slate-100 p-[3mm] rounded-xl space-y-1.5">
