@@ -300,6 +300,24 @@ export default function WorkOrderClient({
     });
   };
 
+  const handlePrint = () => {
+    const originalTitle = document.title;
+    const vendorName = initialSettings.selected_vendor?.trim() || "Vendor";
+    const projectName = woForm.project_name?.trim() || "Project";
+    const woDate = woForm.date || new Date().toISOString().split('T')[0];
+    
+    // Format: "Work Order_Nama Vendor_Nama Proyek_Tanggal"
+    const rawFilename = `Work Order_${vendorName}_${projectName}_${woDate}`;
+    const cleanFilename = rawFilename.replace(/[\/\\:\*\?"<>\|]/g, '-');
+
+    document.title = cleanFilename;
+    window.print();
+
+    setTimeout(() => {
+      document.title = originalTitle;
+    }, 1000);
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f9fc] font-sans text-slate-700 flex flex-col lg:flex-row print:bg-white print:text-black print-safe">
       
@@ -493,7 +511,7 @@ export default function WorkOrderClient({
         {/* Action Controls */}
         <div className="flex flex-col gap-3 pt-2">
           <button 
-            onClick={() => window.print()}
+            onClick={handlePrint}
             className="w-full flex items-center justify-center gap-2 py-4 bg-[#0073ea] hover:bg-[#0060c5] text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-500/10 group"
           >
             <Printer size={16} className="group-hover:scale-110 transition-transform" /> Cetak / Download PDF
