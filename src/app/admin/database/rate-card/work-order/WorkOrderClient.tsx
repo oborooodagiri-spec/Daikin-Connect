@@ -301,7 +301,7 @@ export default function WorkOrderClient({
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fc] font-sans text-slate-700 flex flex-col lg:flex-row print:bg-white print:text-black">
+    <div className="min-h-screen bg-[#f8f9fc] font-sans text-slate-700 flex flex-col lg:flex-row print:bg-white print:text-black print-safe">
       
       {/* LEFT SIDEBAR CONTROLS (LIGHT MODE COHESIVE SYSTEM) */}
       <div className="w-full lg:w-[450px] lg:border-r border-slate-200 bg-white p-6 md:p-8 flex flex-col gap-8 flex-shrink-0 lg:max-h-screen lg:overflow-y-auto custom-scrollbar no-print shadow-sm">
@@ -503,7 +503,7 @@ export default function WorkOrderClient({
       </div>
 
       {/* RIGHT PREVIEW WORKSPACE (LIGHT PREMIUM GREY CONTAINER) */}
-      <div className="flex-1 p-6 md:p-12 overflow-y-auto max-h-screen bg-slate-100 flex flex-col items-center custom-scrollbar print:bg-white print:p-0 print:overflow-visible print:max-h-none print-safe">
+      <div className="flex-1 p-6 md:p-12 overflow-y-auto max-h-screen bg-slate-100 flex flex-col items-center custom-scrollbar print:bg-white print:p-0 print:overflow-visible print:max-h-none">
         
         {/* A4 sheet preview loop */}
         {partitionedPages.map((pageItems, pageIdx) => {
@@ -513,7 +513,7 @@ export default function WorkOrderClient({
           return (
             <div 
               key={pageIdx} 
-              className="a4-sheet relative bg-white text-black shadow-[0_10px_40px_rgba(0,0,0,0.06)] mb-8 flex flex-col justify-between overflow-hidden print:shadow-none print:m-0 print:page-break-after-always print-safe"
+              className="a4-sheet relative bg-white text-black shadow-[0_10px_40px_rgba(0,0,0,0.06)] mb-8 flex flex-col justify-between overflow-hidden print:shadow-none print:m-0 print:page-break-after-always"
             >
               
               {/* FULL BLEED HEADER (ON ALL PAGES) */}
