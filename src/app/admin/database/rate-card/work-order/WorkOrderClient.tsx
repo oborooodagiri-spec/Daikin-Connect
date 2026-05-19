@@ -21,6 +21,7 @@ import {
   X
 } from "lucide-react";
 import Link from "next/link";
+import StaticLogo from "@/components/ui/StaticLogo";
 
 interface WorkOrderClientProps {
   initialItems: any[];
@@ -521,9 +522,9 @@ export default function WorkOrderClient({
                 <div className="h-[4mm] bg-gradient-to-r from-[#009ce1] to-[#003366] w-full" />
                 
                 <div className="px-[15mm] pt-[10mm] pb-[4mm] flex justify-between items-start">
-                  <div>
-                    <h1 className="text-[20px] font-black tracking-tight text-[#005aab]">DAIKIN CONNECT</h1>
-                    <p className="text-[7.5px] font-black text-slate-450 uppercase tracking-[0.2em] mt-0.5">HVAC Engineering & Maintenance Services</p>
+                  <div className="flex flex-col gap-1">
+                    <StaticLogo size={22} className="h-6" />
+                    <p className="text-[7px] font-black text-[#003366] uppercase tracking-[0.05em] leading-none mt-1">PT. Daikin Applied Solutions Indonesia</p>
                   </div>
                   <div className="text-right">
                     <h2 className="text-[12px] font-black text-[#1e2229] uppercase tracking-wider">Surat Perintah Kerja (WO)</h2>
@@ -534,7 +535,7 @@ export default function WorkOrderClient({
                 {/* Thin dividing line under header */}
                 <div className="mx-[15mm] h-[0.5px] bg-slate-200" />
               </div>
-
+ 
               {/* MAIN CONTENT BLOCK */}
               <div className="flex-1 px-[15mm] py-[6mm] flex flex-col justify-start">
                 
@@ -545,7 +546,7 @@ export default function WorkOrderClient({
                     <div className="flex flex-col gap-1.5 border-r border-slate-200 pr-[4.5mm]">
                       <div>
                         <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest block">Pemberi Tugas (Pihak I)</span>
-                        <span className="text-[9.5px] font-black text-[#005aab] uppercase leading-none block mt-0.5">DAIKIN CONNECT</span>
+                        <span className="text-[9.5px] font-black text-[#003366] uppercase leading-none block mt-0.5">PT. DAIKIN APPLIED SOLUTIONS INDONESIA</span>
                         {woForm.pic_name && (
                           <span className="text-[8px] font-bold text-slate-500 mt-1 block">PIC: {woForm.pic_name}</span>
                         )}
@@ -783,7 +784,7 @@ export default function WorkOrderClient({
                 <div className="px-[15mm] py-[3mm] border-t border-slate-100 flex justify-between items-center text-[7px] text-slate-400">
                   <div className="flex items-center gap-1">
                     <Building size={10} className="text-slate-350" />
-                    <span>Daikin Connect &bull; Service & Engineering Department</span>
+                    <span>EPL CONNECT Portal</span>
                   </div>
                   <div className="font-bold text-slate-500 uppercase tracking-widest">
                     Halaman {pageIdx + 1} dari {partitionedPages.length}
