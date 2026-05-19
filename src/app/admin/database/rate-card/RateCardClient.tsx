@@ -763,13 +763,15 @@ export default function RateCardClient() {
                 </button>
              )}
              <div className="flex gap-2">
-                <button 
-                  onClick={() => router.push("/admin/database/rate-card/print")}
+                <Link 
+                  href="/admin/database/rate-card/print"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex items-center gap-2 px-6 py-4 bg-white border border-slate-200 text-[#323338] hover:text-[#0073ea] hover:border-[#0073ea] rounded-2xl transition-all shadow-sm group font-black text-[10px] uppercase tracking-widest"
                   title="Cetak & Kustomisasi Kontrak Payung"
                 >
-                  <Printer size={16} /> Cetak Kontrak Payung
-                </button>
+                  <Printer size={16} /> Print
+                </Link>
              </div>
           </div>
         </div>
