@@ -251,19 +251,34 @@ export default function WorkOrderClient({
     };
   }, [activeItems, negotiationDiscount]);
 
-  // 13. Partitioning of Active Items for A4 sheet rendering
+  // 13. Pagination / Partitioning of Active Items for A4 sheet rendering
   const partitionedPages = useMemo(() => {
+    if (activeItems.length === 0) return [[]];
+    
     const pages: any[][] = [];
-    const MAX_ITEMS_PER_PAGE = 7;
+    const REGULAR_SIZE = 8;
+    const LAST_PAGE_MAX = 4;
     
-    for (let i = 0; i < activeItems.length; i += MAX_ITEMS_PER_PAGE) {
-      pages.push(activeItems.slice(i, i + MAX_ITEMS_PER_PAGE));
+    let temp = [...activeItems];
+    
+    while (temp.length > 0) {
+      // If the remaining items fit within the last page capacity:
+      if (temp.length <= LAST_PAGE_MAX) {
+        pages.push(temp);
+        break;
+      }
+      
+      // If we have more than the last page capacity, but taking a REGULAR_SIZE
+      // would leave too many or too few items:
+      if (temp.length <= REGULAR_SIZE) {
+        const firstPageCount = Math.max(1, Math.min(temp.length - 2, REGULAR_SIZE - 2));
+        pages.push(temp.slice(0, firstPageCount));
+        temp = temp.slice(firstPageCount);
+      } else {
+        pages.push(temp.slice(0, REGULAR_SIZE));
+        temp = temp.slice(REGULAR_SIZE);
+      }
     }
-    
-    if (pages.length === 0) {
-      pages.push([]);
-    }
-    
     return pages;
   }, [activeItems]);
 
@@ -802,6 +817,7 @@ export default function WorkOrderClient({
           width: 21cm;
           height: 29.7cm;
           box-sizing: border-box;
+          flex-shrink: 0;
         }
 
         @media print {
