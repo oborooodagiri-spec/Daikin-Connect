@@ -44,7 +44,16 @@ export default function DashboardSidebarClient({
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
-  const menuItems = [
+  interface MenuItem {
+    href: string;
+    label: string;
+    icon: any;
+    show: boolean | any;
+    accent?: string;
+    disabled?: boolean;
+  }
+
+  const menuItems: MenuItem[] = [
     {
       href: "/home",
       label: "Home",

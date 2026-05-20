@@ -215,111 +215,70 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
                 Admin Console
               </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
-              <motion.div 
-                whileHover={{ y: -4 }}
+            
+            <div className="app-grid">
+              <div 
+                className="app-item"
                 onClick={() => window.open("/admin/database", "_blank")}
-                style={adminCardStyle}
-                onMouseEnter={e => handleCardHover(e, true)}
-                onMouseLeave={e => handleCardHover(e, false)}
               >
-                <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
-                   <div style={{ ...adminIconBox, background: "linear-gradient(135deg, #0073ea 0%, #00a1e4 100%)" }}>
-                      <Database size={22} />
-                   </div>
-                   <div>
-                      <h3 style={adminCardTitle}>Database</h3>
-                   </div>
-                </div>
-              </motion.div>
+                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #0073ea 0%, #00a1e4 100%)" }}>
+                    <Database size={22} />
+                 </div>
+                 <span className="app-label">Database</span>
+              </div>
 
-              <motion.div 
-                whileHover={{ y: -4 }}
+              <div 
+                className="app-item"
                 onClick={() => router.push("/admin/attendance")}
-                style={adminCardStyle}
-                onMouseEnter={e => handleCardHover(e, true)}
-                onMouseLeave={e => handleCardHover(e, false)}
               >
-                <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
-                   <div style={{ ...adminIconBox, background: "linear-gradient(135deg, #e44258 0%, #ff6b81 100%)" }}>
-                      <Calendar size={22} />
-                   </div>
-                   <div>
-                      <h3 style={adminCardTitle}>Attendance Records</h3>
-                   </div>
-                </div>
-              </motion.div>
+                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #e44258 0%, #ff6b81 100%)" }}>
+                    <Calendar size={22} />
+                 </div>
+                 <span className="app-label">Kehadiran</span>
+              </div>
 
-              <motion.div 
-                whileHover={{ y: -4 }}
+              <div 
+                className="app-item"
                 onClick={() => router.push("/admin/security")}
-                style={adminCardStyle}
-                onMouseEnter={e => handleCardHover(e, true)}
-                onMouseLeave={e => handleCardHover(e, false)}
               >
-                <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
-                   <div style={{ ...adminIconBox, background: "linear-gradient(135deg, #00c875 0%, #00e68a 100%)" }}>
-                      <Shield size={22} />
-                   </div>
-                   <div>
-                      <h3 style={adminCardTitle}>Profile & Security</h3>
-                   </div>
-                </div>
-              </motion.div>
+                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #00c875 0%, #00e68a 100%)" }}>
+                    <Shield size={22} />
+                 </div>
+                 <span className="app-label">Keamanan</span>
+              </div>
 
-              <motion.div 
-                whileHover={{ y: -4 }}
+              <div 
+                className="app-item"
                 onClick={() => router.push("/admin/users")}
-                style={adminCardStyle}
-                onMouseEnter={e => handleCardHover(e, true)}
-                onMouseLeave={e => handleCardHover(e, false)}
               >
-                <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
-                   <div style={{ ...adminIconBox, background: "linear-gradient(135deg, #fdab3d 0%, #ffc107 100%)" }}>
-                      <Users size={22} />
-                   </div>
-                   <div>
-                      <h3 style={adminCardTitle}>User Management</h3>
-                   </div>
-                </div>
-              </motion.div>
+                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #fdab3d 0%, #ffc107 100%)" }}>
+                    <Users size={22} />
+                 </div>
+                 <span className="app-label">Kelola User</span>
+              </div>
 
-              <motion.div 
-                whileHover={{ y: -4 }}
+              <div 
+                className="app-item"
                 onClick={() => {
                   const pid = profile.projects[0]?.id || "empty";
                   router.push(`/w/${pid}/dashboard/customers`);
                 }}
-                style={adminCardStyle}
-                onMouseEnter={e => handleCardHover(e, true)}
-                onMouseLeave={e => handleCardHover(e, false)}
               >
-                <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
-                   <div style={{ ...adminIconBox, background: "linear-gradient(135deg, #a25ddc 0%, #c084fc 100%)" }}>
-                      <Briefcase size={22} />
-                   </div>
-                   <div>
-                      <h3 style={adminCardTitle}>Project Management</h3>
-                   </div>
-                </div>
-              </motion.div>
+                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #a25ddc 0%, #c084fc 100%)" }}>
+                    <Briefcase size={22} />
+                 </div>
+                 <span className="app-label">Proyek</span>
+              </div>
 
-              <motion.div 
-                whileHover={{ y: -4 }}
+              <div 
+                className="app-item"
                 onClick={() => router.push("/admin/settings")}
-                style={adminCardStyle}
-                onMouseEnter={e => handleCardHover(e, true)}
-                onMouseLeave={e => handleCardHover(e, false)}
               >
-                <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
-                   <div style={{ ...adminIconBox, background: "linear-gradient(135deg, #676879 0%, #323338 100%)" }}>
-                      <Settings size={22} />
-                   </div>
-                   <div>
-                      <h3 style={adminCardTitle}>System Settings</h3>
-                   </div>
-                </div>
-              </motion.div>
+                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #676879 0%, #323338 100%)" }}>
+                    <Settings size={22} />
+                 </div>
+                 <span className="app-label">Pengaturan</span>
+              </div>
             </div>
           </motion.section>
         )}
@@ -336,43 +295,30 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
               Layanan Mandiri
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+          
+          <div className="app-grid-self">
             {profile.attendanceEnabled && (
-              <motion.div 
-                whileHover={{ y: -4 }}
+              <div 
+                className="app-item"
                 onClick={() => router.push("/home/attendance")}
-                style={adminCardStyle}
-                onMouseEnter={e => handleCardHover(e, true)}
-                onMouseLeave={e => handleCardHover(e, false)}
               >
-                <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
-                   <div style={{ ...adminIconBox, background: "linear-gradient(135deg, #00c875 0%, #00e68a 100%)" }}>
-                      <Calendar size={22} />
-                   </div>
-                   <div>
-                      <h3 style={adminCardTitle}>Absensi</h3>
-                   </div>
-                </div>
-              </motion.div>
+                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #00c875 0%, #00e68a 100%)" }}>
+                    <Calendar size={22} />
+                 </div>
+                 <span className="app-label">Absensi</span>
+              </div>
             )}
 
             {profile.isAdmin && (
-              <motion.div 
-                whileHover={{ y: -4 }}
+              <div 
+                className="app-item"
                 onClick={() => router.push("/home/knowledge")}
-                style={adminCardStyle}
-                onMouseEnter={e => handleCardHover(e, true)}
-                onMouseLeave={e => handleCardHover(e, false)}
               >
-                <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
-                   <div style={{ ...adminIconBox, background: "linear-gradient(135deg, #0073ea 0%, #579bfc 100%)" }}>
-                      <BookOpen size={22} />
-                   </div>
-                   <div>
-                      <h3 style={adminCardTitle}>Pusat Pengetahuan</h3>
-                   </div>
-                </div>
-              </motion.div>
+                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #0073ea 0%, #579bfc 100%)" }}>
+                    <BookOpen size={22} />
+                 </div>
+                 <span className="app-label">Pusat Ilmu</span>
+              </div>
             )}
           </div>
         </motion.section>
@@ -597,6 +543,130 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
 
       <style jsx global>{`
         @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .app-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 12px;
+          width: 100%;
+        }
+        
+        @media (min-width: 640px) {
+          .app-grid {
+            grid-template-columns: repeat(6, 1fr);
+            gap: 20px;
+          }
+        }
+        
+        .app-grid-self {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
+          width: 100%;
+        }
+        
+        @media (min-width: 640px) {
+          .app-grid-self {
+            gap: 20px;
+          }
+        }
+        
+        .app-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          cursor: pointer;
+          background: #ffffff;
+          border: 1px solid #e6e9ef;
+          border-radius: 16px;
+          padding: 16px 8px;
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
+          user-select: none;
+          flex: 1;
+          min-width: 80px;
+        }
+
+        .app-grid .app-item {
+          flex: none;
+        }
+        
+        .app-grid-self .app-item {
+          flex: 0 0 calc(33.333% - 8px);
+          max-width: calc(33.333% - 8px);
+        }
+
+        @media (min-width: 480px) {
+          .app-grid-self .app-item {
+            flex: 0 0 110px;
+            max-width: 110px;
+          }
+        }
+
+        .app-item:hover {
+          border-color: #0073ea;
+          box-shadow: 0 10px 15px -3px rgba(0, 73, 234, 0.08), 0 4px 6px -2px rgba(0, 73, 234, 0.04);
+          transform: translateY(-2px);
+        }
+        
+        .app-item:active {
+          transform: translateY(0) scale(0.97);
+        }
+        
+        .app-icon-container {
+          width: 48px;
+          height: 48px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          margin-bottom: 10px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .app-item:hover .app-icon-container {
+          transform: scale(1.05);
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .app-label {
+          font-size: 11px;
+          font-weight: 600;
+          color: #323338;
+          line-height: 1.3;
+          max-width: 90px;
+          word-wrap: break-word;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        
+        @media (min-width: 640px) {
+          .app-icon-container {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+          }
+          .app-label {
+            font-size: 12px;
+            font-weight: 600;
+          }
+        }
+
+        /* Responsive spacing for top components */
+        @media (max-width: 640px) {
+          header {
+            padding: 12px 16px !important;
+          }
+          main {
+            padding: 20px 16px 48px !important;
+          }
+        }
       `}</style>
     </div>
   );
