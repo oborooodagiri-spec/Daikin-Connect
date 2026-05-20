@@ -78,11 +78,18 @@ export async function updateUnitStatusFromPassport(unitId: number, status: strin
       data: { status: status as any }
     });
     
+    const unit = await prisma.units.findUnique({
+      where: { id: unitId },
+      select: { project_ref_id: true }
+    });
+    const projId = unit?.project_ref_id ? unit.project_ref_id.toString() : "empty";
+
     await notifyInternalStaff(
       "Unit Status Update",
       `${session.name} updated status of unit ${unitId} to ${status} via Passport`,
       "info",
-      `/dashboard/units/${unitId}`
+      `/w/${projId}/dashboard/units/${unitId}`,
+      projId
     );
 
     revalidatePath("/dashboard");
@@ -123,7 +130,8 @@ export async function submitActivityFromPassport(token: string, data: any) {
       "New Activity Submitted",
       `${data.reporterName} submitted a ${data.type} report for unit ${unit.tag_number}`,
       data.type === "Problem" ? "error" : "success",
-      `/w/${unit.project_ref_id}/dashboard/units/${unit.id}`
+      `/w/${unit.project_ref_id}/dashboard/units/${unit.id}`,
+      unit.project_ref_id
     );
 
     revalidatePath("/dashboard");
@@ -177,7 +185,8 @@ export async function updateUnitInfoFromPassport(token: string, data: any) {
       "Pending Unit Edit",
       `${requesterName} requested changes for unit ${unit.tag_number}`,
       "alert",
-      `/w/${unit.project_ref_id}/dashboard/unit-requests`
+      `/w/${unit.project_ref_id}/dashboard/unit-requests`,
+      unit.project_ref_id
     );
 
     // Notify Admin & Engineer (Push)

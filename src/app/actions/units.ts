@@ -225,7 +225,8 @@ export async function createUnit(projectId: string, data: any) {
       "New Unit Registered",
       `${session.name} added a new unit ${finalTagNumber} to ${project.name}`,
       "success",
-      `/w/${projectId}/dashboard/units`
+      `/w/${projectId}/dashboard/units`,
+      projectId
     );
 
     return { success: true };
@@ -281,7 +282,8 @@ export async function updateUnit(unitId: number, data: any) {
         "Unit Updated",
         `${session.name} modified unit ${unit.tag_number} at ${unit.projects?.name}`,
         "info",
-        `/w/${unit.projects.id}/dashboard/units`
+        `/w/${unit.projects.id}/dashboard/units`,
+        unit.projects.id
       );
     }
     
@@ -338,7 +340,8 @@ export async function createUnitEditRequest(unitId: number, data: any) {
       "Update Request Submitted",
       `${session.name} proposed changes for unit ${unit.tag_number} at ${unit.projects?.name || 'Unknown Project'}`,
       "warning",
-      `/w/${projId}/dashboard/unit-requests`
+      `/w/${projId}/dashboard/unit-requests`,
+      projId
     );
 
     revalidatePath(`/w/${projId}/dashboard/unit-requests`);
@@ -829,7 +832,8 @@ export async function updateUnitStatus(unitId: string | number, status: string) 
       `Unit ${status} Alert`,
       `Unit ${unit.tag_number} status changed to ${status.toUpperCase()} at ${unit.projects?.name}`,
       ['Problem', 'Critical'].includes(status) ? "error" : "warning",
-      `/w/${unit.projects.id}/dashboard/units`
+      `/w/${unit.projects.id}/dashboard/units`,
+      unit.projects.id
     );
 
     // TRIGGER PUSH NOTIFICATION (Real-time Phase 2)
@@ -1142,6 +1146,63 @@ export async function updateActivityReportUrls(activityId: number, reportUrl: st
 }
 
 /**
+ * Resolves projectId from a given activity or report ID
+ */
+async function getProjectIdFromActivityId(id: number | string, type?: string): Promise<string | undefined> {
+  const activityIdRaw = id.toString();
+  const isDailyLog = activityIdRaw.startsWith("DL-");
+  const numericId = isDailyLog ? parseInt(activityIdRaw.replace("DL-", ""), 10) : Number(id);
+
+  if (isNaN(numericId)) return undefined;
+
+  try {
+    let unitId: number | null = null;
+
+    if (isDailyLog) {
+      const log = await (prisma as any).daily_ops_logs.findUnique({
+        where: { id: numericId },
+        select: { unit_id: true }
+      });
+      if (log) unitId = log.unit_id;
+    } else {
+      const tables = ['service_activities', 'activities', 'corrective', 'audits'];
+      if (type) {
+        const primaryTable = type.toLowerCase() === 'formal' ? 'service_activities' : 'activities';
+        const index = tables.indexOf(primaryTable);
+        if (index > -1) {
+          tables.splice(index, 1);
+          tables.unshift(primaryTable);
+        }
+      }
+
+      for (const table of tables) {
+        const record = await (prisma as any)[table].findUnique({
+          where: { id: numericId },
+          select: { unit_id: true }
+        });
+        if (record && record.unit_id) {
+          unitId = record.unit_id;
+          break;
+        }
+      }
+    }
+
+    if (unitId) {
+      const unit = await (prisma as any).units.findUnique({
+        where: { id: unitId },
+        select: { project_ref_id: true }
+      });
+      if (unit && unit.project_ref_id) {
+        return unit.project_ref_id.toString();
+      }
+    }
+  } catch (error) {
+    console.error("Error resolving projectId from activityId:", error);
+  }
+  return undefined;
+}
+
+/**
  * 16.5 REQUEST DELETION (For External Users)
  */
 export async function requestDeletion(targetId: string | number, type: string, reason: string = "") {
@@ -1158,12 +1219,15 @@ export async function requestDeletion(targetId: string | number, type: string, r
       details: `User requested deletion of ${type} (ID: ${targetId}). Reason: ${reason}`
     });
 
+    const projectId = await getProjectIdFromActivityId(targetId, type);
+
     // 2. Notify Internal Staff
     await notifyInternalStaff(
       "Deletion Requested",
       `${session.name} meminta penghapusan ${type} (ID: ${targetId}).`,
       "warning",
-      "/admin/security" // Redirect to Security Intelligence (Global Logs)
+      projectId ? `/w/${projectId}/dashboard/units` : "/admin/security",
+      projectId
     );
 
     return { success: true };
@@ -1232,11 +1296,14 @@ export async function softDeleteActivity(id: number | string, type: 'formal' | '
       return { error: "Report not found or already removed." };
     }
 
+    const projectId = await getProjectIdFromActivityId(id, type);
+
     await notifyInternalStaff(
       "Report Removed",
       `${session.name} deleted a report (ID: ${numericId}) from the system.`,
       "warning",
-      "/admin/security"
+      projectId ? `/w/${projectId}/dashboard/units` : "/admin/security",
+      projectId
     );
 
     revalidatePath("/dashboard");

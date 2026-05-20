@@ -5020,6 +5020,7 @@ export namespace Prisma {
     user_project_access: number
     vendor_attendance: number
     knowledge_resources: number
+    notifications: number
   }
 
   export type ProjectsCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5031,6 +5032,7 @@ export namespace Prisma {
     user_project_access?: boolean | ProjectsCountOutputTypeCountUser_project_accessArgs
     vendor_attendance?: boolean | ProjectsCountOutputTypeCountVendor_attendanceArgs
     knowledge_resources?: boolean | ProjectsCountOutputTypeCountKnowledge_resourcesArgs
+    notifications?: boolean | ProjectsCountOutputTypeCountNotificationsArgs
   }
 
   // Custom InputTypes
@@ -5098,6 +5100,13 @@ export namespace Prisma {
    */
   export type ProjectsCountOutputTypeCountKnowledge_resourcesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: knowledge_resourcesWhereInput
+  }
+
+  /**
+   * ProjectsCountOutputType without action
+   */
+  export type ProjectsCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: notificationsWhereInput
   }
 
 
@@ -7939,6 +7948,7 @@ export namespace Prisma {
     user_project_access?: boolean | projects$user_project_accessArgs<ExtArgs>
     vendor_attendance?: boolean | projects$vendor_attendanceArgs<ExtArgs>
     knowledge_resources?: boolean | projects$knowledge_resourcesArgs<ExtArgs>
+    notifications?: boolean | projects$notificationsArgs<ExtArgs>
     _count?: boolean | ProjectsCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["projects"]>
 
@@ -7973,6 +7983,7 @@ export namespace Prisma {
     user_project_access?: boolean | projects$user_project_accessArgs<ExtArgs>
     vendor_attendance?: boolean | projects$vendor_attendanceArgs<ExtArgs>
     knowledge_resources?: boolean | projects$knowledge_resourcesArgs<ExtArgs>
+    notifications?: boolean | projects$notificationsArgs<ExtArgs>
     _count?: boolean | ProjectsCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -7989,6 +8000,7 @@ export namespace Prisma {
       user_project_access: Prisma.$user_project_accessPayload<ExtArgs>[]
       vendor_attendance: Prisma.$vendor_attendancePayload<ExtArgs>[]
       knowledge_resources: Prisma.$knowledge_resourcesPayload<ExtArgs>[]
+      notifications: Prisma.$notificationsPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: bigint
@@ -8355,6 +8367,7 @@ export namespace Prisma {
     user_project_access<T extends projects$user_project_accessArgs<ExtArgs> = {}>(args?: Subset<T, projects$user_project_accessArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$user_project_accessPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     vendor_attendance<T extends projects$vendor_attendanceArgs<ExtArgs> = {}>(args?: Subset<T, projects$vendor_attendanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$vendor_attendancePayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     knowledge_resources<T extends projects$knowledge_resourcesArgs<ExtArgs> = {}>(args?: Subset<T, projects$knowledge_resourcesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$knowledge_resourcesPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    notifications<T extends projects$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, projects$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$notificationsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8949,6 +8962,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: Knowledge_resourcesScalarFieldEnum | Knowledge_resourcesScalarFieldEnum[]
+  }
+
+  /**
+   * projects.notifications
+   */
+  export type projects$notificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notifications
+     */
+    select?: notificationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notifications
+     */
+    omit?: notificationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: notificationsInclude<ExtArgs> | null
+    where?: notificationsWhereInput
+    orderBy?: notificationsOrderByWithRelationInput | notificationsOrderByWithRelationInput[]
+    cursor?: notificationsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NotificationsScalarFieldEnum | NotificationsScalarFieldEnum[]
   }
 
   /**
@@ -46267,16 +46304,19 @@ export namespace Prisma {
   export type NotificationsAvgAggregateOutputType = {
     id: number | null
     user_id: number | null
+    project_id: number | null
   }
 
   export type NotificationsSumAggregateOutputType = {
     id: number | null
     user_id: number | null
+    project_id: bigint | null
   }
 
   export type NotificationsMinAggregateOutputType = {
     id: number | null
     user_id: number | null
+    project_id: bigint | null
     title: string | null
     message: string | null
     type: string | null
@@ -46288,6 +46328,7 @@ export namespace Prisma {
   export type NotificationsMaxAggregateOutputType = {
     id: number | null
     user_id: number | null
+    project_id: bigint | null
     title: string | null
     message: string | null
     type: string | null
@@ -46299,6 +46340,7 @@ export namespace Prisma {
   export type NotificationsCountAggregateOutputType = {
     id: number
     user_id: number
+    project_id: number
     title: number
     message: number
     type: number
@@ -46312,16 +46354,19 @@ export namespace Prisma {
   export type NotificationsAvgAggregateInputType = {
     id?: true
     user_id?: true
+    project_id?: true
   }
 
   export type NotificationsSumAggregateInputType = {
     id?: true
     user_id?: true
+    project_id?: true
   }
 
   export type NotificationsMinAggregateInputType = {
     id?: true
     user_id?: true
+    project_id?: true
     title?: true
     message?: true
     type?: true
@@ -46333,6 +46378,7 @@ export namespace Prisma {
   export type NotificationsMaxAggregateInputType = {
     id?: true
     user_id?: true
+    project_id?: true
     title?: true
     message?: true
     type?: true
@@ -46344,6 +46390,7 @@ export namespace Prisma {
   export type NotificationsCountAggregateInputType = {
     id?: true
     user_id?: true
+    project_id?: true
     title?: true
     message?: true
     type?: true
@@ -46442,6 +46489,7 @@ export namespace Prisma {
   export type NotificationsGroupByOutputType = {
     id: number
     user_id: number
+    project_id: bigint | null
     title: string
     message: string
     type: string
@@ -46472,6 +46520,7 @@ export namespace Prisma {
   export type notificationsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     user_id?: boolean
+    project_id?: boolean
     title?: boolean
     message?: boolean
     type?: boolean
@@ -46479,6 +46528,7 @@ export namespace Prisma {
     is_read?: boolean
     created_at?: boolean
     users?: boolean | usersDefaultArgs<ExtArgs>
+    projects?: boolean | notifications$projectsArgs<ExtArgs>
   }, ExtArgs["result"]["notifications"]>
 
 
@@ -46486,6 +46536,7 @@ export namespace Prisma {
   export type notificationsSelectScalar = {
     id?: boolean
     user_id?: boolean
+    project_id?: boolean
     title?: boolean
     message?: boolean
     type?: boolean
@@ -46494,19 +46545,22 @@ export namespace Prisma {
     created_at?: boolean
   }
 
-  export type notificationsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "user_id" | "title" | "message" | "type" | "link" | "is_read" | "created_at", ExtArgs["result"]["notifications"]>
+  export type notificationsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "user_id" | "project_id" | "title" | "message" | "type" | "link" | "is_read" | "created_at", ExtArgs["result"]["notifications"]>
   export type notificationsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | usersDefaultArgs<ExtArgs>
+    projects?: boolean | notifications$projectsArgs<ExtArgs>
   }
 
   export type $notificationsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "notifications"
     objects: {
       users: Prisma.$usersPayload<ExtArgs>
+      projects: Prisma.$projectsPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       user_id: number
+      project_id: bigint | null
       title: string
       message: string
       type: string
@@ -46854,6 +46908,7 @@ export namespace Prisma {
   export interface Prisma__notificationsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     users<T extends usersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, usersDefaultArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    projects<T extends notifications$projectsArgs<ExtArgs> = {}>(args?: Subset<T, notifications$projectsArgs<ExtArgs>>): Prisma__projectsClient<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -46885,6 +46940,7 @@ export namespace Prisma {
   interface notificationsFieldRefs {
     readonly id: FieldRef<"notifications", 'Int'>
     readonly user_id: FieldRef<"notifications", 'Int'>
+    readonly project_id: FieldRef<"notifications", 'BigInt'>
     readonly title: FieldRef<"notifications", 'String'>
     readonly message: FieldRef<"notifications", 'String'>
     readonly type: FieldRef<"notifications", 'String'>
@@ -47231,6 +47287,25 @@ export namespace Prisma {
      * Limit how many notifications to delete.
      */
     limit?: number
+  }
+
+  /**
+   * notifications.projects
+   */
+  export type notifications$projectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the projects
+     */
+    select?: projectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the projects
+     */
+    omit?: projectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: projectsInclude<ExtArgs> | null
+    where?: projectsWhereInput
   }
 
   /**
@@ -56508,6 +56583,7 @@ export namespace Prisma {
   export const NotificationsScalarFieldEnum: {
     id: 'id',
     user_id: 'user_id',
+    project_id: 'project_id',
     title: 'title',
     message: 'message',
     type: 'type',
@@ -57490,6 +57566,7 @@ export namespace Prisma {
     user_project_access?: User_project_accessListRelationFilter
     vendor_attendance?: Vendor_attendanceListRelationFilter
     knowledge_resources?: Knowledge_resourcesListRelationFilter
+    notifications?: NotificationsListRelationFilter
   }
 
   export type projectsOrderByWithRelationInput = {
@@ -57517,6 +57594,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessOrderByRelationAggregateInput
     vendor_attendance?: vendor_attendanceOrderByRelationAggregateInput
     knowledge_resources?: knowledge_resourcesOrderByRelationAggregateInput
+    notifications?: notificationsOrderByRelationAggregateInput
     _relevance?: projectsOrderByRelevanceInput
   }
 
@@ -57549,6 +57627,7 @@ export namespace Prisma {
     user_project_access?: User_project_accessListRelationFilter
     vendor_attendance?: Vendor_attendanceListRelationFilter
     knowledge_resources?: Knowledge_resourcesListRelationFilter
+    notifications?: NotificationsListRelationFilter
   }, "id" | "customer_id_name">
 
   export type projectsOrderByWithAggregationInput = {
@@ -60640,6 +60719,7 @@ export namespace Prisma {
     NOT?: notificationsWhereInput | notificationsWhereInput[]
     id?: IntFilter<"notifications"> | number
     user_id?: IntFilter<"notifications"> | number
+    project_id?: BigIntNullableFilter<"notifications"> | bigint | number | null
     title?: StringFilter<"notifications"> | string
     message?: StringFilter<"notifications"> | string
     type?: StringFilter<"notifications"> | string
@@ -60647,11 +60727,13 @@ export namespace Prisma {
     is_read?: BoolFilter<"notifications"> | boolean
     created_at?: DateTimeFilter<"notifications"> | Date | string
     users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    projects?: XOR<ProjectsNullableScalarRelationFilter, projectsWhereInput> | null
   }
 
   export type notificationsOrderByWithRelationInput = {
     id?: SortOrder
     user_id?: SortOrder
+    project_id?: SortOrderInput | SortOrder
     title?: SortOrder
     message?: SortOrder
     type?: SortOrder
@@ -60659,6 +60741,7 @@ export namespace Prisma {
     is_read?: SortOrder
     created_at?: SortOrder
     users?: usersOrderByWithRelationInput
+    projects?: projectsOrderByWithRelationInput
     _relevance?: notificationsOrderByRelevanceInput
   }
 
@@ -60668,6 +60751,7 @@ export namespace Prisma {
     OR?: notificationsWhereInput[]
     NOT?: notificationsWhereInput | notificationsWhereInput[]
     user_id?: IntFilter<"notifications"> | number
+    project_id?: BigIntNullableFilter<"notifications"> | bigint | number | null
     title?: StringFilter<"notifications"> | string
     message?: StringFilter<"notifications"> | string
     type?: StringFilter<"notifications"> | string
@@ -60675,11 +60759,13 @@ export namespace Prisma {
     is_read?: BoolFilter<"notifications"> | boolean
     created_at?: DateTimeFilter<"notifications"> | Date | string
     users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    projects?: XOR<ProjectsNullableScalarRelationFilter, projectsWhereInput> | null
   }, "id">
 
   export type notificationsOrderByWithAggregationInput = {
     id?: SortOrder
     user_id?: SortOrder
+    project_id?: SortOrderInput | SortOrder
     title?: SortOrder
     message?: SortOrder
     type?: SortOrder
@@ -60699,6 +60785,7 @@ export namespace Prisma {
     NOT?: notificationsScalarWhereWithAggregatesInput | notificationsScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"notifications"> | number
     user_id?: IntWithAggregatesFilter<"notifications"> | number
+    project_id?: BigIntNullableWithAggregatesFilter<"notifications"> | bigint | number | null
     title?: StringWithAggregatesFilter<"notifications"> | string
     message?: StringWithAggregatesFilter<"notifications"> | string
     type?: StringWithAggregatesFilter<"notifications"> | string
@@ -61700,6 +61787,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateInput = {
@@ -61726,6 +61814,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUpdateInput = {
@@ -61752,6 +61841,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateInput = {
@@ -61778,6 +61868,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsCreateManyInput = {
@@ -65072,11 +65163,13 @@ export namespace Prisma {
     is_read?: boolean
     created_at?: Date | string
     users: usersCreateNestedOneWithoutNotificationsInput
+    projects?: projectsCreateNestedOneWithoutNotificationsInput
   }
 
   export type notificationsUncheckedCreateInput = {
     id?: number
     user_id: number
+    project_id?: bigint | number | null
     title: string
     message: string
     type?: string
@@ -65093,11 +65186,13 @@ export namespace Prisma {
     is_read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: usersUpdateOneRequiredWithoutNotificationsNestedInput
+    projects?: projectsUpdateOneWithoutNotificationsNestedInput
   }
 
   export type notificationsUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     user_id?: IntFieldUpdateOperationsInput | number
+    project_id?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     title?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
@@ -65109,6 +65204,7 @@ export namespace Prisma {
   export type notificationsCreateManyInput = {
     id?: number
     user_id: number
+    project_id?: bigint | number | null
     title: string
     message: string
     type?: string
@@ -65129,6 +65225,7 @@ export namespace Prisma {
   export type notificationsUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     user_id?: IntFieldUpdateOperationsInput | number
+    project_id?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     title?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
@@ -66473,6 +66570,12 @@ export namespace Prisma {
     none?: knowledge_resourcesWhereInput
   }
 
+  export type NotificationsListRelationFilter = {
+    every?: notificationsWhereInput
+    some?: notificationsWhereInput
+    none?: notificationsWhereInput
+  }
+
   export type logsheet_templatesOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -66502,6 +66605,10 @@ export namespace Prisma {
   }
 
   export type knowledge_resourcesOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type notificationsOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -67247,12 +67354,6 @@ export namespace Prisma {
     none?: user_push_tokensWhereInput
   }
 
-  export type NotificationsListRelationFilter = {
-    every?: notificationsWhereInput
-    some?: notificationsWhereInput
-    none?: notificationsWhereInput
-  }
-
   export type RolesNullableScalarRelationFilter = {
     is?: rolesWhereInput | null
     isNot?: rolesWhereInput | null
@@ -67275,10 +67376,6 @@ export namespace Prisma {
   }
 
   export type user_push_tokensOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type notificationsOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -69328,6 +69425,7 @@ export namespace Prisma {
   export type notificationsCountOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
+    project_id?: SortOrder
     title?: SortOrder
     message?: SortOrder
     type?: SortOrder
@@ -69339,11 +69437,13 @@ export namespace Prisma {
   export type notificationsAvgOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
+    project_id?: SortOrder
   }
 
   export type notificationsMaxOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
+    project_id?: SortOrder
     title?: SortOrder
     message?: SortOrder
     type?: SortOrder
@@ -69355,6 +69455,7 @@ export namespace Prisma {
   export type notificationsMinOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
+    project_id?: SortOrder
     title?: SortOrder
     message?: SortOrder
     type?: SortOrder
@@ -69366,6 +69467,7 @@ export namespace Prisma {
   export type notificationsSumOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
+    project_id?: SortOrder
   }
 
   export type daily_ops_logsOrderByRelevanceInput = {
@@ -70352,6 +70454,13 @@ export namespace Prisma {
     connect?: knowledge_resourcesWhereUniqueInput | knowledge_resourcesWhereUniqueInput[]
   }
 
+  export type notificationsCreateNestedManyWithoutProjectsInput = {
+    create?: XOR<notificationsCreateWithoutProjectsInput, notificationsUncheckedCreateWithoutProjectsInput> | notificationsCreateWithoutProjectsInput[] | notificationsUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: notificationsCreateOrConnectWithoutProjectsInput | notificationsCreateOrConnectWithoutProjectsInput[]
+    createMany?: notificationsCreateManyProjectsInputEnvelope
+    connect?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
+  }
+
   export type logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput = {
     create?: XOR<logsheet_templatesCreateWithoutProjectsInput, logsheet_templatesUncheckedCreateWithoutProjectsInput> | logsheet_templatesCreateWithoutProjectsInput[] | logsheet_templatesUncheckedCreateWithoutProjectsInput[]
     connectOrCreate?: logsheet_templatesCreateOrConnectWithoutProjectsInput | logsheet_templatesCreateOrConnectWithoutProjectsInput[]
@@ -70412,6 +70521,13 @@ export namespace Prisma {
     connectOrCreate?: knowledge_resourcesCreateOrConnectWithoutProjectsInput | knowledge_resourcesCreateOrConnectWithoutProjectsInput[]
     createMany?: knowledge_resourcesCreateManyProjectsInputEnvelope
     connect?: knowledge_resourcesWhereUniqueInput | knowledge_resourcesWhereUniqueInput[]
+  }
+
+  export type notificationsUncheckedCreateNestedManyWithoutProjectsInput = {
+    create?: XOR<notificationsCreateWithoutProjectsInput, notificationsUncheckedCreateWithoutProjectsInput> | notificationsCreateWithoutProjectsInput[] | notificationsUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: notificationsCreateOrConnectWithoutProjectsInput | notificationsCreateOrConnectWithoutProjectsInput[]
+    createMany?: notificationsCreateManyProjectsInputEnvelope
+    connect?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
   }
 
   export type Enumprojects_statusFieldUpdateOperationsInput = {
@@ -70560,6 +70676,20 @@ export namespace Prisma {
     deleteMany?: knowledge_resourcesScalarWhereInput | knowledge_resourcesScalarWhereInput[]
   }
 
+  export type notificationsUpdateManyWithoutProjectsNestedInput = {
+    create?: XOR<notificationsCreateWithoutProjectsInput, notificationsUncheckedCreateWithoutProjectsInput> | notificationsCreateWithoutProjectsInput[] | notificationsUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: notificationsCreateOrConnectWithoutProjectsInput | notificationsCreateOrConnectWithoutProjectsInput[]
+    upsert?: notificationsUpsertWithWhereUniqueWithoutProjectsInput | notificationsUpsertWithWhereUniqueWithoutProjectsInput[]
+    createMany?: notificationsCreateManyProjectsInputEnvelope
+    set?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
+    disconnect?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
+    delete?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
+    connect?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
+    update?: notificationsUpdateWithWhereUniqueWithoutProjectsInput | notificationsUpdateWithWhereUniqueWithoutProjectsInput[]
+    updateMany?: notificationsUpdateManyWithWhereWithoutProjectsInput | notificationsUpdateManyWithWhereWithoutProjectsInput[]
+    deleteMany?: notificationsScalarWhereInput | notificationsScalarWhereInput[]
+  }
+
   export type logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput = {
     create?: XOR<logsheet_templatesCreateWithoutProjectsInput, logsheet_templatesUncheckedCreateWithoutProjectsInput> | logsheet_templatesCreateWithoutProjectsInput[] | logsheet_templatesUncheckedCreateWithoutProjectsInput[]
     connectOrCreate?: logsheet_templatesCreateOrConnectWithoutProjectsInput | logsheet_templatesCreateOrConnectWithoutProjectsInput[]
@@ -70680,6 +70810,20 @@ export namespace Prisma {
     update?: knowledge_resourcesUpdateWithWhereUniqueWithoutProjectsInput | knowledge_resourcesUpdateWithWhereUniqueWithoutProjectsInput[]
     updateMany?: knowledge_resourcesUpdateManyWithWhereWithoutProjectsInput | knowledge_resourcesUpdateManyWithWhereWithoutProjectsInput[]
     deleteMany?: knowledge_resourcesScalarWhereInput | knowledge_resourcesScalarWhereInput[]
+  }
+
+  export type notificationsUncheckedUpdateManyWithoutProjectsNestedInput = {
+    create?: XOR<notificationsCreateWithoutProjectsInput, notificationsUncheckedCreateWithoutProjectsInput> | notificationsCreateWithoutProjectsInput[] | notificationsUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: notificationsCreateOrConnectWithoutProjectsInput | notificationsCreateOrConnectWithoutProjectsInput[]
+    upsert?: notificationsUpsertWithWhereUniqueWithoutProjectsInput | notificationsUpsertWithWhereUniqueWithoutProjectsInput[]
+    createMany?: notificationsCreateManyProjectsInputEnvelope
+    set?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
+    disconnect?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
+    delete?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
+    connect?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
+    update?: notificationsUpdateWithWhereUniqueWithoutProjectsInput | notificationsUpdateWithWhereUniqueWithoutProjectsInput[]
+    updateMany?: notificationsUpdateManyWithWhereWithoutProjectsInput | notificationsUpdateManyWithWhereWithoutProjectsInput[]
+    deleteMany?: notificationsScalarWhereInput | notificationsScalarWhereInput[]
   }
 
   export type projectsCreateNestedOneWithoutKnowledge_resourcesInput = {
@@ -72904,12 +73048,28 @@ export namespace Prisma {
     connect?: usersWhereUniqueInput
   }
 
+  export type projectsCreateNestedOneWithoutNotificationsInput = {
+    create?: XOR<projectsCreateWithoutNotificationsInput, projectsUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: projectsCreateOrConnectWithoutNotificationsInput
+    connect?: projectsWhereUniqueInput
+  }
+
   export type usersUpdateOneRequiredWithoutNotificationsNestedInput = {
     create?: XOR<usersCreateWithoutNotificationsInput, usersUncheckedCreateWithoutNotificationsInput>
     connectOrCreate?: usersCreateOrConnectWithoutNotificationsInput
     upsert?: usersUpsertWithoutNotificationsInput
     connect?: usersWhereUniqueInput
     update?: XOR<XOR<usersUpdateToOneWithWhereWithoutNotificationsInput, usersUpdateWithoutNotificationsInput>, usersUncheckedUpdateWithoutNotificationsInput>
+  }
+
+  export type projectsUpdateOneWithoutNotificationsNestedInput = {
+    create?: XOR<projectsCreateWithoutNotificationsInput, projectsUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: projectsCreateOrConnectWithoutNotificationsInput
+    upsert?: projectsUpsertWithoutNotificationsInput
+    disconnect?: projectsWhereInput | boolean
+    delete?: projectsWhereInput | boolean
+    connect?: projectsWhereUniqueInput
+    update?: XOR<XOR<projectsUpdateToOneWithWhereWithoutNotificationsInput, projectsUpdateWithoutNotificationsInput>, projectsUncheckedUpdateWithoutNotificationsInput>
   }
 
   export type unitsCreateNestedOneWithoutDaily_ops_logsInput = {
@@ -73780,6 +73940,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutCustomersInput = {
@@ -73805,6 +73966,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutCustomersInput = {
@@ -74439,6 +74601,37 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type notificationsCreateWithoutProjectsInput = {
+    title: string
+    message: string
+    type?: string
+    link?: string | null
+    is_read?: boolean
+    created_at?: Date | string
+    users: usersCreateNestedOneWithoutNotificationsInput
+  }
+
+  export type notificationsUncheckedCreateWithoutProjectsInput = {
+    id?: number
+    user_id: number
+    title: string
+    message: string
+    type?: string
+    link?: string | null
+    is_read?: boolean
+    created_at?: Date | string
+  }
+
+  export type notificationsCreateOrConnectWithoutProjectsInput = {
+    where: notificationsWhereUniqueInput
+    create: XOR<notificationsCreateWithoutProjectsInput, notificationsUncheckedCreateWithoutProjectsInput>
+  }
+
+  export type notificationsCreateManyProjectsInputEnvelope = {
+    data: notificationsCreateManyProjectsInput | notificationsCreateManyProjectsInput[]
+    skipDuplicates?: boolean
+  }
+
   export type logsheet_templatesUpsertWithWhereUniqueWithoutProjectsInput = {
     where: logsheet_templatesWhereUniqueInput
     update: XOR<logsheet_templatesUpdateWithoutProjectsInput, logsheet_templatesUncheckedUpdateWithoutProjectsInput>
@@ -74788,6 +74981,37 @@ export namespace Prisma {
     updated_at?: DateTimeFilter<"knowledge_resources"> | Date | string
   }
 
+  export type notificationsUpsertWithWhereUniqueWithoutProjectsInput = {
+    where: notificationsWhereUniqueInput
+    update: XOR<notificationsUpdateWithoutProjectsInput, notificationsUncheckedUpdateWithoutProjectsInput>
+    create: XOR<notificationsCreateWithoutProjectsInput, notificationsUncheckedCreateWithoutProjectsInput>
+  }
+
+  export type notificationsUpdateWithWhereUniqueWithoutProjectsInput = {
+    where: notificationsWhereUniqueInput
+    data: XOR<notificationsUpdateWithoutProjectsInput, notificationsUncheckedUpdateWithoutProjectsInput>
+  }
+
+  export type notificationsUpdateManyWithWhereWithoutProjectsInput = {
+    where: notificationsScalarWhereInput
+    data: XOR<notificationsUpdateManyMutationInput, notificationsUncheckedUpdateManyWithoutProjectsInput>
+  }
+
+  export type notificationsScalarWhereInput = {
+    AND?: notificationsScalarWhereInput | notificationsScalarWhereInput[]
+    OR?: notificationsScalarWhereInput[]
+    NOT?: notificationsScalarWhereInput | notificationsScalarWhereInput[]
+    id?: IntFilter<"notifications"> | number
+    user_id?: IntFilter<"notifications"> | number
+    project_id?: BigIntNullableFilter<"notifications"> | bigint | number | null
+    title?: StringFilter<"notifications"> | string
+    message?: StringFilter<"notifications"> | string
+    type?: StringFilter<"notifications"> | string
+    link?: StringNullableFilter<"notifications"> | string | null
+    is_read?: BoolFilter<"notifications"> | boolean
+    created_at?: DateTimeFilter<"notifications"> | Date | string
+  }
+
   export type projectsCreateWithoutKnowledge_resourcesInput = {
     id?: bigint | number
     name: string
@@ -74811,6 +75035,7 @@ export namespace Prisma {
     units?: unitsCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutKnowledge_resourcesInput = {
@@ -74836,6 +75061,7 @@ export namespace Prisma {
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutKnowledge_resourcesInput = {
@@ -74877,6 +75103,7 @@ export namespace Prisma {
     units?: unitsUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutKnowledge_resourcesInput = {
@@ -74902,6 +75129,7 @@ export namespace Prisma {
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type usersCreateWithoutRefresh_tokensInput = {
@@ -75908,6 +76136,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutUnitsInput = {
@@ -75933,6 +76162,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutUnitsInput = {
@@ -76414,6 +76644,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutUnitsInput = {
@@ -76439,6 +76670,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type user_unit_accessUpsertWithWhereUniqueWithoutUnitsInput = {
@@ -76488,6 +76720,7 @@ export namespace Prisma {
     units?: unitsCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutUser_project_accessInput = {
@@ -76513,6 +76746,7 @@ export namespace Prisma {
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutUser_project_accessInput = {
@@ -76630,6 +76864,7 @@ export namespace Prisma {
     units?: unitsUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutUser_project_accessInput = {
@@ -76655,6 +76890,7 @@ export namespace Prisma {
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type usersUpsertWithoutUser_project_accessInput = {
@@ -77723,10 +77959,12 @@ export namespace Prisma {
     link?: string | null
     is_read?: boolean
     created_at?: Date | string
+    projects?: projectsCreateNestedOneWithoutNotificationsInput
   }
 
   export type notificationsUncheckedCreateWithoutUsersInput = {
     id?: number
+    project_id?: bigint | number | null
     title: string
     message: string
     type?: string
@@ -78093,20 +78331,6 @@ export namespace Prisma {
   export type notificationsUpdateManyWithWhereWithoutUsersInput = {
     where: notificationsScalarWhereInput
     data: XOR<notificationsUpdateManyMutationInput, notificationsUncheckedUpdateManyWithoutUsersInput>
-  }
-
-  export type notificationsScalarWhereInput = {
-    AND?: notificationsScalarWhereInput | notificationsScalarWhereInput[]
-    OR?: notificationsScalarWhereInput[]
-    NOT?: notificationsScalarWhereInput | notificationsScalarWhereInput[]
-    id?: IntFilter<"notifications"> | number
-    user_id?: IntFilter<"notifications"> | number
-    title?: StringFilter<"notifications"> | string
-    message?: StringFilter<"notifications"> | string
-    type?: StringFilter<"notifications"> | string
-    link?: StringNullableFilter<"notifications"> | string | null
-    is_read?: BoolFilter<"notifications"> | boolean
-    created_at?: DateTimeFilter<"notifications"> | Date | string
   }
 
   export type rolesUpsertWithoutUsersInput = {
@@ -80736,6 +80960,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutSchedulesInput = {
@@ -80761,6 +80986,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutSchedulesInput = {
@@ -81035,6 +81261,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutSchedulesInput = {
@@ -81060,6 +81287,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type unitsUpsertWithoutSchedulesInput = {
@@ -81657,6 +81885,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutSchedule_targetsInput = {
@@ -81682,6 +81911,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutSchedule_targetsInput = {
@@ -81805,6 +82035,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutSchedule_targetsInput = {
@@ -81830,6 +82061,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type unitsCreateWithoutComplaintsInput = {
@@ -82714,6 +82946,63 @@ export namespace Prisma {
     create: XOR<usersCreateWithoutNotificationsInput, usersUncheckedCreateWithoutNotificationsInput>
   }
 
+  export type projectsCreateWithoutNotificationsInput = {
+    id?: bigint | number
+    name: string
+    code?: string | null
+    status?: $Enums.projects_status
+    created_at?: Date | string
+    enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
+    logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
+    customers: customersCreateNestedOneWithoutProjectsInput
+    schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
+    schedules?: schedulesCreateNestedManyWithoutProjectsInput
+    units?: unitsCreateNestedManyWithoutProjectsInput
+    user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
+  }
+
+  export type projectsUncheckedCreateWithoutNotificationsInput = {
+    id?: bigint | number
+    customer_id: number
+    name: string
+    code?: string | null
+    status?: $Enums.projects_status
+    created_at?: Date | string
+    enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
+    logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
+    schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
+    schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
+    units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
+    user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
+  }
+
+  export type projectsCreateOrConnectWithoutNotificationsInput = {
+    where: projectsWhereUniqueInput
+    create: XOR<projectsCreateWithoutNotificationsInput, projectsUncheckedCreateWithoutNotificationsInput>
+  }
+
   export type usersUpsertWithoutNotificationsInput = {
     update: XOR<usersUpdateWithoutNotificationsInput, usersUncheckedUpdateWithoutNotificationsInput>
     create: XOR<usersCreateWithoutNotificationsInput, usersUncheckedCreateWithoutNotificationsInput>
@@ -82794,6 +83083,69 @@ export namespace Prisma {
     unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
     processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type projectsUpsertWithoutNotificationsInput = {
+    update: XOR<projectsUpdateWithoutNotificationsInput, projectsUncheckedUpdateWithoutNotificationsInput>
+    create: XOR<projectsCreateWithoutNotificationsInput, projectsUncheckedCreateWithoutNotificationsInput>
+    where?: projectsWhereInput
+  }
+
+  export type projectsUpdateToOneWithWhereWithoutNotificationsInput = {
+    where?: projectsWhereInput
+    data: XOR<projectsUpdateWithoutNotificationsInput, projectsUncheckedUpdateWithoutNotificationsInput>
+  }
+
+  export type projectsUpdateWithoutNotificationsInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
+    logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
+    customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
+    schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
+    schedules?: schedulesUpdateManyWithoutProjectsNestedInput
+    units?: unitsUpdateManyWithoutProjectsNestedInput
+    user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
+  }
+
+  export type projectsUncheckedUpdateWithoutNotificationsInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    customer_id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
+    logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
+    schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
+    schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
+    units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
+    user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type unitsCreateWithoutDaily_ops_logsInput = {
@@ -82985,6 +83337,7 @@ export namespace Prisma {
     units?: unitsCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutVendor_attendanceInput = {
@@ -83010,6 +83363,7 @@ export namespace Prisma {
     units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutVendor_attendanceInput = {
@@ -83127,6 +83481,7 @@ export namespace Prisma {
     units?: unitsUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutVendor_attendanceInput = {
@@ -83152,6 +83507,7 @@ export namespace Prisma {
     units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type usersUpsertWithoutVendor_attendanceInput = {
@@ -83259,6 +83615,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutProject_intelligenceInput = {
@@ -83284,6 +83641,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutProject_intelligenceInput = {
@@ -83401,6 +83759,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutProject_intelligenceInput = {
@@ -83426,6 +83785,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type usersUpsertWithoutIntelligence_updatesInput = {
@@ -83533,6 +83893,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutProject_issuesInput = {
@@ -83558,6 +83919,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutProject_issuesInput = {
@@ -83599,6 +83961,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutProject_issuesInput = {
@@ -83624,6 +83987,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type logsheet_entriesCreateWithoutTemplateInput = {
@@ -83678,6 +84042,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutLogsheet_templatesInput = {
@@ -83703,6 +84068,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutLogsheet_templatesInput = {
@@ -83774,6 +84140,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutLogsheet_templatesInput = {
@@ -83799,6 +84166,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type logsheet_templatesCreateWithoutEntriesInput = {
@@ -83968,6 +84336,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutCustomersInput = {
@@ -83993,6 +84362,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateManyWithoutCustomersInput = {
@@ -84192,6 +84562,17 @@ export namespace Prisma {
     allowed_users?: string | null
     created_at?: Date | string
     updated_at?: Date | string
+  }
+
+  export type notificationsCreateManyProjectsInput = {
+    id?: number
+    user_id: number
+    title: string
+    message: string
+    type?: string
+    link?: string | null
+    is_read?: boolean
+    created_at?: Date | string
   }
 
   export type logsheet_templatesUpdateWithoutProjectsInput = {
@@ -84558,6 +84939,38 @@ export namespace Prisma {
     allowed_users?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type notificationsUpdateWithoutProjectsInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    link?: NullableStringFieldUpdateOperationsInput | string | null
+    is_read?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: usersUpdateOneRequiredWithoutNotificationsNestedInput
+  }
+
+  export type notificationsUncheckedUpdateWithoutProjectsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    user_id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    link?: NullableStringFieldUpdateOperationsInput | string | null
+    is_read?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type notificationsUncheckedUpdateManyWithoutProjectsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    user_id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    link?: NullableStringFieldUpdateOperationsInput | string | null
+    is_read?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type role_permissionsCreateManyRolesInput = {
@@ -85737,6 +86150,7 @@ export namespace Prisma {
 
   export type notificationsCreateManyUsersInput = {
     id?: number
+    project_id?: bigint | number | null
     title: string
     message: string
     type?: string
@@ -86249,10 +86663,12 @@ export namespace Prisma {
     link?: NullableStringFieldUpdateOperationsInput | string | null
     is_read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    projects?: projectsUpdateOneWithoutNotificationsNestedInput
   }
 
   export type notificationsUncheckedUpdateWithoutUsersInput = {
     id?: IntFieldUpdateOperationsInput | number
+    project_id?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     title?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
@@ -86263,6 +86679,7 @@ export namespace Prisma {
 
   export type notificationsUncheckedUpdateManyWithoutUsersInput = {
     id?: IntFieldUpdateOperationsInput | number
+    project_id?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     title?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string

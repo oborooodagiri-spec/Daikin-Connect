@@ -79,7 +79,7 @@ export default async function DashboardLayout({
                 
 
                 <div className="flex items-center gap-4">
-                  <NotificationCenter />
+                  <NotificationCenter projectId={projectId} />
                 </div>
               </div>
             </header>

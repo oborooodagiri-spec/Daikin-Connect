@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 /**
  * Get notifications for current user
  */
-export async function getMyNotifications() {
+export async function getMyNotifications(projectId?: string) {
   const session = await getSession();
   if (!session) return { error: "Unauthorized" };
 
@@ -15,11 +15,35 @@ export async function getMyNotifications() {
     const notifications = await (prisma as any).notifications.findMany({
       where: { user_id: parseInt(session.userId) },
       orderBy: { created_at: "desc" },
-      take: 20
+      take: 100
     });
 
-    return { success: true, data: notifications };
+    let filtered = notifications;
+    if (projectId) {
+      filtered = notifications.filter((n: any) => {
+        // 1. Check database column project_id
+        if (n.project_id !== null && n.project_id !== undefined) {
+          return n.project_id.toString() === projectId;
+        }
+
+        // 2. Fallback: Parse from link
+        if (n.link) {
+          const match = n.link.match(/\/w\/(\d+)\//);
+          if (match) {
+            const linkProjectId = match[1];
+            return linkProjectId === projectId;
+          }
+        }
+
+        // 3. Keep global notifications (no project context in link nor database)
+        return true;
+      });
+    }
+
+    // Limit output to top 20 after filtering
+    return { success: true, data: filtered.slice(0, 20) };
   } catch (error) {
+    console.error("Failed to fetch notifications:", error);
     return { error: "Failed to fetch notifications" };
   }
 }
@@ -47,21 +71,34 @@ export async function createNotification({
   title,
   message,
   type = "info",
-  link
+  link,
+  projectId
 }: {
   userIds: number[],
   title: string,
   message: string,
   type?: "info" | "success" | "warning" | "error" | "alert",
-  link?: string
+  link?: string,
+  projectId?: number | bigint | string
 }) {
   try {
+    let inferredProjectId: bigint | null = null;
+    if (projectId !== undefined && projectId !== null) {
+      inferredProjectId = BigInt(projectId.toString());
+    } else if (link) {
+      const match = link.match(/\/w\/(\d+)\//);
+      if (match) {
+        inferredProjectId = BigInt(match[1]);
+      }
+    }
+
     const data = userIds.map(uid => ({
       user_id: uid,
       title,
       message,
       type,
-      link
+      link,
+      project_id: inferredProjectId
     }));
 
     await (prisma as any).notifications.createMany({ data });
@@ -107,7 +144,13 @@ export async function registerPushToken(token: string, platform: string = "web")
 /**
  * Utility to notify all internal staff (Admin/Engineer)
  */
-export async function notifyInternalStaff(title: string, message: string, type: any = "info", link?: string) {
+export async function notifyInternalStaff(
+  title: string, 
+  message: string, 
+  type: any = "info", 
+  link?: string,
+  projectId?: number | bigint | string
+) {
     try {
         const staff = await prisma.users.findMany({
             where: {
@@ -124,7 +167,7 @@ export async function notifyInternalStaff(title: string, message: string, type: 
 
         const ids = staff.map(s => s.id);
         if (ids.length > 0) {
-            await createNotification({ userIds: ids, title, message, type, link });
+            await createNotification({ userIds: ids, title, message, type, link, projectId });
         }
     } catch (err) {
         console.error("Internal staff notification failed:", err);

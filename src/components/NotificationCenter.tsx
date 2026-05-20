@@ -10,7 +10,7 @@ import {
 import { useRouter } from "next/navigation";
 import { getMyNotifications, markAsRead } from "@/app/actions/notifications";
 
-export default function NotificationCenter() {
+export default function NotificationCenter({ projectId }: { projectId?: string }) {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -26,7 +26,7 @@ export default function NotificationCenter() {
   }, []);
 
   const fetchNotifications = async () => {
-    const res = await getMyNotifications();
+    const res = await getMyNotifications(projectId);
     if (res.success && res.data) {
       // Check for new unread notifications to trigger sound
       const prevUnreadCount = notifications.filter(n => !n.is_read).length;
@@ -45,7 +45,7 @@ export default function NotificationCenter() {
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 10000); // 10 seconds
     return () => clearInterval(interval);
-  }, [notifications.length]);
+  }, [projectId]);
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
 

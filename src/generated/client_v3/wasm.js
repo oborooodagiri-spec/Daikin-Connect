@@ -611,6 +611,7 @@ exports.Prisma.User_push_tokensScalarFieldEnum = {
 exports.Prisma.NotificationsScalarFieldEnum = {
   id: 'id',
   user_id: 'user_id',
+  project_id: 'project_id',
   title: 'title',
   message: 'message',
   type: 'type',
