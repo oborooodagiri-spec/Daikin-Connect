@@ -16,31 +16,45 @@ export async function getMyNotifications(projectId?: string) {
 
   try {
     console.log(`[getMyNotifications] user_id=${session.userId} | projectId=${projectId} | cleanProjectId=${cleanProjectId} | type=${typeof projectId}`);
+
+    // Build query filter: always filter by user, optionally filter by project at DB level
+    const whereClause: any = { user_id: parseInt(session.userId) };
+
+    if (cleanProjectId) {
+      // Primary filter: only fetch notifications that belong to this project
+      // This includes notifications with matching project_id OR no project_id (to be filtered further)
+      whereClause.OR = [
+        { project_id: BigInt(cleanProjectId) },
+        { project_id: null }
+      ];
+    }
+
     const notifications = await (prisma as any).notifications.findMany({
-      where: { user_id: parseInt(session.userId) },
+      where: whereClause,
       orderBy: { created_at: "desc" },
       take: 100
     });
 
     let filtered = notifications;
     if (cleanProjectId) {
+      // Secondary filter: for notifications without project_id, check link pattern
       filtered = notifications.filter((n: any) => {
-        // 1. Check database column project_id
+        // 1. If project_id is set in database, it was already filtered by the query above
         if (n.project_id !== null && n.project_id !== undefined) {
-          return n.project_id.toString() === cleanProjectId;
+          return true; // Already matched by DB query
         }
 
-        // 2. Fallback: Parse from link (broadened pattern to match with or without trailing slash)
+        // 2. Fallback: Parse project from link URL pattern
         if (n.link) {
           const match = n.link.match(/\/w\/(\d+)/);
           if (match) {
-            const linkProjectId = match[1];
-            return linkProjectId === cleanProjectId;
+            return match[1] === cleanProjectId;
           }
         }
 
-        // 3. Keep global notifications (no project context in link nor database)
-        return true;
+        // 3. Notification has no project context — do NOT show in project views
+        //    (prevents cross-project leaking)
+        return false;
       });
     }
 

@@ -56,12 +56,14 @@ export async function approveUnitRequest(requestId: number, adminNote?: string) 
 
   try {
     const request = await (prisma as any).unit_edit_requests.findUnique({
-      where: { id: requestId }
+      where: { id: requestId },
+      include: { units: { select: { project_ref_id: true } } }
     });
 
     if (!request || request.status !== "Pending") return { error: "Request not found or already processed" };
 
     const details = JSON.parse(request.details_json);
+    const projId = request.units?.project_ref_id?.toString() || undefined;
 
     // 1. Update the actual unit
     // Ensure data types are correct (yoi must be Int, etc.)
@@ -102,7 +104,8 @@ export async function approveUnitRequest(requestId: number, adminNote?: string) 
       title: "Edit Request Approved",
       message: `Your requested changes for unit ${request.unit_id} have been approved and applied.`,
       type: "success",
-      link: `/passport/${request.unit_id}`
+      link: projId ? `/w/${projId}/dashboard/units/${request.unit_id}` : `/passport/${request.unit_id}`,
+      projectId: projId
     });
 
     revalidatePath("/dashboard");
@@ -131,13 +134,19 @@ export async function rejectUnitRequest(requestId: number, adminNote: string) {
       }
     });
 
-    const request = await (prisma as any).unit_edit_requests.findUnique({ where: { id: requestId } });
+    const request = await (prisma as any).unit_edit_requests.findUnique({
+      where: { id: requestId },
+      include: { units: { select: { project_ref_id: true } } }
+    });
     if (request) {
+      const projId = request.units?.project_ref_id?.toString() || undefined;
       await createNotification({
         userIds: [request.requested_by],
         title: "Edit Request Rejected",
         message: `Your requested changes for unit ${request.unit_id} were rejected. Note: ${adminNote}`,
-        type: "error"
+        type: "error",
+        link: projId ? `/w/${projId}/dashboard/units/${request.unit_id}` : undefined,
+        projectId: projId
       });
     }
 
