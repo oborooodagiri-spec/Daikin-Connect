@@ -227,18 +227,18 @@ export default function AttendanceRecordsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex">
-      <div className="flex-1 p-6 md:p-12 lg:p-16 max-w-[1600px] mx-auto space-y-12">
+    <div className="min-h-screen bg-[#f8fafc] flex flex-col w-full overflow-x-hidden">
+      <div className="flex-1 p-4 sm:p-6 md:p-12 lg:p-16 max-w-[1600px] mx-auto space-y-8 sm:space-y-12 w-full">
         
         {/* 1. Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-          <div className="space-y-3">
-               <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-[#003366] rounded-3xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
-                     <Fingerprint size={28} />
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 sm:gap-8">
+          <div className="space-y-3 w-full sm:w-auto">
+               <div className="flex items-center gap-3 sm:gap-4">
+                  <div className="w-11 h-11 sm:w-14 sm:h-14 bg-[#003366] rounded-2xl sm:rounded-3xl flex items-center justify-center text-white shadow-lg shadow-blue-200 shrink-0">
+                     <Fingerprint size={22} className="sm:w-7 sm:h-7" />
                   </div>
                   <div>
-                     <h1 className="text-3xl font-black text-[#003366] tracking-tight uppercase">Attendance Record</h1>
+                     <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-[#003366] tracking-tight uppercase">Attendance Record</h1>
                   </div>
                </div>
           </div>
@@ -247,12 +247,12 @@ export default function AttendanceRecordsPage() {
             <button 
               onClick={handleExportPDF}
               disabled={exportingPDF || timesheetRecords.length === 0}
-              className="px-8 py-4 bg-rose-600 hover:bg-rose-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[11px] font-black uppercase tracking-widest rounded-2xl transition-all shadow-lg flex items-center gap-3"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-rose-600 hover:bg-rose-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[10px] sm:text-[11px] font-black uppercase tracking-widest rounded-2xl transition-all shadow-lg flex items-center justify-center gap-3"
             >
               {exportingPDF ? (
-                <Loader2 size={16} className="animate-spin" />
+                <Loader2 size={14} className="animate-spin" />
               ) : (
-                <Download size={16} />
+                <Download size={14} />
               )}
               Download PDF Report
             </button>
@@ -291,15 +291,15 @@ export default function AttendanceRecordsPage() {
           <div className="space-y-6">
             
             {/* Search Input Box */}
-            <div className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50">
+            <div className="bg-white p-4 sm:p-6 rounded-3xl sm:rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50">
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Search Personnel</label>
+                <label className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Search Personnel</label>
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                   <input 
                     type="text" 
                     placeholder="Search by name or company..."
-                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all text-xs"
+                    className="w-full pl-11 sm:pl-12 pr-4 py-3 sm:py-4 bg-slate-50 border-none rounded-xl sm:rounded-2xl font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all text-[11px] sm:text-xs"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -308,16 +308,16 @@ export default function AttendanceRecordsPage() {
             </div>
 
             {/* Personnel Listing Table */}
-            <div className="bg-white border border-slate-100 rounded-[2.5rem] shadow-2xl shadow-slate-200/40 overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
+            <div className="bg-white border border-slate-100 rounded-3xl sm:rounded-[2.5rem] shadow-2xl shadow-slate-200/40 overflow-hidden">
+              <div className="overflow-x-auto w-full max-w-full">
+                <table className="w-full text-left whitespace-nowrap sm:whitespace-normal">
                   <thead>
-                    <tr className="bg-slate-50/80 border-b border-slate-100 uppercase text-[10px] font-black text-slate-400 tracking-widest">
-                      <th className="px-10 py-8">Personnel</th>
-                      <th className="px-10 py-8">Main Workplace</th>
-                      <th className="px-10 py-8 text-center">Total Logs</th>
-                      <th className="px-10 py-8">Last Active</th>
-                      <th className="px-10 py-8 text-right">Actions</th>
+                    <tr className="bg-slate-50/80 border-b border-slate-100 uppercase text-[9px] sm:text-[10px] font-black text-slate-400 tracking-widest">
+                      <th className="px-4 sm:px-10 py-4 sm:py-8">Personnel</th>
+                      <th className="px-4 sm:px-10 py-4 sm:py-8">Main Workplace</th>
+                      <th className="px-4 sm:px-10 py-4 sm:py-8 text-center">Total Logs</th>
+                      <th className="px-4 sm:px-10 py-4 sm:py-8">Last Active</th>
+                      <th className="px-4 sm:px-10 py-4 sm:py-8 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
@@ -338,39 +338,39 @@ export default function AttendanceRecordsPage() {
                           className="group hover:bg-slate-50/80 cursor-pointer transition-all border-l-4 border-l-transparent hover:border-l-[#003366]"
                         >
                           {/* Profile row */}
-                          <td className="px-10 py-7">
-                            <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center font-black group-hover:bg-blue-50 group-hover:text-[#003366] transition-colors uppercase">
+                          <td className="px-4 sm:px-10 py-4 sm:py-7">
+                            <div className="flex items-center gap-3 sm:gap-4">
+                              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center font-black group-hover:bg-blue-50 group-hover:text-[#003366] transition-colors uppercase shrink-0">
                                 {u.name?.charAt(0)}
                               </div>
                               <div>
-                                <p className="font-black text-slate-800 text-sm group-hover:text-[#003366] transition-colors">{u.name}</p>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-1">{u.company_name || 'Independent Vendor'}</p>
+                                <p className="font-black text-slate-800 text-xs sm:text-sm group-hover:text-[#003366] transition-colors">{u.name}</p>
+                                <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-0.5 sm:mt-1">{u.company_name || 'Independent Vendor'}</p>
                               </div>
                             </div>
                           </td>
 
                           {/* Workplace */}
-                          <td className="px-10 py-7">
-                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-[#0073ea] rounded-xl border border-blue-100 text-[10px] font-black uppercase tracking-tight">
+                          <td className="px-4 sm:px-10 py-4 sm:py-7">
+                            <div className="inline-flex items-center gap-2 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-blue-50 text-[#0073ea] rounded-lg sm:rounded-xl border border-blue-100 text-[9px] sm:text-[10px] font-black uppercase tracking-tight">
                               {getUserWorkplace(u.id)}
                             </div>
                           </td>
 
                           {/* Total logs */}
-                          <td className="px-10 py-7 text-center font-bold text-slate-600">
+                          <td className="px-4 sm:px-10 py-4 sm:py-7 text-center font-bold text-slate-600 text-xs sm:text-sm">
                             {getUserLogCount(u.id)} Logs
                           </td>
 
                           {/* Last active date */}
-                          <td className="px-10 py-7 font-bold text-slate-500">
+                          <td className="px-4 sm:px-10 py-4 sm:py-7 font-bold text-slate-500 text-xs sm:text-sm">
                             {getUserLastActiveDate(u.id)}
                           </td>
 
                           {/* Arrow link */}
-                          <td className="px-10 py-7 text-right">
-                            <button className="p-3 bg-slate-50 text-slate-400 rounded-xl group-hover:bg-[#003366] group-hover:text-white transition-all">
-                              <ChevronIcon size={18} />
+                          <td className="px-4 sm:px-10 py-4 sm:py-7 text-right">
+                            <button className="p-2 sm:p-3 bg-slate-50 text-slate-400 rounded-lg sm:rounded-xl group-hover:bg-[#003366] group-hover:text-white transition-all">
+                              <ChevronIcon size={16} className="sm:w-[18px] sm:h-[18px]" />
                             </button>
                           </td>
 
@@ -380,11 +380,11 @@ export default function AttendanceRecordsPage() {
                   </tbody>
                 </table>
               </div>
-              <div className="p-10 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] flex items-center gap-2">
-                  <CheckCircle2 size={14} className="text-emerald-500" /> EPL Connect Management Portal
+              <div className="p-4 sm:p-10 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+                <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] sm:tracking-[0.4em] flex items-center justify-center sm:justify-start gap-2">
+                  <CheckCircle2 size={14} className="text-emerald-500 shrink-0" /> EPL Connect Management Portal
                 </p>
-                <p className="text-[10px] font-bold text-slate-300">Displaying {filteredUsers.length} active personnel</p>
+                <p className="text-[9px] sm:text-[10px] font-bold text-slate-300">Displaying {filteredUsers.length} active personnel</p>
               </div>
             </div>
 
@@ -395,19 +395,20 @@ export default function AttendanceRecordsPage() {
           <div className="space-y-6">
             
             {/* Action Toolbar */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            {/* Action Toolbar */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <button
                 onClick={() => {
                   setSelectedUserId(null);
                   setTimesheetRecords([]);
                 }}
-                className="flex items-center gap-2 px-5 py-3 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-800 text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-800 text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm"
               >
                 <ArrowLeft size={14} /> Back to Personnel Directory
               </button>
 
               {/* Month navigation slider */}
-              <div className="flex items-center justify-between bg-white border border-slate-200 p-2 rounded-xl shadow-sm min-w-[220px]">
+              <div className="flex items-center justify-between bg-white border border-slate-200 p-2 rounded-xl shadow-sm w-full sm:w-auto sm:min-w-[220px]">
                 <button
                   onClick={handlePrevMonth}
                   className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"
@@ -427,7 +428,7 @@ export default function AttendanceRecordsPage() {
             </div>
 
             {/* Interactive print preview wrapper */}
-            <div className="bg-slate-200 border border-slate-300 rounded-[2.5rem] p-4 md:p-12 flex justify-center overflow-x-auto shadow-inner">
+            <div className="bg-slate-200 border border-slate-300 rounded-3xl sm:rounded-[2.5rem] p-2 sm:p-6 md:p-12 flex justify-start md:justify-center overflow-x-auto shadow-inner w-full max-w-full">
               
               {/* Authentic A4 Document Visual Sheet */}
               <div className="w-[210mm] min-h-[297mm] bg-white border border-slate-300 rounded-2xl shadow-2xl p-12 font-sans text-slate-800 relative flex flex-col justify-between shrink-0">
@@ -647,20 +648,20 @@ export default function AttendanceRecordsPage() {
 
 function SummaryCard({ label, value, icon, sub, highlight = false }: any) {
   return (
-    <div className={`p-8 rounded-[2.5rem] border transition-all ${highlight ? 'bg-[#003366] text-white border-blue-900 shadow-xl shadow-blue-900/20' : 'bg-white text-slate-800 border-slate-100 shadow-sm'}`}>
+    <div className={`p-5 sm:p-8 rounded-3xl sm:rounded-[2.5rem] border transition-all ${highlight ? 'bg-[#003366] text-white border-blue-900 shadow-xl shadow-blue-900/20' : 'bg-white text-slate-800 border-slate-100 shadow-sm'}`}>
        <div className="flex justify-between items-start mb-4">
-          <div className={`p-3 rounded-2xl ${highlight ? 'bg-white/10' : 'bg-slate-50'}`}>
-             {React.cloneElement(icon as React.ReactElement, { size: 24 })}
+          <div className={`p-2.5 sm:p-3 rounded-xl sm:rounded-2xl ${highlight ? 'bg-white/10' : 'bg-slate-50'}`}>
+             {React.cloneElement(icon as React.ReactElement, { size: 20, className: "sm:w-6 sm:h-6" } as any)}
           </div>
-          <div className="text-[10px] font-black uppercase tracking-widest opacity-50">Active</div>
+          <div className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest opacity-50">Active</div>
        </div>
        <div className="space-y-1">
-          <h4 className="text-4xl font-black tracking-tighter">{value}</h4>
-          <p className="text-[11px] font-bold uppercase tracking-widest opacity-60">{label}</p>
+          <h4 className="text-3xl sm:text-4xl font-black tracking-tighter">{value}</h4>
+          <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest opacity-60">{label}</p>
        </div>
-       <div className={`mt-6 pt-6 border-t ${highlight ? 'border-white/10' : 'border-slate-50'} flex items-center gap-2`}>
+       <div className={`mt-4 sm:mt-6 pt-4 sm:pt-6 border-t ${highlight ? 'border-white/10' : 'border-slate-50'} flex items-center gap-2`}>
           <div className={`w-1.5 h-1.5 rounded-full ${highlight ? 'bg-emerald-400' : 'bg-blue-500'}`} />
-          <p className="text-[9px] font-black uppercase tracking-widest opacity-40">{sub}</p>
+          <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-40">{sub}</p>
        </div>
     </div>
   );
