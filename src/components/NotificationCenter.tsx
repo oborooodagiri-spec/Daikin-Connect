@@ -102,7 +102,7 @@ export default function NotificationCenter({ projectId }: { projectId?: string }
               initial={{ opacity: 0, y: 10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
-              className="absolute right-0 top-full mt-3 w-[calc(100vw-2rem)] sm:w-[26rem] max-h-[80vh] md:max-h-[75vh] bg-white border border-slate-200 rounded-[2rem] shadow-2xl z-[1000] flex flex-col overflow-hidden"
+              className="fixed top-0 left-0 w-full h-full sm:top-20 sm:left-auto sm:right-[22px] sm:w-[26rem] sm:h-auto sm:max-h-[75vh] bg-white border border-slate-200 sm:rounded-[2rem] shadow-2xl z-[1000] flex flex-col overflow-hidden"
             >
               {/* Header */}
               <div className="p-6 border-b border-slate-100 flex flex-row-reverse items-center justify-between bg-white sticky top-0 z-10">
