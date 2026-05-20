@@ -258,7 +258,7 @@ export default function AttendanceClient({
       
       // Force reload active record to prevent double actions
       const refreshRes = await getActiveAttendance(projectId);
-      if (refreshRes?.data) setActiveRecord(refreshRes.data);
+      if ((refreshRes as any)?.data) setActiveRecord((refreshRes as any).data);
       
       await loadModelsAndReference();
     } catch (error: any) {

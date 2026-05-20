@@ -87,7 +87,11 @@ export async function getAttendanceHistory(month?: number, year?: number) {
       },
       include: {
         projects: {
-          select: { name: true }
+          select: {
+            name: true,
+            shift_start_time: true,
+            shift_end_time: true,
+          }
         }
       },
       orderBy: {
@@ -122,21 +126,32 @@ export async function getAttendanceStats(month?: number, year?: number) {
           gte: startDate,
           lte: endDate,
         },
+      },
+      include: {
+        projects: {
+          select: {
+            shift_start_time: true,
+            shift_end_time: true,
+          }
+        }
       }
     });
 
-    // Simple mock stats for now as we don't have shift schedule comparison logic fully here yet
-    // In real app, we'd compare check_in_time with scheduled start_at
+    // Dynamic stats comparison using configured project shift hours
     const stats = {
       absent: 0,
       late: records.filter((r: any) => {
         const checkIn = new Date(r.check_in_time);
-        return checkIn.getHours() > 8 || (checkIn.getHours() === 8 && checkIn.getMinutes() > 30);
+        const shiftStart = r.projects?.shift_start_time || "08:00";
+        const [shiftHour, shiftMin] = shiftStart.split(":").map(Number);
+        return checkIn.getHours() > shiftHour || (checkIn.getHours() === shiftHour && checkIn.getMinutes() > shiftMin);
       }).length,
       earlyOut: records.filter((r: any) => {
-        if (!r.check_out_photo || r.check_out_photo === "") return false;
+        if (!r.check_out_photo || r.check_out_photo === "" || !r.check_out_time) return false;
         const checkOut = new Date(r.check_out_time);
-        return checkOut.getHours() < 17 || (checkOut.getHours() === 17 && checkOut.getMinutes() < 30);
+        const shiftEnd = r.projects?.shift_end_time || "17:00";
+        const [shiftHour, shiftMin] = shiftEnd.split(":").map(Number);
+        return checkOut.getHours() < shiftHour || (checkOut.getHours() === shiftHour && checkOut.getMinutes() < shiftMin);
       }).length,
       noClockIn: 0,
       noClockOut: records.filter((r: any) => !r.check_out_photo || r.check_out_photo === "").length

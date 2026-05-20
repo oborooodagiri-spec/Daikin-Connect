@@ -43,6 +43,8 @@ model projects {
   radius_meters        Int                   @default(100)
   enabled_unit_types   String                @default("Chiller") @db.Text
   monitoring_focus     String                @default("UNIT") @db.VarChar(50)
+  shift_start_time     String?               @default("08:00") @db.VarChar(5)
+  shift_end_time       String?               @default("17:00") @db.VarChar(5)
   logsheet_templates   logsheet_templates[]
   project_intelligence project_intelligence?
   project_issues       project_issues[]

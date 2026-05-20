@@ -146,7 +146,9 @@ exports.Prisma.ProjectsScalarFieldEnum = {
   longitude: 'longitude',
   radius_meters: 'radius_meters',
   enabled_unit_types: 'enabled_unit_types',
-  monitoring_focus: 'monitoring_focus'
+  monitoring_focus: 'monitoring_focus',
+  shift_start_time: 'shift_start_time',
+  shift_end_time: 'shift_end_time'
 };
 
 exports.Prisma.Knowledge_resourcesScalarFieldEnum = {
@@ -781,7 +783,9 @@ exports.Prisma.projectsOrderByRelevanceFieldEnum = {
   code: 'code',
   enabled_forms: 'enabled_forms',
   enabled_unit_types: 'enabled_unit_types',
-  monitoring_focus: 'monitoring_focus'
+  monitoring_focus: 'monitoring_focus',
+  shift_start_time: 'shift_start_time',
+  shift_end_time: 'shift_end_time'
 };
 
 exports.Prisma.knowledge_resourcesOrderByRelevanceFieldEnum = {

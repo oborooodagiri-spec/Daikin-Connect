@@ -49,7 +49,9 @@ export default function ProjectsPage() {
     enabled_forms: "Audit,Preventive,Corrective",
     latitude: null,
     longitude: null,
-    radius_meters: 100
+    radius_meters: 100,
+    shift_start_time: "08:00",
+    shift_end_time: "17:00"
   });
 
   // Progress & Modal State for Targets/Schedules
@@ -114,7 +116,9 @@ export default function ProjectsPage() {
       enabled_forms: "Audit,Preventive,Corrective",
       latitude: null,
       longitude: null,
-      radius_meters: 100
+      radius_meters: 100,
+      shift_start_time: "08:00",
+      shift_end_time: "17:00"
     });
     setIsModalOpen(true);
   };
@@ -128,7 +132,9 @@ export default function ProjectsPage() {
       enabled_forms: project.enabled_forms || "Audit,Preventive,Corrective",
       latitude: project.latitude,
       longitude: project.longitude,
-      radius_meters: project.radius_meters || 100
+      radius_meters: project.radius_meters || 100,
+      shift_start_time: project.shift_start_time || "08:00",
+      shift_end_time: project.shift_end_time || "17:00"
     });
     setIsModalOpen(true);
   };
@@ -291,6 +297,12 @@ export default function ProjectsPage() {
                             <p className={`text-base font-black tracking-tight ${isActive ? 'text-[#003366]' : 'text-slate-400'}`}>
                               {project.name}
                             </p>
+                            {isActive && (
+                              <p className="text-[10px] font-bold text-slate-400 mt-1 flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#00a1e4]"></span>
+                                Shift: {project.shift_start_time || "08:00"} - {project.shift_end_time || "17:00"}
+                              </p>
+                            )}
                           </div>
                         </div>
                       </td>
@@ -570,6 +582,23 @@ export default function ProjectsPage() {
                             className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl font-bold text-xs outline-none"
                             placeholder="100"
                           />
+                       </div>
+
+                       <div className="pt-4 border-t border-slate-100/60 grid grid-cols-2 gap-4">
+                          <div className="space-y-1.5">
+                             <label className="text-[9px] font-black text-[#003366] uppercase tracking-widest ml-1">Jam Masuk (Shift Start)</label>
+                             <input 
+                               type="time" required value={formData.shift_start_time || "08:00"} onChange={e => setFormData({...formData, shift_start_time: e.target.value})}
+                               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-xs outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all text-slate-700"
+                             />
+                          </div>
+                          <div className="space-y-1.5">
+                             <label className="text-[9px] font-black text-[#003366] uppercase tracking-widest ml-1">Jam Pulang (Shift End)</label>
+                             <input 
+                               type="time" required value={formData.shift_end_time || "17:00"} onChange={e => setFormData({...formData, shift_end_time: e.target.value})}
+                               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-xs outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all text-slate-700"
+                             />
+                          </div>
                        </div>
                     </div>
                   </div>

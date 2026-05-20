@@ -114,12 +114,25 @@ export default function AttendanceRecordsPage() {
     return `${hrs} jam ${mins} menit`;
   };
 
-  const getOvertimeMinutes = (checkIn: string, checkOut: string | null) => {
+  const getOvertimeMinutes = (checkIn: string, checkOut: string | null, shiftStart?: string | null, shiftEnd?: string | null) => {
     if (!checkOut) return 0;
     const diffMs = new Date(checkOut).getTime() - new Date(checkIn).getTime();
     const diffMinutes = Math.floor(diffMs / 60000);
-    // Standard work hours: 8 hours = 480 minutes
-    const overtime = diffMinutes - 480;
+    
+    let standardWorkMinutes = 480; // Default to 8 hours
+    if (shiftStart && shiftEnd) {
+      const [sh, sm] = shiftStart.split(":").map(Number);
+      const [eh, em] = shiftEnd.split(":").map(Number);
+      const shiftDiffMinutes = (eh * 60 + em) - (sh * 60 + sm);
+      // Deduct 1 hour break (60 minutes) if shift duration exceeds 6 hours (360 minutes)
+      if (shiftDiffMinutes > 360) {
+        standardWorkMinutes = shiftDiffMinutes - 60;
+      } else {
+        standardWorkMinutes = shiftDiffMinutes;
+      }
+    }
+    
+    const overtime = diffMinutes - standardWorkMinutes;
     return overtime > 0 ? overtime : 0;
   };
 
@@ -194,7 +207,7 @@ export default function AttendanceRecordsPage() {
   }, 0);
 
   const totalOvertimeMinutes = timesheetRecords.reduce((acc, r) => {
-    return acc + getOvertimeMinutes(r.check_in_time, r.check_out_time);
+    return acc + getOvertimeMinutes(r.check_in_time, r.check_out_time, r.projects?.shift_start_time, r.projects?.shift_end_time);
   }, 0);
 
   const totalHoursStr = `${Math.floor(totalMinutes / 60)} Jam ${totalMinutes % 60} Menit`;
@@ -515,7 +528,25 @@ export default function AttendanceRecordsPage() {
                                 {format(new Date(r.check_in_time), "EEEE, dd MMM yyyy", { locale: id })}
                               </td>
                               <td className="p-3 text-emerald-600 font-bold">
-                                {format(new Date(r.check_in_time), "HH:mm")}
+                                <div className="flex flex-col">
+                                  <span>{format(new Date(r.check_in_time), "HH:mm")}</span>
+                                  {(() => {
+                                    const checkIn = new Date(r.check_in_time);
+                                    const shiftStart = r.projects?.shift_start_time || "08:00";
+                                    const [sh, sm] = shiftStart.split(":").map(Number);
+                                    const checkInMins = checkIn.getHours() * 60 + checkIn.getMinutes();
+                                    const shiftMins = sh * 60 + sm;
+                                    if (checkInMins > shiftMins) {
+                                      const diff = checkInMins - shiftMins;
+                                      return (
+                                        <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1 py-0.5 rounded border border-rose-100 w-max">
+                                          Terlambat {diff}m
+                                        </span>
+                                      );
+                                    }
+                                    return null;
+                                  })()}
+                                </div>
                               </td>
                               <td className="p-3">
                                 {r.check_in_lat !== null ? (
@@ -532,7 +563,26 @@ export default function AttendanceRecordsPage() {
                                 )}
                               </td>
                               <td className="p-3 text-rose-600 font-bold">
-                                {r.check_out_time ? format(new Date(r.check_out_time), "HH:mm") : "-"}
+                                <div className="flex flex-col">
+                                  <span>{r.check_out_time ? format(new Date(r.check_out_time), "HH:mm") : "-"}</span>
+                                  {(() => {
+                                    if (!r.check_out_time) return null;
+                                    const checkOut = new Date(r.check_out_time);
+                                    const shiftEnd = r.projects?.shift_end_time || "17:00";
+                                    const [eh, em] = shiftEnd.split(":").map(Number);
+                                    const checkOutMins = checkOut.getHours() * 60 + checkOut.getMinutes();
+                                    const shiftMins = eh * 60 + em;
+                                    if (checkOutMins < shiftMins) {
+                                      const diff = shiftMins - checkOutMins;
+                                      return (
+                                        <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1 py-0.5 rounded border border-rose-100 w-max">
+                                          Cepat {diff}m
+                                        </span>
+                                      );
+                                    }
+                                    return null;
+                                  })()}
+                                </div>
                               </td>
                               <td className="p-3">
                                 {r.check_out_lat !== null ? (
@@ -552,7 +602,7 @@ export default function AttendanceRecordsPage() {
                                 {getDurationStr(r.check_in_time, r.check_out_time)}
                               </td>
                               <td className="p-3 font-black text-amber-700 text-center">
-                                {formatMinutesToHoursMins(getOvertimeMinutes(r.check_in_time, r.check_out_time))}
+                                {formatMinutesToHoursMins(getOvertimeMinutes(r.check_in_time, r.check_out_time, r.projects?.shift_start_time, r.projects?.shift_end_time))}
                               </td>
                             </tr>
                           ))}

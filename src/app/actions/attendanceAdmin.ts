@@ -52,7 +52,7 @@ export async function getAttendanceRecords(params: {
                     select: { name: true, email: true, company_name: true }
                 },
                 projects: {
-                    select: { name: true, customer_id: true }
+                    select: { name: true, customer_id: true, shift_start_time: true, shift_end_time: true }
                 }
             },
             orderBy: { check_in_time: "desc" }
@@ -208,7 +208,7 @@ export async function getUserMonthlyAttendance(userId: number, month: number, ye
                     select: { id: true, name: true, email: true, company_name: true }
                 },
                 projects: {
-                    select: { name: true }
+                    select: { name: true, shift_start_time: true, shift_end_time: true }
                 }
             },
             orderBy: { check_in_time: "asc" }

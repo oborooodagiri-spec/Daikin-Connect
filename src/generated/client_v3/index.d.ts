@@ -7684,6 +7684,8 @@ export namespace Prisma {
     radius_meters: number | null
     enabled_unit_types: string | null
     monitoring_focus: string | null
+    shift_start_time: string | null
+    shift_end_time: string | null
   }
 
   export type ProjectsMaxAggregateOutputType = {
@@ -7699,6 +7701,8 @@ export namespace Prisma {
     radius_meters: number | null
     enabled_unit_types: string | null
     monitoring_focus: string | null
+    shift_start_time: string | null
+    shift_end_time: string | null
   }
 
   export type ProjectsCountAggregateOutputType = {
@@ -7714,6 +7718,8 @@ export namespace Prisma {
     radius_meters: number
     enabled_unit_types: number
     monitoring_focus: number
+    shift_start_time: number
+    shift_end_time: number
     _all: number
   }
 
@@ -7747,6 +7753,8 @@ export namespace Prisma {
     radius_meters?: true
     enabled_unit_types?: true
     monitoring_focus?: true
+    shift_start_time?: true
+    shift_end_time?: true
   }
 
   export type ProjectsMaxAggregateInputType = {
@@ -7762,6 +7770,8 @@ export namespace Prisma {
     radius_meters?: true
     enabled_unit_types?: true
     monitoring_focus?: true
+    shift_start_time?: true
+    shift_end_time?: true
   }
 
   export type ProjectsCountAggregateInputType = {
@@ -7777,6 +7787,8 @@ export namespace Prisma {
     radius_meters?: true
     enabled_unit_types?: true
     monitoring_focus?: true
+    shift_start_time?: true
+    shift_end_time?: true
     _all?: true
   }
 
@@ -7879,6 +7891,8 @@ export namespace Prisma {
     radius_meters: number
     enabled_unit_types: string
     monitoring_focus: string
+    shift_start_time: string | null
+    shift_end_time: string | null
     _count: ProjectsCountAggregateOutputType | null
     _avg: ProjectsAvgAggregateOutputType | null
     _sum: ProjectsSumAggregateOutputType | null
@@ -7913,6 +7927,8 @@ export namespace Prisma {
     radius_meters?: boolean
     enabled_unit_types?: boolean
     monitoring_focus?: boolean
+    shift_start_time?: boolean
+    shift_end_time?: boolean
     logsheet_templates?: boolean | projects$logsheet_templatesArgs<ExtArgs>
     project_intelligence?: boolean | projects$project_intelligenceArgs<ExtArgs>
     project_issues?: boolean | projects$project_issuesArgs<ExtArgs>
@@ -7941,9 +7957,11 @@ export namespace Prisma {
     radius_meters?: boolean
     enabled_unit_types?: boolean
     monitoring_focus?: boolean
+    shift_start_time?: boolean
+    shift_end_time?: boolean
   }
 
-  export type projectsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customer_id" | "name" | "code" | "status" | "created_at" | "enabled_forms" | "latitude" | "longitude" | "radius_meters" | "enabled_unit_types" | "monitoring_focus", ExtArgs["result"]["projects"]>
+  export type projectsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customer_id" | "name" | "code" | "status" | "created_at" | "enabled_forms" | "latitude" | "longitude" | "radius_meters" | "enabled_unit_types" | "monitoring_focus" | "shift_start_time" | "shift_end_time", ExtArgs["result"]["projects"]>
   export type projectsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     logsheet_templates?: boolean | projects$logsheet_templatesArgs<ExtArgs>
     project_intelligence?: boolean | projects$project_intelligenceArgs<ExtArgs>
@@ -7985,6 +8003,8 @@ export namespace Prisma {
       radius_meters: number
       enabled_unit_types: string
       monitoring_focus: string
+      shift_start_time: string | null
+      shift_end_time: string | null
     }, ExtArgs["result"]["projects"]>
     composites: {}
   }
@@ -8376,6 +8396,8 @@ export namespace Prisma {
     readonly radius_meters: FieldRef<"projects", 'Int'>
     readonly enabled_unit_types: FieldRef<"projects", 'String'>
     readonly monitoring_focus: FieldRef<"projects", 'String'>
+    readonly shift_start_time: FieldRef<"projects", 'String'>
+    readonly shift_end_time: FieldRef<"projects", 'String'>
   }
     
 
@@ -55913,7 +55935,9 @@ export namespace Prisma {
     longitude: 'longitude',
     radius_meters: 'radius_meters',
     enabled_unit_types: 'enabled_unit_types',
-    monitoring_focus: 'monitoring_focus'
+    monitoring_focus: 'monitoring_focus',
+    shift_start_time: 'shift_start_time',
+    shift_end_time: 'shift_end_time'
   };
 
   export type ProjectsScalarFieldEnum = (typeof ProjectsScalarFieldEnum)[keyof typeof ProjectsScalarFieldEnum]
@@ -56695,7 +56719,9 @@ export namespace Prisma {
     code: 'code',
     enabled_forms: 'enabled_forms',
     enabled_unit_types: 'enabled_unit_types',
-    monitoring_focus: 'monitoring_focus'
+    monitoring_focus: 'monitoring_focus',
+    shift_start_time: 'shift_start_time',
+    shift_end_time: 'shift_end_time'
   };
 
   export type projectsOrderByRelevanceFieldEnum = (typeof projectsOrderByRelevanceFieldEnum)[keyof typeof projectsOrderByRelevanceFieldEnum]
@@ -57452,6 +57478,8 @@ export namespace Prisma {
     radius_meters?: IntFilter<"projects"> | number
     enabled_unit_types?: StringFilter<"projects"> | string
     monitoring_focus?: StringFilter<"projects"> | string
+    shift_start_time?: StringNullableFilter<"projects"> | string | null
+    shift_end_time?: StringNullableFilter<"projects"> | string | null
     logsheet_templates?: Logsheet_templatesListRelationFilter
     project_intelligence?: XOR<Project_intelligenceNullableScalarRelationFilter, project_intelligenceWhereInput> | null
     project_issues?: Project_issuesListRelationFilter
@@ -57477,6 +57505,8 @@ export namespace Prisma {
     radius_meters?: SortOrder
     enabled_unit_types?: SortOrder
     monitoring_focus?: SortOrder
+    shift_start_time?: SortOrderInput | SortOrder
+    shift_end_time?: SortOrderInput | SortOrder
     logsheet_templates?: logsheet_templatesOrderByRelationAggregateInput
     project_intelligence?: project_intelligenceOrderByWithRelationInput
     project_issues?: project_issuesOrderByRelationAggregateInput
@@ -57507,6 +57537,8 @@ export namespace Prisma {
     radius_meters?: IntFilter<"projects"> | number
     enabled_unit_types?: StringFilter<"projects"> | string
     monitoring_focus?: StringFilter<"projects"> | string
+    shift_start_time?: StringNullableFilter<"projects"> | string | null
+    shift_end_time?: StringNullableFilter<"projects"> | string | null
     logsheet_templates?: Logsheet_templatesListRelationFilter
     project_intelligence?: XOR<Project_intelligenceNullableScalarRelationFilter, project_intelligenceWhereInput> | null
     project_issues?: Project_issuesListRelationFilter
@@ -57532,6 +57564,8 @@ export namespace Prisma {
     radius_meters?: SortOrder
     enabled_unit_types?: SortOrder
     monitoring_focus?: SortOrder
+    shift_start_time?: SortOrderInput | SortOrder
+    shift_end_time?: SortOrderInput | SortOrder
     _count?: projectsCountOrderByAggregateInput
     _avg?: projectsAvgOrderByAggregateInput
     _max?: projectsMaxOrderByAggregateInput
@@ -57555,6 +57589,8 @@ export namespace Prisma {
     radius_meters?: IntWithAggregatesFilter<"projects"> | number
     enabled_unit_types?: StringWithAggregatesFilter<"projects"> | string
     monitoring_focus?: StringWithAggregatesFilter<"projects"> | string
+    shift_start_time?: StringNullableWithAggregatesFilter<"projects"> | string | null
+    shift_end_time?: StringNullableWithAggregatesFilter<"projects"> | string | null
   }
 
   export type knowledge_resourcesWhereInput = {
@@ -61652,6 +61688,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
     project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
     project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
@@ -61677,6 +61715,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
     project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
     project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
@@ -61700,6 +61740,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
     project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
     project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
@@ -61725,6 +61767,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
     project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
     project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
@@ -61749,6 +61793,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
   }
 
   export type projectsUpdateManyMutationInput = {
@@ -61763,6 +61809,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type projectsUncheckedUpdateManyInput = {
@@ -61778,6 +61826,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type knowledge_resourcesCreateInput = {
@@ -66479,6 +66529,8 @@ export namespace Prisma {
     radius_meters?: SortOrder
     enabled_unit_types?: SortOrder
     monitoring_focus?: SortOrder
+    shift_start_time?: SortOrder
+    shift_end_time?: SortOrder
   }
 
   export type projectsAvgOrderByAggregateInput = {
@@ -66502,6 +66554,8 @@ export namespace Prisma {
     radius_meters?: SortOrder
     enabled_unit_types?: SortOrder
     monitoring_focus?: SortOrder
+    shift_start_time?: SortOrder
+    shift_end_time?: SortOrder
   }
 
   export type projectsMinOrderByAggregateInput = {
@@ -66517,6 +66571,8 @@ export namespace Prisma {
     radius_meters?: SortOrder
     enabled_unit_types?: SortOrder
     monitoring_focus?: SortOrder
+    shift_start_time?: SortOrder
+    shift_end_time?: SortOrder
   }
 
   export type projectsSumOrderByAggregateInput = {
@@ -73713,6 +73769,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
     project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
     project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
@@ -73736,6 +73794,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
     project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
     project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
@@ -73875,6 +73935,8 @@ export namespace Prisma {
     radius_meters?: IntFilter<"projects"> | number
     enabled_unit_types?: StringFilter<"projects"> | string
     monitoring_focus?: StringFilter<"projects"> | string
+    shift_start_time?: StringNullableFilter<"projects"> | string | null
+    shift_end_time?: StringNullableFilter<"projects"> | string | null
   }
 
   export type sitesUpsertWithWhereUniqueWithoutCustomersInput = {
@@ -74738,6 +74800,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
     project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
     project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
@@ -74762,6 +74826,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
     project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
     project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
@@ -74800,6 +74866,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
     project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
     project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
@@ -74824,6 +74892,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
     project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
     project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
@@ -75827,6 +75897,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
     project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
     project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
@@ -75851,6 +75923,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
     project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
     project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
@@ -76329,6 +76403,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
     project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
     project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
@@ -76353,6 +76429,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
     project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
     project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
@@ -76399,6 +76477,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
     project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
     project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
@@ -76423,6 +76503,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
     project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
     project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
@@ -76537,6 +76619,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
     project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
     project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
@@ -76561,6 +76645,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
     project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
     project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
@@ -80639,6 +80725,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
     project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
     project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
@@ -80663,6 +80751,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
     project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
     project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
@@ -80934,6 +81024,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
     project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
     project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
@@ -80958,6 +81050,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
     project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
     project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
@@ -81552,6 +81646,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
     project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
     project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
@@ -81576,6 +81672,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
     project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
     project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
@@ -81696,6 +81794,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
     project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
     project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
@@ -81720,6 +81820,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
     project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
     project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
@@ -82872,6 +82974,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
     project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
     project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
@@ -82896,6 +83000,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
     project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
     project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
@@ -83010,6 +83116,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
     project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
     project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
@@ -83034,6 +83142,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
     project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
     project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
@@ -83138,6 +83248,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
     project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
     customers: customersCreateNestedOneWithoutProjectsInput
@@ -83162,6 +83274,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
     project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
@@ -83276,6 +83390,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
     project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
     customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
@@ -83300,6 +83416,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
     project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
@@ -83404,6 +83522,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
     project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
     customers: customersCreateNestedOneWithoutProjectsInput
@@ -83428,6 +83548,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
     project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
@@ -83466,6 +83588,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
     project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
     customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
@@ -83490,6 +83614,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
     project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
@@ -83541,6 +83667,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
     project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
     customers: customersCreateNestedOneWithoutProjectsInput
@@ -83565,6 +83693,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
     project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
     project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
     schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
@@ -83633,6 +83763,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
     project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
     customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
@@ -83657,6 +83789,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
     project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
     schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
@@ -83759,6 +83893,8 @@ export namespace Prisma {
     radius_meters?: number
     enabled_unit_types?: string
     monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
   }
 
   export type sitesCreateManyCustomersInput = {
@@ -83821,6 +83957,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
     project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
     project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
@@ -83844,6 +83982,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
     logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
     project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
     project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
@@ -83867,6 +84007,8 @@ export namespace Prisma {
     radius_meters?: IntFieldUpdateOperationsInput | number
     enabled_unit_types?: StringFieldUpdateOperationsInput | string
     monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type sitesUpdateWithoutCustomersInput = {

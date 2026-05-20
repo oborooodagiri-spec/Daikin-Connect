@@ -22,7 +22,19 @@ const AttendanceClient = dynamic(() => import("./AttendanceClient"), {
   )
 });
 
-export default function AttendanceDashboard({ projects, session }: { projects: {id: string, name: string}[]; session: any }) {
+export default function AttendanceDashboard({ 
+  projects, 
+  session 
+}: { 
+  projects: {
+    id: string; 
+    name: string; 
+    shift_start_time?: string; 
+    shift_end_time?: string; 
+    radius_meters?: number;
+  }[]; 
+  session: any; 
+}) {
   const [activeTab, setActiveTab] = useState<"riwayat" | "absensi" | "shift">("riwayat");
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(projects.length === 1 ? projects[0].id : null);
   const [history, setHistory] = useState<any[]>([]);
@@ -41,8 +53,8 @@ export default function AttendanceDashboard({ projects, session }: { projects: {
     async function autoSelectActiveProject() {
       try {
         const res = await getActiveAttendance("empty");
-        if (res && "success" in res && res.success && res.data) {
-          setSelectedProjectId(String(res.data.project_id));
+        if (res && (res as any).success && (res as any).data) {
+          setSelectedProjectId(String((res as any).data.project_id));
           setActiveTab("absensi"); // Langsung ke tab absensi jika ada sesi aktif
         }
       } catch (err) {
@@ -65,8 +77,8 @@ export default function AttendanceDashboard({ projects, session }: { projects: {
       getAttendanceStats(selectedMonth.getMonth(), selectedMonth.getFullYear())
     ]);
 
-    if (histRes.success) setHistory(histRes.data);
-    if (statsRes.success) setStats(statsRes.data);
+    if ((histRes as any).success) setHistory((histRes as any).data);
+    if ((statsRes as any).success) setStats((statsRes as any).data);
     setLoading(false);
   };
 
@@ -276,9 +288,76 @@ export default function AttendanceDashboard({ projects, session }: { projects: {
             </div>
          )}
          {activeTab === "shift" && (
-           <div className="p-8 text-center text-slate-400">
-              <Clock size={48} className="mx-auto mb-4 opacity-20" />
-              <p>Halaman Shift akan segera hadir</p>
+           <div className="p-4 space-y-6 pb-24">
+              {/* Premium Shift Header Card */}
+              <div className="bg-gradient-to-br from-blue-900 to-indigo-950 text-white rounded-3xl p-6 border border-blue-800 shadow-md relative overflow-hidden">
+                 <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                 <div className="flex items-start gap-4 relative z-10">
+                    <div className="p-3 bg-white/10 backdrop-blur-md rounded-2xl text-blue-300">
+                       <Clock size={20} />
+                    </div>
+                    <div>
+                       <h3 className="text-sm font-black tracking-wide uppercase">Jadwal Shift Kerja</h3>
+                       <p className="text-[11px] text-blue-100/80 font-medium mt-1 leading-relaxed">
+                          Jadwal shift kerja ditentukan secara dinamis per proyek oleh administrator. Keterlambatan check-in atau kepulangan lebih awal akan tercatat secara otomatis pada sistem.
+                       </p>
+                    </div>
+                 </div>
+              </div>
+
+              {/* Projects Shift List */}
+              <div className="space-y-4">
+                 {projects.length === 0 ? (
+                    <div className="text-center py-12 text-slate-400">
+                       <Clock size={40} className="mx-auto mb-3 opacity-20" />
+                       <p className="text-sm">Belum ada proyek yang ditugaskan</p>
+                    </div>
+                 ) : (
+                    projects.map((project) => {
+                       const start = project.shift_start_time || "08:00";
+                       const end = project.shift_end_time || "17:00";
+                       const radius = project.radius_meters || 100;
+                       return (
+                          <div 
+                             key={project.id} 
+                             className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm space-y-4 hover:border-blue-200 transition-colors"
+                          >
+                             <div className="flex items-start justify-between">
+                                <div className="space-y-1">
+                                   <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest">
+                                      LOKASI PROYEK
+                                   </p>
+                                   <h4 className="text-sm font-black text-slate-800 leading-snug">
+                                      {project.name}
+                                   </h4>
+                                </div>
+                                <span className="px-3 py-1 bg-blue-50 text-blue-700 text-[10px] font-bold rounded-lg border border-blue-100 flex items-center gap-1">
+                                   <MapPin size={10} /> {radius}m Radius
+                                </span>
+                             </div>
+                             
+                             <div className="h-[1px] bg-slate-100" />
+                             
+                             <div className="grid grid-cols-2 gap-4">
+                                <div className="p-3 bg-slate-50/80 rounded-xl space-y-1 border border-slate-100">
+                                   <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> JAM MASUK
+                                   </span>
+                                   <p className="text-sm font-black text-slate-700">{start}</p>
+                                </div>
+                                
+                                <div className="p-3 bg-slate-50/80 rounded-xl space-y-1 border border-slate-100">
+                                   <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-rose-500" /> JAM PULANG
+                                   </span>
+                                   <p className="text-sm font-black text-slate-700">{end}</p>
+                                </div>
+                             </div>
+                          </div>
+                       );
+                    })
+                 )}
+              </div>
            </div>
          )}
       </main>
@@ -317,6 +396,35 @@ function StatItem({ label, value }: { label: string, value: number }) {
 }
 
 function HistoryDetailModal({ item, onClose }: { item: any; onClose: () => void }) {
+  const shiftStart = item.projects?.shift_start_time || "08:00";
+  const shiftEnd = item.projects?.shift_end_time || "17:00";
+
+  let isLate = false;
+  let lateMinutes = 0;
+  if (item.check_in_time) {
+    const checkIn = new Date(item.check_in_time);
+    const [sh, sm] = shiftStart.split(":").map(Number);
+    const checkInMins = checkIn.getHours() * 60 + checkIn.getMinutes();
+    const shiftStartMins = sh * 60 + sm;
+    if (checkInMins > shiftStartMins) {
+      isLate = true;
+      lateMinutes = checkInMins - shiftStartMins;
+    }
+  }
+
+  let isEarlyOut = false;
+  let earlyMinutes = 0;
+  if (item.check_out_time && item.check_out_photo && item.check_out_photo !== "") {
+    const checkOut = new Date(item.check_out_time);
+    const [eh, em] = shiftEnd.split(":").map(Number);
+    const checkOutMins = checkOut.getHours() * 60 + checkOut.getMinutes();
+    const shiftEndMins = eh * 60 + em;
+    if (checkOutMins < shiftEndMins) {
+      isEarlyOut = true;
+      earlyMinutes = shiftEndMins - checkOutMins;
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-0 sm:p-4">
        <motion.div 
@@ -349,6 +457,45 @@ function HistoryDetailModal({ item, onClose }: { item: any; onClose: () => void 
                 <PhotoCard label="Clock In" url={item.check_in_photo} time={item.check_in_time} color="emerald" />
                 <PhotoCard label="Clock Out" url={item.check_out_photo} time={item.check_out_photo && item.check_out_photo !== "" ? item.check_out_time : null} color="rose" />
              </div>
+
+             {/* Dynamic Compliance & Shift Info Banner */}
+             {isLate || isEarlyOut ? (
+                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-100 space-y-2">
+                   <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest flex items-center gap-1">
+                      <AlertCircle size={12} /> Status Kedisiplinan
+                   </p>
+                   <div className="space-y-1">
+                      {isLate && (
+                         <p className="text-xs font-bold text-amber-800">
+                            Terlambat Check-in: <span className="text-rose-600">+{lateMinutes} menit</span> (Jadwal: {shiftStart})
+                         </p>
+                      )}
+                      {isEarlyOut && (
+                         <p className="text-xs font-bold text-amber-800">
+                            Pulang Lebih Awal: <span className="text-rose-600">-{earlyMinutes} menit</span> (Jadwal: {shiftEnd})
+                         </p>
+                      )}
+                   </div>
+                </div>
+             ) : item.check_in_time && item.check_out_time && item.check_out_photo && item.check_out_photo !== "" ? (
+                <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-100">
+                   <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1 mb-1">
+                      <CheckCircle2 size={12} /> Status Kedisiplinan
+                   </p>
+                   <p className="text-xs font-bold text-emerald-800">
+                      Sesuai Jadwal (Tepat waktu sesuai shift proyek: {shiftStart} - {shiftEnd})
+                   </p>
+                </div>
+             ) : (
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1 mb-1">
+                      <Clock size={12} /> Info Shift Proyek
+                   </p>
+                   <p className="text-xs font-bold text-slate-700">
+                      Shift Aktif: {shiftStart} - {shiftEnd}
+                   </p>
+                </div>
+             )}
 
              <div className="space-y-4">
                 <div className="flex items-start gap-4">

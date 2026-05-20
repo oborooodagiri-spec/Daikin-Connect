@@ -36,6 +36,8 @@ export async function getProjectsByCustomer(customerId: string) {
         latitude: p.latitude,
         longitude: p.longitude,
         radius_meters: p.radius_meters,
+        shift_start_time: p.shift_start_time || "08:00",
+        shift_end_time: p.shift_end_time || "17:00",
         units_count: p._count.units,
         schedules_count: p._count.schedules
       }))
@@ -88,6 +90,8 @@ export async function createProject(customerId: string, data: {
   latitude?: number | null;
   longitude?: number | null;
   radius_meters?: number | null;
+  shift_start_time?: string | null;
+  shift_end_time?: string | null;
 }) {
   try {
     await prisma.projects.create({
@@ -99,7 +103,9 @@ export async function createProject(customerId: string, data: {
         enabled_forms: data.enabled_forms || "Audit,Preventive,Corrective",
         latitude: data.latitude,
         longitude: data.longitude,
-        radius_meters: data.radius_meters
+        radius_meters: data.radius_meters,
+        shift_start_time: data.shift_start_time || "08:00",
+        shift_end_time: data.shift_end_time || "17:00"
       }
     });
     revalidatePath(`/dashboard/customers/${customerId}/projects`);
@@ -118,6 +124,8 @@ export async function updateProject(customerId: string, projectId: string, data:
   latitude?: number | null;
   longitude?: number | null;
   radius_meters?: number | null;
+  shift_start_time?: string | null;
+  shift_end_time?: string | null;
 }) {
   try {
     await prisma.projects.update({
@@ -128,7 +136,9 @@ export async function updateProject(customerId: string, projectId: string, data:
         enabled_forms: data.enabled_forms,
         latitude: data.latitude,
         longitude: data.longitude,
-        radius_meters: data.radius_meters
+        radius_meters: data.radius_meters,
+        shift_start_time: data.shift_start_time,
+        shift_end_time: data.shift_end_time
       }
     });
     revalidatePath(`/dashboard/customers/${customerId}/projects`);
