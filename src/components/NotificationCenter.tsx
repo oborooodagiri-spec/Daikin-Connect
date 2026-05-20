@@ -7,7 +7,7 @@ import {
   CheckCircle2, BellRing, Settings, Trash2, ExternalLink,
   PlusCircle, Edit3, Trash, Zap
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { getMyNotifications, markAsRead } from "@/app/actions/notifications";
 
 export default function NotificationCenter({ projectId }: { projectId?: string }) {
@@ -15,8 +15,14 @@ export default function NotificationCenter({ projectId }: { projectId?: string }
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const params = useParams();
   const [isMounted, setIsMounted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Extract projectId dynamically from URL routing path as a bulletproof fallback
+  const routeProjectId = params?.projectId as string | undefined;
+  const activeProjectId = projectId || routeProjectId;
+  const cleanProjectId = (activeProjectId && activeProjectId !== "empty" && activeProjectId !== "undefined") ? activeProjectId : undefined;
 
   useEffect(() => {
     setIsMounted(true);
@@ -26,7 +32,7 @@ export default function NotificationCenter({ projectId }: { projectId?: string }
   }, []);
 
   const fetchNotifications = async () => {
-    const res = await getMyNotifications(projectId);
+    const res = await getMyNotifications(cleanProjectId);
     if (res.success && res.data) {
       // Check for new unread notifications to trigger sound
       const prevUnreadCount = notifications.filter(n => !n.is_read).length;
@@ -45,7 +51,7 @@ export default function NotificationCenter({ projectId }: { projectId?: string }
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 10000); // 10 seconds
     return () => clearInterval(interval);
-  }, [projectId]);
+  }, [cleanProjectId]);
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
@@ -96,7 +102,7 @@ export default function NotificationCenter({ projectId }: { projectId?: string }
               initial={{ opacity: 0, y: 10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
-              className="fixed top-0 left-0 w-full h-full md:top-20 md:left-auto md:right-[22px] md:w-[26rem] md:h-auto md:max-h-[75vh] bg-white border border-slate-200 md:rounded-[2.5rem] shadow-2xl z-[1000] flex flex-col overflow-hidden"
+              className="absolute right-0 top-full mt-3 w-[calc(100vw-2rem)] sm:w-[26rem] max-h-[80vh] md:max-h-[75vh] bg-white border border-slate-200 rounded-[2rem] shadow-2xl z-[1000] flex flex-col overflow-hidden"
             >
               {/* Header */}
               <div className="p-6 border-b border-slate-100 flex flex-row-reverse items-center justify-between bg-white sticky top-0 z-10">

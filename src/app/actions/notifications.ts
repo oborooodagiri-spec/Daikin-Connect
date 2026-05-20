@@ -11,7 +11,11 @@ export async function getMyNotifications(projectId?: string) {
   const session = await getSession();
   if (!session) return { error: "Unauthorized" };
 
+  // Sanitize input to handle stringified "undefined" or "empty" from client context
+  const cleanProjectId = (projectId && projectId !== "empty" && projectId !== "undefined") ? projectId : undefined;
+
   try {
+    console.log(`[getMyNotifications] user_id=${session.userId} | projectId=${projectId} | cleanProjectId=${cleanProjectId} | type=${typeof projectId}`);
     const notifications = await (prisma as any).notifications.findMany({
       where: { user_id: parseInt(session.userId) },
       orderBy: { created_at: "desc" },
@@ -19,19 +23,19 @@ export async function getMyNotifications(projectId?: string) {
     });
 
     let filtered = notifications;
-    if (projectId) {
+    if (cleanProjectId) {
       filtered = notifications.filter((n: any) => {
         // 1. Check database column project_id
         if (n.project_id !== null && n.project_id !== undefined) {
-          return n.project_id.toString() === projectId;
+          return n.project_id.toString() === cleanProjectId;
         }
 
-        // 2. Fallback: Parse from link
+        // 2. Fallback: Parse from link (broadened pattern to match with or without trailing slash)
         if (n.link) {
-          const match = n.link.match(/\/w\/(\d+)\//);
+          const match = n.link.match(/\/w\/(\d+)/);
           if (match) {
             const linkProjectId = match[1];
-            return linkProjectId === projectId;
+            return linkProjectId === cleanProjectId;
           }
         }
 
@@ -86,7 +90,8 @@ export async function createNotification({
     if (projectId !== undefined && projectId !== null) {
       inferredProjectId = BigInt(projectId.toString());
     } else if (link) {
-      const match = link.match(/\/w\/(\d+)\//);
+      // Broadened pattern to match with or without trailing slash
+      const match = link.match(/\/w\/(\d+)/);
       if (match) {
         inferredProjectId = BigInt(match[1]);
       }
