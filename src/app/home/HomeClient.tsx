@@ -219,16 +219,6 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
             <div className="app-grid">
               <div 
                 className="app-item"
-                onClick={() => window.open("/admin/database", "_blank")}
-              >
-                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #0073ea 0%, #00a1e4 100%)" }}>
-                    <Database size={22} />
-                 </div>
-                 <span className="app-label">Database</span>
-              </div>
-
-              <div 
-                className="app-item"
                 onClick={() => router.push("/admin/attendance")}
               >
                  <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #e44258 0%, #ff6b81 100%)" }}>
@@ -308,6 +298,16 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
                  <span className="app-label">Absensi</span>
               </div>
             )}
+
+            <div 
+              className="app-item"
+              onClick={() => window.open("/admin/database", "_blank")}
+            >
+               <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #0073ea 0%, #00a1e4 100%)" }}>
+                  <Database size={22} />
+               </div>
+               <span className="app-label">Database</span>
+            </div>
 
             {profile.isAdmin && (
               <div 

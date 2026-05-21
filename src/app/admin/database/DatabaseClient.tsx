@@ -71,10 +71,10 @@ export default function KnowledgeCenterPage() {
       getAllUsers()
     ]);
 
-    if (resData.success) setResources(resData.data);
+    if ('success' in resData && resData.success && 'data' in resData) setResources(resData.data);
     if (sessData) setSession(sessData);
-    if (projData.success) setProjects(projData.data);
-    if (usersData?.success) setAllUsers(usersData.data);
+    if ('success' in projData && projData.success && 'data' in projData) setProjects(projData.data);
+    if (usersData && 'success' in usersData && usersData.success && 'data' in usersData) setAllUsers(usersData.data);
     setLoading(false);
   };
 
@@ -225,7 +225,25 @@ export default function KnowledgeCenterPage() {
 
         {/* Assets Grid/List */}
         <AnimatePresence mode="wait">
-          {viewMode === "grid" ? (
+          {filteredResources.length === 0 ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="text-center py-24 bg-slate-50/50 rounded-[2.5rem] border-2 border-dashed border-slate-200/60 p-8 flex flex-col items-center justify-center"
+            >
+              <div className="w-16 h-16 bg-white border border-slate-100 rounded-2xl flex items-center justify-center text-slate-300 mb-6 shadow-sm">
+                <FileText className="w-8 h-8 text-slate-400" />
+              </div>
+              <h3 className="text-xl font-black text-[#323338] mb-2 uppercase tracking-tight">Belum Ada File Tersedia</h3>
+              <p className="text-sm font-bold text-slate-400 max-w-md mx-auto leading-relaxed">
+                {session?.isInternal 
+                  ? "Database internal Anda masih kosong. Silakan tambahkan resource baru dengan menekan tombol 'Add Resource' di atas."
+                  : "Belum ada materi, katalog, atau database yang dibagikan ke akun Anda saat ini. Hubungi administrator jika Anda memerlukan akses."}
+              </p>
+            </motion.div>
+          ) : viewMode === "grid" ? (
             <motion.div 
               key="grid"
               initial={{ opacity: 0, y: 10 }}

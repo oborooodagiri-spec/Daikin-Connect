@@ -10,13 +10,8 @@ export const metadata = {
 export default async function ResourceDatabasePage() {
   const session = await getSession();
 
-  // Strict Admin Role Check
-  const isAdmin = session?.roles?.some((role: string) => 
-    ["admin", "super", "administrator"].some(keyword => role.toLowerCase().includes(keyword))
-  );
-
-  if (!isAdmin) {
-    redirect("/dashboard");
+  if (!session) {
+    redirect("/");
   }
 
   return <DatabaseClient />;
