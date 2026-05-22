@@ -1,0 +1,318 @@
+"use client";
+
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ArrowLeftRight,
+  Thermometer,
+  Wind,
+  Gauge,
+  PipetteIcon,
+  Wrench,
+  Zap,
+  Snowflake,
+  Ruler,
+  BarChart3,
+  Calculator,
+  ArrowLeft,
+  X,
+  Info,
+} from "lucide-react";
+import StaticLogo from "@/components/ui/StaticLogo";
+
+interface Tool {
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ReactNode;
+  gradient: string;
+  href: string;
+  active: boolean;
+}
+
+const TOOLS: Tool[] = [
+  {
+    id: "unit-converter",
+    name: "Unit Converter",
+    description: "CMH↔CFM, Velocity, Pressure, Pipe Size, dan lainnya",
+    icon: <ArrowLeftRight size={24} />,
+    gradient: "linear-gradient(135deg, #0073ea 0%, #00a1e4 100%)",
+    href: "/tools/unit-converter",
+    active: true,
+  },
+  {
+    id: "psychrometric",
+    name: "Psychrometric",
+    description: "Kalkulator properti udara lembab dengan grafik interaktif",
+    icon: <Thermometer size={24} />,
+    gradient: "linear-gradient(135deg, #e44258 0%, #ff6b81 100%)",
+    href: "/tools/psychrometric",
+    active: true,
+  },
+  {
+    id: "air-mixing",
+    name: "Air Mixing",
+    description: "Hitung kondisi udara campuran dari 2 aliran udara",
+    icon: <Wind size={24} />,
+    gradient: "linear-gradient(135deg, #00c875 0%, #00e68a 100%)",
+    href: "/tools/air-mixing",
+    active: true,
+  },
+  {
+    id: "duct-sizer",
+    name: "Duct Sizer",
+    description: "Kalkulasi dimensi dan velocity duct berdasarkan air flow",
+    icon: <Ruler size={24} />,
+    gradient: "linear-gradient(135deg, #fdab3d 0%, #ffc107 100%)",
+    href: "/tools/duct-sizer",
+    active: false,
+  },
+  {
+    id: "refrigerant-pt",
+    name: "Refrigerant P-T",
+    description: "Tabel Pressure-Temperature untuk R-32, R-410A, R-134a",
+    icon: <Snowflake size={24} />,
+    gradient: "linear-gradient(135deg, #579bfc 0%, #a25ddc 100%)",
+    href: "/tools/refrigerant-pt",
+    active: false,
+  },
+  {
+    id: "chilled-water",
+    name: "Chilled Water",
+    description: "Sizing pipa dan flow rate untuk sistem chilled water",
+    icon: <PipetteIcon size={24} />,
+    gradient: "linear-gradient(135deg, #00c2ff 0%, #0073ea 100%)",
+    href: "/tools/chilled-water",
+    active: false,
+  },
+  {
+    id: "heat-load",
+    name: "Heat Load",
+    description: "Estimasi cepat beban pendinginan ruangan",
+    icon: <Zap size={24} />,
+    gradient: "linear-gradient(135deg, #ff642e 0%, #fdab3d 100%)",
+    href: "/tools/heat-load",
+    active: false,
+  },
+  {
+    id: "electrical-calc",
+    name: "Electrical",
+    description: "Konversi daya, arus, tegangan, dan power factor",
+    icon: <Gauge size={24} />,
+    gradient: "linear-gradient(135deg, #a25ddc 0%, #c084fc 100%)",
+    href: "/tools/electrical",
+    active: false,
+  },
+];
+
+export default function ToolsClient() {
+  const router = useRouter();
+  const [showToast, setShowToast] = useState(false);
+  const [toastName, setToastName] = useState("");
+
+  const handleToolClick = (tool: Tool) => {
+    if (tool.active) {
+      router.push(tool.href);
+    } else {
+      setToastName(tool.name);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2500);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-white" style={{ fontFamily: "'Inter', -apple-system, sans-serif" }}>
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100">
+        <div className="max-w-6xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <StaticLogo size={28} />
+            <div className="h-6 w-px bg-slate-200" />
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0073ea] to-[#00a1e4] flex items-center justify-center text-white">
+                <Wrench size={16} />
+              </div>
+              <div>
+                <h1 className="text-sm font-black text-[#323338] uppercase tracking-wide leading-none">HVAC Tools</h1>
+                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Engineering Suite</p>
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={() => window.close()}
+            className="p-2.5 rounded-xl bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-all"
+            title="Tutup"
+          >
+            <X size={18} />
+          </button>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-6xl mx-auto px-4 md:px-8 py-8 md:py-12">
+        {/* Hero Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-10 md:mb-14"
+        >
+          <h2 className="text-3xl md:text-5xl font-black text-[#323338] tracking-tight leading-tight uppercase">
+            Engineering<br />
+            <span className="text-slate-300">Toolkit</span>
+          </h2>
+          <p className="text-sm md:text-base text-slate-500 font-medium mt-3 max-w-lg">
+            Kalkulator dan converter satuan HVAC untuk kebutuhan engineering sehari-hari. Semua berjalan secara <strong className="text-[#0073ea]">real-time</strong> dan <strong className="text-[#0073ea]">offline</strong>.
+          </p>
+        </motion.div>
+
+        {/* Active Tools Label */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="flex items-center gap-3 mb-6"
+        >
+          <div className="px-3 py-1.5 bg-[#0073ea] text-white rounded-lg text-[10px] font-black uppercase tracking-widest">
+            Active Tools
+          </div>
+          <div className="h-px flex-1 bg-slate-100" />
+        </motion.div>
+
+        {/* Tools Grid - Active */}
+        <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 md:gap-5 mb-12">
+          {TOOLS.filter(t => t.active).map((tool, i) => (
+            <motion.div
+              key={tool.id}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + i * 0.06 }}
+              onClick={() => handleToolClick(tool)}
+              className="group relative bg-white border border-[#e6e9ef] rounded-2xl md:rounded-[1.5rem] p-4 md:p-6 cursor-pointer transition-all duration-300 hover:border-[#0073ea]/30 hover:shadow-xl hover:shadow-blue-100/40 hover:-translate-y-1 active:scale-[0.97]"
+            >
+              {/* Icon */}
+              <div
+                className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center text-white mb-3 md:mb-4 shadow-lg transition-transform duration-300 group-hover:scale-105"
+                style={{ background: tool.gradient, boxShadow: `0 8px 20px ${tool.gradient.includes('#0073ea') ? 'rgba(0,115,234,0.25)' : tool.gradient.includes('#e44258') ? 'rgba(228,66,88,0.25)' : 'rgba(0,200,117,0.25)'}` }}
+              >
+                {tool.icon}
+              </div>
+
+              {/* Name */}
+              <h3 className="text-xs md:text-sm font-black text-[#323338] uppercase tracking-tight leading-tight mb-1">
+                {tool.name}
+              </h3>
+
+              {/* Description (hidden on mobile) */}
+              <p className="hidden md:block text-[11px] text-slate-400 font-medium leading-relaxed line-clamp-2">
+                {tool.description}
+              </p>
+
+              {/* Active indicator dot */}
+              <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#00c875] shadow-sm shadow-emerald-200" />
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Coming Soon Label */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="flex items-center gap-3 mb-6"
+        >
+          <div className="px-3 py-1.5 bg-slate-200 text-slate-500 rounded-lg text-[10px] font-black uppercase tracking-widest">
+            Coming Soon
+          </div>
+          <div className="h-px flex-1 bg-slate-100" />
+        </motion.div>
+
+        {/* Tools Grid - Coming Soon */}
+        <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5">
+          {TOOLS.filter(t => !t.active).map((tool, i) => (
+            <motion.div
+              key={tool.id}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 + i * 0.05 }}
+              onClick={() => handleToolClick(tool)}
+              className="group relative bg-white border border-slate-100 rounded-2xl md:rounded-[1.5rem] p-4 md:p-6 cursor-pointer transition-all duration-300 hover:border-slate-200 hover:shadow-md active:scale-[0.97] opacity-60 hover:opacity-80"
+            >
+              {/* Icon */}
+              <div
+                className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center text-white mb-3 md:mb-4 grayscale-[30%] group-hover:grayscale-0 transition-all"
+                style={{ background: tool.gradient }}
+              >
+                {tool.icon}
+              </div>
+
+              {/* Name */}
+              <h3 className="text-xs md:text-sm font-black text-slate-400 uppercase tracking-tight leading-tight mb-1">
+                {tool.name}
+              </h3>
+
+              {/* Description (hidden on mobile) */}
+              <p className="hidden md:block text-[11px] text-slate-300 font-medium leading-relaxed line-clamp-2">
+                {tool.description}
+              </p>
+
+              {/* Coming Soon Badge */}
+              <div className="absolute top-3 right-3 px-1.5 py-0.5 bg-slate-100 rounded text-[7px] font-black text-slate-400 uppercase tracking-widest">
+                Soon
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Info Footer */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="mt-16 mb-8 flex items-start gap-3 bg-blue-50/50 border border-blue-100/50 rounded-2xl p-5"
+        >
+          <Info size={16} className="text-[#0073ea] mt-0.5 shrink-0" />
+          <div>
+            <p className="text-[11px] font-bold text-[#0073ea]">
+              Semua kalkulasi berjalan secara lokal di browser Anda — tanpa perlu koneksi internet setelah halaman dimuat.
+            </p>
+            <p className="text-[10px] font-medium text-slate-400 mt-1">
+              Data tidak dikirim ke server manapun. Privasi dan kecepatan terjamin.
+            </p>
+          </div>
+        </motion.div>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-100 py-6">
+        <div className="max-w-6xl mx-auto px-4 md:px-8 flex items-center justify-between">
+          <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
+            EPL Connect · HVAC Engineering Suite
+          </p>
+          <p className="text-[10px] font-bold text-slate-300">© 2026</p>
+        </div>
+      </footer>
+
+      {/* Coming Soon Toast */}
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[999] bg-[#323338] text-white px-6 py-4 rounded-2xl shadow-2xl shadow-black/20 flex items-center gap-3"
+          >
+            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+              <Wrench size={16} />
+            </div>
+            <div>
+              <p className="text-xs font-black uppercase tracking-wide">{toastName}</p>
+              <p className="text-[10px] font-medium text-white/60">Fitur ini akan segera hadir — stay tuned!</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

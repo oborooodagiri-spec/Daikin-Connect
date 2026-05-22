@@ -7,7 +7,7 @@ import {
   User, Mail, Phone, Building2, Shield, ChevronRight,
   Camera, X, Check, Search, LogOut, Settings, Clock,
   FileText, Calendar, Upload, Download, Activity, Edit3,
-  LayoutDashboard, ExternalLink, Database, Users, Briefcase, BookOpen
+  LayoutDashboard, ExternalLink, Database, Users, Briefcase, BookOpen, Wrench
 } from "lucide-react";
 import StaticLogo from "@/components/ui/StaticLogo";
 import { updateProfile, saveAvatarUrl } from "@/app/actions/profile";
@@ -307,6 +307,16 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
                   <Database size={22} />
                </div>
                <span className="app-label">Database</span>
+            </div>
+
+            <div 
+              className="app-item"
+              onClick={() => window.open("/tools", "_blank")}
+            >
+               <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #fdab3d 0%, #ffc107 100%)" }}>
+                  <Wrench size={22} />
+               </div>
+               <span className="app-label">Tools</span>
             </div>
 
             {profile.isAdmin && (
