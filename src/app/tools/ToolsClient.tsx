@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowLeftRight,
   Thermometer,
@@ -13,9 +13,6 @@ import {
   Zap,
   Snowflake,
   Ruler,
-  BarChart3,
-  Calculator,
-  ArrowLeft,
   X,
   Info,
 } from "lucide-react";
@@ -66,7 +63,7 @@ const TOOLS: Tool[] = [
     icon: <Ruler size={24} />,
     gradient: "linear-gradient(135deg, #fdab3d 0%, #ffc107 100%)",
     href: "/tools/duct-sizer",
-    active: false,
+    active: true,
   },
   {
     id: "refrigerant-pt",
@@ -75,7 +72,7 @@ const TOOLS: Tool[] = [
     icon: <Snowflake size={24} />,
     gradient: "linear-gradient(135deg, #579bfc 0%, #a25ddc 100%)",
     href: "/tools/refrigerant-pt",
-    active: false,
+    active: true,
   },
   {
     id: "chilled-water",
@@ -84,7 +81,7 @@ const TOOLS: Tool[] = [
     icon: <PipetteIcon size={24} />,
     gradient: "linear-gradient(135deg, #00c2ff 0%, #0073ea 100%)",
     href: "/tools/chilled-water",
-    active: false,
+    active: true,
   },
   {
     id: "heat-load",
@@ -93,7 +90,7 @@ const TOOLS: Tool[] = [
     icon: <Zap size={24} />,
     gradient: "linear-gradient(135deg, #ff642e 0%, #fdab3d 100%)",
     href: "/tools/heat-load",
-    active: false,
+    active: true,
   },
   {
     id: "electrical-calc",
@@ -102,23 +99,15 @@ const TOOLS: Tool[] = [
     icon: <Gauge size={24} />,
     gradient: "linear-gradient(135deg, #a25ddc 0%, #c084fc 100%)",
     href: "/tools/electrical",
-    active: false,
+    active: true,
   },
 ];
 
 export default function ToolsClient() {
   const router = useRouter();
-  const [showToast, setShowToast] = useState(false);
-  const [toastName, setToastName] = useState("");
 
   const handleToolClick = (tool: Tool) => {
-    if (tool.active) {
-      router.push(tool.href);
-    } else {
-      setToastName(tool.name);
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2500);
-    }
+    router.push(tool.href);
   };
 
   return (
@@ -164,7 +153,7 @@ export default function ToolsClient() {
           </h2>
         </motion.div>
 
-        {/* Active Tools Label */}
+        {/* Engineering Tools Grid Label */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -172,82 +161,61 @@ export default function ToolsClient() {
           className="flex items-center gap-3 mb-6"
         >
           <div className="px-3 py-1.5 bg-[#0073ea] text-white rounded-lg text-[10px] font-black uppercase tracking-widest">
-            Active Tools
+            Engineering Tools
           </div>
           <div className="h-px flex-1 bg-slate-100" />
         </motion.div>
 
-        {/* Tools Grid - Active */}
-        <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 md:gap-5 mb-12">
-          {TOOLS.filter(t => t.active).map((tool, i) => (
+        {/* Tools Grid - All Active */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
+          {TOOLS.map((tool, i) => (
             <motion.div
               key={tool.id}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.06 }}
               onClick={() => handleToolClick(tool)}
-              className="group relative bg-white border border-[#e6e9ef] rounded-2xl md:rounded-[1.5rem] p-4 md:p-6 cursor-pointer transition-all duration-300 hover:border-[#0073ea]/30 hover:shadow-xl hover:shadow-blue-100/40 hover:-translate-y-1 active:scale-[0.97]"
+              className="group relative bg-white border border-[#e6e9ef] rounded-[1.5rem] p-4 md:p-6 cursor-pointer transition-all duration-300 hover:border-[#0073ea]/30 hover:shadow-xl hover:shadow-blue-100/40 hover:-translate-y-1 active:scale-[0.97]"
             >
               {/* Icon */}
               <div
                 className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center text-white mb-3 md:mb-4 shadow-lg transition-transform duration-300 group-hover:scale-105"
-                style={{ background: tool.gradient, boxShadow: `0 8px 20px ${tool.gradient.includes('#0073ea') ? 'rgba(0,115,234,0.25)' : tool.gradient.includes('#e44258') ? 'rgba(228,66,88,0.25)' : 'rgba(0,200,117,0.25)'}` }}
+                style={{
+                  background: tool.gradient,
+                  boxShadow: `0 8px 20px ${
+                    tool.gradient.includes("#0073ea")
+                      ? "rgba(0,115,234,0.25)"
+                      : tool.gradient.includes("#e44258")
+                      ? "rgba(228,66,88,0.25)"
+                      : tool.gradient.includes("#00c875")
+                      ? "rgba(0,200,117,0.25)"
+                      : tool.gradient.includes("#fdab3d")
+                      ? "rgba(253,171,61,0.25)"
+                      : tool.gradient.includes("#579bfc")
+                      ? "rgba(87,155,252,0.25)"
+                      : tool.gradient.includes("#00c2ff")
+                      ? "rgba(0,194,255,0.25)"
+                      : tool.gradient.includes("#ff642e")
+                      ? "rgba(255,100,46,0.25)"
+                      : "rgba(162,93,220,0.25)"
+                  }`,
+                }}
               >
                 {tool.icon}
               </div>
 
               {/* Name */}
-              <h3 className="text-xs md:text-sm font-black text-[#323338] uppercase tracking-tight leading-tight mb-0.5">
+              <h3 className="text-xs md:text-sm font-black text-[#323338] uppercase tracking-tight leading-tight mb-2">
                 {tool.name}
               </h3>
+              
+              {/* Description */}
+              <p className="text-[10px] font-medium text-slate-400 leading-relaxed">
+                {tool.description}
+              </p>
 
               {/* Active indicator dot */}
               <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#00c875] shadow-sm shadow-emerald-200" />
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Coming Soon Label */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="flex items-center gap-3 mb-6"
-        >
-          <div className="px-3 py-1.5 bg-slate-200 text-slate-500 rounded-lg text-[10px] font-black uppercase tracking-widest">
-            Coming Soon
-          </div>
-          <div className="h-px flex-1 bg-slate-100" />
-        </motion.div>
-
-        {/* Tools Grid - Coming Soon */}
-        <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5">
-          {TOOLS.filter(t => !t.active).map((tool, i) => (
-            <motion.div
-              key={tool.id}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35 + i * 0.05 }}
-              onClick={() => handleToolClick(tool)}
-              className="group relative bg-white border border-slate-100 rounded-2xl md:rounded-[1.5rem] p-4 md:p-6 cursor-pointer transition-all duration-300 hover:border-slate-200 hover:shadow-md active:scale-[0.97] opacity-60 hover:opacity-80"
-            >
-              {/* Icon */}
-              <div
-                className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center text-white mb-3 md:mb-4 grayscale-[30%] group-hover:grayscale-0 transition-all"
-                style={{ background: tool.gradient }}
-              >
-                {tool.icon}
-              </div>
-
-              {/* Name */}
-              <h3 className="text-xs md:text-sm font-black text-slate-400 uppercase tracking-tight leading-tight mb-0.5">
-                {tool.name}
-              </h3>
-
-              {/* Coming Soon Badge */}
-              <div className="absolute top-3 right-3 px-1.5 py-0.5 bg-slate-100 rounded text-[7px] font-black text-slate-400 uppercase tracking-widest">
-                Soon
-              </div>
             </motion.div>
           ))}
         </div>
@@ -263,7 +231,7 @@ export default function ToolsClient() {
             <Info size={14} className="shrink-0" />
             <h4 className="text-[10px] font-black uppercase tracking-widest leading-none">Sumber Data & Acuan</h4>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Psychrometrics & Air Mixing</h5>
               <p className="text-[10px] font-medium text-slate-500 leading-relaxed">
@@ -271,9 +239,21 @@ export default function ToolsClient() {
               </p>
             </div>
             <div>
-              <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Unit Converter</h5>
+              <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Duct Sizer & Chilled Water</h5>
               <p className="text-[10px] font-medium text-slate-500 leading-relaxed">
-                Faktor konversi mengacu pada standar internasional <strong>SI / IP Metric Guidelines</strong> yang diakui secara global dalam bidang Heating, Ventilation, and Air Conditioning (HVAC).
+                Kalkulasi diameter ekuivalen duct menggunakan formula <strong>Huebscher</strong>. Sizing pipa chilled water didasarkan pada diagram friksi <strong>Hazen-Williams</strong> dan kecepatan aliran rekomendasi ASHRAE.
+              </p>
+            </div>
+            <div>
+              <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Heat Load Estimator</h5>
+              <p className="text-[10px] font-medium text-slate-500 leading-relaxed">
+                Metode kalkulasi cepat beban panas berdasarkan CLTD (Cooling Load Temperature Difference) yang disederhanakan untuk selubung bangunan, solar gain, beban peralatan, beban hunian manusia (sensible/latent), serta ventilation airflow.
+              </p>
+            </div>
+            <div>
+              <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Electrical & Cable Sizer</h5>
+              <p className="text-[10px] font-medium text-slate-500 leading-relaxed">
+                Perhitungan arus nominal beban 1-Phase / 3-Phase berdasar cos φ beban induktif motor. Rekomendasi minimum luas penampang kabel mengacu pada standar <strong>PUIL / IEC 60364</strong> dengan continuous load safety factor 125%.
               </p>
             </div>
           </div>
@@ -289,26 +269,6 @@ export default function ToolsClient() {
           <p className="text-[10px] font-bold text-slate-300">© 2026</p>
         </div>
       </footer>
-
-      {/* Coming Soon Toast */}
-      <AnimatePresence>
-        {showToast && (
-          <motion.div
-            initial={{ opacity: 0, y: 40, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[999] bg-[#323338] text-white px-6 py-4 rounded-2xl shadow-2xl shadow-black/20 flex items-center gap-3"
-          >
-            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-              <Wrench size={16} />
-            </div>
-            <div>
-              <p className="text-xs font-black uppercase tracking-wide">{toastName}</p>
-              <p className="text-[10px] font-medium text-white/60">Fitur ini akan segera hadir — stay tuned!</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
