@@ -345,9 +345,6 @@ export default function AirMixingClient() {
               <h1 className="text-xl md:text-2xl font-black text-[#323338] tracking-tight">
                 Air Mixing Calculator
               </h1>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                Psychrometric Air Stream Mixing
-              </p>
             </div>
           </div>
         </motion.div>

@@ -474,9 +474,6 @@ export default function PsychrometricClient() {
             <h1 className="text-xl md:text-2xl font-black text-[#323338] tracking-tight">
               Psychrometric Calculator
             </h1>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-              Moist Air Properties & Interactive Chart
-            </p>
           </div>
         </motion.div>
 

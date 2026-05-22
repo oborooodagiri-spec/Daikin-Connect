@@ -162,9 +162,6 @@ export default function ToolsClient() {
             Engineering<br />
             <span className="text-slate-300">Toolkit</span>
           </h2>
-          <p className="text-sm md:text-base text-slate-500 font-medium mt-3 max-w-lg">
-            Kalkulator dan converter satuan HVAC untuk kebutuhan engineering sehari-hari. Semua berjalan secara <strong className="text-[#0073ea]">real-time</strong> dan <strong className="text-[#0073ea]">offline</strong>.
-          </p>
         </motion.div>
 
         {/* Active Tools Label */}
@@ -200,14 +197,9 @@ export default function ToolsClient() {
               </div>
 
               {/* Name */}
-              <h3 className="text-xs md:text-sm font-black text-[#323338] uppercase tracking-tight leading-tight mb-1">
+              <h3 className="text-xs md:text-sm font-black text-[#323338] uppercase tracking-tight leading-tight mb-0.5">
                 {tool.name}
               </h3>
-
-              {/* Description (hidden on mobile) */}
-              <p className="hidden md:block text-[11px] text-slate-400 font-medium leading-relaxed line-clamp-2">
-                {tool.description}
-              </p>
 
               {/* Active indicator dot */}
               <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#00c875] shadow-sm shadow-emerald-200" />
@@ -248,14 +240,9 @@ export default function ToolsClient() {
               </div>
 
               {/* Name */}
-              <h3 className="text-xs md:text-sm font-black text-slate-400 uppercase tracking-tight leading-tight mb-1">
+              <h3 className="text-xs md:text-sm font-black text-slate-400 uppercase tracking-tight leading-tight mb-0.5">
                 {tool.name}
               </h3>
-
-              {/* Description (hidden on mobile) */}
-              <p className="hidden md:block text-[11px] text-slate-300 font-medium leading-relaxed line-clamp-2">
-                {tool.description}
-              </p>
 
               {/* Coming Soon Badge */}
               <div className="absolute top-3 right-3 px-1.5 py-0.5 bg-slate-100 rounded text-[7px] font-black text-slate-400 uppercase tracking-widest">
@@ -265,21 +252,30 @@ export default function ToolsClient() {
           ))}
         </div>
 
-        {/* Info Footer */}
+        {/* References / Acuan */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="mt-16 mb-8 flex items-start gap-3 bg-blue-50/50 border border-blue-100/50 rounded-2xl p-5"
+          className="mt-16 mb-8 bg-slate-50 border border-slate-100 rounded-[1.5rem] p-6"
         >
-          <Info size={16} className="text-[#0073ea] mt-0.5 shrink-0" />
-          <div>
-            <p className="text-[11px] font-bold text-[#0073ea]">
-              Semua kalkulasi berjalan secara lokal di browser Anda — tanpa perlu koneksi internet setelah halaman dimuat.
-            </p>
-            <p className="text-[10px] font-medium text-slate-400 mt-1">
-              Data tidak dikirim ke server manapun. Privasi dan kecepatan terjamin.
-            </p>
+          <div className="flex items-center gap-2 mb-3 text-[#0073ea]">
+            <Info size={14} className="shrink-0" />
+            <h4 className="text-[10px] font-black uppercase tracking-widest leading-none">Sumber Data & Acuan</h4>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Psychrometrics & Air Mixing</h5>
+              <p className="text-[10px] font-medium text-slate-500 leading-relaxed">
+                Formulasi berdasarkan <strong>ASHRAE Handbook of Fundamentals</strong>. Perhitungan saturasi tekanan uap air menggunakan persamaan <strong>August-Roche-Magnus</strong> dengan asumsi tekanan atmosfer standar (101.325 kPa).
+              </p>
+            </div>
+            <div>
+              <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Unit Converter</h5>
+              <p className="text-[10px] font-medium text-slate-500 leading-relaxed">
+                Faktor konversi mengacu pada standar internasional <strong>SI / IP Metric Guidelines</strong> yang diakui secara global dalam bidang Heating, Ventilation, and Air Conditioning (HVAC).
+              </p>
+            </div>
           </div>
         </motion.div>
       </main>
