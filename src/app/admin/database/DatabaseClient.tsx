@@ -38,7 +38,7 @@ import { getAllUsers } from "@/app/actions/users";
 import { getSession } from "@/app/actions/auth";
 import { getAllProjects } from "@/app/actions/projects";
 
-const CATEGORIES = ["All", "Rate Card", "Interactive App", "Presentation", "Catalog", "Technical", "Marketing"];
+const CATEGORIES = ["All", "Rate Card", "Logsheet", "Interactive App", "Presentation", "Catalog", "Technical", "Marketing"];
 
 export default function KnowledgeCenterPage() {
   const router = useRouter();
@@ -321,12 +321,12 @@ export default function KnowledgeCenterPage() {
                     <div className="pt-2 flex items-center gap-3">
                        <Link 
                           href={res.href || res.file_url || "#"} 
-                          target={res.id === 'internal-rate-card' ? "_self" : "_blank"}
-                          className={`flex-1 ${res.id === 'internal-rate-card' ? 'bg-[#323338] hover:bg-black' : 'bg-[#0073ea] hover:bg-[#0060c5]'} py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md shadow-slate-200`}
+                          target={res.type === 'DATABASE' ? "_self" : "_blank"}
+                          className={`flex-1 ${res.type === 'DATABASE' ? 'bg-[#323338] hover:bg-black' : 'bg-[#0073ea] hover:bg-[#0060c5]'} py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md shadow-slate-200`}
                        >
-                          {res.id === 'internal-rate-card' ? <Briefcase className="w-4 h-4 text-white" /> : <Sparkles className="w-4 h-4 text-white" />}
+                          {res.type === 'DATABASE' ? <Briefcase className="w-4 h-4 text-white" /> : <Sparkles className="w-4 h-4 text-white" />}
                           <span className="text-[10px] font-black uppercase tracking-widest text-white">
-                             {res.id === 'internal-rate-card' ? 'Buka Buku Tarif' : 'Luncurkan'}
+                             {res.type === 'DATABASE' ? 'Buka' : 'Luncurkan'}
                           </span>
                        </Link>
                     </div>
@@ -392,7 +392,7 @@ export default function KnowledgeCenterPage() {
                      )}
                      <Link 
                        href={res.href || res.file_url || "#"} 
-                       target={res.id === "internal-rate-card" ? "_self" : "_blank"}
+                       target={res.type === "DATABASE" ? "_self" : "_blank"}
                        className="px-5 py-2.5 bg-[#0073ea] hover:bg-[#0060c5] rounded-lg transition-all flex items-center gap-2"
                      >
                         <span className="text-[9px] font-black uppercase tracking-widest text-white">Buka</span>
