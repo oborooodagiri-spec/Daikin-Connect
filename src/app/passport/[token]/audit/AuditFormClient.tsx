@@ -661,7 +661,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
       {/* HEADER */}
       <div className="bg-[#003366] text-white p-6 rounded-b-[2rem] shadow-lg mb-6 pt-12 sticky top-0 z-40">
         <div className="flex justify-between items-start mb-2">
-          <h1 className="text-2xl font-black tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-black tracking-tight flex items-center gap-2 text-white">
             <FileText size={20}/> {t("FORM PENGUKURAN (AUDIT)", lang)}
           </h1>
           <button 

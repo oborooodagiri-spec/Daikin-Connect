@@ -744,7 +744,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
 
       {/* HEADER */}
       <div className="bg-[#003366] text-white p-6 rounded-b-[2rem] shadow-lg mb-6 pt-12 sticky top-0 z-40">
-        <h1 className="text-xl font-black tracking-tight flex items-center gap-2">
+        <h1 className="text-xl font-black tracking-tight flex items-center gap-2 text-white">
           <Wrench size={22} /> {lang === 'ja' ? 'メンテナンスチェックシート' : 'Maintenance Checksheet'} {unit.unit_type}
         </h1>
         <div className="flex justify-between items-center mt-3">

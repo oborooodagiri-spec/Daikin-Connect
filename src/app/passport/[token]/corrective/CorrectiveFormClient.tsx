@@ -561,7 +561,7 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
 
       {/* HEADER */}
       <div className="bg-gradient-to-br from-rose-700 to-rose-900 text-white p-6 rounded-b-[2rem] shadow-lg mb-6 pt-12 sticky top-0 z-40">
-        <h1 className="text-xl font-black tracking-tight flex items-center gap-2">
+        <h1 className="text-xl font-black tracking-tight flex items-center gap-2 text-white">
           <AlertTriangle size={22} /> {lang === 'ja' ? '故障修理レポート' : 'Complain / Problem Report'}
         </h1>
         <div className="flex justify-between items-center mt-3">
