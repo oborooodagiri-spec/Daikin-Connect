@@ -150,7 +150,7 @@ export default function ChilledWaterClient() {
             </div>
             <div>
               <h1 className="text-xs font-black text-[#323338] uppercase tracking-wide leading-none">
-                Chilled Water
+                Piping
               </h1>
               <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
                 HVAC Tool
@@ -164,11 +164,8 @@ export default function ChilledWaterClient() {
       <main className="max-w-6xl mx-auto px-4 md:px-8 py-8">
         <div className="mb-8">
           <h2 className="text-2xl md:text-3xl font-black text-[#323338] uppercase tracking-tight">
-            Sizing Pipa Chilled Water
+            Sizing Piping
           </h2>
-          <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-1">
-            Hitung flow rate air, laju kecepatan, dan pressure drop berdasarkan beban chiller
-          </p>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[380px_1fr]">
@@ -229,7 +226,7 @@ export default function ChilledWaterClient() {
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-[#323338] flex items-center gap-1.5">
                     <Thermometer size={12} className="text-[#0073ea]" />
-                    Delta T (Chilled Water)
+                    Delta T (Piping)
                   </label>
                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
                     BEDA SUHU

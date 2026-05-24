@@ -166,9 +166,6 @@ export default function ElectricalClient() {
           <h2 className="text-2xl md:text-3xl font-black text-[#323338] uppercase tracking-tight">
             Kalkulator Elektrikal HVAC
           </h2>
-          <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-1">
-            Konversi daya kompresor, hitung arus nominal beban, dan tentukan ukuran kabel standard
-          </p>
         </div>
 
         {/* Tab Pills Selector */}

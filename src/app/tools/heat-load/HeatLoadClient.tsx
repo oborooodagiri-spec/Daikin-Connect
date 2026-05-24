@@ -205,11 +205,8 @@ export default function HeatLoadClient() {
         {/* Title */}
         <div className="mb-8">
           <h2 className="text-2xl md:text-3xl font-black text-[#323338] uppercase tracking-tight">
-            Estimasi Beban Pendinginan
+            Estimasi Cooling Load
           </h2>
-          <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-1">
-            Hitung cooling load ruangan secara cepat untuk merekomendasikan kapasitas AC Daikin yang tepat
-          </p>
         </div>
 
         {/* Outer Layout Grid */}

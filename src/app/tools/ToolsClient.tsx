@@ -76,8 +76,8 @@ const TOOLS: Tool[] = [
   },
   {
     id: "chilled-water",
-    name: "Chilled Water",
-    description: "Sizing pipa dan flow rate untuk sistem chilled water",
+    name: "Piping",
+    description: "Sizing pipa dan flow rate untuk sistem piping",
     icon: <PipetteIcon size={24} />,
     gradient: "linear-gradient(135deg, #00c2ff 0%, #0073ea 100%)",
     href: "/tools/chilled-water",
@@ -234,9 +234,9 @@ export default function ToolsClient() {
               </p>
             </div>
             <div>
-              <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Duct Sizer & Chilled Water</h5>
+              <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Duct Sizer & Piping</h5>
               <p className="text-[10px] font-medium text-slate-500 leading-relaxed">
-                Kalkulasi diameter ekuivalen duct menggunakan formula <strong>Huebscher</strong>. Sizing pipa chilled water didasarkan pada diagram friksi <strong>Hazen-Williams</strong> dan kecepatan aliran rekomendasi ASHRAE.
+                Kalkulasi diameter ekuivalen duct menggunakan formula <strong>Huebscher</strong>. Sizing piping didasarkan pada diagram friksi <strong>Hazen-Williams</strong> dan kecepatan aliran rekomendasi ASHRAE.
               </p>
             </div>
             <div>

@@ -3,8 +3,8 @@ import { redirect } from "next/navigation";
 import ChilledWaterClient from "./ChilledWaterClient";
 
 export const metadata = {
-  title: "Chilled Water | HVAC Tools",
-  description: "Calculate pipe sizing, water flow rates, and pressure drop for chilled water systems.",
+  title: "Piping | HVAC Tools",
+  description: "Calculate pipe sizing, water flow rates, and pressure drop for piping systems.",
 };
 
 export default async function ChilledWaterPage() {
