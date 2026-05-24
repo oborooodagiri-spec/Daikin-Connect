@@ -1,0 +1,59 @@
+Daily Logsheet,,,,,,Contractor,,,Owner,,,,Daily Logsheet,,,,,,Contractor,,,Owner,,,,Daily Logsheet,,,,,,Contractor,,,Owner,,,Daily Logsheet,,,,,,Contractor,,,Owner,,
+Customer,:,Lanud Roesmin Nurjadin (Rafale Simulator),,,,,,,,,,,Customer,:,Lanud Roesmin Nurjadin (Rafale Simulator),,,,,,,,,,,Customer,:,Lanud Roesmin Nurjadin (Rafale Simulator),,,,,,,,,,Customer,:,Lanud Roesmin Nurjadin (Rafale Simulator),,,,,,,,,
+Equipment,:,Air Cooled Chiller,,,,,,,,,,,Equipment,:,AHU SIMULATOR,,,,,,,,,,,Equipment,:,"AHU CORRIDOR, CRAC & GENSET",,,,,,,,,,Equipment,:,FCU,,,,,,,,,
+Date/ Time,:,5/20/2026,,,,,,,,,,,Date/ Time,:,5/20/2026,,,,,,,,,,,Date/ Time,:,5/20/2026,,,,,,,,,,Date/ Time,:,5/20/2026,,,,,,,,,
+Page,:,1 of 4,,,,PT Daikin Applied Solutions Indonesia,,,Lanud Roesmin Nurjadin (Rafale Simulator),,,,Page,:,2 of 4,,,,PT Daikin Applied Solutions Indonesia,,,Lanud Roesmin Nurjadin (Rafale Simulator),,,,Page,:,3 of 4,,,,PT Daikin Applied Solution Indonesia,,,Lanud Roesmin Nurjadin (Rafale Simulator),,,Page,:,4 of 4,,,,PT Daikin Applied Solution Indonesia,,,Lanud Roesmin Nurjadin (Rafale Simulator),,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CHILLER,,,,,,,,,,,,,AHU SIMULATOR 1,,,,,,,AHU SIMULATOR 2,,,,,,AHU CORRIDOR,,,,,,,CRAC,,,,,FCU,,,,,,,,,,,
+PARAMETER,UNIT,DESIGN,CHILLER NO,,,,,,,,,,AHU SIMULATOR 1,,,PARAMETER,UNIT,DESIGN,ACTUAL,AHU SIMULATOR 2,,PARAMETER,UNIT,DESIGN,ACTUAL,AHU CORRIDOR,,,PARAMETER,UNIT,DESIGN,ACTUAL,CRAC-GF-01,,PARAMETER,UNIT,ACTUAL,FCU - GF,,,,,,,,,,,
+,,,1,2,3,4,5,6,7,8,9,10,,,,,,,,,,,,,,,,,,,,,,,,,,Room Name,,Room Temp,Design,Room Setpoint,Design,FCU Status,Design,MV Status,Design,Ampere (A),Design
+Chiller Status,,ON - Auto,0n,0n,off,0ff,on,off,off,on,off,off,,,,AHU Status,,ON - Auto,ON,,,AHU Status,,ON - Auto,0n,,,,AHU Status,,ON - Auto,0n,,,Status Unit,,stop,MDF Room,,18.9,20 - 24 °C,17,20 - 24 °C,on,ON,on,ON,,0.98
+Run Hours,(hr),-,,,,,,,,,,,,,,Room Temperature,(°C),19,19.7,,,Room Temperature,(°C),20 - 22,18.8,,,,Room Temperature,(°C),22 - 24,20.4,,,Status Fan,,stop,Electrical Room,,20.1,20 - 24 °C,17,20 - 24 °C,on,ON,on,ON,,0.98
+MV Status,,-,,,,,,,,,,,,,,Room Humidity,(%),50 - 60,49.7,,,Room Humidity,(%),50 - 60,51.3,,,,Motorized Valve Setpoint,(%),30,30,,,Status Comp - 1,,stop,Server IDF Room,,17.6,20 - 24 °C,18.0,20 - 24 °C,on,ON,on,ON,,0.98
+Unit Capacity,(%),-,,,,,,,,,,,,,,Room Pressure,(Pa),10 - 15,14.5,,,Room Pressure,(Pa),10 - 15,17.2,,,,Motorized Valve Percentage,(%),0 - 50,28,,,Status Comp - 2,,stop,Ship & Packing Room,,17.3,20 - 24 °C,25.0,20 - 24 °C,on,ON,off,ON,,0.98
+EWT,(°C),12,7.4,7.4,23.0,26.3,8.1,27.4,26.1,8.0,26.2,25.8,,,,Motorized Valve Status,,Auto,auto,,,Motorized Valve Status,,Auto,auto,,,,Pre Filter,,Normal,normal,,,Temp High Alarm,,normal,Utility Office,,20.7,20 - 24 °C,22.0,20 - 24 °C,on,ON,off,ON,,0.98
+LWT,(°C),7,6.1,6.3,22.2,26.6,5.7,26.9,26.1,5.7,25.8,25.5,,,,Motorized Valve Percentage,(%),-,85,,,Motorized Valve Percentage,(%),-,43,,,,Medium Filter,,Normal,normal,,,RH High Alarm,,normal,Computer Workshop,,22.1,20 - 24 °C,23.0,20 - 24 °C,0n,ON,on,ON,,0.98
+Δ t,(°C),5,,,,,,,,,,,,,,Pre Filter,,Normal,NORMAL,,,Pre Filter,,Normal,normal,,,,VSD Fan Setpoint,(Hz),38,36,,,Alarm Status,,normal,Vidio Workshop,,23.2,20 - 24 °C,24.0,20 - 24 °C,on,ON,off,ON,,0.98
+Pressure Inlet,(Bar),-,,,,,,,,,,,,,,Medium Filter,,Normal,NORMAL,,,Medium Filter,,Normal,normal,,,,VSD Fan Frequency,Hz,38,36,,,Supply Fan Speed,(%),0,Corridor,,21.0,20 - 24 °C,,20 - 24 °C,,ON,,ON,,0.98
+Pressure Outlet,(Bar),-,,,,,,,,,,,,,,HEPA Filter,,Normal,NORMAL,,,HEPA Filter,,Normal,normal,,,,Fan Ampere R,(Amp),-,,,,Return Air Temp,(°C),20.3,Tech Pub Room,,21.1,20 - 24 °C,20.0,20 - 24 °C,on,ON,off,ON,,0.98
+Δ P,(Bar),0.5 - 1,,,,,,,,,,,,,,Heater Status,,ON,ON,,,Heater Status,,ON,on,,,,Fan Ampere S,(Amp),-,,,,Return Air RH,(%),56,Maintenance Manager Office,,23.0,20 - 24 °C,22.0,20 - 24 °C,on,ON,off,ON,,0.98
+R,(Amp),168.5/ 76.1,,,,,,,,,,,,,,Heater Stage,(Stage),-,stage 1,,,Heater Stage,(Stage),-,stage 1,,,,Fan Ampere T,(Amp),-,,CRAC-GF-02,,Status Unit,,run,Cafetaria,,21.3,20 - 24 °C,20.5,20 - 24 °C,on,ON,on,ON,,0.98
+S,(Amp),168.5/ 76.1,,,,,,,,,,,,,,Heater Ampere R,(Amp),-,,,,Heater Ampere R,(Amp),-,,,,,Fan Voltage R-S,(V),380 - 415,,,,Status Fan,,run,Meeting Room,,22.1,20 - 24 °C,22,20 - 24 °C,on,ON,off,ON,,0.98
+T,(Amp),168.5/ 76.1,,,,,,,,,,,,,,Heater Ampere S,(Amp),-,,,,Heater Ampere S,(Amp),-,,,,,Fan Voltage R-T,(V),380 - 415,,,,Status Comp - 1,,stop,Building Main Office,,19.9,20 - 24 °C,20.0,20 - 24 °C,on,ON,on,ON,,0.98
+Voltage R-S,(V),380 - 415,,,,,,,,,,,,,,Heater Ampere T,(Amp),-,,,,Heater Ampere T,(Amp),-,,,,,Fan Voltage S-T,(V),380 - 415,,,,Status Comp - 2,,stop,Security Desk,,13.9,20 - 24 °C,21.0,20 - 24 °C,on,ON,off,ON,,0.98
+Voltage R-T,(V),380 - 415,,,,,,,,,,,,,,Heater Voltage R-S,(V),380 - 415,,,,Heater Voltage R-S,(V),380 - 415,,,,,Damper Corr Supply,(%),100,100,,,Temp High Alarm,,normal,Instructor Manager,,24.2,20 - 24 °C,24.0,20 - 24 °C,on,ON,off,ON,,0.98
+Voltage S-T,(V),380 - 415,,,,,,,,,,,,,,Heater Voltage R-T,(V),380 - 415,,,,Heater Voltage R-T,(V),380 - 415,,,,,Damper Corr Return,(%),100,100,,,RH High Alarm,,normal,Briefing Room,,21.6,20 - 24 °C,23.0,20 - 24 °C,on,ON,off,ON,,0.98
+Condenser,,Clean,clean,clean,clean,clean,clean,clean,clean,clean,clean,clean,,,,Heater Voltage S-T,(V),380 - 415,,,,Heater Voltage S-T,(V),380 - 415,,,,,Damper Comp Supply,(%),0,0,,,Alarm Status,,normal,Local Instructor Office,,21.3,20 - 24 °C,22.0,20 - 24 °C,on,ON,off,ON,,0.98
+CHILLED WATER PUMP,,,,,,,,,,,,,,,,VSD Fan Status,,Auto,auto,,,VSD Fan Status,,Auto,auto,,,,Damper Comp Supply,(%),0,0,,,Supply Fan Speed,(%),60,Simulator Operator,,19.6,20 - 24 °C,20.0,20 - 24 °C,on,ON,off,ON,,0.98
+PARAMETER,UNIT,DESIGN,CHWP NO,,,,,,,,,,,,,Frequency,(Hz),50,50,,,Frequency,(Hz),50,35,,,,Fresh Air Fan Status,,ON,on,,,Return Air Temp,(°C),20.0,Simulator Technical,,23.8,20 - 24 °C,23.0,20 - 24 °C,on,ON,off,ON,,0.98
+,,,2.01,2.02,1.01,1.02,1.03,1.04,,,,,,,,Fan Ampere R,(Amp),30,,,,Fan Ampere R,(Amp),30,,,,,Fresh Air Fan Frequency,(Hz),23,24,,,Return Air RH,(%),60,Trainee's Office,,24.0,20 - 24 °C,24.0,20 - 24 °C,on,ON,off,ON,,0.98
+CHWP Status,,ON - Auto,on,off,off,on,0ff,off,,,,,,,,Fan Ampere S,(Amp),30,,,,Fan Ampere S,(Amp),30,,,,,Fresh Air Fan Ampere R,(Amp),-,,CRAC-2ND-01,,Status Unit,,stop,IOS S1,,21.5,20 - 24 °C,21.0,20 - 24 °C,on,ON,off,ON,,0.98
+Pressure Inlet,(Bar),-,,,,,,,,,,,,,,Fan Ampere T,(Amp),30,,,,Fan Ampere T,(Amp),30,,,,,Fresh Air Fan Ampere S,(Amp),-,,,,Status Fan,,stop,IOS S2,,21.5,20 - 24 °C,21.0,20 - 24 °C,on,ON,off,ON,,0.98
+Pressure Outlet,(Bar),-,,,,,,,,,,,,,,Fan Voltage R-S,(V),380 - 415,,,,Fan Voltage R-S,(V),380 - 415,,,,,Fresh Air Fan Ampere T,(Amp),-,,,,Status Comp - 1,,stop,FCU - 1ST FLOOR,,,,,,,,,,,
+Δ P,(Bar),-,,,,,,,,,,,,,,Fan Voltage R-T,(V),380 - 415,,,,Fan Voltage R-T,(V),380 - 415,,,,,Fresh Air Fan Voltage R-S,(V),380 - 415,,,,Status Comp - 2,,stop,Security Supervision,,23.9,20 - 24 °C,24.0,20 - 24 °C,on,ON,off,ON,,0.98
+R,(Amp),15.6,,,,,,,,,,,,,,Fan Voltage S-T,(V),380 - 415,,,,Fan Voltage S-T,(V),380 - 415,,,,,Fresh Air Fan Voltage R-T,(V),380 - 415,,,,Temp High Alarm,,normal,Cafetaria,,20.4,20 - 24 °C,20.0,20 - 24 °C,on,ON,on,ON,,0.98
+S,(Amp),15.6,,,,,,,,,,,,,,Damper Status,,Auto,manual,,,Damper Status,,Auto,manual,,,,Fresh Air Fan Voltage S-T,(V),380 - 415,,,,RH High Alarm,,normal,Gan Room,,15.9,20 - 24 °C,22.0,20 - 24 °C,on,ON,off,ON,,0.98
+T,(Amp),15.6,,,,,,,,,,,,,,Fresh Air Percentage,(%),20,12,,,Fresh Air Percentage,(%),20,12,GENSET,,,,,,,,,Alarm Status,,normal,Male Changing Room,,16.1,20 - 24 °C,18.0,20 - 24 °C,on,ON,on,ON,,0.98
+Voltage R-S,(V),380 - 415,,,,,,,,,,,,,,EF Damper,(%),0,,,,EF Damper,(%),0,,POWER METER GENSET,,,PARAMETER,,DESIGN,ACTUAL,,,Supply Fan Speed,(%),0,Seller IT Room,,19.7,20 - 24 °C,18.0,20 - 24 °C,on,ON,on,ON,,0.98
+Voltage R-T,(V),380 - 415,,,,,,,,,,,,,,SA 1.1,(%),100,100,,,SA 1.1,(%),100,100,,,,,,,,,,Return Air Temp,(°C),31.5,Training IT Room,,19.1,20 - 24 °C,18.0,20 - 24 °C,on,ON,on,ON,,0.98
+Voltage S-T,(V),380 - 415,,,,,,,,,,,,,,SA 1.2,(%),100,100,,,SA 1.2,(%),100,100,,,,L1 - L2,V,380 - 415,0,,,Return Air RH,(%),49,Prayer Room,,24.2,20 - 24 °C,23.0,20 - 24 °C,on,ON,off,ON,,0.98
+MAIN LINE PIPE,,,,,,,,,,,,,,,,SA 1.3,(%),100,100,,,SA 1.3,(%),100,100,,,,L2 - L3,V,380 - 415,0,CRAC-2ND-02,,Status Unit,,stop,Sparepart Room,,21.1,20 - 24 °C,20.0,20 - 24 °C,on,ON,off,ON,,0.98
+Temperature Inlet,(°C),7,,,,,,,,,,,,,,SA 1.4,(%),100,100,,,SA 1.4,(%),100,100,,,,L3 - L1,V,380 - 415,0,,,Status Fan,,stop,IT Administration Office,,23.1,20 - 24 °C,18.0,20 - 24 °C,on,ON,on,ON,,0.98
+Temperature Outlet,(°C),12,,,,,,,,,,,Alarm,,,,,,,,,,,,,POWER METER PLN,,,PARAMETER,UNIT,DESIGN,ACTUAL,,,Status Comp - 1,,stop,IT Network Supervision,,24.5,20 - 24 °C,20.0,20 - 24 °C,on,ON,on,ON,,0.98
+Water Flow,(L/s),-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Status Comp - 2,,stop,PPT Room,,19.3,20 - 24 °C,20.0,20 - 24 °C,on,ON,off,ON,,0.98
+Motorized Valve,(%),-,,,,,,,,,,,,,,,,,,,,,,,,,,,L1 - L2,V,380 - 415,394.0,,,Temp High Alarm,,normal,Tutorial Classroom,,22.5,20 - 24 °C,23.0,20 - 24 °C,on,ON,off,ON,,0.98
+Alarm,,,,,,,,,,,,,Notes,,,,,,,,,,,,,,,,L2 - L3,V,380 - 415,387.7,,,RH High Alarm,,normal,Tutorial Classroom 2,,21.0,20 - 24 °C,22.0,20 - 24 °C,on,ON,on,ON,,0.98
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,L3 - L1,V,380 - 415,389.8,,,Alarm Status,,normal,Trainer Office Room 2,,19.9,20 - 24 °C,21.0,20 - 24 °C,on,ON,on,ON,,0.98
+Notes,,,,,,,,,,,,,,,,,,,,,,,,,,Alarm,,,,,,,,,Supply Fan Speed,(%),0,Media Classroom,,21.8,20 - 24 °C,23.0,20 - 24 °C,on,ON,on,ON,,0.98
+,,,,,,,,,,,,,,,,,,,,,,,,,,Notes,,,,,,,,,Return Air Temp,(°C),31.6,Tutorial Classroom 3,,23.2,20 - 24 °C,22.5,20 - 24 °C,on,ON,off,ON,,0.98
+,,,PT Daikin Applied Solution Indonesia,,,,Lanud Roesmin Nurjadin (Rafale Simulator),,,,,,,,,PT Daikin Applied Solution Indonesia,,,,Lanud Roesmin Nurjadin (Rafale Simulator),,,,,,,,,,,,,,,Return Air RH,(%),44,Meeting Room,,21.9,20 - 24 °C,22.0,20 - 24 °C,on,ON,off,ON,,0.98
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,PT Daikin Applied Solution Indonesia,,,,Lanud Roesmin Nurjadin (Rafale Simulator),,,,,Coaching Room,,17.4,20 - 24 °C,18.0,20 - 24 °C,on,ON,on,ON,,0.98
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Secretariat Office,,20.7,20 - 24 °C,21.0,20 - 24 °C,on,ON,on,ON,,0.98
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,General Manager Office,,24.7,20 - 24 °C,24.0,20 - 24 °C,on,ON,off,ON,,0.98
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Administrative Manager,,25.3,20 - 24 °C,25.0,20 - 24 °C,on,ON,off,ON,,0.98
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Practical Academic 2,,19.6,20 - 24 °C,21.0,20 - 24 °C,on,ON,on,ON,,0.98
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Practical Academic 1,,21.5,20 - 24 °C,16.0,ON,on,ON,0n,ON,,0.98
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Plamfication Room,,17.6,20 - 24 °C,20.0,ON,on,ON,off,ON,,0.98
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Alarm,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Notes,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,PT Daikin Applied Solution Indonesia,,,,,Lanud Roesmin Nurjadin (Rafale Simulator,,,,
