@@ -205,14 +205,9 @@ export default function ToolsClient() {
               </div>
 
               {/* Name */}
-              <h3 className="text-xs md:text-sm font-black text-[#323338] uppercase tracking-tight leading-tight mb-2">
+              <h3 className="text-xs md:text-sm font-black text-[#323338] uppercase tracking-tight leading-tight mb-0">
                 {tool.name}
               </h3>
-              
-              {/* Description */}
-              <p className="text-[10px] font-medium text-slate-400 leading-relaxed">
-                {tool.description}
-              </p>
 
               {/* Active indicator dot */}
               <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#00c875] shadow-sm shadow-emerald-200" />
