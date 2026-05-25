@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { t, Language } from "@/lib/i18n";
+import { getPhotoUrl } from "@/lib/photo_utils";
 
 // PDF Templates for high-fidelity printing
 import { getAuditSections } from "@/components/AuditPDFTemplate";
@@ -423,7 +424,7 @@ function ReportsContent({ lang }: { lang: Language }) {
                                      </div>
                                   ) : (
                                      <img 
-                                       src={m.photo_url} 
+                                       src={getPhotoUrl(m.photo_url)} 
                                        className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700" 
                                        alt={m.description || `Documentation ${i+1}`} 
                                      />

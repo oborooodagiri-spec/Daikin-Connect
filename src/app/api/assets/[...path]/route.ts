@@ -63,7 +63,7 @@ export async function GET(
             if (stat.isDirectory()) {
               const result = findRecursive(fullPath);
               if (result) return result;
-            } else if (item.toLowerCase() === fileNameLower) {
+            } else if (item.toLowerCase() === fileNameLower || item.toLowerCase().startsWith(fileNameLower + ".")) {
               return fullPath;
             }
           }
