@@ -4,12 +4,14 @@ import React, { useState, useEffect, useMemo } from "react";
 import { ChevronLeft, Printer, ShieldCheck, Edit3, Save } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { createOrUpdateSLA } from "@/app/actions/commercial";
 
 export default function SlaVesClient() {
   const router = useRouter();
   const [slaData, setSlaData] = useState<any>(null);
   const [editMode, setEditMode] = useState(false);
   const [customContent, setCustomContent] = useState<any>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Load from session storage
   useEffect(() => {
@@ -161,16 +163,44 @@ export default function SlaVesClient() {
     return Array.from(types);
   }, [slaData]);
 
-  const handlePrint = () => {
+  const handlePrint = async () => {
     if (editMode) {
       alert("Harap simpan Mode Edit terlebih dahulu sebelum mencetak dokumen.");
       return;
     }
-    const originalTitle = document.title;
-    const customer = slaData?.woForm?.recipient_company?.trim() || "Customer";
-    document.title = `SLA_${customer}_${slaData?.woForm?.date}`;
-    window.print();
-    setTimeout(() => { document.title = originalTitle; }, 1000);
+    
+    setIsSaving(true);
+    try {
+      const quotationId = slaData?.quotation_id || sessionStorage.getItem("current_quotation_id");
+      
+      if (!quotationId) {
+        throw new Error("Quotation ID tidak ditemukan. Harap buat Quotation terlebih dahulu.");
+      }
+
+      // Save SLA Data to DB
+      const res = await createOrUpdateSLA({
+        quotation_id: parseInt(quotationId),
+        contract_duration: contractDuration,
+        service_frequency: serviceFrequency,
+        custom_kpis: customContent.kpis,
+        custom_terms: customContent.terms,
+        custom_sow: customContent.sow,
+        status: "Active"
+      });
+
+      if (!res.success) throw new Error(res.error);
+
+      const originalTitle = document.title;
+      const customer = slaData?.woForm?.recipient_company?.trim() || "Customer";
+      document.title = `SLA_${customer}_${slaData?.woForm?.date}`;
+      window.print();
+      setTimeout(() => { document.title = originalTitle; }, 1000);
+    } catch (err) {
+      console.error("Failed to save SLA:", err);
+      alert("Gagal menyimpan SLA ke database. " + (err as Error).message);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (!slaData || !customContent) {
@@ -289,9 +319,11 @@ export default function SlaVesClient() {
 
           <button 
             onClick={handlePrint}
-            className="w-full flex items-center justify-center gap-2 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/10 group"
+            disabled={isSaving}
+            className={`w-full flex items-center justify-center gap-2 py-4 ${isSaving ? 'bg-emerald-400' : 'bg-emerald-600 hover:bg-emerald-700'} text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/10 group`}
           >
-            <Printer size={16} className="group-hover:scale-110 transition-transform" /> Cetak SLA PDF
+            <Printer size={16} className={`${isSaving ? 'animate-bounce' : 'group-hover:scale-110'} transition-transform`} /> 
+            {isSaving ? "Menyimpan..." : "Simpan ke DB & Cetak SLA PDF"}
           </button>
         </div>
       </div>

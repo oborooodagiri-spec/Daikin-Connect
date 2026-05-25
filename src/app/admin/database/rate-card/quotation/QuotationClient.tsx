@@ -24,8 +24,8 @@ import {
   Info,
   ShieldCheck
 } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { createWorkOrder, createQuotation } from "@/app/actions/commercial";
 
 interface QuotationClientProps {
   initialItems: any[];
@@ -56,6 +56,7 @@ export default function QuotationClient({
   const [syncPromptOpen, setSyncPromptOpen] = useState(false);
   const [pendingProject, setPendingProject] = useState<any>(null);
   const [activeItems, setActiveItems] = useState<any[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Pricing configuration states
   const [globalMargin, setGlobalMargin] = useState<number>(20); // Default profit margin markup (20%)
@@ -301,44 +302,129 @@ export default function QuotationClient({
     return pages.length > 0 ? pages : [[]];
   }, [calculatedItems]);
 
-  // Dynamic professional document.title printer function
-  const handlePrint = () => {
-    const originalTitle = document.title;
-    const customer = woForm.recipient_company?.trim() || "Customer";
-    const project = pendingProject?.name?.trim() || "Project";
-    const dateStr = woForm.date;
+  // Dynamic professional document.title printer function & Save to DB
+  const handlePrint = async () => {
+    setIsSaving(true);
+    try {
+      // 1. Create or ensure WO exists
+      const woRes = await createWorkOrder({
+        wo_number: woForm.quo_number.replace("QUO", "WO"),
+        customer_name: woForm.recipient_company,
+        pic_name: woForm.recipient_pic,
+        company_address: woForm.recipient_address,
+        project_id: selectedProject,
+        status: "Quoted"
+      });
 
-    const rawTitle = `Quotation_${customer}_${project}_${dateStr}`;
-    const cleanTitle = rawTitle.replace(/[\/\\:\*\?"<>\|]/g, '-');
+      if (!woRes.success) throw new Error(woRes.error);
+      const woId = woRes.data.id;
 
-    document.title = cleanTitle;
-    window.print();
+      // 2. Save Quotation
+      const quoRes = await createQuotation({
+        quo_number: woForm.quo_number,
+        work_order_id: woId,
+        total_amount: financialTotals.totalVendorCostTahun, // We can store vendor subtotal if needed, or customer subtotal
+        discount: 0,
+        tax: financialTotals.ppnVal,
+        grand_total: financialTotals.grandTotalPenawaran,
+        status: "Draft",
+        items: activeItems.map(item => ({
+          item_name: item.item_name,
+          category: item.category,
+          qty: item.qty,
+          unit_price: item.original_price, // Or we can use calculated price
+          total_price: item.original_price * item.qty
+        }))
+      });
 
-    setTimeout(() => {
-      document.title = originalTitle;
-    }, 1000);
+      if (!quoRes.success) throw new Error(quoRes.error);
+
+      // Save ID to session for SLA generator
+      sessionStorage.setItem("current_quotation_id", quoRes.data.id.toString());
+
+      const originalTitle = document.title;
+      const customer = woForm.recipient_company?.trim() || "Customer";
+      const project = pendingProject?.name?.trim() || "Project";
+      const dateStr = woForm.date;
+
+      const rawTitle = `Quotation_${customer}_${project}_${dateStr}`;
+      const cleanTitle = rawTitle.replace(/[\/\\:\*\?"<>\|]/g, '-');
+
+      document.title = cleanTitle;
+      window.print();
+
+      setTimeout(() => {
+        document.title = originalTitle;
+      }, 1000);
+    } catch (err) {
+      console.error("Save failed:", err);
+      alert("Gagal menyimpan ke database. " + (err as Error).message);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleGenerateSLA = () => {
-    // Save relevant SOW and metrics data for the SLA page
-    const slaData = {
-      woForm,
-      contractDuration,
-      serviceFrequency,
-      activeItems: activeItems.map(item => ({
-        id: item.id,
-        item_name: item.item_name,
-        category: item.category,
-        work_type: item.work_type,
-        capacity_range: item.capacity_range,
-        capacity_unit: item.capacity_unit,
-        qty: item.qty,
-        notes: item.notes
-      }))
-    };
-    
-    sessionStorage.setItem("pending_sla_data", JSON.stringify(slaData));
-    router.push("/admin/database/rate-card/quotation/sla-ves");
+  const handleGenerateSLA = async () => {
+    setIsSaving(true);
+    try {
+      // Create WO and Quotation first, because SLA requires a Quotation ID
+      const woRes = await createWorkOrder({
+        wo_number: woForm.quo_number.replace("QUO", "WO"),
+        customer_name: woForm.recipient_company,
+        pic_name: woForm.recipient_pic,
+        company_address: woForm.recipient_address,
+        project_id: selectedProject,
+        status: "Quoted"
+      });
+
+      if (!woRes.success) throw new Error(woRes.error);
+      const woId = woRes.data.id;
+
+      const quoRes = await createQuotation({
+        quo_number: woForm.quo_number,
+        work_order_id: woId,
+        total_amount: financialTotals.subtotalPenawaranTahun,
+        discount: 0,
+        tax: financialTotals.ppnVal,
+        grand_total: financialTotals.grandTotalPenawaran,
+        status: "Approved", // If SLA is generated, quo is basically approved
+        items: activeItems.map(item => ({
+          item_name: item.item_name,
+          category: item.category,
+          qty: item.qty,
+          unit_price: item.original_price,
+          total_price: item.original_price * item.qty
+        }))
+      });
+
+      if (!quoRes.success) throw new Error(quoRes.error);
+
+      // Save relevant SOW and metrics data for the SLA page
+      const slaData = {
+        quotation_id: quoRes.data.id,
+        woForm,
+        contractDuration,
+        serviceFrequency,
+        activeItems: activeItems.map(item => ({
+          id: item.id,
+          item_name: item.item_name,
+          category: item.category,
+          work_type: item.work_type,
+          capacity_range: item.capacity_range,
+          capacity_unit: item.capacity_unit,
+          qty: item.qty,
+          notes: item.notes
+        }))
+      };
+      
+      sessionStorage.setItem("pending_sla_data", JSON.stringify(slaData));
+      router.push("/admin/database/rate-card/quotation/sla-ves");
+    } catch (err) {
+      console.error("Generate SLA failed:", err);
+      alert("Gagal memproses data ke database. " + (err as Error).message);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Format Helper
@@ -645,15 +731,19 @@ export default function QuotationClient({
         <div className="pt-4 border-t border-slate-100 space-y-3 bg-white no-print">
           <button 
             onClick={handleGenerateSLA}
-            className="w-full flex items-center justify-center gap-2 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/10 group"
+            disabled={isSaving}
+            className={`w-full flex items-center justify-center gap-2 py-4 ${isSaving ? 'bg-emerald-400' : 'bg-emerald-600 hover:bg-emerald-700'} text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/10 group`}
           >
-            <ShieldCheck size={16} className="group-hover:scale-110 transition-transform" /> Generate SLA Document
+            <ShieldCheck size={16} className={`${isSaving ? 'animate-spin' : 'group-hover:scale-110'} transition-transform`} /> 
+            {isSaving ? "Menyimpan Data..." : "Generate SLA Document"}
           </button>
           <button 
             onClick={handlePrint}
-            className="w-full flex items-center justify-center gap-2 py-4 bg-[#0073ea] hover:bg-[#0060c5] text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-500/10 group"
+            disabled={isSaving}
+            className={`w-full flex items-center justify-center gap-2 py-4 ${isSaving ? 'bg-[#0073ea]/60' : 'bg-[#0073ea] hover:bg-[#0060c5]'} text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-500/10 group`}
           >
-            <Printer size={16} className="group-hover:scale-110 transition-transform" /> Cetak Penawaran PDF
+            <Printer size={16} className={`${isSaving ? 'animate-bounce' : 'group-hover:scale-110'} transition-transform`} /> 
+            {isSaving ? "Memproses..." : "Simpan ke DB & Cetak PDF"}
           </button>
         </div>
 
