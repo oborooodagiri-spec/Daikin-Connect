@@ -17,8 +17,16 @@ export async function createWorkOrder(data: any) {
     // Generate WO Number if not provided
     const wo_number = data.wo_number || `WO/DASI/VES/${new Date().getFullYear()}/${Math.floor(1000 + Math.random() * 9000)}`;
 
-    const wo = await prisma.work_orders.create({
-      data: {
+    const wo = await prisma.work_orders.upsert({
+      where: { wo_number },
+      update: {
+        customer_name: data.customer_name,
+        pic_name: data.pic_name,
+        company_address: data.company_address,
+        project_id: data.project_id ? BigInt(data.project_id) : null,
+        status: data.status || "Draft"
+      },
+      create: {
         wo_number,
         customer_name: data.customer_name,
         pic_name: data.pic_name,
@@ -80,30 +88,61 @@ export async function createQuotation(data: any) {
 
     const quo_number = data.quo_number || `QUO/DASI/VES/${new Date().getFullYear()}/${Math.floor(1000 + Math.random() * 9000)}`;
 
-    const quo = await prisma.quotations.create({
-      data: {
-        quo_number,
-        work_order_id: data.work_order_id,
-        total_amount: data.total_amount,
-        discount: data.discount,
-        tax: data.tax,
-        grand_total: data.grand_total,
-        status: data.status || "Draft",
-        created_by: session.id,
-        items: {
-          create: data.items.map((item: any) => ({
-            item_name: item.item_name,
-            category: item.category,
-            qty: item.qty,
-            unit_price: item.unit_price,
-            total_price: item.total_price
-          }))
-        }
-      },
-      include: {
-        items: true
-      }
+    const existingQuo = await prisma.quotations.findUnique({
+      where: { quo_number }
     });
+
+    let quo;
+    if (existingQuo) {
+      // Clear existing items
+      await prisma.quotation_items.deleteMany({
+        where: { quotation_id: existingQuo.id }
+      });
+      // Update
+      quo = await prisma.quotations.update({
+        where: { id: existingQuo.id },
+        data: {
+          total_amount: data.total_amount,
+          discount: data.discount,
+          tax: data.tax,
+          grand_total: data.grand_total,
+          status: data.status || "Draft",
+          items: {
+            create: data.items.map((item: any) => ({
+              item_name: item.item_name,
+              category: item.category,
+              qty: item.qty,
+              unit_price: item.unit_price,
+              total_price: item.total_price
+            }))
+          }
+        },
+        include: { items: true }
+      });
+    } else {
+      quo = await prisma.quotations.create({
+        data: {
+          quo_number,
+          work_order_id: data.work_order_id,
+          total_amount: data.total_amount,
+          discount: data.discount,
+          tax: data.tax,
+          grand_total: data.grand_total,
+          status: data.status || "Draft",
+          created_by: session.id,
+          items: {
+            create: data.items.map((item: any) => ({
+              item_name: item.item_name,
+              category: item.category,
+              qty: item.qty,
+              unit_price: item.unit_price,
+              total_price: item.total_price
+            }))
+          }
+        },
+        include: { items: true }
+      });
+    }
 
     // Update WO status
     await prisma.work_orders.update({
