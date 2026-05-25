@@ -1,112 +1,141 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { ChevronLeft, Printer, ShieldCheck } from "lucide-react";
+import { ChevronLeft, Printer, ShieldCheck, Edit3, Save } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function SlaVesClient() {
   const router = useRouter();
   const [slaData, setSlaData] = useState<any>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [customContent, setCustomContent] = useState<any>(null);
 
   // Load from session storage
   useEffect(() => {
     const data = sessionStorage.getItem("pending_sla_data");
     if (data) {
       try {
-        setSlaData(JSON.parse(data));
+        const parsed = JSON.parse(data);
+        setSlaData(parsed);
+        
+        if (parsed.customContent) {
+          setCustomContent(parsed.customContent);
+        } else {
+          setCustomContent({
+            kpis: [
+              "Emergency Breakdown Response: Kedatangan teknisi maksimal 4 jam (dalam area Jabodetabek) atau 24 jam (luar kota) sejak pelaporan.",
+              "Resolution Time (Minor): Penanganan masalah minor tanpa pergantian sparepart spesifik maksimal 24 jam.",
+              "Resolution Time (Major): Penanganan masalah major maksimal 3 hari kerja, tergantung pada ketersediaan suku cadang lokal.",
+              "Uptime Target: Kami menargetkan ketersediaan sistem operasional mencapai 98% per tahun setelah pemeliharaan rutin diimplementasikan secara konsisten."
+            ],
+            terms: [
+              "Jam Kerja Layanan: Kunjungan pemeliharaan preventif dilakukan pada jam kerja standar (Senin - Jumat, 08:30 - 17:30). Pekerjaan di luar jam kerja (overtime/weekend) akan dikenakan biaya tambahan sesuai *Rate Card* kecuali telah disepakati lain dalam kontrak.",
+              "Pergantian Sparepart: SLA ini mencakup jasa tenaga kerja (labor) untuk preventive maintenance. Harga dan pergantian suku cadang (spare parts) dan material *consumables* (seperti refrigeran, chemical, filter) akan ditawarkan secara terpisah, kecuali tercantum secara eksplisit pada Bill of Quantities (BOQ).",
+              "Pelaporan: Setiap kunjungan (baik preventif maupun korektif) akan didokumentasikan melalui Service Report berbasis digital yang dapat diakses oleh pelanggan."
+            ],
+            sow: {
+              Chiller: {
+                Monthly: [
+                  "Pemeriksaan log parameter operasi (Pressure, Temperature, Ampere, Voltage)",
+                  "Pemeriksaan level oli kompresor",
+                  "Pemeriksaan visual adanya kebocoran refrigeran",
+                  "Pemeriksaan sistem kontrol dan safety devices"
+                ],
+                Quarterly: [
+                  "Pembersihan panel elektrikal dari debu",
+                  "Pemeriksaan kekencangan koneksi terminal kabel",
+                  "Analisa oli kompresor (opsional jika dibutuhkan)",
+                  "Pembersihan kondensor (untuk tipe Air Cooled)"
+                ],
+                Yearly: [
+                  "Megger test kompresor motor",
+                  "Kalibrasi sensor pressure dan temperature",
+                  "Pembersihan tube kondensor dan evaporator menggunakan chiller tube cleaner (untuk tipe Water Cooled)",
+                  "Penggantian filter drier (jika terindikasi kotor)"
+                ]
+              },
+              AHU_FCU: {
+                Monthly: [
+                  "Pembersihan pre-filter dan pengecekan medium filter",
+                  "Pemeriksaan dan pembersihan drain pan serta drain pipe untuk mencegah luapan",
+                  "Pemeriksaan putaran fan dan kondisi bearing",
+                  "Pemeriksaan visual coil evaporator"
+                ],
+                Quarterly: [
+                  "Pemeriksaan tension dan kondisi V-Belt (penggantian jika aus)",
+                  "Greasing pada bearing fan dan motor",
+                  "Chemical cleaning pada coil evaporator (coil washing)"
+                ],
+                Yearly: [
+                  "Pemeriksaan kelistrikan motor fan (Megger test)",
+                  "Pembersihan menyeluruh ruang dalam (casing) AHU/FCU"
+                ]
+              },
+              AC_Split: {
+                Monthly: [
+                  "Pembersihan filter udara indoor",
+                  "Pemeriksaan visual drainase dan pembersihan ringan",
+                  "Pengecekan temperatur udara supply dan return"
+                ],
+                Quarterly: [
+                  "Chemical washing unit indoor (evaporator coil, blower fan, casing)",
+                  "Penyemprotan unit outdoor (condenser coil)",
+                  "Pemeriksaan tekanan freon dan arus listrik (ampere) kompresor",
+                  "Pemeriksaan sambungan kelistrikan"
+                ]
+              },
+              CoolingTower: {
+                Monthly: [
+                  "Pemeriksaan level air pada basin",
+                  "Pembersihan strainer",
+                  "Pemeriksaan rotasi dan vibrasi fan motor"
+                ],
+                Quarterly: [
+                  "Kuras (drain) dan pembersihan basin dari lumpur/kotoran",
+                  "Pembersihan infill dan sprinkler head",
+                  "Pemeriksaan kualitas air dan sistem chemical dosing"
+                ],
+                Yearly: [
+                  "Megger test fan motor",
+                  "Greasing bearing motor dan gearbox"
+                ]
+              },
+              Pump: {
+                Monthly: [
+                  "Pemeriksaan indikasi kebocoran pada mechanical seal",
+                  "Pencatatan pressure suction dan discharge",
+                  "Pemeriksaan temperatur dan vibrasi bearing",
+                  "Pemeriksaan arus (ampere) motor"
+                ],
+                Quarterly: [
+                  "Pemeriksaan dan kalibrasi alignment coupling",
+                  "Greasing pada bearing motor dan pompa",
+                  "Pembersihan body pompa dan motor"
+                ],
+                Yearly: [
+                  "Megger test pompa motor",
+                  "Pengecekan dan penggantian seal jika aus (overhaul minor)"
+                ]
+              }
+            }
+          });
+        }
       } catch (e) {
         console.error("Failed to parse SLA data", e);
       }
     }
   }, []);
 
-  // Standard SOWs
-  const standardSOW = useMemo(() => ({
-    Chiller: {
-      Monthly: [
-        "Pemeriksaan log parameter operasi (Pressure, Temperature, Ampere, Voltage)",
-        "Pemeriksaan level oli kompresor",
-        "Pemeriksaan visual adanya kebocoran refrigeran",
-        "Pemeriksaan sistem kontrol dan safety devices"
-      ],
-      Quarterly: [
-        "Pembersihan panel elektrikal dari debu",
-        "Pemeriksaan kekencangan koneksi terminal kabel",
-        "Analisa oli kompresor (opsional jika dibutuhkan)",
-        "Pembersihan kondensor (untuk tipe Air Cooled)"
-      ],
-      Yearly: [
-        "Megger test kompresor motor",
-        "Kalibrasi sensor pressure dan temperature",
-        "Pembersihan tube kondensor dan evaporator menggunakan chiller tube cleaner (untuk tipe Water Cooled)",
-        "Penggantian filter drier (jika terindikasi kotor)"
-      ]
-    },
-    AHU_FCU: {
-      Monthly: [
-        "Pembersihan pre-filter dan pengecekan medium filter",
-        "Pemeriksaan dan pembersihan drain pan serta drain pipe untuk mencegah luapan",
-        "Pemeriksaan putaran fan dan kondisi bearing",
-        "Pemeriksaan visual coil evaporator"
-      ],
-      Quarterly: [
-        "Pemeriksaan tension dan kondisi V-Belt (penggantian jika aus)",
-        "Greasing pada bearing fan dan motor",
-        "Chemical cleaning pada coil evaporator (coil washing)"
-      ],
-      Yearly: [
-        "Pemeriksaan kelistrikan motor fan (Megger test)",
-        "Pembersihan menyeluruh ruang dalam (casing) AHU/FCU"
-      ]
-    },
-    AC_Split: {
-      Monthly: [
-        "Pembersihan filter udara indoor",
-        "Pemeriksaan visual drainase dan pembersihan ringan",
-        "Pengecekan temperatur udara supply dan return"
-      ],
-      Quarterly: [
-        "Chemical washing unit indoor (evaporator coil, blower fan, casing)",
-        "Penyemprotan unit outdoor (condenser coil)",
-        "Pemeriksaan tekanan freon dan arus listrik (ampere) kompresor",
-        "Pemeriksaan sambungan kelistrikan"
-      ]
-    },
-    CoolingTower: {
-      Monthly: [
-        "Pemeriksaan level air pada basin",
-        "Pembersihan strainer",
-        "Pemeriksaan rotasi dan vibrasi fan motor"
-      ],
-      Quarterly: [
-        "Kuras (drain) dan pembersihan basin dari lumpur/kotoran",
-        "Pembersihan infill dan sprinkler head",
-        "Pemeriksaan kualitas air dan sistem chemical dosing"
-      ],
-      Yearly: [
-        "Megger test fan motor",
-        "Greasing bearing motor dan gearbox"
-      ]
-    },
-    Pump: {
-      Monthly: [
-        "Pemeriksaan indikasi kebocoran pada mechanical seal",
-        "Pencatatan pressure suction dan discharge",
-        "Pemeriksaan temperatur dan vibrasi bearing",
-        "Pemeriksaan arus (ampere) motor"
-      ],
-      Quarterly: [
-        "Pemeriksaan dan kalibrasi alignment coupling",
-        "Greasing pada bearing motor dan pompa",
-        "Pembersihan body pompa dan motor"
-      ],
-      Yearly: [
-        "Megger test pompa motor",
-        "Pengecekan dan penggantian seal jika aus (overhaul minor)"
-      ]
+  // Sync customContent to slaData in session storage when saved
+  const handleSaveEdit = () => {
+    setEditMode(false);
+    if (slaData && customContent) {
+      const newData = { ...slaData, customContent };
+      setSlaData(newData);
+      sessionStorage.setItem("pending_sla_data", JSON.stringify(newData));
     }
-  }), []);
+  };
 
   // Helper to categorize items robustly
   const getEquipmentType = (item: any) => {
@@ -133,6 +162,10 @@ export default function SlaVesClient() {
   }, [slaData]);
 
   const handlePrint = () => {
+    if (editMode) {
+      alert("Harap simpan Mode Edit terlebih dahulu sebelum mencetak dokumen.");
+      return;
+    }
     const originalTitle = document.title;
     const customer = slaData?.woForm?.recipient_company?.trim() || "Customer";
     document.title = `SLA_${customer}_${slaData?.woForm?.date}`;
@@ -140,12 +173,7 @@ export default function SlaVesClient() {
     setTimeout(() => { document.title = originalTitle; }, 1000);
   };
 
-  const fmtDate = (dStr: string) => {
-    if (!dStr) return "-";
-    return new Date(dStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-  };
-
-  if (!slaData) {
+  if (!slaData || !customContent) {
     return (
       <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center p-6">
         <div className="bg-white p-8 rounded-2xl shadow-sm text-center max-w-md">
@@ -242,7 +270,23 @@ export default function SlaVesClient() {
           </div>
         </div>
 
-        <div className="pt-4 border-t border-slate-100 mt-auto">
+        <div className="pt-4 border-t border-slate-100 mt-auto space-y-3">
+          {editMode ? (
+            <button 
+              onClick={handleSaveEdit}
+              className="w-full flex items-center justify-center gap-2 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-amber-500/10 group"
+            >
+              <Save size={16} className="group-hover:scale-110 transition-transform" /> Simpan Edit Konten
+            </button>
+          ) : (
+            <button 
+              onClick={() => setEditMode(true)}
+              className="w-full flex items-center justify-center gap-2 py-4 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-sm group"
+            >
+              <Edit3 size={16} className="text-amber-500 group-hover:scale-110 transition-transform" /> Mode Edit Konten
+            </button>
+          )}
+
           <button 
             onClick={handlePrint}
             className="w-full flex items-center justify-center gap-2 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/10 group"
@@ -255,6 +299,13 @@ export default function SlaVesClient() {
       {/* RIGHT PREVIEW WORKSPACE */}
       <div className="flex-1 p-6 md:p-12 overflow-y-auto max-h-screen bg-slate-100 flex flex-col items-center custom-scrollbar print:bg-white print:p-0 print:overflow-visible print:max-h-none">
         
+        {editMode && (
+          <div className="w-full max-w-4xl bg-amber-100 text-amber-800 p-4 rounded-xl mb-6 text-sm font-bold shadow-sm border border-amber-200 flex items-center gap-3 no-print">
+            <Edit3 size={20} />
+            Anda sedang dalam Mode Edit. Silakan klik teks pada halaman (KPI, Syarat & Ketentuan, atau Checklist) untuk mengubahnya secara langsung.
+          </div>
+        )}
+
         {/* PAGE 1: SLA AGREEMENT & KPIs */}
         <div className="a4-sheet relative bg-white text-black shadow-[0_10px_40px_rgba(0,0,0,0.06)] mb-8 flex flex-col justify-between overflow-hidden print:shadow-none print:m-0 print:page-break-after-always">
           <div className="w-full flex-shrink-0 relative">
@@ -281,18 +332,49 @@ export default function SlaVesClient() {
 
             <h3 className="text-[11px] font-black text-[#003366] border-b border-slate-200 pb-1 mb-2">1. Key Performance Indicators (KPI) & Response Time</h3>
             <ul className="list-disc pl-5 mb-4 space-y-1">
-              <li><strong>Emergency Breakdown Response:</strong> Kedatangan teknisi maksimal 4 jam (dalam area Jabodetabek) atau 24 jam (luar kota) sejak pelaporan.</li>
-              <li><strong>Resolution Time (Minor):</strong> Penanganan masalah minor tanpa pergantian sparepart spesifik maksimal 24 jam.</li>
-              <li><strong>Resolution Time (Major):</strong> Penanganan masalah major maksimal 3 hari kerja, tergantung pada ketersediaan suku cadang lokal.</li>
-              <li><strong>Uptime Target:</strong> Kami menargetkan ketersediaan sistem operasional mencapai 98% per tahun setelah pemeliharaan rutin diimplementasikan secara konsisten.</li>
+              {customContent.kpis.map((kpi: string, idx: number) => (
+                <li key={idx}>
+                  {editMode ? (
+                    <textarea 
+                      value={kpi} 
+                      onChange={(e) => {
+                        const newKpis = [...customContent.kpis];
+                        newKpis[idx] = e.target.value;
+                        setCustomContent({...customContent, kpis: newKpis});
+                      }}
+                      className="w-full bg-amber-50 border border-amber-200 p-1 rounded text-[9.5px] font-medium"
+                      rows={2}
+                    />
+                  ) : (
+                    <span dangerouslySetInnerHTML={{ __html: kpi.replace(/^(.*?):/, "<strong>$1:</strong>") }} />
+                  )}
+                </li>
+              ))}
             </ul>
 
             <h3 className="text-[11px] font-black text-[#003366] border-b border-slate-200 pb-1 mb-2">2. Kondisi & Ketentuan Layanan (Terms & Conditions)</h3>
             <ul className="list-disc pl-5 mb-4 space-y-1">
+              {/* Dynamic Term 1 based on state */}
               <li><strong>Durasi Kontrak:</strong> {contractDuration} dengan frekuensi pemeliharaan rutin sebanyak {visitFrequencyText}.</li>
-              <li><strong>Jam Kerja Layanan:</strong> Kunjungan pemeliharaan preventif dilakukan pada jam kerja standar (Senin - Jumat, 08:30 - 17:30). Pekerjaan di luar jam kerja (overtime/weekend) akan dikenakan biaya tambahan sesuai *Rate Card* kecuali telah disepakati lain dalam kontrak.</li>
-              <li><strong>Pergantian Sparepart:</strong> SLA ini mencakup jasa tenaga kerja (labor) untuk preventive maintenance. Harga dan pergantian suku cadang (spare parts) dan material *consumables* (seperti refrigeran, chemical, filter) akan ditawarkan secara terpisah, kecuali tercantum secara eksplisit pada Bill of Quantities (BOQ).</li>
-              <li><strong>Pelaporan:</strong> Setiap kunjungan (baik preventif maupun korektif) akan didokumentasikan melalui Service Report berbasis digital yang dapat diakses oleh pelanggan.</li>
+              
+              {customContent.terms.map((term: string, idx: number) => (
+                <li key={idx}>
+                  {editMode ? (
+                    <textarea 
+                      value={term} 
+                      onChange={(e) => {
+                        const newTerms = [...customContent.terms];
+                        newTerms[idx] = e.target.value;
+                        setCustomContent({...customContent, terms: newTerms});
+                      }}
+                      className="w-full bg-amber-50 border border-amber-200 p-1 rounded text-[9.5px] font-medium"
+                      rows={3}
+                    />
+                  ) : (
+                    <span dangerouslySetInnerHTML={{ __html: term.replace(/^(.*?):/, "<strong>$1:</strong>") }} />
+                  )}
+                </li>
+              ))}
             </ul>
 
             <h3 className="text-[11px] font-black text-[#003366] border-b border-slate-200 pb-1 mb-2">3. Rekapitulasi Unit Terdampak (Equipment Covered)</h3>
@@ -348,9 +430,31 @@ export default function SlaVesClient() {
 
         {/* PAGES 2+: SCOPE OF WORK CHECKLISTS */}
         {coveredEquipment.map((eqType, idx) => {
-          const typeKey = eqType as keyof typeof standardSOW;
-          const sow = standardSOW[typeKey];
+          const typeKey = eqType as keyof typeof customContent.sow;
+          const sow = customContent.sow[typeKey];
           if (!sow) return null;
+
+          const updateSowTask = (period: string, taskIdx: number, val: string) => {
+            const newSow = { ...customContent.sow };
+            newSow[typeKey] = { ...newSow[typeKey] };
+            newSow[typeKey][period] = [...newSow[typeKey][period]];
+            newSow[typeKey][period][taskIdx] = val;
+            setCustomContent({ ...customContent, sow: newSow });
+          };
+
+          const addSowTask = (period: string) => {
+            const newSow = { ...customContent.sow };
+            newSow[typeKey] = { ...newSow[typeKey] };
+            newSow[typeKey][period] = [...(newSow[typeKey][period] || []), "Pekerjaan baru..."];
+            setCustomContent({ ...customContent, sow: newSow });
+          };
+
+          const removeSowTask = (period: string, taskIdx: number) => {
+            const newSow = { ...customContent.sow };
+            newSow[typeKey] = { ...newSow[typeKey] };
+            newSow[typeKey][period] = newSow[typeKey][period].filter((_: any, i: number) => i !== taskIdx);
+            setCustomContent({ ...customContent, sow: newSow });
+          };
 
           return (
             <div key={eqType} className="a4-sheet relative bg-white text-black shadow-[0_10px_40px_rgba(0,0,0,0.06)] mb-8 flex flex-col justify-between overflow-hidden print:shadow-none print:m-0 print:page-break-after-always">
@@ -378,45 +482,96 @@ export default function SlaVesClient() {
                 </div>
 
                 <div className="space-y-6">
+                  {/* MONTHLY */}
                   {sow.Monthly && (
                     <div className="space-y-2">
-                      <div className="bg-slate-100 py-1.5 px-3 rounded border-l-4 border-[#003366]">
+                      <div className="bg-slate-100 py-1.5 px-3 rounded border-l-4 border-[#003366] flex justify-between items-center">
                         <h4 className="text-[10px] font-black uppercase text-slate-800">Pemeliharaan Rutin (Bulanan)</h4>
+                        {editMode && (
+                          <button onClick={() => addSowTask("Monthly")} className="text-[8px] font-bold text-emerald-600 hover:underline">+ Tambah Task</button>
+                        )}
                       </div>
                       <ul className="space-y-1.5">
-                        {sow.Monthly.map((task, i) => (
-                          <li key={i} className="flex gap-3 text-[9.5px] text-slate-700">
-                            <span className="text-emerald-500 font-bold shrink-0">✓</span> {task}
+                        {sow.Monthly.map((task: string, i: number) => (
+                          <li key={i} className="flex gap-3 text-[9.5px] text-slate-700 items-start">
+                            <span className="text-emerald-500 font-bold shrink-0 mt-0.5">✓</span>
+                            {editMode ? (
+                              <div className="flex-1 flex gap-2">
+                                <input 
+                                  type="text" 
+                                  value={task} 
+                                  onChange={(e) => updateSowTask("Monthly", i, e.target.value)}
+                                  className="flex-1 bg-amber-50 border border-amber-200 px-2 py-1 rounded focus:outline-none"
+                                />
+                                <button onClick={() => removeSowTask("Monthly", i)} className="text-rose-500 font-bold px-1">X</button>
+                              </div>
+                            ) : (
+                              <span>{task}</span>
+                            )}
                           </li>
                         ))}
                       </ul>
                     </div>
                   )}
 
+                  {/* QUARTERLY */}
                   {sow.Quarterly && (
                     <div className="space-y-2">
-                      <div className="bg-slate-100 py-1.5 px-3 rounded border-l-4 border-emerald-500">
+                      <div className="bg-slate-100 py-1.5 px-3 rounded border-l-4 border-emerald-500 flex justify-between items-center">
                         <h4 className="text-[10px] font-black uppercase text-slate-800">Pemeliharaan Kuartalan / 3 Bulanan</h4>
+                        {editMode && (
+                          <button onClick={() => addSowTask("Quarterly")} className="text-[8px] font-bold text-emerald-600 hover:underline">+ Tambah Task</button>
+                        )}
                       </div>
                       <ul className="space-y-1.5">
-                        {sow.Quarterly.map((task, i) => (
-                          <li key={i} className="flex gap-3 text-[9.5px] text-slate-700">
-                            <span className="text-emerald-500 font-bold shrink-0">✓</span> {task}
+                        {sow.Quarterly.map((task: string, i: number) => (
+                          <li key={i} className="flex gap-3 text-[9.5px] text-slate-700 items-start">
+                            <span className="text-emerald-500 font-bold shrink-0 mt-0.5">✓</span>
+                            {editMode ? (
+                              <div className="flex-1 flex gap-2">
+                                <input 
+                                  type="text" 
+                                  value={task} 
+                                  onChange={(e) => updateSowTask("Quarterly", i, e.target.value)}
+                                  className="flex-1 bg-amber-50 border border-amber-200 px-2 py-1 rounded focus:outline-none"
+                                />
+                                <button onClick={() => removeSowTask("Quarterly", i)} className="text-rose-500 font-bold px-1">X</button>
+                              </div>
+                            ) : (
+                              <span>{task}</span>
+                            )}
                           </li>
                         ))}
                       </ul>
                     </div>
                   )}
 
+                  {/* YEARLY */}
                   {sow.Yearly && (
                     <div className="space-y-2">
-                      <div className="bg-slate-100 py-1.5 px-3 rounded border-l-4 border-[#0073ea]">
+                      <div className="bg-slate-100 py-1.5 px-3 rounded border-l-4 border-[#0073ea] flex justify-between items-center">
                         <h4 className="text-[10px] font-black uppercase text-slate-800">Pemeliharaan Tahunan (Annual)</h4>
+                        {editMode && (
+                          <button onClick={() => addSowTask("Yearly")} className="text-[8px] font-bold text-emerald-600 hover:underline">+ Tambah Task</button>
+                        )}
                       </div>
                       <ul className="space-y-1.5">
-                        {sow.Yearly.map((task, i) => (
-                          <li key={i} className="flex gap-3 text-[9.5px] text-slate-700">
-                            <span className="text-emerald-500 font-bold shrink-0">✓</span> {task}
+                        {sow.Yearly.map((task: string, i: number) => (
+                          <li key={i} className="flex gap-3 text-[9.5px] text-slate-700 items-start">
+                            <span className="text-emerald-500 font-bold shrink-0 mt-0.5">✓</span>
+                            {editMode ? (
+                              <div className="flex-1 flex gap-2">
+                                <input 
+                                  type="text" 
+                                  value={task} 
+                                  onChange={(e) => updateSowTask("Yearly", i, e.target.value)}
+                                  className="flex-1 bg-amber-50 border border-amber-200 px-2 py-1 rounded focus:outline-none"
+                                />
+                                <button onClick={() => removeSowTask("Yearly", i)} className="text-rose-500 font-bold px-1">X</button>
+                              </div>
+                            ) : (
+                              <span>{task}</span>
+                            )}
                           </li>
                         ))}
                       </ul>
