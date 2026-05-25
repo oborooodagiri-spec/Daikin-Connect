@@ -21,7 +21,8 @@ import {
   Briefcase,
   HelpCircle,
   Clock,
-  Info
+  Info,
+  ShieldCheck
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -316,6 +317,28 @@ export default function QuotationClient({
     setTimeout(() => {
       document.title = originalTitle;
     }, 1000);
+  };
+
+  const handleGenerateSLA = () => {
+    // Save relevant SOW and metrics data for the SLA page
+    const slaData = {
+      woForm,
+      contractDuration,
+      serviceFrequency,
+      activeItems: activeItems.map(item => ({
+        id: item.id,
+        item_name: item.item_name,
+        category: item.category,
+        work_type: item.work_type,
+        capacity_range: item.capacity_range,
+        capacity_unit: item.capacity_unit,
+        qty: item.qty,
+        notes: item.notes
+      }))
+    };
+    
+    sessionStorage.setItem("pending_sla_data", JSON.stringify(slaData));
+    router.push("/admin/database/rate-card/quotation/sla-ves");
   };
 
   // Format Helper
@@ -620,6 +643,12 @@ export default function QuotationClient({
 
         {/* Global Controls & print */}
         <div className="pt-4 border-t border-slate-100 space-y-3 bg-white no-print">
+          <button 
+            onClick={handleGenerateSLA}
+            className="w-full flex items-center justify-center gap-2 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/10 group"
+          >
+            <ShieldCheck size={16} className="group-hover:scale-110 transition-transform" /> Generate SLA Document
+          </button>
           <button 
             onClick={handlePrint}
             className="w-full flex items-center justify-center gap-2 py-4 bg-[#0073ea] hover:bg-[#0060c5] text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-500/10 group"

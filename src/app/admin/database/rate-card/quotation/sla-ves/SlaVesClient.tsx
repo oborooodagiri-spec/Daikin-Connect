@@ -1,0 +1,407 @@
+"use client";
+
+import React, { useState, useEffect, useMemo } from "react";
+import { ChevronLeft, Printer, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+export default function SlaVesClient() {
+  const router = useRouter();
+  const [slaData, setSlaData] = useState<any>(null);
+
+  // Load from session storage
+  useEffect(() => {
+    const data = sessionStorage.getItem("pending_sla_data");
+    if (data) {
+      try {
+        setSlaData(JSON.parse(data));
+      } catch (e) {
+        console.error("Failed to parse SLA data", e);
+      }
+    }
+  }, []);
+
+  // Standard SOWs
+  const standardSOW = useMemo(() => ({
+    Chiller: {
+      Monthly: [
+        "Pemeriksaan log parameter operasi (Pressure, Temperature, Ampere, Voltage)",
+        "Pemeriksaan level oli kompresor",
+        "Pemeriksaan visual adanya kebocoran refrigeran",
+        "Pemeriksaan sistem kontrol dan safety devices"
+      ],
+      Quarterly: [
+        "Pembersihan panel elektrikal dari debu",
+        "Pemeriksaan kekencangan koneksi terminal kabel",
+        "Analisa oli kompresor (opsional jika dibutuhkan)",
+        "Pembersihan kondensor (untuk tipe Air Cooled)"
+      ],
+      Yearly: [
+        "Megger test kompresor motor",
+        "Kalibrasi sensor pressure dan temperature",
+        "Pembersihan tube kondensor dan evaporator menggunakan chiller tube cleaner (untuk tipe Water Cooled)",
+        "Penggantian filter drier (jika terindikasi kotor)"
+      ]
+    },
+    AHU_FCU: {
+      Monthly: [
+        "Pembersihan pre-filter dan pengecekan medium filter",
+        "Pemeriksaan dan pembersihan drain pan serta drain pipe untuk mencegah luapan",
+        "Pemeriksaan putaran fan dan kondisi bearing",
+        "Pemeriksaan visual coil evaporator"
+      ],
+      Quarterly: [
+        "Pemeriksaan tension dan kondisi V-Belt (penggantian jika aus)",
+        "Greasing pada bearing fan dan motor",
+        "Chemical cleaning pada coil evaporator (coil washing)"
+      ],
+      Yearly: [
+        "Pemeriksaan kelistrikan motor fan (Megger test)",
+        "Pembersihan menyeluruh ruang dalam (casing) AHU/FCU"
+      ]
+    },
+    AC_Split: {
+      Monthly: [
+        "Pembersihan filter udara indoor",
+        "Pemeriksaan visual drainase dan pembersihan ringan",
+        "Pengecekan temperatur udara supply dan return"
+      ],
+      Quarterly: [
+        "Chemical washing unit indoor (evaporator coil, blower fan, casing)",
+        "Penyemprotan unit outdoor (condenser coil)",
+        "Pemeriksaan tekanan freon dan arus listrik (ampere) kompresor",
+        "Pemeriksaan sambungan kelistrikan"
+      ]
+    },
+    CoolingTower: {
+      Monthly: [
+        "Pemeriksaan level air pada basin",
+        "Pembersihan strainer",
+        "Pemeriksaan rotasi dan vibrasi fan motor"
+      ],
+      Quarterly: [
+        "Kuras (drain) dan pembersihan basin dari lumpur/kotoran",
+        "Pembersihan infill dan sprinkler head",
+        "Pemeriksaan kualitas air dan sistem chemical dosing"
+      ],
+      Yearly: [
+        "Megger test fan motor",
+        "Greasing bearing motor dan gearbox"
+      ]
+    },
+    Pump: {
+      Monthly: [
+        "Pemeriksaan indikasi kebocoran pada mechanical seal",
+        "Pencatatan pressure suction dan discharge",
+        "Pemeriksaan temperatur dan vibrasi bearing",
+        "Pemeriksaan arus (ampere) motor"
+      ],
+      Quarterly: [
+        "Pemeriksaan dan kalibrasi alignment coupling",
+        "Greasing pada bearing motor dan pompa",
+        "Pembersihan body pompa dan motor"
+      ],
+      Yearly: [
+        "Megger test pompa motor",
+        "Pengecekan dan penggantian seal jika aus (overhaul minor)"
+      ]
+    }
+  }), []);
+
+  // Map active items to equipment types
+  const coveredEquipment = useMemo(() => {
+    if (!slaData?.activeItems) return [];
+    
+    const types = new Set<string>();
+    slaData.activeItems.forEach((item: any) => {
+      const name = item.item_name.toLowerCase();
+      const cat = item.category.toLowerCase();
+      
+      if (name.includes("chiller") || cat.includes("chiller")) types.add("Chiller");
+      else if (name.includes("ahu") || cat.includes("ahu") || name.includes("fcu") || cat.includes("fcu")) types.add("AHU_FCU");
+      else if (name.includes("cooling tower") || cat.includes("tower")) types.add("CoolingTower");
+      else if (name.includes("pump") || name.includes("pompa") || cat.includes("pump")) types.add("Pump");
+      else if (name.includes("split") || name.includes("wall") || name.includes("cassette") || cat.includes("split")) types.add("AC_Split");
+      else types.add("AHU_FCU"); // Default fallback
+    });
+    
+    return Array.from(types);
+  }, [slaData]);
+
+  const handlePrint = () => {
+    const originalTitle = document.title;
+    const customer = slaData?.woForm?.recipient_company?.trim() || "Customer";
+    document.title = `SLA_${customer}_${slaData?.woForm?.date}`;
+    window.print();
+    setTimeout(() => { document.title = originalTitle; }, 1000);
+  };
+
+  const fmtDate = (dStr: string) => {
+    if (!dStr) return "-";
+    return new Date(dStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+  };
+
+  if (!slaData) {
+    return (
+      <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center p-6">
+        <div className="bg-white p-8 rounded-2xl shadow-sm text-center max-w-md">
+          <ShieldCheck size={48} className="mx-auto text-slate-300 mb-4" />
+          <h2 className="text-xl font-black text-slate-800 uppercase tracking-tight mb-2">Data Tidak Ditemukan</h2>
+          <p className="text-sm font-medium text-slate-500 mb-6">Silakan men-*generate* SLA langsung dari halaman Quotation Creator.</p>
+          <Link href="/admin/database/rate-card/quotation" className="px-6 py-3 bg-[#0073ea] text-white rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-[#0060c5] transition-colors">
+            Kembali ke Quotation
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const { woForm, contractDuration, serviceFrequency, activeItems } = slaData;
+  const visitFrequencyText = serviceFrequency === 12 ? "Bulanan (Monthly)" : 
+                             serviceFrequency === 6 ? "Dwi-Bulanan (Bi-Monthly)" :
+                             serviceFrequency === 4 ? "Kuartalan (Quarterly)" :
+                             serviceFrequency === 2 ? "Semesteran (Semi-Annually)" : "Tahunan (Yearly)";
+
+  return (
+    <div className="min-h-screen bg-[#f8f9fc] font-sans text-slate-700 flex flex-col lg:flex-row print:bg-white print:text-black print-safe">
+      
+      {/* LEFT SIDEBAR CONTROLS (no-print) */}
+      <div className="w-full lg:w-[350px] lg:border-r border-slate-200 bg-white p-6 flex flex-col gap-6 flex-shrink-0 lg:max-h-screen lg:overflow-y-auto shadow-sm no-print">
+        <div className="flex items-center justify-between">
+          <button 
+            onClick={() => router.back()}
+            className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest hover:text-[#0073ea] transition-colors"
+          >
+            <ChevronLeft size={16} /> Kembali
+          </button>
+        </div>
+
+        <div>
+          <h1 className="text-xl font-black text-slate-800 uppercase tracking-tight flex items-center gap-2">
+            <ShieldCheck className="text-emerald-500" size={24} /> SLA Generator
+          </h1>
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Value Engineering Services</p>
+        </div>
+
+        <div className="h-px bg-slate-100" />
+
+        <div className="space-y-4">
+          <div>
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Customer</label>
+            <div className="text-xs font-bold text-slate-800">{woForm.recipient_company || "-"}</div>
+          </div>
+          <div>
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Quotation Ref</label>
+            <div className="text-xs font-bold text-[#0073ea]">{woForm.quo_number}</div>
+          </div>
+          <div>
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Equipment Covered</label>
+            <div className="text-xs font-bold text-slate-800">{coveredEquipment.join(", ").replace(/_/g, " ")}</div>
+          </div>
+          <div>
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Service Frequency</label>
+            <div className="text-xs font-bold text-slate-800">{visitFrequencyText}</div>
+          </div>
+        </div>
+
+        <div className="pt-4 border-t border-slate-100 mt-auto">
+          <button 
+            onClick={handlePrint}
+            className="w-full flex items-center justify-center gap-2 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/10 group"
+          >
+            <Printer size={16} className="group-hover:scale-110 transition-transform" /> Cetak SLA PDF
+          </button>
+        </div>
+      </div>
+
+      {/* RIGHT PREVIEW WORKSPACE */}
+      <div className="flex-1 p-6 md:p-12 overflow-y-auto max-h-screen bg-slate-100 flex flex-col items-center custom-scrollbar print:bg-white print:p-0 print:overflow-visible print:max-h-none">
+        
+        {/* PAGE 1: SLA AGREEMENT & KPIs */}
+        <div className="a4-sheet relative bg-white text-black shadow-[0_10px_40px_rgba(0,0,0,0.06)] mb-8 flex flex-col justify-between overflow-hidden print:shadow-none print:m-0 print:page-break-after-always">
+          <div className="w-full flex-shrink-0 relative">
+            <div className="h-[4mm] bg-gradient-to-r from-emerald-500 to-[#003366] w-full" />
+            <div className="px-[15mm] pt-[8mm] pb-[4mm] flex justify-between items-center border-b-[2px] border-[#003366] mx-[15mm]">
+              <div className="flex items-center gap-4">
+                <img src="/logo_epl_connect_1.png" alt="EPL CONNECT" className="h-[12mm] object-contain" />
+              </div>
+              <div className="text-right">
+                <span className="text-[12px] font-black text-[#003366] uppercase tracking-wide">SERVICE LEVEL AGREEMENT (SLA)</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex-1 px-[20mm] py-[8mm] text-[10px] text-slate-800 flex flex-col leading-relaxed text-justify">
+            <div className="text-center mb-6">
+              <h2 className="text-[14px] font-black uppercase text-[#003366]">SLA - Value Engineering Services</h2>
+              <p className="text-[10px] font-bold text-slate-500 mt-1">Dokumen Lampiran Penawaran No: {woForm.quo_number}</p>
+            </div>
+
+            <p className="font-medium mb-4">
+              Service Level Agreement (SLA) ini merupakan dokumen yang mengatur standar pelayanan operasional dan pemeliharaan teknis untuk sistem HVAC yang dikelola oleh PT Daikin Applied Solutions Indonesia untuk fasilitas <strong>{woForm.recipient_company || "Pelanggan"}</strong>.
+            </p>
+
+            <h3 className="text-[11px] font-black text-[#003366] border-b border-slate-200 pb-1 mb-2">1. Key Performance Indicators (KPI) & Response Time</h3>
+            <ul className="list-disc pl-5 mb-4 space-y-1">
+              <li><strong>Emergency Breakdown Response:</strong> Kedatangan teknisi maksimal 4 jam (dalam area Jabodetabek) atau 24 jam (luar kota) sejak pelaporan.</li>
+              <li><strong>Resolution Time (Minor):</strong> Penanganan masalah minor tanpa pergantian sparepart spesifik maksimal 24 jam.</li>
+              <li><strong>Resolution Time (Major):</strong> Penanganan masalah major maksimal 3 hari kerja, tergantung pada ketersediaan suku cadang lokal.</li>
+              <li><strong>Uptime Target:</strong> Kami menargetkan ketersediaan sistem operasional mencapai 98% per tahun setelah pemeliharaan rutin diimplementasikan secara konsisten.</li>
+            </ul>
+
+            <h3 className="text-[11px] font-black text-[#003366] border-b border-slate-200 pb-1 mb-2">2. Kondisi & Ketentuan Layanan (Terms & Conditions)</h3>
+            <ul className="list-disc pl-5 mb-4 space-y-1">
+              <li><strong>Durasi Kontrak:</strong> {contractDuration} dengan frekuensi pemeliharaan rutin sebanyak {visitFrequencyText}.</li>
+              <li><strong>Jam Kerja Layanan:</strong> Kunjungan pemeliharaan preventif dilakukan pada jam kerja standar (Senin - Jumat, 08:30 - 17:30). Pekerjaan di luar jam kerja (overtime/weekend) akan dikenakan biaya tambahan sesuai *Rate Card* kecuali telah disepakati lain dalam kontrak.</li>
+              <li><strong>Pergantian Sparepart:</strong> SLA ini mencakup jasa tenaga kerja (labor) untuk preventive maintenance. Harga dan pergantian suku cadang (spare parts) dan material *consumables* (seperti refrigeran, chemical, filter) akan ditawarkan secara terpisah, kecuali tercantum secara eksplisit pada Bill of Quantities (BOQ).</li>
+              <li><strong>Pelaporan:</strong> Setiap kunjungan (baik preventif maupun korektif) akan didokumentasikan melalui Service Report berbasis digital yang dapat diakses oleh pelanggan.</li>
+            </ul>
+
+            <h3 className="text-[11px] font-black text-[#003366] border-b border-slate-200 pb-1 mb-2">3. Rekapitulasi Unit Terdampak (Equipment Covered)</h3>
+            <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl">
+              <table className="w-full text-[9px] text-left">
+                <thead>
+                  <tr className="border-b border-slate-300">
+                    <th className="py-1">Kategori/Tipe Unit</th>
+                    <th className="py-1 text-center">Total Kuantitas</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {coveredEquipment.map((type) => {
+                    const count = activeItems.filter((i: any) => 
+                      i.category.toLowerCase().includes(type.toLowerCase().replace("ahu_fcu", "ahu")) || 
+                      i.item_name.toLowerCase().includes(type.toLowerCase().replace("ahu_fcu", "ahu")) ||
+                      i.category.toLowerCase().includes(type.toLowerCase().replace("ahu_fcu", "fcu")) || 
+                      i.item_name.toLowerCase().includes(type.toLowerCase().replace("ahu_fcu", "fcu"))
+                    ).reduce((sum: number, i: any) => sum + i.qty, 0);
+                    
+                    return (
+                      <tr key={type} className="border-b border-slate-100 last:border-0">
+                        <td className="py-1.5 font-bold uppercase text-slate-700">{type.replace("_", " ")}</td>
+                        <td className="py-1.5 text-center font-black text-[#003366]">{count} Unit</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mt-auto flex justify-between items-end pt-8">
+              <div className="text-center w-40">
+                <p className="text-[9px] font-bold text-slate-400 mb-12">Disetujui Oleh Pelanggan,</p>
+                <div className="border-b border-slate-400 mb-1"></div>
+                <p className="text-[9px] font-bold text-slate-700 uppercase">{woForm.recipient_pic || "Nama Terang"}</p>
+                <p className="text-[8px] font-medium text-slate-500">{woForm.recipient_company}</p>
+              </div>
+              <div className="text-center w-40">
+                <p className="text-[9px] font-bold text-slate-400 mb-12">Dibuat Oleh,</p>
+                <div className="border-b border-slate-400 mb-1"></div>
+                <p className="text-[9px] font-bold text-slate-700 uppercase">{woForm.pic_name || "Sales Engineer"}</p>
+                <p className="text-[8px] font-medium text-slate-500">PT Daikin Applied Solutions</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full flex-shrink-0 relative">
+            <div className="mx-[15mm] h-[0.5px] bg-slate-200" />
+            <div className="px-[15mm] py-[3.5mm] flex justify-between items-center text-[7px] font-bold text-slate-400 uppercase tracking-widest">
+              <span>SLA VES Document • Confidential</span>
+              <span>Halaman 1 / {coveredEquipment.length + 1}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* PAGES 2+: SCOPE OF WORK CHECKLISTS */}
+        {coveredEquipment.map((eqType, idx) => {
+          const typeKey = eqType as keyof typeof standardSOW;
+          const sow = standardSOW[typeKey];
+          if (!sow) return null;
+
+          return (
+            <div key={eqType} className="a4-sheet relative bg-white text-black shadow-[0_10px_40px_rgba(0,0,0,0.06)] mb-8 flex flex-col justify-between overflow-hidden print:shadow-none print:m-0 print:page-break-after-always">
+              <div className="w-full flex-shrink-0 relative">
+                <div className="h-[4mm] bg-gradient-to-r from-emerald-500 to-[#003366] w-full" />
+                <div className="px-[15mm] pt-[8mm] pb-[4mm] flex justify-between items-start">
+                  <div className="flex flex-col gap-1">
+                    <img src="/logo_epl_connect_1.png" alt="EPL CONNECT" className="h-[7mm] object-contain" />
+                    <span className="text-[6.5px] font-bold text-slate-450 tracking-wide uppercase">PT. DAIKIN APPLIED SOLUTIONS INDONESIA</span>
+                  </div>
+                  <div className="text-right">
+                    <h3 className="text-[9.5px] font-black text-[#003366] uppercase">STANDARD SCOPE OF WORK (SOW)</h3>
+                    <p className="text-[8px] font-black text-emerald-600 uppercase tracking-widest mt-1">SLA Lampiran: {woForm.quo_number}</p>
+                  </div>
+                </div>
+                <div className="mx-[15mm] h-[0.5px] bg-slate-200" />
+              </div>
+
+              <div className="flex-1 px-[20mm] py-[6mm] flex flex-col justify-start">
+                <div className="flex items-center gap-2 mb-4">
+                  <ShieldCheck size={18} className="text-[#003366]" />
+                  <h2 className="text-[12px] font-black uppercase text-[#003366] tracking-wide">
+                    Checklist SOW: {eqType.replace("_", " ")}
+                  </h2>
+                </div>
+
+                <div className="space-y-6">
+                  {sow.Monthly && (
+                    <div className="space-y-2">
+                      <div className="bg-slate-100 py-1.5 px-3 rounded border-l-4 border-[#003366]">
+                        <h4 className="text-[10px] font-black uppercase text-slate-800">Pemeliharaan Rutin (Bulanan)</h4>
+                      </div>
+                      <ul className="space-y-1.5">
+                        {sow.Monthly.map((task, i) => (
+                          <li key={i} className="flex gap-3 text-[9.5px] text-slate-700">
+                            <span className="text-emerald-500 font-bold shrink-0">✓</span> {task}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {sow.Quarterly && (
+                    <div className="space-y-2">
+                      <div className="bg-slate-100 py-1.5 px-3 rounded border-l-4 border-emerald-500">
+                        <h4 className="text-[10px] font-black uppercase text-slate-800">Pemeliharaan Kuartalan / 3 Bulanan</h4>
+                      </div>
+                      <ul className="space-y-1.5">
+                        {sow.Quarterly.map((task, i) => (
+                          <li key={i} className="flex gap-3 text-[9.5px] text-slate-700">
+                            <span className="text-emerald-500 font-bold shrink-0">✓</span> {task}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {sow.Yearly && (
+                    <div className="space-y-2">
+                      <div className="bg-slate-100 py-1.5 px-3 rounded border-l-4 border-[#0073ea]">
+                        <h4 className="text-[10px] font-black uppercase text-slate-800">Pemeliharaan Tahunan (Annual)</h4>
+                      </div>
+                      <ul className="space-y-1.5">
+                        {sow.Yearly.map((task, i) => (
+                          <li key={i} className="flex gap-3 text-[9.5px] text-slate-700">
+                            <span className="text-emerald-500 font-bold shrink-0">✓</span> {task}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="w-full flex-shrink-0 relative">
+                <div className="mx-[15mm] h-[0.5px] bg-slate-200" />
+                <div className="px-[15mm] py-[3.5mm] flex justify-between items-center text-[7px] font-bold text-slate-400 uppercase tracking-widest">
+                  <span>SOW VES Document • Confidential</span>
+                  <span>Halaman {idx + 2} / {coveredEquipment.length + 1}</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+
+      </div>
+    </div>
+  );
+}
