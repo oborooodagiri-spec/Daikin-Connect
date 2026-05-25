@@ -330,21 +330,42 @@ export default function SlaVesClient() {
               Service Level Agreement (SLA) ini merupakan dokumen yang mengatur standar pelayanan operasional dan pemeliharaan teknis untuk sistem HVAC yang dikelola oleh PT Daikin Applied Solutions Indonesia untuk fasilitas <strong>{woForm.recipient_company || "Pelanggan"}</strong>.
             </p>
 
-            <h3 className="text-[11px] font-black text-[#003366] border-b border-slate-200 pb-1 mb-2">1. Key Performance Indicators (KPI) & Response Time</h3>
+            <div className="flex justify-between items-center border-b border-slate-200 pb-1 mb-2">
+              <h3 className="text-[11px] font-black text-[#003366]">1. Key Performance Indicators (KPI) & Response Time</h3>
+              {editMode && (
+                <button 
+                  onClick={() => setCustomContent({...customContent, kpis: [...customContent.kpis, "Poin KPI baru..."]})} 
+                  className="text-[8px] font-bold text-emerald-600 hover:underline"
+                >
+                  + Tambah Poin
+                </button>
+              )}
+            </div>
             <ul className="list-disc pl-5 mb-4 space-y-1">
               {customContent.kpis.map((kpi: string, idx: number) => (
                 <li key={idx}>
                   {editMode ? (
-                    <textarea 
-                      value={kpi} 
-                      onChange={(e) => {
-                        const newKpis = [...customContent.kpis];
-                        newKpis[idx] = e.target.value;
-                        setCustomContent({...customContent, kpis: newKpis});
-                      }}
-                      className="w-full bg-amber-50 border border-amber-200 p-1 rounded text-[9.5px] font-medium"
-                      rows={2}
-                    />
+                    <div className="flex gap-2 mb-1">
+                      <textarea 
+                        value={kpi} 
+                        onChange={(e) => {
+                          const newKpis = [...customContent.kpis];
+                          newKpis[idx] = e.target.value;
+                          setCustomContent({...customContent, kpis: newKpis});
+                        }}
+                        className="w-full bg-amber-50 border border-amber-200 p-1 rounded text-[9.5px] font-medium"
+                        rows={2}
+                      />
+                      <button 
+                        onClick={() => {
+                          const newKpis = customContent.kpis.filter((_: any, i: number) => i !== idx);
+                          setCustomContent({...customContent, kpis: newKpis});
+                        }} 
+                        className="text-rose-500 font-bold px-1"
+                      >
+                        X
+                      </button>
+                    </div>
                   ) : (
                     <span dangerouslySetInnerHTML={{ __html: kpi.replace(/^(.*?):/, "<strong>$1:</strong>") }} />
                   )}
@@ -352,7 +373,17 @@ export default function SlaVesClient() {
               ))}
             </ul>
 
-            <h3 className="text-[11px] font-black text-[#003366] border-b border-slate-200 pb-1 mb-2">2. Kondisi & Ketentuan Layanan (Terms & Conditions)</h3>
+            <div className="flex justify-between items-center border-b border-slate-200 pb-1 mb-2">
+              <h3 className="text-[11px] font-black text-[#003366]">2. Kondisi & Ketentuan Layanan (Terms & Conditions)</h3>
+              {editMode && (
+                <button 
+                  onClick={() => setCustomContent({...customContent, terms: [...customContent.terms, "Kondisi layanan baru..."]})} 
+                  className="text-[8px] font-bold text-emerald-600 hover:underline"
+                >
+                  + Tambah Poin
+                </button>
+              )}
+            </div>
             <ul className="list-disc pl-5 mb-4 space-y-1">
               {/* Dynamic Term 1 based on state */}
               <li><strong>Durasi Kontrak:</strong> {contractDuration} dengan frekuensi pemeliharaan rutin sebanyak {visitFrequencyText}.</li>
@@ -360,16 +391,27 @@ export default function SlaVesClient() {
               {customContent.terms.map((term: string, idx: number) => (
                 <li key={idx}>
                   {editMode ? (
-                    <textarea 
-                      value={term} 
-                      onChange={(e) => {
-                        const newTerms = [...customContent.terms];
-                        newTerms[idx] = e.target.value;
-                        setCustomContent({...customContent, terms: newTerms});
-                      }}
-                      className="w-full bg-amber-50 border border-amber-200 p-1 rounded text-[9.5px] font-medium"
-                      rows={3}
-                    />
+                    <div className="flex gap-2 mb-1">
+                      <textarea 
+                        value={term} 
+                        onChange={(e) => {
+                          const newTerms = [...customContent.terms];
+                          newTerms[idx] = e.target.value;
+                          setCustomContent({...customContent, terms: newTerms});
+                        }}
+                        className="w-full bg-amber-50 border border-amber-200 p-1 rounded text-[9.5px] font-medium"
+                        rows={3}
+                      />
+                      <button 
+                        onClick={() => {
+                          const newTerms = customContent.terms.filter((_: any, i: number) => i !== idx);
+                          setCustomContent({...customContent, terms: newTerms});
+                        }} 
+                        className="text-rose-500 font-bold px-1"
+                      >
+                        X
+                      </button>
+                    </div>
                   ) : (
                     <span dangerouslySetInnerHTML={{ __html: term.replace(/^(.*?):/, "<strong>$1:</strong>") }} />
                   )}
