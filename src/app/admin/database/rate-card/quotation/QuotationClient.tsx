@@ -136,11 +136,39 @@ export default function QuotationClient({
 
     const newItems: any[] = [];
     pendingProject.units.forEach((unit: any) => {
-      // Find matching catalog item in initialItems (case insensitive match)
-      const matchedItem = initialItems.find(item => 
-        item.category.toLowerCase() === unit.unit_type?.toLowerCase() ||
-        item.item_name.toLowerCase().includes(unit.unit_type?.toLowerCase() || "")
-      );
+      const uType = (unit.unit_type || "").toLowerCase().trim();
+      let matchedItem = null;
+
+      if (uType) {
+        // 1. Exact Category Match
+        matchedItem = initialItems.find(item => item.category.toLowerCase().trim() === uType);
+        
+        // 2. Partial Category Match (e.g. "Outdoor VRV" matches "VRV")
+        if (!matchedItem) {
+          matchedItem = initialItems.find(item => {
+            const cat = item.category.toLowerCase().trim();
+            return cat && (uType.includes(cat) || cat.includes(uType));
+          });
+        }
+        
+        // 3. Partial Name Match
+        if (!matchedItem) {
+          matchedItem = initialItems.find(item => {
+            const name = item.item_name.toLowerCase().trim();
+            return name && (name.includes(uType) || uType.includes(name));
+          });
+        }
+      }
+
+      // 4. Fallback if no match found (or unit_type is empty)
+      if (!matchedItem && initialItems.length > 0) {
+        matchedItem = {
+          ...initialItems[0],
+          item_name: `Maintenance ${unit.unit_type || "Unit"}`,
+          category: unit.unit_type || "Lain-lain",
+          original_price: 0 // Set to 0 so admin knows it needs a price
+        };
+      }
 
       if (matchedItem) {
         const price = getVendorPrice(matchedItem.id.toString());
@@ -168,7 +196,7 @@ export default function QuotationClient({
           capacity_pk: (matchedItem.capacity_unit === "PK" || matchedItem.capacity_unit === "Cell") ? capacityVal : 0,
           qty: 1,
           notes: `Lokasi: ${resolvedLocation} (Model: ${unit.model || "-"})`,
-          original_price: price,
+          original_price: matchedItem.original_price !== undefined ? matchedItem.original_price : price,
           margin_override: null // Uses global margin by default
         });
       }
