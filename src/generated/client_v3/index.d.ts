@@ -39,6 +39,26 @@ export type knowledge_resources = $Result.DefaultSelection<Prisma.$knowledge_res
  */
 export type refresh_tokens = $Result.DefaultSelection<Prisma.$refresh_tokensPayload>
 /**
+ * Model work_orders
+ * 
+ */
+export type work_orders = $Result.DefaultSelection<Prisma.$work_ordersPayload>
+/**
+ * Model quotations
+ * 
+ */
+export type quotations = $Result.DefaultSelection<Prisma.$quotationsPayload>
+/**
+ * Model quotation_items
+ * 
+ */
+export type quotation_items = $Result.DefaultSelection<Prisma.$quotation_itemsPayload>
+/**
+ * Model slas
+ * 
+ */
+export type slas = $Result.DefaultSelection<Prisma.$slasPayload>
+/**
  * Model role_permissions
  * 
  */
@@ -670,6 +690,46 @@ export class PrismaClient<
     * ```
     */
   get refresh_tokens(): Prisma.refresh_tokensDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.work_orders`: Exposes CRUD operations for the **work_orders** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Work_orders
+    * const work_orders = await prisma.work_orders.findMany()
+    * ```
+    */
+  get work_orders(): Prisma.work_ordersDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.quotations`: Exposes CRUD operations for the **quotations** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Quotations
+    * const quotations = await prisma.quotations.findMany()
+    * ```
+    */
+  get quotations(): Prisma.quotationsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.quotation_items`: Exposes CRUD operations for the **quotation_items** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Quotation_items
+    * const quotation_items = await prisma.quotation_items.findMany()
+    * ```
+    */
+  get quotation_items(): Prisma.quotation_itemsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.slas`: Exposes CRUD operations for the **slas** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Slas
+    * const slas = await prisma.slas.findMany()
+    * ```
+    */
+  get slas(): Prisma.slasDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.role_permissions`: Exposes CRUD operations for the **role_permissions** model.
@@ -1535,6 +1595,10 @@ export namespace Prisma {
     projects: 'projects',
     knowledge_resources: 'knowledge_resources',
     refresh_tokens: 'refresh_tokens',
+    work_orders: 'work_orders',
+    quotations: 'quotations',
+    quotation_items: 'quotation_items',
+    slas: 'slas',
     role_permissions: 'role_permissions',
     roles: 'roles',
     units: 'units',
@@ -1592,7 +1656,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "customers" | "permissions" | "projects" | "knowledge_resources" | "refresh_tokens" | "role_permissions" | "roles" | "units" | "user_project_access" | "user_roles" | "user_unit_access" | "users" | "audit_logs" | "password_reset_tokens" | "activities" | "activity_photos" | "ahu_audits" | "audit_tickets" | "audit_velocity_points" | "audits" | "contracts" | "corrective" | "corrective_maintenances" | "maintenance_contracts" | "service_activities" | "service_logs" | "service_photos" | "sites" | "tickets" | "unit_comments" | "schedules" | "schedule_attendance" | "schedule_mom" | "schedule_messages" | "schedule_targets" | "complaints" | "unit_edit_requests" | "user_push_tokens" | "notifications" | "daily_ops_logs" | "vendor_attendance" | "project_intelligence" | "project_issues" | "logsheet_templates" | "logsheet_entries" | "shopping_list" | "rate_card_settings"
+      modelProps: "customers" | "permissions" | "projects" | "knowledge_resources" | "refresh_tokens" | "work_orders" | "quotations" | "quotation_items" | "slas" | "role_permissions" | "roles" | "units" | "user_project_access" | "user_roles" | "user_unit_access" | "users" | "audit_logs" | "password_reset_tokens" | "activities" | "activity_photos" | "ahu_audits" | "audit_tickets" | "audit_velocity_points" | "audits" | "contracts" | "corrective" | "corrective_maintenances" | "maintenance_contracts" | "service_activities" | "service_logs" | "service_photos" | "sites" | "tickets" | "unit_comments" | "schedules" | "schedule_attendance" | "schedule_mom" | "schedule_messages" | "schedule_targets" | "complaints" | "unit_edit_requests" | "user_push_tokens" | "notifications" | "daily_ops_logs" | "vendor_attendance" | "project_intelligence" | "project_issues" | "logsheet_templates" | "logsheet_entries" | "shopping_list" | "rate_card_settings"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1923,6 +1987,270 @@ export namespace Prisma {
           count: {
             args: Prisma.refresh_tokensCountArgs<ExtArgs>
             result: $Utils.Optional<Refresh_tokensCountAggregateOutputType> | number
+          }
+        }
+      }
+      work_orders: {
+        payload: Prisma.$work_ordersPayload<ExtArgs>
+        fields: Prisma.work_ordersFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.work_ordersFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$work_ordersPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.work_ordersFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$work_ordersPayload>
+          }
+          findFirst: {
+            args: Prisma.work_ordersFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$work_ordersPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.work_ordersFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$work_ordersPayload>
+          }
+          findMany: {
+            args: Prisma.work_ordersFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$work_ordersPayload>[]
+          }
+          create: {
+            args: Prisma.work_ordersCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$work_ordersPayload>
+          }
+          createMany: {
+            args: Prisma.work_ordersCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.work_ordersDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$work_ordersPayload>
+          }
+          update: {
+            args: Prisma.work_ordersUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$work_ordersPayload>
+          }
+          deleteMany: {
+            args: Prisma.work_ordersDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.work_ordersUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.work_ordersUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$work_ordersPayload>
+          }
+          aggregate: {
+            args: Prisma.Work_ordersAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateWork_orders>
+          }
+          groupBy: {
+            args: Prisma.work_ordersGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Work_ordersGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.work_ordersCountArgs<ExtArgs>
+            result: $Utils.Optional<Work_ordersCountAggregateOutputType> | number
+          }
+        }
+      }
+      quotations: {
+        payload: Prisma.$quotationsPayload<ExtArgs>
+        fields: Prisma.quotationsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.quotationsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$quotationsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.quotationsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$quotationsPayload>
+          }
+          findFirst: {
+            args: Prisma.quotationsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$quotationsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.quotationsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$quotationsPayload>
+          }
+          findMany: {
+            args: Prisma.quotationsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$quotationsPayload>[]
+          }
+          create: {
+            args: Prisma.quotationsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$quotationsPayload>
+          }
+          createMany: {
+            args: Prisma.quotationsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.quotationsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$quotationsPayload>
+          }
+          update: {
+            args: Prisma.quotationsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$quotationsPayload>
+          }
+          deleteMany: {
+            args: Prisma.quotationsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.quotationsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.quotationsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$quotationsPayload>
+          }
+          aggregate: {
+            args: Prisma.QuotationsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateQuotations>
+          }
+          groupBy: {
+            args: Prisma.quotationsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<QuotationsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.quotationsCountArgs<ExtArgs>
+            result: $Utils.Optional<QuotationsCountAggregateOutputType> | number
+          }
+        }
+      }
+      quotation_items: {
+        payload: Prisma.$quotation_itemsPayload<ExtArgs>
+        fields: Prisma.quotation_itemsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.quotation_itemsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$quotation_itemsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.quotation_itemsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$quotation_itemsPayload>
+          }
+          findFirst: {
+            args: Prisma.quotation_itemsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$quotation_itemsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.quotation_itemsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$quotation_itemsPayload>
+          }
+          findMany: {
+            args: Prisma.quotation_itemsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$quotation_itemsPayload>[]
+          }
+          create: {
+            args: Prisma.quotation_itemsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$quotation_itemsPayload>
+          }
+          createMany: {
+            args: Prisma.quotation_itemsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.quotation_itemsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$quotation_itemsPayload>
+          }
+          update: {
+            args: Prisma.quotation_itemsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$quotation_itemsPayload>
+          }
+          deleteMany: {
+            args: Prisma.quotation_itemsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.quotation_itemsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.quotation_itemsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$quotation_itemsPayload>
+          }
+          aggregate: {
+            args: Prisma.Quotation_itemsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateQuotation_items>
+          }
+          groupBy: {
+            args: Prisma.quotation_itemsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Quotation_itemsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.quotation_itemsCountArgs<ExtArgs>
+            result: $Utils.Optional<Quotation_itemsCountAggregateOutputType> | number
+          }
+        }
+      }
+      slas: {
+        payload: Prisma.$slasPayload<ExtArgs>
+        fields: Prisma.slasFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.slasFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$slasPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.slasFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$slasPayload>
+          }
+          findFirst: {
+            args: Prisma.slasFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$slasPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.slasFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$slasPayload>
+          }
+          findMany: {
+            args: Prisma.slasFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$slasPayload>[]
+          }
+          create: {
+            args: Prisma.slasCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$slasPayload>
+          }
+          createMany: {
+            args: Prisma.slasCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.slasDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$slasPayload>
+          }
+          update: {
+            args: Prisma.slasUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$slasPayload>
+          }
+          deleteMany: {
+            args: Prisma.slasDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.slasUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.slasUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$slasPayload>
+          }
+          aggregate: {
+            args: Prisma.SlasAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSlas>
+          }
+          groupBy: {
+            args: Prisma.slasGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SlasGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.slasCountArgs<ExtArgs>
+            result: $Utils.Optional<SlasCountAggregateOutputType> | number
           }
         }
       }
@@ -4787,6 +5115,10 @@ export namespace Prisma {
     projects?: projectsOmit
     knowledge_resources?: knowledge_resourcesOmit
     refresh_tokens?: refresh_tokensOmit
+    work_orders?: work_ordersOmit
+    quotations?: quotationsOmit
+    quotation_items?: quotation_itemsOmit
+    slas?: slasOmit
     role_permissions?: role_permissionsOmit
     roles?: rolesOmit
     units?: unitsOmit
@@ -4927,6 +5259,7 @@ export namespace Prisma {
     projects: number
     sites: number
     tickets: number
+    work_orders: number
   }
 
   export type CustomersCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4934,6 +5267,7 @@ export namespace Prisma {
     projects?: boolean | CustomersCountOutputTypeCountProjectsArgs
     sites?: boolean | CustomersCountOutputTypeCountSitesArgs
     tickets?: boolean | CustomersCountOutputTypeCountTicketsArgs
+    work_orders?: boolean | CustomersCountOutputTypeCountWork_ordersArgs
   }
 
   // Custom InputTypes
@@ -4973,6 +5307,13 @@ export namespace Prisma {
    */
   export type CustomersCountOutputTypeCountTicketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ticketsWhereInput
+  }
+
+  /**
+   * CustomersCountOutputType without action
+   */
+  export type CustomersCountOutputTypeCountWork_ordersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: work_ordersWhereInput
   }
 
 
@@ -5107,6 +5448,68 @@ export namespace Prisma {
    */
   export type ProjectsCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: notificationsWhereInput
+  }
+
+
+  /**
+   * Count Type Work_ordersCountOutputType
+   */
+
+  export type Work_ordersCountOutputType = {
+    quotations: number
+  }
+
+  export type Work_ordersCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    quotations?: boolean | Work_ordersCountOutputTypeCountQuotationsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * Work_ordersCountOutputType without action
+   */
+  export type Work_ordersCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Work_ordersCountOutputType
+     */
+    select?: Work_ordersCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * Work_ordersCountOutputType without action
+   */
+  export type Work_ordersCountOutputTypeCountQuotationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: quotationsWhereInput
+  }
+
+
+  /**
+   * Count Type QuotationsCountOutputType
+   */
+
+  export type QuotationsCountOutputType = {
+    items: number
+  }
+
+  export type QuotationsCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    items?: boolean | QuotationsCountOutputTypeCountItemsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * QuotationsCountOutputType without action
+   */
+  export type QuotationsCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the QuotationsCountOutputType
+     */
+    select?: QuotationsCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * QuotationsCountOutputType without action
+   */
+  export type QuotationsCountOutputTypeCountItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: quotation_itemsWhereInput
   }
 
 
@@ -5318,6 +5721,9 @@ export namespace Prisma {
     processed_requests: number
     notifications: number
     vendor_attendance: number
+    created_work_orders: number
+    created_quotations: number
+    created_slas: number
   }
 
   export type UsersCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5336,6 +5742,9 @@ export namespace Prisma {
     processed_requests?: boolean | UsersCountOutputTypeCountProcessed_requestsArgs
     notifications?: boolean | UsersCountOutputTypeCountNotificationsArgs
     vendor_attendance?: boolean | UsersCountOutputTypeCountVendor_attendanceArgs
+    created_work_orders?: boolean | UsersCountOutputTypeCountCreated_work_ordersArgs
+    created_quotations?: boolean | UsersCountOutputTypeCountCreated_quotationsArgs
+    created_slas?: boolean | UsersCountOutputTypeCountCreated_slasArgs
   }
 
   // Custom InputTypes
@@ -5452,6 +5861,27 @@ export namespace Prisma {
    */
   export type UsersCountOutputTypeCountVendor_attendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: vendor_attendanceWhereInput
+  }
+
+  /**
+   * UsersCountOutputType without action
+   */
+  export type UsersCountOutputTypeCountCreated_work_ordersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: work_ordersWhereInput
+  }
+
+  /**
+   * UsersCountOutputType without action
+   */
+  export type UsersCountOutputTypeCountCreated_quotationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: quotationsWhereInput
+  }
+
+  /**
+   * UsersCountOutputType without action
+   */
+  export type UsersCountOutputTypeCountCreated_slasArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: slasWhereInput
   }
 
 
@@ -5813,6 +6243,7 @@ export namespace Prisma {
     projects?: boolean | customers$projectsArgs<ExtArgs>
     sites?: boolean | customers$sitesArgs<ExtArgs>
     tickets?: boolean | customers$ticketsArgs<ExtArgs>
+    work_orders?: boolean | customers$work_ordersArgs<ExtArgs>
     _count?: boolean | CustomersCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["customers"]>
 
@@ -5836,6 +6267,7 @@ export namespace Prisma {
     projects?: boolean | customers$projectsArgs<ExtArgs>
     sites?: boolean | customers$sitesArgs<ExtArgs>
     tickets?: boolean | customers$ticketsArgs<ExtArgs>
+    work_orders?: boolean | customers$work_ordersArgs<ExtArgs>
     _count?: boolean | CustomersCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -5846,6 +6278,7 @@ export namespace Prisma {
       projects: Prisma.$projectsPayload<ExtArgs>[]
       sites: Prisma.$sitesPayload<ExtArgs>[]
       tickets: Prisma.$ticketsPayload<ExtArgs>[]
+      work_orders: Prisma.$work_ordersPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -6201,6 +6634,7 @@ export namespace Prisma {
     projects<T extends customers$projectsArgs<ExtArgs> = {}>(args?: Subset<T, customers$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     sites<T extends customers$sitesArgs<ExtArgs> = {}>(args?: Subset<T, customers$sitesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$sitesPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     tickets<T extends customers$ticketsArgs<ExtArgs> = {}>(args?: Subset<T, customers$ticketsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ticketsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    work_orders<T extends customers$work_ordersArgs<ExtArgs> = {}>(args?: Subset<T, customers$work_ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$work_ordersPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6675,6 +7109,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TicketsScalarFieldEnum | TicketsScalarFieldEnum[]
+  }
+
+  /**
+   * customers.work_orders
+   */
+  export type customers$work_ordersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the work_orders
+     */
+    select?: work_ordersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the work_orders
+     */
+    omit?: work_ordersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: work_ordersInclude<ExtArgs> | null
+    where?: work_ordersWhereInput
+    orderBy?: work_ordersOrderByWithRelationInput | work_ordersOrderByWithRelationInput[]
+    cursor?: work_ordersWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Work_ordersScalarFieldEnum | Work_ordersScalarFieldEnum[]
   }
 
   /**
@@ -11074,6 +11532,4309 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: refresh_tokensInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model work_orders
+   */
+
+  export type AggregateWork_orders = {
+    _count: Work_ordersCountAggregateOutputType | null
+    _avg: Work_ordersAvgAggregateOutputType | null
+    _sum: Work_ordersSumAggregateOutputType | null
+    _min: Work_ordersMinAggregateOutputType | null
+    _max: Work_ordersMaxAggregateOutputType | null
+  }
+
+  export type Work_ordersAvgAggregateOutputType = {
+    id: number | null
+    customer_id: number | null
+    created_by: number | null
+  }
+
+  export type Work_ordersSumAggregateOutputType = {
+    id: number | null
+    customer_id: number | null
+    created_by: number | null
+  }
+
+  export type Work_ordersMinAggregateOutputType = {
+    id: number | null
+    wo_number: string | null
+    customer_id: number | null
+    customer_name: string | null
+    pic_name: string | null
+    company_address: string | null
+    status: string | null
+    created_at: Date | null
+    updated_at: Date | null
+    created_by: number | null
+  }
+
+  export type Work_ordersMaxAggregateOutputType = {
+    id: number | null
+    wo_number: string | null
+    customer_id: number | null
+    customer_name: string | null
+    pic_name: string | null
+    company_address: string | null
+    status: string | null
+    created_at: Date | null
+    updated_at: Date | null
+    created_by: number | null
+  }
+
+  export type Work_ordersCountAggregateOutputType = {
+    id: number
+    wo_number: number
+    customer_id: number
+    customer_name: number
+    pic_name: number
+    company_address: number
+    status: number
+    created_at: number
+    updated_at: number
+    created_by: number
+    _all: number
+  }
+
+
+  export type Work_ordersAvgAggregateInputType = {
+    id?: true
+    customer_id?: true
+    created_by?: true
+  }
+
+  export type Work_ordersSumAggregateInputType = {
+    id?: true
+    customer_id?: true
+    created_by?: true
+  }
+
+  export type Work_ordersMinAggregateInputType = {
+    id?: true
+    wo_number?: true
+    customer_id?: true
+    customer_name?: true
+    pic_name?: true
+    company_address?: true
+    status?: true
+    created_at?: true
+    updated_at?: true
+    created_by?: true
+  }
+
+  export type Work_ordersMaxAggregateInputType = {
+    id?: true
+    wo_number?: true
+    customer_id?: true
+    customer_name?: true
+    pic_name?: true
+    company_address?: true
+    status?: true
+    created_at?: true
+    updated_at?: true
+    created_by?: true
+  }
+
+  export type Work_ordersCountAggregateInputType = {
+    id?: true
+    wo_number?: true
+    customer_id?: true
+    customer_name?: true
+    pic_name?: true
+    company_address?: true
+    status?: true
+    created_at?: true
+    updated_at?: true
+    created_by?: true
+    _all?: true
+  }
+
+  export type Work_ordersAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which work_orders to aggregate.
+     */
+    where?: work_ordersWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of work_orders to fetch.
+     */
+    orderBy?: work_ordersOrderByWithRelationInput | work_ordersOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: work_ordersWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` work_orders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` work_orders.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned work_orders
+    **/
+    _count?: true | Work_ordersCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Work_ordersAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Work_ordersSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Work_ordersMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Work_ordersMaxAggregateInputType
+  }
+
+  export type GetWork_ordersAggregateType<T extends Work_ordersAggregateArgs> = {
+        [P in keyof T & keyof AggregateWork_orders]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateWork_orders[P]>
+      : GetScalarType<T[P], AggregateWork_orders[P]>
+  }
+
+
+
+
+  export type work_ordersGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: work_ordersWhereInput
+    orderBy?: work_ordersOrderByWithAggregationInput | work_ordersOrderByWithAggregationInput[]
+    by: Work_ordersScalarFieldEnum[] | Work_ordersScalarFieldEnum
+    having?: work_ordersScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Work_ordersCountAggregateInputType | true
+    _avg?: Work_ordersAvgAggregateInputType
+    _sum?: Work_ordersSumAggregateInputType
+    _min?: Work_ordersMinAggregateInputType
+    _max?: Work_ordersMaxAggregateInputType
+  }
+
+  export type Work_ordersGroupByOutputType = {
+    id: number
+    wo_number: string
+    customer_id: number | null
+    customer_name: string | null
+    pic_name: string | null
+    company_address: string | null
+    status: string
+    created_at: Date
+    updated_at: Date
+    created_by: number | null
+    _count: Work_ordersCountAggregateOutputType | null
+    _avg: Work_ordersAvgAggregateOutputType | null
+    _sum: Work_ordersSumAggregateOutputType | null
+    _min: Work_ordersMinAggregateOutputType | null
+    _max: Work_ordersMaxAggregateOutputType | null
+  }
+
+  type GetWork_ordersGroupByPayload<T extends work_ordersGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Work_ordersGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Work_ordersGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Work_ordersGroupByOutputType[P]>
+            : GetScalarType<T[P], Work_ordersGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type work_ordersSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    wo_number?: boolean
+    customer_id?: boolean
+    customer_name?: boolean
+    pic_name?: boolean
+    company_address?: boolean
+    status?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    created_by?: boolean
+    customers?: boolean | work_orders$customersArgs<ExtArgs>
+    users?: boolean | work_orders$usersArgs<ExtArgs>
+    quotations?: boolean | work_orders$quotationsArgs<ExtArgs>
+    _count?: boolean | Work_ordersCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["work_orders"]>
+
+
+
+  export type work_ordersSelectScalar = {
+    id?: boolean
+    wo_number?: boolean
+    customer_id?: boolean
+    customer_name?: boolean
+    pic_name?: boolean
+    company_address?: boolean
+    status?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    created_by?: boolean
+  }
+
+  export type work_ordersOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "wo_number" | "customer_id" | "customer_name" | "pic_name" | "company_address" | "status" | "created_at" | "updated_at" | "created_by", ExtArgs["result"]["work_orders"]>
+  export type work_ordersInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customers?: boolean | work_orders$customersArgs<ExtArgs>
+    users?: boolean | work_orders$usersArgs<ExtArgs>
+    quotations?: boolean | work_orders$quotationsArgs<ExtArgs>
+    _count?: boolean | Work_ordersCountOutputTypeDefaultArgs<ExtArgs>
+  }
+
+  export type $work_ordersPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "work_orders"
+    objects: {
+      customers: Prisma.$customersPayload<ExtArgs> | null
+      users: Prisma.$usersPayload<ExtArgs> | null
+      quotations: Prisma.$quotationsPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      wo_number: string
+      customer_id: number | null
+      customer_name: string | null
+      pic_name: string | null
+      company_address: string | null
+      status: string
+      created_at: Date
+      updated_at: Date
+      created_by: number | null
+    }, ExtArgs["result"]["work_orders"]>
+    composites: {}
+  }
+
+  type work_ordersGetPayload<S extends boolean | null | undefined | work_ordersDefaultArgs> = $Result.GetResult<Prisma.$work_ordersPayload, S>
+
+  type work_ordersCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<work_ordersFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Work_ordersCountAggregateInputType | true
+    }
+
+  export interface work_ordersDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['work_orders'], meta: { name: 'work_orders' } }
+    /**
+     * Find zero or one Work_orders that matches the filter.
+     * @param {work_ordersFindUniqueArgs} args - Arguments to find a Work_orders
+     * @example
+     * // Get one Work_orders
+     * const work_orders = await prisma.work_orders.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends work_ordersFindUniqueArgs>(args: SelectSubset<T, work_ordersFindUniqueArgs<ExtArgs>>): Prisma__work_ordersClient<$Result.GetResult<Prisma.$work_ordersPayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one Work_orders that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {work_ordersFindUniqueOrThrowArgs} args - Arguments to find a Work_orders
+     * @example
+     * // Get one Work_orders
+     * const work_orders = await prisma.work_orders.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends work_ordersFindUniqueOrThrowArgs>(args: SelectSubset<T, work_ordersFindUniqueOrThrowArgs<ExtArgs>>): Prisma__work_ordersClient<$Result.GetResult<Prisma.$work_ordersPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Work_orders that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {work_ordersFindFirstArgs} args - Arguments to find a Work_orders
+     * @example
+     * // Get one Work_orders
+     * const work_orders = await prisma.work_orders.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends work_ordersFindFirstArgs>(args?: SelectSubset<T, work_ordersFindFirstArgs<ExtArgs>>): Prisma__work_ordersClient<$Result.GetResult<Prisma.$work_ordersPayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Work_orders that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {work_ordersFindFirstOrThrowArgs} args - Arguments to find a Work_orders
+     * @example
+     * // Get one Work_orders
+     * const work_orders = await prisma.work_orders.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends work_ordersFindFirstOrThrowArgs>(args?: SelectSubset<T, work_ordersFindFirstOrThrowArgs<ExtArgs>>): Prisma__work_ordersClient<$Result.GetResult<Prisma.$work_ordersPayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more Work_orders that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {work_ordersFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Work_orders
+     * const work_orders = await prisma.work_orders.findMany()
+     * 
+     * // Get first 10 Work_orders
+     * const work_orders = await prisma.work_orders.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const work_ordersWithIdOnly = await prisma.work_orders.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends work_ordersFindManyArgs>(args?: SelectSubset<T, work_ordersFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$work_ordersPayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a Work_orders.
+     * @param {work_ordersCreateArgs} args - Arguments to create a Work_orders.
+     * @example
+     * // Create one Work_orders
+     * const Work_orders = await prisma.work_orders.create({
+     *   data: {
+     *     // ... data to create a Work_orders
+     *   }
+     * })
+     * 
+     */
+    create<T extends work_ordersCreateArgs>(args: SelectSubset<T, work_ordersCreateArgs<ExtArgs>>): Prisma__work_ordersClient<$Result.GetResult<Prisma.$work_ordersPayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many Work_orders.
+     * @param {work_ordersCreateManyArgs} args - Arguments to create many Work_orders.
+     * @example
+     * // Create many Work_orders
+     * const work_orders = await prisma.work_orders.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends work_ordersCreateManyArgs>(args?: SelectSubset<T, work_ordersCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Work_orders.
+     * @param {work_ordersDeleteArgs} args - Arguments to delete one Work_orders.
+     * @example
+     * // Delete one Work_orders
+     * const Work_orders = await prisma.work_orders.delete({
+     *   where: {
+     *     // ... filter to delete one Work_orders
+     *   }
+     * })
+     * 
+     */
+    delete<T extends work_ordersDeleteArgs>(args: SelectSubset<T, work_ordersDeleteArgs<ExtArgs>>): Prisma__work_ordersClient<$Result.GetResult<Prisma.$work_ordersPayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one Work_orders.
+     * @param {work_ordersUpdateArgs} args - Arguments to update one Work_orders.
+     * @example
+     * // Update one Work_orders
+     * const work_orders = await prisma.work_orders.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends work_ordersUpdateArgs>(args: SelectSubset<T, work_ordersUpdateArgs<ExtArgs>>): Prisma__work_ordersClient<$Result.GetResult<Prisma.$work_ordersPayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more Work_orders.
+     * @param {work_ordersDeleteManyArgs} args - Arguments to filter Work_orders to delete.
+     * @example
+     * // Delete a few Work_orders
+     * const { count } = await prisma.work_orders.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends work_ordersDeleteManyArgs>(args?: SelectSubset<T, work_ordersDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Work_orders.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {work_ordersUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Work_orders
+     * const work_orders = await prisma.work_orders.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends work_ordersUpdateManyArgs>(args: SelectSubset<T, work_ordersUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Work_orders.
+     * @param {work_ordersUpsertArgs} args - Arguments to update or create a Work_orders.
+     * @example
+     * // Update or create a Work_orders
+     * const work_orders = await prisma.work_orders.upsert({
+     *   create: {
+     *     // ... data to create a Work_orders
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Work_orders we want to update
+     *   }
+     * })
+     */
+    upsert<T extends work_ordersUpsertArgs>(args: SelectSubset<T, work_ordersUpsertArgs<ExtArgs>>): Prisma__work_ordersClient<$Result.GetResult<Prisma.$work_ordersPayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of Work_orders.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {work_ordersCountArgs} args - Arguments to filter Work_orders to count.
+     * @example
+     * // Count the number of Work_orders
+     * const count = await prisma.work_orders.count({
+     *   where: {
+     *     // ... the filter for the Work_orders we want to count
+     *   }
+     * })
+    **/
+    count<T extends work_ordersCountArgs>(
+      args?: Subset<T, work_ordersCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Work_ordersCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Work_orders.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Work_ordersAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Work_ordersAggregateArgs>(args: Subset<T, Work_ordersAggregateArgs>): Prisma.PrismaPromise<GetWork_ordersAggregateType<T>>
+
+    /**
+     * Group by Work_orders.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {work_ordersGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends work_ordersGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: work_ordersGroupByArgs['orderBy'] }
+        : { orderBy?: work_ordersGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, work_ordersGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWork_ordersGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the work_orders model
+   */
+  readonly fields: work_ordersFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for work_orders.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__work_ordersClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    customers<T extends work_orders$customersArgs<ExtArgs> = {}>(args?: Subset<T, work_orders$customersArgs<ExtArgs>>): Prisma__customersClient<$Result.GetResult<Prisma.$customersPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
+    users<T extends work_orders$usersArgs<ExtArgs> = {}>(args?: Subset<T, work_orders$usersArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
+    quotations<T extends work_orders$quotationsArgs<ExtArgs> = {}>(args?: Subset<T, work_orders$quotationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$quotationsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the work_orders model
+   */ 
+  interface work_ordersFieldRefs {
+    readonly id: FieldRef<"work_orders", 'Int'>
+    readonly wo_number: FieldRef<"work_orders", 'String'>
+    readonly customer_id: FieldRef<"work_orders", 'Int'>
+    readonly customer_name: FieldRef<"work_orders", 'String'>
+    readonly pic_name: FieldRef<"work_orders", 'String'>
+    readonly company_address: FieldRef<"work_orders", 'String'>
+    readonly status: FieldRef<"work_orders", 'String'>
+    readonly created_at: FieldRef<"work_orders", 'DateTime'>
+    readonly updated_at: FieldRef<"work_orders", 'DateTime'>
+    readonly created_by: FieldRef<"work_orders", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * work_orders findUnique
+   */
+  export type work_ordersFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the work_orders
+     */
+    select?: work_ordersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the work_orders
+     */
+    omit?: work_ordersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: work_ordersInclude<ExtArgs> | null
+    /**
+     * Filter, which work_orders to fetch.
+     */
+    where: work_ordersWhereUniqueInput
+  }
+
+  /**
+   * work_orders findUniqueOrThrow
+   */
+  export type work_ordersFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the work_orders
+     */
+    select?: work_ordersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the work_orders
+     */
+    omit?: work_ordersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: work_ordersInclude<ExtArgs> | null
+    /**
+     * Filter, which work_orders to fetch.
+     */
+    where: work_ordersWhereUniqueInput
+  }
+
+  /**
+   * work_orders findFirst
+   */
+  export type work_ordersFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the work_orders
+     */
+    select?: work_ordersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the work_orders
+     */
+    omit?: work_ordersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: work_ordersInclude<ExtArgs> | null
+    /**
+     * Filter, which work_orders to fetch.
+     */
+    where?: work_ordersWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of work_orders to fetch.
+     */
+    orderBy?: work_ordersOrderByWithRelationInput | work_ordersOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for work_orders.
+     */
+    cursor?: work_ordersWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` work_orders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` work_orders.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of work_orders.
+     */
+    distinct?: Work_ordersScalarFieldEnum | Work_ordersScalarFieldEnum[]
+  }
+
+  /**
+   * work_orders findFirstOrThrow
+   */
+  export type work_ordersFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the work_orders
+     */
+    select?: work_ordersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the work_orders
+     */
+    omit?: work_ordersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: work_ordersInclude<ExtArgs> | null
+    /**
+     * Filter, which work_orders to fetch.
+     */
+    where?: work_ordersWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of work_orders to fetch.
+     */
+    orderBy?: work_ordersOrderByWithRelationInput | work_ordersOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for work_orders.
+     */
+    cursor?: work_ordersWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` work_orders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` work_orders.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of work_orders.
+     */
+    distinct?: Work_ordersScalarFieldEnum | Work_ordersScalarFieldEnum[]
+  }
+
+  /**
+   * work_orders findMany
+   */
+  export type work_ordersFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the work_orders
+     */
+    select?: work_ordersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the work_orders
+     */
+    omit?: work_ordersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: work_ordersInclude<ExtArgs> | null
+    /**
+     * Filter, which work_orders to fetch.
+     */
+    where?: work_ordersWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of work_orders to fetch.
+     */
+    orderBy?: work_ordersOrderByWithRelationInput | work_ordersOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing work_orders.
+     */
+    cursor?: work_ordersWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` work_orders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` work_orders.
+     */
+    skip?: number
+    distinct?: Work_ordersScalarFieldEnum | Work_ordersScalarFieldEnum[]
+  }
+
+  /**
+   * work_orders create
+   */
+  export type work_ordersCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the work_orders
+     */
+    select?: work_ordersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the work_orders
+     */
+    omit?: work_ordersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: work_ordersInclude<ExtArgs> | null
+    /**
+     * The data needed to create a work_orders.
+     */
+    data: XOR<work_ordersCreateInput, work_ordersUncheckedCreateInput>
+  }
+
+  /**
+   * work_orders createMany
+   */
+  export type work_ordersCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many work_orders.
+     */
+    data: work_ordersCreateManyInput | work_ordersCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * work_orders update
+   */
+  export type work_ordersUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the work_orders
+     */
+    select?: work_ordersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the work_orders
+     */
+    omit?: work_ordersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: work_ordersInclude<ExtArgs> | null
+    /**
+     * The data needed to update a work_orders.
+     */
+    data: XOR<work_ordersUpdateInput, work_ordersUncheckedUpdateInput>
+    /**
+     * Choose, which work_orders to update.
+     */
+    where: work_ordersWhereUniqueInput
+  }
+
+  /**
+   * work_orders updateMany
+   */
+  export type work_ordersUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update work_orders.
+     */
+    data: XOR<work_ordersUpdateManyMutationInput, work_ordersUncheckedUpdateManyInput>
+    /**
+     * Filter which work_orders to update
+     */
+    where?: work_ordersWhereInput
+    /**
+     * Limit how many work_orders to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * work_orders upsert
+   */
+  export type work_ordersUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the work_orders
+     */
+    select?: work_ordersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the work_orders
+     */
+    omit?: work_ordersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: work_ordersInclude<ExtArgs> | null
+    /**
+     * The filter to search for the work_orders to update in case it exists.
+     */
+    where: work_ordersWhereUniqueInput
+    /**
+     * In case the work_orders found by the `where` argument doesn't exist, create a new work_orders with this data.
+     */
+    create: XOR<work_ordersCreateInput, work_ordersUncheckedCreateInput>
+    /**
+     * In case the work_orders was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<work_ordersUpdateInput, work_ordersUncheckedUpdateInput>
+  }
+
+  /**
+   * work_orders delete
+   */
+  export type work_ordersDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the work_orders
+     */
+    select?: work_ordersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the work_orders
+     */
+    omit?: work_ordersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: work_ordersInclude<ExtArgs> | null
+    /**
+     * Filter which work_orders to delete.
+     */
+    where: work_ordersWhereUniqueInput
+  }
+
+  /**
+   * work_orders deleteMany
+   */
+  export type work_ordersDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which work_orders to delete
+     */
+    where?: work_ordersWhereInput
+    /**
+     * Limit how many work_orders to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * work_orders.customers
+   */
+  export type work_orders$customersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the customers
+     */
+    select?: customersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the customers
+     */
+    omit?: customersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: customersInclude<ExtArgs> | null
+    where?: customersWhereInput
+  }
+
+  /**
+   * work_orders.users
+   */
+  export type work_orders$usersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the users
+     */
+    select?: usersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the users
+     */
+    omit?: usersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: usersInclude<ExtArgs> | null
+    where?: usersWhereInput
+  }
+
+  /**
+   * work_orders.quotations
+   */
+  export type work_orders$quotationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotations
+     */
+    select?: quotationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotations
+     */
+    omit?: quotationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotationsInclude<ExtArgs> | null
+    where?: quotationsWhereInput
+    orderBy?: quotationsOrderByWithRelationInput | quotationsOrderByWithRelationInput[]
+    cursor?: quotationsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: QuotationsScalarFieldEnum | QuotationsScalarFieldEnum[]
+  }
+
+  /**
+   * work_orders without action
+   */
+  export type work_ordersDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the work_orders
+     */
+    select?: work_ordersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the work_orders
+     */
+    omit?: work_ordersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: work_ordersInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model quotations
+   */
+
+  export type AggregateQuotations = {
+    _count: QuotationsCountAggregateOutputType | null
+    _avg: QuotationsAvgAggregateOutputType | null
+    _sum: QuotationsSumAggregateOutputType | null
+    _min: QuotationsMinAggregateOutputType | null
+    _max: QuotationsMaxAggregateOutputType | null
+  }
+
+  export type QuotationsAvgAggregateOutputType = {
+    id: number | null
+    work_order_id: number | null
+    total_amount: Decimal | null
+    discount: Decimal | null
+    tax: Decimal | null
+    grand_total: Decimal | null
+    created_by: number | null
+  }
+
+  export type QuotationsSumAggregateOutputType = {
+    id: number | null
+    work_order_id: number | null
+    total_amount: Decimal | null
+    discount: Decimal | null
+    tax: Decimal | null
+    grand_total: Decimal | null
+    created_by: number | null
+  }
+
+  export type QuotationsMinAggregateOutputType = {
+    id: number | null
+    quo_number: string | null
+    work_order_id: number | null
+    total_amount: Decimal | null
+    discount: Decimal | null
+    tax: Decimal | null
+    grand_total: Decimal | null
+    status: string | null
+    valid_until: Date | null
+    created_at: Date | null
+    updated_at: Date | null
+    created_by: number | null
+  }
+
+  export type QuotationsMaxAggregateOutputType = {
+    id: number | null
+    quo_number: string | null
+    work_order_id: number | null
+    total_amount: Decimal | null
+    discount: Decimal | null
+    tax: Decimal | null
+    grand_total: Decimal | null
+    status: string | null
+    valid_until: Date | null
+    created_at: Date | null
+    updated_at: Date | null
+    created_by: number | null
+  }
+
+  export type QuotationsCountAggregateOutputType = {
+    id: number
+    quo_number: number
+    work_order_id: number
+    total_amount: number
+    discount: number
+    tax: number
+    grand_total: number
+    status: number
+    valid_until: number
+    created_at: number
+    updated_at: number
+    created_by: number
+    _all: number
+  }
+
+
+  export type QuotationsAvgAggregateInputType = {
+    id?: true
+    work_order_id?: true
+    total_amount?: true
+    discount?: true
+    tax?: true
+    grand_total?: true
+    created_by?: true
+  }
+
+  export type QuotationsSumAggregateInputType = {
+    id?: true
+    work_order_id?: true
+    total_amount?: true
+    discount?: true
+    tax?: true
+    grand_total?: true
+    created_by?: true
+  }
+
+  export type QuotationsMinAggregateInputType = {
+    id?: true
+    quo_number?: true
+    work_order_id?: true
+    total_amount?: true
+    discount?: true
+    tax?: true
+    grand_total?: true
+    status?: true
+    valid_until?: true
+    created_at?: true
+    updated_at?: true
+    created_by?: true
+  }
+
+  export type QuotationsMaxAggregateInputType = {
+    id?: true
+    quo_number?: true
+    work_order_id?: true
+    total_amount?: true
+    discount?: true
+    tax?: true
+    grand_total?: true
+    status?: true
+    valid_until?: true
+    created_at?: true
+    updated_at?: true
+    created_by?: true
+  }
+
+  export type QuotationsCountAggregateInputType = {
+    id?: true
+    quo_number?: true
+    work_order_id?: true
+    total_amount?: true
+    discount?: true
+    tax?: true
+    grand_total?: true
+    status?: true
+    valid_until?: true
+    created_at?: true
+    updated_at?: true
+    created_by?: true
+    _all?: true
+  }
+
+  export type QuotationsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which quotations to aggregate.
+     */
+    where?: quotationsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of quotations to fetch.
+     */
+    orderBy?: quotationsOrderByWithRelationInput | quotationsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: quotationsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` quotations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` quotations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned quotations
+    **/
+    _count?: true | QuotationsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: QuotationsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: QuotationsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: QuotationsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: QuotationsMaxAggregateInputType
+  }
+
+  export type GetQuotationsAggregateType<T extends QuotationsAggregateArgs> = {
+        [P in keyof T & keyof AggregateQuotations]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateQuotations[P]>
+      : GetScalarType<T[P], AggregateQuotations[P]>
+  }
+
+
+
+
+  export type quotationsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: quotationsWhereInput
+    orderBy?: quotationsOrderByWithAggregationInput | quotationsOrderByWithAggregationInput[]
+    by: QuotationsScalarFieldEnum[] | QuotationsScalarFieldEnum
+    having?: quotationsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: QuotationsCountAggregateInputType | true
+    _avg?: QuotationsAvgAggregateInputType
+    _sum?: QuotationsSumAggregateInputType
+    _min?: QuotationsMinAggregateInputType
+    _max?: QuotationsMaxAggregateInputType
+  }
+
+  export type QuotationsGroupByOutputType = {
+    id: number
+    quo_number: string
+    work_order_id: number
+    total_amount: Decimal
+    discount: Decimal
+    tax: Decimal
+    grand_total: Decimal
+    status: string
+    valid_until: Date | null
+    created_at: Date
+    updated_at: Date
+    created_by: number | null
+    _count: QuotationsCountAggregateOutputType | null
+    _avg: QuotationsAvgAggregateOutputType | null
+    _sum: QuotationsSumAggregateOutputType | null
+    _min: QuotationsMinAggregateOutputType | null
+    _max: QuotationsMaxAggregateOutputType | null
+  }
+
+  type GetQuotationsGroupByPayload<T extends quotationsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<QuotationsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof QuotationsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], QuotationsGroupByOutputType[P]>
+            : GetScalarType<T[P], QuotationsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type quotationsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    quo_number?: boolean
+    work_order_id?: boolean
+    total_amount?: boolean
+    discount?: boolean
+    tax?: boolean
+    grand_total?: boolean
+    status?: boolean
+    valid_until?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    created_by?: boolean
+    work_orders?: boolean | work_ordersDefaultArgs<ExtArgs>
+    users?: boolean | quotations$usersArgs<ExtArgs>
+    items?: boolean | quotations$itemsArgs<ExtArgs>
+    sla?: boolean | quotations$slaArgs<ExtArgs>
+    _count?: boolean | QuotationsCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["quotations"]>
+
+
+
+  export type quotationsSelectScalar = {
+    id?: boolean
+    quo_number?: boolean
+    work_order_id?: boolean
+    total_amount?: boolean
+    discount?: boolean
+    tax?: boolean
+    grand_total?: boolean
+    status?: boolean
+    valid_until?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    created_by?: boolean
+  }
+
+  export type quotationsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "quo_number" | "work_order_id" | "total_amount" | "discount" | "tax" | "grand_total" | "status" | "valid_until" | "created_at" | "updated_at" | "created_by", ExtArgs["result"]["quotations"]>
+  export type quotationsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    work_orders?: boolean | work_ordersDefaultArgs<ExtArgs>
+    users?: boolean | quotations$usersArgs<ExtArgs>
+    items?: boolean | quotations$itemsArgs<ExtArgs>
+    sla?: boolean | quotations$slaArgs<ExtArgs>
+    _count?: boolean | QuotationsCountOutputTypeDefaultArgs<ExtArgs>
+  }
+
+  export type $quotationsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "quotations"
+    objects: {
+      work_orders: Prisma.$work_ordersPayload<ExtArgs>
+      users: Prisma.$usersPayload<ExtArgs> | null
+      items: Prisma.$quotation_itemsPayload<ExtArgs>[]
+      sla: Prisma.$slasPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      quo_number: string
+      work_order_id: number
+      total_amount: Prisma.Decimal
+      discount: Prisma.Decimal
+      tax: Prisma.Decimal
+      grand_total: Prisma.Decimal
+      status: string
+      valid_until: Date | null
+      created_at: Date
+      updated_at: Date
+      created_by: number | null
+    }, ExtArgs["result"]["quotations"]>
+    composites: {}
+  }
+
+  type quotationsGetPayload<S extends boolean | null | undefined | quotationsDefaultArgs> = $Result.GetResult<Prisma.$quotationsPayload, S>
+
+  type quotationsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<quotationsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: QuotationsCountAggregateInputType | true
+    }
+
+  export interface quotationsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['quotations'], meta: { name: 'quotations' } }
+    /**
+     * Find zero or one Quotations that matches the filter.
+     * @param {quotationsFindUniqueArgs} args - Arguments to find a Quotations
+     * @example
+     * // Get one Quotations
+     * const quotations = await prisma.quotations.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends quotationsFindUniqueArgs>(args: SelectSubset<T, quotationsFindUniqueArgs<ExtArgs>>): Prisma__quotationsClient<$Result.GetResult<Prisma.$quotationsPayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one Quotations that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {quotationsFindUniqueOrThrowArgs} args - Arguments to find a Quotations
+     * @example
+     * // Get one Quotations
+     * const quotations = await prisma.quotations.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends quotationsFindUniqueOrThrowArgs>(args: SelectSubset<T, quotationsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__quotationsClient<$Result.GetResult<Prisma.$quotationsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Quotations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {quotationsFindFirstArgs} args - Arguments to find a Quotations
+     * @example
+     * // Get one Quotations
+     * const quotations = await prisma.quotations.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends quotationsFindFirstArgs>(args?: SelectSubset<T, quotationsFindFirstArgs<ExtArgs>>): Prisma__quotationsClient<$Result.GetResult<Prisma.$quotationsPayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Quotations that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {quotationsFindFirstOrThrowArgs} args - Arguments to find a Quotations
+     * @example
+     * // Get one Quotations
+     * const quotations = await prisma.quotations.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends quotationsFindFirstOrThrowArgs>(args?: SelectSubset<T, quotationsFindFirstOrThrowArgs<ExtArgs>>): Prisma__quotationsClient<$Result.GetResult<Prisma.$quotationsPayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more Quotations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {quotationsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Quotations
+     * const quotations = await prisma.quotations.findMany()
+     * 
+     * // Get first 10 Quotations
+     * const quotations = await prisma.quotations.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const quotationsWithIdOnly = await prisma.quotations.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends quotationsFindManyArgs>(args?: SelectSubset<T, quotationsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$quotationsPayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a Quotations.
+     * @param {quotationsCreateArgs} args - Arguments to create a Quotations.
+     * @example
+     * // Create one Quotations
+     * const Quotations = await prisma.quotations.create({
+     *   data: {
+     *     // ... data to create a Quotations
+     *   }
+     * })
+     * 
+     */
+    create<T extends quotationsCreateArgs>(args: SelectSubset<T, quotationsCreateArgs<ExtArgs>>): Prisma__quotationsClient<$Result.GetResult<Prisma.$quotationsPayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many Quotations.
+     * @param {quotationsCreateManyArgs} args - Arguments to create many Quotations.
+     * @example
+     * // Create many Quotations
+     * const quotations = await prisma.quotations.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends quotationsCreateManyArgs>(args?: SelectSubset<T, quotationsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Quotations.
+     * @param {quotationsDeleteArgs} args - Arguments to delete one Quotations.
+     * @example
+     * // Delete one Quotations
+     * const Quotations = await prisma.quotations.delete({
+     *   where: {
+     *     // ... filter to delete one Quotations
+     *   }
+     * })
+     * 
+     */
+    delete<T extends quotationsDeleteArgs>(args: SelectSubset<T, quotationsDeleteArgs<ExtArgs>>): Prisma__quotationsClient<$Result.GetResult<Prisma.$quotationsPayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one Quotations.
+     * @param {quotationsUpdateArgs} args - Arguments to update one Quotations.
+     * @example
+     * // Update one Quotations
+     * const quotations = await prisma.quotations.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends quotationsUpdateArgs>(args: SelectSubset<T, quotationsUpdateArgs<ExtArgs>>): Prisma__quotationsClient<$Result.GetResult<Prisma.$quotationsPayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more Quotations.
+     * @param {quotationsDeleteManyArgs} args - Arguments to filter Quotations to delete.
+     * @example
+     * // Delete a few Quotations
+     * const { count } = await prisma.quotations.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends quotationsDeleteManyArgs>(args?: SelectSubset<T, quotationsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Quotations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {quotationsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Quotations
+     * const quotations = await prisma.quotations.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends quotationsUpdateManyArgs>(args: SelectSubset<T, quotationsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Quotations.
+     * @param {quotationsUpsertArgs} args - Arguments to update or create a Quotations.
+     * @example
+     * // Update or create a Quotations
+     * const quotations = await prisma.quotations.upsert({
+     *   create: {
+     *     // ... data to create a Quotations
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Quotations we want to update
+     *   }
+     * })
+     */
+    upsert<T extends quotationsUpsertArgs>(args: SelectSubset<T, quotationsUpsertArgs<ExtArgs>>): Prisma__quotationsClient<$Result.GetResult<Prisma.$quotationsPayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of Quotations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {quotationsCountArgs} args - Arguments to filter Quotations to count.
+     * @example
+     * // Count the number of Quotations
+     * const count = await prisma.quotations.count({
+     *   where: {
+     *     // ... the filter for the Quotations we want to count
+     *   }
+     * })
+    **/
+    count<T extends quotationsCountArgs>(
+      args?: Subset<T, quotationsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], QuotationsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Quotations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {QuotationsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends QuotationsAggregateArgs>(args: Subset<T, QuotationsAggregateArgs>): Prisma.PrismaPromise<GetQuotationsAggregateType<T>>
+
+    /**
+     * Group by Quotations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {quotationsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends quotationsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: quotationsGroupByArgs['orderBy'] }
+        : { orderBy?: quotationsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, quotationsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetQuotationsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the quotations model
+   */
+  readonly fields: quotationsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for quotations.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__quotationsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    work_orders<T extends work_ordersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, work_ordersDefaultArgs<ExtArgs>>): Prisma__work_ordersClient<$Result.GetResult<Prisma.$work_ordersPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    users<T extends quotations$usersArgs<ExtArgs> = {}>(args?: Subset<T, quotations$usersArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
+    items<T extends quotations$itemsArgs<ExtArgs> = {}>(args?: Subset<T, quotations$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$quotation_itemsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    sla<T extends quotations$slaArgs<ExtArgs> = {}>(args?: Subset<T, quotations$slaArgs<ExtArgs>>): Prisma__slasClient<$Result.GetResult<Prisma.$slasPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the quotations model
+   */ 
+  interface quotationsFieldRefs {
+    readonly id: FieldRef<"quotations", 'Int'>
+    readonly quo_number: FieldRef<"quotations", 'String'>
+    readonly work_order_id: FieldRef<"quotations", 'Int'>
+    readonly total_amount: FieldRef<"quotations", 'Decimal'>
+    readonly discount: FieldRef<"quotations", 'Decimal'>
+    readonly tax: FieldRef<"quotations", 'Decimal'>
+    readonly grand_total: FieldRef<"quotations", 'Decimal'>
+    readonly status: FieldRef<"quotations", 'String'>
+    readonly valid_until: FieldRef<"quotations", 'DateTime'>
+    readonly created_at: FieldRef<"quotations", 'DateTime'>
+    readonly updated_at: FieldRef<"quotations", 'DateTime'>
+    readonly created_by: FieldRef<"quotations", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * quotations findUnique
+   */
+  export type quotationsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotations
+     */
+    select?: quotationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotations
+     */
+    omit?: quotationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotationsInclude<ExtArgs> | null
+    /**
+     * Filter, which quotations to fetch.
+     */
+    where: quotationsWhereUniqueInput
+  }
+
+  /**
+   * quotations findUniqueOrThrow
+   */
+  export type quotationsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotations
+     */
+    select?: quotationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotations
+     */
+    omit?: quotationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotationsInclude<ExtArgs> | null
+    /**
+     * Filter, which quotations to fetch.
+     */
+    where: quotationsWhereUniqueInput
+  }
+
+  /**
+   * quotations findFirst
+   */
+  export type quotationsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotations
+     */
+    select?: quotationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotations
+     */
+    omit?: quotationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotationsInclude<ExtArgs> | null
+    /**
+     * Filter, which quotations to fetch.
+     */
+    where?: quotationsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of quotations to fetch.
+     */
+    orderBy?: quotationsOrderByWithRelationInput | quotationsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for quotations.
+     */
+    cursor?: quotationsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` quotations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` quotations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of quotations.
+     */
+    distinct?: QuotationsScalarFieldEnum | QuotationsScalarFieldEnum[]
+  }
+
+  /**
+   * quotations findFirstOrThrow
+   */
+  export type quotationsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotations
+     */
+    select?: quotationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotations
+     */
+    omit?: quotationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotationsInclude<ExtArgs> | null
+    /**
+     * Filter, which quotations to fetch.
+     */
+    where?: quotationsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of quotations to fetch.
+     */
+    orderBy?: quotationsOrderByWithRelationInput | quotationsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for quotations.
+     */
+    cursor?: quotationsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` quotations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` quotations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of quotations.
+     */
+    distinct?: QuotationsScalarFieldEnum | QuotationsScalarFieldEnum[]
+  }
+
+  /**
+   * quotations findMany
+   */
+  export type quotationsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotations
+     */
+    select?: quotationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotations
+     */
+    omit?: quotationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotationsInclude<ExtArgs> | null
+    /**
+     * Filter, which quotations to fetch.
+     */
+    where?: quotationsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of quotations to fetch.
+     */
+    orderBy?: quotationsOrderByWithRelationInput | quotationsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing quotations.
+     */
+    cursor?: quotationsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` quotations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` quotations.
+     */
+    skip?: number
+    distinct?: QuotationsScalarFieldEnum | QuotationsScalarFieldEnum[]
+  }
+
+  /**
+   * quotations create
+   */
+  export type quotationsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotations
+     */
+    select?: quotationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotations
+     */
+    omit?: quotationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotationsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a quotations.
+     */
+    data: XOR<quotationsCreateInput, quotationsUncheckedCreateInput>
+  }
+
+  /**
+   * quotations createMany
+   */
+  export type quotationsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many quotations.
+     */
+    data: quotationsCreateManyInput | quotationsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * quotations update
+   */
+  export type quotationsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotations
+     */
+    select?: quotationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotations
+     */
+    omit?: quotationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotationsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a quotations.
+     */
+    data: XOR<quotationsUpdateInput, quotationsUncheckedUpdateInput>
+    /**
+     * Choose, which quotations to update.
+     */
+    where: quotationsWhereUniqueInput
+  }
+
+  /**
+   * quotations updateMany
+   */
+  export type quotationsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update quotations.
+     */
+    data: XOR<quotationsUpdateManyMutationInput, quotationsUncheckedUpdateManyInput>
+    /**
+     * Filter which quotations to update
+     */
+    where?: quotationsWhereInput
+    /**
+     * Limit how many quotations to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * quotations upsert
+   */
+  export type quotationsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotations
+     */
+    select?: quotationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotations
+     */
+    omit?: quotationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotationsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the quotations to update in case it exists.
+     */
+    where: quotationsWhereUniqueInput
+    /**
+     * In case the quotations found by the `where` argument doesn't exist, create a new quotations with this data.
+     */
+    create: XOR<quotationsCreateInput, quotationsUncheckedCreateInput>
+    /**
+     * In case the quotations was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<quotationsUpdateInput, quotationsUncheckedUpdateInput>
+  }
+
+  /**
+   * quotations delete
+   */
+  export type quotationsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotations
+     */
+    select?: quotationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotations
+     */
+    omit?: quotationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotationsInclude<ExtArgs> | null
+    /**
+     * Filter which quotations to delete.
+     */
+    where: quotationsWhereUniqueInput
+  }
+
+  /**
+   * quotations deleteMany
+   */
+  export type quotationsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which quotations to delete
+     */
+    where?: quotationsWhereInput
+    /**
+     * Limit how many quotations to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * quotations.users
+   */
+  export type quotations$usersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the users
+     */
+    select?: usersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the users
+     */
+    omit?: usersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: usersInclude<ExtArgs> | null
+    where?: usersWhereInput
+  }
+
+  /**
+   * quotations.items
+   */
+  export type quotations$itemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotation_items
+     */
+    select?: quotation_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotation_items
+     */
+    omit?: quotation_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotation_itemsInclude<ExtArgs> | null
+    where?: quotation_itemsWhereInput
+    orderBy?: quotation_itemsOrderByWithRelationInput | quotation_itemsOrderByWithRelationInput[]
+    cursor?: quotation_itemsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Quotation_itemsScalarFieldEnum | Quotation_itemsScalarFieldEnum[]
+  }
+
+  /**
+   * quotations.sla
+   */
+  export type quotations$slaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the slas
+     */
+    select?: slasSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the slas
+     */
+    omit?: slasOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: slasInclude<ExtArgs> | null
+    where?: slasWhereInput
+  }
+
+  /**
+   * quotations without action
+   */
+  export type quotationsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotations
+     */
+    select?: quotationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotations
+     */
+    omit?: quotationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotationsInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model quotation_items
+   */
+
+  export type AggregateQuotation_items = {
+    _count: Quotation_itemsCountAggregateOutputType | null
+    _avg: Quotation_itemsAvgAggregateOutputType | null
+    _sum: Quotation_itemsSumAggregateOutputType | null
+    _min: Quotation_itemsMinAggregateOutputType | null
+    _max: Quotation_itemsMaxAggregateOutputType | null
+  }
+
+  export type Quotation_itemsAvgAggregateOutputType = {
+    id: number | null
+    quotation_id: number | null
+    qty: number | null
+    unit_price: Decimal | null
+    total_price: Decimal | null
+  }
+
+  export type Quotation_itemsSumAggregateOutputType = {
+    id: number | null
+    quotation_id: number | null
+    qty: number | null
+    unit_price: Decimal | null
+    total_price: Decimal | null
+  }
+
+  export type Quotation_itemsMinAggregateOutputType = {
+    id: number | null
+    quotation_id: number | null
+    item_name: string | null
+    category: string | null
+    qty: number | null
+    unit_price: Decimal | null
+    total_price: Decimal | null
+  }
+
+  export type Quotation_itemsMaxAggregateOutputType = {
+    id: number | null
+    quotation_id: number | null
+    item_name: string | null
+    category: string | null
+    qty: number | null
+    unit_price: Decimal | null
+    total_price: Decimal | null
+  }
+
+  export type Quotation_itemsCountAggregateOutputType = {
+    id: number
+    quotation_id: number
+    item_name: number
+    category: number
+    qty: number
+    unit_price: number
+    total_price: number
+    _all: number
+  }
+
+
+  export type Quotation_itemsAvgAggregateInputType = {
+    id?: true
+    quotation_id?: true
+    qty?: true
+    unit_price?: true
+    total_price?: true
+  }
+
+  export type Quotation_itemsSumAggregateInputType = {
+    id?: true
+    quotation_id?: true
+    qty?: true
+    unit_price?: true
+    total_price?: true
+  }
+
+  export type Quotation_itemsMinAggregateInputType = {
+    id?: true
+    quotation_id?: true
+    item_name?: true
+    category?: true
+    qty?: true
+    unit_price?: true
+    total_price?: true
+  }
+
+  export type Quotation_itemsMaxAggregateInputType = {
+    id?: true
+    quotation_id?: true
+    item_name?: true
+    category?: true
+    qty?: true
+    unit_price?: true
+    total_price?: true
+  }
+
+  export type Quotation_itemsCountAggregateInputType = {
+    id?: true
+    quotation_id?: true
+    item_name?: true
+    category?: true
+    qty?: true
+    unit_price?: true
+    total_price?: true
+    _all?: true
+  }
+
+  export type Quotation_itemsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which quotation_items to aggregate.
+     */
+    where?: quotation_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of quotation_items to fetch.
+     */
+    orderBy?: quotation_itemsOrderByWithRelationInput | quotation_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: quotation_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` quotation_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` quotation_items.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned quotation_items
+    **/
+    _count?: true | Quotation_itemsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Quotation_itemsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Quotation_itemsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Quotation_itemsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Quotation_itemsMaxAggregateInputType
+  }
+
+  export type GetQuotation_itemsAggregateType<T extends Quotation_itemsAggregateArgs> = {
+        [P in keyof T & keyof AggregateQuotation_items]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateQuotation_items[P]>
+      : GetScalarType<T[P], AggregateQuotation_items[P]>
+  }
+
+
+
+
+  export type quotation_itemsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: quotation_itemsWhereInput
+    orderBy?: quotation_itemsOrderByWithAggregationInput | quotation_itemsOrderByWithAggregationInput[]
+    by: Quotation_itemsScalarFieldEnum[] | Quotation_itemsScalarFieldEnum
+    having?: quotation_itemsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Quotation_itemsCountAggregateInputType | true
+    _avg?: Quotation_itemsAvgAggregateInputType
+    _sum?: Quotation_itemsSumAggregateInputType
+    _min?: Quotation_itemsMinAggregateInputType
+    _max?: Quotation_itemsMaxAggregateInputType
+  }
+
+  export type Quotation_itemsGroupByOutputType = {
+    id: number
+    quotation_id: number
+    item_name: string
+    category: string | null
+    qty: number
+    unit_price: Decimal
+    total_price: Decimal
+    _count: Quotation_itemsCountAggregateOutputType | null
+    _avg: Quotation_itemsAvgAggregateOutputType | null
+    _sum: Quotation_itemsSumAggregateOutputType | null
+    _min: Quotation_itemsMinAggregateOutputType | null
+    _max: Quotation_itemsMaxAggregateOutputType | null
+  }
+
+  type GetQuotation_itemsGroupByPayload<T extends quotation_itemsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Quotation_itemsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Quotation_itemsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Quotation_itemsGroupByOutputType[P]>
+            : GetScalarType<T[P], Quotation_itemsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type quotation_itemsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    quotation_id?: boolean
+    item_name?: boolean
+    category?: boolean
+    qty?: boolean
+    unit_price?: boolean
+    total_price?: boolean
+    quotations?: boolean | quotationsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["quotation_items"]>
+
+
+
+  export type quotation_itemsSelectScalar = {
+    id?: boolean
+    quotation_id?: boolean
+    item_name?: boolean
+    category?: boolean
+    qty?: boolean
+    unit_price?: boolean
+    total_price?: boolean
+  }
+
+  export type quotation_itemsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "quotation_id" | "item_name" | "category" | "qty" | "unit_price" | "total_price", ExtArgs["result"]["quotation_items"]>
+  export type quotation_itemsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    quotations?: boolean | quotationsDefaultArgs<ExtArgs>
+  }
+
+  export type $quotation_itemsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "quotation_items"
+    objects: {
+      quotations: Prisma.$quotationsPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      quotation_id: number
+      item_name: string
+      category: string | null
+      qty: number
+      unit_price: Prisma.Decimal
+      total_price: Prisma.Decimal
+    }, ExtArgs["result"]["quotation_items"]>
+    composites: {}
+  }
+
+  type quotation_itemsGetPayload<S extends boolean | null | undefined | quotation_itemsDefaultArgs> = $Result.GetResult<Prisma.$quotation_itemsPayload, S>
+
+  type quotation_itemsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<quotation_itemsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Quotation_itemsCountAggregateInputType | true
+    }
+
+  export interface quotation_itemsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['quotation_items'], meta: { name: 'quotation_items' } }
+    /**
+     * Find zero or one Quotation_items that matches the filter.
+     * @param {quotation_itemsFindUniqueArgs} args - Arguments to find a Quotation_items
+     * @example
+     * // Get one Quotation_items
+     * const quotation_items = await prisma.quotation_items.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends quotation_itemsFindUniqueArgs>(args: SelectSubset<T, quotation_itemsFindUniqueArgs<ExtArgs>>): Prisma__quotation_itemsClient<$Result.GetResult<Prisma.$quotation_itemsPayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one Quotation_items that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {quotation_itemsFindUniqueOrThrowArgs} args - Arguments to find a Quotation_items
+     * @example
+     * // Get one Quotation_items
+     * const quotation_items = await prisma.quotation_items.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends quotation_itemsFindUniqueOrThrowArgs>(args: SelectSubset<T, quotation_itemsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__quotation_itemsClient<$Result.GetResult<Prisma.$quotation_itemsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Quotation_items that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {quotation_itemsFindFirstArgs} args - Arguments to find a Quotation_items
+     * @example
+     * // Get one Quotation_items
+     * const quotation_items = await prisma.quotation_items.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends quotation_itemsFindFirstArgs>(args?: SelectSubset<T, quotation_itemsFindFirstArgs<ExtArgs>>): Prisma__quotation_itemsClient<$Result.GetResult<Prisma.$quotation_itemsPayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Quotation_items that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {quotation_itemsFindFirstOrThrowArgs} args - Arguments to find a Quotation_items
+     * @example
+     * // Get one Quotation_items
+     * const quotation_items = await prisma.quotation_items.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends quotation_itemsFindFirstOrThrowArgs>(args?: SelectSubset<T, quotation_itemsFindFirstOrThrowArgs<ExtArgs>>): Prisma__quotation_itemsClient<$Result.GetResult<Prisma.$quotation_itemsPayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more Quotation_items that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {quotation_itemsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Quotation_items
+     * const quotation_items = await prisma.quotation_items.findMany()
+     * 
+     * // Get first 10 Quotation_items
+     * const quotation_items = await prisma.quotation_items.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const quotation_itemsWithIdOnly = await prisma.quotation_items.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends quotation_itemsFindManyArgs>(args?: SelectSubset<T, quotation_itemsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$quotation_itemsPayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a Quotation_items.
+     * @param {quotation_itemsCreateArgs} args - Arguments to create a Quotation_items.
+     * @example
+     * // Create one Quotation_items
+     * const Quotation_items = await prisma.quotation_items.create({
+     *   data: {
+     *     // ... data to create a Quotation_items
+     *   }
+     * })
+     * 
+     */
+    create<T extends quotation_itemsCreateArgs>(args: SelectSubset<T, quotation_itemsCreateArgs<ExtArgs>>): Prisma__quotation_itemsClient<$Result.GetResult<Prisma.$quotation_itemsPayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many Quotation_items.
+     * @param {quotation_itemsCreateManyArgs} args - Arguments to create many Quotation_items.
+     * @example
+     * // Create many Quotation_items
+     * const quotation_items = await prisma.quotation_items.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends quotation_itemsCreateManyArgs>(args?: SelectSubset<T, quotation_itemsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Quotation_items.
+     * @param {quotation_itemsDeleteArgs} args - Arguments to delete one Quotation_items.
+     * @example
+     * // Delete one Quotation_items
+     * const Quotation_items = await prisma.quotation_items.delete({
+     *   where: {
+     *     // ... filter to delete one Quotation_items
+     *   }
+     * })
+     * 
+     */
+    delete<T extends quotation_itemsDeleteArgs>(args: SelectSubset<T, quotation_itemsDeleteArgs<ExtArgs>>): Prisma__quotation_itemsClient<$Result.GetResult<Prisma.$quotation_itemsPayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one Quotation_items.
+     * @param {quotation_itemsUpdateArgs} args - Arguments to update one Quotation_items.
+     * @example
+     * // Update one Quotation_items
+     * const quotation_items = await prisma.quotation_items.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends quotation_itemsUpdateArgs>(args: SelectSubset<T, quotation_itemsUpdateArgs<ExtArgs>>): Prisma__quotation_itemsClient<$Result.GetResult<Prisma.$quotation_itemsPayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more Quotation_items.
+     * @param {quotation_itemsDeleteManyArgs} args - Arguments to filter Quotation_items to delete.
+     * @example
+     * // Delete a few Quotation_items
+     * const { count } = await prisma.quotation_items.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends quotation_itemsDeleteManyArgs>(args?: SelectSubset<T, quotation_itemsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Quotation_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {quotation_itemsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Quotation_items
+     * const quotation_items = await prisma.quotation_items.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends quotation_itemsUpdateManyArgs>(args: SelectSubset<T, quotation_itemsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Quotation_items.
+     * @param {quotation_itemsUpsertArgs} args - Arguments to update or create a Quotation_items.
+     * @example
+     * // Update or create a Quotation_items
+     * const quotation_items = await prisma.quotation_items.upsert({
+     *   create: {
+     *     // ... data to create a Quotation_items
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Quotation_items we want to update
+     *   }
+     * })
+     */
+    upsert<T extends quotation_itemsUpsertArgs>(args: SelectSubset<T, quotation_itemsUpsertArgs<ExtArgs>>): Prisma__quotation_itemsClient<$Result.GetResult<Prisma.$quotation_itemsPayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of Quotation_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {quotation_itemsCountArgs} args - Arguments to filter Quotation_items to count.
+     * @example
+     * // Count the number of Quotation_items
+     * const count = await prisma.quotation_items.count({
+     *   where: {
+     *     // ... the filter for the Quotation_items we want to count
+     *   }
+     * })
+    **/
+    count<T extends quotation_itemsCountArgs>(
+      args?: Subset<T, quotation_itemsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Quotation_itemsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Quotation_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Quotation_itemsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Quotation_itemsAggregateArgs>(args: Subset<T, Quotation_itemsAggregateArgs>): Prisma.PrismaPromise<GetQuotation_itemsAggregateType<T>>
+
+    /**
+     * Group by Quotation_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {quotation_itemsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends quotation_itemsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: quotation_itemsGroupByArgs['orderBy'] }
+        : { orderBy?: quotation_itemsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, quotation_itemsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetQuotation_itemsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the quotation_items model
+   */
+  readonly fields: quotation_itemsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for quotation_items.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__quotation_itemsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    quotations<T extends quotationsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, quotationsDefaultArgs<ExtArgs>>): Prisma__quotationsClient<$Result.GetResult<Prisma.$quotationsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the quotation_items model
+   */ 
+  interface quotation_itemsFieldRefs {
+    readonly id: FieldRef<"quotation_items", 'Int'>
+    readonly quotation_id: FieldRef<"quotation_items", 'Int'>
+    readonly item_name: FieldRef<"quotation_items", 'String'>
+    readonly category: FieldRef<"quotation_items", 'String'>
+    readonly qty: FieldRef<"quotation_items", 'Int'>
+    readonly unit_price: FieldRef<"quotation_items", 'Decimal'>
+    readonly total_price: FieldRef<"quotation_items", 'Decimal'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * quotation_items findUnique
+   */
+  export type quotation_itemsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotation_items
+     */
+    select?: quotation_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotation_items
+     */
+    omit?: quotation_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotation_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which quotation_items to fetch.
+     */
+    where: quotation_itemsWhereUniqueInput
+  }
+
+  /**
+   * quotation_items findUniqueOrThrow
+   */
+  export type quotation_itemsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotation_items
+     */
+    select?: quotation_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotation_items
+     */
+    omit?: quotation_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotation_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which quotation_items to fetch.
+     */
+    where: quotation_itemsWhereUniqueInput
+  }
+
+  /**
+   * quotation_items findFirst
+   */
+  export type quotation_itemsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotation_items
+     */
+    select?: quotation_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotation_items
+     */
+    omit?: quotation_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotation_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which quotation_items to fetch.
+     */
+    where?: quotation_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of quotation_items to fetch.
+     */
+    orderBy?: quotation_itemsOrderByWithRelationInput | quotation_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for quotation_items.
+     */
+    cursor?: quotation_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` quotation_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` quotation_items.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of quotation_items.
+     */
+    distinct?: Quotation_itemsScalarFieldEnum | Quotation_itemsScalarFieldEnum[]
+  }
+
+  /**
+   * quotation_items findFirstOrThrow
+   */
+  export type quotation_itemsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotation_items
+     */
+    select?: quotation_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotation_items
+     */
+    omit?: quotation_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotation_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which quotation_items to fetch.
+     */
+    where?: quotation_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of quotation_items to fetch.
+     */
+    orderBy?: quotation_itemsOrderByWithRelationInput | quotation_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for quotation_items.
+     */
+    cursor?: quotation_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` quotation_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` quotation_items.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of quotation_items.
+     */
+    distinct?: Quotation_itemsScalarFieldEnum | Quotation_itemsScalarFieldEnum[]
+  }
+
+  /**
+   * quotation_items findMany
+   */
+  export type quotation_itemsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotation_items
+     */
+    select?: quotation_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotation_items
+     */
+    omit?: quotation_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotation_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which quotation_items to fetch.
+     */
+    where?: quotation_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of quotation_items to fetch.
+     */
+    orderBy?: quotation_itemsOrderByWithRelationInput | quotation_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing quotation_items.
+     */
+    cursor?: quotation_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` quotation_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` quotation_items.
+     */
+    skip?: number
+    distinct?: Quotation_itemsScalarFieldEnum | Quotation_itemsScalarFieldEnum[]
+  }
+
+  /**
+   * quotation_items create
+   */
+  export type quotation_itemsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotation_items
+     */
+    select?: quotation_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotation_items
+     */
+    omit?: quotation_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotation_itemsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a quotation_items.
+     */
+    data: XOR<quotation_itemsCreateInput, quotation_itemsUncheckedCreateInput>
+  }
+
+  /**
+   * quotation_items createMany
+   */
+  export type quotation_itemsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many quotation_items.
+     */
+    data: quotation_itemsCreateManyInput | quotation_itemsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * quotation_items update
+   */
+  export type quotation_itemsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotation_items
+     */
+    select?: quotation_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotation_items
+     */
+    omit?: quotation_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotation_itemsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a quotation_items.
+     */
+    data: XOR<quotation_itemsUpdateInput, quotation_itemsUncheckedUpdateInput>
+    /**
+     * Choose, which quotation_items to update.
+     */
+    where: quotation_itemsWhereUniqueInput
+  }
+
+  /**
+   * quotation_items updateMany
+   */
+  export type quotation_itemsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update quotation_items.
+     */
+    data: XOR<quotation_itemsUpdateManyMutationInput, quotation_itemsUncheckedUpdateManyInput>
+    /**
+     * Filter which quotation_items to update
+     */
+    where?: quotation_itemsWhereInput
+    /**
+     * Limit how many quotation_items to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * quotation_items upsert
+   */
+  export type quotation_itemsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotation_items
+     */
+    select?: quotation_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotation_items
+     */
+    omit?: quotation_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotation_itemsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the quotation_items to update in case it exists.
+     */
+    where: quotation_itemsWhereUniqueInput
+    /**
+     * In case the quotation_items found by the `where` argument doesn't exist, create a new quotation_items with this data.
+     */
+    create: XOR<quotation_itemsCreateInput, quotation_itemsUncheckedCreateInput>
+    /**
+     * In case the quotation_items was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<quotation_itemsUpdateInput, quotation_itemsUncheckedUpdateInput>
+  }
+
+  /**
+   * quotation_items delete
+   */
+  export type quotation_itemsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotation_items
+     */
+    select?: quotation_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotation_items
+     */
+    omit?: quotation_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotation_itemsInclude<ExtArgs> | null
+    /**
+     * Filter which quotation_items to delete.
+     */
+    where: quotation_itemsWhereUniqueInput
+  }
+
+  /**
+   * quotation_items deleteMany
+   */
+  export type quotation_itemsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which quotation_items to delete
+     */
+    where?: quotation_itemsWhereInput
+    /**
+     * Limit how many quotation_items to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * quotation_items without action
+   */
+  export type quotation_itemsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotation_items
+     */
+    select?: quotation_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotation_items
+     */
+    omit?: quotation_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotation_itemsInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model slas
+   */
+
+  export type AggregateSlas = {
+    _count: SlasCountAggregateOutputType | null
+    _avg: SlasAvgAggregateOutputType | null
+    _sum: SlasSumAggregateOutputType | null
+    _min: SlasMinAggregateOutputType | null
+    _max: SlasMaxAggregateOutputType | null
+  }
+
+  export type SlasAvgAggregateOutputType = {
+    id: number | null
+    quotation_id: number | null
+    service_frequency: number | null
+    created_by: number | null
+  }
+
+  export type SlasSumAggregateOutputType = {
+    id: number | null
+    quotation_id: number | null
+    service_frequency: number | null
+    created_by: number | null
+  }
+
+  export type SlasMinAggregateOutputType = {
+    id: number | null
+    quotation_id: number | null
+    contract_duration: string | null
+    service_frequency: number | null
+    custom_kpis: string | null
+    custom_terms: string | null
+    custom_sow: string | null
+    status: string | null
+    created_at: Date | null
+    updated_at: Date | null
+    created_by: number | null
+  }
+
+  export type SlasMaxAggregateOutputType = {
+    id: number | null
+    quotation_id: number | null
+    contract_duration: string | null
+    service_frequency: number | null
+    custom_kpis: string | null
+    custom_terms: string | null
+    custom_sow: string | null
+    status: string | null
+    created_at: Date | null
+    updated_at: Date | null
+    created_by: number | null
+  }
+
+  export type SlasCountAggregateOutputType = {
+    id: number
+    quotation_id: number
+    contract_duration: number
+    service_frequency: number
+    custom_kpis: number
+    custom_terms: number
+    custom_sow: number
+    status: number
+    created_at: number
+    updated_at: number
+    created_by: number
+    _all: number
+  }
+
+
+  export type SlasAvgAggregateInputType = {
+    id?: true
+    quotation_id?: true
+    service_frequency?: true
+    created_by?: true
+  }
+
+  export type SlasSumAggregateInputType = {
+    id?: true
+    quotation_id?: true
+    service_frequency?: true
+    created_by?: true
+  }
+
+  export type SlasMinAggregateInputType = {
+    id?: true
+    quotation_id?: true
+    contract_duration?: true
+    service_frequency?: true
+    custom_kpis?: true
+    custom_terms?: true
+    custom_sow?: true
+    status?: true
+    created_at?: true
+    updated_at?: true
+    created_by?: true
+  }
+
+  export type SlasMaxAggregateInputType = {
+    id?: true
+    quotation_id?: true
+    contract_duration?: true
+    service_frequency?: true
+    custom_kpis?: true
+    custom_terms?: true
+    custom_sow?: true
+    status?: true
+    created_at?: true
+    updated_at?: true
+    created_by?: true
+  }
+
+  export type SlasCountAggregateInputType = {
+    id?: true
+    quotation_id?: true
+    contract_duration?: true
+    service_frequency?: true
+    custom_kpis?: true
+    custom_terms?: true
+    custom_sow?: true
+    status?: true
+    created_at?: true
+    updated_at?: true
+    created_by?: true
+    _all?: true
+  }
+
+  export type SlasAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which slas to aggregate.
+     */
+    where?: slasWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of slas to fetch.
+     */
+    orderBy?: slasOrderByWithRelationInput | slasOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: slasWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` slas from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` slas.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned slas
+    **/
+    _count?: true | SlasCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: SlasAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: SlasSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SlasMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SlasMaxAggregateInputType
+  }
+
+  export type GetSlasAggregateType<T extends SlasAggregateArgs> = {
+        [P in keyof T & keyof AggregateSlas]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSlas[P]>
+      : GetScalarType<T[P], AggregateSlas[P]>
+  }
+
+
+
+
+  export type slasGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: slasWhereInput
+    orderBy?: slasOrderByWithAggregationInput | slasOrderByWithAggregationInput[]
+    by: SlasScalarFieldEnum[] | SlasScalarFieldEnum
+    having?: slasScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SlasCountAggregateInputType | true
+    _avg?: SlasAvgAggregateInputType
+    _sum?: SlasSumAggregateInputType
+    _min?: SlasMinAggregateInputType
+    _max?: SlasMaxAggregateInputType
+  }
+
+  export type SlasGroupByOutputType = {
+    id: number
+    quotation_id: number
+    contract_duration: string
+    service_frequency: number
+    custom_kpis: string | null
+    custom_terms: string | null
+    custom_sow: string | null
+    status: string
+    created_at: Date
+    updated_at: Date
+    created_by: number | null
+    _count: SlasCountAggregateOutputType | null
+    _avg: SlasAvgAggregateOutputType | null
+    _sum: SlasSumAggregateOutputType | null
+    _min: SlasMinAggregateOutputType | null
+    _max: SlasMaxAggregateOutputType | null
+  }
+
+  type GetSlasGroupByPayload<T extends slasGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SlasGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SlasGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SlasGroupByOutputType[P]>
+            : GetScalarType<T[P], SlasGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type slasSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    quotation_id?: boolean
+    contract_duration?: boolean
+    service_frequency?: boolean
+    custom_kpis?: boolean
+    custom_terms?: boolean
+    custom_sow?: boolean
+    status?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    created_by?: boolean
+    quotations?: boolean | quotationsDefaultArgs<ExtArgs>
+    users?: boolean | slas$usersArgs<ExtArgs>
+  }, ExtArgs["result"]["slas"]>
+
+
+
+  export type slasSelectScalar = {
+    id?: boolean
+    quotation_id?: boolean
+    contract_duration?: boolean
+    service_frequency?: boolean
+    custom_kpis?: boolean
+    custom_terms?: boolean
+    custom_sow?: boolean
+    status?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    created_by?: boolean
+  }
+
+  export type slasOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "quotation_id" | "contract_duration" | "service_frequency" | "custom_kpis" | "custom_terms" | "custom_sow" | "status" | "created_at" | "updated_at" | "created_by", ExtArgs["result"]["slas"]>
+  export type slasInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    quotations?: boolean | quotationsDefaultArgs<ExtArgs>
+    users?: boolean | slas$usersArgs<ExtArgs>
+  }
+
+  export type $slasPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "slas"
+    objects: {
+      quotations: Prisma.$quotationsPayload<ExtArgs>
+      users: Prisma.$usersPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      quotation_id: number
+      contract_duration: string
+      service_frequency: number
+      custom_kpis: string | null
+      custom_terms: string | null
+      custom_sow: string | null
+      status: string
+      created_at: Date
+      updated_at: Date
+      created_by: number | null
+    }, ExtArgs["result"]["slas"]>
+    composites: {}
+  }
+
+  type slasGetPayload<S extends boolean | null | undefined | slasDefaultArgs> = $Result.GetResult<Prisma.$slasPayload, S>
+
+  type slasCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<slasFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SlasCountAggregateInputType | true
+    }
+
+  export interface slasDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['slas'], meta: { name: 'slas' } }
+    /**
+     * Find zero or one Slas that matches the filter.
+     * @param {slasFindUniqueArgs} args - Arguments to find a Slas
+     * @example
+     * // Get one Slas
+     * const slas = await prisma.slas.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends slasFindUniqueArgs>(args: SelectSubset<T, slasFindUniqueArgs<ExtArgs>>): Prisma__slasClient<$Result.GetResult<Prisma.$slasPayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one Slas that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {slasFindUniqueOrThrowArgs} args - Arguments to find a Slas
+     * @example
+     * // Get one Slas
+     * const slas = await prisma.slas.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends slasFindUniqueOrThrowArgs>(args: SelectSubset<T, slasFindUniqueOrThrowArgs<ExtArgs>>): Prisma__slasClient<$Result.GetResult<Prisma.$slasPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Slas that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {slasFindFirstArgs} args - Arguments to find a Slas
+     * @example
+     * // Get one Slas
+     * const slas = await prisma.slas.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends slasFindFirstArgs>(args?: SelectSubset<T, slasFindFirstArgs<ExtArgs>>): Prisma__slasClient<$Result.GetResult<Prisma.$slasPayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Slas that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {slasFindFirstOrThrowArgs} args - Arguments to find a Slas
+     * @example
+     * // Get one Slas
+     * const slas = await prisma.slas.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends slasFindFirstOrThrowArgs>(args?: SelectSubset<T, slasFindFirstOrThrowArgs<ExtArgs>>): Prisma__slasClient<$Result.GetResult<Prisma.$slasPayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more Slas that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {slasFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Slas
+     * const slas = await prisma.slas.findMany()
+     * 
+     * // Get first 10 Slas
+     * const slas = await prisma.slas.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const slasWithIdOnly = await prisma.slas.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends slasFindManyArgs>(args?: SelectSubset<T, slasFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$slasPayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a Slas.
+     * @param {slasCreateArgs} args - Arguments to create a Slas.
+     * @example
+     * // Create one Slas
+     * const Slas = await prisma.slas.create({
+     *   data: {
+     *     // ... data to create a Slas
+     *   }
+     * })
+     * 
+     */
+    create<T extends slasCreateArgs>(args: SelectSubset<T, slasCreateArgs<ExtArgs>>): Prisma__slasClient<$Result.GetResult<Prisma.$slasPayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many Slas.
+     * @param {slasCreateManyArgs} args - Arguments to create many Slas.
+     * @example
+     * // Create many Slas
+     * const slas = await prisma.slas.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends slasCreateManyArgs>(args?: SelectSubset<T, slasCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Slas.
+     * @param {slasDeleteArgs} args - Arguments to delete one Slas.
+     * @example
+     * // Delete one Slas
+     * const Slas = await prisma.slas.delete({
+     *   where: {
+     *     // ... filter to delete one Slas
+     *   }
+     * })
+     * 
+     */
+    delete<T extends slasDeleteArgs>(args: SelectSubset<T, slasDeleteArgs<ExtArgs>>): Prisma__slasClient<$Result.GetResult<Prisma.$slasPayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one Slas.
+     * @param {slasUpdateArgs} args - Arguments to update one Slas.
+     * @example
+     * // Update one Slas
+     * const slas = await prisma.slas.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends slasUpdateArgs>(args: SelectSubset<T, slasUpdateArgs<ExtArgs>>): Prisma__slasClient<$Result.GetResult<Prisma.$slasPayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more Slas.
+     * @param {slasDeleteManyArgs} args - Arguments to filter Slas to delete.
+     * @example
+     * // Delete a few Slas
+     * const { count } = await prisma.slas.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends slasDeleteManyArgs>(args?: SelectSubset<T, slasDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Slas.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {slasUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Slas
+     * const slas = await prisma.slas.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends slasUpdateManyArgs>(args: SelectSubset<T, slasUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Slas.
+     * @param {slasUpsertArgs} args - Arguments to update or create a Slas.
+     * @example
+     * // Update or create a Slas
+     * const slas = await prisma.slas.upsert({
+     *   create: {
+     *     // ... data to create a Slas
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Slas we want to update
+     *   }
+     * })
+     */
+    upsert<T extends slasUpsertArgs>(args: SelectSubset<T, slasUpsertArgs<ExtArgs>>): Prisma__slasClient<$Result.GetResult<Prisma.$slasPayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of Slas.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {slasCountArgs} args - Arguments to filter Slas to count.
+     * @example
+     * // Count the number of Slas
+     * const count = await prisma.slas.count({
+     *   where: {
+     *     // ... the filter for the Slas we want to count
+     *   }
+     * })
+    **/
+    count<T extends slasCountArgs>(
+      args?: Subset<T, slasCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SlasCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Slas.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SlasAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SlasAggregateArgs>(args: Subset<T, SlasAggregateArgs>): Prisma.PrismaPromise<GetSlasAggregateType<T>>
+
+    /**
+     * Group by Slas.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {slasGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends slasGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: slasGroupByArgs['orderBy'] }
+        : { orderBy?: slasGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, slasGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSlasGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the slas model
+   */
+  readonly fields: slasFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for slas.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__slasClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    quotations<T extends quotationsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, quotationsDefaultArgs<ExtArgs>>): Prisma__quotationsClient<$Result.GetResult<Prisma.$quotationsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    users<T extends slas$usersArgs<ExtArgs> = {}>(args?: Subset<T, slas$usersArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the slas model
+   */ 
+  interface slasFieldRefs {
+    readonly id: FieldRef<"slas", 'Int'>
+    readonly quotation_id: FieldRef<"slas", 'Int'>
+    readonly contract_duration: FieldRef<"slas", 'String'>
+    readonly service_frequency: FieldRef<"slas", 'Int'>
+    readonly custom_kpis: FieldRef<"slas", 'String'>
+    readonly custom_terms: FieldRef<"slas", 'String'>
+    readonly custom_sow: FieldRef<"slas", 'String'>
+    readonly status: FieldRef<"slas", 'String'>
+    readonly created_at: FieldRef<"slas", 'DateTime'>
+    readonly updated_at: FieldRef<"slas", 'DateTime'>
+    readonly created_by: FieldRef<"slas", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * slas findUnique
+   */
+  export type slasFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the slas
+     */
+    select?: slasSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the slas
+     */
+    omit?: slasOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: slasInclude<ExtArgs> | null
+    /**
+     * Filter, which slas to fetch.
+     */
+    where: slasWhereUniqueInput
+  }
+
+  /**
+   * slas findUniqueOrThrow
+   */
+  export type slasFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the slas
+     */
+    select?: slasSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the slas
+     */
+    omit?: slasOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: slasInclude<ExtArgs> | null
+    /**
+     * Filter, which slas to fetch.
+     */
+    where: slasWhereUniqueInput
+  }
+
+  /**
+   * slas findFirst
+   */
+  export type slasFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the slas
+     */
+    select?: slasSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the slas
+     */
+    omit?: slasOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: slasInclude<ExtArgs> | null
+    /**
+     * Filter, which slas to fetch.
+     */
+    where?: slasWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of slas to fetch.
+     */
+    orderBy?: slasOrderByWithRelationInput | slasOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for slas.
+     */
+    cursor?: slasWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` slas from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` slas.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of slas.
+     */
+    distinct?: SlasScalarFieldEnum | SlasScalarFieldEnum[]
+  }
+
+  /**
+   * slas findFirstOrThrow
+   */
+  export type slasFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the slas
+     */
+    select?: slasSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the slas
+     */
+    omit?: slasOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: slasInclude<ExtArgs> | null
+    /**
+     * Filter, which slas to fetch.
+     */
+    where?: slasWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of slas to fetch.
+     */
+    orderBy?: slasOrderByWithRelationInput | slasOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for slas.
+     */
+    cursor?: slasWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` slas from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` slas.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of slas.
+     */
+    distinct?: SlasScalarFieldEnum | SlasScalarFieldEnum[]
+  }
+
+  /**
+   * slas findMany
+   */
+  export type slasFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the slas
+     */
+    select?: slasSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the slas
+     */
+    omit?: slasOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: slasInclude<ExtArgs> | null
+    /**
+     * Filter, which slas to fetch.
+     */
+    where?: slasWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of slas to fetch.
+     */
+    orderBy?: slasOrderByWithRelationInput | slasOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing slas.
+     */
+    cursor?: slasWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` slas from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` slas.
+     */
+    skip?: number
+    distinct?: SlasScalarFieldEnum | SlasScalarFieldEnum[]
+  }
+
+  /**
+   * slas create
+   */
+  export type slasCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the slas
+     */
+    select?: slasSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the slas
+     */
+    omit?: slasOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: slasInclude<ExtArgs> | null
+    /**
+     * The data needed to create a slas.
+     */
+    data: XOR<slasCreateInput, slasUncheckedCreateInput>
+  }
+
+  /**
+   * slas createMany
+   */
+  export type slasCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many slas.
+     */
+    data: slasCreateManyInput | slasCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * slas update
+   */
+  export type slasUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the slas
+     */
+    select?: slasSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the slas
+     */
+    omit?: slasOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: slasInclude<ExtArgs> | null
+    /**
+     * The data needed to update a slas.
+     */
+    data: XOR<slasUpdateInput, slasUncheckedUpdateInput>
+    /**
+     * Choose, which slas to update.
+     */
+    where: slasWhereUniqueInput
+  }
+
+  /**
+   * slas updateMany
+   */
+  export type slasUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update slas.
+     */
+    data: XOR<slasUpdateManyMutationInput, slasUncheckedUpdateManyInput>
+    /**
+     * Filter which slas to update
+     */
+    where?: slasWhereInput
+    /**
+     * Limit how many slas to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * slas upsert
+   */
+  export type slasUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the slas
+     */
+    select?: slasSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the slas
+     */
+    omit?: slasOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: slasInclude<ExtArgs> | null
+    /**
+     * The filter to search for the slas to update in case it exists.
+     */
+    where: slasWhereUniqueInput
+    /**
+     * In case the slas found by the `where` argument doesn't exist, create a new slas with this data.
+     */
+    create: XOR<slasCreateInput, slasUncheckedCreateInput>
+    /**
+     * In case the slas was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<slasUpdateInput, slasUncheckedUpdateInput>
+  }
+
+  /**
+   * slas delete
+   */
+  export type slasDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the slas
+     */
+    select?: slasSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the slas
+     */
+    omit?: slasOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: slasInclude<ExtArgs> | null
+    /**
+     * Filter which slas to delete.
+     */
+    where: slasWhereUniqueInput
+  }
+
+  /**
+   * slas deleteMany
+   */
+  export type slasDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which slas to delete
+     */
+    where?: slasWhereInput
+    /**
+     * Limit how many slas to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * slas.users
+   */
+  export type slas$usersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the users
+     */
+    select?: usersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the users
+     */
+    omit?: usersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: usersInclude<ExtArgs> | null
+    where?: usersWhereInput
+  }
+
+  /**
+   * slas without action
+   */
+  export type slasDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the slas
+     */
+    select?: slasSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the slas
+     */
+    omit?: slasOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: slasInclude<ExtArgs> | null
   }
 
 
@@ -17733,6 +22494,9 @@ export namespace Prisma {
     notifications?: boolean | users$notificationsArgs<ExtArgs>
     roles?: boolean | users$rolesArgs<ExtArgs>
     vendor_attendance?: boolean | users$vendor_attendanceArgs<ExtArgs>
+    created_work_orders?: boolean | users$created_work_ordersArgs<ExtArgs>
+    created_quotations?: boolean | users$created_quotationsArgs<ExtArgs>
+    created_slas?: boolean | users$created_slasArgs<ExtArgs>
     _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["users"]>
 
@@ -17778,6 +22542,9 @@ export namespace Prisma {
     notifications?: boolean | users$notificationsArgs<ExtArgs>
     roles?: boolean | users$rolesArgs<ExtArgs>
     vendor_attendance?: boolean | users$vendor_attendanceArgs<ExtArgs>
+    created_work_orders?: boolean | users$created_work_ordersArgs<ExtArgs>
+    created_quotations?: boolean | users$created_quotationsArgs<ExtArgs>
+    created_slas?: boolean | users$created_slasArgs<ExtArgs>
     _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -17800,6 +22567,9 @@ export namespace Prisma {
       notifications: Prisma.$notificationsPayload<ExtArgs>[]
       roles: Prisma.$rolesPayload<ExtArgs> | null
       vendor_attendance: Prisma.$vendor_attendancePayload<ExtArgs>[]
+      created_work_orders: Prisma.$work_ordersPayload<ExtArgs>[]
+      created_quotations: Prisma.$quotationsPayload<ExtArgs>[]
+      created_slas: Prisma.$slasPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -18177,6 +22947,9 @@ export namespace Prisma {
     notifications<T extends users$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, users$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$notificationsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     roles<T extends users$rolesArgs<ExtArgs> = {}>(args?: Subset<T, users$rolesArgs<ExtArgs>>): Prisma__rolesClient<$Result.GetResult<Prisma.$rolesPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
     vendor_attendance<T extends users$vendor_attendanceArgs<ExtArgs> = {}>(args?: Subset<T, users$vendor_attendanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$vendor_attendancePayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    created_work_orders<T extends users$created_work_ordersArgs<ExtArgs> = {}>(args?: Subset<T, users$created_work_ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$work_ordersPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    created_quotations<T extends users$created_quotationsArgs<ExtArgs> = {}>(args?: Subset<T, users$created_quotationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$quotationsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    created_slas<T extends users$created_slasArgs<ExtArgs> = {}>(args?: Subset<T, users$created_slasArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$slasPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -18944,6 +23717,78 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: Vendor_attendanceScalarFieldEnum | Vendor_attendanceScalarFieldEnum[]
+  }
+
+  /**
+   * users.created_work_orders
+   */
+  export type users$created_work_ordersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the work_orders
+     */
+    select?: work_ordersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the work_orders
+     */
+    omit?: work_ordersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: work_ordersInclude<ExtArgs> | null
+    where?: work_ordersWhereInput
+    orderBy?: work_ordersOrderByWithRelationInput | work_ordersOrderByWithRelationInput[]
+    cursor?: work_ordersWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Work_ordersScalarFieldEnum | Work_ordersScalarFieldEnum[]
+  }
+
+  /**
+   * users.created_quotations
+   */
+  export type users$created_quotationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotations
+     */
+    select?: quotationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the quotations
+     */
+    omit?: quotationsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotationsInclude<ExtArgs> | null
+    where?: quotationsWhereInput
+    orderBy?: quotationsOrderByWithRelationInput | quotationsOrderByWithRelationInput[]
+    cursor?: quotationsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: QuotationsScalarFieldEnum | QuotationsScalarFieldEnum[]
+  }
+
+  /**
+   * users.created_slas
+   */
+  export type users$created_slasArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the slas
+     */
+    select?: slasSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the slas
+     */
+    omit?: slasOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: slasInclude<ExtArgs> | null
+    where?: slasWhereInput
+    orderBy?: slasOrderByWithRelationInput | slasOrderByWithRelationInput[]
+    cursor?: slasWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SlasScalarFieldEnum | SlasScalarFieldEnum[]
   }
 
   /**
@@ -56051,6 +60896,70 @@ export namespace Prisma {
   export type Refresh_tokensScalarFieldEnum = (typeof Refresh_tokensScalarFieldEnum)[keyof typeof Refresh_tokensScalarFieldEnum]
 
 
+  export const Work_ordersScalarFieldEnum: {
+    id: 'id',
+    wo_number: 'wo_number',
+    customer_id: 'customer_id',
+    customer_name: 'customer_name',
+    pic_name: 'pic_name',
+    company_address: 'company_address',
+    status: 'status',
+    created_at: 'created_at',
+    updated_at: 'updated_at',
+    created_by: 'created_by'
+  };
+
+  export type Work_ordersScalarFieldEnum = (typeof Work_ordersScalarFieldEnum)[keyof typeof Work_ordersScalarFieldEnum]
+
+
+  export const QuotationsScalarFieldEnum: {
+    id: 'id',
+    quo_number: 'quo_number',
+    work_order_id: 'work_order_id',
+    total_amount: 'total_amount',
+    discount: 'discount',
+    tax: 'tax',
+    grand_total: 'grand_total',
+    status: 'status',
+    valid_until: 'valid_until',
+    created_at: 'created_at',
+    updated_at: 'updated_at',
+    created_by: 'created_by'
+  };
+
+  export type QuotationsScalarFieldEnum = (typeof QuotationsScalarFieldEnum)[keyof typeof QuotationsScalarFieldEnum]
+
+
+  export const Quotation_itemsScalarFieldEnum: {
+    id: 'id',
+    quotation_id: 'quotation_id',
+    item_name: 'item_name',
+    category: 'category',
+    qty: 'qty',
+    unit_price: 'unit_price',
+    total_price: 'total_price'
+  };
+
+  export type Quotation_itemsScalarFieldEnum = (typeof Quotation_itemsScalarFieldEnum)[keyof typeof Quotation_itemsScalarFieldEnum]
+
+
+  export const SlasScalarFieldEnum: {
+    id: 'id',
+    quotation_id: 'quotation_id',
+    contract_duration: 'contract_duration',
+    service_frequency: 'service_frequency',
+    custom_kpis: 'custom_kpis',
+    custom_terms: 'custom_terms',
+    custom_sow: 'custom_sow',
+    status: 'status',
+    created_at: 'created_at',
+    updated_at: 'updated_at',
+    created_by: 'created_by'
+  };
+
+  export type SlasScalarFieldEnum = (typeof SlasScalarFieldEnum)[keyof typeof SlasScalarFieldEnum]
+
+
   export const Role_permissionsScalarFieldEnum: {
     role_id: 'role_id',
     permission_id: 'permission_id'
@@ -56828,6 +61737,44 @@ export namespace Prisma {
   export type refresh_tokensOrderByRelevanceFieldEnum = (typeof refresh_tokensOrderByRelevanceFieldEnum)[keyof typeof refresh_tokensOrderByRelevanceFieldEnum]
 
 
+  export const work_ordersOrderByRelevanceFieldEnum: {
+    wo_number: 'wo_number',
+    customer_name: 'customer_name',
+    pic_name: 'pic_name',
+    company_address: 'company_address',
+    status: 'status'
+  };
+
+  export type work_ordersOrderByRelevanceFieldEnum = (typeof work_ordersOrderByRelevanceFieldEnum)[keyof typeof work_ordersOrderByRelevanceFieldEnum]
+
+
+  export const quotationsOrderByRelevanceFieldEnum: {
+    quo_number: 'quo_number',
+    status: 'status'
+  };
+
+  export type quotationsOrderByRelevanceFieldEnum = (typeof quotationsOrderByRelevanceFieldEnum)[keyof typeof quotationsOrderByRelevanceFieldEnum]
+
+
+  export const quotation_itemsOrderByRelevanceFieldEnum: {
+    item_name: 'item_name',
+    category: 'category'
+  };
+
+  export type quotation_itemsOrderByRelevanceFieldEnum = (typeof quotation_itemsOrderByRelevanceFieldEnum)[keyof typeof quotation_itemsOrderByRelevanceFieldEnum]
+
+
+  export const slasOrderByRelevanceFieldEnum: {
+    contract_duration: 'contract_duration',
+    custom_kpis: 'custom_kpis',
+    custom_terms: 'custom_terms',
+    custom_sow: 'custom_sow',
+    status: 'status'
+  };
+
+  export type slasOrderByRelevanceFieldEnum = (typeof slasOrderByRelevanceFieldEnum)[keyof typeof slasOrderByRelevanceFieldEnum]
+
+
   export const rolesOrderByRelevanceFieldEnum: {
     role_name: 'role_name'
   };
@@ -57425,6 +62372,7 @@ export namespace Prisma {
     projects?: ProjectsListRelationFilter
     sites?: SitesListRelationFilter
     tickets?: TicketsListRelationFilter
+    work_orders?: Work_ordersListRelationFilter
   }
 
   export type customersOrderByWithRelationInput = {
@@ -57441,6 +62389,7 @@ export namespace Prisma {
     projects?: projectsOrderByRelationAggregateInput
     sites?: sitesOrderByRelationAggregateInput
     tickets?: ticketsOrderByRelationAggregateInput
+    work_orders?: work_ordersOrderByRelationAggregateInput
     _relevance?: customersOrderByRelevanceInput
   }
 
@@ -57461,6 +62410,7 @@ export namespace Prisma {
     projects?: ProjectsListRelationFilter
     sites?: SitesListRelationFilter
     tickets?: TicketsListRelationFilter
+    work_orders?: Work_ordersListRelationFilter
   }, "id">
 
   export type customersOrderByWithAggregationInput = {
@@ -57842,6 +62792,356 @@ export namespace Prisma {
     expires_at?: DateTimeWithAggregatesFilter<"refresh_tokens"> | Date | string
     revoked_at?: DateTimeNullableWithAggregatesFilter<"refresh_tokens"> | Date | string | null
     created_at?: DateTimeNullableWithAggregatesFilter<"refresh_tokens"> | Date | string | null
+  }
+
+  export type work_ordersWhereInput = {
+    AND?: work_ordersWhereInput | work_ordersWhereInput[]
+    OR?: work_ordersWhereInput[]
+    NOT?: work_ordersWhereInput | work_ordersWhereInput[]
+    id?: IntFilter<"work_orders"> | number
+    wo_number?: StringFilter<"work_orders"> | string
+    customer_id?: IntNullableFilter<"work_orders"> | number | null
+    customer_name?: StringNullableFilter<"work_orders"> | string | null
+    pic_name?: StringNullableFilter<"work_orders"> | string | null
+    company_address?: StringNullableFilter<"work_orders"> | string | null
+    status?: StringFilter<"work_orders"> | string
+    created_at?: DateTimeFilter<"work_orders"> | Date | string
+    updated_at?: DateTimeFilter<"work_orders"> | Date | string
+    created_by?: IntNullableFilter<"work_orders"> | number | null
+    customers?: XOR<CustomersNullableScalarRelationFilter, customersWhereInput> | null
+    users?: XOR<UsersNullableScalarRelationFilter, usersWhereInput> | null
+    quotations?: QuotationsListRelationFilter
+  }
+
+  export type work_ordersOrderByWithRelationInput = {
+    id?: SortOrder
+    wo_number?: SortOrder
+    customer_id?: SortOrderInput | SortOrder
+    customer_name?: SortOrderInput | SortOrder
+    pic_name?: SortOrderInput | SortOrder
+    company_address?: SortOrderInput | SortOrder
+    status?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    created_by?: SortOrderInput | SortOrder
+    customers?: customersOrderByWithRelationInput
+    users?: usersOrderByWithRelationInput
+    quotations?: quotationsOrderByRelationAggregateInput
+    _relevance?: work_ordersOrderByRelevanceInput
+  }
+
+  export type work_ordersWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    wo_number?: string
+    AND?: work_ordersWhereInput | work_ordersWhereInput[]
+    OR?: work_ordersWhereInput[]
+    NOT?: work_ordersWhereInput | work_ordersWhereInput[]
+    customer_id?: IntNullableFilter<"work_orders"> | number | null
+    customer_name?: StringNullableFilter<"work_orders"> | string | null
+    pic_name?: StringNullableFilter<"work_orders"> | string | null
+    company_address?: StringNullableFilter<"work_orders"> | string | null
+    status?: StringFilter<"work_orders"> | string
+    created_at?: DateTimeFilter<"work_orders"> | Date | string
+    updated_at?: DateTimeFilter<"work_orders"> | Date | string
+    created_by?: IntNullableFilter<"work_orders"> | number | null
+    customers?: XOR<CustomersNullableScalarRelationFilter, customersWhereInput> | null
+    users?: XOR<UsersNullableScalarRelationFilter, usersWhereInput> | null
+    quotations?: QuotationsListRelationFilter
+  }, "id" | "wo_number">
+
+  export type work_ordersOrderByWithAggregationInput = {
+    id?: SortOrder
+    wo_number?: SortOrder
+    customer_id?: SortOrderInput | SortOrder
+    customer_name?: SortOrderInput | SortOrder
+    pic_name?: SortOrderInput | SortOrder
+    company_address?: SortOrderInput | SortOrder
+    status?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    created_by?: SortOrderInput | SortOrder
+    _count?: work_ordersCountOrderByAggregateInput
+    _avg?: work_ordersAvgOrderByAggregateInput
+    _max?: work_ordersMaxOrderByAggregateInput
+    _min?: work_ordersMinOrderByAggregateInput
+    _sum?: work_ordersSumOrderByAggregateInput
+  }
+
+  export type work_ordersScalarWhereWithAggregatesInput = {
+    AND?: work_ordersScalarWhereWithAggregatesInput | work_ordersScalarWhereWithAggregatesInput[]
+    OR?: work_ordersScalarWhereWithAggregatesInput[]
+    NOT?: work_ordersScalarWhereWithAggregatesInput | work_ordersScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"work_orders"> | number
+    wo_number?: StringWithAggregatesFilter<"work_orders"> | string
+    customer_id?: IntNullableWithAggregatesFilter<"work_orders"> | number | null
+    customer_name?: StringNullableWithAggregatesFilter<"work_orders"> | string | null
+    pic_name?: StringNullableWithAggregatesFilter<"work_orders"> | string | null
+    company_address?: StringNullableWithAggregatesFilter<"work_orders"> | string | null
+    status?: StringWithAggregatesFilter<"work_orders"> | string
+    created_at?: DateTimeWithAggregatesFilter<"work_orders"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"work_orders"> | Date | string
+    created_by?: IntNullableWithAggregatesFilter<"work_orders"> | number | null
+  }
+
+  export type quotationsWhereInput = {
+    AND?: quotationsWhereInput | quotationsWhereInput[]
+    OR?: quotationsWhereInput[]
+    NOT?: quotationsWhereInput | quotationsWhereInput[]
+    id?: IntFilter<"quotations"> | number
+    quo_number?: StringFilter<"quotations"> | string
+    work_order_id?: IntFilter<"quotations"> | number
+    total_amount?: DecimalFilter<"quotations"> | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFilter<"quotations"> | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFilter<"quotations"> | Decimal | DecimalJsLike | number | string
+    grand_total?: DecimalFilter<"quotations"> | Decimal | DecimalJsLike | number | string
+    status?: StringFilter<"quotations"> | string
+    valid_until?: DateTimeNullableFilter<"quotations"> | Date | string | null
+    created_at?: DateTimeFilter<"quotations"> | Date | string
+    updated_at?: DateTimeFilter<"quotations"> | Date | string
+    created_by?: IntNullableFilter<"quotations"> | number | null
+    work_orders?: XOR<Work_ordersScalarRelationFilter, work_ordersWhereInput>
+    users?: XOR<UsersNullableScalarRelationFilter, usersWhereInput> | null
+    items?: Quotation_itemsListRelationFilter
+    sla?: XOR<SlasNullableScalarRelationFilter, slasWhereInput> | null
+  }
+
+  export type quotationsOrderByWithRelationInput = {
+    id?: SortOrder
+    quo_number?: SortOrder
+    work_order_id?: SortOrder
+    total_amount?: SortOrder
+    discount?: SortOrder
+    tax?: SortOrder
+    grand_total?: SortOrder
+    status?: SortOrder
+    valid_until?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    created_by?: SortOrderInput | SortOrder
+    work_orders?: work_ordersOrderByWithRelationInput
+    users?: usersOrderByWithRelationInput
+    items?: quotation_itemsOrderByRelationAggregateInput
+    sla?: slasOrderByWithRelationInput
+    _relevance?: quotationsOrderByRelevanceInput
+  }
+
+  export type quotationsWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    quo_number?: string
+    AND?: quotationsWhereInput | quotationsWhereInput[]
+    OR?: quotationsWhereInput[]
+    NOT?: quotationsWhereInput | quotationsWhereInput[]
+    work_order_id?: IntFilter<"quotations"> | number
+    total_amount?: DecimalFilter<"quotations"> | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFilter<"quotations"> | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFilter<"quotations"> | Decimal | DecimalJsLike | number | string
+    grand_total?: DecimalFilter<"quotations"> | Decimal | DecimalJsLike | number | string
+    status?: StringFilter<"quotations"> | string
+    valid_until?: DateTimeNullableFilter<"quotations"> | Date | string | null
+    created_at?: DateTimeFilter<"quotations"> | Date | string
+    updated_at?: DateTimeFilter<"quotations"> | Date | string
+    created_by?: IntNullableFilter<"quotations"> | number | null
+    work_orders?: XOR<Work_ordersScalarRelationFilter, work_ordersWhereInput>
+    users?: XOR<UsersNullableScalarRelationFilter, usersWhereInput> | null
+    items?: Quotation_itemsListRelationFilter
+    sla?: XOR<SlasNullableScalarRelationFilter, slasWhereInput> | null
+  }, "id" | "quo_number">
+
+  export type quotationsOrderByWithAggregationInput = {
+    id?: SortOrder
+    quo_number?: SortOrder
+    work_order_id?: SortOrder
+    total_amount?: SortOrder
+    discount?: SortOrder
+    tax?: SortOrder
+    grand_total?: SortOrder
+    status?: SortOrder
+    valid_until?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    created_by?: SortOrderInput | SortOrder
+    _count?: quotationsCountOrderByAggregateInput
+    _avg?: quotationsAvgOrderByAggregateInput
+    _max?: quotationsMaxOrderByAggregateInput
+    _min?: quotationsMinOrderByAggregateInput
+    _sum?: quotationsSumOrderByAggregateInput
+  }
+
+  export type quotationsScalarWhereWithAggregatesInput = {
+    AND?: quotationsScalarWhereWithAggregatesInput | quotationsScalarWhereWithAggregatesInput[]
+    OR?: quotationsScalarWhereWithAggregatesInput[]
+    NOT?: quotationsScalarWhereWithAggregatesInput | quotationsScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"quotations"> | number
+    quo_number?: StringWithAggregatesFilter<"quotations"> | string
+    work_order_id?: IntWithAggregatesFilter<"quotations"> | number
+    total_amount?: DecimalWithAggregatesFilter<"quotations"> | Decimal | DecimalJsLike | number | string
+    discount?: DecimalWithAggregatesFilter<"quotations"> | Decimal | DecimalJsLike | number | string
+    tax?: DecimalWithAggregatesFilter<"quotations"> | Decimal | DecimalJsLike | number | string
+    grand_total?: DecimalWithAggregatesFilter<"quotations"> | Decimal | DecimalJsLike | number | string
+    status?: StringWithAggregatesFilter<"quotations"> | string
+    valid_until?: DateTimeNullableWithAggregatesFilter<"quotations"> | Date | string | null
+    created_at?: DateTimeWithAggregatesFilter<"quotations"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"quotations"> | Date | string
+    created_by?: IntNullableWithAggregatesFilter<"quotations"> | number | null
+  }
+
+  export type quotation_itemsWhereInput = {
+    AND?: quotation_itemsWhereInput | quotation_itemsWhereInput[]
+    OR?: quotation_itemsWhereInput[]
+    NOT?: quotation_itemsWhereInput | quotation_itemsWhereInput[]
+    id?: IntFilter<"quotation_items"> | number
+    quotation_id?: IntFilter<"quotation_items"> | number
+    item_name?: StringFilter<"quotation_items"> | string
+    category?: StringNullableFilter<"quotation_items"> | string | null
+    qty?: IntFilter<"quotation_items"> | number
+    unit_price?: DecimalFilter<"quotation_items"> | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFilter<"quotation_items"> | Decimal | DecimalJsLike | number | string
+    quotations?: XOR<QuotationsScalarRelationFilter, quotationsWhereInput>
+  }
+
+  export type quotation_itemsOrderByWithRelationInput = {
+    id?: SortOrder
+    quotation_id?: SortOrder
+    item_name?: SortOrder
+    category?: SortOrderInput | SortOrder
+    qty?: SortOrder
+    unit_price?: SortOrder
+    total_price?: SortOrder
+    quotations?: quotationsOrderByWithRelationInput
+    _relevance?: quotation_itemsOrderByRelevanceInput
+  }
+
+  export type quotation_itemsWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: quotation_itemsWhereInput | quotation_itemsWhereInput[]
+    OR?: quotation_itemsWhereInput[]
+    NOT?: quotation_itemsWhereInput | quotation_itemsWhereInput[]
+    quotation_id?: IntFilter<"quotation_items"> | number
+    item_name?: StringFilter<"quotation_items"> | string
+    category?: StringNullableFilter<"quotation_items"> | string | null
+    qty?: IntFilter<"quotation_items"> | number
+    unit_price?: DecimalFilter<"quotation_items"> | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFilter<"quotation_items"> | Decimal | DecimalJsLike | number | string
+    quotations?: XOR<QuotationsScalarRelationFilter, quotationsWhereInput>
+  }, "id">
+
+  export type quotation_itemsOrderByWithAggregationInput = {
+    id?: SortOrder
+    quotation_id?: SortOrder
+    item_name?: SortOrder
+    category?: SortOrderInput | SortOrder
+    qty?: SortOrder
+    unit_price?: SortOrder
+    total_price?: SortOrder
+    _count?: quotation_itemsCountOrderByAggregateInput
+    _avg?: quotation_itemsAvgOrderByAggregateInput
+    _max?: quotation_itemsMaxOrderByAggregateInput
+    _min?: quotation_itemsMinOrderByAggregateInput
+    _sum?: quotation_itemsSumOrderByAggregateInput
+  }
+
+  export type quotation_itemsScalarWhereWithAggregatesInput = {
+    AND?: quotation_itemsScalarWhereWithAggregatesInput | quotation_itemsScalarWhereWithAggregatesInput[]
+    OR?: quotation_itemsScalarWhereWithAggregatesInput[]
+    NOT?: quotation_itemsScalarWhereWithAggregatesInput | quotation_itemsScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"quotation_items"> | number
+    quotation_id?: IntWithAggregatesFilter<"quotation_items"> | number
+    item_name?: StringWithAggregatesFilter<"quotation_items"> | string
+    category?: StringNullableWithAggregatesFilter<"quotation_items"> | string | null
+    qty?: IntWithAggregatesFilter<"quotation_items"> | number
+    unit_price?: DecimalWithAggregatesFilter<"quotation_items"> | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalWithAggregatesFilter<"quotation_items"> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type slasWhereInput = {
+    AND?: slasWhereInput | slasWhereInput[]
+    OR?: slasWhereInput[]
+    NOT?: slasWhereInput | slasWhereInput[]
+    id?: IntFilter<"slas"> | number
+    quotation_id?: IntFilter<"slas"> | number
+    contract_duration?: StringFilter<"slas"> | string
+    service_frequency?: IntFilter<"slas"> | number
+    custom_kpis?: StringNullableFilter<"slas"> | string | null
+    custom_terms?: StringNullableFilter<"slas"> | string | null
+    custom_sow?: StringNullableFilter<"slas"> | string | null
+    status?: StringFilter<"slas"> | string
+    created_at?: DateTimeFilter<"slas"> | Date | string
+    updated_at?: DateTimeFilter<"slas"> | Date | string
+    created_by?: IntNullableFilter<"slas"> | number | null
+    quotations?: XOR<QuotationsScalarRelationFilter, quotationsWhereInput>
+    users?: XOR<UsersNullableScalarRelationFilter, usersWhereInput> | null
+  }
+
+  export type slasOrderByWithRelationInput = {
+    id?: SortOrder
+    quotation_id?: SortOrder
+    contract_duration?: SortOrder
+    service_frequency?: SortOrder
+    custom_kpis?: SortOrderInput | SortOrder
+    custom_terms?: SortOrderInput | SortOrder
+    custom_sow?: SortOrderInput | SortOrder
+    status?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    created_by?: SortOrderInput | SortOrder
+    quotations?: quotationsOrderByWithRelationInput
+    users?: usersOrderByWithRelationInput
+    _relevance?: slasOrderByRelevanceInput
+  }
+
+  export type slasWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    quotation_id?: number
+    AND?: slasWhereInput | slasWhereInput[]
+    OR?: slasWhereInput[]
+    NOT?: slasWhereInput | slasWhereInput[]
+    contract_duration?: StringFilter<"slas"> | string
+    service_frequency?: IntFilter<"slas"> | number
+    custom_kpis?: StringNullableFilter<"slas"> | string | null
+    custom_terms?: StringNullableFilter<"slas"> | string | null
+    custom_sow?: StringNullableFilter<"slas"> | string | null
+    status?: StringFilter<"slas"> | string
+    created_at?: DateTimeFilter<"slas"> | Date | string
+    updated_at?: DateTimeFilter<"slas"> | Date | string
+    created_by?: IntNullableFilter<"slas"> | number | null
+    quotations?: XOR<QuotationsScalarRelationFilter, quotationsWhereInput>
+    users?: XOR<UsersNullableScalarRelationFilter, usersWhereInput> | null
+  }, "id" | "quotation_id">
+
+  export type slasOrderByWithAggregationInput = {
+    id?: SortOrder
+    quotation_id?: SortOrder
+    contract_duration?: SortOrder
+    service_frequency?: SortOrder
+    custom_kpis?: SortOrderInput | SortOrder
+    custom_terms?: SortOrderInput | SortOrder
+    custom_sow?: SortOrderInput | SortOrder
+    status?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    created_by?: SortOrderInput | SortOrder
+    _count?: slasCountOrderByAggregateInput
+    _avg?: slasAvgOrderByAggregateInput
+    _max?: slasMaxOrderByAggregateInput
+    _min?: slasMinOrderByAggregateInput
+    _sum?: slasSumOrderByAggregateInput
+  }
+
+  export type slasScalarWhereWithAggregatesInput = {
+    AND?: slasScalarWhereWithAggregatesInput | slasScalarWhereWithAggregatesInput[]
+    OR?: slasScalarWhereWithAggregatesInput[]
+    NOT?: slasScalarWhereWithAggregatesInput | slasScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"slas"> | number
+    quotation_id?: IntWithAggregatesFilter<"slas"> | number
+    contract_duration?: StringWithAggregatesFilter<"slas"> | string
+    service_frequency?: IntWithAggregatesFilter<"slas"> | number
+    custom_kpis?: StringNullableWithAggregatesFilter<"slas"> | string | null
+    custom_terms?: StringNullableWithAggregatesFilter<"slas"> | string | null
+    custom_sow?: StringNullableWithAggregatesFilter<"slas"> | string | null
+    status?: StringWithAggregatesFilter<"slas"> | string
+    created_at?: DateTimeWithAggregatesFilter<"slas"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"slas"> | Date | string
+    created_by?: IntNullableWithAggregatesFilter<"slas"> | number | null
   }
 
   export type role_permissionsWhereInput = {
@@ -58303,6 +63603,9 @@ export namespace Prisma {
     notifications?: NotificationsListRelationFilter
     roles?: XOR<RolesNullableScalarRelationFilter, rolesWhereInput> | null
     vendor_attendance?: Vendor_attendanceListRelationFilter
+    created_work_orders?: Work_ordersListRelationFilter
+    created_quotations?: QuotationsListRelationFilter
+    created_slas?: SlasListRelationFilter
   }
 
   export type usersOrderByWithRelationInput = {
@@ -58341,6 +63644,9 @@ export namespace Prisma {
     notifications?: notificationsOrderByRelationAggregateInput
     roles?: rolesOrderByWithRelationInput
     vendor_attendance?: vendor_attendanceOrderByRelationAggregateInput
+    created_work_orders?: work_ordersOrderByRelationAggregateInput
+    created_quotations?: quotationsOrderByRelationAggregateInput
+    created_slas?: slasOrderByRelationAggregateInput
     _relevance?: usersOrderByRelevanceInput
   }
 
@@ -58383,6 +63689,9 @@ export namespace Prisma {
     notifications?: NotificationsListRelationFilter
     roles?: XOR<RolesNullableScalarRelationFilter, rolesWhereInput> | null
     vendor_attendance?: Vendor_attendanceListRelationFilter
+    created_work_orders?: Work_ordersListRelationFilter
+    created_quotations?: QuotationsListRelationFilter
+    created_slas?: SlasListRelationFilter
   }, "id" | "email">
 
   export type usersOrderByWithAggregationInput = {
@@ -61640,6 +66949,7 @@ export namespace Prisma {
     projects?: projectsCreateNestedManyWithoutCustomersInput
     sites?: sitesCreateNestedManyWithoutCustomersInput
     tickets?: ticketsCreateNestedManyWithoutCustomersInput
+    work_orders?: work_ordersCreateNestedManyWithoutCustomersInput
   }
 
   export type customersUncheckedCreateInput = {
@@ -61656,6 +66966,7 @@ export namespace Prisma {
     projects?: projectsUncheckedCreateNestedManyWithoutCustomersInput
     sites?: sitesUncheckedCreateNestedManyWithoutCustomersInput
     tickets?: ticketsUncheckedCreateNestedManyWithoutCustomersInput
+    work_orders?: work_ordersUncheckedCreateNestedManyWithoutCustomersInput
   }
 
   export type customersUpdateInput = {
@@ -61671,6 +66982,7 @@ export namespace Prisma {
     projects?: projectsUpdateManyWithoutCustomersNestedInput
     sites?: sitesUpdateManyWithoutCustomersNestedInput
     tickets?: ticketsUpdateManyWithoutCustomersNestedInput
+    work_orders?: work_ordersUpdateManyWithoutCustomersNestedInput
   }
 
   export type customersUncheckedUpdateInput = {
@@ -61687,6 +66999,7 @@ export namespace Prisma {
     projects?: projectsUncheckedUpdateManyWithoutCustomersNestedInput
     sites?: sitesUncheckedUpdateManyWithoutCustomersNestedInput
     tickets?: ticketsUncheckedUpdateManyWithoutCustomersNestedInput
+    work_orders?: work_ordersUncheckedUpdateManyWithoutCustomersNestedInput
   }
 
   export type customersCreateManyInput = {
@@ -62106,6 +67419,363 @@ export namespace Prisma {
     expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
     revoked_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type work_ordersCreateInput = {
+    wo_number: string
+    customer_name?: string | null
+    pic_name?: string | null
+    company_address?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    customers?: customersCreateNestedOneWithoutWork_ordersInput
+    users?: usersCreateNestedOneWithoutCreated_work_ordersInput
+    quotations?: quotationsCreateNestedManyWithoutWork_ordersInput
+  }
+
+  export type work_ordersUncheckedCreateInput = {
+    id?: number
+    wo_number: string
+    customer_id?: number | null
+    customer_name?: string | null
+    pic_name?: string | null
+    company_address?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    created_by?: number | null
+    quotations?: quotationsUncheckedCreateNestedManyWithoutWork_ordersInput
+  }
+
+  export type work_ordersUpdateInput = {
+    wo_number?: StringFieldUpdateOperationsInput | string
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    pic_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    customers?: customersUpdateOneWithoutWork_ordersNestedInput
+    users?: usersUpdateOneWithoutCreated_work_ordersNestedInput
+    quotations?: quotationsUpdateManyWithoutWork_ordersNestedInput
+  }
+
+  export type work_ordersUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    wo_number?: StringFieldUpdateOperationsInput | string
+    customer_id?: NullableIntFieldUpdateOperationsInput | number | null
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    pic_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_by?: NullableIntFieldUpdateOperationsInput | number | null
+    quotations?: quotationsUncheckedUpdateManyWithoutWork_ordersNestedInput
+  }
+
+  export type work_ordersCreateManyInput = {
+    id?: number
+    wo_number: string
+    customer_id?: number | null
+    customer_name?: string | null
+    pic_name?: string | null
+    company_address?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    created_by?: number | null
+  }
+
+  export type work_ordersUpdateManyMutationInput = {
+    wo_number?: StringFieldUpdateOperationsInput | string
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    pic_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type work_ordersUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    wo_number?: StringFieldUpdateOperationsInput | string
+    customer_id?: NullableIntFieldUpdateOperationsInput | number | null
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    pic_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_by?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type quotationsCreateInput = {
+    quo_number: string
+    total_amount?: Decimal | DecimalJsLike | number | string
+    discount?: Decimal | DecimalJsLike | number | string
+    tax?: Decimal | DecimalJsLike | number | string
+    grand_total?: Decimal | DecimalJsLike | number | string
+    status?: string
+    valid_until?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    work_orders: work_ordersCreateNestedOneWithoutQuotationsInput
+    users?: usersCreateNestedOneWithoutCreated_quotationsInput
+    items?: quotation_itemsCreateNestedManyWithoutQuotationsInput
+    sla?: slasCreateNestedOneWithoutQuotationsInput
+  }
+
+  export type quotationsUncheckedCreateInput = {
+    id?: number
+    quo_number: string
+    work_order_id: number
+    total_amount?: Decimal | DecimalJsLike | number | string
+    discount?: Decimal | DecimalJsLike | number | string
+    tax?: Decimal | DecimalJsLike | number | string
+    grand_total?: Decimal | DecimalJsLike | number | string
+    status?: string
+    valid_until?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    created_by?: number | null
+    items?: quotation_itemsUncheckedCreateNestedManyWithoutQuotationsInput
+    sla?: slasUncheckedCreateNestedOneWithoutQuotationsInput
+  }
+
+  export type quotationsUpdateInput = {
+    quo_number?: StringFieldUpdateOperationsInput | string
+    total_amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    grand_total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: StringFieldUpdateOperationsInput | string
+    valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    work_orders?: work_ordersUpdateOneRequiredWithoutQuotationsNestedInput
+    users?: usersUpdateOneWithoutCreated_quotationsNestedInput
+    items?: quotation_itemsUpdateManyWithoutQuotationsNestedInput
+    sla?: slasUpdateOneWithoutQuotationsNestedInput
+  }
+
+  export type quotationsUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    quo_number?: StringFieldUpdateOperationsInput | string
+    work_order_id?: IntFieldUpdateOperationsInput | number
+    total_amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    grand_total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: StringFieldUpdateOperationsInput | string
+    valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_by?: NullableIntFieldUpdateOperationsInput | number | null
+    items?: quotation_itemsUncheckedUpdateManyWithoutQuotationsNestedInput
+    sla?: slasUncheckedUpdateOneWithoutQuotationsNestedInput
+  }
+
+  export type quotationsCreateManyInput = {
+    id?: number
+    quo_number: string
+    work_order_id: number
+    total_amount?: Decimal | DecimalJsLike | number | string
+    discount?: Decimal | DecimalJsLike | number | string
+    tax?: Decimal | DecimalJsLike | number | string
+    grand_total?: Decimal | DecimalJsLike | number | string
+    status?: string
+    valid_until?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    created_by?: number | null
+  }
+
+  export type quotationsUpdateManyMutationInput = {
+    quo_number?: StringFieldUpdateOperationsInput | string
+    total_amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    grand_total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: StringFieldUpdateOperationsInput | string
+    valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type quotationsUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    quo_number?: StringFieldUpdateOperationsInput | string
+    work_order_id?: IntFieldUpdateOperationsInput | number
+    total_amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    grand_total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: StringFieldUpdateOperationsInput | string
+    valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_by?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type quotation_itemsCreateInput = {
+    item_name: string
+    category?: string | null
+    qty?: number
+    unit_price?: Decimal | DecimalJsLike | number | string
+    total_price?: Decimal | DecimalJsLike | number | string
+    quotations: quotationsCreateNestedOneWithoutItemsInput
+  }
+
+  export type quotation_itemsUncheckedCreateInput = {
+    id?: number
+    quotation_id: number
+    item_name: string
+    category?: string | null
+    qty?: number
+    unit_price?: Decimal | DecimalJsLike | number | string
+    total_price?: Decimal | DecimalJsLike | number | string
+  }
+
+  export type quotation_itemsUpdateInput = {
+    item_name?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    qty?: IntFieldUpdateOperationsInput | number
+    unit_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    quotations?: quotationsUpdateOneRequiredWithoutItemsNestedInput
+  }
+
+  export type quotation_itemsUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    quotation_id?: IntFieldUpdateOperationsInput | number
+    item_name?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    qty?: IntFieldUpdateOperationsInput | number
+    unit_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+  }
+
+  export type quotation_itemsCreateManyInput = {
+    id?: number
+    quotation_id: number
+    item_name: string
+    category?: string | null
+    qty?: number
+    unit_price?: Decimal | DecimalJsLike | number | string
+    total_price?: Decimal | DecimalJsLike | number | string
+  }
+
+  export type quotation_itemsUpdateManyMutationInput = {
+    item_name?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    qty?: IntFieldUpdateOperationsInput | number
+    unit_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+  }
+
+  export type quotation_itemsUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    quotation_id?: IntFieldUpdateOperationsInput | number
+    item_name?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    qty?: IntFieldUpdateOperationsInput | number
+    unit_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+  }
+
+  export type slasCreateInput = {
+    contract_duration: string
+    service_frequency?: number
+    custom_kpis?: string | null
+    custom_terms?: string | null
+    custom_sow?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    quotations: quotationsCreateNestedOneWithoutSlaInput
+    users?: usersCreateNestedOneWithoutCreated_slasInput
+  }
+
+  export type slasUncheckedCreateInput = {
+    id?: number
+    quotation_id: number
+    contract_duration: string
+    service_frequency?: number
+    custom_kpis?: string | null
+    custom_terms?: string | null
+    custom_sow?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    created_by?: number | null
+  }
+
+  export type slasUpdateInput = {
+    contract_duration?: StringFieldUpdateOperationsInput | string
+    service_frequency?: IntFieldUpdateOperationsInput | number
+    custom_kpis?: NullableStringFieldUpdateOperationsInput | string | null
+    custom_terms?: NullableStringFieldUpdateOperationsInput | string | null
+    custom_sow?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    quotations?: quotationsUpdateOneRequiredWithoutSlaNestedInput
+    users?: usersUpdateOneWithoutCreated_slasNestedInput
+  }
+
+  export type slasUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    quotation_id?: IntFieldUpdateOperationsInput | number
+    contract_duration?: StringFieldUpdateOperationsInput | string
+    service_frequency?: IntFieldUpdateOperationsInput | number
+    custom_kpis?: NullableStringFieldUpdateOperationsInput | string | null
+    custom_terms?: NullableStringFieldUpdateOperationsInput | string | null
+    custom_sow?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_by?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type slasCreateManyInput = {
+    id?: number
+    quotation_id: number
+    contract_duration: string
+    service_frequency?: number
+    custom_kpis?: string | null
+    custom_terms?: string | null
+    custom_sow?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    created_by?: number | null
+  }
+
+  export type slasUpdateManyMutationInput = {
+    contract_duration?: StringFieldUpdateOperationsInput | string
+    service_frequency?: IntFieldUpdateOperationsInput | number
+    custom_kpis?: NullableStringFieldUpdateOperationsInput | string | null
+    custom_terms?: NullableStringFieldUpdateOperationsInput | string | null
+    custom_sow?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type slasUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    quotation_id?: IntFieldUpdateOperationsInput | number
+    contract_duration?: StringFieldUpdateOperationsInput | string
+    service_frequency?: IntFieldUpdateOperationsInput | number
+    custom_kpis?: NullableStringFieldUpdateOperationsInput | string | null
+    custom_terms?: NullableStringFieldUpdateOperationsInput | string | null
+    custom_sow?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_by?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type role_permissionsCreateInput = {
@@ -62552,6 +68222,9 @@ export namespace Prisma {
     notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateInput = {
@@ -62589,6 +68262,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersUpdateInput = {
@@ -62625,6 +68301,9 @@ export namespace Prisma {
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateInput = {
@@ -62662,6 +68341,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type usersCreateManyInput = {
@@ -66262,6 +71944,12 @@ export namespace Prisma {
     none?: ticketsWhereInput
   }
 
+  export type Work_ordersListRelationFilter = {
+    every?: work_ordersWhereInput
+    some?: work_ordersWhereInput
+    none?: work_ordersWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -66280,6 +71968,10 @@ export namespace Prisma {
   }
 
   export type ticketsOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type work_ordersOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -66883,6 +72575,347 @@ export namespace Prisma {
     user_id?: SortOrder
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type CustomersNullableScalarRelationFilter = {
+    is?: customersWhereInput | null
+    isNot?: customersWhereInput | null
+  }
+
+  export type UsersNullableScalarRelationFilter = {
+    is?: usersWhereInput | null
+    isNot?: usersWhereInput | null
+  }
+
+  export type QuotationsListRelationFilter = {
+    every?: quotationsWhereInput
+    some?: quotationsWhereInput
+    none?: quotationsWhereInput
+  }
+
+  export type quotationsOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type work_ordersOrderByRelevanceInput = {
+    fields: work_ordersOrderByRelevanceFieldEnum | work_ordersOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type work_ordersCountOrderByAggregateInput = {
+    id?: SortOrder
+    wo_number?: SortOrder
+    customer_id?: SortOrder
+    customer_name?: SortOrder
+    pic_name?: SortOrder
+    company_address?: SortOrder
+    status?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    created_by?: SortOrder
+  }
+
+  export type work_ordersAvgOrderByAggregateInput = {
+    id?: SortOrder
+    customer_id?: SortOrder
+    created_by?: SortOrder
+  }
+
+  export type work_ordersMaxOrderByAggregateInput = {
+    id?: SortOrder
+    wo_number?: SortOrder
+    customer_id?: SortOrder
+    customer_name?: SortOrder
+    pic_name?: SortOrder
+    company_address?: SortOrder
+    status?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    created_by?: SortOrder
+  }
+
+  export type work_ordersMinOrderByAggregateInput = {
+    id?: SortOrder
+    wo_number?: SortOrder
+    customer_id?: SortOrder
+    customer_name?: SortOrder
+    pic_name?: SortOrder
+    company_address?: SortOrder
+    status?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    created_by?: SortOrder
+  }
+
+  export type work_ordersSumOrderByAggregateInput = {
+    id?: SortOrder
+    customer_id?: SortOrder
+    created_by?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type DecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type Work_ordersScalarRelationFilter = {
+    is?: work_ordersWhereInput
+    isNot?: work_ordersWhereInput
+  }
+
+  export type Quotation_itemsListRelationFilter = {
+    every?: quotation_itemsWhereInput
+    some?: quotation_itemsWhereInput
+    none?: quotation_itemsWhereInput
+  }
+
+  export type SlasNullableScalarRelationFilter = {
+    is?: slasWhereInput | null
+    isNot?: slasWhereInput | null
+  }
+
+  export type quotation_itemsOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type quotationsOrderByRelevanceInput = {
+    fields: quotationsOrderByRelevanceFieldEnum | quotationsOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type quotationsCountOrderByAggregateInput = {
+    id?: SortOrder
+    quo_number?: SortOrder
+    work_order_id?: SortOrder
+    total_amount?: SortOrder
+    discount?: SortOrder
+    tax?: SortOrder
+    grand_total?: SortOrder
+    status?: SortOrder
+    valid_until?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    created_by?: SortOrder
+  }
+
+  export type quotationsAvgOrderByAggregateInput = {
+    id?: SortOrder
+    work_order_id?: SortOrder
+    total_amount?: SortOrder
+    discount?: SortOrder
+    tax?: SortOrder
+    grand_total?: SortOrder
+    created_by?: SortOrder
+  }
+
+  export type quotationsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    quo_number?: SortOrder
+    work_order_id?: SortOrder
+    total_amount?: SortOrder
+    discount?: SortOrder
+    tax?: SortOrder
+    grand_total?: SortOrder
+    status?: SortOrder
+    valid_until?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    created_by?: SortOrder
+  }
+
+  export type quotationsMinOrderByAggregateInput = {
+    id?: SortOrder
+    quo_number?: SortOrder
+    work_order_id?: SortOrder
+    total_amount?: SortOrder
+    discount?: SortOrder
+    tax?: SortOrder
+    grand_total?: SortOrder
+    status?: SortOrder
+    valid_until?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    created_by?: SortOrder
+  }
+
+  export type quotationsSumOrderByAggregateInput = {
+    id?: SortOrder
+    work_order_id?: SortOrder
+    total_amount?: SortOrder
+    discount?: SortOrder
+    tax?: SortOrder
+    grand_total?: SortOrder
+    created_by?: SortOrder
+  }
+
+  export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
+  export type QuotationsScalarRelationFilter = {
+    is?: quotationsWhereInput
+    isNot?: quotationsWhereInput
+  }
+
+  export type quotation_itemsOrderByRelevanceInput = {
+    fields: quotation_itemsOrderByRelevanceFieldEnum | quotation_itemsOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type quotation_itemsCountOrderByAggregateInput = {
+    id?: SortOrder
+    quotation_id?: SortOrder
+    item_name?: SortOrder
+    category?: SortOrder
+    qty?: SortOrder
+    unit_price?: SortOrder
+    total_price?: SortOrder
+  }
+
+  export type quotation_itemsAvgOrderByAggregateInput = {
+    id?: SortOrder
+    quotation_id?: SortOrder
+    qty?: SortOrder
+    unit_price?: SortOrder
+    total_price?: SortOrder
+  }
+
+  export type quotation_itemsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    quotation_id?: SortOrder
+    item_name?: SortOrder
+    category?: SortOrder
+    qty?: SortOrder
+    unit_price?: SortOrder
+    total_price?: SortOrder
+  }
+
+  export type quotation_itemsMinOrderByAggregateInput = {
+    id?: SortOrder
+    quotation_id?: SortOrder
+    item_name?: SortOrder
+    category?: SortOrder
+    qty?: SortOrder
+    unit_price?: SortOrder
+    total_price?: SortOrder
+  }
+
+  export type quotation_itemsSumOrderByAggregateInput = {
+    id?: SortOrder
+    quotation_id?: SortOrder
+    qty?: SortOrder
+    unit_price?: SortOrder
+    total_price?: SortOrder
+  }
+
+  export type slasOrderByRelevanceInput = {
+    fields: slasOrderByRelevanceFieldEnum | slasOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type slasCountOrderByAggregateInput = {
+    id?: SortOrder
+    quotation_id?: SortOrder
+    contract_duration?: SortOrder
+    service_frequency?: SortOrder
+    custom_kpis?: SortOrder
+    custom_terms?: SortOrder
+    custom_sow?: SortOrder
+    status?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    created_by?: SortOrder
+  }
+
+  export type slasAvgOrderByAggregateInput = {
+    id?: SortOrder
+    quotation_id?: SortOrder
+    service_frequency?: SortOrder
+    created_by?: SortOrder
+  }
+
+  export type slasMaxOrderByAggregateInput = {
+    id?: SortOrder
+    quotation_id?: SortOrder
+    contract_duration?: SortOrder
+    service_frequency?: SortOrder
+    custom_kpis?: SortOrder
+    custom_terms?: SortOrder
+    custom_sow?: SortOrder
+    status?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    created_by?: SortOrder
+  }
+
+  export type slasMinOrderByAggregateInput = {
+    id?: SortOrder
+    quotation_id?: SortOrder
+    contract_duration?: SortOrder
+    service_frequency?: SortOrder
+    custom_kpis?: SortOrder
+    custom_terms?: SortOrder
+    custom_sow?: SortOrder
+    status?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    created_by?: SortOrder
+  }
+
+  export type slasSumOrderByAggregateInput = {
+    id?: SortOrder
+    quotation_id?: SortOrder
+    service_frequency?: SortOrder
+    created_by?: SortOrder
+  }
+
   export type PermissionsScalarRelationFilter = {
     is?: permissionsWhereInput
     isNot?: permissionsWhereInput
@@ -66970,17 +73003,6 @@ export namespace Prisma {
 
   export type rolesSumOrderByAggregateInput = {
     id?: SortOrder
-  }
-
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
   export type Enumunits_statusNullableFilter<$PrismaModel = never> = {
@@ -67198,22 +73220,6 @@ export namespace Prisma {
     project_ref_id?: SortOrder
   }
 
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
-  }
-
   export type Enumunits_statusNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.units_status | Enumunits_statusFieldRefInput<$PrismaModel> | null
     in?: $Enums.units_status[] | null
@@ -67359,6 +73365,12 @@ export namespace Prisma {
     isNot?: rolesWhereInput | null
   }
 
+  export type SlasListRelationFilter = {
+    every?: slasWhereInput
+    some?: slasWhereInput
+    none?: slasWhereInput
+  }
+
   export type audit_logsOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -67376,6 +73388,10 @@ export namespace Prisma {
   }
 
   export type user_push_tokensOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type slasOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -67461,11 +73477,6 @@ export namespace Prisma {
     id?: SortOrder
     role_id?: SortOrder
     failed_login_attempts?: SortOrder
-  }
-
-  export type UsersNullableScalarRelationFilter = {
-    is?: usersWhereInput | null
-    isNot?: usersWhereInput | null
   }
 
   export type audit_logsOrderByRelevanceInput = {
@@ -68090,11 +74101,6 @@ export namespace Prisma {
     in?: $Enums.contracts_status[] | null
     notIn?: $Enums.contracts_status[] | null
     not?: NestedEnumcontracts_statusNullableFilter<$PrismaModel> | $Enums.contracts_status | null
-  }
-
-  export type CustomersNullableScalarRelationFilter = {
-    is?: customersWhereInput | null
-    isNot?: customersWhereInput | null
   }
 
   export type contractsOrderByRelevanceInput = {
@@ -70014,17 +76020,6 @@ export namespace Prisma {
     template_id?: SortOrder
   }
 
-  export type DecimalFilter<$PrismaModel = never> = {
-    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
-    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
-    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
-  }
-
   export type shopping_listOrderByRelevanceInput = {
     fields: shopping_listOrderByRelevanceFieldEnum | shopping_listOrderByRelevanceFieldEnum[]
     sort: SortOrder
@@ -70087,22 +76082,6 @@ export namespace Prisma {
   export type shopping_listSumOrderByAggregateInput = {
     id?: SortOrder
     price?: SortOrder
-  }
-
-  export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
-    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
-    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedDecimalFilter<$PrismaModel>
-    _sum?: NestedDecimalFilter<$PrismaModel>
-    _min?: NestedDecimalFilter<$PrismaModel>
-    _max?: NestedDecimalFilter<$PrismaModel>
   }
 
   export type rate_card_settingsOrderByRelevanceInput = {
@@ -70168,6 +76147,13 @@ export namespace Prisma {
     connect?: ticketsWhereUniqueInput | ticketsWhereUniqueInput[]
   }
 
+  export type work_ordersCreateNestedManyWithoutCustomersInput = {
+    create?: XOR<work_ordersCreateWithoutCustomersInput, work_ordersUncheckedCreateWithoutCustomersInput> | work_ordersCreateWithoutCustomersInput[] | work_ordersUncheckedCreateWithoutCustomersInput[]
+    connectOrCreate?: work_ordersCreateOrConnectWithoutCustomersInput | work_ordersCreateOrConnectWithoutCustomersInput[]
+    createMany?: work_ordersCreateManyCustomersInputEnvelope
+    connect?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+  }
+
   export type contractsUncheckedCreateNestedManyWithoutCustomersInput = {
     create?: XOR<contractsCreateWithoutCustomersInput, contractsUncheckedCreateWithoutCustomersInput> | contractsCreateWithoutCustomersInput[] | contractsUncheckedCreateWithoutCustomersInput[]
     connectOrCreate?: contractsCreateOrConnectWithoutCustomersInput | contractsCreateOrConnectWithoutCustomersInput[]
@@ -70194,6 +76180,13 @@ export namespace Prisma {
     connectOrCreate?: ticketsCreateOrConnectWithoutCustomersInput | ticketsCreateOrConnectWithoutCustomersInput[]
     createMany?: ticketsCreateManyCustomersInputEnvelope
     connect?: ticketsWhereUniqueInput | ticketsWhereUniqueInput[]
+  }
+
+  export type work_ordersUncheckedCreateNestedManyWithoutCustomersInput = {
+    create?: XOR<work_ordersCreateWithoutCustomersInput, work_ordersUncheckedCreateWithoutCustomersInput> | work_ordersCreateWithoutCustomersInput[] | work_ordersUncheckedCreateWithoutCustomersInput[]
+    connectOrCreate?: work_ordersCreateOrConnectWithoutCustomersInput | work_ordersCreateOrConnectWithoutCustomersInput[]
+    createMany?: work_ordersCreateManyCustomersInputEnvelope
+    connect?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -70272,6 +76265,20 @@ export namespace Prisma {
     deleteMany?: ticketsScalarWhereInput | ticketsScalarWhereInput[]
   }
 
+  export type work_ordersUpdateManyWithoutCustomersNestedInput = {
+    create?: XOR<work_ordersCreateWithoutCustomersInput, work_ordersUncheckedCreateWithoutCustomersInput> | work_ordersCreateWithoutCustomersInput[] | work_ordersUncheckedCreateWithoutCustomersInput[]
+    connectOrCreate?: work_ordersCreateOrConnectWithoutCustomersInput | work_ordersCreateOrConnectWithoutCustomersInput[]
+    upsert?: work_ordersUpsertWithWhereUniqueWithoutCustomersInput | work_ordersUpsertWithWhereUniqueWithoutCustomersInput[]
+    createMany?: work_ordersCreateManyCustomersInputEnvelope
+    set?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    disconnect?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    delete?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    connect?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    update?: work_ordersUpdateWithWhereUniqueWithoutCustomersInput | work_ordersUpdateWithWhereUniqueWithoutCustomersInput[]
+    updateMany?: work_ordersUpdateManyWithWhereWithoutCustomersInput | work_ordersUpdateManyWithWhereWithoutCustomersInput[]
+    deleteMany?: work_ordersScalarWhereInput | work_ordersScalarWhereInput[]
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -70334,6 +76341,20 @@ export namespace Prisma {
     update?: ticketsUpdateWithWhereUniqueWithoutCustomersInput | ticketsUpdateWithWhereUniqueWithoutCustomersInput[]
     updateMany?: ticketsUpdateManyWithWhereWithoutCustomersInput | ticketsUpdateManyWithWhereWithoutCustomersInput[]
     deleteMany?: ticketsScalarWhereInput | ticketsScalarWhereInput[]
+  }
+
+  export type work_ordersUncheckedUpdateManyWithoutCustomersNestedInput = {
+    create?: XOR<work_ordersCreateWithoutCustomersInput, work_ordersUncheckedCreateWithoutCustomersInput> | work_ordersCreateWithoutCustomersInput[] | work_ordersUncheckedCreateWithoutCustomersInput[]
+    connectOrCreate?: work_ordersCreateOrConnectWithoutCustomersInput | work_ordersCreateOrConnectWithoutCustomersInput[]
+    upsert?: work_ordersUpsertWithWhereUniqueWithoutCustomersInput | work_ordersUpsertWithWhereUniqueWithoutCustomersInput[]
+    createMany?: work_ordersCreateManyCustomersInputEnvelope
+    set?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    disconnect?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    delete?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    connect?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    update?: work_ordersUpdateWithWhereUniqueWithoutCustomersInput | work_ordersUpdateWithWhereUniqueWithoutCustomersInput[]
+    updateMany?: work_ordersUpdateManyWithWhereWithoutCustomersInput | work_ordersUpdateManyWithWhereWithoutCustomersInput[]
+    deleteMany?: work_ordersScalarWhereInput | work_ordersScalarWhereInput[]
   }
 
   export type role_permissionsCreateNestedManyWithoutPermissionsInput = {
@@ -70864,6 +76885,244 @@ export namespace Prisma {
     update?: XOR<XOR<usersUpdateToOneWithWhereWithoutRefresh_tokensInput, usersUpdateWithoutRefresh_tokensInput>, usersUncheckedUpdateWithoutRefresh_tokensInput>
   }
 
+  export type customersCreateNestedOneWithoutWork_ordersInput = {
+    create?: XOR<customersCreateWithoutWork_ordersInput, customersUncheckedCreateWithoutWork_ordersInput>
+    connectOrCreate?: customersCreateOrConnectWithoutWork_ordersInput
+    connect?: customersWhereUniqueInput
+  }
+
+  export type usersCreateNestedOneWithoutCreated_work_ordersInput = {
+    create?: XOR<usersCreateWithoutCreated_work_ordersInput, usersUncheckedCreateWithoutCreated_work_ordersInput>
+    connectOrCreate?: usersCreateOrConnectWithoutCreated_work_ordersInput
+    connect?: usersWhereUniqueInput
+  }
+
+  export type quotationsCreateNestedManyWithoutWork_ordersInput = {
+    create?: XOR<quotationsCreateWithoutWork_ordersInput, quotationsUncheckedCreateWithoutWork_ordersInput> | quotationsCreateWithoutWork_ordersInput[] | quotationsUncheckedCreateWithoutWork_ordersInput[]
+    connectOrCreate?: quotationsCreateOrConnectWithoutWork_ordersInput | quotationsCreateOrConnectWithoutWork_ordersInput[]
+    createMany?: quotationsCreateManyWork_ordersInputEnvelope
+    connect?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+  }
+
+  export type quotationsUncheckedCreateNestedManyWithoutWork_ordersInput = {
+    create?: XOR<quotationsCreateWithoutWork_ordersInput, quotationsUncheckedCreateWithoutWork_ordersInput> | quotationsCreateWithoutWork_ordersInput[] | quotationsUncheckedCreateWithoutWork_ordersInput[]
+    connectOrCreate?: quotationsCreateOrConnectWithoutWork_ordersInput | quotationsCreateOrConnectWithoutWork_ordersInput[]
+    createMany?: quotationsCreateManyWork_ordersInputEnvelope
+    connect?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+  }
+
+  export type customersUpdateOneWithoutWork_ordersNestedInput = {
+    create?: XOR<customersCreateWithoutWork_ordersInput, customersUncheckedCreateWithoutWork_ordersInput>
+    connectOrCreate?: customersCreateOrConnectWithoutWork_ordersInput
+    upsert?: customersUpsertWithoutWork_ordersInput
+    disconnect?: customersWhereInput | boolean
+    delete?: customersWhereInput | boolean
+    connect?: customersWhereUniqueInput
+    update?: XOR<XOR<customersUpdateToOneWithWhereWithoutWork_ordersInput, customersUpdateWithoutWork_ordersInput>, customersUncheckedUpdateWithoutWork_ordersInput>
+  }
+
+  export type usersUpdateOneWithoutCreated_work_ordersNestedInput = {
+    create?: XOR<usersCreateWithoutCreated_work_ordersInput, usersUncheckedCreateWithoutCreated_work_ordersInput>
+    connectOrCreate?: usersCreateOrConnectWithoutCreated_work_ordersInput
+    upsert?: usersUpsertWithoutCreated_work_ordersInput
+    disconnect?: usersWhereInput | boolean
+    delete?: usersWhereInput | boolean
+    connect?: usersWhereUniqueInput
+    update?: XOR<XOR<usersUpdateToOneWithWhereWithoutCreated_work_ordersInput, usersUpdateWithoutCreated_work_ordersInput>, usersUncheckedUpdateWithoutCreated_work_ordersInput>
+  }
+
+  export type quotationsUpdateManyWithoutWork_ordersNestedInput = {
+    create?: XOR<quotationsCreateWithoutWork_ordersInput, quotationsUncheckedCreateWithoutWork_ordersInput> | quotationsCreateWithoutWork_ordersInput[] | quotationsUncheckedCreateWithoutWork_ordersInput[]
+    connectOrCreate?: quotationsCreateOrConnectWithoutWork_ordersInput | quotationsCreateOrConnectWithoutWork_ordersInput[]
+    upsert?: quotationsUpsertWithWhereUniqueWithoutWork_ordersInput | quotationsUpsertWithWhereUniqueWithoutWork_ordersInput[]
+    createMany?: quotationsCreateManyWork_ordersInputEnvelope
+    set?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    disconnect?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    delete?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    connect?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    update?: quotationsUpdateWithWhereUniqueWithoutWork_ordersInput | quotationsUpdateWithWhereUniqueWithoutWork_ordersInput[]
+    updateMany?: quotationsUpdateManyWithWhereWithoutWork_ordersInput | quotationsUpdateManyWithWhereWithoutWork_ordersInput[]
+    deleteMany?: quotationsScalarWhereInput | quotationsScalarWhereInput[]
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type quotationsUncheckedUpdateManyWithoutWork_ordersNestedInput = {
+    create?: XOR<quotationsCreateWithoutWork_ordersInput, quotationsUncheckedCreateWithoutWork_ordersInput> | quotationsCreateWithoutWork_ordersInput[] | quotationsUncheckedCreateWithoutWork_ordersInput[]
+    connectOrCreate?: quotationsCreateOrConnectWithoutWork_ordersInput | quotationsCreateOrConnectWithoutWork_ordersInput[]
+    upsert?: quotationsUpsertWithWhereUniqueWithoutWork_ordersInput | quotationsUpsertWithWhereUniqueWithoutWork_ordersInput[]
+    createMany?: quotationsCreateManyWork_ordersInputEnvelope
+    set?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    disconnect?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    delete?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    connect?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    update?: quotationsUpdateWithWhereUniqueWithoutWork_ordersInput | quotationsUpdateWithWhereUniqueWithoutWork_ordersInput[]
+    updateMany?: quotationsUpdateManyWithWhereWithoutWork_ordersInput | quotationsUpdateManyWithWhereWithoutWork_ordersInput[]
+    deleteMany?: quotationsScalarWhereInput | quotationsScalarWhereInput[]
+  }
+
+  export type work_ordersCreateNestedOneWithoutQuotationsInput = {
+    create?: XOR<work_ordersCreateWithoutQuotationsInput, work_ordersUncheckedCreateWithoutQuotationsInput>
+    connectOrCreate?: work_ordersCreateOrConnectWithoutQuotationsInput
+    connect?: work_ordersWhereUniqueInput
+  }
+
+  export type usersCreateNestedOneWithoutCreated_quotationsInput = {
+    create?: XOR<usersCreateWithoutCreated_quotationsInput, usersUncheckedCreateWithoutCreated_quotationsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutCreated_quotationsInput
+    connect?: usersWhereUniqueInput
+  }
+
+  export type quotation_itemsCreateNestedManyWithoutQuotationsInput = {
+    create?: XOR<quotation_itemsCreateWithoutQuotationsInput, quotation_itemsUncheckedCreateWithoutQuotationsInput> | quotation_itemsCreateWithoutQuotationsInput[] | quotation_itemsUncheckedCreateWithoutQuotationsInput[]
+    connectOrCreate?: quotation_itemsCreateOrConnectWithoutQuotationsInput | quotation_itemsCreateOrConnectWithoutQuotationsInput[]
+    createMany?: quotation_itemsCreateManyQuotationsInputEnvelope
+    connect?: quotation_itemsWhereUniqueInput | quotation_itemsWhereUniqueInput[]
+  }
+
+  export type slasCreateNestedOneWithoutQuotationsInput = {
+    create?: XOR<slasCreateWithoutQuotationsInput, slasUncheckedCreateWithoutQuotationsInput>
+    connectOrCreate?: slasCreateOrConnectWithoutQuotationsInput
+    connect?: slasWhereUniqueInput
+  }
+
+  export type quotation_itemsUncheckedCreateNestedManyWithoutQuotationsInput = {
+    create?: XOR<quotation_itemsCreateWithoutQuotationsInput, quotation_itemsUncheckedCreateWithoutQuotationsInput> | quotation_itemsCreateWithoutQuotationsInput[] | quotation_itemsUncheckedCreateWithoutQuotationsInput[]
+    connectOrCreate?: quotation_itemsCreateOrConnectWithoutQuotationsInput | quotation_itemsCreateOrConnectWithoutQuotationsInput[]
+    createMany?: quotation_itemsCreateManyQuotationsInputEnvelope
+    connect?: quotation_itemsWhereUniqueInput | quotation_itemsWhereUniqueInput[]
+  }
+
+  export type slasUncheckedCreateNestedOneWithoutQuotationsInput = {
+    create?: XOR<slasCreateWithoutQuotationsInput, slasUncheckedCreateWithoutQuotationsInput>
+    connectOrCreate?: slasCreateOrConnectWithoutQuotationsInput
+    connect?: slasWhereUniqueInput
+  }
+
+  export type DecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
+  }
+
+  export type work_ordersUpdateOneRequiredWithoutQuotationsNestedInput = {
+    create?: XOR<work_ordersCreateWithoutQuotationsInput, work_ordersUncheckedCreateWithoutQuotationsInput>
+    connectOrCreate?: work_ordersCreateOrConnectWithoutQuotationsInput
+    upsert?: work_ordersUpsertWithoutQuotationsInput
+    connect?: work_ordersWhereUniqueInput
+    update?: XOR<XOR<work_ordersUpdateToOneWithWhereWithoutQuotationsInput, work_ordersUpdateWithoutQuotationsInput>, work_ordersUncheckedUpdateWithoutQuotationsInput>
+  }
+
+  export type usersUpdateOneWithoutCreated_quotationsNestedInput = {
+    create?: XOR<usersCreateWithoutCreated_quotationsInput, usersUncheckedCreateWithoutCreated_quotationsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutCreated_quotationsInput
+    upsert?: usersUpsertWithoutCreated_quotationsInput
+    disconnect?: usersWhereInput | boolean
+    delete?: usersWhereInput | boolean
+    connect?: usersWhereUniqueInput
+    update?: XOR<XOR<usersUpdateToOneWithWhereWithoutCreated_quotationsInput, usersUpdateWithoutCreated_quotationsInput>, usersUncheckedUpdateWithoutCreated_quotationsInput>
+  }
+
+  export type quotation_itemsUpdateManyWithoutQuotationsNestedInput = {
+    create?: XOR<quotation_itemsCreateWithoutQuotationsInput, quotation_itemsUncheckedCreateWithoutQuotationsInput> | quotation_itemsCreateWithoutQuotationsInput[] | quotation_itemsUncheckedCreateWithoutQuotationsInput[]
+    connectOrCreate?: quotation_itemsCreateOrConnectWithoutQuotationsInput | quotation_itemsCreateOrConnectWithoutQuotationsInput[]
+    upsert?: quotation_itemsUpsertWithWhereUniqueWithoutQuotationsInput | quotation_itemsUpsertWithWhereUniqueWithoutQuotationsInput[]
+    createMany?: quotation_itemsCreateManyQuotationsInputEnvelope
+    set?: quotation_itemsWhereUniqueInput | quotation_itemsWhereUniqueInput[]
+    disconnect?: quotation_itemsWhereUniqueInput | quotation_itemsWhereUniqueInput[]
+    delete?: quotation_itemsWhereUniqueInput | quotation_itemsWhereUniqueInput[]
+    connect?: quotation_itemsWhereUniqueInput | quotation_itemsWhereUniqueInput[]
+    update?: quotation_itemsUpdateWithWhereUniqueWithoutQuotationsInput | quotation_itemsUpdateWithWhereUniqueWithoutQuotationsInput[]
+    updateMany?: quotation_itemsUpdateManyWithWhereWithoutQuotationsInput | quotation_itemsUpdateManyWithWhereWithoutQuotationsInput[]
+    deleteMany?: quotation_itemsScalarWhereInput | quotation_itemsScalarWhereInput[]
+  }
+
+  export type slasUpdateOneWithoutQuotationsNestedInput = {
+    create?: XOR<slasCreateWithoutQuotationsInput, slasUncheckedCreateWithoutQuotationsInput>
+    connectOrCreate?: slasCreateOrConnectWithoutQuotationsInput
+    upsert?: slasUpsertWithoutQuotationsInput
+    disconnect?: slasWhereInput | boolean
+    delete?: slasWhereInput | boolean
+    connect?: slasWhereUniqueInput
+    update?: XOR<XOR<slasUpdateToOneWithWhereWithoutQuotationsInput, slasUpdateWithoutQuotationsInput>, slasUncheckedUpdateWithoutQuotationsInput>
+  }
+
+  export type quotation_itemsUncheckedUpdateManyWithoutQuotationsNestedInput = {
+    create?: XOR<quotation_itemsCreateWithoutQuotationsInput, quotation_itemsUncheckedCreateWithoutQuotationsInput> | quotation_itemsCreateWithoutQuotationsInput[] | quotation_itemsUncheckedCreateWithoutQuotationsInput[]
+    connectOrCreate?: quotation_itemsCreateOrConnectWithoutQuotationsInput | quotation_itemsCreateOrConnectWithoutQuotationsInput[]
+    upsert?: quotation_itemsUpsertWithWhereUniqueWithoutQuotationsInput | quotation_itemsUpsertWithWhereUniqueWithoutQuotationsInput[]
+    createMany?: quotation_itemsCreateManyQuotationsInputEnvelope
+    set?: quotation_itemsWhereUniqueInput | quotation_itemsWhereUniqueInput[]
+    disconnect?: quotation_itemsWhereUniqueInput | quotation_itemsWhereUniqueInput[]
+    delete?: quotation_itemsWhereUniqueInput | quotation_itemsWhereUniqueInput[]
+    connect?: quotation_itemsWhereUniqueInput | quotation_itemsWhereUniqueInput[]
+    update?: quotation_itemsUpdateWithWhereUniqueWithoutQuotationsInput | quotation_itemsUpdateWithWhereUniqueWithoutQuotationsInput[]
+    updateMany?: quotation_itemsUpdateManyWithWhereWithoutQuotationsInput | quotation_itemsUpdateManyWithWhereWithoutQuotationsInput[]
+    deleteMany?: quotation_itemsScalarWhereInput | quotation_itemsScalarWhereInput[]
+  }
+
+  export type slasUncheckedUpdateOneWithoutQuotationsNestedInput = {
+    create?: XOR<slasCreateWithoutQuotationsInput, slasUncheckedCreateWithoutQuotationsInput>
+    connectOrCreate?: slasCreateOrConnectWithoutQuotationsInput
+    upsert?: slasUpsertWithoutQuotationsInput
+    disconnect?: slasWhereInput | boolean
+    delete?: slasWhereInput | boolean
+    connect?: slasWhereUniqueInput
+    update?: XOR<XOR<slasUpdateToOneWithWhereWithoutQuotationsInput, slasUpdateWithoutQuotationsInput>, slasUncheckedUpdateWithoutQuotationsInput>
+  }
+
+  export type quotationsCreateNestedOneWithoutItemsInput = {
+    create?: XOR<quotationsCreateWithoutItemsInput, quotationsUncheckedCreateWithoutItemsInput>
+    connectOrCreate?: quotationsCreateOrConnectWithoutItemsInput
+    connect?: quotationsWhereUniqueInput
+  }
+
+  export type quotationsUpdateOneRequiredWithoutItemsNestedInput = {
+    create?: XOR<quotationsCreateWithoutItemsInput, quotationsUncheckedCreateWithoutItemsInput>
+    connectOrCreate?: quotationsCreateOrConnectWithoutItemsInput
+    upsert?: quotationsUpsertWithoutItemsInput
+    connect?: quotationsWhereUniqueInput
+    update?: XOR<XOR<quotationsUpdateToOneWithWhereWithoutItemsInput, quotationsUpdateWithoutItemsInput>, quotationsUncheckedUpdateWithoutItemsInput>
+  }
+
+  export type quotationsCreateNestedOneWithoutSlaInput = {
+    create?: XOR<quotationsCreateWithoutSlaInput, quotationsUncheckedCreateWithoutSlaInput>
+    connectOrCreate?: quotationsCreateOrConnectWithoutSlaInput
+    connect?: quotationsWhereUniqueInput
+  }
+
+  export type usersCreateNestedOneWithoutCreated_slasInput = {
+    create?: XOR<usersCreateWithoutCreated_slasInput, usersUncheckedCreateWithoutCreated_slasInput>
+    connectOrCreate?: usersCreateOrConnectWithoutCreated_slasInput
+    connect?: usersWhereUniqueInput
+  }
+
+  export type quotationsUpdateOneRequiredWithoutSlaNestedInput = {
+    create?: XOR<quotationsCreateWithoutSlaInput, quotationsUncheckedCreateWithoutSlaInput>
+    connectOrCreate?: quotationsCreateOrConnectWithoutSlaInput
+    upsert?: quotationsUpsertWithoutSlaInput
+    connect?: quotationsWhereUniqueInput
+    update?: XOR<XOR<quotationsUpdateToOneWithWhereWithoutSlaInput, quotationsUpdateWithoutSlaInput>, quotationsUncheckedUpdateWithoutSlaInput>
+  }
+
+  export type usersUpdateOneWithoutCreated_slasNestedInput = {
+    create?: XOR<usersCreateWithoutCreated_slasInput, usersUncheckedCreateWithoutCreated_slasInput>
+    connectOrCreate?: usersCreateOrConnectWithoutCreated_slasInput
+    upsert?: usersUpsertWithoutCreated_slasInput
+    disconnect?: usersWhereInput | boolean
+    delete?: usersWhereInput | boolean
+    connect?: usersWhereUniqueInput
+    update?: XOR<XOR<usersUpdateToOneWithWhereWithoutCreated_slasInput, usersUpdateWithoutCreated_slasInput>, usersUncheckedUpdateWithoutCreated_slasInput>
+  }
+
   export type permissionsCreateNestedOneWithoutRole_permissionsInput = {
     create?: XOR<permissionsCreateWithoutRole_permissionsInput, permissionsUncheckedCreateWithoutRole_permissionsInput>
     connectOrCreate?: permissionsCreateOrConnectWithoutRole_permissionsInput
@@ -71204,14 +77463,6 @@ export namespace Prisma {
     connectOrCreate?: user_unit_accessCreateOrConnectWithoutUnitsInput | user_unit_accessCreateOrConnectWithoutUnitsInput[]
     createMany?: user_unit_accessCreateManyUnitsInputEnvelope
     connect?: user_unit_accessWhereUniqueInput | user_unit_accessWhereUniqueInput[]
-  }
-
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type NullableEnumunits_statusFieldUpdateOperationsInput = {
@@ -71787,6 +78038,27 @@ export namespace Prisma {
     connect?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
   }
 
+  export type work_ordersCreateNestedManyWithoutUsersInput = {
+    create?: XOR<work_ordersCreateWithoutUsersInput, work_ordersUncheckedCreateWithoutUsersInput> | work_ordersCreateWithoutUsersInput[] | work_ordersUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: work_ordersCreateOrConnectWithoutUsersInput | work_ordersCreateOrConnectWithoutUsersInput[]
+    createMany?: work_ordersCreateManyUsersInputEnvelope
+    connect?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+  }
+
+  export type quotationsCreateNestedManyWithoutUsersInput = {
+    create?: XOR<quotationsCreateWithoutUsersInput, quotationsUncheckedCreateWithoutUsersInput> | quotationsCreateWithoutUsersInput[] | quotationsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: quotationsCreateOrConnectWithoutUsersInput | quotationsCreateOrConnectWithoutUsersInput[]
+    createMany?: quotationsCreateManyUsersInputEnvelope
+    connect?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+  }
+
+  export type slasCreateNestedManyWithoutUsersInput = {
+    create?: XOR<slasCreateWithoutUsersInput, slasUncheckedCreateWithoutUsersInput> | slasCreateWithoutUsersInput[] | slasUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: slasCreateOrConnectWithoutUsersInput | slasCreateOrConnectWithoutUsersInput[]
+    createMany?: slasCreateManyUsersInputEnvelope
+    connect?: slasWhereUniqueInput | slasWhereUniqueInput[]
+  }
+
   export type audit_logsUncheckedCreateNestedManyWithoutUsersInput = {
     create?: XOR<audit_logsCreateWithoutUsersInput, audit_logsUncheckedCreateWithoutUsersInput> | audit_logsCreateWithoutUsersInput[] | audit_logsUncheckedCreateWithoutUsersInput[]
     connectOrCreate?: audit_logsCreateOrConnectWithoutUsersInput | audit_logsCreateOrConnectWithoutUsersInput[]
@@ -71890,6 +78162,27 @@ export namespace Prisma {
     connectOrCreate?: vendor_attendanceCreateOrConnectWithoutUsersInput | vendor_attendanceCreateOrConnectWithoutUsersInput[]
     createMany?: vendor_attendanceCreateManyUsersInputEnvelope
     connect?: vendor_attendanceWhereUniqueInput | vendor_attendanceWhereUniqueInput[]
+  }
+
+  export type work_ordersUncheckedCreateNestedManyWithoutUsersInput = {
+    create?: XOR<work_ordersCreateWithoutUsersInput, work_ordersUncheckedCreateWithoutUsersInput> | work_ordersCreateWithoutUsersInput[] | work_ordersUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: work_ordersCreateOrConnectWithoutUsersInput | work_ordersCreateOrConnectWithoutUsersInput[]
+    createMany?: work_ordersCreateManyUsersInputEnvelope
+    connect?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+  }
+
+  export type quotationsUncheckedCreateNestedManyWithoutUsersInput = {
+    create?: XOR<quotationsCreateWithoutUsersInput, quotationsUncheckedCreateWithoutUsersInput> | quotationsCreateWithoutUsersInput[] | quotationsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: quotationsCreateOrConnectWithoutUsersInput | quotationsCreateOrConnectWithoutUsersInput[]
+    createMany?: quotationsCreateManyUsersInputEnvelope
+    connect?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+  }
+
+  export type slasUncheckedCreateNestedManyWithoutUsersInput = {
+    create?: XOR<slasCreateWithoutUsersInput, slasUncheckedCreateWithoutUsersInput> | slasCreateWithoutUsersInput[] | slasUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: slasCreateOrConnectWithoutUsersInput | slasCreateOrConnectWithoutUsersInput[]
+    createMany?: slasCreateManyUsersInputEnvelope
+    connect?: slasWhereUniqueInput | slasWhereUniqueInput[]
   }
 
   export type audit_logsUpdateManyWithoutUsersNestedInput = {
@@ -72112,6 +78405,48 @@ export namespace Prisma {
     deleteMany?: vendor_attendanceScalarWhereInput | vendor_attendanceScalarWhereInput[]
   }
 
+  export type work_ordersUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<work_ordersCreateWithoutUsersInput, work_ordersUncheckedCreateWithoutUsersInput> | work_ordersCreateWithoutUsersInput[] | work_ordersUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: work_ordersCreateOrConnectWithoutUsersInput | work_ordersCreateOrConnectWithoutUsersInput[]
+    upsert?: work_ordersUpsertWithWhereUniqueWithoutUsersInput | work_ordersUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: work_ordersCreateManyUsersInputEnvelope
+    set?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    disconnect?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    delete?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    connect?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    update?: work_ordersUpdateWithWhereUniqueWithoutUsersInput | work_ordersUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: work_ordersUpdateManyWithWhereWithoutUsersInput | work_ordersUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: work_ordersScalarWhereInput | work_ordersScalarWhereInput[]
+  }
+
+  export type quotationsUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<quotationsCreateWithoutUsersInput, quotationsUncheckedCreateWithoutUsersInput> | quotationsCreateWithoutUsersInput[] | quotationsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: quotationsCreateOrConnectWithoutUsersInput | quotationsCreateOrConnectWithoutUsersInput[]
+    upsert?: quotationsUpsertWithWhereUniqueWithoutUsersInput | quotationsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: quotationsCreateManyUsersInputEnvelope
+    set?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    disconnect?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    delete?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    connect?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    update?: quotationsUpdateWithWhereUniqueWithoutUsersInput | quotationsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: quotationsUpdateManyWithWhereWithoutUsersInput | quotationsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: quotationsScalarWhereInput | quotationsScalarWhereInput[]
+  }
+
+  export type slasUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<slasCreateWithoutUsersInput, slasUncheckedCreateWithoutUsersInput> | slasCreateWithoutUsersInput[] | slasUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: slasCreateOrConnectWithoutUsersInput | slasCreateOrConnectWithoutUsersInput[]
+    upsert?: slasUpsertWithWhereUniqueWithoutUsersInput | slasUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: slasCreateManyUsersInputEnvelope
+    set?: slasWhereUniqueInput | slasWhereUniqueInput[]
+    disconnect?: slasWhereUniqueInput | slasWhereUniqueInput[]
+    delete?: slasWhereUniqueInput | slasWhereUniqueInput[]
+    connect?: slasWhereUniqueInput | slasWhereUniqueInput[]
+    update?: slasUpdateWithWhereUniqueWithoutUsersInput | slasUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: slasUpdateManyWithWhereWithoutUsersInput | slasUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: slasScalarWhereInput | slasScalarWhereInput[]
+  }
+
   export type audit_logsUncheckedUpdateManyWithoutUsersNestedInput = {
     create?: XOR<audit_logsCreateWithoutUsersInput, audit_logsUncheckedCreateWithoutUsersInput> | audit_logsCreateWithoutUsersInput[] | audit_logsUncheckedCreateWithoutUsersInput[]
     connectOrCreate?: audit_logsCreateOrConnectWithoutUsersInput | audit_logsCreateOrConnectWithoutUsersInput[]
@@ -72320,6 +78655,48 @@ export namespace Prisma {
     update?: vendor_attendanceUpdateWithWhereUniqueWithoutUsersInput | vendor_attendanceUpdateWithWhereUniqueWithoutUsersInput[]
     updateMany?: vendor_attendanceUpdateManyWithWhereWithoutUsersInput | vendor_attendanceUpdateManyWithWhereWithoutUsersInput[]
     deleteMany?: vendor_attendanceScalarWhereInput | vendor_attendanceScalarWhereInput[]
+  }
+
+  export type work_ordersUncheckedUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<work_ordersCreateWithoutUsersInput, work_ordersUncheckedCreateWithoutUsersInput> | work_ordersCreateWithoutUsersInput[] | work_ordersUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: work_ordersCreateOrConnectWithoutUsersInput | work_ordersCreateOrConnectWithoutUsersInput[]
+    upsert?: work_ordersUpsertWithWhereUniqueWithoutUsersInput | work_ordersUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: work_ordersCreateManyUsersInputEnvelope
+    set?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    disconnect?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    delete?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    connect?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    update?: work_ordersUpdateWithWhereUniqueWithoutUsersInput | work_ordersUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: work_ordersUpdateManyWithWhereWithoutUsersInput | work_ordersUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: work_ordersScalarWhereInput | work_ordersScalarWhereInput[]
+  }
+
+  export type quotationsUncheckedUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<quotationsCreateWithoutUsersInput, quotationsUncheckedCreateWithoutUsersInput> | quotationsCreateWithoutUsersInput[] | quotationsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: quotationsCreateOrConnectWithoutUsersInput | quotationsCreateOrConnectWithoutUsersInput[]
+    upsert?: quotationsUpsertWithWhereUniqueWithoutUsersInput | quotationsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: quotationsCreateManyUsersInputEnvelope
+    set?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    disconnect?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    delete?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    connect?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    update?: quotationsUpdateWithWhereUniqueWithoutUsersInput | quotationsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: quotationsUpdateManyWithWhereWithoutUsersInput | quotationsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: quotationsScalarWhereInput | quotationsScalarWhereInput[]
+  }
+
+  export type slasUncheckedUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<slasCreateWithoutUsersInput, slasUncheckedCreateWithoutUsersInput> | slasCreateWithoutUsersInput[] | slasUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: slasCreateOrConnectWithoutUsersInput | slasCreateOrConnectWithoutUsersInput[]
+    upsert?: slasUpsertWithWhereUniqueWithoutUsersInput | slasUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: slasCreateManyUsersInputEnvelope
+    set?: slasWhereUniqueInput | slasWhereUniqueInput[]
+    disconnect?: slasWhereUniqueInput | slasWhereUniqueInput[]
+    delete?: slasWhereUniqueInput | slasWhereUniqueInput[]
+    connect?: slasWhereUniqueInput | slasWhereUniqueInput[]
+    update?: slasUpdateWithWhereUniqueWithoutUsersInput | slasUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: slasUpdateManyWithWhereWithoutUsersInput | slasUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: slasScalarWhereInput | slasScalarWhereInput[]
   }
 
   export type usersCreateNestedOneWithoutAudit_logsInput = {
@@ -73232,14 +79609,6 @@ export namespace Prisma {
     update?: XOR<XOR<logsheet_templatesUpdateToOneWithWhereWithoutEntriesInput, logsheet_templatesUpdateWithoutEntriesInput>, logsheet_templatesUncheckedUpdateWithoutEntriesInput>
   }
 
-  export type DecimalFieldUpdateOperationsInput = {
-    set?: Decimal | DecimalJsLike | number | string
-    increment?: Decimal | DecimalJsLike | number | string
-    decrement?: Decimal | DecimalJsLike | number | string
-    multiply?: Decimal | DecimalJsLike | number | string
-    divide?: Decimal | DecimalJsLike | number | string
-  }
-
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -73544,13 +79913,6 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
-  export type NestedEnumunits_statusNullableFilter<$PrismaModel = never> = {
-    equals?: $Enums.units_status | Enumunits_statusFieldRefInput<$PrismaModel> | null
-    in?: $Enums.units_status[] | null
-    notIn?: $Enums.units_status[] | null
-    not?: NestedEnumunits_statusNullableFilter<$PrismaModel> | $Enums.units_status | null
-  }
-
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | null
@@ -73565,6 +79927,40 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedDecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
+  export type NestedEnumunits_statusNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.units_status | Enumunits_statusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.units_status[] | null
+    notIn?: $Enums.units_status[] | null
+    not?: NestedEnumunits_statusNullableFilter<$PrismaModel> | $Enums.units_status | null
   }
 
   export type NestedEnumunits_statusNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -73861,33 +80257,6 @@ export namespace Prisma {
     _max?: NestedEnumLogsheetTypeFilter<$PrismaModel>
   }
 
-  export type NestedDecimalFilter<$PrismaModel = never> = {
-    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
-    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
-    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
-  }
-
-  export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
-    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
-    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedDecimalFilter<$PrismaModel>
-    _sum?: NestedDecimalFilter<$PrismaModel>
-    _min?: NestedDecimalFilter<$PrismaModel>
-    _max?: NestedDecimalFilter<$PrismaModel>
-  }
-
   export type contractsCreateWithoutCustomersInput = {
     site_id?: number | null
     contract_number?: string | null
@@ -74035,6 +80404,41 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type work_ordersCreateWithoutCustomersInput = {
+    wo_number: string
+    customer_name?: string | null
+    pic_name?: string | null
+    company_address?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    users?: usersCreateNestedOneWithoutCreated_work_ordersInput
+    quotations?: quotationsCreateNestedManyWithoutWork_ordersInput
+  }
+
+  export type work_ordersUncheckedCreateWithoutCustomersInput = {
+    id?: number
+    wo_number: string
+    customer_name?: string | null
+    pic_name?: string | null
+    company_address?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    created_by?: number | null
+    quotations?: quotationsUncheckedCreateNestedManyWithoutWork_ordersInput
+  }
+
+  export type work_ordersCreateOrConnectWithoutCustomersInput = {
+    where: work_ordersWhereUniqueInput
+    create: XOR<work_ordersCreateWithoutCustomersInput, work_ordersUncheckedCreateWithoutCustomersInput>
+  }
+
+  export type work_ordersCreateManyCustomersInputEnvelope = {
+    data: work_ordersCreateManyCustomersInput | work_ordersCreateManyCustomersInput[]
+    skipDuplicates?: boolean
+  }
+
   export type contractsUpsertWithWhereUniqueWithoutCustomersInput = {
     where: contractsWhereUniqueInput
     update: XOR<contractsUpdateWithoutCustomersInput, contractsUncheckedUpdateWithoutCustomersInput>
@@ -74158,6 +80562,38 @@ export namespace Prisma {
     priority?: Enumtickets_priorityNullableFilter<"tickets"> | $Enums.tickets_priority | null
     status?: Enumtickets_statusNullableFilter<"tickets"> | $Enums.tickets_status | null
     created_at?: DateTimeNullableFilter<"tickets"> | Date | string | null
+  }
+
+  export type work_ordersUpsertWithWhereUniqueWithoutCustomersInput = {
+    where: work_ordersWhereUniqueInput
+    update: XOR<work_ordersUpdateWithoutCustomersInput, work_ordersUncheckedUpdateWithoutCustomersInput>
+    create: XOR<work_ordersCreateWithoutCustomersInput, work_ordersUncheckedCreateWithoutCustomersInput>
+  }
+
+  export type work_ordersUpdateWithWhereUniqueWithoutCustomersInput = {
+    where: work_ordersWhereUniqueInput
+    data: XOR<work_ordersUpdateWithoutCustomersInput, work_ordersUncheckedUpdateWithoutCustomersInput>
+  }
+
+  export type work_ordersUpdateManyWithWhereWithoutCustomersInput = {
+    where: work_ordersScalarWhereInput
+    data: XOR<work_ordersUpdateManyMutationInput, work_ordersUncheckedUpdateManyWithoutCustomersInput>
+  }
+
+  export type work_ordersScalarWhereInput = {
+    AND?: work_ordersScalarWhereInput | work_ordersScalarWhereInput[]
+    OR?: work_ordersScalarWhereInput[]
+    NOT?: work_ordersScalarWhereInput | work_ordersScalarWhereInput[]
+    id?: IntFilter<"work_orders"> | number
+    wo_number?: StringFilter<"work_orders"> | string
+    customer_id?: IntNullableFilter<"work_orders"> | number | null
+    customer_name?: StringNullableFilter<"work_orders"> | string | null
+    pic_name?: StringNullableFilter<"work_orders"> | string | null
+    company_address?: StringNullableFilter<"work_orders"> | string | null
+    status?: StringFilter<"work_orders"> | string
+    created_at?: DateTimeFilter<"work_orders"> | Date | string
+    updated_at?: DateTimeFilter<"work_orders"> | Date | string
+    created_by?: IntNullableFilter<"work_orders"> | number | null
   }
 
   export type role_permissionsCreateWithoutPermissionsInput = {
@@ -74318,6 +80754,7 @@ export namespace Prisma {
     contracts?: contractsCreateNestedManyWithoutCustomersInput
     sites?: sitesCreateNestedManyWithoutCustomersInput
     tickets?: ticketsCreateNestedManyWithoutCustomersInput
+    work_orders?: work_ordersCreateNestedManyWithoutCustomersInput
   }
 
   export type customersUncheckedCreateWithoutProjectsInput = {
@@ -74333,6 +80770,7 @@ export namespace Prisma {
     contracts?: contractsUncheckedCreateNestedManyWithoutCustomersInput
     sites?: sitesUncheckedCreateNestedManyWithoutCustomersInput
     tickets?: ticketsUncheckedCreateNestedManyWithoutCustomersInput
+    work_orders?: work_ordersUncheckedCreateNestedManyWithoutCustomersInput
   }
 
   export type customersCreateOrConnectWithoutProjectsInput = {
@@ -74758,6 +81196,7 @@ export namespace Prisma {
     contracts?: contractsUpdateManyWithoutCustomersNestedInput
     sites?: sitesUpdateManyWithoutCustomersNestedInput
     tickets?: ticketsUpdateManyWithoutCustomersNestedInput
+    work_orders?: work_ordersUpdateManyWithoutCustomersNestedInput
   }
 
   export type customersUncheckedUpdateWithoutProjectsInput = {
@@ -74773,6 +81212,7 @@ export namespace Prisma {
     contracts?: contractsUncheckedUpdateManyWithoutCustomersNestedInput
     sites?: sitesUncheckedUpdateManyWithoutCustomersNestedInput
     tickets?: ticketsUncheckedUpdateManyWithoutCustomersNestedInput
+    work_orders?: work_ordersUncheckedUpdateManyWithoutCustomersNestedInput
   }
 
   export type schedule_targetsUpsertWithWhereUniqueWithoutProjectsInput = {
@@ -75165,6 +81605,9 @@ export namespace Prisma {
     notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutRefresh_tokensInput = {
@@ -75201,6 +81644,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutRefresh_tokensInput = {
@@ -75252,6 +81698,9 @@ export namespace Prisma {
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutRefresh_tokensInput = {
@@ -75288,6 +81737,1016 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type customersCreateWithoutWork_ordersInput = {
+    name: string
+    pic_name?: string | null
+    bidang_usaha?: string | null
+    pic_phone?: string | null
+    customer_type?: $Enums.customers_customer_type | null
+    address?: string | null
+    created_at?: Date | string | null
+    is_active?: boolean
+    contracts?: contractsCreateNestedManyWithoutCustomersInput
+    projects?: projectsCreateNestedManyWithoutCustomersInput
+    sites?: sitesCreateNestedManyWithoutCustomersInput
+    tickets?: ticketsCreateNestedManyWithoutCustomersInput
+  }
+
+  export type customersUncheckedCreateWithoutWork_ordersInput = {
+    id?: number
+    name: string
+    pic_name?: string | null
+    bidang_usaha?: string | null
+    pic_phone?: string | null
+    customer_type?: $Enums.customers_customer_type | null
+    address?: string | null
+    created_at?: Date | string | null
+    is_active?: boolean
+    contracts?: contractsUncheckedCreateNestedManyWithoutCustomersInput
+    projects?: projectsUncheckedCreateNestedManyWithoutCustomersInput
+    sites?: sitesUncheckedCreateNestedManyWithoutCustomersInput
+    tickets?: ticketsUncheckedCreateNestedManyWithoutCustomersInput
+  }
+
+  export type customersCreateOrConnectWithoutWork_ordersInput = {
+    where: customersWhereUniqueInput
+    create: XOR<customersCreateWithoutWork_ordersInput, customersUncheckedCreateWithoutWork_ordersInput>
+  }
+
+  export type usersCreateWithoutCreated_work_ordersInput = {
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
+    schedules?: schedulesCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
+    roles?: rolesCreateNestedOneWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateWithoutCreated_work_ordersInput = {
+    id?: number
+    role_id?: number | null
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
+    schedules?: schedulesUncheckedCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesUncheckedCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersCreateOrConnectWithoutCreated_work_ordersInput = {
+    where: usersWhereUniqueInput
+    create: XOR<usersCreateWithoutCreated_work_ordersInput, usersUncheckedCreateWithoutCreated_work_ordersInput>
+  }
+
+  export type quotationsCreateWithoutWork_ordersInput = {
+    quo_number: string
+    total_amount?: Decimal | DecimalJsLike | number | string
+    discount?: Decimal | DecimalJsLike | number | string
+    tax?: Decimal | DecimalJsLike | number | string
+    grand_total?: Decimal | DecimalJsLike | number | string
+    status?: string
+    valid_until?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    users?: usersCreateNestedOneWithoutCreated_quotationsInput
+    items?: quotation_itemsCreateNestedManyWithoutQuotationsInput
+    sla?: slasCreateNestedOneWithoutQuotationsInput
+  }
+
+  export type quotationsUncheckedCreateWithoutWork_ordersInput = {
+    id?: number
+    quo_number: string
+    total_amount?: Decimal | DecimalJsLike | number | string
+    discount?: Decimal | DecimalJsLike | number | string
+    tax?: Decimal | DecimalJsLike | number | string
+    grand_total?: Decimal | DecimalJsLike | number | string
+    status?: string
+    valid_until?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    created_by?: number | null
+    items?: quotation_itemsUncheckedCreateNestedManyWithoutQuotationsInput
+    sla?: slasUncheckedCreateNestedOneWithoutQuotationsInput
+  }
+
+  export type quotationsCreateOrConnectWithoutWork_ordersInput = {
+    where: quotationsWhereUniqueInput
+    create: XOR<quotationsCreateWithoutWork_ordersInput, quotationsUncheckedCreateWithoutWork_ordersInput>
+  }
+
+  export type quotationsCreateManyWork_ordersInputEnvelope = {
+    data: quotationsCreateManyWork_ordersInput | quotationsCreateManyWork_ordersInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type customersUpsertWithoutWork_ordersInput = {
+    update: XOR<customersUpdateWithoutWork_ordersInput, customersUncheckedUpdateWithoutWork_ordersInput>
+    create: XOR<customersCreateWithoutWork_ordersInput, customersUncheckedCreateWithoutWork_ordersInput>
+    where?: customersWhereInput
+  }
+
+  export type customersUpdateToOneWithWhereWithoutWork_ordersInput = {
+    where?: customersWhereInput
+    data: XOR<customersUpdateWithoutWork_ordersInput, customersUncheckedUpdateWithoutWork_ordersInput>
+  }
+
+  export type customersUpdateWithoutWork_ordersInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    pic_name?: NullableStringFieldUpdateOperationsInput | string | null
+    bidang_usaha?: NullableStringFieldUpdateOperationsInput | string | null
+    pic_phone?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_type?: NullableEnumcustomers_customer_typeFieldUpdateOperationsInput | $Enums.customers_customer_type | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    contracts?: contractsUpdateManyWithoutCustomersNestedInput
+    projects?: projectsUpdateManyWithoutCustomersNestedInput
+    sites?: sitesUpdateManyWithoutCustomersNestedInput
+    tickets?: ticketsUpdateManyWithoutCustomersNestedInput
+  }
+
+  export type customersUncheckedUpdateWithoutWork_ordersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    pic_name?: NullableStringFieldUpdateOperationsInput | string | null
+    bidang_usaha?: NullableStringFieldUpdateOperationsInput | string | null
+    pic_phone?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_type?: NullableEnumcustomers_customer_typeFieldUpdateOperationsInput | $Enums.customers_customer_type | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    contracts?: contractsUncheckedUpdateManyWithoutCustomersNestedInput
+    projects?: projectsUncheckedUpdateManyWithoutCustomersNestedInput
+    sites?: sitesUncheckedUpdateManyWithoutCustomersNestedInput
+    tickets?: ticketsUncheckedUpdateManyWithoutCustomersNestedInput
+  }
+
+  export type usersUpsertWithoutCreated_work_ordersInput = {
+    update: XOR<usersUpdateWithoutCreated_work_ordersInput, usersUncheckedUpdateWithoutCreated_work_ordersInput>
+    create: XOR<usersCreateWithoutCreated_work_ordersInput, usersUncheckedCreateWithoutCreated_work_ordersInput>
+    where?: usersWhereInput
+  }
+
+  export type usersUpdateToOneWithWhereWithoutCreated_work_ordersInput = {
+    where?: usersWhereInput
+    data: XOR<usersUpdateWithoutCreated_work_ordersInput, usersUncheckedUpdateWithoutCreated_work_ordersInput>
+  }
+
+  export type usersUpdateWithoutCreated_work_ordersInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
+    roles?: rolesUpdateOneWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateWithoutCreated_work_ordersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    role_id?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUncheckedUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUncheckedUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUncheckedUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type quotationsUpsertWithWhereUniqueWithoutWork_ordersInput = {
+    where: quotationsWhereUniqueInput
+    update: XOR<quotationsUpdateWithoutWork_ordersInput, quotationsUncheckedUpdateWithoutWork_ordersInput>
+    create: XOR<quotationsCreateWithoutWork_ordersInput, quotationsUncheckedCreateWithoutWork_ordersInput>
+  }
+
+  export type quotationsUpdateWithWhereUniqueWithoutWork_ordersInput = {
+    where: quotationsWhereUniqueInput
+    data: XOR<quotationsUpdateWithoutWork_ordersInput, quotationsUncheckedUpdateWithoutWork_ordersInput>
+  }
+
+  export type quotationsUpdateManyWithWhereWithoutWork_ordersInput = {
+    where: quotationsScalarWhereInput
+    data: XOR<quotationsUpdateManyMutationInput, quotationsUncheckedUpdateManyWithoutWork_ordersInput>
+  }
+
+  export type quotationsScalarWhereInput = {
+    AND?: quotationsScalarWhereInput | quotationsScalarWhereInput[]
+    OR?: quotationsScalarWhereInput[]
+    NOT?: quotationsScalarWhereInput | quotationsScalarWhereInput[]
+    id?: IntFilter<"quotations"> | number
+    quo_number?: StringFilter<"quotations"> | string
+    work_order_id?: IntFilter<"quotations"> | number
+    total_amount?: DecimalFilter<"quotations"> | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFilter<"quotations"> | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFilter<"quotations"> | Decimal | DecimalJsLike | number | string
+    grand_total?: DecimalFilter<"quotations"> | Decimal | DecimalJsLike | number | string
+    status?: StringFilter<"quotations"> | string
+    valid_until?: DateTimeNullableFilter<"quotations"> | Date | string | null
+    created_at?: DateTimeFilter<"quotations"> | Date | string
+    updated_at?: DateTimeFilter<"quotations"> | Date | string
+    created_by?: IntNullableFilter<"quotations"> | number | null
+  }
+
+  export type work_ordersCreateWithoutQuotationsInput = {
+    wo_number: string
+    customer_name?: string | null
+    pic_name?: string | null
+    company_address?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    customers?: customersCreateNestedOneWithoutWork_ordersInput
+    users?: usersCreateNestedOneWithoutCreated_work_ordersInput
+  }
+
+  export type work_ordersUncheckedCreateWithoutQuotationsInput = {
+    id?: number
+    wo_number: string
+    customer_id?: number | null
+    customer_name?: string | null
+    pic_name?: string | null
+    company_address?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    created_by?: number | null
+  }
+
+  export type work_ordersCreateOrConnectWithoutQuotationsInput = {
+    where: work_ordersWhereUniqueInput
+    create: XOR<work_ordersCreateWithoutQuotationsInput, work_ordersUncheckedCreateWithoutQuotationsInput>
+  }
+
+  export type usersCreateWithoutCreated_quotationsInput = {
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
+    schedules?: schedulesCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
+    roles?: rolesCreateNestedOneWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateWithoutCreated_quotationsInput = {
+    id?: number
+    role_id?: number | null
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
+    schedules?: schedulesUncheckedCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesUncheckedCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersCreateOrConnectWithoutCreated_quotationsInput = {
+    where: usersWhereUniqueInput
+    create: XOR<usersCreateWithoutCreated_quotationsInput, usersUncheckedCreateWithoutCreated_quotationsInput>
+  }
+
+  export type quotation_itemsCreateWithoutQuotationsInput = {
+    item_name: string
+    category?: string | null
+    qty?: number
+    unit_price?: Decimal | DecimalJsLike | number | string
+    total_price?: Decimal | DecimalJsLike | number | string
+  }
+
+  export type quotation_itemsUncheckedCreateWithoutQuotationsInput = {
+    id?: number
+    item_name: string
+    category?: string | null
+    qty?: number
+    unit_price?: Decimal | DecimalJsLike | number | string
+    total_price?: Decimal | DecimalJsLike | number | string
+  }
+
+  export type quotation_itemsCreateOrConnectWithoutQuotationsInput = {
+    where: quotation_itemsWhereUniqueInput
+    create: XOR<quotation_itemsCreateWithoutQuotationsInput, quotation_itemsUncheckedCreateWithoutQuotationsInput>
+  }
+
+  export type quotation_itemsCreateManyQuotationsInputEnvelope = {
+    data: quotation_itemsCreateManyQuotationsInput | quotation_itemsCreateManyQuotationsInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type slasCreateWithoutQuotationsInput = {
+    contract_duration: string
+    service_frequency?: number
+    custom_kpis?: string | null
+    custom_terms?: string | null
+    custom_sow?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    users?: usersCreateNestedOneWithoutCreated_slasInput
+  }
+
+  export type slasUncheckedCreateWithoutQuotationsInput = {
+    id?: number
+    contract_duration: string
+    service_frequency?: number
+    custom_kpis?: string | null
+    custom_terms?: string | null
+    custom_sow?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    created_by?: number | null
+  }
+
+  export type slasCreateOrConnectWithoutQuotationsInput = {
+    where: slasWhereUniqueInput
+    create: XOR<slasCreateWithoutQuotationsInput, slasUncheckedCreateWithoutQuotationsInput>
+  }
+
+  export type work_ordersUpsertWithoutQuotationsInput = {
+    update: XOR<work_ordersUpdateWithoutQuotationsInput, work_ordersUncheckedUpdateWithoutQuotationsInput>
+    create: XOR<work_ordersCreateWithoutQuotationsInput, work_ordersUncheckedCreateWithoutQuotationsInput>
+    where?: work_ordersWhereInput
+  }
+
+  export type work_ordersUpdateToOneWithWhereWithoutQuotationsInput = {
+    where?: work_ordersWhereInput
+    data: XOR<work_ordersUpdateWithoutQuotationsInput, work_ordersUncheckedUpdateWithoutQuotationsInput>
+  }
+
+  export type work_ordersUpdateWithoutQuotationsInput = {
+    wo_number?: StringFieldUpdateOperationsInput | string
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    pic_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    customers?: customersUpdateOneWithoutWork_ordersNestedInput
+    users?: usersUpdateOneWithoutCreated_work_ordersNestedInput
+  }
+
+  export type work_ordersUncheckedUpdateWithoutQuotationsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    wo_number?: StringFieldUpdateOperationsInput | string
+    customer_id?: NullableIntFieldUpdateOperationsInput | number | null
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    pic_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_by?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type usersUpsertWithoutCreated_quotationsInput = {
+    update: XOR<usersUpdateWithoutCreated_quotationsInput, usersUncheckedUpdateWithoutCreated_quotationsInput>
+    create: XOR<usersCreateWithoutCreated_quotationsInput, usersUncheckedCreateWithoutCreated_quotationsInput>
+    where?: usersWhereInput
+  }
+
+  export type usersUpdateToOneWithWhereWithoutCreated_quotationsInput = {
+    where?: usersWhereInput
+    data: XOR<usersUpdateWithoutCreated_quotationsInput, usersUncheckedUpdateWithoutCreated_quotationsInput>
+  }
+
+  export type usersUpdateWithoutCreated_quotationsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
+    roles?: rolesUpdateOneWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateWithoutCreated_quotationsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    role_id?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUncheckedUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUncheckedUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUncheckedUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type quotation_itemsUpsertWithWhereUniqueWithoutQuotationsInput = {
+    where: quotation_itemsWhereUniqueInput
+    update: XOR<quotation_itemsUpdateWithoutQuotationsInput, quotation_itemsUncheckedUpdateWithoutQuotationsInput>
+    create: XOR<quotation_itemsCreateWithoutQuotationsInput, quotation_itemsUncheckedCreateWithoutQuotationsInput>
+  }
+
+  export type quotation_itemsUpdateWithWhereUniqueWithoutQuotationsInput = {
+    where: quotation_itemsWhereUniqueInput
+    data: XOR<quotation_itemsUpdateWithoutQuotationsInput, quotation_itemsUncheckedUpdateWithoutQuotationsInput>
+  }
+
+  export type quotation_itemsUpdateManyWithWhereWithoutQuotationsInput = {
+    where: quotation_itemsScalarWhereInput
+    data: XOR<quotation_itemsUpdateManyMutationInput, quotation_itemsUncheckedUpdateManyWithoutQuotationsInput>
+  }
+
+  export type quotation_itemsScalarWhereInput = {
+    AND?: quotation_itemsScalarWhereInput | quotation_itemsScalarWhereInput[]
+    OR?: quotation_itemsScalarWhereInput[]
+    NOT?: quotation_itemsScalarWhereInput | quotation_itemsScalarWhereInput[]
+    id?: IntFilter<"quotation_items"> | number
+    quotation_id?: IntFilter<"quotation_items"> | number
+    item_name?: StringFilter<"quotation_items"> | string
+    category?: StringNullableFilter<"quotation_items"> | string | null
+    qty?: IntFilter<"quotation_items"> | number
+    unit_price?: DecimalFilter<"quotation_items"> | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFilter<"quotation_items"> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type slasUpsertWithoutQuotationsInput = {
+    update: XOR<slasUpdateWithoutQuotationsInput, slasUncheckedUpdateWithoutQuotationsInput>
+    create: XOR<slasCreateWithoutQuotationsInput, slasUncheckedCreateWithoutQuotationsInput>
+    where?: slasWhereInput
+  }
+
+  export type slasUpdateToOneWithWhereWithoutQuotationsInput = {
+    where?: slasWhereInput
+    data: XOR<slasUpdateWithoutQuotationsInput, slasUncheckedUpdateWithoutQuotationsInput>
+  }
+
+  export type slasUpdateWithoutQuotationsInput = {
+    contract_duration?: StringFieldUpdateOperationsInput | string
+    service_frequency?: IntFieldUpdateOperationsInput | number
+    custom_kpis?: NullableStringFieldUpdateOperationsInput | string | null
+    custom_terms?: NullableStringFieldUpdateOperationsInput | string | null
+    custom_sow?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: usersUpdateOneWithoutCreated_slasNestedInput
+  }
+
+  export type slasUncheckedUpdateWithoutQuotationsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    contract_duration?: StringFieldUpdateOperationsInput | string
+    service_frequency?: IntFieldUpdateOperationsInput | number
+    custom_kpis?: NullableStringFieldUpdateOperationsInput | string | null
+    custom_terms?: NullableStringFieldUpdateOperationsInput | string | null
+    custom_sow?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_by?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type quotationsCreateWithoutItemsInput = {
+    quo_number: string
+    total_amount?: Decimal | DecimalJsLike | number | string
+    discount?: Decimal | DecimalJsLike | number | string
+    tax?: Decimal | DecimalJsLike | number | string
+    grand_total?: Decimal | DecimalJsLike | number | string
+    status?: string
+    valid_until?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    work_orders: work_ordersCreateNestedOneWithoutQuotationsInput
+    users?: usersCreateNestedOneWithoutCreated_quotationsInput
+    sla?: slasCreateNestedOneWithoutQuotationsInput
+  }
+
+  export type quotationsUncheckedCreateWithoutItemsInput = {
+    id?: number
+    quo_number: string
+    work_order_id: number
+    total_amount?: Decimal | DecimalJsLike | number | string
+    discount?: Decimal | DecimalJsLike | number | string
+    tax?: Decimal | DecimalJsLike | number | string
+    grand_total?: Decimal | DecimalJsLike | number | string
+    status?: string
+    valid_until?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    created_by?: number | null
+    sla?: slasUncheckedCreateNestedOneWithoutQuotationsInput
+  }
+
+  export type quotationsCreateOrConnectWithoutItemsInput = {
+    where: quotationsWhereUniqueInput
+    create: XOR<quotationsCreateWithoutItemsInput, quotationsUncheckedCreateWithoutItemsInput>
+  }
+
+  export type quotationsUpsertWithoutItemsInput = {
+    update: XOR<quotationsUpdateWithoutItemsInput, quotationsUncheckedUpdateWithoutItemsInput>
+    create: XOR<quotationsCreateWithoutItemsInput, quotationsUncheckedCreateWithoutItemsInput>
+    where?: quotationsWhereInput
+  }
+
+  export type quotationsUpdateToOneWithWhereWithoutItemsInput = {
+    where?: quotationsWhereInput
+    data: XOR<quotationsUpdateWithoutItemsInput, quotationsUncheckedUpdateWithoutItemsInput>
+  }
+
+  export type quotationsUpdateWithoutItemsInput = {
+    quo_number?: StringFieldUpdateOperationsInput | string
+    total_amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    grand_total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: StringFieldUpdateOperationsInput | string
+    valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    work_orders?: work_ordersUpdateOneRequiredWithoutQuotationsNestedInput
+    users?: usersUpdateOneWithoutCreated_quotationsNestedInput
+    sla?: slasUpdateOneWithoutQuotationsNestedInput
+  }
+
+  export type quotationsUncheckedUpdateWithoutItemsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    quo_number?: StringFieldUpdateOperationsInput | string
+    work_order_id?: IntFieldUpdateOperationsInput | number
+    total_amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    grand_total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: StringFieldUpdateOperationsInput | string
+    valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_by?: NullableIntFieldUpdateOperationsInput | number | null
+    sla?: slasUncheckedUpdateOneWithoutQuotationsNestedInput
+  }
+
+  export type quotationsCreateWithoutSlaInput = {
+    quo_number: string
+    total_amount?: Decimal | DecimalJsLike | number | string
+    discount?: Decimal | DecimalJsLike | number | string
+    tax?: Decimal | DecimalJsLike | number | string
+    grand_total?: Decimal | DecimalJsLike | number | string
+    status?: string
+    valid_until?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    work_orders: work_ordersCreateNestedOneWithoutQuotationsInput
+    users?: usersCreateNestedOneWithoutCreated_quotationsInput
+    items?: quotation_itemsCreateNestedManyWithoutQuotationsInput
+  }
+
+  export type quotationsUncheckedCreateWithoutSlaInput = {
+    id?: number
+    quo_number: string
+    work_order_id: number
+    total_amount?: Decimal | DecimalJsLike | number | string
+    discount?: Decimal | DecimalJsLike | number | string
+    tax?: Decimal | DecimalJsLike | number | string
+    grand_total?: Decimal | DecimalJsLike | number | string
+    status?: string
+    valid_until?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    created_by?: number | null
+    items?: quotation_itemsUncheckedCreateNestedManyWithoutQuotationsInput
+  }
+
+  export type quotationsCreateOrConnectWithoutSlaInput = {
+    where: quotationsWhereUniqueInput
+    create: XOR<quotationsCreateWithoutSlaInput, quotationsUncheckedCreateWithoutSlaInput>
+  }
+
+  export type usersCreateWithoutCreated_slasInput = {
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
+    schedules?: schedulesCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
+    roles?: rolesCreateNestedOneWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateWithoutCreated_slasInput = {
+    id?: number
+    role_id?: number | null
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
+    schedules?: schedulesUncheckedCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesUncheckedCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersCreateOrConnectWithoutCreated_slasInput = {
+    where: usersWhereUniqueInput
+    create: XOR<usersCreateWithoutCreated_slasInput, usersUncheckedCreateWithoutCreated_slasInput>
+  }
+
+  export type quotationsUpsertWithoutSlaInput = {
+    update: XOR<quotationsUpdateWithoutSlaInput, quotationsUncheckedUpdateWithoutSlaInput>
+    create: XOR<quotationsCreateWithoutSlaInput, quotationsUncheckedCreateWithoutSlaInput>
+    where?: quotationsWhereInput
+  }
+
+  export type quotationsUpdateToOneWithWhereWithoutSlaInput = {
+    where?: quotationsWhereInput
+    data: XOR<quotationsUpdateWithoutSlaInput, quotationsUncheckedUpdateWithoutSlaInput>
+  }
+
+  export type quotationsUpdateWithoutSlaInput = {
+    quo_number?: StringFieldUpdateOperationsInput | string
+    total_amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    grand_total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: StringFieldUpdateOperationsInput | string
+    valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    work_orders?: work_ordersUpdateOneRequiredWithoutQuotationsNestedInput
+    users?: usersUpdateOneWithoutCreated_quotationsNestedInput
+    items?: quotation_itemsUpdateManyWithoutQuotationsNestedInput
+  }
+
+  export type quotationsUncheckedUpdateWithoutSlaInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    quo_number?: StringFieldUpdateOperationsInput | string
+    work_order_id?: IntFieldUpdateOperationsInput | number
+    total_amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    grand_total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: StringFieldUpdateOperationsInput | string
+    valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_by?: NullableIntFieldUpdateOperationsInput | number | null
+    items?: quotation_itemsUncheckedUpdateManyWithoutQuotationsNestedInput
+  }
+
+  export type usersUpsertWithoutCreated_slasInput = {
+    update: XOR<usersUpdateWithoutCreated_slasInput, usersUncheckedUpdateWithoutCreated_slasInput>
+    create: XOR<usersCreateWithoutCreated_slasInput, usersUncheckedCreateWithoutCreated_slasInput>
+    where?: usersWhereInput
+  }
+
+  export type usersUpdateToOneWithWhereWithoutCreated_slasInput = {
+    where?: usersWhereInput
+    data: XOR<usersUpdateWithoutCreated_slasInput, usersUncheckedUpdateWithoutCreated_slasInput>
+  }
+
+  export type usersUpdateWithoutCreated_slasInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
+    roles?: rolesUpdateOneWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateWithoutCreated_slasInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    role_id?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUncheckedUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUncheckedUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUncheckedUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type permissionsCreateWithoutRole_permissionsInput = {
@@ -75437,6 +82896,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
     notifications?: notificationsCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutRolesInput = {
@@ -75473,6 +82935,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutRolesInput = {
@@ -76787,6 +84252,9 @@ export namespace Prisma {
     notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutUser_project_accessInput = {
@@ -76823,6 +84291,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutUser_project_accessInput = {
@@ -76937,6 +84408,9 @@ export namespace Prisma {
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutUser_project_accessInput = {
@@ -76973,6 +84447,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type rolesCreateWithoutUser_rolesInput = {
@@ -77026,6 +84503,9 @@ export namespace Prisma {
     notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutUser_rolesInput = {
@@ -77062,6 +84542,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutUser_rolesInput = {
@@ -77137,6 +84620,9 @@ export namespace Prisma {
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutUser_rolesInput = {
@@ -77173,6 +84659,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type unitsCreateWithoutUser_unit_accessInput = {
@@ -77288,6 +84777,9 @@ export namespace Prisma {
     notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutUser_unit_accessInput = {
@@ -77324,6 +84816,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutUser_unit_accessInput = {
@@ -77461,6 +84956,9 @@ export namespace Prisma {
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutUser_unit_accessInput = {
@@ -77497,6 +84995,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type audit_logsCreateWithoutUsersInput = {
@@ -78040,6 +85541,117 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type work_ordersCreateWithoutUsersInput = {
+    wo_number: string
+    customer_name?: string | null
+    pic_name?: string | null
+    company_address?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    customers?: customersCreateNestedOneWithoutWork_ordersInput
+    quotations?: quotationsCreateNestedManyWithoutWork_ordersInput
+  }
+
+  export type work_ordersUncheckedCreateWithoutUsersInput = {
+    id?: number
+    wo_number: string
+    customer_id?: number | null
+    customer_name?: string | null
+    pic_name?: string | null
+    company_address?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    quotations?: quotationsUncheckedCreateNestedManyWithoutWork_ordersInput
+  }
+
+  export type work_ordersCreateOrConnectWithoutUsersInput = {
+    where: work_ordersWhereUniqueInput
+    create: XOR<work_ordersCreateWithoutUsersInput, work_ordersUncheckedCreateWithoutUsersInput>
+  }
+
+  export type work_ordersCreateManyUsersInputEnvelope = {
+    data: work_ordersCreateManyUsersInput | work_ordersCreateManyUsersInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type quotationsCreateWithoutUsersInput = {
+    quo_number: string
+    total_amount?: Decimal | DecimalJsLike | number | string
+    discount?: Decimal | DecimalJsLike | number | string
+    tax?: Decimal | DecimalJsLike | number | string
+    grand_total?: Decimal | DecimalJsLike | number | string
+    status?: string
+    valid_until?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    work_orders: work_ordersCreateNestedOneWithoutQuotationsInput
+    items?: quotation_itemsCreateNestedManyWithoutQuotationsInput
+    sla?: slasCreateNestedOneWithoutQuotationsInput
+  }
+
+  export type quotationsUncheckedCreateWithoutUsersInput = {
+    id?: number
+    quo_number: string
+    work_order_id: number
+    total_amount?: Decimal | DecimalJsLike | number | string
+    discount?: Decimal | DecimalJsLike | number | string
+    tax?: Decimal | DecimalJsLike | number | string
+    grand_total?: Decimal | DecimalJsLike | number | string
+    status?: string
+    valid_until?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    items?: quotation_itemsUncheckedCreateNestedManyWithoutQuotationsInput
+    sla?: slasUncheckedCreateNestedOneWithoutQuotationsInput
+  }
+
+  export type quotationsCreateOrConnectWithoutUsersInput = {
+    where: quotationsWhereUniqueInput
+    create: XOR<quotationsCreateWithoutUsersInput, quotationsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type quotationsCreateManyUsersInputEnvelope = {
+    data: quotationsCreateManyUsersInput | quotationsCreateManyUsersInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type slasCreateWithoutUsersInput = {
+    contract_duration: string
+    service_frequency?: number
+    custom_kpis?: string | null
+    custom_terms?: string | null
+    custom_sow?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    quotations: quotationsCreateNestedOneWithoutSlaInput
+  }
+
+  export type slasUncheckedCreateWithoutUsersInput = {
+    id?: number
+    quotation_id: number
+    contract_duration: string
+    service_frequency?: number
+    custom_kpis?: string | null
+    custom_terms?: string | null
+    custom_sow?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type slasCreateOrConnectWithoutUsersInput = {
+    where: slasWhereUniqueInput
+    create: XOR<slasCreateWithoutUsersInput, slasUncheckedCreateWithoutUsersInput>
+  }
+
+  export type slasCreateManyUsersInputEnvelope = {
+    data: slasCreateManyUsersInput | slasCreateManyUsersInput[]
+    skipDuplicates?: boolean
+  }
+
   export type audit_logsUpsertWithWhereUniqueWithoutUsersInput = {
     where: audit_logsWhereUniqueInput
     update: XOR<audit_logsUpdateWithoutUsersInput, audit_logsUncheckedUpdateWithoutUsersInput>
@@ -78373,6 +85985,71 @@ export namespace Prisma {
     data: XOR<vendor_attendanceUpdateManyMutationInput, vendor_attendanceUncheckedUpdateManyWithoutUsersInput>
   }
 
+  export type work_ordersUpsertWithWhereUniqueWithoutUsersInput = {
+    where: work_ordersWhereUniqueInput
+    update: XOR<work_ordersUpdateWithoutUsersInput, work_ordersUncheckedUpdateWithoutUsersInput>
+    create: XOR<work_ordersCreateWithoutUsersInput, work_ordersUncheckedCreateWithoutUsersInput>
+  }
+
+  export type work_ordersUpdateWithWhereUniqueWithoutUsersInput = {
+    where: work_ordersWhereUniqueInput
+    data: XOR<work_ordersUpdateWithoutUsersInput, work_ordersUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type work_ordersUpdateManyWithWhereWithoutUsersInput = {
+    where: work_ordersScalarWhereInput
+    data: XOR<work_ordersUpdateManyMutationInput, work_ordersUncheckedUpdateManyWithoutUsersInput>
+  }
+
+  export type quotationsUpsertWithWhereUniqueWithoutUsersInput = {
+    where: quotationsWhereUniqueInput
+    update: XOR<quotationsUpdateWithoutUsersInput, quotationsUncheckedUpdateWithoutUsersInput>
+    create: XOR<quotationsCreateWithoutUsersInput, quotationsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type quotationsUpdateWithWhereUniqueWithoutUsersInput = {
+    where: quotationsWhereUniqueInput
+    data: XOR<quotationsUpdateWithoutUsersInput, quotationsUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type quotationsUpdateManyWithWhereWithoutUsersInput = {
+    where: quotationsScalarWhereInput
+    data: XOR<quotationsUpdateManyMutationInput, quotationsUncheckedUpdateManyWithoutUsersInput>
+  }
+
+  export type slasUpsertWithWhereUniqueWithoutUsersInput = {
+    where: slasWhereUniqueInput
+    update: XOR<slasUpdateWithoutUsersInput, slasUncheckedUpdateWithoutUsersInput>
+    create: XOR<slasCreateWithoutUsersInput, slasUncheckedCreateWithoutUsersInput>
+  }
+
+  export type slasUpdateWithWhereUniqueWithoutUsersInput = {
+    where: slasWhereUniqueInput
+    data: XOR<slasUpdateWithoutUsersInput, slasUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type slasUpdateManyWithWhereWithoutUsersInput = {
+    where: slasScalarWhereInput
+    data: XOR<slasUpdateManyMutationInput, slasUncheckedUpdateManyWithoutUsersInput>
+  }
+
+  export type slasScalarWhereInput = {
+    AND?: slasScalarWhereInput | slasScalarWhereInput[]
+    OR?: slasScalarWhereInput[]
+    NOT?: slasScalarWhereInput | slasScalarWhereInput[]
+    id?: IntFilter<"slas"> | number
+    quotation_id?: IntFilter<"slas"> | number
+    contract_duration?: StringFilter<"slas"> | string
+    service_frequency?: IntFilter<"slas"> | number
+    custom_kpis?: StringNullableFilter<"slas"> | string | null
+    custom_terms?: StringNullableFilter<"slas"> | string | null
+    custom_sow?: StringNullableFilter<"slas"> | string | null
+    status?: StringFilter<"slas"> | string
+    created_at?: DateTimeFilter<"slas"> | Date | string
+    updated_at?: DateTimeFilter<"slas"> | Date | string
+    created_by?: IntNullableFilter<"slas"> | number | null
+  }
+
   export type usersCreateWithoutAudit_logsInput = {
     name: string
     email: string
@@ -78406,6 +86083,9 @@ export namespace Prisma {
     notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutAudit_logsInput = {
@@ -78442,6 +86122,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutAudit_logsInput = {
@@ -78493,6 +86176,9 @@ export namespace Prisma {
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutAudit_logsInput = {
@@ -78529,6 +86215,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type unitsCreateWithoutActivitiesInput = {
@@ -79477,6 +87166,7 @@ export namespace Prisma {
     projects?: projectsCreateNestedManyWithoutCustomersInput
     sites?: sitesCreateNestedManyWithoutCustomersInput
     tickets?: ticketsCreateNestedManyWithoutCustomersInput
+    work_orders?: work_ordersCreateNestedManyWithoutCustomersInput
   }
 
   export type customersUncheckedCreateWithoutContractsInput = {
@@ -79492,6 +87182,7 @@ export namespace Prisma {
     projects?: projectsUncheckedCreateNestedManyWithoutCustomersInput
     sites?: sitesUncheckedCreateNestedManyWithoutCustomersInput
     tickets?: ticketsUncheckedCreateNestedManyWithoutCustomersInput
+    work_orders?: work_ordersUncheckedCreateNestedManyWithoutCustomersInput
   }
 
   export type customersCreateOrConnectWithoutContractsInput = {
@@ -79522,6 +87213,7 @@ export namespace Prisma {
     projects?: projectsUpdateManyWithoutCustomersNestedInput
     sites?: sitesUpdateManyWithoutCustomersNestedInput
     tickets?: ticketsUpdateManyWithoutCustomersNestedInput
+    work_orders?: work_ordersUpdateManyWithoutCustomersNestedInput
   }
 
   export type customersUncheckedUpdateWithoutContractsInput = {
@@ -79537,6 +87229,7 @@ export namespace Prisma {
     projects?: projectsUncheckedUpdateManyWithoutCustomersNestedInput
     sites?: sitesUncheckedUpdateManyWithoutCustomersNestedInput
     tickets?: ticketsUncheckedUpdateManyWithoutCustomersNestedInput
+    work_orders?: work_ordersUncheckedUpdateManyWithoutCustomersNestedInput
   }
 
   export type unitsCreateWithoutCorrectiveInput = {
@@ -79868,6 +87561,9 @@ export namespace Prisma {
     notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutService_activitiesInput = {
@@ -79904,6 +87600,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutService_activitiesInput = {
@@ -80097,6 +87796,9 @@ export namespace Prisma {
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutService_activitiesInput = {
@@ -80133,6 +87835,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type unitsCreateWithoutService_logsInput = {
@@ -80313,6 +88018,7 @@ export namespace Prisma {
     contracts?: contractsCreateNestedManyWithoutCustomersInput
     projects?: projectsCreateNestedManyWithoutCustomersInput
     tickets?: ticketsCreateNestedManyWithoutCustomersInput
+    work_orders?: work_ordersCreateNestedManyWithoutCustomersInput
   }
 
   export type customersUncheckedCreateWithoutSitesInput = {
@@ -80328,6 +88034,7 @@ export namespace Prisma {
     contracts?: contractsUncheckedCreateNestedManyWithoutCustomersInput
     projects?: projectsUncheckedCreateNestedManyWithoutCustomersInput
     tickets?: ticketsUncheckedCreateNestedManyWithoutCustomersInput
+    work_orders?: work_ordersUncheckedCreateNestedManyWithoutCustomersInput
   }
 
   export type customersCreateOrConnectWithoutSitesInput = {
@@ -80358,6 +88065,7 @@ export namespace Prisma {
     contracts?: contractsUpdateManyWithoutCustomersNestedInput
     projects?: projectsUpdateManyWithoutCustomersNestedInput
     tickets?: ticketsUpdateManyWithoutCustomersNestedInput
+    work_orders?: work_ordersUpdateManyWithoutCustomersNestedInput
   }
 
   export type customersUncheckedUpdateWithoutSitesInput = {
@@ -80373,6 +88081,7 @@ export namespace Prisma {
     contracts?: contractsUncheckedUpdateManyWithoutCustomersNestedInput
     projects?: projectsUncheckedUpdateManyWithoutCustomersNestedInput
     tickets?: ticketsUncheckedUpdateManyWithoutCustomersNestedInput
+    work_orders?: work_ordersUncheckedUpdateManyWithoutCustomersNestedInput
   }
 
   export type unitsCreateWithoutTicketsInput = {
@@ -80467,6 +88176,7 @@ export namespace Prisma {
     contracts?: contractsCreateNestedManyWithoutCustomersInput
     projects?: projectsCreateNestedManyWithoutCustomersInput
     sites?: sitesCreateNestedManyWithoutCustomersInput
+    work_orders?: work_ordersCreateNestedManyWithoutCustomersInput
   }
 
   export type customersUncheckedCreateWithoutTicketsInput = {
@@ -80482,6 +88192,7 @@ export namespace Prisma {
     contracts?: contractsUncheckedCreateNestedManyWithoutCustomersInput
     projects?: projectsUncheckedCreateNestedManyWithoutCustomersInput
     sites?: sitesUncheckedCreateNestedManyWithoutCustomersInput
+    work_orders?: work_ordersUncheckedCreateNestedManyWithoutCustomersInput
   }
 
   export type customersCreateOrConnectWithoutTicketsInput = {
@@ -80598,6 +88309,7 @@ export namespace Prisma {
     contracts?: contractsUpdateManyWithoutCustomersNestedInput
     projects?: projectsUpdateManyWithoutCustomersNestedInput
     sites?: sitesUpdateManyWithoutCustomersNestedInput
+    work_orders?: work_ordersUpdateManyWithoutCustomersNestedInput
   }
 
   export type customersUncheckedUpdateWithoutTicketsInput = {
@@ -80613,6 +88325,7 @@ export namespace Prisma {
     contracts?: contractsUncheckedUpdateManyWithoutCustomersNestedInput
     projects?: projectsUncheckedUpdateManyWithoutCustomersNestedInput
     sites?: sitesUncheckedUpdateManyWithoutCustomersNestedInput
+    work_orders?: work_ordersUncheckedUpdateManyWithoutCustomersNestedInput
   }
 
   export type unitsCreateWithoutUnit_commentsInput = {
@@ -80894,6 +88607,9 @@ export namespace Prisma {
     notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutSchedulesInput = {
@@ -80930,6 +88646,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutSchedulesInput = {
@@ -81189,6 +88908,9 @@ export namespace Prisma {
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutSchedulesInput = {
@@ -81225,6 +88947,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type projectsUpsertWithoutSchedulesInput = {
@@ -81616,6 +89341,9 @@ export namespace Prisma {
     notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutSchedule_messagesInput = {
@@ -81652,6 +89380,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutSchedule_messagesInput = {
@@ -81748,6 +89479,9 @@ export namespace Prisma {
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutSchedule_messagesInput = {
@@ -81784,6 +89518,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type usersCreateWithoutSchedule_targetsInput = {
@@ -81819,6 +89556,9 @@ export namespace Prisma {
     notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutSchedule_targetsInput = {
@@ -81855,6 +89595,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutSchedule_targetsInput = {
@@ -81963,6 +89706,9 @@ export namespace Prisma {
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutSchedule_targetsInput = {
@@ -81999,6 +89745,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type projectsUpsertWithoutSchedule_targetsInput = {
@@ -82343,6 +90092,9 @@ export namespace Prisma {
     notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutUnit_edit_requestsInput = {
@@ -82379,6 +90131,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutUnit_edit_requestsInput = {
@@ -82419,6 +90174,9 @@ export namespace Prisma {
     notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutProcessed_requestsInput = {
@@ -82455,6 +90213,9 @@ export namespace Prisma {
     unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutProcessed_requestsInput = {
@@ -82592,6 +90353,9 @@ export namespace Prisma {
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutUnit_edit_requestsInput = {
@@ -82628,6 +90392,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUpsertWithoutProcessed_requestsInput = {
@@ -82674,6 +90441,9 @@ export namespace Prisma {
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutProcessed_requestsInput = {
@@ -82710,6 +90480,9 @@ export namespace Prisma {
     unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type usersCreateWithoutUser_push_tokensInput = {
@@ -82745,6 +90518,9 @@ export namespace Prisma {
     notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutUser_push_tokensInput = {
@@ -82781,6 +90557,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutUser_push_tokensInput = {
@@ -82832,6 +90611,9 @@ export namespace Prisma {
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutUser_push_tokensInput = {
@@ -82868,6 +90650,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type usersCreateWithoutNotificationsInput = {
@@ -82903,6 +90688,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutNotificationsInput = {
@@ -82939,6 +90727,9 @@ export namespace Prisma {
     unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
     processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutNotificationsInput = {
@@ -83047,6 +90838,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutNotificationsInput = {
@@ -83083,6 +90877,9 @@ export namespace Prisma {
     unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
     processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type projectsUpsertWithoutNotificationsInput = {
@@ -83404,6 +91201,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
     notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutVendor_attendanceInput = {
@@ -83440,6 +91240,9 @@ export namespace Prisma {
     unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
     processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutVendor_attendanceInput = {
@@ -83554,6 +91357,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutVendor_attendanceInput = {
@@ -83590,6 +91396,9 @@ export namespace Prisma {
     unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
     processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type projectsCreateWithoutProject_intelligenceInput = {
@@ -83682,6 +91491,9 @@ export namespace Prisma {
     notifications?: notificationsCreateNestedManyWithoutUsersInput
     roles?: rolesCreateNestedOneWithoutUsersInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutIntelligence_updatesInput = {
@@ -83718,6 +91530,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutIntelligence_updatesInput = {
@@ -83832,6 +91647,9 @@ export namespace Prisma {
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
     roles?: rolesUpdateOneWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutIntelligence_updatesInput = {
@@ -83868,6 +91686,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type projectsCreateWithoutProject_issuesInput = {
@@ -84284,6 +92105,18 @@ export namespace Prisma {
     created_at?: Date | string | null
   }
 
+  export type work_ordersCreateManyCustomersInput = {
+    id?: number
+    wo_number: string
+    customer_name?: string | null
+    pic_name?: string | null
+    company_address?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    created_by?: number | null
+  }
+
   export type contractsUpdateWithoutCustomersInput = {
     site_id?: NullableIntFieldUpdateOperationsInput | number | null
     contract_number?: NullableStringFieldUpdateOperationsInput | string | null
@@ -84434,6 +92267,43 @@ export namespace Prisma {
     priority?: NullableEnumtickets_priorityFieldUpdateOperationsInput | $Enums.tickets_priority | null
     status?: NullableEnumtickets_statusFieldUpdateOperationsInput | $Enums.tickets_status | null
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type work_ordersUpdateWithoutCustomersInput = {
+    wo_number?: StringFieldUpdateOperationsInput | string
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    pic_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: usersUpdateOneWithoutCreated_work_ordersNestedInput
+    quotations?: quotationsUpdateManyWithoutWork_ordersNestedInput
+  }
+
+  export type work_ordersUncheckedUpdateWithoutCustomersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    wo_number?: StringFieldUpdateOperationsInput | string
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    pic_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_by?: NullableIntFieldUpdateOperationsInput | number | null
+    quotations?: quotationsUncheckedUpdateManyWithoutWork_ordersNestedInput
+  }
+
+  export type work_ordersUncheckedUpdateManyWithoutCustomersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    wo_number?: StringFieldUpdateOperationsInput | string
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    pic_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_by?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type role_permissionsCreateManyPermissionsInput = {
@@ -84973,6 +92843,100 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type quotationsCreateManyWork_ordersInput = {
+    id?: number
+    quo_number: string
+    total_amount?: Decimal | DecimalJsLike | number | string
+    discount?: Decimal | DecimalJsLike | number | string
+    tax?: Decimal | DecimalJsLike | number | string
+    grand_total?: Decimal | DecimalJsLike | number | string
+    status?: string
+    valid_until?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    created_by?: number | null
+  }
+
+  export type quotationsUpdateWithoutWork_ordersInput = {
+    quo_number?: StringFieldUpdateOperationsInput | string
+    total_amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    grand_total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: StringFieldUpdateOperationsInput | string
+    valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: usersUpdateOneWithoutCreated_quotationsNestedInput
+    items?: quotation_itemsUpdateManyWithoutQuotationsNestedInput
+    sla?: slasUpdateOneWithoutQuotationsNestedInput
+  }
+
+  export type quotationsUncheckedUpdateWithoutWork_ordersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    quo_number?: StringFieldUpdateOperationsInput | string
+    total_amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    grand_total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: StringFieldUpdateOperationsInput | string
+    valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_by?: NullableIntFieldUpdateOperationsInput | number | null
+    items?: quotation_itemsUncheckedUpdateManyWithoutQuotationsNestedInput
+    sla?: slasUncheckedUpdateOneWithoutQuotationsNestedInput
+  }
+
+  export type quotationsUncheckedUpdateManyWithoutWork_ordersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    quo_number?: StringFieldUpdateOperationsInput | string
+    total_amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    grand_total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: StringFieldUpdateOperationsInput | string
+    valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_by?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type quotation_itemsCreateManyQuotationsInput = {
+    id?: number
+    item_name: string
+    category?: string | null
+    qty?: number
+    unit_price?: Decimal | DecimalJsLike | number | string
+    total_price?: Decimal | DecimalJsLike | number | string
+  }
+
+  export type quotation_itemsUpdateWithoutQuotationsInput = {
+    item_name?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    qty?: IntFieldUpdateOperationsInput | number
+    unit_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+  }
+
+  export type quotation_itemsUncheckedUpdateWithoutQuotationsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    item_name?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    qty?: IntFieldUpdateOperationsInput | number
+    unit_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+  }
+
+  export type quotation_itemsUncheckedUpdateManyWithoutQuotationsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    item_name?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    qty?: IntFieldUpdateOperationsInput | number
+    unit_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+  }
+
   export type role_permissionsCreateManyRolesInput = {
     permission_id: bigint | number
   }
@@ -85059,6 +93023,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutRolesInput = {
@@ -85095,6 +93062,9 @@ export namespace Prisma {
     processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateManyWithoutRolesInput = {
@@ -86174,6 +94144,45 @@ export namespace Prisma {
     check_out_notes?: string | null
   }
 
+  export type work_ordersCreateManyUsersInput = {
+    id?: number
+    wo_number: string
+    customer_id?: number | null
+    customer_name?: string | null
+    pic_name?: string | null
+    company_address?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type quotationsCreateManyUsersInput = {
+    id?: number
+    quo_number: string
+    work_order_id: number
+    total_amount?: Decimal | DecimalJsLike | number | string
+    discount?: Decimal | DecimalJsLike | number | string
+    tax?: Decimal | DecimalJsLike | number | string
+    grand_total?: Decimal | DecimalJsLike | number | string
+    status?: string
+    valid_until?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type slasCreateManyUsersInput = {
+    id?: number
+    quotation_id: number
+    contract_duration: string
+    service_frequency?: number
+    custom_kpis?: string | null
+    custom_terms?: string | null
+    custom_sow?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
   export type audit_logsUpdateWithoutUsersInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     action?: StringFieldUpdateOperationsInput | string
@@ -86730,6 +94739,126 @@ export namespace Prisma {
     check_out_photo?: NullableStringFieldUpdateOperationsInput | string | null
     check_in_notes?: NullableStringFieldUpdateOperationsInput | string | null
     check_out_notes?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type work_ordersUpdateWithoutUsersInput = {
+    wo_number?: StringFieldUpdateOperationsInput | string
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    pic_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    customers?: customersUpdateOneWithoutWork_ordersNestedInput
+    quotations?: quotationsUpdateManyWithoutWork_ordersNestedInput
+  }
+
+  export type work_ordersUncheckedUpdateWithoutUsersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    wo_number?: StringFieldUpdateOperationsInput | string
+    customer_id?: NullableIntFieldUpdateOperationsInput | number | null
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    pic_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    quotations?: quotationsUncheckedUpdateManyWithoutWork_ordersNestedInput
+  }
+
+  export type work_ordersUncheckedUpdateManyWithoutUsersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    wo_number?: StringFieldUpdateOperationsInput | string
+    customer_id?: NullableIntFieldUpdateOperationsInput | number | null
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    pic_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type quotationsUpdateWithoutUsersInput = {
+    quo_number?: StringFieldUpdateOperationsInput | string
+    total_amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    grand_total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: StringFieldUpdateOperationsInput | string
+    valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    work_orders?: work_ordersUpdateOneRequiredWithoutQuotationsNestedInput
+    items?: quotation_itemsUpdateManyWithoutQuotationsNestedInput
+    sla?: slasUpdateOneWithoutQuotationsNestedInput
+  }
+
+  export type quotationsUncheckedUpdateWithoutUsersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    quo_number?: StringFieldUpdateOperationsInput | string
+    work_order_id?: IntFieldUpdateOperationsInput | number
+    total_amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    grand_total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: StringFieldUpdateOperationsInput | string
+    valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    items?: quotation_itemsUncheckedUpdateManyWithoutQuotationsNestedInput
+    sla?: slasUncheckedUpdateOneWithoutQuotationsNestedInput
+  }
+
+  export type quotationsUncheckedUpdateManyWithoutUsersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    quo_number?: StringFieldUpdateOperationsInput | string
+    work_order_id?: IntFieldUpdateOperationsInput | number
+    total_amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    grand_total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: StringFieldUpdateOperationsInput | string
+    valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type slasUpdateWithoutUsersInput = {
+    contract_duration?: StringFieldUpdateOperationsInput | string
+    service_frequency?: IntFieldUpdateOperationsInput | number
+    custom_kpis?: NullableStringFieldUpdateOperationsInput | string | null
+    custom_terms?: NullableStringFieldUpdateOperationsInput | string | null
+    custom_sow?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    quotations?: quotationsUpdateOneRequiredWithoutSlaNestedInput
+  }
+
+  export type slasUncheckedUpdateWithoutUsersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    quotation_id?: IntFieldUpdateOperationsInput | number
+    contract_duration?: StringFieldUpdateOperationsInput | string
+    service_frequency?: IntFieldUpdateOperationsInput | number
+    custom_kpis?: NullableStringFieldUpdateOperationsInput | string | null
+    custom_terms?: NullableStringFieldUpdateOperationsInput | string | null
+    custom_sow?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type slasUncheckedUpdateManyWithoutUsersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    quotation_id?: IntFieldUpdateOperationsInput | number
+    contract_duration?: StringFieldUpdateOperationsInput | string
+    service_frequency?: IntFieldUpdateOperationsInput | number
+    custom_kpis?: NullableStringFieldUpdateOperationsInput | string | null
+    custom_terms?: NullableStringFieldUpdateOperationsInput | string | null
+    custom_sow?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type activity_photosCreateManyService_activitiesInput = {

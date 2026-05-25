@@ -178,6 +178,58 @@ exports.Prisma.Refresh_tokensScalarFieldEnum = {
   created_at: 'created_at'
 };
 
+exports.Prisma.Work_ordersScalarFieldEnum = {
+  id: 'id',
+  wo_number: 'wo_number',
+  customer_id: 'customer_id',
+  customer_name: 'customer_name',
+  pic_name: 'pic_name',
+  company_address: 'company_address',
+  status: 'status',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  created_by: 'created_by'
+};
+
+exports.Prisma.QuotationsScalarFieldEnum = {
+  id: 'id',
+  quo_number: 'quo_number',
+  work_order_id: 'work_order_id',
+  total_amount: 'total_amount',
+  discount: 'discount',
+  tax: 'tax',
+  grand_total: 'grand_total',
+  status: 'status',
+  valid_until: 'valid_until',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  created_by: 'created_by'
+};
+
+exports.Prisma.Quotation_itemsScalarFieldEnum = {
+  id: 'id',
+  quotation_id: 'quotation_id',
+  item_name: 'item_name',
+  category: 'category',
+  qty: 'qty',
+  unit_price: 'unit_price',
+  total_price: 'total_price'
+};
+
+exports.Prisma.SlasScalarFieldEnum = {
+  id: 'id',
+  quotation_id: 'quotation_id',
+  contract_duration: 'contract_duration',
+  service_frequency: 'service_frequency',
+  custom_kpis: 'custom_kpis',
+  custom_terms: 'custom_terms',
+  custom_sow: 'custom_sow',
+  status: 'status',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  created_by: 'created_by'
+};
+
 exports.Prisma.Role_permissionsScalarFieldEnum = {
   role_id: 'role_id',
   permission_id: 'permission_id'
@@ -808,6 +860,32 @@ exports.Prisma.refresh_tokensOrderByRelevanceFieldEnum = {
   token_hash: 'token_hash'
 };
 
+exports.Prisma.work_ordersOrderByRelevanceFieldEnum = {
+  wo_number: 'wo_number',
+  customer_name: 'customer_name',
+  pic_name: 'pic_name',
+  company_address: 'company_address',
+  status: 'status'
+};
+
+exports.Prisma.quotationsOrderByRelevanceFieldEnum = {
+  quo_number: 'quo_number',
+  status: 'status'
+};
+
+exports.Prisma.quotation_itemsOrderByRelevanceFieldEnum = {
+  item_name: 'item_name',
+  category: 'category'
+};
+
+exports.Prisma.slasOrderByRelevanceFieldEnum = {
+  contract_duration: 'contract_duration',
+  custom_kpis: 'custom_kpis',
+  custom_terms: 'custom_terms',
+  custom_sow: 'custom_sow',
+  status: 'status'
+};
+
 exports.Prisma.rolesOrderByRelevanceFieldEnum = {
   role_name: 'role_name'
 };
@@ -1218,6 +1296,10 @@ exports.Prisma.ModelName = {
   projects: 'projects',
   knowledge_resources: 'knowledge_resources',
   refresh_tokens: 'refresh_tokens',
+  work_orders: 'work_orders',
+  quotations: 'quotations',
+  quotation_items: 'quotation_items',
+  slas: 'slas',
   role_permissions: 'role_permissions',
   roles: 'roles',
   units: 'units',
