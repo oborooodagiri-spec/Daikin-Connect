@@ -108,23 +108,27 @@ export default function SlaVesClient() {
     }
   }), []);
 
+  // Helper to categorize items robustly
+  const getEquipmentType = (item: any) => {
+    const name = (item?.item_name || "").toLowerCase();
+    const cat = (item?.category || "").toLowerCase();
+    
+    if (name.includes("chiller") || cat.includes("chiller")) return "Chiller";
+    if (name.includes("ahu") || cat.includes("ahu") || name.includes("fcu") || cat.includes("fcu")) return "AHU_FCU";
+    if (name.includes("cooling tower") || cat.includes("tower")) return "CoolingTower";
+    if (name.includes("pump") || name.includes("pompa") || cat.includes("pump")) return "Pump";
+    if (name.includes("split") || name.includes("wall") || name.includes("cassette") || cat.includes("split")) return "AC_Split";
+    
+    return "AHU_FCU"; // Default fallback
+  };
+
   // Map active items to equipment types
   const coveredEquipment = useMemo(() => {
     if (!slaData?.activeItems) return [];
-    
     const types = new Set<string>();
     slaData.activeItems.forEach((item: any) => {
-      const name = item.item_name.toLowerCase();
-      const cat = item.category.toLowerCase();
-      
-      if (name.includes("chiller") || cat.includes("chiller")) types.add("Chiller");
-      else if (name.includes("ahu") || cat.includes("ahu") || name.includes("fcu") || cat.includes("fcu")) types.add("AHU_FCU");
-      else if (name.includes("cooling tower") || cat.includes("tower")) types.add("CoolingTower");
-      else if (name.includes("pump") || name.includes("pompa") || cat.includes("pump")) types.add("Pump");
-      else if (name.includes("split") || name.includes("wall") || name.includes("cassette") || cat.includes("split")) types.add("AC_Split");
-      else types.add("AHU_FCU"); // Default fallback
+      types.add(getEquipmentType(item));
     });
-    
     return Array.from(types);
   }, [slaData]);
 
@@ -186,21 +190,55 @@ export default function SlaVesClient() {
         <div className="h-px bg-slate-100" />
 
         <div className="space-y-4">
-          <div>
-            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Customer</label>
-            <div className="text-xs font-bold text-slate-800">{woForm.recipient_company || "-"}</div>
+          <div className="space-y-1">
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Customer Company</label>
+            <input 
+              type="text" 
+              value={woForm.recipient_company} 
+              onChange={e => setSlaData({...slaData, woForm: {...woForm, recipient_company: e.target.value}})}
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:border-[#0073ea]"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">PIC Name</label>
+            <input 
+              type="text" 
+              value={woForm.recipient_pic} 
+              onChange={e => setSlaData({...slaData, woForm: {...woForm, recipient_pic: e.target.value}})}
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:border-[#0073ea]"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Contract Duration</label>
+            <select 
+              value={contractDuration} 
+              onChange={e => setSlaData({...slaData, contractDuration: e.target.value})}
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:border-[#0073ea]"
+            >
+              <option value="1 Tahun">1 Tahun</option>
+              <option value="2 Tahun">2 Tahun</option>
+              <option value="3 Tahun">3 Tahun</option>
+              <option value="4 Tahun">4 Tahun</option>
+              <option value="5 Tahun">5 Tahun</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Service Frequency</label>
+            <select 
+              value={serviceFrequency} 
+              onChange={e => setSlaData({...slaData, serviceFrequency: parseInt(e.target.value)})}
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:border-[#0073ea]"
+            >
+              <option value={1}>1x Setahun (Tahunan)</option>
+              <option value={2}>2x Setahun (Semesteran)</option>
+              <option value={4}>4x Setahun (Kuartalan)</option>
+              <option value={6}>6x Setahun (Dwi-bulanan)</option>
+              <option value={12}>12x Setahun (Bulanan)</option>
+            </select>
           </div>
           <div>
-            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Quotation Ref</label>
-            <div className="text-xs font-bold text-[#0073ea]">{woForm.quo_number}</div>
-          </div>
-          <div>
-            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Equipment Covered</label>
-            <div className="text-xs font-bold text-slate-800">{coveredEquipment.join(", ").replace(/_/g, " ")}</div>
-          </div>
-          <div>
-            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Service Frequency</label>
-            <div className="text-xs font-bold text-slate-800">{visitFrequencyText}</div>
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Equipment Covered</label>
+            <div className="text-xs font-bold text-slate-600 mt-1">{coveredEquipment.join(", ").replace(/_/g, " ")}</div>
           </div>
         </div>
 
@@ -268,12 +306,9 @@ export default function SlaVesClient() {
                 </thead>
                 <tbody>
                   {coveredEquipment.map((type) => {
-                    const count = activeItems.filter((i: any) => 
-                      i.category.toLowerCase().includes(type.toLowerCase().replace("ahu_fcu", "ahu")) || 
-                      i.item_name.toLowerCase().includes(type.toLowerCase().replace("ahu_fcu", "ahu")) ||
-                      i.category.toLowerCase().includes(type.toLowerCase().replace("ahu_fcu", "fcu")) || 
-                      i.item_name.toLowerCase().includes(type.toLowerCase().replace("ahu_fcu", "fcu"))
-                    ).reduce((sum: number, i: any) => sum + i.qty, 0);
+                    const count = activeItems
+                      .filter((i: any) => getEquipmentType(i) === type)
+                      .reduce((sum: number, i: any) => sum + i.qty, 0);
                     
                     return (
                       <tr key={type} className="border-b border-slate-100 last:border-0">
