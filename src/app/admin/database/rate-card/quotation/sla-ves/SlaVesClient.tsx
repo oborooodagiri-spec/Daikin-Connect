@@ -402,6 +402,56 @@ export default function SlaVesClient() {
         })}
 
       </div>
+
+      {/* Global CSS settings for multi-page paged media and scrollbars */}
+      <style jsx global>{`
+        .a4-sheet {
+          width: 21cm;
+          height: 29.7cm;
+          box-sizing: border-box;
+          flex-shrink: 0;
+        }
+
+        @media print {
+          body, html {
+            background: white !important;
+            color: black !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          .no-print {
+            display: none !important;
+          }
+          .a4-sheet {
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            width: 21cm !important;
+            height: 29.7cm !important;
+            page-break-after: always !important;
+            box-sizing: border-box !important;
+          }
+          @page {
+            size: A4 portrait;
+            margin: 0;
+          }
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 5px;
+          height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 9999px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+      `}</style>
     </div>
   );
 }
