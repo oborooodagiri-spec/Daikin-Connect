@@ -535,6 +535,13 @@ export default function RateCardClient() {
              )}
              <div className="flex gap-2">
                 <Link 
+                  href="/admin/database/rate-card/commercial-history"
+                  className="flex items-center gap-2 px-6 py-4 bg-[#0073ea] text-white hover:bg-blue-700 rounded-2xl transition-all shadow-sm group font-black text-[10px] uppercase tracking-widest"
+                  title="Lihat Riwayat Quotation, SLA, dan Work Order"
+                >
+                  <Briefcase size={16} /> Riwayat
+                </Link>
+                <Link 
                   href="/admin/database/rate-card/print"
                   target="_blank"
                   rel="noopener noreferrer"
