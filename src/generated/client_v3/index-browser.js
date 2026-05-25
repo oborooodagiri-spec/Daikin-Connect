@@ -182,6 +182,7 @@ exports.Prisma.Work_ordersScalarFieldEnum = {
   id: 'id',
   wo_number: 'wo_number',
   customer_id: 'customer_id',
+  project_id: 'project_id',
   customer_name: 'customer_name',
   pic_name: 'pic_name',
   company_address: 'company_address',

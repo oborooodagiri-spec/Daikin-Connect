@@ -57,6 +57,7 @@ model projects {
   vendor_attendance    vendor_attendance[]
   knowledge_resources  knowledge_resources[]
   notifications        notifications[]
+  work_orders          work_orders[]
 
   @@unique([customer_id, name], map: "uq_project_per_customer")
   @@index([customer_id], map: "idx_projects_customer")
@@ -101,6 +102,7 @@ model work_orders {
   id              Int      @id @default(autoincrement())
   wo_number       String   @unique @db.VarChar(100)
   customer_id     Int? // Optional link to existing customers
+  project_id      BigInt?  @db.UnsignedBigInt // Link to projects
   customer_name   String?  @db.VarChar(150)
   pic_name        String?  @db.VarChar(100)
   company_address String?  @db.Text
@@ -110,10 +112,12 @@ model work_orders {
   created_by      Int?
 
   customers  customers?   @relation(fields: [customer_id], references: [id])
+  projects   projects?    @relation(fields: [project_id], references: [id])
   users      users?       @relation(fields: [created_by], references: [id])
   quotations quotations[]
 
   @@index([customer_id])
+  @@index([project_id])
   @@index([created_by])
 }
 

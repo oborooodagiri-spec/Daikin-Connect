@@ -23,6 +23,7 @@ export async function createWorkOrder(data: any) {
         customer_name: data.customer_name,
         pic_name: data.pic_name,
         company_address: data.company_address,
+        project_id: data.project_id ? BigInt(data.project_id) : null,
         status: data.status || "Draft",
         created_by: session.id
       }
@@ -35,14 +36,21 @@ export async function createWorkOrder(data: any) {
   }
 }
 
-export async function getWorkOrders() {
+export async function getWorkOrders(projectId?: number | string) {
   try {
     const session = await getSession();
     if (!session) throw new Error("Unauthorized");
 
+    const whereClause: any = {};
+    if (projectId) {
+      whereClause.project_id = BigInt(projectId);
+    }
+
     const wos = await prisma.work_orders.findMany({
+      where: whereClause,
       orderBy: { created_at: "desc" },
       include: {
+        projects: true,
         quotations: {
           include: {
             sla: true
@@ -110,15 +118,25 @@ export async function createQuotation(data: any) {
   }
 }
 
-export async function getQuotations() {
+export async function getQuotations(projectId?: number | string) {
   try {
     const session = await getSession();
     if (!session) throw new Error("Unauthorized");
 
+    const whereClause: any = {};
+    if (projectId) {
+      whereClause.work_orders = { project_id: BigInt(projectId) };
+    }
+
     const quotations = await prisma.quotations.findMany({
+      where: whereClause,
       orderBy: { created_at: "desc" },
       include: {
-        work_orders: true,
+        work_orders: {
+          include: {
+            projects: true
+          }
+        },
         items: true,
         sla: true
       }

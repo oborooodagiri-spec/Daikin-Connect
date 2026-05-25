@@ -5362,6 +5362,7 @@ export namespace Prisma {
     vendor_attendance: number
     knowledge_resources: number
     notifications: number
+    work_orders: number
   }
 
   export type ProjectsCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5374,6 +5375,7 @@ export namespace Prisma {
     vendor_attendance?: boolean | ProjectsCountOutputTypeCountVendor_attendanceArgs
     knowledge_resources?: boolean | ProjectsCountOutputTypeCountKnowledge_resourcesArgs
     notifications?: boolean | ProjectsCountOutputTypeCountNotificationsArgs
+    work_orders?: boolean | ProjectsCountOutputTypeCountWork_ordersArgs
   }
 
   // Custom InputTypes
@@ -5448,6 +5450,13 @@ export namespace Prisma {
    */
   export type ProjectsCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: notificationsWhereInput
+  }
+
+  /**
+   * ProjectsCountOutputType without action
+   */
+  export type ProjectsCountOutputTypeCountWork_ordersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: work_ordersWhereInput
   }
 
 
@@ -8407,6 +8416,7 @@ export namespace Prisma {
     vendor_attendance?: boolean | projects$vendor_attendanceArgs<ExtArgs>
     knowledge_resources?: boolean | projects$knowledge_resourcesArgs<ExtArgs>
     notifications?: boolean | projects$notificationsArgs<ExtArgs>
+    work_orders?: boolean | projects$work_ordersArgs<ExtArgs>
     _count?: boolean | ProjectsCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["projects"]>
 
@@ -8442,6 +8452,7 @@ export namespace Prisma {
     vendor_attendance?: boolean | projects$vendor_attendanceArgs<ExtArgs>
     knowledge_resources?: boolean | projects$knowledge_resourcesArgs<ExtArgs>
     notifications?: boolean | projects$notificationsArgs<ExtArgs>
+    work_orders?: boolean | projects$work_ordersArgs<ExtArgs>
     _count?: boolean | ProjectsCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -8459,6 +8470,7 @@ export namespace Prisma {
       vendor_attendance: Prisma.$vendor_attendancePayload<ExtArgs>[]
       knowledge_resources: Prisma.$knowledge_resourcesPayload<ExtArgs>[]
       notifications: Prisma.$notificationsPayload<ExtArgs>[]
+      work_orders: Prisma.$work_ordersPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: bigint
@@ -8826,6 +8838,7 @@ export namespace Prisma {
     vendor_attendance<T extends projects$vendor_attendanceArgs<ExtArgs> = {}>(args?: Subset<T, projects$vendor_attendanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$vendor_attendancePayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     knowledge_resources<T extends projects$knowledge_resourcesArgs<ExtArgs> = {}>(args?: Subset<T, projects$knowledge_resourcesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$knowledge_resourcesPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     notifications<T extends projects$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, projects$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$notificationsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    work_orders<T extends projects$work_ordersArgs<ExtArgs> = {}>(args?: Subset<T, projects$work_ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$work_ordersPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9444,6 +9457,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: NotificationsScalarFieldEnum | NotificationsScalarFieldEnum[]
+  }
+
+  /**
+   * projects.work_orders
+   */
+  export type projects$work_ordersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the work_orders
+     */
+    select?: work_ordersSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the work_orders
+     */
+    omit?: work_ordersOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: work_ordersInclude<ExtArgs> | null
+    where?: work_ordersWhereInput
+    orderBy?: work_ordersOrderByWithRelationInput | work_ordersOrderByWithRelationInput[]
+    cursor?: work_ordersWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Work_ordersScalarFieldEnum | Work_ordersScalarFieldEnum[]
   }
 
   /**
@@ -11550,12 +11587,14 @@ export namespace Prisma {
   export type Work_ordersAvgAggregateOutputType = {
     id: number | null
     customer_id: number | null
+    project_id: number | null
     created_by: number | null
   }
 
   export type Work_ordersSumAggregateOutputType = {
     id: number | null
     customer_id: number | null
+    project_id: bigint | null
     created_by: number | null
   }
 
@@ -11563,6 +11602,7 @@ export namespace Prisma {
     id: number | null
     wo_number: string | null
     customer_id: number | null
+    project_id: bigint | null
     customer_name: string | null
     pic_name: string | null
     company_address: string | null
@@ -11576,6 +11616,7 @@ export namespace Prisma {
     id: number | null
     wo_number: string | null
     customer_id: number | null
+    project_id: bigint | null
     customer_name: string | null
     pic_name: string | null
     company_address: string | null
@@ -11589,6 +11630,7 @@ export namespace Prisma {
     id: number
     wo_number: number
     customer_id: number
+    project_id: number
     customer_name: number
     pic_name: number
     company_address: number
@@ -11603,12 +11645,14 @@ export namespace Prisma {
   export type Work_ordersAvgAggregateInputType = {
     id?: true
     customer_id?: true
+    project_id?: true
     created_by?: true
   }
 
   export type Work_ordersSumAggregateInputType = {
     id?: true
     customer_id?: true
+    project_id?: true
     created_by?: true
   }
 
@@ -11616,6 +11660,7 @@ export namespace Prisma {
     id?: true
     wo_number?: true
     customer_id?: true
+    project_id?: true
     customer_name?: true
     pic_name?: true
     company_address?: true
@@ -11629,6 +11674,7 @@ export namespace Prisma {
     id?: true
     wo_number?: true
     customer_id?: true
+    project_id?: true
     customer_name?: true
     pic_name?: true
     company_address?: true
@@ -11642,6 +11688,7 @@ export namespace Prisma {
     id?: true
     wo_number?: true
     customer_id?: true
+    project_id?: true
     customer_name?: true
     pic_name?: true
     company_address?: true
@@ -11742,6 +11789,7 @@ export namespace Prisma {
     id: number
     wo_number: string
     customer_id: number | null
+    project_id: bigint | null
     customer_name: string | null
     pic_name: string | null
     company_address: string | null
@@ -11774,6 +11822,7 @@ export namespace Prisma {
     id?: boolean
     wo_number?: boolean
     customer_id?: boolean
+    project_id?: boolean
     customer_name?: boolean
     pic_name?: boolean
     company_address?: boolean
@@ -11782,6 +11831,7 @@ export namespace Prisma {
     updated_at?: boolean
     created_by?: boolean
     customers?: boolean | work_orders$customersArgs<ExtArgs>
+    projects?: boolean | work_orders$projectsArgs<ExtArgs>
     users?: boolean | work_orders$usersArgs<ExtArgs>
     quotations?: boolean | work_orders$quotationsArgs<ExtArgs>
     _count?: boolean | Work_ordersCountOutputTypeDefaultArgs<ExtArgs>
@@ -11793,6 +11843,7 @@ export namespace Prisma {
     id?: boolean
     wo_number?: boolean
     customer_id?: boolean
+    project_id?: boolean
     customer_name?: boolean
     pic_name?: boolean
     company_address?: boolean
@@ -11802,9 +11853,10 @@ export namespace Prisma {
     created_by?: boolean
   }
 
-  export type work_ordersOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "wo_number" | "customer_id" | "customer_name" | "pic_name" | "company_address" | "status" | "created_at" | "updated_at" | "created_by", ExtArgs["result"]["work_orders"]>
+  export type work_ordersOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "wo_number" | "customer_id" | "project_id" | "customer_name" | "pic_name" | "company_address" | "status" | "created_at" | "updated_at" | "created_by", ExtArgs["result"]["work_orders"]>
   export type work_ordersInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customers?: boolean | work_orders$customersArgs<ExtArgs>
+    projects?: boolean | work_orders$projectsArgs<ExtArgs>
     users?: boolean | work_orders$usersArgs<ExtArgs>
     quotations?: boolean | work_orders$quotationsArgs<ExtArgs>
     _count?: boolean | Work_ordersCountOutputTypeDefaultArgs<ExtArgs>
@@ -11814,6 +11866,7 @@ export namespace Prisma {
     name: "work_orders"
     objects: {
       customers: Prisma.$customersPayload<ExtArgs> | null
+      projects: Prisma.$projectsPayload<ExtArgs> | null
       users: Prisma.$usersPayload<ExtArgs> | null
       quotations: Prisma.$quotationsPayload<ExtArgs>[]
     }
@@ -11821,6 +11874,7 @@ export namespace Prisma {
       id: number
       wo_number: string
       customer_id: number | null
+      project_id: bigint | null
       customer_name: string | null
       pic_name: string | null
       company_address: string | null
@@ -12169,6 +12223,7 @@ export namespace Prisma {
   export interface Prisma__work_ordersClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     customers<T extends work_orders$customersArgs<ExtArgs> = {}>(args?: Subset<T, work_orders$customersArgs<ExtArgs>>): Prisma__customersClient<$Result.GetResult<Prisma.$customersPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
+    projects<T extends work_orders$projectsArgs<ExtArgs> = {}>(args?: Subset<T, work_orders$projectsArgs<ExtArgs>>): Prisma__projectsClient<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
     users<T extends work_orders$usersArgs<ExtArgs> = {}>(args?: Subset<T, work_orders$usersArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
     quotations<T extends work_orders$quotationsArgs<ExtArgs> = {}>(args?: Subset<T, work_orders$quotationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$quotationsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     /**
@@ -12203,6 +12258,7 @@ export namespace Prisma {
     readonly id: FieldRef<"work_orders", 'Int'>
     readonly wo_number: FieldRef<"work_orders", 'String'>
     readonly customer_id: FieldRef<"work_orders", 'Int'>
+    readonly project_id: FieldRef<"work_orders", 'BigInt'>
     readonly customer_name: FieldRef<"work_orders", 'String'>
     readonly pic_name: FieldRef<"work_orders", 'String'>
     readonly company_address: FieldRef<"work_orders", 'String'>
@@ -12569,6 +12625,25 @@ export namespace Prisma {
      */
     include?: customersInclude<ExtArgs> | null
     where?: customersWhereInput
+  }
+
+  /**
+   * work_orders.projects
+   */
+  export type work_orders$projectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the projects
+     */
+    select?: projectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the projects
+     */
+    omit?: projectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: projectsInclude<ExtArgs> | null
+    where?: projectsWhereInput
   }
 
   /**
@@ -60900,6 +60975,7 @@ export namespace Prisma {
     id: 'id',
     wo_number: 'wo_number',
     customer_id: 'customer_id',
+    project_id: 'project_id',
     customer_name: 'customer_name',
     pic_name: 'pic_name',
     company_address: 'company_address',
@@ -62517,6 +62593,7 @@ export namespace Prisma {
     vendor_attendance?: Vendor_attendanceListRelationFilter
     knowledge_resources?: Knowledge_resourcesListRelationFilter
     notifications?: NotificationsListRelationFilter
+    work_orders?: Work_ordersListRelationFilter
   }
 
   export type projectsOrderByWithRelationInput = {
@@ -62545,6 +62622,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceOrderByRelationAggregateInput
     knowledge_resources?: knowledge_resourcesOrderByRelationAggregateInput
     notifications?: notificationsOrderByRelationAggregateInput
+    work_orders?: work_ordersOrderByRelationAggregateInput
     _relevance?: projectsOrderByRelevanceInput
   }
 
@@ -62578,6 +62656,7 @@ export namespace Prisma {
     vendor_attendance?: Vendor_attendanceListRelationFilter
     knowledge_resources?: Knowledge_resourcesListRelationFilter
     notifications?: NotificationsListRelationFilter
+    work_orders?: Work_ordersListRelationFilter
   }, "id" | "customer_id_name">
 
   export type projectsOrderByWithAggregationInput = {
@@ -62801,6 +62880,7 @@ export namespace Prisma {
     id?: IntFilter<"work_orders"> | number
     wo_number?: StringFilter<"work_orders"> | string
     customer_id?: IntNullableFilter<"work_orders"> | number | null
+    project_id?: BigIntNullableFilter<"work_orders"> | bigint | number | null
     customer_name?: StringNullableFilter<"work_orders"> | string | null
     pic_name?: StringNullableFilter<"work_orders"> | string | null
     company_address?: StringNullableFilter<"work_orders"> | string | null
@@ -62809,6 +62889,7 @@ export namespace Prisma {
     updated_at?: DateTimeFilter<"work_orders"> | Date | string
     created_by?: IntNullableFilter<"work_orders"> | number | null
     customers?: XOR<CustomersNullableScalarRelationFilter, customersWhereInput> | null
+    projects?: XOR<ProjectsNullableScalarRelationFilter, projectsWhereInput> | null
     users?: XOR<UsersNullableScalarRelationFilter, usersWhereInput> | null
     quotations?: QuotationsListRelationFilter
   }
@@ -62817,6 +62898,7 @@ export namespace Prisma {
     id?: SortOrder
     wo_number?: SortOrder
     customer_id?: SortOrderInput | SortOrder
+    project_id?: SortOrderInput | SortOrder
     customer_name?: SortOrderInput | SortOrder
     pic_name?: SortOrderInput | SortOrder
     company_address?: SortOrderInput | SortOrder
@@ -62825,6 +62907,7 @@ export namespace Prisma {
     updated_at?: SortOrder
     created_by?: SortOrderInput | SortOrder
     customers?: customersOrderByWithRelationInput
+    projects?: projectsOrderByWithRelationInput
     users?: usersOrderByWithRelationInput
     quotations?: quotationsOrderByRelationAggregateInput
     _relevance?: work_ordersOrderByRelevanceInput
@@ -62837,6 +62920,7 @@ export namespace Prisma {
     OR?: work_ordersWhereInput[]
     NOT?: work_ordersWhereInput | work_ordersWhereInput[]
     customer_id?: IntNullableFilter<"work_orders"> | number | null
+    project_id?: BigIntNullableFilter<"work_orders"> | bigint | number | null
     customer_name?: StringNullableFilter<"work_orders"> | string | null
     pic_name?: StringNullableFilter<"work_orders"> | string | null
     company_address?: StringNullableFilter<"work_orders"> | string | null
@@ -62845,6 +62929,7 @@ export namespace Prisma {
     updated_at?: DateTimeFilter<"work_orders"> | Date | string
     created_by?: IntNullableFilter<"work_orders"> | number | null
     customers?: XOR<CustomersNullableScalarRelationFilter, customersWhereInput> | null
+    projects?: XOR<ProjectsNullableScalarRelationFilter, projectsWhereInput> | null
     users?: XOR<UsersNullableScalarRelationFilter, usersWhereInput> | null
     quotations?: QuotationsListRelationFilter
   }, "id" | "wo_number">
@@ -62853,6 +62938,7 @@ export namespace Prisma {
     id?: SortOrder
     wo_number?: SortOrder
     customer_id?: SortOrderInput | SortOrder
+    project_id?: SortOrderInput | SortOrder
     customer_name?: SortOrderInput | SortOrder
     pic_name?: SortOrderInput | SortOrder
     company_address?: SortOrderInput | SortOrder
@@ -62874,6 +62960,7 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter<"work_orders"> | number
     wo_number?: StringWithAggregatesFilter<"work_orders"> | string
     customer_id?: IntNullableWithAggregatesFilter<"work_orders"> | number | null
+    project_id?: BigIntNullableWithAggregatesFilter<"work_orders"> | bigint | number | null
     customer_name?: StringNullableWithAggregatesFilter<"work_orders"> | string | null
     pic_name?: StringNullableWithAggregatesFilter<"work_orders"> | string | null
     company_address?: StringNullableWithAggregatesFilter<"work_orders"> | string | null
@@ -67101,6 +67188,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
     notifications?: notificationsCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateInput = {
@@ -67128,6 +67216,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUpdateInput = {
@@ -67155,6 +67244,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateInput = {
@@ -67182,6 +67272,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsCreateManyInput = {
@@ -67430,6 +67521,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     customers?: customersCreateNestedOneWithoutWork_ordersInput
+    projects?: projectsCreateNestedOneWithoutWork_ordersInput
     users?: usersCreateNestedOneWithoutCreated_work_ordersInput
     quotations?: quotationsCreateNestedManyWithoutWork_ordersInput
   }
@@ -67438,6 +67530,7 @@ export namespace Prisma {
     id?: number
     wo_number: string
     customer_id?: number | null
+    project_id?: bigint | number | null
     customer_name?: string | null
     pic_name?: string | null
     company_address?: string | null
@@ -67457,6 +67550,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     customers?: customersUpdateOneWithoutWork_ordersNestedInput
+    projects?: projectsUpdateOneWithoutWork_ordersNestedInput
     users?: usersUpdateOneWithoutCreated_work_ordersNestedInput
     quotations?: quotationsUpdateManyWithoutWork_ordersNestedInput
   }
@@ -67465,6 +67559,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     wo_number?: StringFieldUpdateOperationsInput | string
     customer_id?: NullableIntFieldUpdateOperationsInput | number | null
+    project_id?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     customer_name?: NullableStringFieldUpdateOperationsInput | string | null
     pic_name?: NullableStringFieldUpdateOperationsInput | string | null
     company_address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -67479,6 +67574,7 @@ export namespace Prisma {
     id?: number
     wo_number: string
     customer_id?: number | null
+    project_id?: bigint | number | null
     customer_name?: string | null
     pic_name?: string | null
     company_address?: string | null
@@ -67502,6 +67598,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     wo_number?: StringFieldUpdateOperationsInput | string
     customer_id?: NullableIntFieldUpdateOperationsInput | number | null
+    project_id?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     customer_name?: NullableStringFieldUpdateOperationsInput | string | null
     pic_name?: NullableStringFieldUpdateOperationsInput | string | null
     company_address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -72616,6 +72713,7 @@ export namespace Prisma {
     id?: SortOrder
     wo_number?: SortOrder
     customer_id?: SortOrder
+    project_id?: SortOrder
     customer_name?: SortOrder
     pic_name?: SortOrder
     company_address?: SortOrder
@@ -72628,6 +72726,7 @@ export namespace Prisma {
   export type work_ordersAvgOrderByAggregateInput = {
     id?: SortOrder
     customer_id?: SortOrder
+    project_id?: SortOrder
     created_by?: SortOrder
   }
 
@@ -72635,6 +72734,7 @@ export namespace Prisma {
     id?: SortOrder
     wo_number?: SortOrder
     customer_id?: SortOrder
+    project_id?: SortOrder
     customer_name?: SortOrder
     pic_name?: SortOrder
     company_address?: SortOrder
@@ -72648,6 +72748,7 @@ export namespace Prisma {
     id?: SortOrder
     wo_number?: SortOrder
     customer_id?: SortOrder
+    project_id?: SortOrder
     customer_name?: SortOrder
     pic_name?: SortOrder
     company_address?: SortOrder
@@ -72660,6 +72761,7 @@ export namespace Prisma {
   export type work_ordersSumOrderByAggregateInput = {
     id?: SortOrder
     customer_id?: SortOrder
+    project_id?: SortOrder
     created_by?: SortOrder
   }
 
@@ -76482,6 +76584,13 @@ export namespace Prisma {
     connect?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
   }
 
+  export type work_ordersCreateNestedManyWithoutProjectsInput = {
+    create?: XOR<work_ordersCreateWithoutProjectsInput, work_ordersUncheckedCreateWithoutProjectsInput> | work_ordersCreateWithoutProjectsInput[] | work_ordersUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: work_ordersCreateOrConnectWithoutProjectsInput | work_ordersCreateOrConnectWithoutProjectsInput[]
+    createMany?: work_ordersCreateManyProjectsInputEnvelope
+    connect?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+  }
+
   export type logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput = {
     create?: XOR<logsheet_templatesCreateWithoutProjectsInput, logsheet_templatesUncheckedCreateWithoutProjectsInput> | logsheet_templatesCreateWithoutProjectsInput[] | logsheet_templatesUncheckedCreateWithoutProjectsInput[]
     connectOrCreate?: logsheet_templatesCreateOrConnectWithoutProjectsInput | logsheet_templatesCreateOrConnectWithoutProjectsInput[]
@@ -76549,6 +76658,13 @@ export namespace Prisma {
     connectOrCreate?: notificationsCreateOrConnectWithoutProjectsInput | notificationsCreateOrConnectWithoutProjectsInput[]
     createMany?: notificationsCreateManyProjectsInputEnvelope
     connect?: notificationsWhereUniqueInput | notificationsWhereUniqueInput[]
+  }
+
+  export type work_ordersUncheckedCreateNestedManyWithoutProjectsInput = {
+    create?: XOR<work_ordersCreateWithoutProjectsInput, work_ordersUncheckedCreateWithoutProjectsInput> | work_ordersCreateWithoutProjectsInput[] | work_ordersUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: work_ordersCreateOrConnectWithoutProjectsInput | work_ordersCreateOrConnectWithoutProjectsInput[]
+    createMany?: work_ordersCreateManyProjectsInputEnvelope
+    connect?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
   }
 
   export type Enumprojects_statusFieldUpdateOperationsInput = {
@@ -76711,6 +76827,20 @@ export namespace Prisma {
     deleteMany?: notificationsScalarWhereInput | notificationsScalarWhereInput[]
   }
 
+  export type work_ordersUpdateManyWithoutProjectsNestedInput = {
+    create?: XOR<work_ordersCreateWithoutProjectsInput, work_ordersUncheckedCreateWithoutProjectsInput> | work_ordersCreateWithoutProjectsInput[] | work_ordersUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: work_ordersCreateOrConnectWithoutProjectsInput | work_ordersCreateOrConnectWithoutProjectsInput[]
+    upsert?: work_ordersUpsertWithWhereUniqueWithoutProjectsInput | work_ordersUpsertWithWhereUniqueWithoutProjectsInput[]
+    createMany?: work_ordersCreateManyProjectsInputEnvelope
+    set?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    disconnect?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    delete?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    connect?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    update?: work_ordersUpdateWithWhereUniqueWithoutProjectsInput | work_ordersUpdateWithWhereUniqueWithoutProjectsInput[]
+    updateMany?: work_ordersUpdateManyWithWhereWithoutProjectsInput | work_ordersUpdateManyWithWhereWithoutProjectsInput[]
+    deleteMany?: work_ordersScalarWhereInput | work_ordersScalarWhereInput[]
+  }
+
   export type logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput = {
     create?: XOR<logsheet_templatesCreateWithoutProjectsInput, logsheet_templatesUncheckedCreateWithoutProjectsInput> | logsheet_templatesCreateWithoutProjectsInput[] | logsheet_templatesUncheckedCreateWithoutProjectsInput[]
     connectOrCreate?: logsheet_templatesCreateOrConnectWithoutProjectsInput | logsheet_templatesCreateOrConnectWithoutProjectsInput[]
@@ -76847,6 +76977,20 @@ export namespace Prisma {
     deleteMany?: notificationsScalarWhereInput | notificationsScalarWhereInput[]
   }
 
+  export type work_ordersUncheckedUpdateManyWithoutProjectsNestedInput = {
+    create?: XOR<work_ordersCreateWithoutProjectsInput, work_ordersUncheckedCreateWithoutProjectsInput> | work_ordersCreateWithoutProjectsInput[] | work_ordersUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: work_ordersCreateOrConnectWithoutProjectsInput | work_ordersCreateOrConnectWithoutProjectsInput[]
+    upsert?: work_ordersUpsertWithWhereUniqueWithoutProjectsInput | work_ordersUpsertWithWhereUniqueWithoutProjectsInput[]
+    createMany?: work_ordersCreateManyProjectsInputEnvelope
+    set?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    disconnect?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    delete?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    connect?: work_ordersWhereUniqueInput | work_ordersWhereUniqueInput[]
+    update?: work_ordersUpdateWithWhereUniqueWithoutProjectsInput | work_ordersUpdateWithWhereUniqueWithoutProjectsInput[]
+    updateMany?: work_ordersUpdateManyWithWhereWithoutProjectsInput | work_ordersUpdateManyWithWhereWithoutProjectsInput[]
+    deleteMany?: work_ordersScalarWhereInput | work_ordersScalarWhereInput[]
+  }
+
   export type projectsCreateNestedOneWithoutKnowledge_resourcesInput = {
     create?: XOR<projectsCreateWithoutKnowledge_resourcesInput, projectsUncheckedCreateWithoutKnowledge_resourcesInput>
     connectOrCreate?: projectsCreateOrConnectWithoutKnowledge_resourcesInput
@@ -76891,6 +77035,12 @@ export namespace Prisma {
     connect?: customersWhereUniqueInput
   }
 
+  export type projectsCreateNestedOneWithoutWork_ordersInput = {
+    create?: XOR<projectsCreateWithoutWork_ordersInput, projectsUncheckedCreateWithoutWork_ordersInput>
+    connectOrCreate?: projectsCreateOrConnectWithoutWork_ordersInput
+    connect?: projectsWhereUniqueInput
+  }
+
   export type usersCreateNestedOneWithoutCreated_work_ordersInput = {
     create?: XOR<usersCreateWithoutCreated_work_ordersInput, usersUncheckedCreateWithoutCreated_work_ordersInput>
     connectOrCreate?: usersCreateOrConnectWithoutCreated_work_ordersInput
@@ -76919,6 +77069,16 @@ export namespace Prisma {
     delete?: customersWhereInput | boolean
     connect?: customersWhereUniqueInput
     update?: XOR<XOR<customersUpdateToOneWithWhereWithoutWork_ordersInput, customersUpdateWithoutWork_ordersInput>, customersUncheckedUpdateWithoutWork_ordersInput>
+  }
+
+  export type projectsUpdateOneWithoutWork_ordersNestedInput = {
+    create?: XOR<projectsCreateWithoutWork_ordersInput, projectsUncheckedCreateWithoutWork_ordersInput>
+    connectOrCreate?: projectsCreateOrConnectWithoutWork_ordersInput
+    upsert?: projectsUpsertWithoutWork_ordersInput
+    disconnect?: projectsWhereInput | boolean
+    delete?: projectsWhereInput | boolean
+    connect?: projectsWhereUniqueInput
+    update?: XOR<XOR<projectsUpdateToOneWithWhereWithoutWork_ordersInput, projectsUpdateWithoutWork_ordersInput>, projectsUncheckedUpdateWithoutWork_ordersInput>
   }
 
   export type usersUpdateOneWithoutCreated_work_ordersNestedInput = {
@@ -80310,6 +80470,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
     notifications?: notificationsCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutCustomersInput = {
@@ -80336,6 +80497,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutCustomersInput = {
@@ -80412,6 +80574,7 @@ export namespace Prisma {
     status?: string
     created_at?: Date | string
     updated_at?: Date | string
+    projects?: projectsCreateNestedOneWithoutWork_ordersInput
     users?: usersCreateNestedOneWithoutCreated_work_ordersInput
     quotations?: quotationsCreateNestedManyWithoutWork_ordersInput
   }
@@ -80419,6 +80582,7 @@ export namespace Prisma {
   export type work_ordersUncheckedCreateWithoutCustomersInput = {
     id?: number
     wo_number: string
+    project_id?: bigint | number | null
     customer_name?: string | null
     pic_name?: string | null
     company_address?: string | null
@@ -80587,6 +80751,7 @@ export namespace Prisma {
     id?: IntFilter<"work_orders"> | number
     wo_number?: StringFilter<"work_orders"> | string
     customer_id?: IntNullableFilter<"work_orders"> | number | null
+    project_id?: BigIntNullableFilter<"work_orders"> | bigint | number | null
     customer_name?: StringNullableFilter<"work_orders"> | string | null
     pic_name?: StringNullableFilter<"work_orders"> | string | null
     company_address?: StringNullableFilter<"work_orders"> | string | null
@@ -81070,6 +81235,43 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type work_ordersCreateWithoutProjectsInput = {
+    wo_number: string
+    customer_name?: string | null
+    pic_name?: string | null
+    company_address?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    customers?: customersCreateNestedOneWithoutWork_ordersInput
+    users?: usersCreateNestedOneWithoutCreated_work_ordersInput
+    quotations?: quotationsCreateNestedManyWithoutWork_ordersInput
+  }
+
+  export type work_ordersUncheckedCreateWithoutProjectsInput = {
+    id?: number
+    wo_number: string
+    customer_id?: number | null
+    customer_name?: string | null
+    pic_name?: string | null
+    company_address?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    created_by?: number | null
+    quotations?: quotationsUncheckedCreateNestedManyWithoutWork_ordersInput
+  }
+
+  export type work_ordersCreateOrConnectWithoutProjectsInput = {
+    where: work_ordersWhereUniqueInput
+    create: XOR<work_ordersCreateWithoutProjectsInput, work_ordersUncheckedCreateWithoutProjectsInput>
+  }
+
+  export type work_ordersCreateManyProjectsInputEnvelope = {
+    data: work_ordersCreateManyProjectsInput | work_ordersCreateManyProjectsInput[]
+    skipDuplicates?: boolean
+  }
+
   export type logsheet_templatesUpsertWithWhereUniqueWithoutProjectsInput = {
     where: logsheet_templatesWhereUniqueInput
     update: XOR<logsheet_templatesUpdateWithoutProjectsInput, logsheet_templatesUncheckedUpdateWithoutProjectsInput>
@@ -81452,6 +81654,22 @@ export namespace Prisma {
     created_at?: DateTimeFilter<"notifications"> | Date | string
   }
 
+  export type work_ordersUpsertWithWhereUniqueWithoutProjectsInput = {
+    where: work_ordersWhereUniqueInput
+    update: XOR<work_ordersUpdateWithoutProjectsInput, work_ordersUncheckedUpdateWithoutProjectsInput>
+    create: XOR<work_ordersCreateWithoutProjectsInput, work_ordersUncheckedCreateWithoutProjectsInput>
+  }
+
+  export type work_ordersUpdateWithWhereUniqueWithoutProjectsInput = {
+    where: work_ordersWhereUniqueInput
+    data: XOR<work_ordersUpdateWithoutProjectsInput, work_ordersUncheckedUpdateWithoutProjectsInput>
+  }
+
+  export type work_ordersUpdateManyWithWhereWithoutProjectsInput = {
+    where: work_ordersScalarWhereInput
+    data: XOR<work_ordersUpdateManyMutationInput, work_ordersUncheckedUpdateManyWithoutProjectsInput>
+  }
+
   export type projectsCreateWithoutKnowledge_resourcesInput = {
     id?: bigint | number
     name: string
@@ -81476,6 +81694,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     notifications?: notificationsCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutKnowledge_resourcesInput = {
@@ -81502,6 +81721,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutKnowledge_resourcesInput = {
@@ -81544,6 +81764,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutKnowledge_resourcesInput = {
@@ -81570,6 +81791,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type usersCreateWithoutRefresh_tokensInput = {
@@ -81778,6 +82000,65 @@ export namespace Prisma {
     create: XOR<customersCreateWithoutWork_ordersInput, customersUncheckedCreateWithoutWork_ordersInput>
   }
 
+  export type projectsCreateWithoutWork_ordersInput = {
+    id?: bigint | number
+    name: string
+    code?: string | null
+    status?: $Enums.projects_status
+    created_at?: Date | string
+    enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
+    logsheet_templates?: logsheet_templatesCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesCreateNestedManyWithoutProjectsInput
+    customers: customersCreateNestedOneWithoutProjectsInput
+    schedule_targets?: schedule_targetsCreateNestedManyWithoutProjectsInput
+    schedules?: schedulesCreateNestedManyWithoutProjectsInput
+    units?: unitsCreateNestedManyWithoutProjectsInput
+    user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsCreateNestedManyWithoutProjectsInput
+  }
+
+  export type projectsUncheckedCreateWithoutWork_ordersInput = {
+    id?: bigint | number
+    customer_id: number
+    name: string
+    code?: string | null
+    status?: $Enums.projects_status
+    created_at?: Date | string
+    enabled_forms?: string | null
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    radius_meters?: number
+    enabled_unit_types?: string
+    monitoring_focus?: string
+    shift_start_time?: string | null
+    shift_end_time?: string | null
+    logsheet_templates?: logsheet_templatesUncheckedCreateNestedManyWithoutProjectsInput
+    project_intelligence?: project_intelligenceUncheckedCreateNestedOneWithoutProjectsInput
+    project_issues?: project_issuesUncheckedCreateNestedManyWithoutProjectsInput
+    schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutProjectsInput
+    schedules?: schedulesUncheckedCreateNestedManyWithoutProjectsInput
+    units?: unitsUncheckedCreateNestedManyWithoutProjectsInput
+    user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
+    knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
+  }
+
+  export type projectsCreateOrConnectWithoutWork_ordersInput = {
+    where: projectsWhereUniqueInput
+    create: XOR<projectsCreateWithoutWork_ordersInput, projectsUncheckedCreateWithoutWork_ordersInput>
+  }
+
   export type usersCreateWithoutCreated_work_ordersInput = {
     name: string
     email: string
@@ -81943,6 +82224,71 @@ export namespace Prisma {
     tickets?: ticketsUncheckedUpdateManyWithoutCustomersNestedInput
   }
 
+  export type projectsUpsertWithoutWork_ordersInput = {
+    update: XOR<projectsUpdateWithoutWork_ordersInput, projectsUncheckedUpdateWithoutWork_ordersInput>
+    create: XOR<projectsCreateWithoutWork_ordersInput, projectsUncheckedCreateWithoutWork_ordersInput>
+    where?: projectsWhereInput
+  }
+
+  export type projectsUpdateToOneWithWhereWithoutWork_ordersInput = {
+    where?: projectsWhereInput
+    data: XOR<projectsUpdateWithoutWork_ordersInput, projectsUncheckedUpdateWithoutWork_ordersInput>
+  }
+
+  export type projectsUpdateWithoutWork_ordersInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
+    logsheet_templates?: logsheet_templatesUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUpdateManyWithoutProjectsNestedInput
+    customers?: customersUpdateOneRequiredWithoutProjectsNestedInput
+    schedule_targets?: schedule_targetsUpdateManyWithoutProjectsNestedInput
+    schedules?: schedulesUpdateManyWithoutProjectsNestedInput
+    units?: unitsUpdateManyWithoutProjectsNestedInput
+    user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUpdateManyWithoutProjectsNestedInput
+  }
+
+  export type projectsUncheckedUpdateWithoutWork_ordersInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    customer_id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: Enumprojects_statusFieldUpdateOperationsInput | $Enums.projects_status
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    enabled_forms?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    radius_meters?: IntFieldUpdateOperationsInput | number
+    enabled_unit_types?: StringFieldUpdateOperationsInput | string
+    monitoring_focus?: StringFieldUpdateOperationsInput | string
+    shift_start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    shift_end_time?: NullableStringFieldUpdateOperationsInput | string | null
+    logsheet_templates?: logsheet_templatesUncheckedUpdateManyWithoutProjectsNestedInput
+    project_intelligence?: project_intelligenceUncheckedUpdateOneWithoutProjectsNestedInput
+    project_issues?: project_issuesUncheckedUpdateManyWithoutProjectsNestedInput
+    schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutProjectsNestedInput
+    schedules?: schedulesUncheckedUpdateManyWithoutProjectsNestedInput
+    units?: unitsUncheckedUpdateManyWithoutProjectsNestedInput
+    user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
+    knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
+  }
+
   export type usersUpsertWithoutCreated_work_ordersInput = {
     update: XOR<usersUpdateWithoutCreated_work_ordersInput, usersUncheckedUpdateWithoutCreated_work_ordersInput>
     create: XOR<usersCreateWithoutCreated_work_ordersInput, usersUncheckedCreateWithoutCreated_work_ordersInput>
@@ -82074,6 +82420,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     customers?: customersCreateNestedOneWithoutWork_ordersInput
+    projects?: projectsCreateNestedOneWithoutWork_ordersInput
     users?: usersCreateNestedOneWithoutCreated_work_ordersInput
   }
 
@@ -82081,6 +82428,7 @@ export namespace Prisma {
     id?: number
     wo_number: string
     customer_id?: number | null
+    project_id?: bigint | number | null
     customer_name?: string | null
     pic_name?: string | null
     company_address?: string | null
@@ -82254,6 +82602,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     customers?: customersUpdateOneWithoutWork_ordersNestedInput
+    projects?: projectsUpdateOneWithoutWork_ordersNestedInput
     users?: usersUpdateOneWithoutCreated_work_ordersNestedInput
   }
 
@@ -82261,6 +82610,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     wo_number?: StringFieldUpdateOperationsInput | string
     customer_id?: NullableIntFieldUpdateOperationsInput | number | null
+    project_id?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     customer_name?: NullableStringFieldUpdateOperationsInput | string | null
     pic_name?: NullableStringFieldUpdateOperationsInput | string | null
     company_address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -83602,6 +83952,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
     notifications?: notificationsCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutUnitsInput = {
@@ -83628,6 +83979,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutUnitsInput = {
@@ -84110,6 +84462,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutUnitsInput = {
@@ -84136,6 +84489,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type user_unit_accessUpsertWithWhereUniqueWithoutUnitsInput = {
@@ -84186,6 +84540,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
     notifications?: notificationsCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutUser_project_accessInput = {
@@ -84212,6 +84567,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutUser_project_accessInput = {
@@ -84336,6 +84692,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutUser_project_accessInput = {
@@ -84362,6 +84719,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type usersUpsertWithoutUser_project_accessInput = {
@@ -85550,6 +85908,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     customers?: customersCreateNestedOneWithoutWork_ordersInput
+    projects?: projectsCreateNestedOneWithoutWork_ordersInput
     quotations?: quotationsCreateNestedManyWithoutWork_ordersInput
   }
 
@@ -85557,6 +85916,7 @@ export namespace Prisma {
     id?: number
     wo_number: string
     customer_id?: number | null
+    project_id?: bigint | number | null
     customer_name?: string | null
     pic_name?: string | null
     company_address?: string | null
@@ -88680,6 +89040,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
     notifications?: notificationsCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutSchedulesInput = {
@@ -88706,6 +89067,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutSchedulesInput = {
@@ -88987,6 +89349,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutSchedulesInput = {
@@ -89013,6 +89376,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type unitsUpsertWithoutSchedulesInput = {
@@ -89629,6 +89993,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
     notifications?: notificationsCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutSchedule_targetsInput = {
@@ -89655,6 +90020,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutSchedule_targetsInput = {
@@ -89785,6 +90151,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutSchedule_targetsInput = {
@@ -89811,6 +90178,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type unitsCreateWithoutComplaintsInput = {
@@ -90761,6 +91129,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutNotificationsInput = {
@@ -90787,6 +91156,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutNotificationsInput = {
@@ -90917,6 +91287,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutNotificationsInput = {
@@ -90943,6 +91314,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type unitsCreateWithoutDaily_ops_logsInput = {
@@ -91135,6 +91507,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
     notifications?: notificationsCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutVendor_attendanceInput = {
@@ -91161,6 +91534,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutVendor_attendanceInput = {
@@ -91285,6 +91659,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutVendor_attendanceInput = {
@@ -91311,6 +91686,7 @@ export namespace Prisma {
     user_project_access?: user_project_accessUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type usersUpsertWithoutVendor_attendanceInput = {
@@ -91425,6 +91801,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
     notifications?: notificationsCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutProject_intelligenceInput = {
@@ -91451,6 +91828,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutProject_intelligenceInput = {
@@ -91575,6 +91953,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutProject_intelligenceInput = {
@@ -91601,6 +91980,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type usersUpsertWithoutIntelligence_updatesInput = {
@@ -91715,6 +92095,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
     notifications?: notificationsCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutProject_issuesInput = {
@@ -91741,6 +92122,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutProject_issuesInput = {
@@ -91783,6 +92165,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutProject_issuesInput = {
@@ -91809,6 +92192,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type logsheet_entriesCreateWithoutTemplateInput = {
@@ -91864,6 +92248,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesCreateNestedManyWithoutProjectsInput
     notifications?: notificationsCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsUncheckedCreateWithoutLogsheet_templatesInput = {
@@ -91890,6 +92275,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutProjectsInput
     knowledge_resources?: knowledge_resourcesUncheckedCreateNestedManyWithoutProjectsInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutProjectsInput
+    work_orders?: work_ordersUncheckedCreateNestedManyWithoutProjectsInput
   }
 
   export type projectsCreateOrConnectWithoutLogsheet_templatesInput = {
@@ -91962,6 +92348,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutLogsheet_templatesInput = {
@@ -91988,6 +92375,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type logsheet_templatesCreateWithoutEntriesInput = {
@@ -92108,6 +92496,7 @@ export namespace Prisma {
   export type work_ordersCreateManyCustomersInput = {
     id?: number
     wo_number: string
+    project_id?: bigint | number | null
     customer_name?: string | null
     pic_name?: string | null
     company_address?: string | null
@@ -92170,6 +92559,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateWithoutCustomersInput = {
@@ -92196,6 +92586,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutProjectsNestedInput
     knowledge_resources?: knowledge_resourcesUncheckedUpdateManyWithoutProjectsNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutProjectsNestedInput
+    work_orders?: work_ordersUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type projectsUncheckedUpdateManyWithoutCustomersInput = {
@@ -92277,6 +92668,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    projects?: projectsUpdateOneWithoutWork_ordersNestedInput
     users?: usersUpdateOneWithoutCreated_work_ordersNestedInput
     quotations?: quotationsUpdateManyWithoutWork_ordersNestedInput
   }
@@ -92284,6 +92676,7 @@ export namespace Prisma {
   export type work_ordersUncheckedUpdateWithoutCustomersInput = {
     id?: IntFieldUpdateOperationsInput | number
     wo_number?: StringFieldUpdateOperationsInput | string
+    project_id?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     customer_name?: NullableStringFieldUpdateOperationsInput | string | null
     pic_name?: NullableStringFieldUpdateOperationsInput | string | null
     company_address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -92297,6 +92690,7 @@ export namespace Prisma {
   export type work_ordersUncheckedUpdateManyWithoutCustomersInput = {
     id?: IntFieldUpdateOperationsInput | number
     wo_number?: StringFieldUpdateOperationsInput | string
+    project_id?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     customer_name?: NullableStringFieldUpdateOperationsInput | string | null
     pic_name?: NullableStringFieldUpdateOperationsInput | string | null
     company_address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -92443,6 +92837,19 @@ export namespace Prisma {
     link?: string | null
     is_read?: boolean
     created_at?: Date | string
+  }
+
+  export type work_ordersCreateManyProjectsInput = {
+    id?: number
+    wo_number: string
+    customer_id?: number | null
+    customer_name?: string | null
+    pic_name?: string | null
+    company_address?: string | null
+    status?: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    created_by?: number | null
   }
 
   export type logsheet_templatesUpdateWithoutProjectsInput = {
@@ -92841,6 +93248,46 @@ export namespace Prisma {
     link?: NullableStringFieldUpdateOperationsInput | string | null
     is_read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type work_ordersUpdateWithoutProjectsInput = {
+    wo_number?: StringFieldUpdateOperationsInput | string
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    pic_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    customers?: customersUpdateOneWithoutWork_ordersNestedInput
+    users?: usersUpdateOneWithoutCreated_work_ordersNestedInput
+    quotations?: quotationsUpdateManyWithoutWork_ordersNestedInput
+  }
+
+  export type work_ordersUncheckedUpdateWithoutProjectsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    wo_number?: StringFieldUpdateOperationsInput | string
+    customer_id?: NullableIntFieldUpdateOperationsInput | number | null
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    pic_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_by?: NullableIntFieldUpdateOperationsInput | number | null
+    quotations?: quotationsUncheckedUpdateManyWithoutWork_ordersNestedInput
+  }
+
+  export type work_ordersUncheckedUpdateManyWithoutProjectsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    wo_number?: StringFieldUpdateOperationsInput | string
+    customer_id?: NullableIntFieldUpdateOperationsInput | number | null
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    pic_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_by?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type quotationsCreateManyWork_ordersInput = {
@@ -94148,6 +94595,7 @@ export namespace Prisma {
     id?: number
     wo_number: string
     customer_id?: number | null
+    project_id?: bigint | number | null
     customer_name?: string | null
     pic_name?: string | null
     company_address?: string | null
@@ -94750,6 +95198,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     customers?: customersUpdateOneWithoutWork_ordersNestedInput
+    projects?: projectsUpdateOneWithoutWork_ordersNestedInput
     quotations?: quotationsUpdateManyWithoutWork_ordersNestedInput
   }
 
@@ -94757,6 +95206,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     wo_number?: StringFieldUpdateOperationsInput | string
     customer_id?: NullableIntFieldUpdateOperationsInput | number | null
+    project_id?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     customer_name?: NullableStringFieldUpdateOperationsInput | string | null
     pic_name?: NullableStringFieldUpdateOperationsInput | string | null
     company_address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -94770,6 +95220,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     wo_number?: StringFieldUpdateOperationsInput | string
     customer_id?: NullableIntFieldUpdateOperationsInput | number | null
+    project_id?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     customer_name?: NullableStringFieldUpdateOperationsInput | string | null
     pic_name?: NullableStringFieldUpdateOperationsInput | string | null
     company_address?: NullableStringFieldUpdateOperationsInput | string | null
