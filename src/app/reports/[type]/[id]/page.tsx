@@ -102,17 +102,22 @@ export default function ReportHubPage() {
   }, [id, type]);
 
   const waitForImages = async (element: HTMLElement) => {
+    // Wait for React to attach elements
+    await new Promise(r => setTimeout(r, 800));
     const imgs = Array.from(element.getElementsByTagName('img'));
     const promises = imgs.map(img => {
       return new Promise((resolve) => {
-        if (img.complete) resolve(true);
+        if (img.complete && img.naturalWidth > 0) resolve(true);
         else {
-          img.onload = () => resolve(true);
-          img.onerror = () => resolve(false);
+          const timer = setTimeout(() => resolve(false), 15000); // 15s timeout
+          img.onload = () => { clearTimeout(timer); resolve(true); };
+          img.onerror = () => { clearTimeout(timer); resolve(false); };
         }
       });
     });
     await Promise.all(promises);
+    // Extra buffer for html2canvas to catch up
+    await new Promise(r => setTimeout(r, 500));
   };
 
   const handleDownloadPDF = async () => {
