@@ -316,14 +316,14 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3mm" }}>
             {chunk.map((p: any, i: number) => (
               <div key={i} style={photoWrapperStyle}>
-                <img src={getPhotoUrl(p.photo_url)} alt={`Photo ${i}`} style={photoImgStyle} />
+                <img src={getPhotoUrl(p.photo_url || p.url || p)} alt={`Photo ${i}`} style={photoImgStyle} />
                 <p style={photoCaptionStyle}>{p.label || p.description || 'Maintenance Documentation'}</p>
               </div>
             ))}
           </div>
         </div>
       ))
-    ) : null),
+    ) : []),
   ].filter(Boolean);
 };
 
