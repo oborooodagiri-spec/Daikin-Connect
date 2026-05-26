@@ -244,12 +244,54 @@ export default function LogsheetRoesminClient() {
   };
 
   const handleSave = async () => {
+    if (!inspector.trim()) {
+      alert("Harap isi nama Inspector terlebih dahulu.");
+      return;
+    }
+    
+    // Check if any data was filled
+    const filledUnits = Object.keys(formData).filter(k => Object.keys(formData[k] || {}).some(pk => formData[k][pk]));
+    if (filledUnits.length === 0) {
+      alert("Harap isi minimal satu parameter sebelum menyimpan.");
+      return;
+    }
+
     setSaving(true);
-    // TODO: connect to server action
-    console.log("Logsheet Data:", { date, inspector, data: formData });
-    await new Promise(r => setTimeout(r, 1200));
-    setSaving(false);
-    alert("Data logsheet berhasil disimpan!");
+    try {
+      const { saveRoesminLogsheet } = await import("@/app/actions/logsheet_roesmin");
+      
+      // Build sections metadata for PDF template
+      const sectionsData = SECTIONS.map(s => ({
+        id: s.id, label: s.label, icon: s.icon, color: s.color,
+        groups: s.groups.map(g => ({
+          id: g.id, label: g.label, color: g.color,
+          units: g.units.map(u => ({
+            id: u.id, label: u.label,
+            params: u.params.map(p => ({ key: p.key, label: p.label, unit: p.unit, type: p.type, design: p.design }))
+          }))
+        }))
+      }));
+      
+      const result = await saveRoesminLogsheet({
+        date,
+        inspector,
+        formData,
+        sections: sectionsData,
+      });
+      
+      if (result.success) {
+        alert(`✅ Logsheet berhasil disimpan! ID: ${result.id}\n\nAnda dapat melihat dan generate report di halaman Project Lanud Roesmin Nurjadin.`);
+        // Open the report in new tab
+        window.open(`/reports/preventive/${result.id}`, "_blank");
+      } else {
+        alert("❌ Gagal menyimpan: " + (result.error || "Unknown error"));
+      }
+    } catch (err: any) {
+      console.error("Save error:", err);
+      alert("❌ Terjadi kesalahan: " + err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const section = SECTIONS.find(s => s.id === activeSection);

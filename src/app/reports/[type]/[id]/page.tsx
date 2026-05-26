@@ -11,6 +11,7 @@ import { getDailyLogSections } from "@/components/DailyLogPDFTemplate";
 import { getFCUPreventiveSections } from "@/components/FCUPreventivePDFTemplate";
 import { getAHUPreventiveSections } from "@/components/AHUPreventivePDFTemplate";
 import { getChillerPreventiveSections } from "@/components/ChillerPreventivePDFTemplate";
+import { getLogsheetRoesminSections } from "@/components/LogsheetRoesminPDFTemplate";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas-pro";
 import { format } from "date-fns";
@@ -56,8 +57,10 @@ export default function ReportHubPage() {
 
   useEffect(() => {
     const handleResize = () => {
-      // 210mm is approx 794px at 96dpi
-      const reportWidth = 794; 
+      // Check if this is a landscape logsheet report
+      const isLandscape = document.querySelector('[data-landscape="true"]') !== null;
+      // 210mm portrait = 794px, 297mm landscape = 1122px at 96dpi
+      const reportWidth = isLandscape ? 1122 : 794; 
       // Add small side padding
       const availableWidth = window.innerWidth - 20; 
       
@@ -126,18 +129,21 @@ export default function ReportHubPage() {
     setDownloading(true);
     try {
       const { createRoot } = await import("react-dom/client");
-      const pdf = new jsPDF("p", "mm", "a4");
+      const isLandscape = isRoesminLogsheet;
+      const pdf = new jsPDF(isLandscape ? "l" : "p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       
-      const fileName = `${type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()}_Report_${data.unit?.tag_number || "Draft"}_${format(new Date(), "yyyyMMdd")}.pdf`;
+      const fileName = isRoesminLogsheet 
+        ? `Logsheet_Roesmin_${format(new Date(data.activity.service_date || Date.now()), "yyyyMMdd")}.pdf`
+        : `${type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()}_Report_${data.unit?.tag_number || "Draft"}_${format(new Date(), "yyyyMMdd")}.pdf`;
 
       // CAPTURE SANDBOX: Create a hidden unscaled container for high-fidelity capture
       const sandbox = document.createElement("div");
       sandbox.style.position = "absolute";
       sandbox.style.top = "-9999px";
       sandbox.style.left = "-9999px";
-      sandbox.style.width = "794px"; // Fixed A4 width at 96dpi
+      sandbox.style.width = isLandscape ? "1122px" : "794px"; // A4 landscape or portrait at 96dpi
       document.body.appendChild(sandbox);
 
       const renderPage = async (pageIndex: number) => {
@@ -146,6 +152,11 @@ export default function ReportHubPage() {
         const root = createRoot(pageContainer);
         
         root.render(
+          isLandscape ? (
+            <div style={{ width: "1122px", minHeight: "794px", backgroundColor: "white", padding: "30px 38px", boxSizing: "border-box" }}>
+              {pages[pageIndex]}
+            </div>
+          ) : (
           <ReportBase 
             reportTitle={reportTitle} 
             reportCode={reportCode}
@@ -168,6 +179,7 @@ export default function ReportHubPage() {
               {pages[pageIndex]}
             </div>
           </ReportBase>
+          )
         );
 
         // Wait for render and images
@@ -179,7 +191,7 @@ export default function ReportHubPage() {
           useCORS: true,
           logging: false,
           backgroundColor: "#ffffff",
-          windowWidth: 794
+          windowWidth: isLandscape ? 1122 : 794
         });
         
         const imgData = canvas.toDataURL("image/jpeg", 0.95);
@@ -368,7 +380,8 @@ export default function ReportHubPage() {
       
       // CAPTURE SANDBOX: High fidelity capture for digital archiving
       const { createRoot } = await import("react-dom/client");
-      const pdf = new jsPDF("p", "mm", "a4");
+      const isLandscape = isRoesminLogsheet;
+      const pdf = new jsPDF(isLandscape ? "l" : "p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       
@@ -376,7 +389,7 @@ export default function ReportHubPage() {
       sandbox.style.position = "absolute";
       sandbox.style.top = "-9999px";
       sandbox.style.left = "-9999px";
-      sandbox.style.width = "794px";
+      sandbox.style.width = isLandscape ? "1122px" : "794px";
       document.body.appendChild(sandbox);
 
       const renderPage = async (pageIndex: number) => {
@@ -385,6 +398,11 @@ export default function ReportHubPage() {
         const root = createRoot(pageContainer);
         
         root.render(
+          isLandscape ? (
+            <div style={{ width: "1122px", minHeight: "794px", backgroundColor: "white", padding: "30px 38px", boxSizing: "border-box" }}>
+              {pages[pageIndex]}
+            </div>
+          ) : (
           <ReportBase 
             reportTitle={reportTitle} 
             reportCode={reportCode}
@@ -407,6 +425,7 @@ export default function ReportHubPage() {
               {pages[pageIndex]}
             </div>
           </ReportBase>
+          )
         );
 
         // Wait for render, stamps and images
@@ -417,7 +436,7 @@ export default function ReportHubPage() {
           scale: 2,
           useCORS: true,
           backgroundColor: "#ffffff",
-          windowWidth: 794
+          windowWidth: isLandscape ? 1122 : 794
         });
         const imgData = canvas.toDataURL("image/jpeg", 0.95);
         if (pageIndex > 0) pdf.addPage();
@@ -513,6 +532,9 @@ export default function ReportHubPage() {
     type: type.charAt(0).toUpperCase() + type.slice(1).toLowerCase() // Normalize type for folder matching
   });
 
+  // Detect Roesmin Logsheet
+  const isRoesminLogsheet = activityData?.is_roesmin_logsheet === true;
+
   const commonApproval = {
     isApproved: isApprovedLocal,
     witnessedBy: data.activity.customer_approver_name,
@@ -526,7 +548,12 @@ export default function ReportHubPage() {
     isBulkSync: activityData?.isBulkSync
   };
 
-  if (type.toLowerCase() === 'audit') {
+  if (isRoesminLogsheet) {
+    // SPECIAL: Roesmin Logsheet uses landscape template with its own pagination
+    reportTitle = "DAILY LOGSHEET — HVAC MONITORING REPORT";
+    reportCode = `LOG-ROESMIN-${format(new Date(data.activity.service_date || Date.now()), "yyyyMMdd")}`;
+    sections = getLogsheetRoesminSections(activityData, activeLang);
+  } else if (type.toLowerCase() === 'audit') {
     reportTitle = activityData.reportTitle || t("FORM PENGUKURAN (AUDIT)", activeLang);
     sections = getAuditSections({...activityData, ...commonApproval}, data.unit);
   } else if (type.toLowerCase() === 'preventive' || type.toLowerCase() === 'pm') {
@@ -567,7 +594,9 @@ export default function ReportHubPage() {
 
   // SMART PAGINATION ENGINE: Dynamic Height Scaling
   const pages: React.ReactNode[][] = [];
-  const MAX_PAGE_HEIGHT = 720; // Safe height in px for A4 to avoid footer overlap
+  
+  // Roesmin logsheet: each section IS a full page (landscape), skip pagination
+  const MAX_PAGE_HEIGHT = isRoesminLogsheet ? 99999 : 720; // Safe height in px for A4 to avoid footer overlap
 
   if (sectionHeights.length > 0 && techSections.length === sectionHeights.length) {
     let currentPage: React.ReactNode[] = [];
@@ -763,6 +792,23 @@ export default function ReportHubPage() {
       >
         {pages.map((pageSections, index) => (
           <div key={index} className="print:shadow-none shadow-2xl">
+            {isRoesminLogsheet ? (
+              /* LANDSCAPE LOGSHEET: Render directly without ReportBase wrapper */
+              <div 
+                data-landscape="true"
+                style={{
+                  width: "297mm",
+                  minHeight: "210mm",
+                  backgroundColor: "white",
+                  padding: "8mm 10mm",
+                  boxSizing: "border-box",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                {pageSections}
+              </div>
+            ) : (
             <ReportBase 
               reportTitle={reportTitle} 
               reportCode={reportCode}
@@ -785,6 +831,7 @@ export default function ReportHubPage() {
                 {pageSections}
               </div>
             </ReportBase>
+            )}
           </div>
         ))}
       </div>
