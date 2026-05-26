@@ -15,27 +15,12 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
 
   const photoChunks = chunkArray(activity_photos, 6);
 
-  const formatMeasurement = (val: any) => {
-    if (typeof val === "object" && val !== null) {
-      const bStr = val.before && val.before !== "-" && val.before !== "" ? val.before : "";
-      const aStr = val.after && val.after !== "-" && val.after !== "" ? val.after : "";
-      let r = val.remarks && val.remarks !== "-" && val.remarks !== "" ? val.remarks : "";
-
-      if (bStr && aStr) {
-        const bNum = parseFloat(String(bStr).replace(',', '.'));
-        const aNum = parseFloat(String(aStr).replace(',', '.'));
-        
-        if (!isNaN(bNum) && !isNaN(aNum)) {
-            const diff = aNum - bNum;
-            r = diff === 0 ? "0.00" : diff > 0 ? `+${diff.toFixed(2)}` : diff.toFixed(2);
-        }
-
-        if (r) return `${bStr} ➔ ${aStr} [${r}]`;
-        return `${bStr} ➔ ${aStr}`;
-      }
-      return aStr || bStr || "-";
+  const getVal = (val: any, type: 'before'|'after') => {
+    if (typeof val === 'object' && val !== null) {
+      return val[type] && val[type] !== "-" ? val[type] : "-";
     }
-    return val || "-";
+    if (type === 'before') return val || "-";
+    return "-";
   };
 
   const renderVoltage = () => {
@@ -44,14 +29,26 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
       <div key="section-a" style={{ marginBottom: "5mm" }}>
         <div style={subHeaderStyle}>A. VOLTAGE</div>
         <table style={mainTableStyle}>
+          <thead>
+            <tr style={tableHeaderRow}>
+              <th style={{...thStyle, width:"33%"}} colSpan={2}>RS</th>
+              <th style={{...thStyle, width:"33%"}} colSpan={2}>RT</th>
+              <th style={{...thStyle, width:"34%"}} colSpan={2}>ST</th>
+            </tr>
+            <tr style={tableHeaderRow}>
+              <th style={thSubStyle}>{t("Before", lang)}</th><th style={thSubStyle}>{t("After", lang)}</th>
+              <th style={thSubStyle}>{t("Before", lang)}</th><th style={thSubStyle}>{t("After", lang)}</th>
+              <th style={thSubStyle}>{t("Before", lang)}</th><th style={thSubStyle}>{t("After", lang)}</th>
+            </tr>
+          </thead>
           <tbody>
             <tr>
-              <td style={cellLabelSmall}>RS</td>
-              <td style={{ ...cellValSmall, textAlign: "center" }}>{formatMeasurement(v.rs)}</td>
-              <td style={cellLabelSmall}>RT</td>
-              <td style={{ ...cellValSmall, textAlign: "center" }}>{formatMeasurement(v.rt)}</td>
-              <td style={cellLabelSmall}>ST</td>
-              <td style={{ ...cellValSmall, textAlign: "center" }}>{formatMeasurement(v.st)}</td>
+              <td style={{ ...tdStyle, textAlign: "center" }}>{getVal(v.rs, 'before')}</td>
+              <td style={{ ...tdStyle, textAlign: "center" }}>{getVal(v.rs, 'after')}</td>
+              <td style={{ ...tdStyle, textAlign: "center" }}>{getVal(v.rt, 'before')}</td>
+              <td style={{ ...tdStyle, textAlign: "center" }}>{getVal(v.rt, 'after')}</td>
+              <td style={{ ...tdStyle, textAlign: "center" }}>{getVal(v.st, 'before')}</td>
+              <td style={{ ...tdStyle, textAlign: "center" }}>{getVal(v.st, 'after')}</td>
             </tr>
           </tbody>
         </table>
@@ -69,10 +66,18 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
         <table style={mainTableStyle}>
           <thead>
             <tr style={tableHeaderRow}>
-              <th style={{ ...thStyle, width: "15%" }}>CIRCUIT</th>
-              <th style={{ ...thStyle, width: "45%" }}>AMPERE (R / S / T)</th>
-              <th style={{ ...thStyle, width: "20%" }}>LP (PSI)</th>
-              <th style={{ ...thStyle, width: "20%" }}>HP (PSI)</th>
+              <th style={{ ...thStyle, width: "15%" }} rowSpan={2}>CIRCUIT</th>
+              <th style={{ ...thStyle, width: "45%" }} colSpan={2}>AMPERE (R / S / T)</th>
+              <th style={{ ...thStyle, width: "20%" }} colSpan={2}>LP (PSI)</th>
+              <th style={{ ...thStyle, width: "20%" }} colSpan={2}>HP (PSI)</th>
+            </tr>
+            <tr style={tableHeaderRow}>
+              <th style={thSubStyle}>{t("Before", lang)}</th>
+              <th style={thSubStyle}>{t("After", lang)}</th>
+              <th style={thSubStyle}>{t("Before", lang)}</th>
+              <th style={thSubStyle}>{t("After", lang)}</th>
+              <th style={thSubStyle}>{t("Before", lang)}</th>
+              <th style={thSubStyle}>{t("After", lang)}</th>
             </tr>
           </thead>
           <tbody>
@@ -83,13 +88,22 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
                   <td style={{ ...tdStyle, textAlign: "center", fontWeight: 700, backgroundColor: "#f8fafc" }}>Circuit {i + 1}</td>
                   <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>
                     <div style={{ display: "flex", flexDirection: "column", gap: "2px", fontSize: "7pt" }}>
-                      <span>R: {formatMeasurement(c.amp_r)}</span>
-                      <span>S: {formatMeasurement(c.amp_s)}</span>
-                      <span>T: {formatMeasurement(c.amp_t)}</span>
+                      <span>R: {getVal(c.amp_r, 'before')}</span>
+                      <span>S: {getVal(c.amp_s, 'before')}</span>
+                      <span>T: {getVal(c.amp_t, 'before')}</span>
                     </div>
                   </td>
-                  <td style={{ ...tdStyle, textAlign: "center", fontSize: "8pt" }}>{formatMeasurement(c.lp)}</td>
-                  <td style={{ ...tdStyle, textAlign: "center", fontSize: "8pt" }}>{formatMeasurement(c.hp)}</td>
+                  <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800 }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "2px", fontSize: "7pt" }}>
+                      <span>R: {getVal(c.amp_r, 'after')}</span>
+                      <span>S: {getVal(c.amp_s, 'after')}</span>
+                      <span>T: {getVal(c.amp_t, 'after')}</span>
+                    </div>
+                  </td>
+                  <td style={{ ...tdStyle, textAlign: "center", fontSize: "8pt" }}>{getVal(c.lp, 'before')}</td>
+                  <td style={{ ...tdStyle, textAlign: "center", fontSize: "8pt" }}>{getVal(c.lp, 'after')}</td>
+                  <td style={{ ...tdStyle, textAlign: "center", fontSize: "8pt" }}>{getVal(c.hp, 'before')}</td>
+                  <td style={{ ...tdStyle, textAlign: "center", fontSize: "8pt" }}>{getVal(c.hp, 'after')}</td>
                 </tr>
               );
             })}
@@ -107,16 +121,24 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
         <table style={mainTableStyle}>
           <thead>
             <tr>
-              <th style={thStyle}>R</th>
-              <th style={thStyle}>S</th>
-              <th style={thStyle}>T</th>
+              <th style={thStyle} colSpan={2}>R</th>
+              <th style={thStyle} colSpan={2}>S</th>
+              <th style={thStyle} colSpan={2}>T</th>
+            </tr>
+            <tr style={tableHeaderRow}>
+              <th style={thSubStyle}>{t("Before", lang)}</th><th style={thSubStyle}>{t("After", lang)}</th>
+              <th style={thSubStyle}>{t("Before", lang)}</th><th style={thSubStyle}>{t("After", lang)}</th>
+              <th style={thSubStyle}>{t("Before", lang)}</th><th style={thSubStyle}>{t("After", lang)}</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800, fontSize: "9pt" }}>{formatMeasurement(fan.r)}</td>
-              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800, fontSize: "9pt" }}>{formatMeasurement(fan.s)}</td>
-              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800, fontSize: "9pt" }}>{formatMeasurement(fan.t)}</td>
+              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800, fontSize: "9pt" }}>{getVal(fan.r, 'before')}</td>
+              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800, fontSize: "9pt" }}>{getVal(fan.r, 'after')}</td>
+              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800, fontSize: "9pt" }}>{getVal(fan.s, 'before')}</td>
+              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800, fontSize: "9pt" }}>{getVal(fan.s, 'after')}</td>
+              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800, fontSize: "9pt" }}>{getVal(fan.t, 'before')}</td>
+              <td style={{ ...tdStyle, textAlign: "center", color: "#003366", fontWeight: 800, fontSize: "9pt" }}>{getVal(fan.t, 'after')}</td>
             </tr>
           </tbody>
         </table>
@@ -130,22 +152,48 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
       <div key="section-d" style={{ marginBottom: "5mm" }}>
         <div style={subHeaderStyle}>D. WATER PARAMETERS</div>
         <table style={mainTableStyle}>
+          <thead>
+            <tr>
+              <th style={thStyle} colSpan={2}>Inlet Temp (°C)</th>
+              <th style={thStyle} colSpan={2}>Outlet Temp (°C)</th>
+              <th style={{...thStyle, color: "#2563eb", backgroundColor: "#eff6ff"}} colSpan={2}>DELTA T (°C)</th>
+            </tr>
+            <tr style={tableHeaderRow}>
+              <th style={thSubStyle}>{t("Before", lang)}</th><th style={thSubStyle}>{t("After", lang)}</th>
+              <th style={thSubStyle}>{t("Before", lang)}</th><th style={thSubStyle}>{t("After", lang)}</th>
+              <th style={thSubStyle}>{t("Before", lang)}</th><th style={thSubStyle}>{t("After", lang)}</th>
+            </tr>
+          </thead>
           <tbody>
             <tr>
-              <td style={cellLabelSmall}>Inlet Temp</td>
-              <td style={{ ...cellValSmall, textAlign: "center" }}>{formatMeasurement(water.inlet_temp)} °C</td>
-              <td style={cellLabelSmall}>Outlet Temp</td>
-              <td style={{ ...cellValSmall, textAlign: "center" }}>{formatMeasurement(water.outlet_temp)} °C</td>
-              <td style={{ ...cellLabelSmall, color: "#2563eb", backgroundColor: "#eff6ff" }}>DELTA T</td>
-              <td style={{ ...cellValSmall, textAlign: "center", color: "#2563eb" }}>{formatMeasurement(water.delta_t)} °C</td>
+              <td style={{ ...tdStyle, textAlign: "center" }}>{getVal(water.inlet_temp, 'before')}</td>
+              <td style={{ ...tdStyle, textAlign: "center" }}>{getVal(water.inlet_temp, 'after')}</td>
+              <td style={{ ...tdStyle, textAlign: "center" }}>{getVal(water.outlet_temp, 'before')}</td>
+              <td style={{ ...tdStyle, textAlign: "center" }}>{getVal(water.outlet_temp, 'after')}</td>
+              <td style={{ ...tdStyle, textAlign: "center", color: "#2563eb", backgroundColor: "#eff6ff" }}>{getVal(water.delta_t, 'before')}</td>
+              <td style={{ ...tdStyle, textAlign: "center", color: "#2563eb", backgroundColor: "#eff6ff" }}>{getVal(water.delta_t, 'after')}</td>
             </tr>
+          </tbody>
+          <thead>
             <tr>
-              <td style={cellLabelSmall}>Inlet Press</td>
-              <td style={{ ...cellValSmall, textAlign: "center" }}>{formatMeasurement(water.inlet_pressure)} bar</td>
-              <td style={cellLabelSmall}>Outlet Press</td>
-              <td style={{ ...cellValSmall, textAlign: "center" }}>{formatMeasurement(water.outlet_pressure)} bar</td>
-              <td style={{ ...cellLabelSmall, color: "#2563eb", backgroundColor: "#eff6ff" }}>DELTA P</td>
-              <td style={{ ...cellValSmall, textAlign: "center", color: "#2563eb" }}>{formatMeasurement(water.delta_p)} bar</td>
+              <th style={thStyle} colSpan={2}>Inlet Press (bar)</th>
+              <th style={thStyle} colSpan={2}>Outlet Press (bar)</th>
+              <th style={{...thStyle, color: "#2563eb", backgroundColor: "#eff6ff"}} colSpan={2}>DELTA P (bar)</th>
+            </tr>
+            <tr style={tableHeaderRow}>
+              <th style={thSubStyle}>{t("Before", lang)}</th><th style={thSubStyle}>{t("After", lang)}</th>
+              <th style={thSubStyle}>{t("Before", lang)}</th><th style={thSubStyle}>{t("After", lang)}</th>
+              <th style={thSubStyle}>{t("Before", lang)}</th><th style={thSubStyle}>{t("After", lang)}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style={{ ...tdStyle, textAlign: "center" }}>{getVal(water.inlet_pressure, 'before')}</td>
+              <td style={{ ...tdStyle, textAlign: "center" }}>{getVal(water.inlet_pressure, 'after')}</td>
+              <td style={{ ...tdStyle, textAlign: "center" }}>{getVal(water.outlet_pressure, 'before')}</td>
+              <td style={{ ...tdStyle, textAlign: "center" }}>{getVal(water.outlet_pressure, 'after')}</td>
+              <td style={{ ...tdStyle, textAlign: "center", color: "#2563eb", backgroundColor: "#eff6ff" }}>{getVal(water.delta_p, 'before')}</td>
+              <td style={{ ...tdStyle, textAlign: "center", color: "#2563eb", backgroundColor: "#eff6ff" }}>{getVal(water.delta_p, 'after')}</td>
             </tr>
           </tbody>
         </table>
@@ -161,7 +209,7 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
           <tbody>
             <tr>
               <td style={{ ...cellLabelSmall, width: "50%", textAlign: "right", paddingRight: "4mm" }}>Setting Temp EWT</td>
-              <td style={{ ...cellValSmall, width: "50%", textAlign: "center", color: "#16a34a", fontSize: "10pt" }}>{formatMeasurement(scope?.setting_temp_ewt)} °C</td>
+              <td style={{ ...cellValSmall, width: "50%", textAlign: "center", color: "#16a34a", fontSize: "10pt" }}>{getVal(scope?.setting_temp_ewt, 'before')} °C</td>
             </tr>
           </tbody>
         </table>
@@ -266,14 +314,16 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
     renderCheckRunning("B. CHECK RUNNING (COMPRESSOR) - PART 1", 0, 4),
     
     // Force page break before C/D/E to prevent footer truncation
-    <div key="force-break-cde" style={{ width: "100%" }}>
+    <div key="cde-group" style={{ width: "100%" }}>
       {renderCheckRunning("B. CHECK RUNNING (COMPRESSOR) - PART 2", 4, 5)}
       {renderFanUnit()}
       {renderWaterParameters()}
       {renderSetting()}
     </div>,
 
-    renderChecklistTable(),
+    <div key="force-break-checklist" style={{ width: "100%" }}>
+      {renderChecklistTable()}
+    </div>,
 
     // PAGE: DOCUMENTATION & ADVICE (Force new page, keep header+content together)
     <div key="force-break-documentation" style={{ width: "100%" }}>
@@ -309,21 +359,38 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
     // PHOTOS (each chunk gets its own page)
     ...(photoChunks.length > 0 ? (
       photoChunks.map((chunk, chunkIdx) => (
-        <div key={`photos-${chunkIdx}`} style={{ width: "100%", marginBottom: "5mm" }}>
-          <div style={subHeaderStyle}>
-            {t("Maintenance Documentation Photos", lang)} {photoChunks.length > 1 ? `(Set ${chunkIdx + 1})` : ''}
+        <div key={`photos-${chunkIdx}`} style={{ width: "100%", marginTop: "5mm" }}>
+          <div style={categoryHeader}>
+            {t("Maintenance Documentation Photos", lang)} {photoChunks.length > 1 ? `(Page ${chunkIdx + 1})` : ''}
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3mm" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2mm" }}>
             {chunk.map((p: any, i: number) => (
               <div key={i} style={photoWrapperStyle}>
                 <img src={getPhotoUrl(p.photo_url || p.url || p)} alt={`Photo ${i}`} style={photoImgStyle} />
-                <p style={photoCaptionStyle}>{p.label || p.description || 'Maintenance Documentation'}</p>
+                <p style={photoCaptionStyle}>Photo {chunkIdx * 6 + i + 1}: {p.label || p.description || 'Maintenance Documentation'}</p>
               </div>
             ))}
           </div>
         </div>
       ))
-    ) : []),
+    ) : [
+      <div key="photos-placeholder" style={{ width: "100%", marginTop: "5mm" }}>
+        <div style={categoryHeader}>{t("Maintenance Documentation Photos", lang)}</div>
+        <div style={{ 
+          border: "1px dashed #cbd5e1", 
+          borderRadius: "2mm", 
+          paddingTop: "10mm", 
+          paddingBottom: "10mm", 
+          paddingLeft: "10mm", 
+          paddingRight: "10mm", 
+          textAlign: "center", 
+          color: "#94a3b8", 
+          fontSize: "8pt" 
+        }}>
+          {t("No reports found.", lang)}
+        </div>
+      </div>
+    ]),
   ].filter(Boolean);
 };
 
@@ -335,7 +402,8 @@ const cellLabelSmall: React.CSSProperties = { border: "1px solid #e2e8f0", paddi
 const cellValSmall: React.CSSProperties = { border: "1px solid #e2e8f0", padding: "1.5mm 2mm", width: "25%", fontSize: "8pt", fontWeight: 700, color: "#0f172a" };
 const categoryHeader: React.CSSProperties = { backgroundColor: "#f1f5f9", paddingTop: "2.5mm", paddingBottom: "2.5mm", paddingLeft: "4mm", paddingRight: "4mm", fontSize: "10pt", fontWeight: 900, color: "#003366", borderLeft: "5px solid #00a1e4", marginBottom: "4mm", textTransform: "uppercase", letterSpacing: "0.5px" };
 const tableHeaderRow: React.CSSProperties = { backgroundColor: "#f8fafc" };
-const thStyle: React.CSSProperties = { border: "1px solid #e2e8f0", paddingTop: "2mm", paddingBottom: "2mm", paddingLeft: "2mm", paddingRight: "2mm", fontSize: "7.5pt", fontWeight: 900, color: "#475569", textTransform: "uppercase", textAlign: "center" };
+const thStyle: React.CSSProperties = { border: "1px solid #e2e8f0", paddingTop: "2mm", paddingBottom: "2mm", paddingLeft: "2mm", paddingRight: "2mm", fontSize: "7pt", fontWeight: 900, color: "#475569", textTransform: "uppercase", textAlign: "center" };
+const thSubStyle: React.CSSProperties = { border: "1px solid #e2e8f0", paddingTop: "1mm", paddingBottom: "1mm", paddingLeft: "1mm", paddingRight: "1mm", fontSize: "6.5pt", fontWeight: 700, color: "#64748b", textTransform: "uppercase", textAlign: "center", backgroundColor: "white" };
 const tdStyle: React.CSSProperties = { border: "1px solid #e2e8f0", paddingTop: "1.5mm", paddingBottom: "1.5mm", paddingLeft: "2mm", paddingRight: "2mm", fontSize: "8.5pt" };
 const photoWrapperStyle: React.CSSProperties = { border: "1px solid #e2e8f0", paddingTop: "1mm", paddingBottom: "1mm", paddingLeft: "1mm", paddingRight: "1mm", borderRadius: "1.5mm", backgroundColor: "white", position: "relative" };
 const photoImgStyle: React.CSSProperties = { width: "100%", height: "45mm", objectFit: "cover", borderRadius: "1mm" };
