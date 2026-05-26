@@ -333,13 +333,17 @@ function ReportsContent({ lang }: { lang: Language }) {
                   </td>
                   <td className="p-4">
                     <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${TYPE_CONFIG[r.type]?.bg || 'bg-slate-100'} ${TYPE_CONFIG[r.type]?.color || 'text-slate-600'}`}>
-                      {r.type === 'Corrective' && r.technical_json?.includes('Complaint') ? 'Complaint' : 
-                       r.type === 'Preventive' ? t(
-                         r.units?.unit_type?.toUpperCase() === 'AHU' ? 'Preventive AHU' : 
-                         r.units?.unit_type?.toUpperCase() === 'FCU' ? 'Preventive FCU' : 
-                         r.units?.unit_type?.toUpperCase()?.includes('CHILLER') || r.units?.unit_type?.toUpperCase()?.includes('WCP') ? 'Preventive Chiller' : 
-                         'Preventive Split Duct', lang) : 
-                       r.type}
+                      {(() => {
+                        if (r.type === 'Corrective' && r.technical_json?.includes('Complaint')) return 'Complaint';
+                        if (r.type === 'Preventive') {
+                           const uType = (r.units?.unit_type || "").toUpperCase();
+                           const isFCU = uType === 'FCU';
+                           const isAHU = uType === 'AHU';
+                           const isChiller = uType.includes('CHILLER') || uType.includes('WCP');
+                           return t(isFCU ? 'Preventive FCU' : isAHU ? 'Preventive AHU' : isChiller ? 'Preventive Chiller' : 'Preventive Split Duct', lang);
+                        }
+                        return r.type;
+                      })()}
                     </span>
                   </td>
                   <td className="p-4">
@@ -428,7 +432,7 @@ function ReportsContent({ lang }: { lang: Language }) {
                                      </div>
                                   ) : (
                                      <img 
-                                       src={getPhotoUrl(m.photo_url)} 
+                                       src={getPhotoUrl(m.photo_url || m.url || m)} 
                                        className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700" 
                                        alt={m.description || `Documentation ${i+1}`} 
                                      />
@@ -467,9 +471,9 @@ function ReportsContent({ lang }: { lang: Language }) {
              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="relative max-w-4xl w-full" onClick={e => e.stopPropagation()}>
                 <button onClick={() => setSelectedMedia(null)} className="absolute -top-12 right-0 p-2 text-white hover:text-rose-400 transition-colors"><X size={32} /></button>
                 {selectedMedia.media_type === 'video' ? (
-                  <video src={getPhotoUrl(selectedMedia.photo_url || selectedMedia.url)} controls className="w-full h-auto max-h-[80vh] rounded-2xl shadow-2xl bg-black" autoPlay />
+                  <video src={getPhotoUrl(selectedMedia.photo_url || selectedMedia.url || (typeof selectedMedia === 'string' ? selectedMedia : ""))} controls className="w-full h-auto max-h-[80vh] rounded-2xl shadow-2xl bg-black" autoPlay />
                 ) : (
-                  <img src={getPhotoUrl(selectedMedia.photo_url || selectedMedia.url)} alt={selectedMedia.description || "Media Detail"} className="w-full h-auto max-h-[80vh] object-contain rounded-2xl shadow-2xl bg-black/50" />
+                  <img src={getPhotoUrl(selectedMedia.photo_url || selectedMedia.url || (typeof selectedMedia === 'string' ? selectedMedia : ""))} alt={selectedMedia.description || "Media Detail"} className="w-full h-auto max-h-[80vh] object-contain rounded-2xl shadow-2xl bg-black/50" />
                 )}
                 {selectedMedia.description && (
                   <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent rounded-b-2xl">

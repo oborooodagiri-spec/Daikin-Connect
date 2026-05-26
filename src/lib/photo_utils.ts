@@ -7,7 +7,7 @@
  * 4. Naked filenames (image.jpg)
  */
 export function getPhotoUrl(url: string | null | undefined): string {
-  if (!url) return "";
+  if (!url || typeof url !== 'string') return "";
   
   // 1. If it's already a full URL or starts with /, but contains /uploads/
   // We want to force it through our proxy
