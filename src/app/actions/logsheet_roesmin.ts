@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { serializePrisma } from "@/lib/serialize";
 import { getSession } from "./auth";
+import { service_activities_type } from "@/generated/client_v3";
 
 interface RoesminLogsheetData {
   date: string;
@@ -39,7 +40,7 @@ export async function saveRoesminLogsheet(data: RoesminLogsheetData) {
     const newActivity = await (prisma.service_activities as any).create({
       data: {
         unit_id: 17588,
-        type: "Preventive",
+        type: service_activities_type.Preventive,
         service_date: new Date(data.date),
         inspector_name: data.inspector,
         engineer_note:
