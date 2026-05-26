@@ -236,6 +236,12 @@ export default function SlaVesClient() {
           >
             <ChevronLeft size={16} /> Kembali
           </button>
+          <Link 
+            href="/admin/database/rate-card/commercial-history"
+            className="flex items-center gap-1.5 text-[10px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-100 hover:bg-emerald-100 transition-colors"
+          >
+            Riwayat Dokumen <ChevronRight size={14} />
+          </Link>
         </div>
 
         <div>

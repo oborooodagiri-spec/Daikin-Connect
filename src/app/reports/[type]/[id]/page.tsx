@@ -433,7 +433,8 @@ export default function ReportHubPage() {
       
       // 3. Upload to Server
       const blob = pdf.output("blob");
-      const folder = type.toLowerCase() === 'ba' ? 'berita-acara' : type.toLowerCase();
+      const safeProjectName = (data.project?.name || "Uncategorized").replace(/[^a-zA-Z0-9_-]/g, "_");
+      const folder = `${safeProjectName}/${type.toLowerCase() === 'ba' ? 'berita-acara' : type.toLowerCase()}`;
       const fileName = `${type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()}_Report_${data.unit?.tag_number}_${format(new Date(), "yyyyMMdd")}.pdf`;
       
       const formData = new FormData();

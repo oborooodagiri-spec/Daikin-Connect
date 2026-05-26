@@ -141,21 +141,27 @@ export default function QuotationClient({
 
       if (uType) {
         // 1. Exact Category Match
-        matchedItem = initialItems.find(item => item.category.toLowerCase().trim() === uType);
+        matchedItem = initialItems.find(item => (item.category || "").toLowerCase().trim() === uType);
         
-        // 2. Partial Category Match (e.g. "Outdoor VRV" matches "VRV")
+        // 2. Word-based Partial Category Match
         if (!matchedItem) {
           matchedItem = initialItems.find(item => {
-            const cat = item.category.toLowerCase().trim();
-            return cat && (uType.includes(cat) || cat.includes(uType));
+            const cat = (item.category || "").toLowerCase().trim();
+            if (!cat) return false;
+            const catWords = cat.split(/[\s-]+/).filter(w => w.length > 2);
+            const uTypeWords = uType.split(/[\s-]+/);
+            return catWords.length > 0 && catWords.some(cw => uTypeWords.includes(cw));
           });
         }
         
-        // 3. Partial Name Match
+        // 3. Word-based Partial Name Match
         if (!matchedItem) {
           matchedItem = initialItems.find(item => {
-            const name = item.item_name.toLowerCase().trim();
-            return name && (name.includes(uType) || uType.includes(name));
+            const name = (item.item_name || "").toLowerCase().trim();
+            if (!name) return false;
+            const nameWords = name.split(/[\s-]+/).filter(w => w.length > 2);
+            const uTypeWords = uType.split(/[\s-]+/);
+            return nameWords.length > 0 && nameWords.some(nw => uTypeWords.includes(nw));
           });
         }
       }
@@ -164,6 +170,7 @@ export default function QuotationClient({
       if (!matchedItem && initialItems.length > 0) {
         matchedItem = {
           ...initialItems[0],
+          id: -1, // Unlinked
           item_name: `Maintenance ${unit.unit_type || "Unit"}`,
           category: unit.unit_type || "Lain-lain",
           original_price: 0 // Set to 0 so admin knows it needs a price
@@ -484,7 +491,12 @@ export default function QuotationClient({
           >
             <ChevronLeft size={16} /> Kembali ke Manager
           </Link>
-          <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] bg-slate-50 px-2 py-0.5 rounded border border-slate-100">B2C Quotation V1</span>
+          <Link 
+            href="/admin/database/rate-card/commercial-history"
+            className="flex items-center gap-1.5 text-[10px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-100 hover:bg-emerald-100 transition-colors"
+          >
+            Riwayat Dokumen <ChevronRight size={14} />
+          </Link>
         </div>
 
         <div>
