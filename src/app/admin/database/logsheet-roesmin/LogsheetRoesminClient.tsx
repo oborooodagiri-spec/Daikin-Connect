@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, Snowflake, Wind, Server, Fan,
@@ -238,6 +238,37 @@ export default function LogsheetRoesminClient() {
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [inspector, setInspector] = useState("");
   const [saving, setSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<string | null>(null);
+
+  // Load draft from localStorage on mount
+  useEffect(() => {
+    try {
+      const draftStr = localStorage.getItem("roesmin_logsheet_draft");
+      if (draftStr) {
+        const draft = JSON.parse(draftStr);
+        if (draft.formData) setFormData(draft.formData);
+        if (draft.date) setDate(draft.date);
+        if (draft.inspector) setInspector(draft.inspector);
+      }
+    } catch (e) {
+      console.error("Failed to load draft:", e);
+    }
+  }, []);
+
+  // Auto-save draft whenever data changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        localStorage.setItem("roesmin_logsheet_draft", JSON.stringify({
+          formData, date, inspector
+        }));
+        setLastSaved(new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
+      } catch (e) {
+        console.error("Failed to save draft:", e);
+      }
+    }, 2000); // Debounce auto-save by 2 seconds
+    return () => clearTimeout(timer);
+  }, [formData, date, inspector]);
 
   const handleInput = (unitId: string, key: string, val: string) => {
     setFormData(prev => ({ ...prev, [unitId]: { ...prev[unitId], [key]: val } }));
@@ -280,6 +311,12 @@ export default function LogsheetRoesminClient() {
       });
       
       if (result.success) {
+        // Clear draft on successful save
+        localStorage.removeItem("roesmin_logsheet_draft");
+        setFormData({});
+        setInspector("");
+        setLastSaved(null);
+        
         alert(`✅ Logsheet berhasil disimpan! ID: ${result.id}\n\nAnda dapat melihat dan generate report di halaman Project Lanud Roesmin Nurjadin.`);
         // Open the report in new tab
         window.open(`/reports/preventive/${result.id}`, "_blank");
@@ -432,6 +469,13 @@ export default function LogsheetRoesminClient() {
                 />
               </div>
             </div>
+            
+            {lastSaved && (
+              <span className="hidden md:inline text-[10px] text-slate-400 font-bold mr-2 whitespace-nowrap">
+                Draft auto-saved {lastSaved}
+              </span>
+            )}
+            
             <button onClick={handleSave} disabled={saving}
               className="px-6 py-2.5 bg-[#003366] text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-[#00a1e4] transition-all disabled:opacity-50 flex items-center gap-2 shrink-0 shadow-lg shadow-[#003366]/20">
               {saving ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <Save size={16} />}
