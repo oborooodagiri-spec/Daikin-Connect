@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, Snowflake, Wind, Server, Fan,
   ChevronDown, ChevronRight, Save, Calendar,
-  User, ClipboardList, Zap
+  User, ClipboardList, Zap, Folder, FileText, History, FileDown
 } from "lucide-react";
 import Link from "next/link";
 
@@ -231,7 +231,8 @@ function SectionIcon({ name, size = 28, className }: { name: string; size?: numb
 }
 
 /* ───────── MAIN COMPONENT ───────── */
-export default function LogsheetRoesminClient() {
+export default function LogsheetRoesminClient({ projectId }: { projectId?: string }) {
+  const [activeTab, setActiveTab] = useState<"input" | "history">("input");
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [expandedUnit, setExpandedUnit] = useState<string | null>(null);
   const [formData, setFormData] = useState<Record<string, Record<string, string>>>({});
@@ -239,6 +240,105 @@ export default function LogsheetRoesminClient() {
   const [inspector, setInspector] = useState("");
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<string | null>(null);
+
+  const [historyData, setHistoryData] = useState<any[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === "history") {
+      fetchHistory();
+    }
+  }, [activeTab]);
+
+  const fetchHistory = async () => {
+    setLoadingHistory(true);
+    try {
+      const { getRoesminLogsheets } = await import("@/app/actions/logsheet_roesmin");
+      const res = await getRoesminLogsheets({ projectId, limit: 100 });
+      if (res.success && res.data) {
+        setHistoryData(res.data);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setLoadingHistory(false);
+  };
+
+  const renderHistory = () => {
+    // Group historyData by Year > Month > Date/Day
+    const grouped: any = {};
+    const monthsStr = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+    const daysStr = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+    
+    historyData.forEach(item => {
+      if (!item.service_date) return;
+      const d = new Date(item.service_date);
+      const year = d.getFullYear();
+      const month = monthsStr[d.getMonth()];
+      const dateKey = `${daysStr[d.getDay()]}, ${d.getDate()} ${month} ${year}`;
+      
+      if (!grouped[year]) grouped[year] = {};
+      if (!grouped[year][month]) grouped[year][month] = {};
+      if (!grouped[year][month][dateKey]) grouped[year][month][dateKey] = [];
+      
+      grouped[year][month][dateKey].push(item);
+    });
+
+    return (
+      <div className="max-w-5xl mx-auto py-8 pb-32">
+        <h2 className="text-xl font-black text-[#003366] mb-6 flex items-center gap-2 px-4 md:px-0">
+          <History className="text-[#00a1e4]" /> Riwayat Logsheet
+        </h2>
+        {loadingHistory ? (
+          <div className="flex justify-center py-10"><div className="w-8 h-8 border-4 border-[#003366]/20 border-t-[#00a1e4] rounded-full animate-spin" /></div>
+        ) : historyData.length === 0 ? (
+          <div className="mx-4 md:mx-0 text-center py-20 text-slate-400 font-bold bg-white rounded-3xl border border-slate-100">Belum ada riwayat logsheet.</div>
+        ) : (
+          <div className="space-y-4 px-4 md:px-0">
+            {Object.keys(grouped).sort((a,b) => Number(b) - Number(a)).map(year => (
+              <div key={year} className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
+                <h3 className="text-lg font-black text-[#003366] flex items-center gap-2 mb-4">
+                  <Folder className="text-amber-400" fill="currentColor" /> Tahun {year}
+                </h3>
+                <div className="pl-4 border-l-2 border-slate-100 space-y-4 ml-3">
+                  {Object.keys(grouped[year]).map(month => (
+                    <div key={month}>
+                      <h4 className="text-md font-bold text-slate-700 flex items-center gap-2 mb-3">
+                        <Folder className="text-blue-400 w-5 h-5" fill="currentColor" /> {month}
+                      </h4>
+                      <div className="pl-4 border-l-2 border-slate-100 space-y-3 ml-2.5">
+                        {Object.keys(grouped[year][month]).map(dateKey => (
+                          <div key={dateKey}>
+                            <h5 className="text-sm font-bold text-slate-500 mb-2">{dateKey}</h5>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              {grouped[year][month][dateKey].map((item: any) => (
+                                <div key={item.id} className="bg-slate-50 border border-slate-100 p-4 rounded-2xl flex items-center justify-between hover:border-[#00a1e4]/30 hover:shadow-md transition-all group">
+                                  <div>
+                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">ID: #{item.id}</p>
+                                    <p className="text-sm font-black text-[#003366] flex items-center gap-2">
+                                      <User size={14} className="text-[#00a1e4]" /> {item.inspector_name || "Unknown"}
+                                    </p>
+                                  </div>
+                                  <Link href={`/reports/preventive/${item.id}`} target="_blank"
+                                    className="p-3 bg-white text-[#003366] border border-slate-200 rounded-xl hover:bg-[#00a1e4] hover:text-white hover:border-[#00a1e4] transition-all flex items-center gap-2">
+                                    <FileDown size={16} /> <span className="text-xs font-bold hidden sm:inline">Buka PDF</span>
+                                  </Link>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   // Load draft from localStorage on mount
   useEffect(() => {
@@ -308,7 +408,7 @@ export default function LogsheetRoesminClient() {
         inspector,
         formData,
         sections: sectionsData,
-      });
+      }, projectId);
       
       if (result.success) {
         // Clear draft on successful save
@@ -504,26 +604,53 @@ export default function LogsheetRoesminClient() {
           </div>
         </div>
 
-        {/* Date & Inspector Bar */}
-        <div className="mt-5 flex items-center gap-3">
-          <div className="relative flex-1">
-            <Calendar size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input type="date" value={date} onChange={e => setDate(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-[#003366] outline-none focus:border-[#00a1e4] focus:ring-4 focus:ring-[#00a1e4]/5"
-            />
-          </div>
-          <div className="relative flex-1">
-            <User size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input type="text" placeholder="Nama Inspector" value={inspector} onChange={e => setInspector(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-[#003366] outline-none focus:border-[#00a1e4] focus:ring-4 focus:ring-[#00a1e4]/5"
-            />
-          </div>
+        {/* Tab Navigation */}
+        <div className="mt-6 flex gap-2 overflow-x-auto hide-scrollbar">
+          <button 
+            onClick={() => setActiveTab("input")}
+            className={`px-5 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider whitespace-nowrap transition-all ${
+              activeTab === "input" 
+                ? "bg-[#003366] text-white shadow-md shadow-[#003366]/20" 
+                : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+            }`}
+          >
+            Input Logsheet
+          </button>
+          <button 
+            onClick={() => setActiveTab("history")}
+            className={`px-5 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 ${
+              activeTab === "history" 
+                ? "bg-[#00a1e4] text-white shadow-md shadow-[#00a1e4]/20" 
+                : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+            }`}
+          >
+            <History size={14} /> Riwayat
+          </button>
         </div>
+
+        {/* Date & Inspector Bar (Only for Input Tab) */}
+        {activeTab === "input" && (
+          <div className="mt-5 flex items-center gap-3">
+            <div className="relative flex-1">
+              <Calendar size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input type="date" value={date} onChange={e => setDate(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-[#003366] outline-none focus:border-[#00a1e4] focus:ring-4 focus:ring-[#00a1e4]/5"
+              />
+            </div>
+            <div className="relative flex-1">
+              <User size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input type="text" placeholder="Nama Inspector" value={inspector} onChange={e => setInspector(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-[#003366] outline-none focus:border-[#00a1e4] focus:ring-4 focus:ring-[#00a1e4]/5"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Section Grid */}
-      <div className="p-4 md:p-8">
-        <div className="grid grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto">
+      {/* Content Area */}
+      {activeTab === "history" ? renderHistory() : (
+        <div className="p-4 md:p-8">
+          <div className="grid grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto">
           {SECTIONS.map((sec, i) => {
             const totalParams = sec.groups.reduce((a, g) => a + g.units.reduce((b, u) => b + u.params.length, 0), 0);
             const totalUnits  = sec.groups.reduce((a, g) => a + g.units.length, 0);
@@ -577,6 +704,7 @@ export default function LogsheetRoesminClient() {
           })}
         </div>
       </div>
+      )}
     </div>
   );
 }
