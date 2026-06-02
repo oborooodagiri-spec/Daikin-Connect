@@ -172,6 +172,37 @@ export async function deleteUser(userId: number) {
   }
 }
 
+export async function getAttendanceEnabledUsers() {
+  if (!await checkAdmin()) return { error: "Unauthorized" };
+
+  try {
+    const users = await prisma.users.findMany({
+      where: {
+        attendance_enabled: true,
+        is_active: true,
+      },
+      include: {
+        user_roles: {
+          include: { roles: true }
+        }
+      },
+      orderBy: { name: 'asc' }
+    }) as any[];
+
+    const formattedUsers = users.map((u: any) => ({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      roles: u.user_roles.map((ur: any) => ur.roles.role_name),
+      attendance_enabled: true,
+    }));
+
+    return serializePrisma({ success: true, data: formattedUsers });
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
 export async function toggleUserAttendance(userId: number, currentStatus: boolean) {
   if (!await checkAdmin()) return { error: "Unauthorized" };
 

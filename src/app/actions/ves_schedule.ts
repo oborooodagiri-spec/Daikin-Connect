@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getSession } from "./auth";
 
 /**
  * Save the entire Shift Roster for a project/month
@@ -77,5 +78,56 @@ export async function getVesSchedule(projectId: string, year: number, month: num
   } catch (error) {
     console.error("Get VES Schedule Error:", error);
     return { error: "Failed to load schedule data" };
+  }
+}
+
+/**
+ * Remove a person from the Shift Roster (Admin only)
+ */
+export async function removePersonFromSchedule(
+  projectId: string,
+  year: number,
+  month: number,
+  personId: string
+) {
+  try {
+    // Admin check
+    const session = await getSession();
+    const isAdmin = session?.roles?.some((role: string) =>
+      ["admin", "super", "administrator", "management"].some(keyword => role.toLowerCase().includes(keyword))
+    );
+    if (!isAdmin) return { error: "Only admins can remove personnel from schedule" };
+
+    const templateName = `ROSTER_${year}_${month + 1}`;
+    const pId = BigInt(projectId);
+
+    const existing = await prisma.logsheet_templates.findFirst({
+      where: { project_id: pId, name: templateName }
+    });
+
+    if (!existing) return { error: "Schedule not found for this period" };
+
+    const data = JSON.parse(existing.parameters_json);
+
+    // Remove person from people array
+    data.people = (data.people || []).filter((p: any) => p.id !== personId && p.id?.toString() !== personId);
+
+    // Remove their schedule entries
+    if (data.schedule && data.schedule[personId]) {
+      delete data.schedule[personId];
+    }
+
+    data.updatedAt = new Date().toISOString();
+
+    await prisma.logsheet_templates.update({
+      where: { id: existing.id },
+      data: { parameters_json: JSON.stringify(data) }
+    });
+
+    revalidatePath("/admin/schedule");
+    return { success: true };
+  } catch (error) {
+    console.error("Remove Person Error:", error);
+    return { error: "Failed to remove personnel" };
   }
 }

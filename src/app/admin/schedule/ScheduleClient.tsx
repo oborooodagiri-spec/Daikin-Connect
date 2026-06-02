@@ -25,12 +25,17 @@ import {
   Clock,
   Briefcase,
   UserCheck,
-  Printer
+  Printer,
+  Trash2,
+  RefreshCw,
+  MapPin,
+  AlertTriangle,
+  Search
 } from "lucide-react";
 import { getIndonesianHolidays } from "@/app/actions/schedules";
-import { saveVesSchedule, getVesSchedule } from "@/app/actions/ves_schedule";
-import { getAllUsers } from "@/app/actions/users";
-import { Search } from "lucide-react";
+import { saveVesSchedule, getVesSchedule, removePersonFromSchedule } from "@/app/actions/ves_schedule";
+import { getAttendanceEnabledUsers } from "@/app/actions/users";
+import { getAttendanceForRoster } from "@/app/actions/attendanceAdmin";
 import { format, parseISO } from "date-fns";
 
 /**
@@ -47,6 +52,12 @@ interface Person {
 
 interface ScheduleEntry {
   [day: number]: ShiftType;
+}
+
+interface AttendanceRecord {
+  clockIn: string;
+  clockOut: string | null;
+  durationMin: number | null;
 }
 
 const DEFAULT_SHIFT_INFO: Record<string, { label: string, color: string, textColor: string, duration: number }> = {
@@ -110,6 +121,12 @@ export default function ScheduleClient() {
   const [justification, setJustification] = useState("");
   const [changeLog, setChangeLog] = useState<any[]>([]);
 
+  // Attendance Sync States
+  const [attendanceData, setAttendanceData] = useState<Record<string, AttendanceRecord>>({});
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   /**
    * Action: Save Schedule
    */
@@ -127,6 +144,73 @@ export default function ScheduleClient() {
       console.error("An unexpected error occurred");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  /**
+   * Fetch Attendance Data for current month's personnel
+   */
+  const fetchAttendanceData = async () => {
+    if (people.length === 0) return;
+    setIsSyncing(true);
+    try {
+      const userIds = people.map(p => parseInt(p.id)).filter(id => !isNaN(id));
+      if (userIds.length === 0) { setIsSyncing(false); return; }
+
+      const startDate = `${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, '0')}-01`;
+      const endDay = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0).getDate();
+      const endDate = `${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, '0')}-${String(endDay).padStart(2, '0')}`;
+
+      const res = await getAttendanceForRoster({ userIds, startDate, endDate });
+      if ('data' in res && res.data) {
+        const mapped: Record<string, AttendanceRecord> = {};
+        (res.data as any[]).forEach((rec: any) => {
+          const checkIn = new Date(rec.check_in_time);
+          const day = checkIn.getDate();
+          const key = `${rec.user_id}-${day}`;
+          const checkOut = rec.check_out_time ? new Date(rec.check_out_time) : null;
+          const durationMin = checkOut ? Math.round((checkOut.getTime() - checkIn.getTime()) / 60000) : null;
+          mapped[key] = {
+            clockIn: format(checkIn, 'HH:mm'),
+            clockOut: checkOut ? format(checkOut, 'HH:mm') : null,
+            durationMin,
+          };
+        });
+        setAttendanceData(mapped);
+      }
+    } catch (err) {
+      console.error('Failed to sync attendance:', err);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  /**
+   * Handle Delete Personnel
+   */
+  const handleDeletePerson = async (personId: string) => {
+    setIsDeleting(true);
+    try {
+      const res = await removePersonFromSchedule(
+        "4", viewDate.getFullYear(), viewDate.getMonth(), personId
+      );
+      if (res.success) {
+        setPeople(prev => prev.filter(p => p.id !== personId && p.id?.toString() !== personId));
+        setSchedule(prev => {
+          const next = { ...prev };
+          delete next[personId];
+          return next;
+        });
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+      } else {
+        console.error(res.error);
+      }
+    } catch (err) {
+      console.error('Delete failed:', err);
+    } finally {
+      setIsDeleting(false);
+      setDeleteConfirmId(null);
     }
   };
 
@@ -407,9 +491,9 @@ export default function ScheduleClient() {
       // Load Saved Roster
       const [rosterRes, usersRes] = await Promise.all([
         getVesSchedule("4", viewDate.getFullYear(), viewDate.getMonth()),
-        getAllUsers()
+        getAttendanceEnabledUsers()
       ]);
-      if (usersRes.success) setAvailableUsers(usersRes.data);
+      if ('data' in usersRes && usersRes.data) setAvailableUsers(usersRes.data);
       if (rosterRes.success && rosterRes.data) {
         setSchedule(rosterRes.data.schedule || {});
         setPeople(rosterRes.data.people || []);
@@ -427,6 +511,11 @@ export default function ScheduleClient() {
     }
     loadData();
   }, [viewDate]);
+
+  // Auto-sync attendance data when people or month changes
+  React.useEffect(() => {
+    fetchAttendanceData();
+  }, [people.length, viewDate]);
 
 
   const holidaysByDay = useMemo(() => {
@@ -814,6 +903,24 @@ export default function ScheduleClient() {
               )}
            </button>
 
+           <button 
+              onClick={fetchAttendanceData}
+              disabled={isSyncing}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-200/50 
+                ${isSyncing ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-[#003366] text-white hover:bg-[#004488] hover:-translate-y-0.5 active:translate-y-0'}`}
+           >
+              {isSyncing ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Syncing...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="w-4 h-4" /> Sync Absensi
+                </>
+              )}
+           </button>
+
            <div className="relative group">
               <button className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-blue-500/20">
                  <Plus className="w-4 h-4" />
@@ -1136,6 +1243,15 @@ export default function ScheduleClient() {
                                        </select>
                                      )}
                                   </div>
+                                  {!isExporting && (
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); setDeleteConfirmId(p.id); }}
+                                      className="opacity-0 group-hover:opacity-100 transition-all p-1.5 hover:bg-rose-100 rounded-xl text-slate-300 hover:text-rose-500 shrink-0"
+                                      title="Hapus dari schedule"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  )}
                                </div>
                             </td>
                              {daysArray.map(day => {
@@ -1144,7 +1260,7 @@ export default function ScheduleClient() {
                                const holiday = holidaysByDay[day];
                                const isHoliday = !!holiday;
                                const isSunday = new Date(viewDate.getFullYear(), viewDate.getMonth(), day).getDay() === 0;
-                               const isPast = new Date(viewDate.getFullYear(), viewDate.getMonth(), day) < new Date().setHours(0,0,0,0);
+                               const isPast = new Date(viewDate.getFullYear(), viewDate.getMonth(), day).getTime() < new Date().setHours(0,0,0,0);
 
                                return (
                                  <td 
@@ -1175,11 +1291,33 @@ export default function ScheduleClient() {
                                        <option value="OFF">OFF</option>
                                         <option value="MANUAL">⌨️ MANUAL</option>
                                     </select>
-                                    {isPast && (
-                                      <div className="absolute top-1 right-1 opacity-20 group-hover:opacity-100 transition-opacity">
-                                         <Briefcase className="w-2.5 h-2.5 text-slate-400" />
-                                      </div>
-                                    )}
+                                    {isPast && (() => {
+                                      const att = attendanceData[`${p.id}-${day}`];
+                                      const hasConflict = att && val && val !== "OFF" && !att.clockOut;
+                                      const isAbsent = val && val !== "OFF" && val !== "" && !att;
+                                      const isExtraWork = val === "OFF" && att;
+                                      return (
+                                        <>
+                                          {att ? (
+                                            <div className={`absolute bottom-0.5 inset-x-0.5 rounded-lg px-1 py-0.5 text-center transition-all
+                                              ${isExtraWork ? 'bg-emerald-100 border border-emerald-300' : hasConflict ? 'bg-amber-100 border border-amber-300' : 'bg-blue-50 border border-blue-200'}`}>
+                                              <div className="text-[7px] font-black text-slate-600 leading-tight truncate">
+                                                {att.clockIn}{att.clockOut ? `-${att.clockOut}` : ''}
+                                              </div>
+                                              {isExtraWork && <div className="text-[6px] font-black text-emerald-600">EXTRA</div>}
+                                            </div>
+                                          ) : isAbsent ? (
+                                            <div className="absolute bottom-0.5 inset-x-0.5 rounded-lg px-1 py-0.5 bg-rose-100 border border-rose-300 text-center">
+                                              <div className="text-[7px] font-black text-rose-500">ABSENT</div>
+                                            </div>
+                                          ) : (
+                                            <div className="absolute top-1 right-1 opacity-20 group-hover:opacity-100 transition-opacity">
+                                              <Briefcase className="w-2.5 h-2.5 text-slate-400" />
+                                            </div>
+                                          )}
+                                        </>
+                                      );
+                                    })()}
                                  </td>
                                );
                              })}
@@ -1217,7 +1355,7 @@ export default function ScheduleClient() {
                                    {userSearch && (
                                       <div className="absolute bottom-full mb-2 left-0 w-64 bg-white border border-slate-200 rounded-[1.5rem] shadow-2xl z-[100] max-h-48 overflow-y-auto p-3 flex flex-col gap-1 border-t-4 border-t-[#003366]">
                                          <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest px-2 mb-1">Hasil Pencarian</p>
-                                         {availableUsers.filter(u => u.name.toLowerCase().includes(userSearch.toLowerCase()))
+                                         {availableUsers.filter((u: any) => u.name.toLowerCase().includes(userSearch.toLowerCase()) && u.attendance_enabled)
                                             .slice(0, 10)
                                             .map(u => (
                                                <button 
@@ -1233,13 +1371,16 @@ export default function ScheduleClient() {
                                                >
                                                   <div className="flex flex-col">
                                                      <span className="text-[11px] font-bold text-slate-700">{u.name}</span>
-                                                     <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">{u.roles?.[0] || 'Member'}</span>
+                                                     <div className="flex items-center gap-1">
+                                                        <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">{u.roles?.[0] || 'Member'}</span>
+                                                        <span className="text-[7px] font-black text-emerald-500 bg-emerald-50 px-1 rounded">ABSENSI</span>
+                                                     </div>
                                                   </div>
                                                   <Plus size={12} className="text-slate-300 group-hover:text-[#003366]" />
                                                </button>
                                             ))
                                          }
-                                         {availableUsers.filter(u => u.name.toLowerCase().includes(userSearch.toLowerCase())).length === 0 && (
+                                         {availableUsers.filter((u: any) => u.name.toLowerCase().includes(userSearch.toLowerCase()) && u.attendance_enabled).length === 0 && (
                                             <p className="p-3 text-center text-[10px] text-slate-400 font-bold italic">Akun tidak ditemukan.</p>
                                          )}
                                       </div>
@@ -1620,6 +1761,60 @@ export default function ScheduleClient() {
               </motion.div>
            </div>
          )}
+      </AnimatePresence>
+
+      {/* Delete Personnel Confirmation Modal */}
+      <AnimatePresence>
+        {deleteConfirmId && (() => {
+          const person = people.find(p => p.id === deleteConfirmId);
+          if (!person) return null;
+          return (
+            <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
+              <motion.div 
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" 
+                onClick={() => setDeleteConfirmId(null)}
+              />
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                className="relative bg-white w-full max-w-sm rounded-[2rem] shadow-2xl overflow-hidden p-8"
+              >
+                <div className="flex flex-col items-center text-center gap-4">
+                  <div className="w-16 h-16 rounded-3xl bg-rose-100 text-rose-600 flex items-center justify-center shadow-lg">
+                    <Trash2 className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black text-slate-800">Hapus Personel</h2>
+                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Konfirmasi Penghapusan</p>
+                  </div>
+                  <p className="text-sm text-slate-500 leading-relaxed font-medium">
+                    Apakah Anda yakin ingin menghapus <b className="text-slate-800">{person.name}</b> dari schedule ini? Semua data jadwal personel ini akan dihapus.
+                  </p>
+                  <div className="grid grid-cols-2 gap-3 w-full">
+                    <button 
+                      onClick={() => setDeleteConfirmId(null)}
+                      disabled={isDeleting}
+                      className="py-3 rounded-xl border border-slate-200 text-slate-400 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all disabled:opacity-50"
+                    >
+                      Batal
+                    </button>
+                    <button 
+                      onClick={() => handleDeletePerson(deleteConfirmId)}
+                      disabled={isDeleting}
+                      className="py-3 rounded-xl bg-rose-600 text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-rose-200/50 hover:bg-rose-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {isDeleting ? (
+                        <><div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Menghapus...</>
+                      ) : 'Hapus'}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          );
+        })()}
       </AnimatePresence>
 
       {/* Generator Modals */}
