@@ -128,8 +128,7 @@ export async function getAttendanceForRoster(params: {
             select: {
                 user_id: true,
                 check_in_time: true,
-                check_out_time: true,
-                status: true
+                check_out_time: true
             }
         });
 
