@@ -511,9 +511,9 @@ export const PhaseManagement = ({ isVisible }: { isVisible: boolean }) => {
     <VesPhaseWrapper
       isVisible={isVisible}
       phaseNumber={7}
-      subtitle="Fase 7: Penentuan Tata Kelola EPL Connect"
+      subtitle="Fase 7: Penentuan Tata Kelola EPL Link"
       title="Strategi Pengelolaan Platform"
-      description="Menentukan model operasional jangka panjang platform EPL Connect guna memastikan kesinambungan monitoring dan efisiensi data."
+      description="Menentukan model operasional jangka panjang platform EPL Link guna memastikan kesinambungan monitoring dan efisiensi data."
       roles={[
         { name: "Management Internal", icon: ShieldCheck, color: "text-red-400" },
         { name: "Control Team", icon: Activity, color: "text-orange-400" },

@@ -42,11 +42,6 @@ export default function LoginPage() {
   useEffect(() => {
     setIsMounted(true);
     
-    // Explicitly trigger turnstile render when page is ready
-    if (typeof window !== "undefined" && (window as any).renderTurnstile) {
-      setTimeout((window as any).renderTurnstile, 500);
-    }
-    
     // Dynamic Greeting Logic - More precise ranges
     const hour = new Date().getHours();
     if (hour >= 5 && hour < 12) setGreeting("Selamat Pagi");
@@ -58,6 +53,38 @@ export default function LoginPage() {
       localStorage.removeItem("daikin_last_project");
     }
   }, []);
+
+  // Explicitly render Turnstile widget after component mounts
+  useEffect(() => {
+    if (!isMounted || isRequestMode) return;
+
+    const siteKey = (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"))
+      ? "1x00000000000000000000AA"
+      : (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAADGD9nT3x6TSaE8-");
+
+    const renderWidget = () => {
+      const container = document.getElementById('turnstile-container');
+      if (container && (window as any).turnstile) {
+        // Clear any previous render
+        (window as any).turnstile.remove(container);
+        (window as any).turnstile.render(container, {
+          sitekey: siteKey,
+          theme: 'light',
+        });
+      }
+    };
+
+    // Retry until turnstile script is loaded
+    const interval = setInterval(() => {
+      if ((window as any).turnstile) {
+        renderWidget();
+        clearInterval(interval);
+      }
+    }, 500);
+
+    // Cleanup
+    return () => clearInterval(interval);
+  }, [isMounted, isRequestMode]);
 
   if (!isMounted) return <div className="min-h-screen bg-white" />;
 
@@ -236,15 +263,7 @@ export default function LoginPage() {
 
               {!isRequestMode && (
                 <div className="flex justify-center py-2 min-h-[65px] mb-4">
-                  <div 
-                    className="cf-turnstile" 
-                    data-sitekey={
-                      (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"))
-                        ? "1x00000000000000000000AA" 
-                        : (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAADGD9nT3x6TSaE8-")
-                    }
-                    data-theme="light"
-                  ></div>
+                  <div id="turnstile-container"></div>
                 </div>
               )}
 
@@ -257,7 +276,7 @@ export default function LoginPage() {
                     className="mt-1 w-4 h-4 text-[#0073ea] border-slate-300 rounded focus:ring-[#0073ea]"
                   />
                   <label htmlFor="privacy-policy-agree" className="text-xs text-slate-500 leading-snug">
-                    Saya telah membaca dan menyetujui <Link href="/privacy-policy" target="_blank" className="text-[#0073ea] font-bold hover:underline">Kebijakan Privasi</Link> EPL Connect.
+                    Saya telah membaca dan menyetujui <Link href="/privacy-policy" target="_blank" className="text-[#0073ea] font-bold hover:underline">Kebijakan Privasi</Link> EPL Link.
                   </label>
                 </div>
               )}
@@ -300,7 +319,7 @@ export default function LoginPage() {
       <div className="py-8" />
       <footer className="w-full py-6 text-center text-xs text-slate-400 font-medium">
         <p>
-          &copy; {new Date().getFullYear()} EPL Connect. All rights reserved. {" | "}
+          &copy; {new Date().getFullYear()} EPL Link. All rights reserved. {" | "}
           <Link href="/privacy-policy" className="text-[#0073ea] hover:underline font-bold">
             Privacy Policy
           </Link>

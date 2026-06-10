@@ -422,7 +422,7 @@ export default function AttendanceRecordsPage() {
                       PT DAIKIN APPLIED SOLUTIONS INDONESIA
                     </div>
                   </div>
-                  <img src="/logo_epl_connect_1.png" alt="EPL Connect" className="h-10 object-contain" />
+                  <img src="/logo_epl_connect_1.png" alt="EPL Link" className="h-10 object-contain" />
                 </div>
 
                 {/* Report Title */}

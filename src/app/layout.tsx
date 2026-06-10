@@ -24,7 +24,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "EPL Connect - Daikin",
+  title: "EPL Link - Daikin",
   description: "Daikin Connect - Value Engineering Services",
   manifest: "/manifest.json",
   icons: {
@@ -56,10 +56,8 @@ export default function RootLayout({
         <SyncManager />
         <UpdatePrompt />
         <Script 
-          src="https://challenges.cloudflare.com/turnstile/v0/api.js" 
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" 
           strategy="afterInteractive" 
-          async 
-          defer
         />
       </body>
     </html>

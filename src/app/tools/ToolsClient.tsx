@@ -259,7 +259,7 @@ export default function ToolsClient() {
       <footer className="border-t border-slate-100 py-6">
         <div className="max-w-6xl mx-auto px-4 md:px-8 flex items-center justify-between">
           <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
-            EPL Connect · HVAC Engineering Suite
+            EPL Link · HVAC Engineering Suite
           </p>
           <p className="text-[10px] font-bold text-slate-300">© 2026</p>
         </div>

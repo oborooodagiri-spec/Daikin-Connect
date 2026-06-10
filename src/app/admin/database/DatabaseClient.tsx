@@ -412,7 +412,7 @@ export default function KnowledgeCenterPage() {
                 Akses Terbatas &bull; {session?.isInternal ? "INTERNAL STAFF MODE" : "EXTERNAL ACCESS"}
               </p>
            </div>
-           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">&copy; 2026 EPL Connect Portal</p>
+           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">&copy; 2026 EPL Link Portal</p>
         </footer>
       </div>
 

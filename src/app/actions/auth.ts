@@ -182,7 +182,7 @@ export async function login(formData: FormData) {
         // Send Email with Timeout Resilience
         try {
           const mailPromise = transporter.sendMail({
-            from: '"EPL Connect Security" <no-reply@epllink.com>',
+            from: '"EPL Link Security" <no-reply@epllink.com>',
             to: user.email,
             subject: 'Security Verification Code',
             html: `

@@ -242,7 +242,7 @@ export default function CinematicAdPage() {
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-center gap-6 mb-4">
                   <img src="/daikin_logo.png" className="h-6 brightness-0 invert" alt="Daikin" />
                   <div className="w-[1px] h-6 bg-white/20"></div>
-                  <img src="/logo_epl_connect_1.png" className="h-8 brightness-0 invert" alt="EPL Connect" />
+                  <img src="/logo_epl_connect_1.png" className="h-8 brightness-0 invert" alt="EPL Link" />
                 </motion.div>
                 <div className="space-y-4">
                   <MaskedText text="THE FUTURE REVEALED" className="text-6xl md:text-8xl font-black italic text-white" highlight="FUTURE" />

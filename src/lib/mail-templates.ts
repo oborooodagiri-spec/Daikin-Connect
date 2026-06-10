@@ -1,5 +1,5 @@
 /**
- * Bilingual (Indonesian & English) Email Templates for EPL Connect
+ * Bilingual (Indonesian & English) Email Templates for EPL Link
  */
 
 const baseStyles = `
@@ -44,23 +44,23 @@ export function getRegistrationReceivedTemplate(name: string) {
   return `
     <div style="${baseStyles}">
       <div style="${headerStyles}">
-        <h1 style="color: #003366; margin: 0;">EPL Connect</h1>
+        <h1 style="color: #003366; margin: 0;">EPL Link</h1>
       </div>
       
       <div style="margin-bottom: 25px;">
         <p>Halo <strong>${name}</strong>,</p>
-        <p>Terima kasih telah mendaftar di <strong>EPL Connect</strong>. Permintaan akses Anda telah kami terima.</p>
+        <p>Terima kasih telah mendaftar di <strong>EPL Link</strong>. Permintaan akses Anda telah kami terima.</p>
         <p>Saat ini, akun Anda sedang dalam proses validasi oleh tim Admin kami. Mohon tunggu informasi selanjutnya melalui email ini jika akun Anda telah disetujui.</p>
       </div>
 
       <div style="border-top: 1px dashed #cbd5e1; padding-top: 20px;">
         <p>Hello <strong>${name}</strong>,</p>
-        <p>Thank you for registering with <strong>EPL Connect</strong>. Your access request has been received.</p>
+        <p>Thank you for registering with <strong>EPL Link</strong>. Your access request has been received.</p>
         <p>Currently, your account is being validated by our Admin team. Please wait for further information via email once your account has been approved.</p>
       </div>
 
       <div style="${footerStyles}">
-        <p>&copy; ${new Date().getFullYear()} EPL Connect - Daikin Applied Indonesia. All rights reserved.</p>
+        <p>&copy; ${new Date().getFullYear()} EPL Link - Daikin Applied Indonesia. All rights reserved.</p>
       </div>
     </div>
   `;
@@ -70,7 +70,7 @@ export function getAccountApprovedTemplate(name: string, role: string) {
   return `
     <div style="${baseStyles}">
       <div style="${headerStyles}">
-        <h1 style="color: #003366; margin: 0;">EPL Connect</h1>
+        <h1 style="color: #003366; margin: 0;">EPL Link</h1>
       </div>
       
       <div style="margin-bottom: 25px;">
@@ -87,7 +87,7 @@ export function getAccountApprovedTemplate(name: string, role: string) {
       </div>
 
       <div style="${footerStyles}">
-        <p>&copy; ${new Date().getFullYear()} EPL Connect - Daikin Applied Indonesia. All rights reserved.</p>
+        <p>&copy; ${new Date().getFullYear()} EPL Link - Daikin Applied Indonesia. All rights reserved.</p>
       </div>
     </div>
   `;
@@ -97,23 +97,23 @@ export function getAccountSuspendedTemplate(name: string) {
   return `
     <div style="${baseStyles}">
       <div style="${headerStyles}">
-        <h1 style="color: #003366; margin: 0;">EPL Connect</h1>
+        <h1 style="color: #003366; margin: 0;">EPL Link</h1>
       </div>
       
       <div style="margin-bottom: 25px;">
         <p>Halo <strong>${name}</strong>,</p>
-        <p>Kami memberitahukan bahwa akun Anda pada <strong>EPL Connect</strong> telah <strong>ditangguhkan</strong> untuk sementara waktu.</p>
+        <p>Kami memberitahukan bahwa akun Anda pada <strong>EPL Link</strong> telah <strong>ditangguhkan</strong> untuk sementara waktu.</p>
         <p>Jika Anda merasa ini adalah kesalahan, silakan hubungi tim Admin kami untuk klarifikasi lebih lanjut.</p>
       </div>
 
       <div style="border-top: 1px dashed #cbd5e1; padding-top: 20px;">
         <p>Hello <strong>${name}</strong>,</p>
-        <p>We are informing you that your <strong>EPL Connect</strong> account has been <strong>suspended</strong> temporarily.</p>
+        <p>We are informing you that your <strong>EPL Link</strong> account has been <strong>suspended</strong> temporarily.</p>
         <p>If you believe this is a mistake, please contact our Admin team for further clarification.</p>
       </div>
 
       <div style="${footerStyles}">
-        <p>&copy; ${new Date().getFullYear()} EPL Connect - Daikin Applied Indonesia. All rights reserved.</p>
+        <p>&copy; ${new Date().getFullYear()} EPL Link - Daikin Applied Indonesia. All rights reserved.</p>
       </div>
     </div>
   `;
@@ -123,7 +123,7 @@ export function getPasswordResetTemplate(name: string, resetLink: string) {
   return `
     <div style="${baseStyles}">
       <div style="${headerStyles}">
-        <h1 style="color: #003366; margin: 0;">EPL Connect</h1>
+        <h1 style="color: #003366; margin: 0;">EPL Link</h1>
       </div>
       
       <div style="margin-bottom: 25px;">
@@ -140,7 +140,7 @@ export function getPasswordResetTemplate(name: string, resetLink: string) {
       </div>
 
       <div style="${footerStyles}">
-        <p>&copy; ${new Date().getFullYear()} EPL Connect - Daikin Applied Indonesia. All rights reserved.</p>
+        <p>&copy; ${new Date().getFullYear()} EPL Link - Daikin Applied Indonesia. All rights reserved.</p>
       </div>
     </div>
   `;

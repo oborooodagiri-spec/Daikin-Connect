@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
 /**
- * EPL Connect — Edge Proxy Security Layer (Next.js 16)
+ * EPL Link — Edge Proxy Security Layer (Next.js 16)
  * 
  * Provides:
  * 1. Session-based route protection

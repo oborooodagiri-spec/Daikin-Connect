@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
         // Send Email
         try {
           await transporter.sendMail({
-            from: '"EPL Connect Security" <no-reply@epllink.com>',
+            from: '"EPL Link Security" <no-reply@epllink.com>',
             to: user.email,
             subject: 'Security Verification Code',
             html: `

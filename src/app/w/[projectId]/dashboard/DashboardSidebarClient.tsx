@@ -113,7 +113,7 @@ export default function DashboardSidebarClient({
           <div className="relative h-10 lg:h-12 w-48 mb-6">
             <Image 
               src="/logo_epl_connect_1.png" 
-              alt="EPL Connect" 
+              alt="EPL Link" 
               fill
               className="object-contain"
               priority

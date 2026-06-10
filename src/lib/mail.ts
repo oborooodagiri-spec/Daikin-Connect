@@ -21,7 +21,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-const fromEmail = `"EPL Connect" <${process.env.SMTP_USER || 'no-reply@epllink.com'}>`;
+const fromEmail = `"EPL Link" <${process.env.SMTP_USER || 'no-reply@epllink.com'}>`;
 
 export async function sendRegistrationReceivedEmail(to: string, name: string) {
   console.log(`[MAIL] Attempting to send Registration Confirmation to ${to}...`);
@@ -29,7 +29,7 @@ export async function sendRegistrationReceivedEmail(to: string, name: string) {
     const info = await transporter.sendMail({
       from: fromEmail,
       to,
-      subject: 'EPL Connect: Permintaan Akses Diterima / Access Request Received',
+      subject: 'EPL Link: Permintaan Akses Diterima / Access Request Received',
       html: getRegistrationReceivedTemplate(name),
     });
     console.log(`[MAIL] Registration Confirmation sent: ${info.messageId}`);
@@ -46,7 +46,7 @@ export async function sendAccountApprovedEmail(to: string, name: string, role: s
     const info = await transporter.sendMail({
       from: fromEmail,
       to,
-      subject: 'EPL Connect: Akun Disetujui / Account Approved',
+      subject: 'EPL Link: Akun Disetujui / Account Approved',
       html: getAccountApprovedTemplate(name, role),
     });
     console.log(`[MAIL] Approval Notification sent: ${info.messageId}`);
@@ -63,7 +63,7 @@ export async function sendAccountSuspendedEmail(to: string, name: string) {
     const info = await transporter.sendMail({
       from: fromEmail,
       to,
-      subject: 'EPL Connect: Akun Ditangguhkan / Account Suspended',
+      subject: 'EPL Link: Akun Ditangguhkan / Account Suspended',
       html: getAccountSuspendedTemplate(name),
     });
     console.log(`[MAIL] Suspension Notification sent: ${info.messageId}`);
@@ -82,7 +82,7 @@ export async function sendPasswordResetEmail(to: string, name: string, resetToke
     const info = await transporter.sendMail({
       from: fromEmail,
       to,
-      subject: 'EPL Connect: Atur Ulang Kata Sandi / Password Reset',
+      subject: 'EPL Link: Atur Ulang Kata Sandi / Password Reset',
       html: getPasswordResetTemplate(name, resetLink),
     });
     console.log(`[MAIL] Password Reset sent: ${info.messageId}`);
