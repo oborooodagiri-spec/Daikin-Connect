@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SyncManager } from "@/components/SyncManager";
 import UpdatePrompt from "@/components/dashboard/UpdatePrompt";
-import Script from "next/script";
+
 import "./globals.css";
 
 const geistSans = Geist({
@@ -55,10 +55,7 @@ export default function RootLayout({
         {children}
         <SyncManager />
         <UpdatePrompt />
-        <Script 
-          src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" 
-          strategy="afterInteractive" 
-        />
+        
       </body>
     </html>
   );

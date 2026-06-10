@@ -66,42 +66,47 @@ export default function LoginPage() {
 
     const renderWidget = () => {
       const container = document.getElementById('turnstile-container');
-      if (!container || !(window as any).turnstile) return false;
+      if (!container || !(window as any).turnstile) return;
       
-      // Clear the container safely before rendering
       container.innerHTML = '';
-      
       try {
         widgetId = (window as any).turnstile.render(container, {
           sitekey: siteKey,
           theme: 'light',
         });
-        console.log('[Turnstile] Widget rendered successfully, id:', widgetId);
-        return true;
       } catch (err) {
         console.error('[Turnstile] Render error:', err);
-        return false;
       }
     };
 
-    // Retry until turnstile script is loaded and widget renders
-    const interval = setInterval(() => {
-      if ((window as any).turnstile) {
-        const success = renderWidget();
-        if (success) clearInterval(interval);
-      }
-    }, 500);
+    // Load Turnstile script dynamically if not already loaded
+    const loadScript = () => {
+      return new Promise<void>((resolve) => {
+        if ((window as any).turnstile) {
+          resolve();
+          return;
+        }
 
-    // Give up after 15 seconds
-    const timeout = setTimeout(() => {
-      clearInterval(interval);
-      console.warn('[Turnstile] Widget failed to load after 15 seconds');
-    }, 15000);
+        const existing = document.querySelector('script[src*="challenges.cloudflare.com/turnstile"]');
+        if (existing) {
+          existing.remove();
+        }
+
+        const script = document.createElement('script');
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        script.async = true;
+        script.onload = () => {
+          // Wait a tick for turnstile to initialize
+          setTimeout(resolve, 300);
+        };
+        document.head.appendChild(script);
+      });
+    };
+
+    loadScript().then(renderWidget);
 
     // Cleanup
     return () => {
-      clearInterval(interval);
-      clearTimeout(timeout);
       if (widgetId && (window as any).turnstile) {
         try { (window as any).turnstile.remove(widgetId); } catch (e) { /* ignore */ }
       }
