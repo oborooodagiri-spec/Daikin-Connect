@@ -132,7 +132,7 @@ class _UnitPassportScreenState extends State<UnitPassportScreen> with SingleTick
       ),
       child: Text(
         widget.asset.status.toUpperCase(),
-        style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.black, letterSpacing: 1),
+        style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1),
       ),
     );
   }
@@ -143,7 +143,7 @@ class _UnitPassportScreenState extends State<UnitPassportScreen> with SingleTick
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
         child: Row(
           children: [
-            _buildMiniStat("HEALTH", "98%", Colors.emerald),
+            _buildMiniStat("HEALTH", "98%", Colors.green),
             const SizedBox(width: 12),
             _buildMiniStat("MTBF", "420H", Colors.blue),
             const SizedBox(width: 12),
@@ -333,7 +333,7 @@ class _UnitPassportScreenState extends State<UnitPassportScreen> with SingleTick
     switch (status.toLowerCase()) {
       case 'critical': return Colors.red;
       case 'warning': return Colors.amber;
-      case 'normal': return Colors.emerald;
+      case 'normal': return Colors.green;
       default: return const Color(0xFF00A1E4);
     }
   }

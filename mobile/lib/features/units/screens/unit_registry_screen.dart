@@ -219,7 +219,7 @@ class _UnitRegistryScreenState extends State<UnitRegistryScreen> {
                       ),
                       child: Text(
                         status.toUpperCase(),
-                        style: TextStyle(color: statusColor, fontSize: 8, fontWeight: FontWeight.black),
+                        style: TextStyle(color: statusColor, fontSize: 8, fontWeight: FontWeight.w900),
                       ),
                     ),
                   ],
@@ -237,7 +237,7 @@ class _UnitRegistryScreenState extends State<UnitRegistryScreen> {
       case 'critical': return Colors.red;
       case 'warning': return Colors.amber;
       case 'problem': return Colors.orange;
-      case 'normal': return Colors.emerald;
+      case 'normal': return Colors.green;
       default: return const Color(0xFF00A1E4);
     }
   }

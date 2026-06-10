@@ -131,11 +131,11 @@ class _DashboardHomeState extends State<DashboardHome> {
       width: 10,
       height: 10,
       decoration: BoxDecoration(
-        color: isLoading ? Colors.amber : Colors.emerald,
+        color: isLoading ? Colors.amber : Colors.green,
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: (isLoading ? Colors.amber : Colors.emerald).withOpacity(0.5), 
+            color: (isLoading ? Colors.amber : Colors.green).withOpacity(0.5), 
             blurRadius: 8,
             spreadRadius: 2
           )

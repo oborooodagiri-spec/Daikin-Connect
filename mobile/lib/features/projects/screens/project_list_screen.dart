@@ -78,7 +78,7 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
   }
 
   Widget _buildProjectCard(Map<String, dynamic> project, int index) {
-    final statusColor = project['status'] == 'active' ? Colors.emerald : Colors.white24;
+    final statusColor = project['status'] == 'active' ? Colors.green : Colors.white24;
 
     return FadeInUp(
       delay: Duration(milliseconds: index * 100),
@@ -101,7 +101,7 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
                     ),
                     child: Text(
                       project['status']?.toUpperCase() ?? "UNKNOWN",
-                      style: TextStyle(color: statusColor, fontSize: 9, fontWeight: FontWeight.black, letterSpacing: 1),
+                      style: TextStyle(color: statusColor, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1),
                     ),
                   ),
                   Text(
@@ -138,7 +138,7 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
                 children: [
                   _buildStatItem("UNITS", project['unit_count'].toString(), const Color(0xFF00A1E4)),
                   _buildStatItem("UPCOMING", "02", Colors.amber), // Placeholder for real upcoming tasks count
-                  _buildStatItem("HEALTH", "98%", Colors.emerald), // Placeholder for real health score
+                  _buildStatItem("HEALTH", "98%", Colors.green), // Placeholder for real health score
                 ],
               ),
               const SizedBox(height: 24),

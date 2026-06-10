@@ -39,6 +39,9 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "D2 Connect",
   },
+  verification: {
+    google: "rg5f8uFSdDy7-X29_ZCn8Vs1sLfKEeCo4UuBjBmOqgE",
+  },
 };
 
 export default function RootLayout({

@@ -10,7 +10,7 @@ class SyncProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      await SyncService.queueReport(report);
+      await SyncService().queueReport('/api/v1/reports', report);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -22,7 +22,7 @@ class SyncProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      await SyncService.processQueue();
+      await SyncService().syncPendingReports();
     } finally {
       _isLoading = false;
       notifyListeners();

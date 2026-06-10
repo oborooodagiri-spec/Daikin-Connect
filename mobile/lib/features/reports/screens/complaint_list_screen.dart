@@ -176,14 +176,14 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
       ),
       child: Text(
         priority.toUpperCase(),
-        style: TextStyle(color: color, fontSize: 8, fontWeight: FontWeight.black, letterSpacing: 1),
+        style: TextStyle(color: color, fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: 1),
       ),
     );
   }
 
   Widget _buildStatusBadge(String status) {
     final isClosed = status.toLowerCase() == 'closed' || status.toLowerCase() == 'resolved';
-    final color = isClosed ? Colors.emerald : Colors.amber;
+    final color = isClosed ? Colors.green : Colors.amber;
 
     return Row(
       children: [

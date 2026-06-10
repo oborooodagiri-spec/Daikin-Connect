@@ -153,7 +153,7 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
                       width: 14,
                       height: 14,
                       decoration: BoxDecoration(
-                        color: isOnline ? Colors.emerald : Colors.white24,
+                        color: isOnline ? Colors.green : Colors.white24,
                         shape: BoxShape.circle,
                         border: Border.all(color: const Color(0xFF040814), width: 2),
                       ),
@@ -191,7 +191,7 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
                           ),
                           child: Text(
                             user['role'].toUpperCase(),
-                            style: TextStyle(color: roleColor, fontSize: 8, fontWeight: FontWeight.black, letterSpacing: 1),
+                            style: TextStyle(color: roleColor, fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: 1),
                           ),
                         ),
                       ],
