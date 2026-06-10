@@ -257,7 +257,6 @@ export default function LoginPage() {
                     className="cf-turnstile" 
                     data-sitekey="0x4AAAAAAADGD9nT3x6TSaE8-"
                     data-theme="light"
-                    data-callback="onTurnstileSuccess"
                   ></div>
                 </div>
               )}
