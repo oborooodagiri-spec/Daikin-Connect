@@ -1,8 +1,8 @@
 import React from 'react';
 
 export const metadata = {
-  title: 'Privacy Policy | Daikin Connect',
-  description: 'Privacy Policy and Data Collection statement for Daikin Connect.',
+  title: 'Privacy Policy | EPL Connect',
+  description: 'Privacy Policy and Data Collection statement for EPL Connect.',
 };
 
 export default function PrivacyPolicyPage() {
@@ -16,9 +16,9 @@ export default function PrivacyPolicyPage() {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Introduction</h2>
             <p>
-              Welcome to Daikin Connect. We respect your privacy and are committed to protecting your personal data. 
+              Welcome to EPL Connect. We respect your privacy and are committed to protecting your personal data. 
               This privacy policy will inform you as to how we look after your personal data when you visit our website 
-              (daikin-connect.com) and use our enterprise service management systems.
+              (and use our enterprise service management systems.
             </p>
           </section>
 
