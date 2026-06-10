@@ -1,6 +1,6 @@
 {
   "packageId": "com.daikin.connect.epl",
-  "host": "daikin-connect.com",
+  "host": "epllink.com",
   "name": "Daikin Connect",
   "launcherName": "D2 Connect",
   "display": "standalone",
@@ -13,8 +13,8 @@
   "backgroundColor": "#040814",
   "enableNotifications": true,
   "startUrl": "/",
-  "iconUrl": "https://daikin-connect.com/app-logo.png",
-  "maskableIconUrl": "https://daikin-connect.com/app-logo.png",
+  "iconUrl": "https://epllink.com/app-logo.png",
+  "maskableIconUrl": "https://epllink.com/app-logo.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "C:\\Users\\D22AGRI-EPL\\Desktop\\daikin-connect-clean\\android\\android.keystore",
@@ -24,7 +24,7 @@
   "appVersionCode": 17260406,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://daikin-connect.com/manifest.json",
+  "webManifestUrl": "https://epllink.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {
     "locationDelegation": { "enabled": true }
@@ -33,7 +33,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://daikin-connect.com/",
+  "fullScopeUrl": "https://epllink.com/",
   "minSdkVersion": 21,
   "orientation": "portrait",
   "fingerprints": [],

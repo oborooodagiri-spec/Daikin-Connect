@@ -20,7 +20,7 @@ const transportConfig = {
   port: 465,
   secure: true,
   auth: {
-    user: 'no-reply@daikin-connect.com',
+    user: 'no-reply@epllink.com',
     pass: 'Doda4244@#',
   },
   tls: { rejectUnauthorized: false }
@@ -182,7 +182,7 @@ export async function login(formData: FormData) {
         // Send Email with Timeout Resilience
         try {
           const mailPromise = transporter.sendMail({
-            from: '"Daikin Connect Security" <no-reply@daikin-connect.com>',
+            from: '"Daikin Connect Security" <no-reply@epllink.com>',
             to: user.email,
             subject: 'Security Verification Code',
             html: `

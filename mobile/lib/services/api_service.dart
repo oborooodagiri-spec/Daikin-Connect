@@ -6,7 +6,7 @@ class ApiService {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   
   // Official Production API URL
-  static const String baseUrl = 'https://daikin-connect.com/api/v1';
+  static const String baseUrl = 'https://epllink.com/api/v1';
 
   ApiService() {
     _dio = Dio(BaseOptions(

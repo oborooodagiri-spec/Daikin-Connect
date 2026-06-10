@@ -6,7 +6,7 @@ const transportConfig = {
   port: 465,
   secure: true,
   auth: {
-    user: 'no-reply@daikin-connect.com',
+    user: 'no-reply@epllink.com',
     pass: 'Doda4244@#',
   },
   // Add TLS options for broader compatibility
@@ -25,8 +25,8 @@ async function testConnection() {
     
     console.log('Sending test email...');
     const info = await transporter.sendMail({
-      from: '"EPL Connect Test" <no-reply@daikin-connect.com>',
-      to: 'no-reply@daikin-connect.com', // Sending to self for test
+      from: '"EPL Connect Test" <no-reply@epllink.com>',
+      to: 'no-reply@epllink.com', // Sending to self for test
       subject: 'EPL Connect SMTP Test',
       text: 'If you receive this, the SMTP configuration is working correctly.',
       html: '<b>If you receive this, the SMTP configuration is working correctly.</b>'

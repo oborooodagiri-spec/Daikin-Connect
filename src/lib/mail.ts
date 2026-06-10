@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
   port: parseInt(process.env.SMTP_PORT || '465'),
   secure: true, // true for 465, false for 587
   auth: {
-    user: process.env.SMTP_USER || 'no-reply@daikin-connect.com',
+    user: process.env.SMTP_USER || 'no-reply@epllink.com',
     pass: process.env.SMTP_PASS || 'Doda4244@#',
   },
   tls: {
@@ -21,7 +21,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-const fromEmail = `"EPL Connect" <${process.env.SMTP_USER || 'no-reply@daikin-connect.com'}>`;
+const fromEmail = `"EPL Connect" <${process.env.SMTP_USER || 'no-reply@epllink.com'}>`;
 
 export async function sendRegistrationReceivedEmail(to: string, name: string) {
   console.log(`[MAIL] Attempting to send Registration Confirmation to ${to}...`);
@@ -77,7 +77,7 @@ export async function sendAccountSuspendedEmail(to: string, name: string) {
 export async function sendPasswordResetEmail(to: string, name: string, resetToken: string) {
   console.log(`[MAIL] Attempting to send Password Reset to ${to}...`);
   try {
-    const resetLink = `${process.env.NEXT_PUBLIC_APP_URL || 'https://daikin-connect.com'}/reset-password/${resetToken}`;
+    const resetLink = `${process.env.NEXT_PUBLIC_APP_URL || 'https://epllink.com'}/reset-password/${resetToken}`;
     
     const info = await transporter.sendMail({
       from: fromEmail,

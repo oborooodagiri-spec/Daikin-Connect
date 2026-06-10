@@ -77,7 +77,7 @@ class VersionGuardScreen extends StatelessWidget {
                 height: 55,
                 child: ElevatedButton(
                   onPressed: () async {
-                    final url = Uri.parse("https://daikin-connect.com/downloads/daikin-connect.apk");
+                    final url = Uri.parse("https://epllink.com/downloads/daikin-connect.apk");
                     if (await canLaunchUrl(url)) {
                       await launchUrl(url, mode: LaunchMode.externalApplication);
                     } else {

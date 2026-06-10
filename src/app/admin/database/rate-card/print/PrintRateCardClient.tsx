@@ -249,7 +249,7 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
           Halaman {pageNum} dari {totalPages}
         </span>
         <span className="text-[9px] font-extrabold italic text-white">
-          www.daikin-connect.com
+          www.epllink.com
         </span>
       </div>
     </div>

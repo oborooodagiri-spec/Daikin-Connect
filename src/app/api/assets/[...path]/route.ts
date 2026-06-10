@@ -87,7 +87,7 @@ export async function GET(
       // PRO-TIP: If we are on localhost and the file isn't here, try to redirect to production
       const isLocal = req.headers.get("host")?.includes("localhost");
       if (isLocal) {
-        const prodUrl = `https://daikin-connect.com/api/assets/${cleanSegments.join("/")}`;
+        const prodUrl = `https://epllink.com/api/assets/${cleanSegments.join("/")}`;
         return NextResponse.redirect(prodUrl);
       }
       

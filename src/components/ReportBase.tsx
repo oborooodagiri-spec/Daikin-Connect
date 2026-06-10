@@ -201,7 +201,7 @@ export const ReportBase = ({
                {lang === 'id' ? `Halaman ${pageNumber} dari ${totalPages}` : lang === 'ja' ? `${totalPages} ページ中 ${pageNumber} ページ` : `Page ${pageNumber} of ${totalPages}`}
             </span>
             <span style={{ color: "white", fontSize: "10pt", fontWeight: 700, fontStyle: "italic" }}>
-              www.daikin-connect.com
+              www.epllink.com
             </span>
           </div>
         </div>
