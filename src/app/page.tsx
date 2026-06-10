@@ -62,28 +62,50 @@ export default function LoginPage() {
       ? "1x00000000000000000000AA"
       : (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAADGD9nT3x6TSaE8-");
 
+    let widgetId: string | null = null;
+
     const renderWidget = () => {
       const container = document.getElementById('turnstile-container');
-      if (container && (window as any).turnstile) {
-        // Clear any previous render
-        (window as any).turnstile.remove(container);
-        (window as any).turnstile.render(container, {
+      if (!container || !(window as any).turnstile) return false;
+      
+      // Clear the container safely before rendering
+      container.innerHTML = '';
+      
+      try {
+        widgetId = (window as any).turnstile.render(container, {
           sitekey: siteKey,
           theme: 'light',
         });
+        console.log('[Turnstile] Widget rendered successfully, id:', widgetId);
+        return true;
+      } catch (err) {
+        console.error('[Turnstile] Render error:', err);
+        return false;
       }
     };
 
-    // Retry until turnstile script is loaded
+    // Retry until turnstile script is loaded and widget renders
     const interval = setInterval(() => {
       if ((window as any).turnstile) {
-        renderWidget();
-        clearInterval(interval);
+        const success = renderWidget();
+        if (success) clearInterval(interval);
       }
     }, 500);
 
+    // Give up after 15 seconds
+    const timeout = setTimeout(() => {
+      clearInterval(interval);
+      console.warn('[Turnstile] Widget failed to load after 15 seconds');
+    }, 15000);
+
     // Cleanup
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+      if (widgetId && (window as any).turnstile) {
+        try { (window as any).turnstile.remove(widgetId); } catch (e) { /* ignore */ }
+      }
+    };
   }, [isMounted, isRequestMode]);
 
   if (!isMounted) return <div className="min-h-screen bg-white" />;
