@@ -54,62 +54,25 @@ export default function LoginPage() {
     }
   }, []);
 
-  // Explicitly render Turnstile widget after component mounts
+  // Load Cloudflare Turnstile script dynamically (implicit mode)
   useEffect(() => {
     if (!isMounted || isRequestMode) return;
+    
+    // Remove any existing turnstile scripts to force re-scan
+    document.querySelectorAll('script[src*="challenges.cloudflare.com/turnstile"]').forEach(s => s.remove());
+    // Reset turnstile global
+    delete (window as any).turnstile;
 
-    const siteKey = (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"))
-      ? "1x00000000000000000000AA"
-      : (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAADGD9nT3x6TSaE8-");
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
 
-    let widgetId: string | null = null;
-
-    const renderWidget = () => {
-      const container = document.getElementById('turnstile-container');
-      if (!container || !(window as any).turnstile) return;
-      
-      container.innerHTML = '';
-      try {
-        widgetId = (window as any).turnstile.render(container, {
-          sitekey: siteKey,
-          theme: 'light',
-        });
-      } catch (err) {
-        console.error('[Turnstile] Render error:', err);
-      }
-    };
-
-    // Load Turnstile script dynamically if not already loaded
-    const loadScript = () => {
-      return new Promise<void>((resolve) => {
-        if ((window as any).turnstile) {
-          resolve();
-          return;
-        }
-
-        const existing = document.querySelector('script[src*="challenges.cloudflare.com/turnstile"]');
-        if (existing) {
-          existing.remove();
-        }
-
-        const script = document.createElement('script');
-        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-        script.async = true;
-        script.onload = () => {
-          // Wait a tick for turnstile to initialize
-          setTimeout(resolve, 300);
-        };
-        document.head.appendChild(script);
-      });
-    };
-
-    loadScript().then(renderWidget);
-
-    // Cleanup
     return () => {
-      if (widgetId && (window as any).turnstile) {
-        try { (window as any).turnstile.remove(widgetId); } catch (e) { /* ignore */ }
-      }
+      // Cleanup widget on unmount
+      const container = document.querySelector('.cf-turnstile');
+      if (container) container.innerHTML = '';
     };
   }, [isMounted, isRequestMode]);
 
@@ -290,7 +253,12 @@ export default function LoginPage() {
 
               {!isRequestMode && (
                 <div className="flex justify-center py-2 min-h-[65px] mb-4">
-                  <div id="turnstile-container"></div>
+                  <div 
+                    className="cf-turnstile" 
+                    data-sitekey="0x4AAAAAAADGD9nT3x6TSaE8-"
+                    data-theme="light"
+                    data-callback="onTurnstileSuccess"
+                  ></div>
                 </div>
               )}
 
