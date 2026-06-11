@@ -168,14 +168,11 @@ export default function UsersPage() {
           <div className="space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#003366] border border-[#004488] text-[10px] font-black uppercase tracking-widest text-blue-300">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Identity & Access Management</span>
+              <span>EPL LINK SECURITY SYSTEMS</span>
             </div>
             <h1 className="text-5xl font-black text-[#003366] tracking-tight">
               User <span className="text-[#00a1e4]">Management</span>
             </h1>
-            <p className="text-sm font-semibold text-slate-500 uppercase tracking-[0.3em] italic">
-              Control platform access, verify registrations, and assign security clearance.
-            </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
