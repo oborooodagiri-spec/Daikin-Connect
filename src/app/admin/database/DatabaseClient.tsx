@@ -157,7 +157,7 @@ export default function KnowledgeCenterPage() {
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
           <div className="space-y-4">
             <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-none uppercase text-[#323338]">
-              Internal <br/>
+              Document <br/>
               <span className="text-slate-400">Database</span>
             </h1>
           </div>
@@ -171,20 +171,6 @@ export default function KnowledgeCenterPage() {
                  <Plus size={18} /> Add Resource
                </button>
              )}
-             <div className="flex items-center gap-1 bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
-                <button 
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2.5 rounded-xl transition-all ${viewMode === "grid" ? "bg-white text-[#0073ea] shadow-sm" : "text-slate-400 hover:text-slate-600"}`}
-                >
-                  <Grid className="w-5 h-5" />
-                </button>
-                <button 
-                  onClick={() => setViewMode("list")}
-                  className={`p-2.5 rounded-xl transition-all ${viewMode === "list" ? "bg-white text-[#0073ea] shadow-sm" : "text-slate-400 hover:text-slate-600"}`}
-                >
-                  <ListIcon className="w-5 h-5" />
-                </button>
-             </div>
           </div>
         </header>
 
@@ -243,7 +229,7 @@ export default function KnowledgeCenterPage() {
                   : "Belum ada materi, katalog, atau database yang dibagikan ke akun Anda saat ini. Hubungi administrator jika Anda memerlukan akses."}
               </p>
             </motion.div>
-          ) : viewMode === "grid" ? (
+          ) : (
             <motion.div 
               key="grid"
               initial={{ opacity: 0, y: 10 }}
@@ -330,73 +316,6 @@ export default function KnowledgeCenterPage() {
                           </span>
                        </Link>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          ) : (
-            <motion.div 
-              key="list"
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 10 }}
-              className="space-y-3"
-            >
-              {filteredResources.map((res, i) => (
-                <motion.div
-                  key={res.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  className="flex items-center gap-6 bg-white border border-[#e6e9ef] p-4 rounded-2xl hover:border-[#0073ea]/30 transition-all group"
-                >
-                  <div className="w-14 h-14 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 shrink-0">
-                    {res.id === "internal-rate-card" ? <Briefcase className="w-5 h-5 text-[#0073ea]" /> :
-                     res.category === "Interactive App" ? <Sparkles className="w-5 h-5 text-[#0073ea]" /> :
-                     res.category === "Presentation" ? <Presentation className="w-5 h-5 text-[#0073ea]" /> : 
-                     res.category === "Catalog" ? <BookOpen className="w-5 h-5 text-[#0073ea]" /> : 
-                     <FileText className="w-5 h-5 text-[#0073ea]" />}
-                  </div>
-                  
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                       <h3 className="text-md font-bold text-[#323338] truncate group-hover:text-[#0073ea] transition-colors uppercase">{res.title}</h3>
-                       <span className="text-[8px] font-black text-[#0073ea] bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 shrink-0">{res.projects?.name || "OFFICIAL"}</span>
-                    </div>
-                    <div className="flex items-center gap-4 mt-0.5">
-                       <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">{res.category} &bull; {res.type} &bull; {res.size || "Live"}</span>
-                       <div className="h-2 w-px bg-slate-100" />
-                       <span className={`text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 ${res.visibility === 'Internal' ? 'text-indigo-500' : 'text-emerald-500'}`}>
-                          {res.visibility === 'Internal' ? <Shield size={10} /> : <Globe size={10} />}
-                          {res.visibility}
-                       </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 pr-2">
-                     {isAdmin && (
-                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                          <button 
-                            onClick={() => handleOpenEdit(res)}
-                            className="p-2.5 bg-indigo-50 text-indigo-500 rounded-lg hover:bg-indigo-500 hover:text-white"
-                          >
-                            <SettingsIcon size={16} />
-                          </button>
-                          <button 
-                            onClick={() => handleDelete(res.id)}
-                            className="p-2.5 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                     )}
-                     <Link 
-                       href={res.href || res.file_url || "#"} 
-                       target={res.type === "DATABASE" ? "_self" : "_blank"}
-                       className="px-5 py-2.5 bg-[#0073ea] hover:bg-[#0060c5] rounded-lg transition-all flex items-center gap-2"
-                     >
-                        <span className="text-[9px] font-black uppercase tracking-widest text-white">Buka</span>
-                     </Link>
                   </div>
                 </motion.div>
               ))}
