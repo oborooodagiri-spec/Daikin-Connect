@@ -100,8 +100,9 @@ function getEmailWrapper(content: string) {
             ${content}
           </div>
           <div style="${footerStyles}">
-            <p style="margin: 0 0 10px 0;"><strong>EPL Link</strong> by Daikin Applied Indonesia</p>
+            <p style="margin: 0 0 10px 0;"><strong>EPL Link</strong> by Expanded Product Line of Service and Solution Division</p>
             <p style="margin: 0;">&copy; ${new Date().getFullYear()} All rights reserved.</p>
+            <p style="margin: 5px 0 0 0;">Daikin Applied Solution Indonesia</p>
             <p style="margin: 10px 0 0 0; font-size: 11px;">If you didn't request this email, please safely ignore it.</p>
           </div>
         </div>
