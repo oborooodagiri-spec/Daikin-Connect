@@ -13,8 +13,8 @@
   "backgroundColor": "#040814",
   "enableNotifications": true,
   "startUrl": "/",
-  "iconUrl": "https://epllink.com/app-logo.png",
-  "maskableIconUrl": "https://epllink.com/app-logo.png",
+  "iconUrl": "https://epllink.com/logo_epllink.png",
+  "maskableIconUrl": "https://epllink.com/logo_epllink.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "C:\\Users\\D22AGRI-EPL\\Desktop\\daikin-connect-clean\\android\\android.keystore",

@@ -49,7 +49,7 @@ export default function ForgotPasswordPage() {
           <div className="flex items-center gap-3">
              <img src="/daikin_logo.png" className="h-6 brightness-0 invert" alt="Daikin" />
              <div className="w-[1px] h-4 bg-white/20"></div>
-             <img src="/logo_epl_connect_1.png" className="h-6 brightness-0 invert" alt="EPL Link" />
+             <img src="/logo_epllink.png" className="h-6 brightness-0 invert" alt="EPL Link" />
           </div>
         </div>
 

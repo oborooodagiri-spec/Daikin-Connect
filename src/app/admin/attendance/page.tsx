@@ -228,7 +228,7 @@ export default function AttendanceRecordsPage() {
 
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col w-full overflow-x-hidden">
-      <div className="flex-1 p-4 sm:p-6 md:p-12 lg:p-16 max-w-[1600px] mx-auto space-y-8 sm:space-y-12 w-full">
+      <div className="flex-1 p-4 sm:p-6 md:p-8 lg:p-10 max-w-[1200px] mx-auto space-y-6 sm:space-y-8 w-full">
         
         {/* 1. Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 sm:gap-8">
@@ -291,7 +291,7 @@ export default function AttendanceRecordsPage() {
           <div className="space-y-6">
             
             {/* Search Input Box */}
-            <div className="bg-white p-4 sm:p-6 rounded-3xl sm:rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50">
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-sm">
               <div className="space-y-2">
                 <label className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Search Personnel</label>
                 <div className="relative">
@@ -308,7 +308,7 @@ export default function AttendanceRecordsPage() {
             </div>
 
             {/* Personnel Listing Table */}
-            <div className="bg-white border border-slate-100 rounded-3xl sm:rounded-[2.5rem] shadow-2xl shadow-slate-200/40 overflow-hidden">
+            <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
               <div className="overflow-x-auto w-full max-w-full">
                 <table className="w-full text-left whitespace-nowrap sm:whitespace-normal">
                   <thead>
@@ -428,7 +428,7 @@ export default function AttendanceRecordsPage() {
             </div>
 
             {/* Interactive print preview wrapper */}
-            <div className="bg-slate-200 border border-slate-300 rounded-3xl sm:rounded-[2.5rem] p-2 sm:p-6 md:p-12 flex justify-start md:justify-center overflow-x-auto shadow-inner w-full max-w-full">
+            <div className="bg-slate-200 border border-slate-300 rounded-2xl p-2 sm:p-6 md:p-10 flex justify-start md:justify-center overflow-x-auto shadow-inner w-full max-w-full">
               
               {/* Authentic A4 Document Visual Sheet */}
               <div className="w-[210mm] min-h-[297mm] bg-white border border-slate-300 rounded-2xl shadow-2xl p-12 font-sans text-slate-800 relative flex flex-col justify-between shrink-0">
@@ -444,7 +444,7 @@ export default function AttendanceRecordsPage() {
                         PT DAIKIN APPLIED SOLUTIONS INDONESIA
                       </div>
                     </div>
-                    <img src="/logo_epl_connect_1.png" alt="EPL Link" className="h-10 object-contain" />
+                    <img src="/logo_epllink.png" alt="EPL Link" className="h-10 object-contain" />
                   </div>
 
                   {/* Document Title */}
@@ -648,20 +648,20 @@ export default function AttendanceRecordsPage() {
 
 function SummaryCard({ label, value, icon, sub, highlight = false }: any) {
   return (
-    <div className={`p-5 sm:p-8 rounded-3xl sm:rounded-[2.5rem] border transition-all ${highlight ? 'bg-[#003366] text-white border-blue-900 shadow-xl shadow-blue-900/20' : 'bg-white text-slate-800 border-slate-100 shadow-sm'}`}>
-       <div className="flex justify-between items-start mb-4">
-          <div className={`p-2.5 sm:p-3 rounded-xl sm:rounded-2xl ${highlight ? 'bg-white/10' : 'bg-slate-50'}`}>
-             {React.cloneElement(icon as React.ReactElement, { size: 20, className: "sm:w-6 sm:h-6" } as any)}
+    <div className={`p-4 sm:p-5 rounded-2xl sm:rounded-2xl border transition-all hover:-translate-y-0.5 hover:shadow-md ${highlight ? 'bg-[#003366] text-white border-blue-900 shadow-md shadow-blue-900/20' : 'bg-white text-slate-800 border-slate-100 shadow-sm hover:border-[#0073ea]'}`}>
+       <div className="flex justify-between items-start mb-3">
+          <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center ${highlight ? 'bg-white/10' : 'bg-slate-50'}`}>
+             {React.cloneElement(icon as React.ReactElement, { size: 20, className: "sm:w-5 sm:h-5" } as any)}
           </div>
           <div className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest opacity-50">Active</div>
        </div>
-       <div className="space-y-1">
-          <h4 className="text-3xl sm:text-4xl font-black tracking-tighter">{value}</h4>
-          <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest opacity-60">{label}</p>
+       <div className="space-y-0.5">
+          <h4 className="text-2xl sm:text-3xl font-black tracking-tighter">{value}</h4>
+          <p className="text-[10px] font-bold uppercase tracking-widest opacity-60">{label}</p>
        </div>
-       <div className={`mt-4 sm:mt-6 pt-4 sm:pt-6 border-t ${highlight ? 'border-white/10' : 'border-slate-50'} flex items-center gap-2`}>
+       <div className={`mt-3 sm:mt-4 pt-3 sm:pt-4 border-t ${highlight ? 'border-white/10' : 'border-slate-50'} flex items-center gap-2`}>
           <div className={`w-1.5 h-1.5 rounded-full ${highlight ? 'bg-emerald-400' : 'bg-blue-500'}`} />
-          <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-40">{sub}</p>
+          <p className="text-[8px] font-black uppercase tracking-widest opacity-40 truncate">{sub}</p>
        </div>
     </div>
   );

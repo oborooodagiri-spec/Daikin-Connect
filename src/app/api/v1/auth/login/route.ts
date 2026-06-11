@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import { checkRateLimit, handleFailedLogin, resetLoginFails, recordAuditLog } from "@/lib/security";
+import { getVerificationCodeTemplate } from "@/lib/mail-templates";
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret";
@@ -86,17 +87,8 @@ export async function POST(req: NextRequest) {
           await transporter.sendMail({
             from: '"EPL Link Security" <no-reply@epllink.com>',
             to: user.email,
-            subject: 'Security Verification Code',
-            html: `
-              <div style="font-family: sans-serif; padding: 20px; color: #003366;">
-                <h2>Security Verification</h2>
-                <p>Your login verification code is:</p>
-                <div style="font-size: 32px; font-weight: bold; background: #f0f9ff; padding: 20px; display: inline-block; border-radius: 12px; letter-spacing: 5px;">
-                  ${generatedOtp}
-                </div>
-                <p style="margin-top: 20px; font-size: 12px; color: #64748b;">This code is valid for 10 minutes. If you did not request this, please change your password immediately.</p>
-              </div>
-            `
+            subject: 'Security Verification Code - EPL Link',
+            html: getVerificationCodeTemplate(generatedOtp)
           });
         } catch (mailError) {
           console.error("Mail Delivery Failed:", mailError);

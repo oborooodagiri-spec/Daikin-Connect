@@ -242,7 +242,7 @@ export default function CinematicAdPage() {
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-center gap-6 mb-4">
                   <img src="/daikin_logo.png" className="h-6 brightness-0 invert" alt="Daikin" />
                   <div className="w-[1px] h-6 bg-white/20"></div>
-                  <img src="/logo_epl_connect_1.png" className="h-8 brightness-0 invert" alt="EPL Link" />
+                  <img src="/logo_epllink.png" className="h-8 brightness-0 invert" alt="EPL Link" />
                 </motion.div>
                 <div className="space-y-4">
                   <MaskedText text="THE FUTURE REVEALED" className="text-6xl md:text-8xl font-black italic text-white" highlight="FUTURE" />
@@ -326,7 +326,7 @@ export default function CinematicAdPage() {
               <MaskedText text="Developed by Daikin Applied Solutions Indonesia." className="text-4xl md:text-6xl font-black" highlight="Daikin" />
               <div className="flex gap-12 justify-center opacity-40">
                 <img src="/daikin_logo.png" className="h-10 brightness-0 invert" alt="Daikin" />
-                <img src="/logo_epl_connect_1.png" className="h-12 brightness-0 invert" alt="EPL" />
+                <img src="/logo_epllink.png" className="h-12 brightness-0 invert" alt="EPL" />
               </div>
            </div>
         </Scene>
@@ -403,7 +403,7 @@ export default function CinematicAdPage() {
                      <div className="flex items-center gap-10">
                         <img src="/daikin_logo.png" className="h-10 brightness-0 invert" alt="Daikin" />
                         <div className="w-[1px] h-10 bg-white/20"></div>
-                        <img src="/logo_epl_connect_1.png" className="h-14 brightness-0 invert" alt="EPL" />
+                        <img src="/logo_epllink.png" className="h-14 brightness-0 invert" alt="EPL" />
                      </div>
                      <MaskedText text="CONNECT" className="text-[120px] font-black italic tracking-tighter leading-none" />
                  </div>

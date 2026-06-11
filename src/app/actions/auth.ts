@@ -97,6 +97,8 @@ export async function register(formData: FormData) {
   }
 }
 
+import { getVerificationCodeTemplate } from "@/lib/mail-templates";
+
 export async function login(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -184,17 +186,8 @@ export async function login(formData: FormData) {
           const mailPromise = transporter.sendMail({
             from: '"EPL Link Security" <no-reply@epllink.com>',
             to: user.email,
-            subject: 'Security Verification Code',
-            html: `
-              <div style="font-family: sans-serif; padding: 20px; color: #003366;">
-                <h2>Web Access Security</h2>
-                <p>Your login verification code is:</p>
-                <div style="font-size: 32px; font-weight: bold; background: #f0f9ff; padding: 20px; display: inline-block; border-radius: 12px; letter-spacing: 5px;">
-                  ${generatedOtp}
-                </div>
-                <p style="margin-top: 20px; font-size: 12px; color: #64748b;">Valid for 10 minutes.</p>
-              </div>
-            `
+            subject: 'Security Verification Code - EPL Link',
+            html: getVerificationCodeTemplate(generatedOtp)
           });
           
           // Don't wait forever for the mail server

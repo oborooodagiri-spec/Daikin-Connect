@@ -536,7 +536,7 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
                   </div>
                 </div>
                 <div className="text-right">
-                  <img src="/logo_epl_connect_1.png" alt="EPL Link" className="h-[14mm] object-contain" />
+                  <img src="/logo_epllink.png" alt="EPL Link" className="h-[14mm] object-contain" />
                 </div>
               </div>
             </div>

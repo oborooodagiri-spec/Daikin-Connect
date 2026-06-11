@@ -542,7 +542,7 @@ export default function WorkOrderClient({
                 <div className="px-[15mm] pt-[8mm] pb-[4mm] flex justify-between items-start">
                   <div className="flex flex-col gap-1">
                     <img 
-                      src="/logo_epl_connect_1.png" 
+                      src="/logo_epllink.png" 
                       alt="EPL Link" 
                       className="h-[10mm] w-auto object-contain self-start" 
                     />

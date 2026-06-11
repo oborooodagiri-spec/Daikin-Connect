@@ -261,7 +261,7 @@ export default function ServicePresentationPage() {
                            <div className="flex gap-4 items-center">
                               <img src="/daikin_logo.png" className="h-4 object-contain brightness-0 grayscale opacity-40" alt="Daikin" />
                               <div className="w-px h-8 bg-slate-200"></div>
-                              <img src="/logo_epl_connect_1.png" className="h-6 object-contain brightness-0 grayscale opacity-40" alt="EPL" />
+                              <img src="/logo_epllink.png" className="h-6 object-contain brightness-0 grayscale opacity-40" alt="EPL" />
                            </div>
                            <div className="text-right">
                               <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-1">Service Audit Report</h4>
@@ -359,7 +359,7 @@ export default function ServicePresentationPage() {
             
             <div className="flex justify-center items-center gap-10 opacity-30">
                <img src="/daikin_logo.png" className="h-4 brightness-0 invert" alt="Daikin" />
-               <img src="/logo_epl_connect_1.png" className="h-6 brightness-0 invert" alt="EPL" />
+               <img src="/logo_epllink.png" className="h-6 brightness-0 invert" alt="EPL" />
             </div>
          </motion.div>
       </footer>

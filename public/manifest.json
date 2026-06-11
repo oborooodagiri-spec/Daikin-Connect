@@ -8,13 +8,13 @@
   "theme_color": "#00a1e4",
   "icons": [
     {
-      "src": "/app-logo.png",
+      "src": "/logo_epllink.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/app-logo.png",
+      "src": "/logo_epllink.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
