@@ -282,7 +282,7 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
         >
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
             <div style={{ padding: "6px 12px", background: "#0073ea", color: "#fff", borderRadius: 8, fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-              Layanan Mandiri
+              EPL FEATURE
             </div>
           </div>
           
