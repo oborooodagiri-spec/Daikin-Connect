@@ -94,7 +94,7 @@ function getEmailWrapper(content: string) {
       <div style="${baseStyles}">
         <div style="${cardStyles}">
           <div style="${headerStyles}">
-            <img src="${LOGO_URL}" alt="EPL Link" style="height: 48px; width: auto; object-fit: contain;">
+            <h1 style="color: #003366; margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;">EPL LINK</h1>
           </div>
           <div style="${contentStyles}">
             ${content}
