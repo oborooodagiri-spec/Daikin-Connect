@@ -444,7 +444,7 @@ export default function AttendanceRecordsPage() {
                         PT DAIKIN APPLIED SOLUTIONS INDONESIA
                       </div>
                     </div>
-                    <img src="/logo_epllink.png" alt="EPL Link" className="h-16 sm:h-20 w-auto object-contain" />
+                    <img src="/logo_epllink.png" alt="EPL Link" className="h-16 sm:h-20 w-auto object-contain scale-[1.8] sm:scale-[2] origin-right" />
                   </div>
 
                   {/* Document Title */}
