@@ -43,9 +43,6 @@ export default function ProblemNotificationCenter() {
   const triggerFeedback = () => {
     if (typeof window !== "undefined") {
       if (window.navigator.vibrate) window.navigator.vibrate([200, 100, 200]);
-      const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3");
-      audio.volume = 0.5;
-      audio.play().catch(() => {});
     }
   };
 

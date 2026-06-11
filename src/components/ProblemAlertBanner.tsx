@@ -31,12 +31,6 @@ export default function ProblemAlertBanner() {
       window.navigator.vibrate([200, 100, 200, 100, 200]);
     }
 
-    // 2. Sound (Modern Alert)
-    const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3");
-    audio.volume = 0.5;
-    audio.play().catch(() => {
-        console.log("Audio playback blocked until user interaction");
-    });
   };
 
   useEffect(() => {

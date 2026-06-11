@@ -17,7 +17,6 @@ export default function NotificationCenter({ projectId }: { projectId?: string }
   const router = useRouter();
   const params = useParams();
   const [isMounted, setIsMounted] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Extract projectId dynamically from URL routing path as a bulletproof fallback
   const routeProjectId = params?.projectId as string | undefined;
@@ -26,9 +25,6 @@ export default function NotificationCenter({ projectId }: { projectId?: string }
 
   useEffect(() => {
     setIsMounted(true);
-    // Prepare sound
-    audioRef.current = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3");
-    audioRef.current.volume = 0.3;
   }, []);
 
   const fetchNotifications = async () => {
@@ -39,7 +35,7 @@ export default function NotificationCenter({ projectId }: { projectId?: string }
       const currentUnreadCount = res.data.filter((n: any) => !n.is_read).length;
       
       if (currentUnreadCount > prevUnreadCount) {
-        audioRef.current?.play().catch(() => {});
+        // Sound notification removed per request
       }
       
       setNotifications(res.data);
