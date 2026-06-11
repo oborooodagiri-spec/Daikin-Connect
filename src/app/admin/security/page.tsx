@@ -190,12 +190,7 @@ export default function ProfileSecurityPage() {
           <div className="lg:col-span-3">
             <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-xl shadow-slate-200/50 flex flex-col min-h-[600px]">
                 <div className="p-8 border-b border-slate-100 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                      <History className="w-5 h-5 text-[#003366]" />
-                      <h2 className="text-lg font-black text-[#003366] uppercase tracking-tight">
-                        {viewMode === 'personal' ? 'My Security Audit' : 'Global Access Intelligence'}
-                      </h2>
-                  </div>
+                  <div></div>
                     <div className="flex items-center gap-3">
                       {viewMode === 'global' && (
                         <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
