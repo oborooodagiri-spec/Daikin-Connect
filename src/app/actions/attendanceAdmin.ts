@@ -75,8 +75,11 @@ export async function getAttendanceSummary() {
     if (!session || !isAdmin) return { error: "Unauthorized" };
 
     try {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        // Explicitly calculate midnight in WIB (UTC+7)
+        const now = new Date();
+        const wibTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+        wibTime.setUTCHours(0, 0, 0, 0);
+        const today = new Date(wibTime.getTime() - 7 * 60 * 60 * 1000);
 
         const [totalToday, activeNow] = await Promise.all([
             prisma.vendor_attendance.count({
@@ -84,7 +87,6 @@ export async function getAttendanceSummary() {
             }),
             prisma.vendor_attendance.count({
                 where: {
-                    check_in_time: { gte: today },
                     check_out_time: null
                 }
             })
