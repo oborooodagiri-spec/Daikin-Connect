@@ -925,7 +925,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
                 {/* Action Items with Categorization support */}
                 {Object.entries(
                   SCOPE_ROWS.filter(r => r.type === "action").reduce((acc: any, row) => {
-                    const cat = row.category || "General";
+                    const cat = (row as any).category || "General";
                     if (!acc[cat]) acc[cat] = [];
                     acc[cat].push(row);
                     return acc;

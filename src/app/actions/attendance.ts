@@ -442,7 +442,7 @@ export async function verifyFaceMatch(photoUrl: string) {
           { inlineData: { data: currentImageBase64, mimeType: "image/jpeg" } },
         ]);
         const response = result.response.text();
-        const jsonMatch = response.match(/\{.*\}/s);
+        const jsonMatch = response.match(/\{[\s\S]*\}/);
         if (!jsonMatch) throw new Error("Format respon AI tidak valid.");
         aiResult = JSON.parse(jsonMatch[0]);
         console.log(`[verifyFaceMatch] Success with model: ${modelName}`);

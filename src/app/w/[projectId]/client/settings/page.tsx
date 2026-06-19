@@ -6,7 +6,7 @@ import {
   User, Shield, Bell,
   ChevronRight, ArrowLeft
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Language, t } from "@/lib/i18n";
 import { getSession } from "@/app/actions/auth";
 import FaceProfileClient from "@/components/attendance/FaceProfileClient";

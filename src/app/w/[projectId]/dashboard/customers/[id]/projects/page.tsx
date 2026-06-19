@@ -67,7 +67,7 @@ export default function ProjectsPage() {
       getSession()
     ]);
     
-    if (custRes.error) {
+    if ('error' in custRes) {
       setError(custRes.error);
     } else {
       setCustomer(custRes.data);
@@ -75,7 +75,7 @@ export default function ProjectsPage() {
 
     setSession(sessionRes);
 
-    if (projRes.error) {
+    if ('error' in projRes) {
       setError(projRes.error);
     } else {
       const projs = projRes.data || [];
@@ -143,7 +143,7 @@ export default function ProjectsPage() {
     const current = formData.enabled_forms.split(",").filter(Boolean);
     let updated;
     if (current.includes(formName)) {
-      updated = current.filter(f => f !== formName);
+      updated = current.filter((f: string) => f !== formName);
     } else {
       updated = [...current, formName];
     }

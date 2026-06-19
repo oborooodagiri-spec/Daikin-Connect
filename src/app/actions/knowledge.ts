@@ -43,7 +43,8 @@ export async function createKnowledgeResource(data: {
 }) {
   try {
     const session = await getSession();
-    if (!session || !session.isAdmin) throw new Error("Unauthorized");
+    const isAdmin = session?.roles?.some((role: string) => ["admin", "super", "administrator"].some(keyword => role.toLowerCase().includes(keyword)));
+    if (!session || !isAdmin) throw new Error("Unauthorized");
 
     const resource = await prisma.knowledge_resources.create({
       data: {
@@ -71,7 +72,8 @@ export async function createKnowledgeResource(data: {
 export async function updateKnowledgeResource(id: string, data: any) {
   try {
     const session = await getSession();
-    if (!session || !session.isAdmin) throw new Error("Unauthorized");
+    const isAdmin = session?.roles?.some((role: string) => ["admin", "super", "administrator"].some(keyword => role.toLowerCase().includes(keyword)));
+    if (!session || !isAdmin) throw new Error("Unauthorized");
 
     await prisma.knowledge_resources.update({
       where: { id: id },
@@ -100,7 +102,8 @@ export async function updateKnowledgeResource(id: string, data: any) {
 export async function deleteKnowledgeResource(id: string) {
   try {
     const session = await getSession();
-    if (!session || !session.isAdmin) throw new Error("Unauthorized");
+    const isAdmin = session?.roles?.some((role: string) => ["admin", "super", "administrator"].some(keyword => role.toLowerCase().includes(keyword)));
+    if (!session || !isAdmin) throw new Error("Unauthorized");
 
     await prisma.knowledge_resources.delete({
       where: { id: id }

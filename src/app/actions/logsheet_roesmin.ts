@@ -12,17 +12,23 @@ interface RoesminLogsheetData {
   sections: Array<{
     id: string;
     label: string;
-    groups: Array<{
-      id: string;
-      label: string;
-      fields: Array<{
+      groups: Array<{
         id: string;
         label: string;
-        type?: string;
-        unit?: string;
-        options?: string[];
+        color?: string;
+        units: Array<{
+          id: string;
+          label: string;
+          params: Array<{
+            key: string;
+            label: string;
+            type?: string;
+            unit?: string;
+            options?: string[];
+            design?: string;
+          }>;
+        }>;
       }>;
-    }>;
   }>;
 }
 
@@ -41,7 +47,7 @@ export async function saveRoesminLogsheet(data: RoesminLogsheetData, projectId?:
     let projectName = "General Project";
 
     if (projectId) {
-      const project = await prisma.projects.findUnique({ where: { id: projectId } });
+      const project = await prisma.projects.findUnique({ where: { id: Number(projectId) } });
       if (project) {
         projectName = project.name;
       }
@@ -61,7 +67,7 @@ export async function saveRoesminLogsheet(data: RoesminLogsheetData, projectId?:
         // Create Virtual Unit
         const newVirtual = await prisma.units.create({
           data: {
-            project_id: projectId,
+            project_id: String(projectId),
             unit_type: "Virtual Room",
             tag_number: "LOGSHEET-ROOM",
             brand: "Daikin Connect",
@@ -131,7 +137,7 @@ export async function getRoesminLogsheets(filters?: RoesminLogsheetFilters) {
     };
 
     if (filters?.projectId) {
-      where.units = { project_id: filters.projectId };
+      where.units = { project_id: String(filters.projectId) };
     }
 
     if (filters?.dateFrom || filters?.dateTo) {

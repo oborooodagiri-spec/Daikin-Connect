@@ -33,8 +33,8 @@ export default async function QuotationPage() {
 
   return (
     <QuotationClient 
-      initialItems={itemsRes?.success ? itemsRes.data : []}
-      initialSettings={settingsRes?.success ? settingsRes.data : {
+      initialItems={itemsRes && 'success' in itemsRes && itemsRes.success ? (itemsRes as any).data : []}
+      initialSettings={settingsRes && 'success' in settingsRes && settingsRes.success ? (settingsRes as any).data : {
         vendors: [],
         period_year: new Date().getFullYear().toString(),
         selected_vendor: "",
@@ -44,8 +44,8 @@ export default async function QuotationPage() {
         work_types: [],
         capacity_units: []
       }}
-      users={usersRes?.success ? usersRes.data : []}
-      projects={projectsRes?.success ? projectsRes.data : []}
+      users={usersRes && 'success' in usersRes && usersRes.success ? (usersRes as any).data : []}
+      projects={projectsRes && 'success' in projectsRes && projectsRes.success ? (projectsRes as any).data : []}
     />
   );
 }

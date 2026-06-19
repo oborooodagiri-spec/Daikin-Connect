@@ -131,7 +131,7 @@ export async function submitActivityFromPassport(token: string, data: any) {
       `${data.reporterName} submitted a ${data.type} report for unit ${unit.tag_number}`,
       data.type === "Problem" ? "error" : "success",
       `/w/${unit.project_ref_id}/dashboard/units/${unit.id}`,
-      unit.project_ref_id
+      unit.project_ref_id || undefined
     );
 
     revalidatePath("/dashboard");
@@ -186,7 +186,7 @@ export async function updateUnitInfoFromPassport(token: string, data: any) {
       `${requesterName} requested changes for unit ${unit.tag_number}`,
       "alert",
       `/w/${unit.project_ref_id}/dashboard/unit-requests`,
-      unit.project_ref_id
+      unit.project_ref_id || undefined
     );
 
     // Notify Admin & Engineer (Push)

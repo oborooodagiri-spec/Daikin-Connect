@@ -33,7 +33,7 @@ export async function createWorkOrder(data: any) {
         company_address: data.company_address,
         project_id: data.project_id ? BigInt(data.project_id) : null,
         status: data.status || "Draft",
-        created_by: session.id
+        created_by: parseInt(session.userId)
       }
     });
 
@@ -129,7 +129,7 @@ export async function createQuotation(data: any) {
           tax: data.tax,
           grand_total: data.grand_total,
           status: data.status || "Draft",
-          created_by: session.id,
+          created_by: parseInt(session.userId),
           items: {
             create: data.items.map((item: any) => ({
               item_name: item.item_name,
@@ -249,7 +249,7 @@ export async function createOrUpdateSLA(data: any) {
           custom_terms: JSON.stringify(data.custom_terms),
           custom_sow: JSON.stringify(data.custom_sow),
           status: data.status || "Draft",
-          created_by: session.id
+          created_by: parseInt(session.userId)
         }
       });
     }

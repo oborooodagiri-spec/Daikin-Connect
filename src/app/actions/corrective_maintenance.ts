@@ -17,7 +17,7 @@ export async function submitCorrectiveMaintenanceForm(data: any) {
       data: {
         unit_id: data.unit_id,
         tech_name: data.technician_name,
-        inspector_name: session.user?.name || "Admin",
+        inspector_name: session.name || "Admin",
         repair_date: new Date(data.service_date),
         issue_description: data.problem_reported,
         finding: technicalJson, // Store shopping list, parameters, photos here

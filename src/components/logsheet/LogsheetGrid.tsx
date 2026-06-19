@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import { Plus, Edit2, User, Clock, Info, CheckCircle2, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";

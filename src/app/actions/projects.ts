@@ -101,9 +101,9 @@ export async function createProject(customerId: string, data: {
         code: data.code,
         status: "active",
         enabled_forms: data.enabled_forms || "Audit,Preventive,Corrective",
-        latitude: data.latitude,
-        longitude: data.longitude,
-        radius_meters: data.radius_meters,
+        latitude: data.latitude ?? undefined,
+        longitude: data.longitude ?? undefined,
+        radius_meters: data.radius_meters ?? undefined,
         shift_start_time: data.shift_start_time || "08:00",
         shift_end_time: data.shift_end_time || "17:00"
       }
@@ -134,9 +134,9 @@ export async function updateProject(customerId: string, projectId: string, data:
         name: data.name,
         code: data.code,
         enabled_forms: data.enabled_forms,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        radius_meters: data.radius_meters,
+        latitude: data.latitude ?? undefined,
+        longitude: data.longitude ?? undefined,
+        radius_meters: data.radius_meters ?? undefined,
         shift_start_time: data.shift_start_time,
         shift_end_time: data.shift_end_time
       }

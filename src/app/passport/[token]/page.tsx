@@ -283,7 +283,7 @@ export default function PassportLandingPage() {
                   </div>
                 ) : (
                   <form onSubmit={handleComplaintSubmit} className="bg-white rounded-3xl p-8 border border-[#e6e9ef] shadow-xl space-y-6">
-                    <InputField label="Reporter Name" value={complaintForm.customerName} onChange={v => setComplaintForm({ ...complaintForm, customerName: v })} />
+                    <InputField label="Reporter Name" value={complaintForm.customerName} onChange={(v: any) => setComplaintForm({ ...complaintForm, customerName: v })} />
                     <div className="space-y-2">
                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Issue Details</label>
                        <textarea required rows={4} value={complaintForm.description} onChange={e => setComplaintForm({ ...complaintForm, description: e.target.value })} className="w-full px-5 py-4 bg-[#f5f6f8] border border-[#e6e9ef] rounded-2xl text-sm font-bold focus:outline-none focus:border-[#0073ea] transition-all" />
@@ -413,8 +413,8 @@ function EditInfoModal({ isOpen, onClose, formData, setFormData, onSubmit, isPen
                             {!session && (
                                <div className="space-y-4 p-5 bg-blue-50 border border-blue-100 rounded-3xl">
                                   <p className="text-[10px] font-black text-[#0073ea] uppercase tracking-widest mb-1 flex items-center gap-2"><User size={12}/> Reporter Contact</p>
-                                  <InputField label="Name" value={formData.reporter_name} onChange={v => setFormData({...formData, reporter_name: v})} />
-                                  <InputField label="Contact Info" value={formData.reporter_contact} onChange={v => setFormData({...formData, reporter_contact: v})} />
+                                  <InputField label="Name" value={formData.reporter_name} onChange={(v: any) => setFormData({...formData, reporter_name: v})} />
+                                  <InputField label="Contact Info" value={formData.reporter_contact} onChange={(v: any) => setFormData({...formData, reporter_contact: v})} />
                                </div>
                             )}
 
@@ -422,33 +422,33 @@ function EditInfoModal({ isOpen, onClose, formData, setFormData, onSubmit, isPen
                             <div className="space-y-4">
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><Database size={12}/> Asset Identity</p>
                                 <div className="grid grid-cols-2 gap-4">
-                                   <InputField label="Brand" value={formData.brand} onChange={v => setFormData({...formData, brand: v})} />
-                                   <InputField label="Unit Code" value={formData.code} onChange={v => setFormData({...formData, code: v})} />
+                                   <InputField label="Brand" value={formData.brand} onChange={(v: any) => setFormData({...formData, brand: v})} />
+                                   <InputField label="Unit Code" value={formData.code} onChange={(v: any) => setFormData({...formData, code: v})} />
                                 </div>
-                                <InputField label="Model Name" value={formData.model} onChange={v => setFormData({...formData, model: v})} />
+                                <InputField label="Model Name" value={formData.model} onChange={(v: any) => setFormData({...formData, model: v})} />
                             </div>
 
                             {/* TECHNICAL SECTION */}
                             <div className="space-y-4">
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><Settings2 size={12}/> Technical Data</p>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <InputField label="Unit Type" value={formData.unit_type} onChange={v => setFormData({...formData, unit_type: v})} />
-                                    <InputField label="Capacity" value={formData.capacity} onChange={v => setFormData({...formData, capacity: v})} />
+                                    <InputField label="Unit Type" value={formData.unit_type} onChange={(v: any) => setFormData({...formData, unit_type: v})} />
+                                    <InputField label="Capacity" value={formData.capacity} onChange={(v: any) => setFormData({...formData, capacity: v})} />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <InputField label="Serial Number" value={formData.serial_number} onChange={v => setFormData({...formData, serial_number: v})} />
-                                    <InputField label="Year of Install" value={formData.yoi} onChange={v => setFormData({...formData, yoi: v})} />
+                                    <InputField label="Serial Number" value={formData.serial_number} onChange={(v: any) => setFormData({...formData, serial_number: v})} />
+                                    <InputField label="Year of Install" value={formData.yoi} onChange={(v: any) => setFormData({...formData, yoi: v})} />
                                 </div>
                             </div>
 
                             {/* LOCATION SECTION */}
                             <div className="space-y-4">
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><MapPin size={12}/> Deployment Location</p>
-                                <InputField label="Area Building" value={formData.area} onChange={v => setFormData({...formData, area: v})} />
-                                <InputField label="City / Location" value={formData.location} onChange={v => setFormData({...formData, location: v})} />
+                                <InputField label="Area Building" value={formData.area} onChange={(v: any) => setFormData({...formData, area: v})} />
+                                <InputField label="City / Location" value={formData.location} onChange={(v: any) => setFormData({...formData, location: v})} />
                                 <div className="grid grid-cols-2 gap-4">
-                                    <InputField label="Floor Level" value={formData.building_floor} onChange={v => setFormData({...formData, building_floor: v})} />
-                                    <InputField label="Room / Tenant" value={formData.room_tenant} onChange={v => setFormData({...formData, room_tenant: v})} />
+                                    <InputField label="Floor Level" value={formData.building_floor} onChange={(v: any) => setFormData({...formData, building_floor: v})} />
+                                    <InputField label="Room / Tenant" value={formData.room_tenant} onChange={(v: any) => setFormData({...formData, room_tenant: v})} />
                                 </div>
                             </div>
 

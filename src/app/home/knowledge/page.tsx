@@ -14,8 +14,8 @@ export default async function KnowledgePage() {
     redirect("/");
   }
 
-  // Restrict to Admin only for now
-  if (!session.isAdmin) {
+  // Restrict to Internal users only for now
+  if (!session.isInternal) {
     redirect("/home");
   }
 
@@ -24,7 +24,7 @@ export default async function KnowledgePage() {
   return (
     <KnowledgeClient 
       resources={resources} 
-      isAdmin={session.isAdmin} 
+      isAdmin={session.isInternal} 
     />
   );
 }

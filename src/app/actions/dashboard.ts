@@ -68,7 +68,7 @@ export async function getDashboardData(filters: { customerId?: string; projectId
 
     // 1. Build where clause based on filter + permissions
     const unitWhere: any = {};
-    const baseActivityWhere: any = {};
+    const baseActivityWhere: any = { deleted_at: null };
 
     if (filters.projectId && filters.projectId !== "empty" && !isNaN(Number(filters.projectId))) {
       const pid = BigInt(filters.projectId);
@@ -406,7 +406,7 @@ export async function getTrendChartData(filters: { customerId?: string; projectI
     // 2. Fetch Data from different sources safely
     const [activities, correctiveMaintenances, dailyLogs] = await Promise.all([
       (prisma.service_activities as any).findMany({
-        where: { unit_id: { in: unitIds }, service_date: { gte: startOfYear } },
+        where: { unit_id: { in: unitIds }, service_date: { gte: startOfYear }, deleted_at: null },
         select: { service_date: true, type: true, technical_json: true }
       }).catch(() => []),
       (prisma.corrective_maintenances as any).findMany({
@@ -492,7 +492,7 @@ export async function getRecentActivities(filters: { customerId?: string; projec
 
     const [recentService, recentCorrective] = await Promise.all([
       (prisma.service_activities as any).findMany({
-        where: { unit_id: { in: unitIds } },
+        where: { unit_id: { in: unitIds }, deleted_at: null },
         take: 8,
         orderBy: { created_at: "desc" },
         include: {

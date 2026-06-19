@@ -32,7 +32,7 @@ export async function bulkSyncExcelAction(formData: FormData) {
 
   const bytes = await file.arrayBuffer();
   const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.load(Buffer.from(bytes));
+  await workbook.xlsx.load(bytes as any);
   
   const worksheet = workbook.worksheets[0];
   if (!worksheet) throw new Error("No worksheet found in file");
@@ -48,7 +48,7 @@ export async function bulkSyncExcelAction(formData: FormData) {
     
     if (!imagesInCells.has(cellKey)) imagesInCells.set(cellKey, []);
     imagesInCells.get(cellKey)?.push({
-      buffer: img.buffer as Buffer,
+      buffer: img.buffer as unknown as Buffer,
       extension: img.extension || 'jpg'
     });
   });
@@ -240,7 +240,7 @@ export async function bulkSyncExcelAction(formData: FormData) {
               inspector_name: "Sync Center Admin",
               engineer_note: `Imported via Sync Center (${syncType})`,
               technical_json: JSON.stringify(technicalData),
-              status: "Completed"
+              status: "Completed" as any
             }
           });
         }

@@ -12,7 +12,7 @@ export default async function LogsheetsPage({ params }: { params: Promise<{ proj
   }
 
   const templatesResult = await getLogsheetTemplates(projectId);
-  const templates = templatesResult.success ? templatesResult.data : [];
+  const templates = (templatesResult.success && 'data' in templatesResult) ? templatesResult.data : [];
 
   return (
     <div className="w-full min-h-screen bg-slate-50/50">

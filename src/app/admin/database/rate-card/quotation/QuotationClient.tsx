@@ -22,6 +22,7 @@ import {
   HelpCircle,
   Clock,
   Info,
+  ChevronRight,
   ShieldCheck
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -148,9 +149,9 @@ export default function QuotationClient({
           matchedItem = initialItems.find(item => {
             const cat = (item.category || "").toLowerCase().trim();
             if (!cat) return false;
-            const catWords = cat.split(/[\s-]+/).filter(w => w.length > 2);
+            const catWords = cat.split(/[\s-]+/).filter((w: string) => w.length > 2);
             const uTypeWords = uType.split(/[\s-]+/);
-            return catWords.length > 0 && catWords.some(cw => uTypeWords.includes(cw));
+            return catWords.length > 0 && catWords.some((cw: string) => uTypeWords.includes(cw));
           });
         }
         
@@ -159,9 +160,9 @@ export default function QuotationClient({
           matchedItem = initialItems.find(item => {
             const name = (item.item_name || "").toLowerCase().trim();
             if (!name) return false;
-            const nameWords = name.split(/[\s-]+/).filter(w => w.length > 2);
+            const nameWords = name.split(/[\s-]+/).filter((w: string) => w.length > 2);
             const uTypeWords = uType.split(/[\s-]+/);
-            return nameWords.length > 0 && nameWords.some(nw => uTypeWords.includes(nw));
+            return nameWords.length > 0 && nameWords.some((nw: string) => uTypeWords.includes(nw));
           });
         }
       }
@@ -353,7 +354,7 @@ export default function QuotationClient({
       });
 
       if (!woRes.success) throw new Error(woRes.error);
-      const woId = woRes.data.id;
+      const woId = (woRes as any).data.id;
 
       // 2. Save Quotation
       const quoRes = await createQuotation({
@@ -376,7 +377,7 @@ export default function QuotationClient({
       if (!quoRes.success) throw new Error(quoRes.error);
 
       // Save ID to session for SLA generator
-      sessionStorage.setItem("current_quotation_id", quoRes.data.id.toString());
+      sessionStorage.setItem("current_quotation_id", (quoRes as any).data.id.toString());
 
       const originalTitle = document.title;
       const customer = woForm.recipient_company?.trim() || "Customer";
@@ -414,7 +415,7 @@ export default function QuotationClient({
       });
 
       if (!woRes.success) throw new Error(woRes.error);
-      const woId = woRes.data.id;
+      const woId = (woRes as any).data.id;
 
       const quoRes = await createQuotation({
         quo_number: woForm.quo_number,
@@ -437,7 +438,7 @@ export default function QuotationClient({
 
       // Save relevant SOW and metrics data for the SLA page
       const slaData = {
-        quotation_id: quoRes.data.id,
+        quotation_id: (quoRes as any).data.id,
         woForm,
         contractDuration,
         serviceFrequency,

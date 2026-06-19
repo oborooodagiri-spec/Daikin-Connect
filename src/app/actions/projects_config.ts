@@ -73,9 +73,9 @@ export async function updateProjectSettings(
         ...(data.enabled_forms !== undefined && { enabled_forms: data.enabled_forms }),
         ...(data.enabled_unit_types !== undefined && { enabled_unit_types: data.enabled_unit_types }),
         ...(data.monitoring_focus !== undefined && { monitoring_focus: data.monitoring_focus }),
-        ...(data.latitude !== undefined && { latitude: data.latitude }),
-        ...(data.longitude !== undefined && { longitude: data.longitude }),
-        ...(data.radius_meters !== undefined && { radius_meters: data.radius_meters }),
+        ...(data.latitude !== undefined && { latitude: data.latitude ?? undefined }),
+        ...(data.longitude !== undefined && { longitude: data.longitude ?? undefined }),
+        ...(data.radius_meters !== undefined && { radius_meters: data.radius_meters ?? undefined }),
       }
     });
 

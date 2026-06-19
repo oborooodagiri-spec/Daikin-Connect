@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   getAllProjectsConfig, 
   updateProjectSettings, 
+  updateProjectLocation,
   getAllCustomersForFilter
 } from "@/app/actions/projects_config";
 import { useRouter } from "next/navigation";

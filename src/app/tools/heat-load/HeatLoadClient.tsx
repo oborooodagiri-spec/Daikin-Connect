@@ -483,7 +483,7 @@ export default function HeatLoadClient() {
                     />
                     <div 
                       className="bg-[#fdab3d] h-full"
-                      style={{ width: `${calculation.breakdown.breakdown?.ventilation?.pct || calculation.breakdown.ventilation.pct}%` }}
+                      style={{ width: `${calculation.breakdown.ventilation.pct}%` }}
                       title={`${calculation.breakdown.ventilation.name}: ${calculation.breakdown.ventilation.pct.toFixed(1)}%`}
                     />
                   </div>

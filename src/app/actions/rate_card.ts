@@ -27,7 +27,7 @@ export async function getShoppingList() {
       // If internal, check if user is in allowed_users
       if (item.allowed_users) {
         const allowedIds = item.allowed_users.split(",");
-        return allowedIds.includes(session?.id?.toString());
+        return allowedIds.includes(session?.userId?.toString());
       }
       
       // Default: only admins see internal items with no specific users

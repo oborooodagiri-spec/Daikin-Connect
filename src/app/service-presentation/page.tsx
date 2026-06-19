@@ -6,7 +6,7 @@ import {
   ArrowRight, ShieldCheck, Zap, Activity, BarChart3, 
   FileText, Globe, Cpu, Laptop, Check, ChevronDown, 
   ArrowDown, Play, Sparkles, Box, Layout, Award, X,
-  Clock, Shield, TrendingUp, BellPulse, FileWarning, Search,
+  Clock, Shield, TrendingUp, BellPlus, FileWarning, Search,
   Database, Fingerprint, Lock
 } from "lucide-react";
 import Link from "next/link";

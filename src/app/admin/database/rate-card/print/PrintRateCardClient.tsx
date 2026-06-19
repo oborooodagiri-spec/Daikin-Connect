@@ -156,7 +156,7 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
 
   // Format date helper in Indonesian
   const formatIndonesianDate = (dateStr: string) => {
-    if (!dateStr) return "";
+    if (!dateStr) return { dayName: "", fullDateStr: "", year: "" };
     const date = new Date(dateStr);
     const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
     const months = [

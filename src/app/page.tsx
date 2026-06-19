@@ -244,7 +244,7 @@ export default function LoginPage() {
                 </div>
                 {!isRequestMode && (
                   <div className="flex justify-end pt-1 px-2">
-                    <Link href="/forgot-password" size="sm" className="text-[10px] font-bold text-[#0073ea] hover:underline transition-all uppercase tracking-widest">
+                    <Link href="/forgot-password" className="text-[10px] font-bold text-[#0073ea] hover:underline transition-all uppercase tracking-widest">
                       Lupa Sandi?
                     </Link>
                   </div>

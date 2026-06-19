@@ -220,13 +220,13 @@ const SECTIONS: { id: string; label: string; icon: string; color: string; bgColo
 ];
 
 /* ───────── ICON HELPER ───────── */
-function SectionIcon({ name, size = 28, className }: { name: string; size?: number; className?: string }) {
+function SectionIcon({ name, size = 28, className, style }: { name: string; size?: number; className?: string; style?: React.CSSProperties }) {
   switch (name) {
-    case "snowflake": return <Snowflake size={size} className={className} />;
-    case "wind":      return <Wind size={size} className={className} />;
-    case "server":    return <Server size={size} className={className} />;
-    case "fan":       return <Fan size={size} className={className} />;
-    default:          return <ClipboardList size={size} className={className} />;
+    case "snowflake": return <Snowflake size={size} className={className} style={style} />;
+    case "wind":      return <Wind size={size} className={className} style={style} />;
+    case "server":    return <Server size={size} className={className} style={style} />;
+    case "fan":       return <Fan size={size} className={className} style={style} />;
+    default:          return <ClipboardList size={size} className={className} style={style} />;
   }
 }
 
@@ -255,8 +255,8 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
     try {
       const { getRoesminLogsheets } = await import("@/app/actions/logsheet_roesmin");
       const res = await getRoesminLogsheets({ projectId, limit: 100 });
-      if (res.success && res.data) {
-        setHistoryData(res.data);
+      if (res && 'success' in res && res.success && 'data' in res) {
+        setHistoryData((res as any).data);
       }
     } catch (e) {
       console.error(e);

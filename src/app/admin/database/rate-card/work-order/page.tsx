@@ -42,8 +42,8 @@ export default async function WorkOrderPage() {
     work_types: [],
     capacity_units: []
   };
-  const projects = projectsRes?.success ? projectsRes.data : [];
-  const users = usersRes?.success ? usersRes.data : [];
+  const projects = ('success' in projectsRes && projectsRes.success) ? (projectsRes as any).data : [];
+  const users = ('success' in usersRes && usersRes.success) ? (usersRes as any).data : [];
 
   return (
     <WorkOrderClient 

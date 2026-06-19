@@ -129,7 +129,7 @@ export default function DashboardWrapper() {
         ]);
         setSummaryData(stats);
         setSession(s);
-        if (stats.projectName) setProjectName(stats.projectName);
+        if ((stats as any).projectName) setProjectName((stats as any).projectName);
       } catch (err) {
         console.error("Critical Stats Error:", err);
       }
@@ -158,8 +158,8 @@ export default function DashboardWrapper() {
       }
       
       const complaintsRes = await getProjectComplaints(f.projectId);
-      if (complaintsRes && 'success' in complaintsRes) {
-        setRecentComplaints(complaintsRes.data || []);
+      if (complaintsRes && 'success' in complaintsRes && 'data' in complaintsRes) {
+        setRecentComplaints((complaintsRes as any).data || []);
       }
     } catch (err) {
       console.error("Secondary Data Error:", err);
@@ -170,8 +170,8 @@ export default function DashboardWrapper() {
     e.preventDefault();
     e.stopPropagation();
     const res = await getUnitByTag(tag);
-    if (res && "success" in res && res.success && res.data) {
-        window.open(`/w/${urlProjectId}/dashboard/units/${res.data.id}`, '_blank');
+    if (res && "success" in res && res.success && (res as any).data) {
+        window.open(`/w/${urlProjectId}/dashboard/units/${(res as any).data.id}`, '_blank');
     }
   };
 
@@ -349,7 +349,7 @@ export default function DashboardWrapper() {
                   onItemClick={(e: any, unit: any) => handleUnitClick(e, unit)}
                 />
 
-                <ComplaintWidget items={recentComplaints} onItemClick={(e, unitId) => handleActivityClick(e, unitId)} />
+                <ComplaintWidget items={recentComplaints} onItemClick={(e: React.MouseEvent, unitId: string) => handleActivityClick(e, unitId)} />
               </div>
             </div>
           </motion.div>

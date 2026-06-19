@@ -185,10 +185,10 @@ export default function CorrectiveMaintenancePage() {
       };
 
       const res = await submitCorrectiveMaintenanceForm(payload);
-      if (res && res.success) {
+      if (res && 'success' in res && res.success) {
         setSuccess(true);
       } else {
-        alert(res.error || "Gagal menyimpan data.");
+        alert(('error' in res ? res.error : undefined) || "Gagal menyimpan data.");
       }
     });
   };

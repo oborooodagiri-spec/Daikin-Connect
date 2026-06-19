@@ -135,11 +135,11 @@ export default function RateCardClient() {
       getAllProjects()
     ]);
     
-    if (res.success) setItems(res.data);
+    if (res && 'success' in res && res.success) setItems((res as any).data);
     if (sess) setSession(sess);
-    if (users?.success) setAllUsers(users.data);
-    if (settingsRes.success) setSettings(settingsRes.data);
-    if (projectsRes?.success) setProjects(projectsRes.data);
+    if (users && 'success' in users && users.success) setAllUsers((users as any).data);
+    if (settingsRes && 'success' in settingsRes && settingsRes.success) setSettings((settingsRes as any).data);
+    if ('success' in projectsRes && projectsRes.success) setProjects((projectsRes as any).data);
     
     setLoading(false);
   };

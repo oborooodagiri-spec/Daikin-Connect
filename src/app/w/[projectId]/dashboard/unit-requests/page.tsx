@@ -17,8 +17,8 @@ export default function UnitEditRequestsPage() {
   async function loadRequests() {
     setLoading(true);
     const res = await getPendingUnitRequests();
-    if (res.success) {
-      setRequests(res.data);
+    if ('success' in res && res.success) {
+      setRequests((res as any).data);
     }
     setLoading(false);
   }
@@ -34,10 +34,10 @@ export default function UnitEditRequestsPage() {
         res = await rejectUnitRequest(requestId, note);
       }
 
-      if (res.success) {
+      if ('success' in res && res.success) {
         loadRequests();
       } else {
-        alert(res.error || "Gagal memproses permintaan");
+        alert(('error' in res ? res.error : null) || "Gagal memproses permintaan");
       }
     });
   };

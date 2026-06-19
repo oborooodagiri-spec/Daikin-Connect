@@ -94,8 +94,8 @@ export default function AttendanceClient({
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { 
           facingMode: "user",
-          resizeMode: "none"
-        },
+          resizeMode: "none" as any
+        } as MediaTrackConstraints,
         audio: false
       });
       setShowScanner(true);

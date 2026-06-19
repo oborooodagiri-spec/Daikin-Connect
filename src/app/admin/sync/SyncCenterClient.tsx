@@ -43,7 +43,7 @@ export default function SyncCenterClient() {
   useEffect(() => {
     async function fetchProjects() {
       const res = await getAllProjects();
-      if (res.success) setProjects(res.data);
+      if ('success' in res && res.success) setProjects((res as any).data);
       setLoadingProjects(false);
     }
     fetchProjects();

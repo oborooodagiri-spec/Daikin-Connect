@@ -60,10 +60,10 @@ export default function LogsheetEntryModal({
       notes: notes
     });
 
-    if ((result as any).success) {
+    if ('success' in result && result.success) {
       onSuccess();
     } else {
-      setError(result.error || "Gagal menyimpan data.");
+      setError(('error' in result ? result.error : null) || "Gagal menyimpan data.");
       setIsSubmitting(false);
     }
   };

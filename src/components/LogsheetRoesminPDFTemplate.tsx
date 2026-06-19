@@ -416,17 +416,17 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
   ];
 
   // Build AHU parameter groups
-  const ahuRoomParams = [
+  const ahuRoomParams: { key: string; label: string; design?: string }[] = [
     { key: 'room_temp', label: 'Room Temp (°C)', design: '19' },
     { key: 'room_rh', label: 'Room RH (%)', design: '50-60' },
     { key: 'room_press', label: 'Room Press (Pa)', design: '10-15' },
   ];
-  const ahuFilterParams = [
+  const ahuFilterParams: { key: string; label: string; design?: string }[] = [
     { key: 'filter_pre', label: 'Filter Pre' },
     { key: 'filter_med', label: 'Filter Med' },
     { key: 'filter_hepa', label: 'Filter HEPA' },
   ];
-  const ahuHeaterParams = [
+  const ahuHeaterParams: { key: string; label: string; design?: string }[] = [
     { key: 'heater_status', label: 'Heater Status' },
     { key: 'heater_stage', label: 'Heater Stage' },
     { key: 'heater_amp_r', label: 'Htr Amp R' },
@@ -436,7 +436,7 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
     { key: 'heater_volt_rt', label: 'Htr V RT', design: '400' },
     { key: 'heater_volt_st', label: 'Htr V ST', design: '400' },
   ];
-  const ahuFanParams = [
+  const ahuFanParams: { key: string; label: string; design?: string }[] = [
     { key: 'fan_status', label: 'Fan Status' },
     { key: 'fan_freq', label: 'Fan Freq (Hz)', design: '50' },
     { key: 'fan_amp_r', label: 'Fan Amp R' },
@@ -446,7 +446,7 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
     { key: 'fan_volt_rt', label: 'Fan V RT', design: '400' },
     { key: 'fan_volt_st', label: 'Fan V ST', design: '400' },
   ];
-  const ahuDamperParams = [
+  const ahuDamperParams: { key: string; label: string; design?: string }[] = [
     { key: 'damper_status', label: 'Damper Status' },
     { key: 'fresh_air_pct', label: 'Fresh Air (%)' },
     { key: 'ef_damper', label: 'EF Damper (%)' },
@@ -455,7 +455,7 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
     { key: 'sa_1_3', label: 'SA 1-3 (%)', design: '100' },
     { key: 'sa_1_4', label: 'SA 1-4 (%)', design: '100' },
   ];
-  const ahuCorridorExtra = [
+  const ahuCorridorExtra: { key: string; label: string; design?: string }[] = [
     { key: 'damper_corr_supply', label: 'Corr Supply (%)' },
     { key: 'damper_corr_return', label: 'Corr Return (%)' },
     { key: 'damper_comp_supply', label: 'Comp Supply (%)' },
