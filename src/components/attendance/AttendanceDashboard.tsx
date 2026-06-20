@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { 
   ChevronLeft, Calendar, ChevronRight, Clock, MapPin, 
   User, CheckCircle2, AlertCircle, History, Fingerprint,
-  MoreVertical, Download, X, FileImage
+  MoreVertical, Download, X, FileImage, UserMinus, AlertTriangle, FastForward
 } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from "date-fns";
 import { id } from "date-fns/locale/id";
@@ -160,15 +160,12 @@ export default function AttendanceDashboard({
         </div>
 
         {/* Stats Card */}
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-6 border border-blue-100 shadow-sm relative overflow-hidden">
-           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-200/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-           <div className="grid grid-cols-3 gap-4 relative z-10">
-              <StatItem label="Absent" value={stats?.absent || 0} />
-              <StatItem label="Late clock in" value={stats?.late || 0} />
-              <StatItem label="Early clock out" value={stats?.earlyOut || 0} />
-              <StatItem label="No clock in" value={stats?.noClockIn || 0} />
-              <StatItem label="No clock out" value={stats?.noClockOut || 0} />
-           </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+           <StatItem label="Absent" value={stats?.absent || 0} icon={UserMinus} colorClass="text-rose-600" bgClass="bg-rose-50" />
+           <StatItem label="Late In" value={stats?.late || 0} icon={AlertTriangle} colorClass="text-amber-600" bgClass="bg-amber-50" />
+           <StatItem label="Early Out" value={stats?.earlyOut || 0} icon={FastForward} colorClass="text-orange-600" bgClass="bg-orange-50" />
+           <StatItem label="No Clock In" value={stats?.noClockIn || 0} icon={Clock} colorClass="text-slate-500" bgClass="bg-slate-100" />
+           <StatItem label="No Clock Out" value={stats?.noClockOut || 0} icon={History} colorClass="text-slate-500" bgClass="bg-slate-100" />
         </div>
 
         {/* History List */}
@@ -231,16 +228,18 @@ export default function AttendanceDashboard({
   return (
     <div className="min-h-screen bg-[#f8fafc] font-sans">
       {/* Header */}
-      <div className="bg-[#003366] text-white p-4 pb-14 flex items-center gap-4 sticky top-0 z-50 shadow-lg">
-         <button onClick={() => window.history.back()} className="p-2 hover:bg-white/10 rounded-full">
-            <ChevronLeft size={24} />
-         </button>
-         <h1 className="text-xl font-bold">Daftar Absensi</h1>
+      <div className="bg-white/90 backdrop-blur-md text-[#323338] p-4 flex items-center justify-between sticky top-0 z-50 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]">
+         <div className="flex items-center gap-3">
+            <button onClick={() => window.history.back()} className="p-2 hover:bg-slate-100 rounded-xl transition-colors">
+               <ChevronLeft size={20} className="text-slate-600" />
+            </button>
+            <h1 className="text-lg font-black tracking-tight">Daftar Absensi</h1>
+         </div>
       </div>
 
       {/* Tabs */}
-      <div className="bg-white px-4 -mt-10 pt-6 rounded-t-[3rem] border-b border-slate-100 sticky top-[72px] z-40">
-         <div className="flex justify-around">
+      <div className="bg-white px-4 pt-4 pb-2 border-b border-slate-100 sticky top-[60px] z-40">
+         <div className="flex p-1 bg-slate-50/80 border border-slate-100 rounded-2xl">
             <TabItem active={activeTab === "riwayat"} onClick={() => setActiveTab("riwayat")}>Riwayat</TabItem>
             <TabItem active={activeTab === "absensi"} onClick={() => setActiveTab("absensi")}>Absensi</TabItem>
             <TabItem active={activeTab === "shift"} onClick={() => setActiveTab("shift")}>Shift</TabItem>
@@ -374,23 +373,21 @@ function TabItem({ children, active, onClick }: { children: React.ReactNode; act
   return (
     <button 
       onClick={onClick}
-      className={`py-3 px-6 text-sm font-black transition-all relative ${active ? 'text-blue-600' : 'text-slate-400'}`}
+      className={`flex-1 py-2.5 px-4 text-xs font-black uppercase tracking-widest rounded-xl transition-all duration-300 ${active ? 'bg-white text-[#0073ea] shadow-sm border border-slate-100/50' : 'text-slate-400 hover:text-slate-600'}`}
     >
       {children}
-      {active && (
-        <div 
-          className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 rounded-t-full"
-        />
-      )}
     </button>
   );
 }
 
-function StatItem({ label, value }: { label: string, value: number }) {
+function StatItem({ label, value, icon: Icon, colorClass, bgClass }: { label: string, value: number, icon: any, colorClass: string, bgClass: string }) {
   return (
-    <div className="text-left">
-       <p className="text-[11px] font-bold text-slate-500 mb-1 leading-tight">{label}</p>
-       <p className="text-xl font-black text-slate-800">{value}</p>
+    <div className="flex flex-col bg-white p-3.5 rounded-2xl border border-slate-100 shadow-[0_4px_12px_-6px_rgba(0,0,0,0.05)] transition-all hover:shadow-md hover:-translate-y-0.5">
+       <div className={`w-8 h-8 rounded-xl ${bgClass} ${colorClass} flex items-center justify-center mb-2.5 shrink-0`}>
+          <Icon size={14} />
+       </div>
+       <p className="text-[9px] font-black uppercase tracking-wider text-slate-400 mb-0.5 line-clamp-1">{label}</p>
+       <p className={`text-xl font-black text-slate-800 tracking-tight`}>{value}</p>
     </div>
   );
 }
