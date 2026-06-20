@@ -73,12 +73,13 @@ const otpContainerStyles = `
 `;
 
 const otpCodeStyles = `
-  font-size: 40px;
+  font-size: 32px;
   font-weight: 800;
   color: #0369a1;
-  letter-spacing: 8px;
+  letter-spacing: 6px;
   margin: 0;
   font-family: 'Courier New', Courier, monospace;
+  white-space: nowrap;
 `;
 
 function getEmailWrapper(content: string) {
