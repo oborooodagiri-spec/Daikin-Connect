@@ -42,13 +42,51 @@ function AnimatedNumber({ value }: { value: number }) {
   return <span>{displayValue.toLocaleString()}</span>;
 }
 
+function Sparkline({ data, colorKey }: { data: number[], colorKey: string }) {
+  if (!data || data.length < 2) return <div className="h-8 w-16" />;
+  
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const range = max - min || 1; // Prevent division by zero
+  
+  const points = data.map((d, i) => {
+    const x = (i / (data.length - 1)) * 100;
+    const y = 100 - ((d - min) / range) * 100;
+    return `${x},${y}`;
+  }).join(' ');
+
+  const strokeColor = colorKey.includes('rose') || colorKey.includes('e44258') ? '#e44258' : 
+                      colorKey.includes('emerald') || colorKey.includes('00c875') ? '#00c875' : 
+                      colorKey.includes('amber') || colorKey.includes('ff9f1a') ? '#ff9f1a' : 
+                      colorKey.includes('purple') || colorKey.includes('a25ddc') ? '#a25ddc' :
+                      '#0073ea';
+
+  return (
+    <div className="h-8 w-16 relative flex items-center shrink-0">
+       <svg viewBox="0 -5 100 110" className="w-full h-full overflow-visible preserve-3d">
+         <motion.polyline
+           initial={{ pathLength: 0, opacity: 0 }}
+           animate={{ pathLength: 1, opacity: 1 }}
+           transition={{ duration: 1.5, ease: "easeOut" }}
+           points={points}
+           fill="none"
+           stroke={strokeColor}
+           strokeWidth="4"
+           strokeLinecap="round"
+           strokeLinejoin="round"
+         />
+       </svg>
+    </div>
+  );
+}
+
 const TIMEFRAMES = [
   { id: 'daily', label: 'DAILY', icon: Clock },
   { id: 'monthly', label: 'MONTHLY', icon: Calendar },
   { id: 'total', label: 'YTD', icon: TrendingUp }
 ];
 
-function CompactMetricCard({ title, icon: Icon, color, bg, metrics, onDetailClick, type }: any) {
+function CompactMetricCard({ title, icon: Icon, color, bg, metrics, onDetailClick, type, sparklineData }: any) {
   const [frameIndex, setFrameIndex] = useState(1); // Default to Monthly
 
   const currentFrame = TIMEFRAMES[frameIndex];
@@ -83,13 +121,18 @@ function CompactMetricCard({ title, icon: Icon, color, bg, metrics, onDetailClic
 
       <div className="flex-1 flex flex-col">
         <h2 className="text-[10px] font-bold tracking-widest text-slate-400 uppercase mb-1">{title}</h2>
-        <div className="flex items-baseline gap-2">
-           <div className="text-3xl font-bold text-[#323338] tracking-tight">
-              <AnimatedNumber value={currentMetric.actual} />
+        <div className="flex items-center justify-between">
+           <div className="flex items-baseline gap-2">
+              <div className="text-3xl font-bold text-[#323338] tracking-tight">
+                 <AnimatedNumber value={currentMetric.actual} />
+              </div>
+              <div className="text-xs font-medium text-slate-300">
+                / {currentMetric.target}
+              </div>
            </div>
-           <div className="text-xs font-medium text-slate-300">
-             / {currentMetric.target}
-           </div>
+           {sparklineData && sparklineData.length > 0 && (
+             <Sparkline data={sparklineData} colorKey={color} />
+           )}
         </div>
       </div>
 
@@ -118,7 +161,7 @@ function CompactMetricCard({ title, icon: Icon, color, bg, metrics, onDetailClic
   );
 }
 
-function CompactCorrectiveCard({ title, icon: Icon, kpi, onDetailClick }: any) {
+function CompactCorrectiveCard({ title, icon: Icon, kpi, onDetailClick, sparklineData }: any) {
   const resolutionRate = (kpi && kpi.appeared > 0) ? Math.round((kpi.resolved / kpi.appeared) * 100) : 0;
   
   return (
@@ -136,13 +179,18 @@ function CompactCorrectiveCard({ title, icon: Icon, kpi, onDetailClick }: any) {
 
       <div className="flex-1 flex flex-col">
         <h2 className="text-[10px] font-bold tracking-widest text-slate-400 uppercase mb-1">{title}</h2>
-        <div className="flex items-baseline gap-2">
-           <div className="text-3xl font-bold text-[#323338] tracking-tight">
-              <AnimatedNumber value={kpi.resolved} />
+        <div className="flex items-center justify-between">
+           <div className="flex items-baseline gap-2">
+              <div className="text-3xl font-bold text-[#323338] tracking-tight">
+                 <AnimatedNumber value={kpi.resolved} />
+              </div>
+              <div className="text-xs font-medium text-slate-300">
+                / {kpi.appeared}
+              </div>
            </div>
-           <div className="text-xs font-medium text-slate-300">
-             / {kpi.appeared}
-           </div>
+           {sparklineData && sparklineData.length > 0 && (
+             <Sparkline data={sparklineData} colorKey="text-[#e44258]" />
+           )}
         </div>
       </div>
 
@@ -168,7 +216,7 @@ function CompactCorrectiveCard({ title, icon: Icon, kpi, onDetailClick }: any) {
   );
 }
 
-function CompactComplaintCard({ title, icon: Icon, data, onDetailClick }: any) {
+function CompactComplaintCard({ title, icon: Icon, data, onDetailClick, sparklineData }: any) {
   const kpi = data?.kpi || { appeared: 0, resolved: 0 };
   const actual = data?.actual || { daily: 0, monthly: 0, total: 0 };
   const resolutionRate = (kpi.appeared > 0) ? Math.round((kpi.resolved / kpi.appeared) * 100) : 0;
@@ -204,13 +252,18 @@ function CompactComplaintCard({ title, icon: Icon, data, onDetailClick }: any) {
 
       <div className="flex-1 flex flex-col">
         <h2 className="text-[10px] font-bold tracking-widest text-slate-400 uppercase mb-1">{title}</h2>
-        <div className="flex items-baseline gap-2">
-           <div className="text-3xl font-bold text-[#323338] tracking-tight">
-              <AnimatedNumber value={currentFrame.value} />
+        <div className="flex items-center justify-between">
+           <div className="flex items-baseline gap-2">
+              <div className="text-3xl font-bold text-[#323338] tracking-tight">
+                 <AnimatedNumber value={currentFrame.value} />
+              </div>
+              <div className="text-xs font-medium text-slate-300">
+                {currentFrame.label}
+              </div>
            </div>
-           <div className="text-xs font-medium text-slate-300">
-             {currentFrame.label}
-           </div>
+           {sparklineData && sparklineData.length > 0 && (
+             <Sparkline data={sparklineData} colorKey="text-[#ff9f1a]" />
+           )}
         </div>
       </div>
 
@@ -239,7 +292,7 @@ function CompactComplaintCard({ title, icon: Icon, data, onDetailClick }: any) {
   );
 }
 
-export default function SummaryCards({ data, onCardClick }: { data: any, onCardClick?: (metric: any) => void }) {
+export default function SummaryCards({ data, chartData, onCardClick }: { data: any, chartData?: any[], onCardClick?: (metric: any) => void }) {
   if (!data) return null;
 
   const enabledForms = data.enabled_forms 
@@ -268,6 +321,7 @@ export default function SummaryCards({ data, onCardClick }: { data: any, onCardC
             { actual: data.audit.actual.monthly, target: data.audit.target.monthly },
             { actual: data.audit.actual.total, target: data.audit.target.total }
           ]}
+          sparklineData={chartData ? chartData.map(d => d.Audit || 0) : []}
           onDetailClick={onCardClick}
         />
       )}
@@ -282,6 +336,7 @@ export default function SummaryCards({ data, onCardClick }: { data: any, onCardC
             { actual: data.preventive.actual.monthly, target: data.preventive.target.monthly },
             { actual: data.preventive.actual.total, target: data.preventive.target.total }
           ]}
+          sparklineData={chartData ? chartData.map(d => d.Preventive || 0) : []}
           onDetailClick={onCardClick}
         />
       )}
@@ -296,6 +351,7 @@ export default function SummaryCards({ data, onCardClick }: { data: any, onCardC
             { actual: data.dailyLog.actual?.monthly || 0, target: data.dailyLog.target?.monthly || 0 },
             { actual: data.dailyLog.actual?.total || 0, target: data.dailyLog.target?.total || 0 }
           ]}
+          sparklineData={chartData ? chartData.map(d => d.DailyLog || 0) : []}
           onDetailClick={onCardClick}
         />
       )}
@@ -306,6 +362,7 @@ export default function SummaryCards({ data, onCardClick }: { data: any, onCardC
           title="CORRECTIVE" 
           icon={AlertTriangle}
           kpi={data.corrective.kpi}
+          sparklineData={chartData ? chartData.map(d => d.Corrective || 0) : []}
           onDetailClick={onCardClick}
         />
       )}
@@ -316,6 +373,7 @@ export default function SummaryCards({ data, onCardClick }: { data: any, onCardC
           title="COMPLAINT" 
           icon={MessageSquareWarning}
           data={data.complaint}
+          sparklineData={chartData ? chartData.map(d => d.Complaint || 0) : []}
           onDetailClick={onCardClick}
         />
       )}

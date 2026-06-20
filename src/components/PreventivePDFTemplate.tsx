@@ -57,6 +57,13 @@ export const getPreventiveSections = (data: any, unit: any, engineerName?: strin
         { key: "ampere_s", label: "Compressor Current - Phase S (A)" },
         { key: "ampere_t", label: "Compressor Current - Phase T (A)" }
     );
+    AIR_SIDE_ROWS.push(
+        { key: "air_volume", label: "Air Volume (CFM)" }
+    );
+  } else if (unitType.includes("SPLIT") || unitType.includes("WALL")) {
+    AIR_SIDE_ROWS.push(
+        { key: "air_volume", label: "Air Volume (CFM)" }
+    );
   } else {
     // Split Wall / VRV (Generic)
     // Only show Phase R / Single Phase

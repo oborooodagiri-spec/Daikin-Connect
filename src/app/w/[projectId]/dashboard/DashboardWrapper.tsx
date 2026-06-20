@@ -297,7 +297,7 @@ export default function DashboardWrapper() {
                 ))}
               </div>
             ) : (
-              <SummaryCards data={summaryData} onCardClick={handleMetricCardClick} />
+              <SummaryCards data={summaryData} chartData={chartData} onCardClick={handleMetricCardClick} />
             )}
 
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">

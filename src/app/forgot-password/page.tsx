@@ -3,8 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, ArrowLeft, ArrowRight, AlertCircle, CheckCircle2, Activity } from "lucide-react";
+import { Mail, ArrowLeft, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
 import { requestPasswordReset } from "../actions/password-reset";
+import LoadingLogo from "@/components/ui/LoadingLogo";
+
+const HVACIllustration = () => {
+  return (
+    <div className="relative w-full max-w-2xl aspect-square flex items-center justify-center">
+      <LoadingLogo size={320} />
+    </div>
+  );
+};
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -23,7 +32,7 @@ export default function ForgotPasswordPage() {
       if (result && "error" in result) {
         setError(result.error || "An unknown error occurred");
       } else {
-        setMessage(result && "success" in result ? (result.success as string || "If an account exists, a reset link has been sent.") : "If an account exists, a reset link has been sent.");
+        setMessage(result && "success" in result ? (result.success as string) : "If an account exists, a reset link has been sent.");
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
@@ -33,107 +42,113 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#040814] flex flex-col items-center justify-center p-6 text-slate-200 overflow-hidden relative">
-      {/* Background Gradients */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div className="absolute -top-[10%] -left-[10%] w-[40vw] h-[40vw] rounded-full bg-[#00a1e4] opacity-[0.1] blur-[120px]" />
-        <div className="absolute bottom-[10%] -right-[10%] w-[40vw] h-[40vw] rounded-full bg-[#003366] opacity-[0.1] blur-[120px]" />
+    <div className="min-h-screen bg-[#ffffff] flex flex-col text-[#323338] font-sans selection:bg-blue-100 selection:text-blue-600 relative overflow-x-hidden">
+      
+      {/* Top Header Logo Area */}
+      <div className="absolute top-8 left-8 z-50 flex items-center gap-6 group">
+         <img src="/daikin_logo.png" className="h-5 w-auto object-contain transition-transform group-hover:scale-105" alt="Daikin" />
       </div>
 
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md bg-white/[0.03] backdrop-blur-2xl border border-white/10 p-10 rounded-[2rem] shadow-2xl relative z-10"
-      >
-        <div className="mb-8 flex justify-center">
-          <div className="flex items-center gap-3">
-             <img src="/daikin_logo.png" className="h-6 brightness-0 invert" alt="Daikin" />
-             <div className="w-[1px] h-4 bg-white/20"></div>
-             <img src="/logo_epllink.png" className="h-6 brightness-0 invert" alt="EPL Link" />
-          </div>
+      <div className="flex-1 flex flex-col lg:flex-row w-full max-w-[1600px] mx-auto px-6 lg:px-20 pt-32 lg:pt-0">
+        
+        {/* Left Side: Animated Brand Illustration */}
+        <div className="hidden lg:flex lg:w-1/2 flex-col justify-center items-center pr-12">
+           <HVACIllustration />
         </div>
 
-        <div className="text-center mb-10">
-          <h2 className="text-2xl font-bold text-white tracking-tight mb-2">Forgot Password</h2>
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest">
-            Recovery Access
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <AnimatePresence mode="popLayout">
-            {error && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-xs font-semibold flex items-center gap-3"
-              >
-                <AlertCircle className="w-4 h-4" />
-                <p>{error}</p>
-              </motion.div>
-            )}
-
-            {message && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-4 py-3 rounded-xl text-xs font-semibold flex items-center gap-3"
-              >
-                <CheckCircle2 className="w-4 h-4" />
-                <p>{message}</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <div className="group">
-            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 px-1">Email Address</label>
-            <div className="relative">
-              <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 group-focus-within:text-[#00a1e4]" />
-              <input 
-                type="email" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={!!message}
-                className="w-full pl-12 pr-5 py-4 bg-black/20 border border-white/10 rounded-2xl text-sm font-medium text-white focus:bg-white/5 focus:border-[#00a1e4] focus:ring-1 focus:ring-[#00a1e4] outline-none transition-all placeholder:text-slate-500 disabled:opacity-50"
-                placeholder="Enter your registered email"
-              />
+        {/* Right Side: Form */}
+        <div className="flex-1 flex items-center justify-center lg:justify-end py-12 lg:py-0">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-md"
+          >
+            <div className="mb-10 text-center">
+              <h2 className="text-4xl font-black tracking-tight text-[#323338] mb-2">
+                Forgot Password
+              </h2>
+              <p className="text-sm font-bold text-slate-400">
+                Recovery Access
+              </p>
             </div>
-          </div>
 
-          <button 
-            type="submit"
-            disabled={isLoading || !!message}
-            className="w-full bg-gradient-to-r from-[#00a1e4] to-blue-600 text-white rounded-2xl font-bold uppercase text-[11px] tracking-[0.15em] py-4 transition-all hover:shadow-[0_0_20px_rgba(0,161,228,0.4)] disabled:opacity-50"
-          >
-            <span className="flex items-center justify-center gap-3">
-              {isLoading ? (
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>
-                  Send Reset Link
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </span>
-          </button>
-        </form>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <AnimatePresence mode="popLayout">
+                {error && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="bg-red-50 border border-red-100 text-red-600 px-5 py-4 rounded-2xl text-xs font-bold flex items-center gap-3 shadow-sm"
+                  >
+                    <AlertCircle className="w-5 h-5 shrink-0" />
+                    <p>{error}</p>
+                  </motion.div>
+                )}
 
-        <div className="mt-8 text-center">
-          <Link 
-            href="/" 
-            className="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors uppercase tracking-widest"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Back to Login
-          </Link>
+                {message && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="bg-emerald-50 border border-emerald-100 text-emerald-600 px-5 py-4 rounded-2xl text-xs font-bold flex items-center gap-3 shadow-sm"
+                  >
+                    <CheckCircle2 className="w-5 h-5 shrink-0" />
+                    <p>{message}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Alamat Email</label>
+                <div className="relative">
+                  <input 
+                    type="email" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={!!message}
+                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-4 focus:ring-blue-100 outline-none transition-all duration-300 placeholder:text-slate-300 disabled:opacity-50"
+                    placeholder="Enter your registered email"
+                  />
+                </div>
+              </div>
+
+              <button 
+                type="submit"
+                disabled={isLoading || !!message}
+                className="w-full bg-[#0073ea] hover:bg-[#0060c5] text-white rounded-2xl font-black uppercase text-xs tracking-widest py-4 transition-all duration-300 shadow-xl shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:hover:translate-y-0"
+              >
+                <span className="flex items-center justify-center gap-3">
+                  {isLoading ? (
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      Kirim Tautan Pemulihan
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </span>
+              </button>
+            </form>
+
+            <div className="mt-8 text-center">
+              <Link 
+                href="/" 
+                className="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-[#0073ea] transition-colors uppercase tracking-widest"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                Kembali ke Login
+              </Link>
+            </div>
+
+            <div className="mt-12 text-center border-t border-slate-100 pt-8">
+               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                 © 2026 EPLLINK <span className="text-[#0073ea] mx-2">•</span> RECOVERY
+               </p>
+            </div>
+          </motion.div>
         </div>
-      </motion.div>
-      
-      <div className="mt-12 text-center relative z-10 w-full">
-         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-           © 2026 EPL CONNECT <span className="text-[#00a1e4] mx-2">•</span> RECOVERY
-         </p>
       </div>
     </div>
   );

@@ -44,7 +44,12 @@ export async function requestPasswordReset(email: string) {
       },
     });
 
-    await sendPasswordResetEmail(email, user.name, resetToken);
+    const emailResult = await sendPasswordResetEmail(email, user.name, resetToken);
+    
+    if (emailResult.error) {
+      console.error("SMTP Error during password reset:", emailResult.error);
+      return { error: "Failed to send the reset email. Please try again later." };
+    }
 
     return { success: "If an account exists with that email, a reset link has been sent." };
   } catch (error) {
