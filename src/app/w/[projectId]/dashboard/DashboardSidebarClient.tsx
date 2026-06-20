@@ -112,7 +112,7 @@ export default function DashboardSidebarClient({
         <div className="p-8 border-b border-[#f7f8fa] flex flex-col items-center shrink-0">
           <div className="relative h-10 lg:h-12 w-48 mb-6">
             <Image 
-              src="/logo_epl_connect_1.png" 
+              src="/logo_epllink.png" 
               alt="EPL Link" 
               fill
               className="object-contain"

@@ -130,9 +130,7 @@ function CompactMetricCard({ title, icon: Icon, color, bg, metrics, onDetailClic
                 / {currentMetric.target}
               </div>
            </div>
-           {sparklineData && sparklineData.length > 0 && (
-             <Sparkline data={sparklineData} colorKey={color} />
-           )}
+           <Sparkline data={sparklineData && sparklineData.length > 0 ? sparklineData : [0,0,0,0,0,0]} colorKey={color} />
         </div>
       </div>
 
@@ -188,9 +186,7 @@ function CompactCorrectiveCard({ title, icon: Icon, kpi, onDetailClick, sparklin
                 / {kpi.appeared}
               </div>
            </div>
-           {sparklineData && sparklineData.length > 0 && (
-             <Sparkline data={sparklineData} colorKey="text-[#e44258]" />
-           )}
+           <Sparkline data={sparklineData && sparklineData.length > 0 ? sparklineData : [0,0,0,0,0,0]} colorKey="text-[#e44258]" />
         </div>
       </div>
 
@@ -261,9 +257,7 @@ function CompactComplaintCard({ title, icon: Icon, data, onDetailClick, sparklin
                 {currentFrame.label}
               </div>
            </div>
-           {sparklineData && sparklineData.length > 0 && (
-             <Sparkline data={sparklineData} colorKey="text-[#ff9f1a]" />
-           )}
+           <Sparkline data={sparklineData && sparklineData.length > 0 ? sparklineData : [0,0,0,0,0,0]} colorKey="text-[#ff9f1a]" />
         </div>
       </div>
 
