@@ -140,7 +140,8 @@ export default function AttendanceRecordsPage() {
     const hrs = Math.floor(minutes / 60);
     const mins = minutes % 60;
     if (hrs === 0 && mins === 0) return "-";
-    return `${hrs}j ${mins}m`;
+    if (hrs === 0) return `${mins} Menit`;
+    return `${hrs} Jam ${mins} Menit`;
   };
 
   const getProjectName = () => {
@@ -541,7 +542,7 @@ export default function AttendanceRecordsPage() {
                                       const diff = checkInMins - shiftMins;
                                       return (
                                         <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1 py-0.5 rounded border border-rose-100 w-max">
-                                          Terlambat {diff}m
+                                          Terlambat {formatMinutesToHoursMins(diff)}
                                         </span>
                                       );
                                     }
@@ -577,7 +578,7 @@ export default function AttendanceRecordsPage() {
                                       const diff = shiftMins - checkOutMins;
                                       return (
                                         <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1 py-0.5 rounded border border-rose-100 w-max">
-                                          Cepat {diff}m
+                                          Cepat {formatMinutesToHoursMins(diff)}
                                         </span>
                                       );
                                     }
