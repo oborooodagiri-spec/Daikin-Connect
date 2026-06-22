@@ -240,6 +240,7 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
   const [inspector, setInspector] = useState("");
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<string | null>(null);
+  const [editId, setEditId] = useState<string | number | null>(null);
 
   const [historyData, setHistoryData] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
@@ -262,6 +263,21 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
       console.error(e);
     }
     setLoadingHistory(false);
+  };
+
+  const handleEdit = (item: any) => {
+    try {
+      const parsed = JSON.parse(item.technical_json || "{}");
+      if (parsed.formData) setFormData(parsed.formData);
+      if (parsed.date) setDate(parsed.date);
+      if (parsed.inspector) setInspector(parsed.inspector);
+      setEditId(item.id);
+      setActiveTab("input");
+      setActiveSection(null);
+    } catch (e) {
+      console.error(e);
+      alert("Gagal memuat data logsheet.");
+    }
   };
 
   const renderHistory = () => {
@@ -311,20 +327,35 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
                           <div key={dateKey}>
                             <h5 className="text-sm font-bold text-slate-500 mb-2">{dateKey}</h5>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                              {grouped[year][month][dateKey].map((item: any) => (
+                              {grouped[year][month][dateKey].map((item: any) => {
+                                const isDraft = (() => {
+                                  try { return JSON.parse(item.technical_json || "{}").is_draft; }
+                                  catch { return false; }
+                                })();
+                                return (
                                 <div key={item.id} className="bg-slate-50 border border-slate-100 p-4 rounded-2xl flex items-center justify-between hover:border-[#00a1e4]/30 hover:shadow-md transition-all group">
                                   <div>
-                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">ID: #{item.id}</p>
+                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+                                      ID: #{item.id}
+                                      {isDraft && <span className="ml-2 text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded font-black">DRAFT</span>}
+                                    </p>
                                     <p className="text-sm font-black text-[#003366] flex items-center gap-2">
                                       <User size={14} className="text-[#00a1e4]" /> {item.inspector_name || "Unknown"}
                                     </p>
                                   </div>
-                                  <Link href={`/reports/preventive/${item.id}`} target="_blank"
-                                    className="p-3 bg-white text-[#003366] border border-slate-200 rounded-xl hover:bg-[#00a1e4] hover:text-white hover:border-[#00a1e4] transition-all flex items-center gap-2">
-                                    <FileDown size={16} /> <span className="text-xs font-bold hidden sm:inline">Buka PDF</span>
-                                  </Link>
+                                  <div className="flex gap-2">
+                                    <button onClick={() => handleEdit(item)}
+                                      className="p-3 bg-white text-slate-500 border border-slate-200 rounded-xl hover:bg-slate-100 hover:text-[#003366] transition-all flex items-center gap-2">
+                                      <span className="text-xs font-bold hidden sm:inline">{isDraft ? 'Lanjutkan' : 'Edit'}</span>
+                                    </button>
+                                    <Link href={`/reports/preventive/${item.id}`} target="_blank"
+                                      className="p-3 bg-white text-[#003366] border border-slate-200 rounded-xl hover:bg-[#00a1e4] hover:text-white hover:border-[#00a1e4] transition-all flex items-center gap-2">
+                                      <FileDown size={16} /> <span className="text-xs font-bold hidden sm:inline">Buka PDF</span>
+                                    </Link>
+                                  </div>
                                 </div>
-                              ))}
+                                );
+                              })}
                             </div>
                           </div>
                         ))}
@@ -374,7 +405,7 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
     setFormData(prev => ({ ...prev, [unitId]: { ...prev[unitId], [key]: val } }));
   };
 
-  const handleSave = async () => {
+  const handleSave = async (isDraft = false) => {
     if (!inspector.trim()) {
       alert("Harap isi nama Inspector terlebih dahulu.");
       return;
@@ -404,6 +435,8 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
       }));
       
       const result = await saveRoesminLogsheet({
+        id: editId || undefined,
+        isDraft,
         date,
         inspector,
         formData,
@@ -413,13 +446,18 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
       if (result.success) {
         // Clear draft on successful save
         localStorage.removeItem("roesmin_logsheet_draft");
-        setFormData({});
-        setInspector("");
-        setLastSaved(null);
+        if (!isDraft) {
+          setFormData({});
+          setInspector("");
+          setEditId(null);
+          setLastSaved(null);
+        }
         
-        alert(`✅ Logsheet berhasil disimpan! ID: ${result.id}\n\nAnda dapat melihat dan generate report di halaman Project Lanud Roesmin Nurjadin.`);
-        // Open the report in new tab
-        window.open(`/reports/preventive/${result.id}`, "_blank");
+        alert(`✅ Logsheet berhasil ${isDraft ? 'disimpan sebagai draft' : 'disimpan'}! ID: ${result.id}`);
+        // Open the report in new tab if not draft
+        if (!isDraft) {
+          window.open(`/reports/preventive/${result.id}`, "_blank");
+        }
       } else {
         alert("❌ Gagal menyimpan: " + (result.error || "Unknown error"));
       }
@@ -576,7 +614,12 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
               </span>
             )}
             
-            <button onClick={handleSave} disabled={saving}
+            <button onClick={() => handleSave(true)} disabled={saving}
+              className="px-4 py-2.5 bg-slate-200 text-slate-600 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-300 transition-all disabled:opacity-50 flex items-center gap-2 shrink-0">
+              Simpan Draft
+            </button>
+
+            <button onClick={() => handleSave(false)} disabled={saving}
               className="px-6 py-2.5 bg-[#003366] text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-[#00a1e4] transition-all disabled:opacity-50 flex items-center gap-2 shrink-0 shadow-lg shadow-[#003366]/20">
               {saving ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <Save size={16} />}
               Simpan

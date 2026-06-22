@@ -8,6 +8,8 @@ import { service_activities_type } from "@/generated/client_v3";
 interface RoesminLogsheetData {
   date: string;
   inspector: string;
+  id?: string | number;
+  isDraft?: boolean;
   formData: Record<string, Record<string, string>>;
   sections: Array<{
     id: string;
@@ -80,28 +82,43 @@ export async function saveRoesminLogsheet(data: RoesminLogsheetData, projectId?:
       }
     }
 
-    const newActivity = await (prisma.service_activities as any).create({
-      data: {
-        unit_id: targetUnitId,
-        type: service_activities_type.Preventive,
-        service_date: new Date(data.date),
-        inspector_name: data.inspector,
-        engineer_note: `Daily Logsheet - ${projectName}`,
-        technical_json: JSON.stringify({
-          is_roesmin_logsheet: true,
-          date: data.date,
-          inspector: data.inspector,
-          sections: data.sections,
-          formData: data.formData,
-          project_id: projectId
-        }),
-        technical_advice: "Daily HVAC Monitoring Logsheet",
-        location: projectName,
-        unit_tag: "LOGSHEET-ROESMIN",
-      },
+    const techJson = JSON.stringify({
+      is_roesmin_logsheet: true,
+      date: data.date,
+      inspector: data.inspector,
+      sections: data.sections,
+      formData: data.formData,
+      project_id: projectId,
+      is_draft: data.isDraft || false
     });
 
-    return { success: true, id: serializePrisma(newActivity.id) };
+    let activityRecord;
+    if (data.id) {
+      activityRecord = await (prisma.service_activities as any).update({
+        where: { id: Number(data.id) },
+        data: {
+          service_date: new Date(data.date),
+          inspector_name: data.inspector,
+          technical_json: techJson,
+        }
+      });
+    } else {
+      activityRecord = await (prisma.service_activities as any).create({
+        data: {
+          unit_id: targetUnitId,
+          type: service_activities_type.Preventive,
+          service_date: new Date(data.date),
+          inspector_name: data.inspector,
+          engineer_note: `Daily Logsheet - ${projectName}${data.isDraft ? ' (DRAFT)' : ''}`,
+          technical_json: techJson,
+          technical_advice: "Daily HVAC Monitoring Logsheet",
+          location: projectName,
+          unit_tag: "LOGSHEET-ROESMIN",
+        },
+      });
+    }
+
+    return { success: true, id: serializePrisma(activityRecord.id) };
   } catch (error) {
     console.error("Save Roesmin logsheet error:", error);
     return { success: false, error: "Failed to save logsheet" };
