@@ -22,16 +22,18 @@ const C = {
 // ─── Shared styles ──────────────────────────────────────────────────────────
 const S = {
   page: {
-    width: '297mm',
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
     fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
     fontSize: '7pt',
     color: '#1e293b',
     lineHeight: 1.3,
-    padding: '0',
   } as React.CSSProperties,
   thCell: {
     border: `0.5pt solid ${C.border}`,
-    padding: '1.2mm 1.5mm',
+    padding: '1.2mm 1mm',
     fontSize: '6.5pt',
     fontWeight: 800,
     color: C.headerFg,
@@ -52,14 +54,14 @@ const S = {
   } as React.CSSProperties,
   tdCell: {
     border: `0.5pt solid ${C.border}`,
-    padding: '0.8mm 1.2mm',
+    padding: '0.5mm 1mm',
     fontSize: '6.5pt',
     textAlign: 'center' as const,
     fontWeight: 600,
   } as React.CSSProperties,
   tdLabel: {
     border: `0.5pt solid ${C.border}`,
-    padding: '0.8mm 1.5mm',
+    padding: '0.5mm 1.5mm',
     fontSize: '6.5pt',
     textAlign: 'left' as const,
     fontWeight: 700,
@@ -171,21 +173,23 @@ const renderPageHeader = (
     </div>
 
     {/* Section title */}
-    <div style={{
-      ...S.catRow,
-      padding: '1.5mm 3mm',
-      marginTop: '2mm',
-      borderRadius: '1mm',
-    }}>
-      {sectionTitle}
-    </div>
+    {sectionTitle && (
+      <div style={{
+        ...S.catRow,
+        padding: '1.5mm 3mm',
+        marginTop: '2mm',
+        borderRadius: '1mm',
+      }}>
+        {sectionTitle}
+      </div>
+    )}
   </div>
 );
 
 // ─── Page Footer ────────────────────────────────────────────────────────────
 const renderPageFooter = () => (
   <div style={{
-    marginTop: '3mm',
+    marginTop: 'auto',
     borderTop: `1px solid ${C.border}`,
     paddingTop: '1.5mm',
     display: 'flex',
@@ -245,87 +249,16 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
   ];
 
   pages.push(
-    <div key="page-1-chiller" style={S.page}>
-      {renderPageHeader('CHILLER PERFORMANCE — CH-1 to CH-10', date, inspector, 'Page 1 of 6')}
-      <table style={S.table}>
-        <thead>
-          <tr>
-            <th style={{ ...S.thCell, width: '55px', textAlign: 'left' as const }}>UNIT</th>
-            {chillerParams.map((p) => (
-              <th key={p.key} style={S.thCellWrap}>
-                {dv(`${p.label}${p.unit ? ` (${p.unit})` : ''}`, p.design)}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {chillerIds.map((id, idx) => (
-            <tr key={id} style={{ backgroundColor: idx % 2 === 0 ? C.rowEven : C.rowOdd }}>
-              <td style={S.tdLabel}>Chiller {idx + 1}</td>
-              {chillerParams.map((p) => {
-                const val = getVal(id, p.key);
-                const isStatus = p.key === 'status' || p.key === 'mv_status' || p.key === 'condenser';
-                return (
-                  <td key={p.key} style={{
-                    ...S.tdCell,
-                    color: isStatus ? statusColor(val) : undefined,
-                    fontWeight: isStatus ? 800 : 600,
-                  }}>
-                    {val}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {renderPageFooter()}
-    </div>
-  );
-
-  // ═══════════════════════════════════════════════════════════════════════
-  // PAGE 2: CHWP + MAIN LINE PIPE
-  // ═══════════════════════════════════════════════════════════════════════
-  const chwpIds = ['chwp_2.01', 'chwp_2.02', 'chwp_2.03', 'chwp_1.02', 'chwp_1.03', 'chwp_1.04'];
-  const chwpLabels = ['CHWP 2.01', 'CHWP 2.02', 'CHWP 2.03', 'CHWP 1.02', 'CHWP 1.03', 'CHWP 1.04'];
-  const chwpParams: { key: string; label: string; design?: string; unit?: string }[] = [
-    { key: 'status', label: 'Status' },
-    { key: 'press_inlet', label: 'P.Inlet', unit: 'Bar' },
-    { key: 'press_outlet', label: 'P.Outlet', unit: 'Bar' },
-    { key: 'delta_p', label: 'ΔP', unit: 'Bar' },
-    { key: 'arus_r', label: 'Arus R', design: '15.6', unit: 'Amp' },
-    { key: 'arus_s', label: 'Arus S', design: '15.6', unit: 'Amp' },
-    { key: 'arus_t', label: 'Arus T', design: '15.6', unit: 'Amp' },
-    { key: 'volt_rs', label: 'V RS', design: '400', unit: 'V' },
-    { key: 'volt_rt', label: 'V RT', design: '400', unit: 'V' },
-    { key: 'volt_st', label: 'V ST', design: '400', unit: 'V' },
-  ];
-
-  const mainLineParams: { key: string; label: string; design?: string; unit?: string }[] = [
-    { key: 'temp_inlet', label: 'Temp Inlet', design: '7', unit: '°C' },
-    { key: 'temp_outlet', label: 'Temp Outlet', design: '12', unit: '°C' },
-    { key: 'water_flow', label: 'Water Flow', unit: 'L/s' },
-    { key: 'mv_persen', label: 'MV', unit: '%' },
-  ];
-
-  pages.push(
-    <div key="page-2-chwp" style={S.page}>
-      {renderPageHeader('CHILLED WATER PUMP & MAIN LINE', date, inspector, 'Page 2 of 6')}
-
-      {/* CHWP Table */}
-      <div style={{ marginBottom: '4mm' }}>
-        <div style={{
-          fontSize: '8pt', fontWeight: 800, color: C.navy,
-          padding: '1mm 2mm', backgroundColor: '#eef2ff',
-          borderLeft: `3px solid ${C.cyan}`, marginBottom: '1mm',
-        }}>
-          CHILLED WATER PUMPS (CHWP)
-        </div>
+    <div key="page-1-plant" style={S.page}>
+      {renderPageHeader('DAILY LOGSHEET — HVAC MONITORING REPORT', date, inspector, 'Page 1 of 4')}
+      
+      <div style={{ padding: '0 2mm' }}>
+        <div style={{ ...S.catRow, marginBottom: '1.5mm', fontSize: '7.5pt' }}>CHILLER PERFORMANCE — CH-1 to CH-10</div>
         <table style={S.table}>
           <thead>
             <tr>
-              <th style={{ ...S.thCell, width: '70px', textAlign: 'left' as const }}>UNIT</th>
-              {chwpParams.map((p) => (
+              <th style={{ ...S.thCell, width: '55px', textAlign: 'left' as const }}>UNIT</th>
+              {chillerParams.map((p) => (
                 <th key={p.key} style={S.thCellWrap}>
                   {dv(`${p.label}${p.unit ? ` (${p.unit})` : ''}`, p.design)}
                 </th>
@@ -333,16 +266,17 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
             </tr>
           </thead>
           <tbody>
-            {chwpIds.map((id, idx) => (
+            {chillerIds.map((id, idx) => (
               <tr key={id} style={{ backgroundColor: idx % 2 === 0 ? C.rowEven : C.rowOdd }}>
-                <td style={S.tdLabel}>{chwpLabels[idx]}</td>
-                {chwpParams.map((p) => {
+                <td style={S.tdLabel}>Chiller {idx + 1}</td>
+                {chillerParams.map((p) => {
                   const val = getVal(id, p.key);
+                  const isStatus = p.key === 'status' || p.key === 'mv_status' || p.key === 'condenser';
                   return (
                     <td key={p.key} style={{
                       ...S.tdCell,
-                      color: p.key === 'status' ? statusColor(val) : undefined,
-                      fontWeight: p.key === 'status' ? 800 : 600,
+                      color: isStatus ? statusColor(val) : undefined,
+                      fontWeight: isStatus ? 800 : 600,
                     }}>
                       {val}
                     </td>
@@ -352,53 +286,69 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
             ))}
           </tbody>
         </table>
-      </div>
 
-      {/* Main Line Pipe */}
-      <div>
-        <div style={{
-          fontSize: '8pt', fontWeight: 800, color: C.navy,
-          padding: '1mm 2mm', backgroundColor: '#eef2ff',
-          borderLeft: `3px solid ${C.cyan}`, marginBottom: '1mm',
-        }}>
-          MAIN LINE PIPE
-        </div>
-        <table style={S.table}>
-          <thead>
-            <tr>
-              <th style={{ ...S.thCell, width: '120px', textAlign: 'left' as const }}>PARAMETER</th>
-              <th style={{ ...S.thCell, width: '80px' }}>DESIGN</th>
-              <th style={{ ...S.thCell, width: '100px' }}>ACTUAL</th>
-            </tr>
-          </thead>
-          <tbody>
-            {mainLineParams.map((p, idx) => (
-              <tr key={p.key} style={{ backgroundColor: idx % 2 === 0 ? C.rowEven : C.rowOdd }}>
-                <td style={S.tdLabel}>{p.label} {p.unit ? `(${p.unit})` : ''}</td>
-                <td style={{ ...S.tdCell, color: C.designText, fontStyle: 'italic' }}>
-                  {p.design || '-'}
-                </td>
-                <td style={{ ...S.tdCell, fontWeight: 700 }}>
-                  {getVal('main_line', p.key)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Signature area for page 2 */}
-      <div style={{ marginTop: '8mm', display: 'flex', justifyContent: 'space-between' }}>
-        <div style={{ width: '40%', textAlign: 'center' }}>
-          <div style={{ fontSize: '7pt', fontWeight: 800, color: C.navy, marginBottom: '12mm' }}>Inspector / Operator</div>
-          <div style={{ borderTop: `1px solid ${C.navy}`, width: '60%', margin: '0 auto', paddingTop: '1mm', fontSize: '7pt', fontWeight: 600 }}>
-            {inspector || '( __________________ )'}
+        <div style={{ display: 'flex', gap: '4mm', marginTop: '3mm' }}>
+          {/* CHWP Table */}
+          <div style={{ flex: 1.5 }}>
+            <div style={{ ...S.catRow, marginBottom: '1.5mm', fontSize: '7.5pt' }}>CHILLED WATER PUMPS (CHWP)</div>
+            <table style={S.table}>
+              <thead>
+                <tr>
+                  <th style={{ ...S.thCell, width: '70px', textAlign: 'left' as const }}>UNIT</th>
+                  {chwpParams.map((p) => (
+                    <th key={p.key} style={S.thCellWrap}>
+                      {dv(`${p.label}${p.unit ? ` (${p.unit})` : ''}`, p.design)}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {chwpIds.map((id, idx) => (
+                  <tr key={id} style={{ backgroundColor: idx % 2 === 0 ? C.rowEven : C.rowOdd }}>
+                    <td style={S.tdLabel}>{chwpLabels[idx]}</td>
+                    {chwpParams.map((p) => {
+                      const val = getVal(id, p.key);
+                      return (
+                        <td key={p.key} style={{
+                          ...S.tdCell,
+                          color: p.key === 'status' ? statusColor(val) : undefined,
+                          fontWeight: p.key === 'status' ? 800 : 600,
+                        }}>
+                          {val}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </div>
-        <div style={{ width: '40%', textAlign: 'center' }}>
-          <div style={{ fontSize: '7pt', fontWeight: 800, color: C.navy, marginBottom: '12mm' }}>Reviewed By</div>
-          <div style={{ borderTop: `1px solid ${C.navy}`, width: '60%', margin: '0 auto', paddingTop: '1mm', fontSize: '7pt', fontWeight: 600 }}>
-            ( __________________ )
+
+          {/* Main Line Pipe */}
+          <div style={{ flex: 1 }}>
+            <div style={{ ...S.catRow, marginBottom: '1.5mm', fontSize: '7.5pt' }}>MAIN LINE PIPE</div>
+            <table style={S.table}>
+              <thead>
+                <tr>
+                  <th style={{ ...S.thCell, width: '120px', textAlign: 'left' as const }}>PARAMETER</th>
+                  <th style={{ ...S.thCell, width: '80px' }}>DESIGN</th>
+                  <th style={{ ...S.thCell, width: '100px' }}>ACTUAL</th>
+                </tr>
+              </thead>
+              <tbody>
+                {mainLineParams.map((p, idx) => (
+                  <tr key={p.key} style={{ backgroundColor: idx % 2 === 0 ? C.rowEven : C.rowOdd }}>
+                    <td style={S.tdLabel}>{p.label} {p.unit ? `(${p.unit})` : ''}</td>
+                    <td style={{ ...S.tdCell, color: C.designText, fontStyle: 'italic' }}>
+                      {p.design || '-'}
+                    </td>
+                    <td style={{ ...S.tdCell, fontWeight: 700 }}>
+                      {getVal('main_line', p.key)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -479,164 +429,90 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
   ];
 
   pages.push(
-    <div key="page-3-ahu" style={S.page}>
-      {renderPageHeader('AIR HANDLING UNIT (AHU) MONITORING', date, inspector, 'Page 3 of 6')}
-      <table style={S.table}>
-        <thead>
-          <tr>
-            <th style={{ ...S.thCell, width: '40px' }}>#</th>
-            <th style={{ ...S.thCell, width: '130px', textAlign: 'left' as const }}>PARAMETER</th>
-            <th style={{ ...S.thCell, width: '50px' }}>DESIGN</th>
-            {ahuUnits.map((u) => (
-              <th key={u.id} style={S.thCell}>{u.label}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {allAhuParams.map((group) => (
-            <React.Fragment key={group.group}>
-              {/* Group header row */}
-              <tr>
-                <td colSpan={3 + ahuUnits.length} style={{
-                  ...S.catRow,
-                  padding: '1mm 3mm',
-                  border: `0.5pt solid ${C.border}`,
-                  fontSize: '7pt',
-                }}>
-                  {group.group}
-                </td>
-              </tr>
-              {group.params.map((p, pIdx) => (
-                <tr key={p.key} style={{ backgroundColor: pIdx % 2 === 0 ? C.rowEven : C.rowOdd }}>
-                  <td style={{ ...S.tdCell, fontSize: '6pt', color: '#94a3b8' }}>{pIdx + 1}</td>
-                  <td style={S.tdLabel}>{p.label}</td>
-                  <td style={{ ...S.tdCell, color: C.designText, fontStyle: 'italic', fontSize: '6pt' }}>
-                    {p.design || '-'}
-                  </td>
-                  {ahuUnits.map((u) => {
-                    const val = getVal(u.id, p.key);
-                    const isStatus = p.key.includes('status');
-                    return (
-                      <td key={u.id} style={{
-                        ...S.tdCell,
-                        color: isStatus ? statusColor(val) : undefined,
-                        fontWeight: isStatus ? 800 : 600,
-                      }}>
-                        {val}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </React.Fragment>
-          ))}
-
-          {/* Corridor-only extra params */}
-          <tr>
-            <td colSpan={3 + ahuUnits.length} style={{
-              ...S.catRow,
-              padding: '1mm 3mm',
-              border: `0.5pt solid ${C.border}`,
-              fontSize: '7pt',
-            }}>
-              CORRIDOR ADDITIONAL PARAMETERS
-            </td>
-          </tr>
-          {ahuCorridorExtra.map((p, pIdx) => (
-            <tr key={p.key} style={{ backgroundColor: pIdx % 2 === 0 ? C.rowEven : C.rowOdd }}>
-              <td style={{ ...S.tdCell, fontSize: '6pt', color: '#94a3b8' }}>{pIdx + 1}</td>
-              <td style={S.tdLabel}>{p.label}</td>
-              <td style={{ ...S.tdCell, color: C.designText, fontStyle: 'italic', fontSize: '6pt' }}>
-                {p.design || '-'}
-              </td>
-              {ahuUnits.map((u) => {
-                const val = u.type === 'corridor' ? getVal(u.id, p.key) : '-';
-                const isStatus = p.key.includes('status');
-                return (
-                  <td key={u.id} style={{
-                    ...S.tdCell,
-                    color: u.type === 'corridor'
-                      ? (isStatus ? statusColor(val) : undefined)
-                      : '#d1d5db',
-                    fontWeight: isStatus ? 800 : 600,
-                    fontStyle: u.type !== 'corridor' ? 'italic' : undefined,
-                  }}>
-                    {val}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {renderPageFooter()}
-    </div>
-  );
-
-  // ═══════════════════════════════════════════════════════════════════════
-  // PAGE 4: CRAC & POWER
-  // ═══════════════════════════════════════════════════════════════════════
-  const cracUnits = [
-    { id: 'crac_gf_01', label: 'CRAC-GF-01' },
-    { id: 'crac_gf_02', label: 'CRAC-GF-02' },
-    { id: 'crac_2nd_01', label: 'CRAC-2ND-01' },
-    { id: 'crac_2nd_02', label: 'CRAC-2ND-02' },
-  ];
-  const cracParams: { key: string; label: string }[] = [
-    { key: 'status', label: 'Status' },
-    { key: 'fan_status', label: 'Fan Status' },
-    { key: 'comp1', label: 'Comp 1' },
-    { key: 'comp2', label: 'Comp 2' },
-    { key: 'temp_alarm', label: 'Temp Alarm' },
-    { key: 'rh_alarm', label: 'RH Alarm' },
-    { key: 'alarm_status', label: 'Alarm Status' },
-    { key: 'fan_speed', label: 'Fan Speed (%)' },
-    { key: 'return_temp', label: 'Return Temp (°C)' },
-    { key: 'return_rh', label: 'Return RH (%)' },
-  ];
-
-  const powerParams = [
-    { key: 'l1_l2', label: 'L1-L2 (V)', design: '400' },
-    { key: 'l2_l3', label: 'L2-L3 (V)', design: '400' },
-    { key: 'l3_l1', label: 'L3-L1 (V)', design: '400' },
-  ];
-
-  pages.push(
-    <div key="page-4-crac" style={S.page}>
-      {renderPageHeader('CRAC UNITS & POWER METER', date, inspector, 'Page 4 of 6')}
-
-      {/* CRAC Table */}
-      <div style={{ marginBottom: '5mm' }}>
-        <div style={{
-          fontSize: '8pt', fontWeight: 800, color: C.navy,
-          padding: '1mm 2mm', backgroundColor: '#eef2ff',
-          borderLeft: `3px solid ${C.cyan}`, marginBottom: '1mm',
-        }}>
-          COMPUTER ROOM AIR CONDITIONING (CRAC)
-        </div>
+    <div key="page-2-ahu-crac" style={S.page}>
+      {renderPageHeader('AHU & CRAC MONITORING', date, inspector, 'Page 2 of 4')}
+      
+      <div style={{ padding: '0 2mm' }}>
+        <div style={{ ...S.catRow, marginBottom: '1.5mm', fontSize: '7.5pt' }}>AIR HANDLING UNIT (AHU)</div>
         <table style={S.table}>
           <thead>
             <tr>
-              <th style={{ ...S.thCell, width: '50px' }}>#</th>
+              <th style={{ ...S.thCell, width: '40px' }}>#</th>
               <th style={{ ...S.thCell, width: '130px', textAlign: 'left' as const }}>PARAMETER</th>
-              {cracUnits.map((u) => (
+              <th style={{ ...S.thCell, width: '50px' }}>DESIGN</th>
+              {ahuUnits.map((u) => (
                 <th key={u.id} style={S.thCell}>{u.label}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {cracParams.map((p, idx) => (
-              <tr key={p.key} style={{ backgroundColor: idx % 2 === 0 ? C.rowEven : C.rowOdd }}>
-                <td style={{ ...S.tdCell, fontSize: '6pt', color: '#94a3b8' }}>{idx + 1}</td>
+            {allAhuParams.map((group) => (
+              <React.Fragment key={group.group}>
+                {/* Group header row */}
+                <tr>
+                  <td colSpan={3 + ahuUnits.length} style={{
+                    ...S.catRow,
+                    padding: '1mm 3mm',
+                    border: `0.5pt solid ${C.border}`,
+                    fontSize: '7pt',
+                  }}>
+                    {group.group}
+                  </td>
+                </tr>
+                {group.params.map((p, pIdx) => (
+                  <tr key={p.key} style={{ backgroundColor: pIdx % 2 === 0 ? C.rowEven : C.rowOdd }}>
+                    <td style={{ ...S.tdCell, fontSize: '6pt', color: '#94a3b8' }}>{pIdx + 1}</td>
+                    <td style={S.tdLabel}>{p.label}</td>
+                    <td style={{ ...S.tdCell, color: C.designText, fontStyle: 'italic', fontSize: '6pt' }}>
+                      {p.design || '-'}
+                    </td>
+                    {ahuUnits.map((u) => {
+                      const val = getVal(u.id, p.key);
+                      const isStatus = p.key.includes('status');
+                      return (
+                        <td key={u.id} style={{
+                          ...S.tdCell,
+                          color: isStatus ? statusColor(val) : undefined,
+                          fontWeight: isStatus ? 800 : 600,
+                        }}>
+                          {val}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </React.Fragment>
+            ))}
+
+            {/* Corridor-only extra params */}
+            <tr>
+              <td colSpan={3 + ahuUnits.length} style={{
+                ...S.catRow,
+                padding: '1mm 3mm',
+                border: `0.5pt solid ${C.border}`,
+                fontSize: '7pt',
+              }}>
+                CORRIDOR ADDITIONAL PARAMETERS
+              </td>
+            </tr>
+            {ahuCorridorExtra.map((p, pIdx) => (
+              <tr key={p.key} style={{ backgroundColor: pIdx % 2 === 0 ? C.rowEven : C.rowOdd }}>
+                <td style={{ ...S.tdCell, fontSize: '6pt', color: '#94a3b8' }}>{pIdx + 1}</td>
                 <td style={S.tdLabel}>{p.label}</td>
-                {cracUnits.map((u) => {
-                  const val = getVal(u.id, p.key);
-                  const isStatus = p.key.includes('status') || p.key.includes('alarm') || p.key === 'comp1' || p.key === 'comp2' || p.key === 'fan_status';
+                <td style={{ ...S.tdCell, color: C.designText, fontStyle: 'italic', fontSize: '6pt' }}>
+                  {p.design || '-'}
+                </td>
+                {ahuUnits.map((u) => {
+                  const val = u.type === 'corridor' ? getVal(u.id, p.key) : '-';
+                  const isStatus = p.key.includes('status');
                   return (
                     <td key={u.id} style={{
                       ...S.tdCell,
-                      color: isStatus ? statusColor(val) : undefined,
+                      color: u.type === 'corridor'
+                        ? (isStatus ? statusColor(val) : undefined)
+                        : '#d1d5db',
                       fontWeight: isStatus ? 800 : 600,
+                      fontStyle: u.type !== 'corridor' ? 'italic' : undefined,
                     }}>
                       {val}
                     </td>
@@ -646,14 +522,68 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
             ))}
           </tbody>
         </table>
-      </div>
 
+        <div style={{ ...S.catRow, marginTop: '4mm', marginBottom: '1.5mm', fontSize: '7.5pt' }}>CRAC UNITS & POWER METER</div>
+        <div style={{ display: 'flex', gap: '4mm' }}>
+          {/* CRAC */}
+          <div style={{ flex: 1.5 }}>
+            <div style={{
+              fontSize: '7.5pt', fontWeight: 800, color: C.navy,
+              padding: '1mm 2mm', backgroundColor: '#eef2ff',
+              borderLeft: `3px solid ${C.cyan}`, marginBottom: '1mm',
+            }}>
+              COMPUTER ROOM AIR CONDITIONING (CRAC)
+            </div>
+            <table style={S.table}>
+              <thead>
+                <tr>
+                  <th style={{ ...S.thCell, width: '50px' }}>#</th>
+                  <th style={{ ...S.thCell, width: '130px', textAlign: 'left' as const }}>PARAMETER</th>
+                  {cracUnits.map((u) => (
+                    <th key={u.id} style={S.thCell}>{u.label}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {cracParams.map((p, idx) => (
+                  <tr key={p.key} style={{ backgroundColor: idx % 2 === 0 ? C.rowEven : C.rowOdd }}>
+                    <td style={{ ...S.tdCell, fontSize: '6pt', color: '#94a3b8' }}>{idx + 1}</td>
+                    <td style={S.tdLabel}>{p.label}</td>
+                    {cracUnits.map((u) => {
+                      const val = getVal(u.id, p.key);
+                      const isStatus = p.key.includes('status') || p.key.includes('alarm') || p.key === 'comp1' || p.key === 'comp2' || p.key === 'fan_status';
+                      return (
+                        <td key={u.id} style={{
+                          ...S.tdCell,
+                          color: isStatus ? statusColor(val) : undefined,
+                          fontWeight: isStatus ? 800 : 600,
+                        }}>
+                          {val}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Power Meter */}
+          <div style={{ flex: 1 }}>
+            <div style={{
+              fontSize: '7.5pt', fontWeight: 800, color: C.navy,
+              padding: '1mm 2mm', backgroundColor: '#eef2ff',
+              borderLeft: `3px solid ${C.cyan}`, marginBottom: '1mm',
+            }}>
+              POWER METER
+            </div>
+            
       {/* Power Meter Tables */}
-      <div style={{ display: 'flex', gap: '5mm' }}>
+      <div style={{ display: 'flex', gap: '2mm', flexDirection: 'column' }}>
         {/* Genset */}
-        <div style={{ flex: 1 }}>
+        <div>
           <div style={{
-            fontSize: '8pt', fontWeight: 800, color: C.navy,
+            fontSize: '7pt', fontWeight: 800, color: C.navy,
             padding: '1mm 2mm', backgroundColor: '#fef3c7',
             borderLeft: '3px solid #f59e0b', marginBottom: '1mm',
           }}>
@@ -679,9 +609,9 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
           </table>
         </div>
         {/* PLN */}
-        <div style={{ flex: 1 }}>
+        <div>
           <div style={{
-            fontSize: '8pt', fontWeight: 800, color: C.navy,
+            fontSize: '7pt', fontWeight: 800, color: C.navy,
             padding: '1mm 2mm', backgroundColor: '#dbeafe',
             borderLeft: '3px solid #3b82f6', marginBottom: '1mm',
           }}>
@@ -707,6 +637,11 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
           </table>
         </div>
       </div>
+
+          </div>
+        </div>
+      </div>
+
       {renderPageFooter()}
     </div>
   );
@@ -785,9 +720,11 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
   );
 
   pages.push(
-    <div key="page-5-fcu-gf" style={S.page}>
-      {renderPageHeader('FAN COIL UNIT (FCU) — GROUND FLOOR', date, inspector, 'Page 5 of 6')}
-      {renderFcuTable(fcuGFRooms)}
+    <div key="page-3-fcu-gf" style={S.page}>
+      {renderPageHeader('FAN COIL UNIT (FCU) — GROUND FLOOR', date, inspector, 'Page 3 of 4')}
+      <div style={{ padding: '0 2mm' }}>
+        {renderFcuTable(fcuGFRooms)}
+      </div>
       {renderPageFooter()}
     </div>
   );
@@ -823,47 +760,49 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
   ];
 
   pages.push(
-    <div key="page-6-fcu-1f" style={S.page}>
-      {renderPageHeader('FAN COIL UNIT (FCU) — 1ST FLOOR', date, inspector, 'Page 6 of 6')}
-      {renderFcuTable(fcu1FRooms)}
+    <div key="page-4-fcu-1f" style={S.page}>
+      {renderPageHeader('FAN COIL UNIT (FCU) — 1ST FLOOR', date, inspector, 'Page 4 of 4')}
+      <div style={{ padding: '0 2mm' }}>
+        {renderFcuTable(fcu1FRooms)}
 
-      {/* Final Signature Block */}
-      <div style={{
-        marginTop: '6mm',
-        padding: '3mm',
-        border: `1px solid ${C.border}`,
-        borderRadius: '2mm',
-        backgroundColor: '#fafbfc',
-      }}>
+        {/* Final Signature Block */}
         <div style={{
-          fontSize: '7.5pt', fontWeight: 800, color: C.navy,
-          textAlign: 'center', marginBottom: '2mm',
+          marginTop: '4mm',
+          padding: '2mm 3mm',
+          border: `1px solid ${C.border}`,
+          borderRadius: '2mm',
+          backgroundColor: '#fafbfc',
         }}>
-          APPROVAL SIGNATURES
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-          {[
-            { role: 'Prepared By', sub: 'Field Inspector' },
-            { role: 'Reviewed By', sub: 'Site Supervisor' },
-            { role: 'Approved By', sub: 'Project Manager' },
-          ].map((s) => (
-            <div key={s.role} style={{ width: '28%', textAlign: 'center' }}>
-              <div style={{ fontSize: '7pt', fontWeight: 800, color: C.navy, marginBottom: '14mm' }}>
-                {s.role}
-              </div>
-              <div style={{
-                borderTop: `1px solid ${C.navy}`,
-                width: '80%',
-                margin: '0 auto',
-                paddingTop: '1mm',
-              }}>
-                <div style={{ fontSize: '6.5pt', fontWeight: 600 }}>
-                  {s.role === 'Prepared By' ? (inspector || '( ____________ )') : '( ____________ )'}
+          <div style={{
+            fontSize: '7pt', fontWeight: 800, color: C.navy,
+            textAlign: 'center', marginBottom: '2mm',
+          }}>
+            APPROVAL SIGNATURES
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+            {[
+              { role: 'Prepared By', sub: 'Field Inspector' },
+              { role: 'Reviewed By', sub: 'Site Supervisor' },
+              { role: 'Approved By', sub: 'Project Manager' },
+            ].map((s) => (
+              <div key={s.role} style={{ width: '28%', textAlign: 'center' }}>
+                <div style={{ fontSize: '6.5pt', fontWeight: 800, color: C.navy, marginBottom: '8mm' }}>
+                  {s.role}
                 </div>
-                <div style={{ fontSize: '5.5pt', color: '#94a3b8', marginTop: '0.5mm' }}>{s.sub}</div>
+                <div style={{
+                  borderTop: `1px solid ${C.navy}`,
+                  width: '80%',
+                  margin: '0 auto',
+                  paddingTop: '1mm',
+                }}>
+                  <div style={{ fontSize: '6pt', fontWeight: 600 }}>
+                    {s.role === 'Prepared By' ? (inspector || '( ____________ )') : '( ____________ )'}
+                  </div>
+                  <div style={{ fontSize: '5pt', color: '#94a3b8', marginTop: '0.5mm' }}>{s.sub}</div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
       {renderPageFooter()}

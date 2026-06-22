@@ -804,6 +804,8 @@ export default function ReportHubPage() {
                   boxSizing: "border-box",
                   position: "relative",
                   overflow: "hidden",
+                  display: "flex",
+                  flexDirection: "column",
                 }}
               >
                 {pageSections}
