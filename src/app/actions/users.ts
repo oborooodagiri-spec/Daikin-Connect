@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
 import { revalidatePath } from "next/cache";
 import { serializePrisma } from "@/lib/serialize";
+import { sendAccountApprovedEmail, sendAccountSuspendedEmail } from "@/lib/mail";
 
 async function checkAdmin() {
   const session = await getSession();
@@ -79,6 +80,17 @@ export async function toggleUserStatus(userId: number, currentStatus: boolean) {
       where: { id: userId },
       data: { is_active: !currentStatus }
     });
+
+    // Send email notification based on the new status
+    const primaryRole = user.user_roles[0]?.roles?.role_name || "User";
+    if (!currentStatus) {
+      // Activating (was inactive)
+      await sendAccountApprovedEmail(user.email, user.name, primaryRole);
+    } else {
+      // Deactivating (was active)
+      await sendAccountSuspendedEmail(user.email, user.name);
+    }
+
     revalidatePath("/admin/users");
     return { success: true };
   } catch (error: any) {
