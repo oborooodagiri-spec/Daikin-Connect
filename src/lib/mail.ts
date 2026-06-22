@@ -28,6 +28,7 @@ export async function sendRegistrationReceivedEmail(to: string, name: string) {
   try {
     const info = await transporter.sendMail({
       from: fromEmail,
+      replyTo: 'admin@epllink.com',
       to,
       subject: 'EPL Link: Permintaan Akses Diterima / Access Request Received',
       html: getRegistrationReceivedTemplate(name),
@@ -45,6 +46,7 @@ export async function sendAccountApprovedEmail(to: string, name: string, role: s
   try {
     const info = await transporter.sendMail({
       from: fromEmail,
+      replyTo: 'admin@epllink.com',
       to,
       subject: 'EPL Link: Akun Disetujui / Account Approved',
       html: getAccountApprovedTemplate(name, role),
@@ -62,6 +64,7 @@ export async function sendAccountSuspendedEmail(to: string, name: string) {
   try {
     const info = await transporter.sendMail({
       from: fromEmail,
+      replyTo: 'admin@epllink.com',
       to,
       subject: 'EPL Link: Akun Ditangguhkan / Account Suspended',
       html: getAccountSuspendedTemplate(name),
@@ -81,6 +84,7 @@ export async function sendPasswordResetEmail(to: string, name: string, resetToke
     
     const info = await transporter.sendMail({
       from: fromEmail,
+      replyTo: 'admin@epllink.com',
       to,
       subject: 'EPL Link: Atur Ulang Kata Sandi / Password Reset',
       html: getPasswordResetTemplate(name, resetLink),
