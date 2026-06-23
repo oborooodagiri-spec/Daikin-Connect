@@ -13,7 +13,6 @@ import { getAHUPreventiveSections } from "@/components/AHUPreventivePDFTemplate"
 import { getChillerPreventiveSections } from "@/components/ChillerPreventivePDFTemplate";
 import { getLogsheetRoesminSections } from "@/components/LogsheetRoesminPDFTemplate";
 import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas-pro";
 import { format } from "date-fns";
 import { 
   Download, FileText, ChevronLeft, Loader2, 
@@ -37,7 +36,7 @@ export default function ReportHubPage() {
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [downloading, setDownloading] = useState(false);
+
   const [approving, setApproving] = useState(false);
   const [isApprovedLocal, setIsApprovedLocal] = useState(false);
   const [isReviewedLocal, setIsReviewedLocal] = useState(false);
@@ -124,103 +123,6 @@ export default function ReportHubPage() {
     // Extra buffer for html2canvas to catch up
     await new Promise(r => setTimeout(r, 500));
   };
-
-  const handleDownloadPDF = async () => {
-    if (!reportRef.current || !data) return;
-    
-    setDownloading(true);
-    try {
-      const { createRoot } = await import("react-dom/client");
-      const isLandscape = isRoesminLogsheet;
-      const pdf = new jsPDF(isLandscape ? "l" : "p", "mm", "a4");
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      
-      const fileName = isRoesminLogsheet 
-        ? `Logsheet_Roesmin_${format(new Date(data.activity.service_date || Date.now()), "yyyyMMdd")}.pdf`
-        : `${type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()}_Report_${data.unit?.tag_number || "Draft"}_${format(new Date(), "yyyyMMdd")}.pdf`;
-
-      // CAPTURE SANDBOX: Create a hidden unscaled container for high-fidelity capture
-      const sandbox = document.createElement("div");
-      sandbox.style.position = "absolute";
-      sandbox.style.top = "-9999px";
-      sandbox.style.left = "-9999px";
-      sandbox.style.width = isLandscape ? "1122px" : "794px"; // A4 landscape or portrait at 96dpi
-      document.body.appendChild(sandbox);
-
-      const renderPage = async (pageIndex: number) => {
-        const pageContainer = document.createElement("div");
-        sandbox.appendChild(pageContainer);
-        const root = createRoot(pageContainer);
-        
-        root.render(
-          isLandscape ? (
-            <div style={{ width: "1122px", minHeight: "794px", backgroundColor: "white", padding: "30px 38px", boxSizing: "border-box" }}>
-              {pages[pageIndex]}
-            </div>
-          ) : (
-          <ReportBase 
-            reportTitle={reportTitle} 
-            reportCode={reportCode}
-            projectName={projectName}
-            unit={data.unit}
-            date={data.activity.service_date}
-            inputDate={type.toLowerCase() !== 'ba' ? data.activity.created_at : undefined}
-            pageNumber={pageIndex + 1}
-            totalPages={pages.length}
-            isFixedHeight={true}
-            lang={activeLang}
-          >
-            <div 
-              className="flex-1 flex flex-col w-full"
-              style={{ 
-                justifyContent: pageIndex >= (pages.length - photoSections.length) ? 'center' : 'flex-start',
-                paddingTop: pageIndex >= (pages.length - photoSections.length) ? '0' : '4mm'
-              }}
-            >
-              {pages[pageIndex]}
-            </div>
-          </ReportBase>
-          )
-        );
-
-        // Wait for render and images
-        await new Promise(r => setTimeout(r, 1000));
-        await waitForImages(pageContainer);
-
-        const canvas = await html2canvas(pageContainer, {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: "#ffffff",
-          windowWidth: isLandscape ? 1122 : 794
-        });
-        
-        const imgData = canvas.toDataURL("image/jpeg", 0.95);
-        if (pageIndex > 0) pdf.addPage();
-        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
-        
-        root.unmount();
-        sandbox.removeChild(pageContainer);
-      };
-
-      for (let i = 0; i < pages.length; i++) {
-        await renderPage(i);
-      }
-      
-      pdf.save(fileName);
-      document.body.removeChild(sandbox);
-
-      // Log activity
-      await logUserActivity("REPORT_DOWNLOAD", `Downloaded ${type} report for ${data.unit?.tag_number || 'Unknown'}`);
-    } catch (err) {
-      console.error("Download error:", err);
-      alert("Failed to generate PDF. Please try again.");
-    } finally {
-      setDownloading(false);
-    }
-  };
-
 
 
   const handlePrint = () => {
@@ -320,6 +222,8 @@ export default function ReportHubPage() {
         await new Promise(r => setTimeout(r, 1500));
         await waitForImages(pageContainer);
 
+        // Note: html2canvas required for PDF generation logic in Sign action
+        const html2canvas = (await import("html2canvas")).default;
         const canvas = await html2canvas(pageContainer, {
           scale: 2,
           useCORS: true,
@@ -675,15 +579,6 @@ export default function ReportHubPage() {
             <span className="text-[10px] uppercase">Awaiting Customer Approval</span>
           </div>
         )}
-
-        <button 
-          onClick={handleDownloadPDF}
-          disabled={downloading}
-          className="h-10 sm:h-12 px-4 sm:px-6 bg-[#003366] text-white rounded-lg sm:rounded-xl shadow-lg shadow-blue-900/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 font-black disabled:opacity-50 shrink-0"
-        >
-          {downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={18} />}
-          <span className="hidden sm:inline text-xs sm:text-sm">Download</span>
-        </button>
       </div>
 
       {/* HIDDEN PROBE CONTAINER (For measurement) */}
