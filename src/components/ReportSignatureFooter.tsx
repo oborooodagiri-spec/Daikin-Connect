@@ -11,6 +11,7 @@ interface SignatureFooterProps {
   isBulkSync?: boolean;
   customerSignatureUrl?: string | null;
   engineerSignatureUrl?: string | null;
+  reviewerSignatureUrl?: string | null;
   onCustomerSignClick?: () => void;
   onEngineerSignClick?: () => void;
 }
@@ -25,6 +26,7 @@ export const ReportSignatureFooter = ({
   isBulkSync = false,
   customerSignatureUrl,
   engineerSignatureUrl,
+  reviewerSignatureUrl,
   onCustomerSignClick,
   onEngineerSignClick
 }: SignatureFooterProps) => {
@@ -61,13 +63,8 @@ export const ReportSignatureFooter = ({
       <div style={{ textAlign: "center" }}>
         <p style={{ fontSize: "8pt", fontWeight: 800, color: "#003366", margin: "0 0 2mm 0", textTransform: "uppercase" }}>{t("REVIEWED BY", lang)}:</p>
         <div style={{ height: "35mm", position: "relative" }}>
-          {reviewedBy ? (
-            <DigitalStamp 
-              label="REVIEWED" 
-              subLabel="EPL CONNECT" 
-              name={reviewedBy} 
-              date={reviewedDate} 
-            />
+          {reviewerSignatureUrl ? (
+            <img src={reviewerSignatureUrl} alt="Reviewer Signature" style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", margin: "auto" }} />
           ) : (
             <div 
               style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", cursor: onEngineerSignClick ? 'pointer' : 'default' }}

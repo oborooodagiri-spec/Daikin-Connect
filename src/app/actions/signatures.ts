@@ -35,8 +35,8 @@ export async function saveSignature(
         await prisma.service_activities.update({
           where: { id: documentId },
           data: {
-            engineer_signature: signatureBase64,
-            engineer_signature_ip: ipAddress,
+            reviewer_signature: signatureBase64,
+            reviewer_signature_ip: ipAddress,
             engineer_signer_name: signerName,
           }
         });
@@ -54,6 +54,15 @@ export async function saveSignature(
             approval_status: 'Approved'
           }
         });
+      } else if (role === 'engineer') {
+        await prisma.ahu_audits.update({
+          where: { id: documentId },
+          data: {
+            reviewer_signature: signatureBase64,
+            reviewer_signature_ip: ipAddress,
+            // reviewer name might be tracked somewhere else if available, but for now we just save signature
+          }
+        });
       }
     }
     else if (documentType === 'daily_ops_logs') {
@@ -67,6 +76,14 @@ export async function saveSignature(
             customer_approved_at: now,
           }
         });
+      } else if (role === 'engineer') {
+        await prisma.daily_ops_logs.update({
+          where: { id: documentId },
+          data: {
+            reviewer_signature: signatureBase64,
+            reviewer_signature_ip: ipAddress,
+          }
+        });
       }
     }
     else if (documentType === 'corrective') {
@@ -78,6 +95,14 @@ export async function saveSignature(
             customer_signature_ip: ipAddress,
             customer_approver_name: signerName,
             customer_approved_at: now,
+          }
+        });
+      } else if (role === 'engineer') {
+        await prisma.corrective.update({
+          where: { id: documentId },
+          data: {
+            reviewer_signature: signatureBase64,
+            reviewer_signature_ip: ipAddress,
           }
         });
       }

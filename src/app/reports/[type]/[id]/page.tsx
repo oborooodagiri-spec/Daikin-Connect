@@ -588,7 +588,7 @@ export default function ReportHubPage() {
           setIsReviewedLocal(true);
           setData((prev: any) => ({
              ...prev,
-             activity: { ...prev.activity, engineer_signature: signatureBase64, engineer_signer_name: name }
+             activity: { ...prev.activity, reviewer_signature: signatureBase64, engineer_signer_name: name }
           }));
        }
     } else {
@@ -605,6 +605,7 @@ export default function ReportHubPage() {
     reviewedAt: data.activity.engineer_approved_at || new Date(), // Using current if not set yet for preview
     customerSignatureUrl: data.activity.customer_signature,
     engineerSignatureUrl: data.activity.engineer_signature,
+    reviewerSignatureUrl: data.activity.reviewer_signature,
     onCustomerSignClick: handleCustomerSignClick,
     onEngineerSignClick: handleEngineerSignClick,
     customerApproverName: data.activity.customer_approver_name,

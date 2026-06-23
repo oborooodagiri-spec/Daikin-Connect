@@ -408,6 +408,8 @@ model ahu_audits {
   customer_signature      String?                     @db.LongText
   customer_signature_ip   String?                     @db.VarChar(45)
   customer_signature_date DateTime?                   @db.DateTime(0)
+  reviewer_signature      String?                     @db.LongText
+  reviewer_signature_ip   String?                     @db.VarChar(45)
 }
 
 model audit_tickets {
@@ -486,6 +488,8 @@ model corrective {
   customer_approved_at    DateTime? @db.DateTime(0)
   customer_signature      String?   @db.LongText
   customer_signature_ip   String?   @db.VarChar(45)
+  reviewer_signature      String?   @db.LongText
+  reviewer_signature_ip   String?   @db.VarChar(45)
   units           units     @relation(fields: [unit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "corrective_ibfk_1")
 
   @@index([unit_id], map: "unit_id")
@@ -565,6 +569,8 @@ model service_activities {
   customer_signature_ip   String?                    @db.VarChar(45)
   engineer_signature      String?                    @db.LongText
   engineer_signature_ip   String?                    @db.VarChar(45)
+  reviewer_signature      String?                    @db.LongText
+  reviewer_signature_ip   String?                    @db.VarChar(45)
   deleted_at              DateTime?                  @db.DateTime(0)
   activity_photos         activity_photos[]
   audit_velocity_points   audit_velocity_points[]
@@ -830,6 +836,8 @@ model daily_ops_logs {
   customer_approved_at    DateTime? @db.DateTime(0)
   customer_signature      String?   @db.LongText
   customer_signature_ip   String?   @db.VarChar(45)
+  reviewer_signature      String?   @db.LongText
+  reviewer_signature_ip   String?   @db.VarChar(45)
   units            units     @relation(fields: [unit_id], references: [id], onDelete: Cascade)
 
   @@index([unit_id], map: "idx_daily_ops_unit")
