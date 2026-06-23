@@ -17,7 +17,7 @@ import html2canvas from "html2canvas-pro";
 import { format } from "date-fns";
 import { 
   Download, FileText, ChevronLeft, Loader2, 
-  CheckCircle2, AlertCircle, Printer, ShieldCheck
+  CheckCircle2, AlertCircle, ShieldCheck
 } from "lucide-react";
 import { approveServiceActivity, updateActivityReportUrls, getActivityDetailForReport } from "@/app/actions/units";
 import { logUserActivity } from "@/app/actions/user_security";
@@ -221,11 +221,6 @@ export default function ReportHubPage() {
     }
   };
 
-
-
-  const handlePrint = () => {
-    window.print();
-  };
 
   // 5. Smart Pagination: Measuring Pass
   React.useLayoutEffect(() => {
@@ -617,14 +612,6 @@ export default function ReportHubPage() {
               <p className="text-xs font-black text-[#00a1e4] uppercase">{type}</p>
            </div>
         </div>
-
-        <button 
-          onClick={handlePrint}
-          className="h-12 px-4 hover:bg-slate-100 rounded-xl transition-all flex items-center gap-2 text-slate-800 font-bold underline decoration-[#00a1e4] shrink-0"
-        >
-          <Printer size={18} />
-          <span className="hidden md:inline">Print</span>
-        </button>
 
         {/* ENGINEER SIGN STATUS/BUTTON */}
         {isReviewedLocal ? (
