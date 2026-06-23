@@ -75,7 +75,7 @@ export const ReportSignatureFooter = ({
             >
               <div style={{ border: "1px dashed #cbd5e1", borderRadius: "8px", width: "80%", height: "80%", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: onEngineerSignClick ? '#f8fafc' : 'transparent', transition: 'background-color 0.2s' }}>
                 <p style={{ fontSize: "7pt", color: onEngineerSignClick ? "#3b82f6" : "#94a3b8", fontStyle: "italic", fontWeight: onEngineerSignClick ? 600 : 400 }}>
-                  {onEngineerSignClick ? "Klik untuk Tanda Tangan" : t("Awaiting Review", lang)}
+                  {onEngineerSignClick ? "Klik untuk Tanda Tangan" : "KLIK UNTUK TANDA TANGAN (NEW)"}
                 </p>
               </div>
             </div>
@@ -105,7 +105,7 @@ export const ReportSignatureFooter = ({
             >
               <div style={{ border: "1px dashed #cbd5e1", borderRadius: "8px", width: "80%", height: "80%", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: onCustomerSignClick ? '#f8fafc' : 'transparent', transition: 'background-color 0.2s' }}>
                 <p style={{ fontSize: "7pt", color: onCustomerSignClick ? "#3b82f6" : "#94a3b8", fontStyle: "italic", fontWeight: onCustomerSignClick ? 600 : 400 }}>
-                  {onCustomerSignClick ? "Klik untuk Tanda Tangan" : t("Awaiting Approval", lang)}
+                  {onCustomerSignClick ? "Klik untuk Tanda Tangan" : "KLIK UNTUK TANDA TANGAN (NEW)"}
                 </p>
               </div>
             </div>
