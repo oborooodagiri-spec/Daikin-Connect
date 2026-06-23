@@ -25,6 +25,8 @@ import { getSession } from "@/app/actions/auth";
 import { translateReportStringsAction } from "@/app/actions/translate";
 import { Language, t } from "@/lib/i18n";
 import { processReportData } from "@/lib/reportDataHelper";
+import { SignatureModal } from "@/components/ui/SignatureModal";
+import { saveSignature } from "@/app/actions/signatures";
 
 export default function ReportHubPage() {
   const params = useParams();
@@ -39,6 +41,9 @@ export default function ReportHubPage() {
   const [approving, setApproving] = useState(false);
   const [isApprovedLocal, setIsApprovedLocal] = useState(false);
   const [isReviewedLocal, setIsReviewedLocal] = useState(false);
+  const [signatureModalOpen, setSignatureModalOpen] = useState(false);
+  const [signatureRole, setSignatureRole] = useState<'customer' | 'engineer'>('customer');
+  const [signatureSaving, setSignatureSaving] = useState(false);
   
   // Translation States
   const [activeLang, setActiveLang] = useState<Language>('id');
@@ -535,12 +540,73 @@ export default function ReportHubPage() {
   // Detect Roesmin Logsheet
   const isRoesminLogsheet = activityData?.is_roesmin_logsheet === true;
 
+  const handleCustomerSignClick = () => {
+    if (!isApprovedLocal) {
+      if (!session) {
+        alert(activeLang === 'en' ? "You must be logged in to sign this document." : "Anda harus login untuk menandatangani dokumen ini.");
+        return;
+      }
+      // Anyone logged in can do Customer Sign (Internal for handover, External for remote)
+      setSignatureRole('customer');
+      setSignatureModalOpen(true);
+    }
+  };
+
+  const handleEngineerSignClick = () => {
+    if (!isReviewedLocal) {
+      if (!session) {
+        alert(activeLang === 'en' ? "You must be logged in to sign this document." : "Anda harus login untuk menandatangani dokumen ini.");
+        return;
+      }
+      if (!session.isInternal) {
+        alert(activeLang === 'en' ? "Only Technicians, Supervisors, or Admins can sign this section." : "Hanya Teknisi, Supervisor, atau Admin yang dapat menandatangani bagian ini.");
+        return;
+      }
+      setSignatureRole('engineer');
+      setSignatureModalOpen(true);
+    }
+  };
+
+  const handleSaveSignature = async (signatureBase64: string, name: string) => {
+    setSignatureSaving(true);
+    
+    let docType: any = 'service_activities';
+    if (type.toLowerCase() === 'audit') docType = 'ahu_audits';
+    else if (type.toLowerCase() === 'dailylog') docType = 'daily_ops_logs';
+    else if (type.toLowerCase() === 'corrective') docType = 'corrective';
+
+    const res = await saveSignature(docType, parseInt(id), signatureRole, signatureBase64, name);
+    if (res.success) {
+       setSignatureModalOpen(false);
+       if (signatureRole === 'customer') {
+          setIsApprovedLocal(true);
+          setData((prev: any) => ({
+             ...prev,
+             activity: { ...prev.activity, customer_signature: signatureBase64, customer_approver_name: name, customer_approved_at: new Date() }
+          }));
+       } else {
+          setIsReviewedLocal(true);
+          setData((prev: any) => ({
+             ...prev,
+             activity: { ...prev.activity, engineer_signature: signatureBase64, engineer_signer_name: name }
+          }));
+       }
+    } else {
+       alert(res.error || "Gagal menyimpan tanda tangan");
+    }
+    setSignatureSaving(false);
+  };
+
   const commonApproval = {
     isApproved: isApprovedLocal,
     witnessedBy: data.activity.customer_approver_name,
     approvedAt: data.activity.customer_approved_at,
     reviewedBy: data.activity.engineer_signer_name,
     reviewedAt: data.activity.engineer_approved_at || new Date(), // Using current if not set yet for preview
+    customerSignatureUrl: data.activity.customer_signature,
+    engineerSignatureUrl: data.activity.engineer_signature,
+    onCustomerSignClick: handleCustomerSignClick,
+    onEngineerSignClick: handleEngineerSignClick,
     customerApproverName: data.activity.customer_approver_name,
     engineerSignerName: data.activity.engineer_signer_name,
     engineerName: data.activity.inspector_name,

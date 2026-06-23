@@ -405,6 +405,9 @@ model ahu_audits {
   created_at              DateTime?                   @default(now()) @db.Timestamp(0)
   approval_status         ahu_audits_approval_status? @default(Pending)
   approved_by             String?                     @db.VarChar(100)
+  customer_signature      String?                     @db.LongText
+  customer_signature_ip   String?                     @db.VarChar(45)
+  customer_signature_date DateTime?                   @db.DateTime(0)
 }
 
 model audit_tickets {
@@ -466,20 +469,24 @@ model contracts {
 }
 
 model corrective {
-  id              Int       @id @default(autoincrement())
-  unit_id         Int
-  service_date    DateTime  @db.Date
-  technician_name String?   @db.VarChar(100)
-  case_complain   String?   @db.Text
-  root_cause      String?   @db.Text
-  temp_action     String?   @db.Text
-  perm_action     String?   @db.Text
-  recommendation  String?   @db.Text
-  photo_url       String?   @db.Text
-  status          String?   @default("Final Approved") @db.VarChar(50)
-  created_at      DateTime? @default(now()) @db.Timestamp(0)
-  deleted_at      DateTime? @db.DateTime(0)
-  units           units     @relation(fields: [unit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "corrective_ibfk_1")
+  id                     Int       @id @default(autoincrement())
+  unit_id                Int
+  service_date           DateTime  @db.Date
+  technician_name        String?   @db.VarChar(100)
+  case_complain          String?   @db.Text
+  root_cause             String?   @db.Text
+  temp_action            String?   @db.Text
+  perm_action            String?   @db.Text
+  recommendation         String?   @db.Text
+  photo_url              String?   @db.Text
+  status                 String?   @default("Final Approved") @db.VarChar(50)
+  created_at             DateTime? @default(now()) @db.Timestamp(0)
+  deleted_at             DateTime? @db.DateTime(0)
+  customer_approver_name String?   @db.VarChar(255)
+  customer_approved_at   DateTime? @db.DateTime(0)
+  customer_signature     String?   @db.LongText
+  customer_signature_ip  String?   @db.VarChar(45)
+  units                  units     @relation(fields: [unit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "corrective_ibfk_1")
 
   @@index([unit_id], map: "unit_id")
 }
@@ -554,6 +561,10 @@ model service_activities {
   customer_approver_name  String?                    @db.VarChar(255)
   engineer_signer_name    String?                    @db.VarChar(255)
   is_approved_by_customer Boolean?                   @default(false)
+  customer_signature      String?                    @db.LongText
+  customer_signature_ip   String?                    @db.VarChar(45)
+  engineer_signature      String?                    @db.LongText
+  engineer_signature_ip   String?                    @db.VarChar(45)
   deleted_at              DateTime?                  @db.DateTime(0)
   activity_photos         activity_photos[]
   audit_velocity_points   audit_velocity_points[]
@@ -773,49 +784,53 @@ model notifications {
 }
 
 model daily_ops_logs {
-  id               Int       @id @default(autoincrement())
-  unit_id          Int
-  inspector_name   String    @db.VarChar(150)
-  service_date     DateTime  @db.Date
-  created_at       DateTime  @default(now()) @db.Timestamp(0)
-  fan_on           Boolean   @default(true)
-  fan_speed        Decimal?  @db.Decimal(5, 2)
-  fan_curr_r       Decimal?  @db.Decimal(5, 2)
-  fan_curr_s       Decimal?  @db.Decimal(5, 2)
-  fan_curr_t       Decimal?  @db.Decimal(5, 2)
-  fan_volt_r       Int?
-  fan_volt_s       Int?
-  fan_volt_t       Int?
-  heater_on        Boolean   @default(false)
-  heater_curr_r    Decimal?  @db.Decimal(5, 2)
-  heater_curr_s    Decimal?  @db.Decimal(5, 2)
-  heater_curr_t    Decimal?  @db.Decimal(5, 2)
-  heater_volt_r    Int?
-  heater_volt_s    Int?
-  heater_volt_t    Int?
-  valve_opening    Decimal?  @db.Decimal(5, 2)
-  supply_temp      Decimal?  @db.Decimal(5, 2)
-  supply_rh        Decimal?  @db.Decimal(5, 2)
-  return_temp      Decimal?  @db.Decimal(5, 2)
-  return_rh        Decimal?  @db.Decimal(5, 2)
-  fresh_temp       Decimal?  @db.Decimal(5, 2)
-  fresh_rh         Decimal?  @db.Decimal(5, 2)
-  filter_pre       String?   @db.VarChar(20)
-  filter_med       String?   @db.VarChar(20)
-  filter_hepa      String?   @db.VarChar(20)
-  room_temp        Decimal?  @db.Decimal(5, 2)
-  room_diff_press  Decimal?  @db.Decimal(5, 2)
-  temp_s1          Decimal?  @db.Decimal(5, 2)
-  temp_s2          Decimal?  @db.Decimal(5, 2)
-  temp_s3          Decimal?  @db.Decimal(5, 2)
-  temp_s4          Decimal?  @db.Decimal(5, 2)
-  temp_s5          Decimal?  @db.Decimal(5, 2)
-  static_pressure  Decimal?  @db.Decimal(10, 2)
-  vibration_status String?   @db.VarChar(50)
-  drainage_status  String?   @db.VarChar(50)
-  notes            String?   @db.Text
-  deleted_at       DateTime? @db.DateTime(0)
-  units            units     @relation(fields: [unit_id], references: [id], onDelete: Cascade)
+  id                     Int       @id @default(autoincrement())
+  unit_id                Int
+  inspector_name         String    @db.VarChar(150)
+  service_date           DateTime  @db.Date
+  created_at             DateTime  @default(now()) @db.Timestamp(0)
+  fan_on                 Boolean   @default(true)
+  fan_speed              Decimal?  @db.Decimal(5, 2)
+  fan_curr_r             Decimal?  @db.Decimal(5, 2)
+  fan_curr_s             Decimal?  @db.Decimal(5, 2)
+  fan_curr_t             Decimal?  @db.Decimal(5, 2)
+  fan_volt_r             Int?
+  fan_volt_s             Int?
+  fan_volt_t             Int?
+  heater_on              Boolean   @default(false)
+  heater_curr_r          Decimal?  @db.Decimal(5, 2)
+  heater_curr_s          Decimal?  @db.Decimal(5, 2)
+  heater_curr_t          Decimal?  @db.Decimal(5, 2)
+  heater_volt_r          Int?
+  heater_volt_s          Int?
+  heater_volt_t          Int?
+  valve_opening          Decimal?  @db.Decimal(5, 2)
+  supply_temp            Decimal?  @db.Decimal(5, 2)
+  supply_rh              Decimal?  @db.Decimal(5, 2)
+  return_temp            Decimal?  @db.Decimal(5, 2)
+  return_rh              Decimal?  @db.Decimal(5, 2)
+  fresh_temp             Decimal?  @db.Decimal(5, 2)
+  fresh_rh               Decimal?  @db.Decimal(5, 2)
+  filter_pre             String?   @db.VarChar(20)
+  filter_med             String?   @db.VarChar(20)
+  filter_hepa            String?   @db.VarChar(20)
+  room_temp              Decimal?  @db.Decimal(5, 2)
+  room_diff_press        Decimal?  @db.Decimal(5, 2)
+  temp_s1                Decimal?  @db.Decimal(5, 2)
+  temp_s2                Decimal?  @db.Decimal(5, 2)
+  temp_s3                Decimal?  @db.Decimal(5, 2)
+  temp_s4                Decimal?  @db.Decimal(5, 2)
+  temp_s5                Decimal?  @db.Decimal(5, 2)
+  static_pressure        Decimal?  @db.Decimal(10, 2)
+  vibration_status       String?   @db.VarChar(50)
+  drainage_status        String?   @db.VarChar(50)
+  notes                  String?   @db.Text
+  deleted_at             DateTime? @db.DateTime(0)
+  customer_approver_name String?   @db.VarChar(255)
+  customer_approved_at   DateTime? @db.DateTime(0)
+  customer_signature     String?   @db.LongText
+  customer_signature_ip  String?   @db.VarChar(45)
+  units                  units     @relation(fields: [unit_id], references: [id], onDelete: Cascade)
 
   @@index([unit_id], map: "idx_daily_ops_unit")
   @@index([service_date], map: "idx_daily_ops_date")

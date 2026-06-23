@@ -389,7 +389,10 @@ exports.Prisma.Ahu_auditsScalarFieldEnum = {
   pdf_url: 'pdf_url',
   created_at: 'created_at',
   approval_status: 'approval_status',
-  approved_by: 'approved_by'
+  approved_by: 'approved_by',
+  customer_signature: 'customer_signature',
+  customer_signature_ip: 'customer_signature_ip',
+  customer_signature_date: 'customer_signature_date'
 };
 
 exports.Prisma.Audit_ticketsScalarFieldEnum = {
@@ -451,7 +454,11 @@ exports.Prisma.CorrectiveScalarFieldEnum = {
   photo_url: 'photo_url',
   status: 'status',
   created_at: 'created_at',
-  deleted_at: 'deleted_at'
+  deleted_at: 'deleted_at',
+  customer_approver_name: 'customer_approver_name',
+  customer_approved_at: 'customer_approved_at',
+  customer_signature: 'customer_signature',
+  customer_signature_ip: 'customer_signature_ip'
 };
 
 exports.Prisma.Corrective_maintenancesScalarFieldEnum = {
@@ -524,6 +531,10 @@ exports.Prisma.Service_activitiesScalarFieldEnum = {
   customer_approver_name: 'customer_approver_name',
   engineer_signer_name: 'engineer_signer_name',
   is_approved_by_customer: 'is_approved_by_customer',
+  customer_signature: 'customer_signature',
+  customer_signature_ip: 'customer_signature_ip',
+  engineer_signature: 'engineer_signature',
+  engineer_signature_ip: 'engineer_signature_ip',
   deleted_at: 'deleted_at'
 };
 
@@ -715,7 +726,11 @@ exports.Prisma.Daily_ops_logsScalarFieldEnum = {
   vibration_status: 'vibration_status',
   drainage_status: 'drainage_status',
   notes: 'notes',
-  deleted_at: 'deleted_at'
+  deleted_at: 'deleted_at',
+  customer_approver_name: 'customer_approver_name',
+  customer_approved_at: 'customer_approved_at',
+  customer_signature: 'customer_signature',
+  customer_signature_ip: 'customer_signature_ip'
 };
 
 exports.Prisma.Vendor_attendanceScalarFieldEnum = {
@@ -967,7 +982,9 @@ exports.Prisma.ahu_auditsOrderByRelevanceFieldEnum = {
   visual_notes: 'visual_notes',
   recommendation: 'recommendation',
   pdf_url: 'pdf_url',
-  approved_by: 'approved_by'
+  approved_by: 'approved_by',
+  customer_signature: 'customer_signature',
+  customer_signature_ip: 'customer_signature_ip'
 };
 
 exports.Prisma.audit_ticketsOrderByRelevanceFieldEnum = {
@@ -999,7 +1016,10 @@ exports.Prisma.correctiveOrderByRelevanceFieldEnum = {
   perm_action: 'perm_action',
   recommendation: 'recommendation',
   photo_url: 'photo_url',
-  status: 'status'
+  status: 'status',
+  customer_approver_name: 'customer_approver_name',
+  customer_signature: 'customer_signature',
+  customer_signature_ip: 'customer_signature_ip'
 };
 
 exports.Prisma.corrective_maintenancesOrderByRelevanceFieldEnum = {
@@ -1029,7 +1049,11 @@ exports.Prisma.service_activitiesOrderByRelevanceFieldEnum = {
   unit_tag: 'unit_tag',
   berita_acara_pdf_url: 'berita_acara_pdf_url',
   customer_approver_name: 'customer_approver_name',
-  engineer_signer_name: 'engineer_signer_name'
+  engineer_signer_name: 'engineer_signer_name',
+  customer_signature: 'customer_signature',
+  customer_signature_ip: 'customer_signature_ip',
+  engineer_signature: 'engineer_signature',
+  engineer_signature_ip: 'engineer_signature_ip'
 };
 
 exports.Prisma.service_logsOrderByRelevanceFieldEnum = {
@@ -1113,7 +1137,10 @@ exports.Prisma.daily_ops_logsOrderByRelevanceFieldEnum = {
   filter_hepa: 'filter_hepa',
   vibration_status: 'vibration_status',
   drainage_status: 'drainage_status',
-  notes: 'notes'
+  notes: 'notes',
+  customer_approver_name: 'customer_approver_name',
+  customer_signature: 'customer_signature',
+  customer_signature_ip: 'customer_signature_ip'
 };
 
 exports.Prisma.vendor_attendanceOrderByRelevanceFieldEnum = {

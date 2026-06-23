@@ -131,6 +131,10 @@ export const getBeritaAcaraSections = (data: any, unit: any, engineerName: strin
         witnessedDate={approvedAt}
         lang={lang}
         isBulkSync={options.isBulkSync}
+         customerSignatureUrl={options.customerSignatureUrl}
+         engineerSignatureUrl={options.engineerSignatureUrl}
+         onCustomerSignClick={options.onCustomerSignClick}
+         onEngineerSignClick={options.onEngineerSignClick}
       />
     </div>
   ];

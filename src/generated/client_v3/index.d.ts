@@ -28042,6 +28042,9 @@ export namespace Prisma {
     created_at: Date | null
     approval_status: $Enums.ahu_audits_approval_status | null
     approved_by: string | null
+    customer_signature: string | null
+    customer_signature_ip: string | null
+    customer_signature_date: Date | null
   }
 
   export type Ahu_auditsMaxAggregateOutputType = {
@@ -28080,6 +28083,9 @@ export namespace Prisma {
     created_at: Date | null
     approval_status: $Enums.ahu_audits_approval_status | null
     approved_by: string | null
+    customer_signature: string | null
+    customer_signature_ip: string | null
+    customer_signature_date: Date | null
   }
 
   export type Ahu_auditsCountAggregateOutputType = {
@@ -28118,6 +28124,9 @@ export namespace Prisma {
     created_at: number
     approval_status: number
     approved_by: number
+    customer_signature: number
+    customer_signature_ip: number
+    customer_signature_date: number
     _all: number
   }
 
@@ -28214,6 +28223,9 @@ export namespace Prisma {
     created_at?: true
     approval_status?: true
     approved_by?: true
+    customer_signature?: true
+    customer_signature_ip?: true
+    customer_signature_date?: true
   }
 
   export type Ahu_auditsMaxAggregateInputType = {
@@ -28252,6 +28264,9 @@ export namespace Prisma {
     created_at?: true
     approval_status?: true
     approved_by?: true
+    customer_signature?: true
+    customer_signature_ip?: true
+    customer_signature_date?: true
   }
 
   export type Ahu_auditsCountAggregateInputType = {
@@ -28290,6 +28305,9 @@ export namespace Prisma {
     created_at?: true
     approval_status?: true
     approved_by?: true
+    customer_signature?: true
+    customer_signature_ip?: true
+    customer_signature_date?: true
     _all?: true
   }
 
@@ -28415,6 +28433,9 @@ export namespace Prisma {
     created_at: Date | null
     approval_status: $Enums.ahu_audits_approval_status | null
     approved_by: string | null
+    customer_signature: string | null
+    customer_signature_ip: string | null
+    customer_signature_date: Date | null
     _count: Ahu_auditsCountAggregateOutputType | null
     _avg: Ahu_auditsAvgAggregateOutputType | null
     _sum: Ahu_auditsSumAggregateOutputType | null
@@ -28472,6 +28493,9 @@ export namespace Prisma {
     created_at?: boolean
     approval_status?: boolean
     approved_by?: boolean
+    customer_signature?: boolean
+    customer_signature_ip?: boolean
+    customer_signature_date?: boolean
   }, ExtArgs["result"]["ahu_audits"]>
 
 
@@ -28512,9 +28536,12 @@ export namespace Prisma {
     created_at?: boolean
     approval_status?: boolean
     approved_by?: boolean
+    customer_signature?: boolean
+    customer_signature_ip?: boolean
+    customer_signature_date?: boolean
   }
 
-  export type ahu_auditsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "unit_id" | "location" | "unit_tag" | "audit_date" | "prepared_by" | "design_airflow" | "design_cooling_capacity" | "leaving_db" | "leaving_wb" | "leaving_rh" | "entering_db" | "entering_wb" | "entering_rh" | "room_db" | "room_wb" | "room_rh" | "chws_temp" | "chwr_temp" | "chws_press" | "chwr_press" | "water_flow_gpm" | "amp_r" | "amp_s" | "amp_t" | "volt_rs" | "volt_st" | "volt_rt" | "volt_ln" | "visual_notes" | "recommendation" | "pdf_url" | "created_at" | "approval_status" | "approved_by", ExtArgs["result"]["ahu_audits"]>
+  export type ahu_auditsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "unit_id" | "location" | "unit_tag" | "audit_date" | "prepared_by" | "design_airflow" | "design_cooling_capacity" | "leaving_db" | "leaving_wb" | "leaving_rh" | "entering_db" | "entering_wb" | "entering_rh" | "room_db" | "room_wb" | "room_rh" | "chws_temp" | "chwr_temp" | "chws_press" | "chwr_press" | "water_flow_gpm" | "amp_r" | "amp_s" | "amp_t" | "volt_rs" | "volt_st" | "volt_rt" | "volt_ln" | "visual_notes" | "recommendation" | "pdf_url" | "created_at" | "approval_status" | "approved_by" | "customer_signature" | "customer_signature_ip" | "customer_signature_date", ExtArgs["result"]["ahu_audits"]>
 
   export type $ahu_auditsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "ahu_audits"
@@ -28555,6 +28582,9 @@ export namespace Prisma {
       created_at: Date | null
       approval_status: $Enums.ahu_audits_approval_status | null
       approved_by: string | null
+      customer_signature: string | null
+      customer_signature_ip: string | null
+      customer_signature_date: Date | null
     }, ExtArgs["result"]["ahu_audits"]>
     composites: {}
   }
@@ -28959,6 +28989,9 @@ export namespace Prisma {
     readonly created_at: FieldRef<"ahu_audits", 'DateTime'>
     readonly approval_status: FieldRef<"ahu_audits", 'ahu_audits_approval_status'>
     readonly approved_by: FieldRef<"ahu_audits", 'String'>
+    readonly customer_signature: FieldRef<"ahu_audits", 'String'>
+    readonly customer_signature_ip: FieldRef<"ahu_audits", 'String'>
+    readonly customer_signature_date: FieldRef<"ahu_audits", 'DateTime'>
   }
     
 
@@ -33411,6 +33444,10 @@ export namespace Prisma {
     status: string | null
     created_at: Date | null
     deleted_at: Date | null
+    customer_approver_name: string | null
+    customer_approved_at: Date | null
+    customer_signature: string | null
+    customer_signature_ip: string | null
   }
 
   export type CorrectiveMaxAggregateOutputType = {
@@ -33427,6 +33464,10 @@ export namespace Prisma {
     status: string | null
     created_at: Date | null
     deleted_at: Date | null
+    customer_approver_name: string | null
+    customer_approved_at: Date | null
+    customer_signature: string | null
+    customer_signature_ip: string | null
   }
 
   export type CorrectiveCountAggregateOutputType = {
@@ -33443,6 +33484,10 @@ export namespace Prisma {
     status: number
     created_at: number
     deleted_at: number
+    customer_approver_name: number
+    customer_approved_at: number
+    customer_signature: number
+    customer_signature_ip: number
     _all: number
   }
 
@@ -33471,6 +33516,10 @@ export namespace Prisma {
     status?: true
     created_at?: true
     deleted_at?: true
+    customer_approver_name?: true
+    customer_approved_at?: true
+    customer_signature?: true
+    customer_signature_ip?: true
   }
 
   export type CorrectiveMaxAggregateInputType = {
@@ -33487,6 +33536,10 @@ export namespace Prisma {
     status?: true
     created_at?: true
     deleted_at?: true
+    customer_approver_name?: true
+    customer_approved_at?: true
+    customer_signature?: true
+    customer_signature_ip?: true
   }
 
   export type CorrectiveCountAggregateInputType = {
@@ -33503,6 +33556,10 @@ export namespace Prisma {
     status?: true
     created_at?: true
     deleted_at?: true
+    customer_approver_name?: true
+    customer_approved_at?: true
+    customer_signature?: true
+    customer_signature_ip?: true
     _all?: true
   }
 
@@ -33606,6 +33663,10 @@ export namespace Prisma {
     status: string | null
     created_at: Date | null
     deleted_at: Date | null
+    customer_approver_name: string | null
+    customer_approved_at: Date | null
+    customer_signature: string | null
+    customer_signature_ip: string | null
     _count: CorrectiveCountAggregateOutputType | null
     _avg: CorrectiveAvgAggregateOutputType | null
     _sum: CorrectiveSumAggregateOutputType | null
@@ -33641,6 +33702,10 @@ export namespace Prisma {
     status?: boolean
     created_at?: boolean
     deleted_at?: boolean
+    customer_approver_name?: boolean
+    customer_approved_at?: boolean
+    customer_signature?: boolean
+    customer_signature_ip?: boolean
     units?: boolean | unitsDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["corrective"]>
 
@@ -33660,9 +33725,13 @@ export namespace Prisma {
     status?: boolean
     created_at?: boolean
     deleted_at?: boolean
+    customer_approver_name?: boolean
+    customer_approved_at?: boolean
+    customer_signature?: boolean
+    customer_signature_ip?: boolean
   }
 
-  export type correctiveOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "unit_id" | "service_date" | "technician_name" | "case_complain" | "root_cause" | "temp_action" | "perm_action" | "recommendation" | "photo_url" | "status" | "created_at" | "deleted_at", ExtArgs["result"]["corrective"]>
+  export type correctiveOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "unit_id" | "service_date" | "technician_name" | "case_complain" | "root_cause" | "temp_action" | "perm_action" | "recommendation" | "photo_url" | "status" | "created_at" | "deleted_at" | "customer_approver_name" | "customer_approved_at" | "customer_signature" | "customer_signature_ip", ExtArgs["result"]["corrective"]>
   export type correctiveInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     units?: boolean | unitsDefaultArgs<ExtArgs>
   }
@@ -33686,6 +33755,10 @@ export namespace Prisma {
       status: string | null
       created_at: Date | null
       deleted_at: Date | null
+      customer_approver_name: string | null
+      customer_approved_at: Date | null
+      customer_signature: string | null
+      customer_signature_ip: string | null
     }, ExtArgs["result"]["corrective"]>
     composites: {}
   }
@@ -34069,6 +34142,10 @@ export namespace Prisma {
     readonly status: FieldRef<"corrective", 'String'>
     readonly created_at: FieldRef<"corrective", 'DateTime'>
     readonly deleted_at: FieldRef<"corrective", 'DateTime'>
+    readonly customer_approver_name: FieldRef<"corrective", 'String'>
+    readonly customer_approved_at: FieldRef<"corrective", 'DateTime'>
+    readonly customer_signature: FieldRef<"corrective", 'String'>
+    readonly customer_signature_ip: FieldRef<"corrective", 'String'>
   }
     
 
@@ -36468,6 +36545,10 @@ export namespace Prisma {
     customer_approver_name: string | null
     engineer_signer_name: string | null
     is_approved_by_customer: boolean | null
+    customer_signature: string | null
+    customer_signature_ip: string | null
+    engineer_signature: string | null
+    engineer_signature_ip: string | null
     deleted_at: Date | null
   }
 
@@ -36518,6 +36599,10 @@ export namespace Prisma {
     customer_approver_name: string | null
     engineer_signer_name: string | null
     is_approved_by_customer: boolean | null
+    customer_signature: string | null
+    customer_signature_ip: string | null
+    engineer_signature: string | null
+    engineer_signature_ip: string | null
     deleted_at: Date | null
   }
 
@@ -36568,6 +36653,10 @@ export namespace Prisma {
     customer_approver_name: number
     engineer_signer_name: number
     is_approved_by_customer: number
+    customer_signature: number
+    customer_signature_ip: number
+    engineer_signature: number
+    engineer_signature_ip: number
     deleted_at: number
     _all: number
   }
@@ -36682,6 +36771,10 @@ export namespace Prisma {
     customer_approver_name?: true
     engineer_signer_name?: true
     is_approved_by_customer?: true
+    customer_signature?: true
+    customer_signature_ip?: true
+    engineer_signature?: true
+    engineer_signature_ip?: true
     deleted_at?: true
   }
 
@@ -36732,6 +36825,10 @@ export namespace Prisma {
     customer_approver_name?: true
     engineer_signer_name?: true
     is_approved_by_customer?: true
+    customer_signature?: true
+    customer_signature_ip?: true
+    engineer_signature?: true
+    engineer_signature_ip?: true
     deleted_at?: true
   }
 
@@ -36782,6 +36879,10 @@ export namespace Prisma {
     customer_approver_name?: true
     engineer_signer_name?: true
     is_approved_by_customer?: true
+    customer_signature?: true
+    customer_signature_ip?: true
+    engineer_signature?: true
+    engineer_signature_ip?: true
     deleted_at?: true
     _all?: true
   }
@@ -36919,6 +37020,10 @@ export namespace Prisma {
     customer_approver_name: string | null
     engineer_signer_name: string | null
     is_approved_by_customer: boolean | null
+    customer_signature: string | null
+    customer_signature_ip: string | null
+    engineer_signature: string | null
+    engineer_signature_ip: string | null
     deleted_at: Date | null
     _count: Service_activitiesCountAggregateOutputType | null
     _avg: Service_activitiesAvgAggregateOutputType | null
@@ -36988,6 +37093,10 @@ export namespace Prisma {
     customer_approver_name?: boolean
     engineer_signer_name?: boolean
     is_approved_by_customer?: boolean
+    customer_signature?: boolean
+    customer_signature_ip?: boolean
+    engineer_signature?: boolean
+    engineer_signature_ip?: boolean
     deleted_at?: boolean
     activity_photos?: boolean | service_activities$activity_photosArgs<ExtArgs>
     audit_velocity_points?: boolean | service_activities$audit_velocity_pointsArgs<ExtArgs>
@@ -37045,10 +37154,14 @@ export namespace Prisma {
     customer_approver_name?: boolean
     engineer_signer_name?: boolean
     is_approved_by_customer?: boolean
+    customer_signature?: boolean
+    customer_signature_ip?: boolean
+    engineer_signature?: boolean
+    engineer_signature_ip?: boolean
     deleted_at?: boolean
   }
 
-  export type service_activitiesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "unit_id" | "type" | "reference_id" | "engineer_id" | "sales_engineer_id" | "pdf_report_url" | "photo_url" | "service_date" | "status" | "engineer_note" | "sales_note" | "created_at" | "inspector_name" | "technical_json" | "technical_advice" | "location" | "unit_tag" | "design_airflow" | "design_cooling_capacity" | "entering_db" | "entering_wb" | "entering_rh" | "leaving_db" | "leaving_wb" | "leaving_rh" | "room_db" | "room_wb" | "room_rh" | "chws_temp" | "chwr_temp" | "chws_press" | "chwr_press" | "water_flow_gpm" | "amp_r" | "amp_s" | "amp_t" | "volt_rs" | "volt_st" | "volt_rt" | "volt_ln" | "berita_acara_pdf_url" | "customer_approved_at" | "customer_approver_name" | "engineer_signer_name" | "is_approved_by_customer" | "deleted_at", ExtArgs["result"]["service_activities"]>
+  export type service_activitiesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "unit_id" | "type" | "reference_id" | "engineer_id" | "sales_engineer_id" | "pdf_report_url" | "photo_url" | "service_date" | "status" | "engineer_note" | "sales_note" | "created_at" | "inspector_name" | "technical_json" | "technical_advice" | "location" | "unit_tag" | "design_airflow" | "design_cooling_capacity" | "entering_db" | "entering_wb" | "entering_rh" | "leaving_db" | "leaving_wb" | "leaving_rh" | "room_db" | "room_wb" | "room_rh" | "chws_temp" | "chwr_temp" | "chws_press" | "chwr_press" | "water_flow_gpm" | "amp_r" | "amp_s" | "amp_t" | "volt_rs" | "volt_st" | "volt_rt" | "volt_ln" | "berita_acara_pdf_url" | "customer_approved_at" | "customer_approver_name" | "engineer_signer_name" | "is_approved_by_customer" | "customer_signature" | "customer_signature_ip" | "engineer_signature" | "engineer_signature_ip" | "deleted_at", ExtArgs["result"]["service_activities"]>
   export type service_activitiesInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     activity_photos?: boolean | service_activities$activity_photosArgs<ExtArgs>
     audit_velocity_points?: boolean | service_activities$audit_velocity_pointsArgs<ExtArgs>
@@ -37112,6 +37225,10 @@ export namespace Prisma {
       customer_approver_name: string | null
       engineer_signer_name: string | null
       is_approved_by_customer: boolean | null
+      customer_signature: string | null
+      customer_signature_ip: string | null
+      engineer_signature: string | null
+      engineer_signature_ip: string | null
       deleted_at: Date | null
     }, ExtArgs["result"]["service_activities"]>
     composites: {}
@@ -37532,6 +37649,10 @@ export namespace Prisma {
     readonly customer_approver_name: FieldRef<"service_activities", 'String'>
     readonly engineer_signer_name: FieldRef<"service_activities", 'String'>
     readonly is_approved_by_customer: FieldRef<"service_activities", 'Boolean'>
+    readonly customer_signature: FieldRef<"service_activities", 'String'>
+    readonly customer_signature_ip: FieldRef<"service_activities", 'String'>
+    readonly engineer_signature: FieldRef<"service_activities", 'String'>
+    readonly engineer_signature_ip: FieldRef<"service_activities", 'String'>
     readonly deleted_at: FieldRef<"service_activities", 'DateTime'>
   }
     
@@ -52368,6 +52489,10 @@ export namespace Prisma {
     drainage_status: string | null
     notes: string | null
     deleted_at: Date | null
+    customer_approver_name: string | null
+    customer_approved_at: Date | null
+    customer_signature: string | null
+    customer_signature_ip: string | null
   }
 
   export type Daily_ops_logsMaxAggregateOutputType = {
@@ -52413,6 +52538,10 @@ export namespace Prisma {
     drainage_status: string | null
     notes: string | null
     deleted_at: Date | null
+    customer_approver_name: string | null
+    customer_approved_at: Date | null
+    customer_signature: string | null
+    customer_signature_ip: string | null
   }
 
   export type Daily_ops_logsCountAggregateOutputType = {
@@ -52458,6 +52587,10 @@ export namespace Prisma {
     drainage_status: number
     notes: number
     deleted_at: number
+    customer_approver_name: number
+    customer_approved_at: number
+    customer_signature: number
+    customer_signature_ip: number
     _all: number
   }
 
@@ -52571,6 +52704,10 @@ export namespace Prisma {
     drainage_status?: true
     notes?: true
     deleted_at?: true
+    customer_approver_name?: true
+    customer_approved_at?: true
+    customer_signature?: true
+    customer_signature_ip?: true
   }
 
   export type Daily_ops_logsMaxAggregateInputType = {
@@ -52616,6 +52753,10 @@ export namespace Prisma {
     drainage_status?: true
     notes?: true
     deleted_at?: true
+    customer_approver_name?: true
+    customer_approved_at?: true
+    customer_signature?: true
+    customer_signature_ip?: true
   }
 
   export type Daily_ops_logsCountAggregateInputType = {
@@ -52661,6 +52802,10 @@ export namespace Prisma {
     drainage_status?: true
     notes?: true
     deleted_at?: true
+    customer_approver_name?: true
+    customer_approved_at?: true
+    customer_signature?: true
+    customer_signature_ip?: true
     _all?: true
   }
 
@@ -52793,6 +52938,10 @@ export namespace Prisma {
     drainage_status: string | null
     notes: string | null
     deleted_at: Date | null
+    customer_approver_name: string | null
+    customer_approved_at: Date | null
+    customer_signature: string | null
+    customer_signature_ip: string | null
     _count: Daily_ops_logsCountAggregateOutputType | null
     _avg: Daily_ops_logsAvgAggregateOutputType | null
     _sum: Daily_ops_logsSumAggregateOutputType | null
@@ -52857,6 +53006,10 @@ export namespace Prisma {
     drainage_status?: boolean
     notes?: boolean
     deleted_at?: boolean
+    customer_approver_name?: boolean
+    customer_approved_at?: boolean
+    customer_signature?: boolean
+    customer_signature_ip?: boolean
     units?: boolean | unitsDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["daily_ops_logs"]>
 
@@ -52905,9 +53058,13 @@ export namespace Prisma {
     drainage_status?: boolean
     notes?: boolean
     deleted_at?: boolean
+    customer_approver_name?: boolean
+    customer_approved_at?: boolean
+    customer_signature?: boolean
+    customer_signature_ip?: boolean
   }
 
-  export type daily_ops_logsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "unit_id" | "inspector_name" | "service_date" | "created_at" | "fan_on" | "fan_speed" | "fan_curr_r" | "fan_curr_s" | "fan_curr_t" | "fan_volt_r" | "fan_volt_s" | "fan_volt_t" | "heater_on" | "heater_curr_r" | "heater_curr_s" | "heater_curr_t" | "heater_volt_r" | "heater_volt_s" | "heater_volt_t" | "valve_opening" | "supply_temp" | "supply_rh" | "return_temp" | "return_rh" | "fresh_temp" | "fresh_rh" | "filter_pre" | "filter_med" | "filter_hepa" | "room_temp" | "room_diff_press" | "temp_s1" | "temp_s2" | "temp_s3" | "temp_s4" | "temp_s5" | "static_pressure" | "vibration_status" | "drainage_status" | "notes" | "deleted_at", ExtArgs["result"]["daily_ops_logs"]>
+  export type daily_ops_logsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "unit_id" | "inspector_name" | "service_date" | "created_at" | "fan_on" | "fan_speed" | "fan_curr_r" | "fan_curr_s" | "fan_curr_t" | "fan_volt_r" | "fan_volt_s" | "fan_volt_t" | "heater_on" | "heater_curr_r" | "heater_curr_s" | "heater_curr_t" | "heater_volt_r" | "heater_volt_s" | "heater_volt_t" | "valve_opening" | "supply_temp" | "supply_rh" | "return_temp" | "return_rh" | "fresh_temp" | "fresh_rh" | "filter_pre" | "filter_med" | "filter_hepa" | "room_temp" | "room_diff_press" | "temp_s1" | "temp_s2" | "temp_s3" | "temp_s4" | "temp_s5" | "static_pressure" | "vibration_status" | "drainage_status" | "notes" | "deleted_at" | "customer_approver_name" | "customer_approved_at" | "customer_signature" | "customer_signature_ip", ExtArgs["result"]["daily_ops_logs"]>
   export type daily_ops_logsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     units?: boolean | unitsDefaultArgs<ExtArgs>
   }
@@ -52960,6 +53117,10 @@ export namespace Prisma {
       drainage_status: string | null
       notes: string | null
       deleted_at: Date | null
+      customer_approver_name: string | null
+      customer_approved_at: Date | null
+      customer_signature: string | null
+      customer_signature_ip: string | null
     }, ExtArgs["result"]["daily_ops_logs"]>
     composites: {}
   }
@@ -53372,6 +53533,10 @@ export namespace Prisma {
     readonly drainage_status: FieldRef<"daily_ops_logs", 'String'>
     readonly notes: FieldRef<"daily_ops_logs", 'String'>
     readonly deleted_at: FieldRef<"daily_ops_logs", 'DateTime'>
+    readonly customer_approver_name: FieldRef<"daily_ops_logs", 'String'>
+    readonly customer_approved_at: FieldRef<"daily_ops_logs", 'DateTime'>
+    readonly customer_signature: FieldRef<"daily_ops_logs", 'String'>
+    readonly customer_signature_ip: FieldRef<"daily_ops_logs", 'String'>
   }
     
 
@@ -61227,7 +61392,10 @@ export namespace Prisma {
     pdf_url: 'pdf_url',
     created_at: 'created_at',
     approval_status: 'approval_status',
-    approved_by: 'approved_by'
+    approved_by: 'approved_by',
+    customer_signature: 'customer_signature',
+    customer_signature_ip: 'customer_signature_ip',
+    customer_signature_date: 'customer_signature_date'
   };
 
   export type Ahu_auditsScalarFieldEnum = (typeof Ahu_auditsScalarFieldEnum)[keyof typeof Ahu_auditsScalarFieldEnum]
@@ -61304,7 +61472,11 @@ export namespace Prisma {
     photo_url: 'photo_url',
     status: 'status',
     created_at: 'created_at',
-    deleted_at: 'deleted_at'
+    deleted_at: 'deleted_at',
+    customer_approver_name: 'customer_approver_name',
+    customer_approved_at: 'customer_approved_at',
+    customer_signature: 'customer_signature',
+    customer_signature_ip: 'customer_signature_ip'
   };
 
   export type CorrectiveScalarFieldEnum = (typeof CorrectiveScalarFieldEnum)[keyof typeof CorrectiveScalarFieldEnum]
@@ -61386,6 +61558,10 @@ export namespace Prisma {
     customer_approver_name: 'customer_approver_name',
     engineer_signer_name: 'engineer_signer_name',
     is_approved_by_customer: 'is_approved_by_customer',
+    customer_signature: 'customer_signature',
+    customer_signature_ip: 'customer_signature_ip',
+    engineer_signature: 'engineer_signature',
+    engineer_signature_ip: 'engineer_signature_ip',
     deleted_at: 'deleted_at'
   };
 
@@ -61622,7 +61798,11 @@ export namespace Prisma {
     vibration_status: 'vibration_status',
     drainage_status: 'drainage_status',
     notes: 'notes',
-    deleted_at: 'deleted_at'
+    deleted_at: 'deleted_at',
+    customer_approver_name: 'customer_approver_name',
+    customer_approved_at: 'customer_approved_at',
+    customer_signature: 'customer_signature',
+    customer_signature_ip: 'customer_signature_ip'
   };
 
   export type Daily_ops_logsScalarFieldEnum = (typeof Daily_ops_logsScalarFieldEnum)[keyof typeof Daily_ops_logsScalarFieldEnum]
@@ -61952,7 +62132,9 @@ export namespace Prisma {
     visual_notes: 'visual_notes',
     recommendation: 'recommendation',
     pdf_url: 'pdf_url',
-    approved_by: 'approved_by'
+    approved_by: 'approved_by',
+    customer_signature: 'customer_signature',
+    customer_signature_ip: 'customer_signature_ip'
   };
 
   export type ahu_auditsOrderByRelevanceFieldEnum = (typeof ahu_auditsOrderByRelevanceFieldEnum)[keyof typeof ahu_auditsOrderByRelevanceFieldEnum]
@@ -61996,7 +62178,10 @@ export namespace Prisma {
     perm_action: 'perm_action',
     recommendation: 'recommendation',
     photo_url: 'photo_url',
-    status: 'status'
+    status: 'status',
+    customer_approver_name: 'customer_approver_name',
+    customer_signature: 'customer_signature',
+    customer_signature_ip: 'customer_signature_ip'
   };
 
   export type correctiveOrderByRelevanceFieldEnum = (typeof correctiveOrderByRelevanceFieldEnum)[keyof typeof correctiveOrderByRelevanceFieldEnum]
@@ -62035,7 +62220,11 @@ export namespace Prisma {
     unit_tag: 'unit_tag',
     berita_acara_pdf_url: 'berita_acara_pdf_url',
     customer_approver_name: 'customer_approver_name',
-    engineer_signer_name: 'engineer_signer_name'
+    engineer_signer_name: 'engineer_signer_name',
+    customer_signature: 'customer_signature',
+    customer_signature_ip: 'customer_signature_ip',
+    engineer_signature: 'engineer_signature',
+    engineer_signature_ip: 'engineer_signature_ip'
   };
 
   export type service_activitiesOrderByRelevanceFieldEnum = (typeof service_activitiesOrderByRelevanceFieldEnum)[keyof typeof service_activitiesOrderByRelevanceFieldEnum]
@@ -62161,7 +62350,10 @@ export namespace Prisma {
     filter_hepa: 'filter_hepa',
     vibration_status: 'vibration_status',
     drainage_status: 'drainage_status',
-    notes: 'notes'
+    notes: 'notes',
+    customer_approver_name: 'customer_approver_name',
+    customer_signature: 'customer_signature',
+    customer_signature_ip: 'customer_signature_ip'
   };
 
   export type daily_ops_logsOrderByRelevanceFieldEnum = (typeof daily_ops_logsOrderByRelevanceFieldEnum)[keyof typeof daily_ops_logsOrderByRelevanceFieldEnum]
@@ -64191,6 +64383,9 @@ export namespace Prisma {
     created_at?: DateTimeNullableFilter<"ahu_audits"> | Date | string | null
     approval_status?: Enumahu_audits_approval_statusNullableFilter<"ahu_audits"> | $Enums.ahu_audits_approval_status | null
     approved_by?: StringNullableFilter<"ahu_audits"> | string | null
+    customer_signature?: StringNullableFilter<"ahu_audits"> | string | null
+    customer_signature_ip?: StringNullableFilter<"ahu_audits"> | string | null
+    customer_signature_date?: DateTimeNullableFilter<"ahu_audits"> | Date | string | null
   }
 
   export type ahu_auditsOrderByWithRelationInput = {
@@ -64229,6 +64424,9 @@ export namespace Prisma {
     created_at?: SortOrderInput | SortOrder
     approval_status?: SortOrderInput | SortOrder
     approved_by?: SortOrderInput | SortOrder
+    customer_signature?: SortOrderInput | SortOrder
+    customer_signature_ip?: SortOrderInput | SortOrder
+    customer_signature_date?: SortOrderInput | SortOrder
     _relevance?: ahu_auditsOrderByRelevanceInput
   }
 
@@ -64271,6 +64469,9 @@ export namespace Prisma {
     created_at?: DateTimeNullableFilter<"ahu_audits"> | Date | string | null
     approval_status?: Enumahu_audits_approval_statusNullableFilter<"ahu_audits"> | $Enums.ahu_audits_approval_status | null
     approved_by?: StringNullableFilter<"ahu_audits"> | string | null
+    customer_signature?: StringNullableFilter<"ahu_audits"> | string | null
+    customer_signature_ip?: StringNullableFilter<"ahu_audits"> | string | null
+    customer_signature_date?: DateTimeNullableFilter<"ahu_audits"> | Date | string | null
   }, "id">
 
   export type ahu_auditsOrderByWithAggregationInput = {
@@ -64309,6 +64510,9 @@ export namespace Prisma {
     created_at?: SortOrderInput | SortOrder
     approval_status?: SortOrderInput | SortOrder
     approved_by?: SortOrderInput | SortOrder
+    customer_signature?: SortOrderInput | SortOrder
+    customer_signature_ip?: SortOrderInput | SortOrder
+    customer_signature_date?: SortOrderInput | SortOrder
     _count?: ahu_auditsCountOrderByAggregateInput
     _avg?: ahu_auditsAvgOrderByAggregateInput
     _max?: ahu_auditsMaxOrderByAggregateInput
@@ -64355,6 +64559,9 @@ export namespace Prisma {
     created_at?: DateTimeNullableWithAggregatesFilter<"ahu_audits"> | Date | string | null
     approval_status?: Enumahu_audits_approval_statusNullableWithAggregatesFilter<"ahu_audits"> | $Enums.ahu_audits_approval_status | null
     approved_by?: StringNullableWithAggregatesFilter<"ahu_audits"> | string | null
+    customer_signature?: StringNullableWithAggregatesFilter<"ahu_audits"> | string | null
+    customer_signature_ip?: StringNullableWithAggregatesFilter<"ahu_audits"> | string | null
+    customer_signature_date?: DateTimeNullableWithAggregatesFilter<"ahu_audits"> | Date | string | null
   }
 
   export type audit_ticketsWhereInput = {
@@ -64675,6 +64882,10 @@ export namespace Prisma {
     status?: StringNullableFilter<"corrective"> | string | null
     created_at?: DateTimeNullableFilter<"corrective"> | Date | string | null
     deleted_at?: DateTimeNullableFilter<"corrective"> | Date | string | null
+    customer_approver_name?: StringNullableFilter<"corrective"> | string | null
+    customer_approved_at?: DateTimeNullableFilter<"corrective"> | Date | string | null
+    customer_signature?: StringNullableFilter<"corrective"> | string | null
+    customer_signature_ip?: StringNullableFilter<"corrective"> | string | null
     units?: XOR<UnitsScalarRelationFilter, unitsWhereInput>
   }
 
@@ -64692,6 +64903,10 @@ export namespace Prisma {
     status?: SortOrderInput | SortOrder
     created_at?: SortOrderInput | SortOrder
     deleted_at?: SortOrderInput | SortOrder
+    customer_approver_name?: SortOrderInput | SortOrder
+    customer_approved_at?: SortOrderInput | SortOrder
+    customer_signature?: SortOrderInput | SortOrder
+    customer_signature_ip?: SortOrderInput | SortOrder
     units?: unitsOrderByWithRelationInput
     _relevance?: correctiveOrderByRelevanceInput
   }
@@ -64713,6 +64928,10 @@ export namespace Prisma {
     status?: StringNullableFilter<"corrective"> | string | null
     created_at?: DateTimeNullableFilter<"corrective"> | Date | string | null
     deleted_at?: DateTimeNullableFilter<"corrective"> | Date | string | null
+    customer_approver_name?: StringNullableFilter<"corrective"> | string | null
+    customer_approved_at?: DateTimeNullableFilter<"corrective"> | Date | string | null
+    customer_signature?: StringNullableFilter<"corrective"> | string | null
+    customer_signature_ip?: StringNullableFilter<"corrective"> | string | null
     units?: XOR<UnitsScalarRelationFilter, unitsWhereInput>
   }, "id">
 
@@ -64730,6 +64949,10 @@ export namespace Prisma {
     status?: SortOrderInput | SortOrder
     created_at?: SortOrderInput | SortOrder
     deleted_at?: SortOrderInput | SortOrder
+    customer_approver_name?: SortOrderInput | SortOrder
+    customer_approved_at?: SortOrderInput | SortOrder
+    customer_signature?: SortOrderInput | SortOrder
+    customer_signature_ip?: SortOrderInput | SortOrder
     _count?: correctiveCountOrderByAggregateInput
     _avg?: correctiveAvgOrderByAggregateInput
     _max?: correctiveMaxOrderByAggregateInput
@@ -64754,6 +64977,10 @@ export namespace Prisma {
     status?: StringNullableWithAggregatesFilter<"corrective"> | string | null
     created_at?: DateTimeNullableWithAggregatesFilter<"corrective"> | Date | string | null
     deleted_at?: DateTimeNullableWithAggregatesFilter<"corrective"> | Date | string | null
+    customer_approver_name?: StringNullableWithAggregatesFilter<"corrective"> | string | null
+    customer_approved_at?: DateTimeNullableWithAggregatesFilter<"corrective"> | Date | string | null
+    customer_signature?: StringNullableWithAggregatesFilter<"corrective"> | string | null
+    customer_signature_ip?: StringNullableWithAggregatesFilter<"corrective"> | string | null
   }
 
   export type corrective_maintenancesWhereInput = {
@@ -64951,6 +65178,10 @@ export namespace Prisma {
     customer_approver_name?: StringNullableFilter<"service_activities"> | string | null
     engineer_signer_name?: StringNullableFilter<"service_activities"> | string | null
     is_approved_by_customer?: BoolNullableFilter<"service_activities"> | boolean | null
+    customer_signature?: StringNullableFilter<"service_activities"> | string | null
+    customer_signature_ip?: StringNullableFilter<"service_activities"> | string | null
+    engineer_signature?: StringNullableFilter<"service_activities"> | string | null
+    engineer_signature_ip?: StringNullableFilter<"service_activities"> | string | null
     deleted_at?: DateTimeNullableFilter<"service_activities"> | Date | string | null
     activity_photos?: Activity_photosListRelationFilter
     audit_velocity_points?: Audit_velocity_pointsListRelationFilter
@@ -65005,6 +65236,10 @@ export namespace Prisma {
     customer_approver_name?: SortOrderInput | SortOrder
     engineer_signer_name?: SortOrderInput | SortOrder
     is_approved_by_customer?: SortOrderInput | SortOrder
+    customer_signature?: SortOrderInput | SortOrder
+    customer_signature_ip?: SortOrderInput | SortOrder
+    engineer_signature?: SortOrderInput | SortOrder
+    engineer_signature_ip?: SortOrderInput | SortOrder
     deleted_at?: SortOrderInput | SortOrder
     activity_photos?: activity_photosOrderByRelationAggregateInput
     audit_velocity_points?: audit_velocity_pointsOrderByRelationAggregateInput
@@ -65063,6 +65298,10 @@ export namespace Prisma {
     customer_approver_name?: StringNullableFilter<"service_activities"> | string | null
     engineer_signer_name?: StringNullableFilter<"service_activities"> | string | null
     is_approved_by_customer?: BoolNullableFilter<"service_activities"> | boolean | null
+    customer_signature?: StringNullableFilter<"service_activities"> | string | null
+    customer_signature_ip?: StringNullableFilter<"service_activities"> | string | null
+    engineer_signature?: StringNullableFilter<"service_activities"> | string | null
+    engineer_signature_ip?: StringNullableFilter<"service_activities"> | string | null
     deleted_at?: DateTimeNullableFilter<"service_activities"> | Date | string | null
     activity_photos?: Activity_photosListRelationFilter
     audit_velocity_points?: Audit_velocity_pointsListRelationFilter
@@ -65117,6 +65356,10 @@ export namespace Prisma {
     customer_approver_name?: SortOrderInput | SortOrder
     engineer_signer_name?: SortOrderInput | SortOrder
     is_approved_by_customer?: SortOrderInput | SortOrder
+    customer_signature?: SortOrderInput | SortOrder
+    customer_signature_ip?: SortOrderInput | SortOrder
+    engineer_signature?: SortOrderInput | SortOrder
+    engineer_signature_ip?: SortOrderInput | SortOrder
     deleted_at?: SortOrderInput | SortOrder
     _count?: service_activitiesCountOrderByAggregateInput
     _avg?: service_activitiesAvgOrderByAggregateInput
@@ -65175,6 +65418,10 @@ export namespace Prisma {
     customer_approver_name?: StringNullableWithAggregatesFilter<"service_activities"> | string | null
     engineer_signer_name?: StringNullableWithAggregatesFilter<"service_activities"> | string | null
     is_approved_by_customer?: BoolNullableWithAggregatesFilter<"service_activities"> | boolean | null
+    customer_signature?: StringNullableWithAggregatesFilter<"service_activities"> | string | null
+    customer_signature_ip?: StringNullableWithAggregatesFilter<"service_activities"> | string | null
+    engineer_signature?: StringNullableWithAggregatesFilter<"service_activities"> | string | null
+    engineer_signature_ip?: StringNullableWithAggregatesFilter<"service_activities"> | string | null
     deleted_at?: DateTimeNullableWithAggregatesFilter<"service_activities"> | Date | string | null
   }
 
@@ -66236,6 +66483,10 @@ export namespace Prisma {
     drainage_status?: StringNullableFilter<"daily_ops_logs"> | string | null
     notes?: StringNullableFilter<"daily_ops_logs"> | string | null
     deleted_at?: DateTimeNullableFilter<"daily_ops_logs"> | Date | string | null
+    customer_approver_name?: StringNullableFilter<"daily_ops_logs"> | string | null
+    customer_approved_at?: DateTimeNullableFilter<"daily_ops_logs"> | Date | string | null
+    customer_signature?: StringNullableFilter<"daily_ops_logs"> | string | null
+    customer_signature_ip?: StringNullableFilter<"daily_ops_logs"> | string | null
     units?: XOR<UnitsScalarRelationFilter, unitsWhereInput>
   }
 
@@ -66282,6 +66533,10 @@ export namespace Prisma {
     drainage_status?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     deleted_at?: SortOrderInput | SortOrder
+    customer_approver_name?: SortOrderInput | SortOrder
+    customer_approved_at?: SortOrderInput | SortOrder
+    customer_signature?: SortOrderInput | SortOrder
+    customer_signature_ip?: SortOrderInput | SortOrder
     units?: unitsOrderByWithRelationInput
     _relevance?: daily_ops_logsOrderByRelevanceInput
   }
@@ -66332,6 +66587,10 @@ export namespace Prisma {
     drainage_status?: StringNullableFilter<"daily_ops_logs"> | string | null
     notes?: StringNullableFilter<"daily_ops_logs"> | string | null
     deleted_at?: DateTimeNullableFilter<"daily_ops_logs"> | Date | string | null
+    customer_approver_name?: StringNullableFilter<"daily_ops_logs"> | string | null
+    customer_approved_at?: DateTimeNullableFilter<"daily_ops_logs"> | Date | string | null
+    customer_signature?: StringNullableFilter<"daily_ops_logs"> | string | null
+    customer_signature_ip?: StringNullableFilter<"daily_ops_logs"> | string | null
     units?: XOR<UnitsScalarRelationFilter, unitsWhereInput>
   }, "id">
 
@@ -66378,6 +66637,10 @@ export namespace Prisma {
     drainage_status?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     deleted_at?: SortOrderInput | SortOrder
+    customer_approver_name?: SortOrderInput | SortOrder
+    customer_approved_at?: SortOrderInput | SortOrder
+    customer_signature?: SortOrderInput | SortOrder
+    customer_signature_ip?: SortOrderInput | SortOrder
     _count?: daily_ops_logsCountOrderByAggregateInput
     _avg?: daily_ops_logsAvgOrderByAggregateInput
     _max?: daily_ops_logsMaxOrderByAggregateInput
@@ -66431,6 +66694,10 @@ export namespace Prisma {
     drainage_status?: StringNullableWithAggregatesFilter<"daily_ops_logs"> | string | null
     notes?: StringNullableWithAggregatesFilter<"daily_ops_logs"> | string | null
     deleted_at?: DateTimeNullableWithAggregatesFilter<"daily_ops_logs"> | Date | string | null
+    customer_approver_name?: StringNullableWithAggregatesFilter<"daily_ops_logs"> | string | null
+    customer_approved_at?: DateTimeNullableWithAggregatesFilter<"daily_ops_logs"> | Date | string | null
+    customer_signature?: StringNullableWithAggregatesFilter<"daily_ops_logs"> | string | null
+    customer_signature_ip?: StringNullableWithAggregatesFilter<"daily_ops_logs"> | string | null
   }
 
   export type vendor_attendanceWhereInput = {
@@ -68880,6 +69147,9 @@ export namespace Prisma {
     created_at?: Date | string | null
     approval_status?: $Enums.ahu_audits_approval_status | null
     approved_by?: string | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
+    customer_signature_date?: Date | string | null
   }
 
   export type ahu_auditsUncheckedCreateInput = {
@@ -68918,6 +69188,9 @@ export namespace Prisma {
     created_at?: Date | string | null
     approval_status?: $Enums.ahu_audits_approval_status | null
     approved_by?: string | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
+    customer_signature_date?: Date | string | null
   }
 
   export type ahu_auditsUpdateInput = {
@@ -68955,6 +69228,9 @@ export namespace Prisma {
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     approval_status?: NullableEnumahu_audits_approval_statusFieldUpdateOperationsInput | $Enums.ahu_audits_approval_status | null
     approved_by?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ahu_auditsUncheckedUpdateInput = {
@@ -68993,6 +69269,9 @@ export namespace Prisma {
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     approval_status?: NullableEnumahu_audits_approval_statusFieldUpdateOperationsInput | $Enums.ahu_audits_approval_status | null
     approved_by?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ahu_auditsCreateManyInput = {
@@ -69031,6 +69310,9 @@ export namespace Prisma {
     created_at?: Date | string | null
     approval_status?: $Enums.ahu_audits_approval_status | null
     approved_by?: string | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
+    customer_signature_date?: Date | string | null
   }
 
   export type ahu_auditsUpdateManyMutationInput = {
@@ -69068,6 +69350,9 @@ export namespace Prisma {
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     approval_status?: NullableEnumahu_audits_approval_statusFieldUpdateOperationsInput | $Enums.ahu_audits_approval_status | null
     approved_by?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ahu_auditsUncheckedUpdateManyInput = {
@@ -69106,6 +69391,9 @@ export namespace Prisma {
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     approval_status?: NullableEnumahu_audits_approval_statusFieldUpdateOperationsInput | $Enums.ahu_audits_approval_status | null
     approved_by?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type audit_ticketsCreateInput = {
@@ -69426,6 +69714,10 @@ export namespace Prisma {
     status?: string | null
     created_at?: Date | string | null
     deleted_at?: Date | string | null
+    customer_approver_name?: string | null
+    customer_approved_at?: Date | string | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
     units: unitsCreateNestedOneWithoutCorrectiveInput
   }
 
@@ -69443,6 +69735,10 @@ export namespace Prisma {
     status?: string | null
     created_at?: Date | string | null
     deleted_at?: Date | string | null
+    customer_approver_name?: string | null
+    customer_approved_at?: Date | string | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
   }
 
   export type correctiveUpdateInput = {
@@ -69457,6 +69753,10 @@ export namespace Prisma {
     status?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_approved_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
     units?: unitsUpdateOneRequiredWithoutCorrectiveNestedInput
   }
 
@@ -69474,6 +69774,10 @@ export namespace Prisma {
     status?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_approved_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type correctiveCreateManyInput = {
@@ -69490,6 +69794,10 @@ export namespace Prisma {
     status?: string | null
     created_at?: Date | string | null
     deleted_at?: Date | string | null
+    customer_approver_name?: string | null
+    customer_approved_at?: Date | string | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
   }
 
   export type correctiveUpdateManyMutationInput = {
@@ -69504,6 +69812,10 @@ export namespace Prisma {
     status?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_approved_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type correctiveUncheckedUpdateManyInput = {
@@ -69520,6 +69832,10 @@ export namespace Prisma {
     status?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_approved_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type corrective_maintenancesCreateInput = {
@@ -69721,6 +70037,10 @@ export namespace Prisma {
     customer_approver_name?: string | null
     engineer_signer_name?: string | null
     is_approved_by_customer?: boolean | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
+    engineer_signature?: string | null
+    engineer_signature_ip?: string | null
     deleted_at?: Date | string | null
     activity_photos?: activity_photosCreateNestedManyWithoutService_activitiesInput
     audit_velocity_points?: audit_velocity_pointsCreateNestedManyWithoutService_activitiesInput
@@ -69775,6 +70095,10 @@ export namespace Prisma {
     customer_approver_name?: string | null
     engineer_signer_name?: string | null
     is_approved_by_customer?: boolean | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
+    engineer_signature?: string | null
+    engineer_signature_ip?: string | null
     deleted_at?: Date | string | null
     activity_photos?: activity_photosUncheckedCreateNestedManyWithoutService_activitiesInput
     audit_velocity_points?: audit_velocity_pointsUncheckedCreateNestedManyWithoutService_activitiesInput
@@ -69824,6 +70148,10 @@ export namespace Prisma {
     customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
     engineer_signer_name?: NullableStringFieldUpdateOperationsInput | string | null
     is_approved_by_customer?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     activity_photos?: activity_photosUpdateManyWithoutService_activitiesNestedInput
     audit_velocity_points?: audit_velocity_pointsUpdateManyWithoutService_activitiesNestedInput
@@ -69878,6 +70206,10 @@ export namespace Prisma {
     customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
     engineer_signer_name?: NullableStringFieldUpdateOperationsInput | string | null
     is_approved_by_customer?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     activity_photos?: activity_photosUncheckedUpdateManyWithoutService_activitiesNestedInput
     audit_velocity_points?: audit_velocity_pointsUncheckedUpdateManyWithoutService_activitiesNestedInput
@@ -69930,6 +70262,10 @@ export namespace Prisma {
     customer_approver_name?: string | null
     engineer_signer_name?: string | null
     is_approved_by_customer?: boolean | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
+    engineer_signature?: string | null
+    engineer_signature_ip?: string | null
     deleted_at?: Date | string | null
   }
 
@@ -69977,6 +70313,10 @@ export namespace Prisma {
     customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
     engineer_signer_name?: NullableStringFieldUpdateOperationsInput | string | null
     is_approved_by_customer?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
@@ -70027,6 +70367,10 @@ export namespace Prisma {
     customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
     engineer_signer_name?: NullableStringFieldUpdateOperationsInput | string | null
     is_approved_by_customer?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
@@ -71054,6 +71398,10 @@ export namespace Prisma {
     drainage_status?: string | null
     notes?: string | null
     deleted_at?: Date | string | null
+    customer_approver_name?: string | null
+    customer_approved_at?: Date | string | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
     units: unitsCreateNestedOneWithoutDaily_ops_logsInput
   }
 
@@ -71100,6 +71448,10 @@ export namespace Prisma {
     drainage_status?: string | null
     notes?: string | null
     deleted_at?: Date | string | null
+    customer_approver_name?: string | null
+    customer_approved_at?: Date | string | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
   }
 
   export type daily_ops_logsUpdateInput = {
@@ -71143,6 +71495,10 @@ export namespace Prisma {
     drainage_status?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_approved_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
     units?: unitsUpdateOneRequiredWithoutDaily_ops_logsNestedInput
   }
 
@@ -71189,6 +71545,10 @@ export namespace Prisma {
     drainage_status?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_approved_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type daily_ops_logsCreateManyInput = {
@@ -71234,6 +71594,10 @@ export namespace Prisma {
     drainage_status?: string | null
     notes?: string | null
     deleted_at?: Date | string | null
+    customer_approver_name?: string | null
+    customer_approved_at?: Date | string | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
   }
 
   export type daily_ops_logsUpdateManyMutationInput = {
@@ -71277,6 +71641,10 @@ export namespace Prisma {
     drainage_status?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_approved_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type daily_ops_logsUncheckedUpdateManyInput = {
@@ -71322,6 +71690,10 @@ export namespace Prisma {
     drainage_status?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_approved_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type vendor_attendanceCreateInput = {
@@ -73847,6 +74219,9 @@ export namespace Prisma {
     created_at?: SortOrder
     approval_status?: SortOrder
     approved_by?: SortOrder
+    customer_signature?: SortOrder
+    customer_signature_ip?: SortOrder
+    customer_signature_date?: SortOrder
   }
 
   export type ahu_auditsAvgOrderByAggregateInput = {
@@ -73913,6 +74288,9 @@ export namespace Prisma {
     created_at?: SortOrder
     approval_status?: SortOrder
     approved_by?: SortOrder
+    customer_signature?: SortOrder
+    customer_signature_ip?: SortOrder
+    customer_signature_date?: SortOrder
   }
 
   export type ahu_auditsMinOrderByAggregateInput = {
@@ -73951,6 +74329,9 @@ export namespace Prisma {
     created_at?: SortOrder
     approval_status?: SortOrder
     approved_by?: SortOrder
+    customer_signature?: SortOrder
+    customer_signature_ip?: SortOrder
+    customer_signature_date?: SortOrder
   }
 
   export type ahu_auditsSumOrderByAggregateInput = {
@@ -74288,6 +74669,10 @@ export namespace Prisma {
     status?: SortOrder
     created_at?: SortOrder
     deleted_at?: SortOrder
+    customer_approver_name?: SortOrder
+    customer_approved_at?: SortOrder
+    customer_signature?: SortOrder
+    customer_signature_ip?: SortOrder
   }
 
   export type correctiveAvgOrderByAggregateInput = {
@@ -74309,6 +74694,10 @@ export namespace Prisma {
     status?: SortOrder
     created_at?: SortOrder
     deleted_at?: SortOrder
+    customer_approver_name?: SortOrder
+    customer_approved_at?: SortOrder
+    customer_signature?: SortOrder
+    customer_signature_ip?: SortOrder
   }
 
   export type correctiveMinOrderByAggregateInput = {
@@ -74325,6 +74714,10 @@ export namespace Prisma {
     status?: SortOrder
     created_at?: SortOrder
     deleted_at?: SortOrder
+    customer_approver_name?: SortOrder
+    customer_approved_at?: SortOrder
+    customer_signature?: SortOrder
+    customer_signature_ip?: SortOrder
   }
 
   export type correctiveSumOrderByAggregateInput = {
@@ -74536,6 +74929,10 @@ export namespace Prisma {
     customer_approver_name?: SortOrder
     engineer_signer_name?: SortOrder
     is_approved_by_customer?: SortOrder
+    customer_signature?: SortOrder
+    customer_signature_ip?: SortOrder
+    engineer_signature?: SortOrder
+    engineer_signature_ip?: SortOrder
     deleted_at?: SortOrder
   }
 
@@ -74617,6 +75014,10 @@ export namespace Prisma {
     customer_approver_name?: SortOrder
     engineer_signer_name?: SortOrder
     is_approved_by_customer?: SortOrder
+    customer_signature?: SortOrder
+    customer_signature_ip?: SortOrder
+    engineer_signature?: SortOrder
+    engineer_signature_ip?: SortOrder
     deleted_at?: SortOrder
   }
 
@@ -74667,6 +75068,10 @@ export namespace Prisma {
     customer_approver_name?: SortOrder
     engineer_signer_name?: SortOrder
     is_approved_by_customer?: SortOrder
+    customer_signature?: SortOrder
+    customer_signature_ip?: SortOrder
+    engineer_signature?: SortOrder
+    engineer_signature_ip?: SortOrder
     deleted_at?: SortOrder
   }
 
@@ -75627,6 +76032,10 @@ export namespace Prisma {
     drainage_status?: SortOrder
     notes?: SortOrder
     deleted_at?: SortOrder
+    customer_approver_name?: SortOrder
+    customer_approved_at?: SortOrder
+    customer_signature?: SortOrder
+    customer_signature_ip?: SortOrder
   }
 
   export type daily_ops_logsAvgOrderByAggregateInput = {
@@ -75705,6 +76114,10 @@ export namespace Prisma {
     drainage_status?: SortOrder
     notes?: SortOrder
     deleted_at?: SortOrder
+    customer_approver_name?: SortOrder
+    customer_approved_at?: SortOrder
+    customer_signature?: SortOrder
+    customer_signature_ip?: SortOrder
   }
 
   export type daily_ops_logsMinOrderByAggregateInput = {
@@ -75750,6 +76163,10 @@ export namespace Prisma {
     drainage_status?: SortOrder
     notes?: SortOrder
     deleted_at?: SortOrder
+    customer_approver_name?: SortOrder
+    customer_approved_at?: SortOrder
+    customer_signature?: SortOrder
+    customer_signature_ip?: SortOrder
   }
 
   export type daily_ops_logsSumOrderByAggregateInput = {
@@ -83535,6 +83952,10 @@ export namespace Prisma {
     status?: string | null
     created_at?: Date | string | null
     deleted_at?: Date | string | null
+    customer_approver_name?: string | null
+    customer_approved_at?: Date | string | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
   }
 
   export type correctiveUncheckedCreateWithoutUnitsInput = {
@@ -83550,6 +83971,10 @@ export namespace Prisma {
     status?: string | null
     created_at?: Date | string | null
     deleted_at?: Date | string | null
+    customer_approver_name?: string | null
+    customer_approved_at?: Date | string | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
   }
 
   export type correctiveCreateOrConnectWithoutUnitsInput = {
@@ -83603,6 +84028,10 @@ export namespace Prisma {
     drainage_status?: string | null
     notes?: string | null
     deleted_at?: Date | string | null
+    customer_approver_name?: string | null
+    customer_approved_at?: Date | string | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
   }
 
   export type daily_ops_logsUncheckedCreateWithoutUnitsInput = {
@@ -83647,6 +84076,10 @@ export namespace Prisma {
     drainage_status?: string | null
     notes?: string | null
     deleted_at?: Date | string | null
+    customer_approver_name?: string | null
+    customer_approved_at?: Date | string | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
   }
 
   export type daily_ops_logsCreateOrConnectWithoutUnitsInput = {
@@ -83747,6 +84180,10 @@ export namespace Prisma {
     customer_approver_name?: string | null
     engineer_signer_name?: string | null
     is_approved_by_customer?: boolean | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
+    engineer_signature?: string | null
+    engineer_signature_ip?: string | null
     deleted_at?: Date | string | null
     activity_photos?: activity_photosCreateNestedManyWithoutService_activitiesInput
     audit_velocity_points?: audit_velocity_pointsCreateNestedManyWithoutService_activitiesInput
@@ -83799,6 +84236,10 @@ export namespace Prisma {
     customer_approver_name?: string | null
     engineer_signer_name?: string | null
     is_approved_by_customer?: boolean | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
+    engineer_signature?: string | null
+    engineer_signature_ip?: string | null
     deleted_at?: Date | string | null
     activity_photos?: activity_photosUncheckedCreateNestedManyWithoutService_activitiesInput
     audit_velocity_points?: audit_velocity_pointsUncheckedCreateNestedManyWithoutService_activitiesInput
@@ -84171,6 +84612,10 @@ export namespace Prisma {
     status?: StringNullableFilter<"corrective"> | string | null
     created_at?: DateTimeNullableFilter<"corrective"> | Date | string | null
     deleted_at?: DateTimeNullableFilter<"corrective"> | Date | string | null
+    customer_approver_name?: StringNullableFilter<"corrective"> | string | null
+    customer_approved_at?: DateTimeNullableFilter<"corrective"> | Date | string | null
+    customer_signature?: StringNullableFilter<"corrective"> | string | null
+    customer_signature_ip?: StringNullableFilter<"corrective"> | string | null
   }
 
   export type daily_ops_logsUpsertWithWhereUniqueWithoutUnitsInput = {
@@ -84235,6 +84680,10 @@ export namespace Prisma {
     drainage_status?: StringNullableFilter<"daily_ops_logs"> | string | null
     notes?: StringNullableFilter<"daily_ops_logs"> | string | null
     deleted_at?: DateTimeNullableFilter<"daily_ops_logs"> | Date | string | null
+    customer_approver_name?: StringNullableFilter<"daily_ops_logs"> | string | null
+    customer_approved_at?: DateTimeNullableFilter<"daily_ops_logs"> | Date | string | null
+    customer_signature?: StringNullableFilter<"daily_ops_logs"> | string | null
+    customer_signature_ip?: StringNullableFilter<"daily_ops_logs"> | string | null
   }
 
   export type schedulesUpsertWithWhereUniqueWithoutUnitsInput = {
@@ -84319,6 +84768,10 @@ export namespace Prisma {
     customer_approver_name?: StringNullableFilter<"service_activities"> | string | null
     engineer_signer_name?: StringNullableFilter<"service_activities"> | string | null
     is_approved_by_customer?: BoolNullableFilter<"service_activities"> | boolean | null
+    customer_signature?: StringNullableFilter<"service_activities"> | string | null
+    customer_signature_ip?: StringNullableFilter<"service_activities"> | string | null
+    engineer_signature?: StringNullableFilter<"service_activities"> | string | null
+    engineer_signature_ip?: StringNullableFilter<"service_activities"> | string | null
     deleted_at?: DateTimeNullableFilter<"service_activities"> | Date | string | null
   }
 
@@ -85601,6 +86054,10 @@ export namespace Prisma {
     customer_approver_name?: string | null
     engineer_signer_name?: string | null
     is_approved_by_customer?: boolean | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
+    engineer_signature?: string | null
+    engineer_signature_ip?: string | null
     deleted_at?: Date | string | null
     activity_photos?: activity_photosCreateNestedManyWithoutService_activitiesInput
     audit_velocity_points?: audit_velocity_pointsCreateNestedManyWithoutService_activitiesInput
@@ -85653,6 +86110,10 @@ export namespace Prisma {
     customer_approver_name?: string | null
     engineer_signer_name?: string | null
     is_approved_by_customer?: boolean | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
+    engineer_signature?: string | null
+    engineer_signature_ip?: string | null
     deleted_at?: Date | string | null
     activity_photos?: activity_photosUncheckedCreateNestedManyWithoutService_activitiesInput
     audit_velocity_points?: audit_velocity_pointsUncheckedCreateNestedManyWithoutService_activitiesInput
@@ -86790,6 +87251,10 @@ export namespace Prisma {
     customer_approver_name?: string | null
     engineer_signer_name?: string | null
     is_approved_by_customer?: boolean | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
+    engineer_signature?: string | null
+    engineer_signature_ip?: string | null
     deleted_at?: Date | string | null
     audit_velocity_points?: audit_velocity_pointsCreateNestedManyWithoutService_activitiesInput
     units?: unitsCreateNestedOneWithoutService_activitiesInput
@@ -86843,6 +87308,10 @@ export namespace Prisma {
     customer_approver_name?: string | null
     engineer_signer_name?: string | null
     is_approved_by_customer?: boolean | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
+    engineer_signature?: string | null
+    engineer_signature_ip?: string | null
     deleted_at?: Date | string | null
     audit_velocity_points?: audit_velocity_pointsUncheckedCreateNestedManyWithoutService_activitiesInput
   }
@@ -86907,6 +87376,10 @@ export namespace Prisma {
     customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
     engineer_signer_name?: NullableStringFieldUpdateOperationsInput | string | null
     is_approved_by_customer?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     audit_velocity_points?: audit_velocity_pointsUpdateManyWithoutService_activitiesNestedInput
     units?: unitsUpdateOneWithoutService_activitiesNestedInput
@@ -86960,6 +87433,10 @@ export namespace Prisma {
     customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
     engineer_signer_name?: NullableStringFieldUpdateOperationsInput | string | null
     is_approved_by_customer?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     audit_velocity_points?: audit_velocity_pointsUncheckedUpdateManyWithoutService_activitiesNestedInput
   }
@@ -87174,6 +87651,10 @@ export namespace Prisma {
     customer_approver_name?: string | null
     engineer_signer_name?: string | null
     is_approved_by_customer?: boolean | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
+    engineer_signature?: string | null
+    engineer_signature_ip?: string | null
     deleted_at?: Date | string | null
     activity_photos?: activity_photosCreateNestedManyWithoutService_activitiesInput
     units?: unitsCreateNestedOneWithoutService_activitiesInput
@@ -87227,6 +87708,10 @@ export namespace Prisma {
     customer_approver_name?: string | null
     engineer_signer_name?: string | null
     is_approved_by_customer?: boolean | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
+    engineer_signature?: string | null
+    engineer_signature_ip?: string | null
     deleted_at?: Date | string | null
     activity_photos?: activity_photosUncheckedCreateNestedManyWithoutService_activitiesInput
   }
@@ -87291,6 +87776,10 @@ export namespace Prisma {
     customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
     engineer_signer_name?: NullableStringFieldUpdateOperationsInput | string | null
     is_approved_by_customer?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     activity_photos?: activity_photosUpdateManyWithoutService_activitiesNestedInput
     units?: unitsUpdateOneWithoutService_activitiesNestedInput
@@ -87344,6 +87833,10 @@ export namespace Prisma {
     customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
     engineer_signer_name?: NullableStringFieldUpdateOperationsInput | string | null
     is_approved_by_customer?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     activity_photos?: activity_photosUncheckedUpdateManyWithoutService_activitiesNestedInput
   }
@@ -93601,6 +94094,10 @@ export namespace Prisma {
     status?: string | null
     created_at?: Date | string | null
     deleted_at?: Date | string | null
+    customer_approver_name?: string | null
+    customer_approved_at?: Date | string | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
   }
 
   export type daily_ops_logsCreateManyUnitsInput = {
@@ -93645,6 +94142,10 @@ export namespace Prisma {
     drainage_status?: string | null
     notes?: string | null
     deleted_at?: Date | string | null
+    customer_approver_name?: string | null
+    customer_approved_at?: Date | string | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
   }
 
   export type schedulesCreateManyUnitsInput = {
@@ -93707,6 +94208,10 @@ export namespace Prisma {
     customer_approver_name?: string | null
     engineer_signer_name?: string | null
     is_approved_by_customer?: boolean | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
+    engineer_signature?: string | null
+    engineer_signature_ip?: string | null
     deleted_at?: Date | string | null
   }
 
@@ -93920,6 +94425,10 @@ export namespace Prisma {
     status?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_approved_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type correctiveUncheckedUpdateWithoutUnitsInput = {
@@ -93935,6 +94444,10 @@ export namespace Prisma {
     status?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_approved_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type correctiveUncheckedUpdateManyWithoutUnitsInput = {
@@ -93950,6 +94463,10 @@ export namespace Prisma {
     status?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_approved_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type daily_ops_logsUpdateWithoutUnitsInput = {
@@ -93993,6 +94510,10 @@ export namespace Prisma {
     drainage_status?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_approved_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type daily_ops_logsUncheckedUpdateWithoutUnitsInput = {
@@ -94037,6 +94558,10 @@ export namespace Prisma {
     drainage_status?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_approved_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type daily_ops_logsUncheckedUpdateManyWithoutUnitsInput = {
@@ -94081,6 +94606,10 @@ export namespace Prisma {
     drainage_status?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_approved_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type schedulesUpdateWithoutUnitsInput = {
@@ -94175,6 +94704,10 @@ export namespace Prisma {
     customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
     engineer_signer_name?: NullableStringFieldUpdateOperationsInput | string | null
     is_approved_by_customer?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     activity_photos?: activity_photosUpdateManyWithoutService_activitiesNestedInput
     audit_velocity_points?: audit_velocity_pointsUpdateManyWithoutService_activitiesNestedInput
@@ -94227,6 +94760,10 @@ export namespace Prisma {
     customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
     engineer_signer_name?: NullableStringFieldUpdateOperationsInput | string | null
     is_approved_by_customer?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     activity_photos?: activity_photosUncheckedUpdateManyWithoutService_activitiesNestedInput
     audit_velocity_points?: audit_velocity_pointsUncheckedUpdateManyWithoutService_activitiesNestedInput
@@ -94278,6 +94815,10 @@ export namespace Prisma {
     customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
     engineer_signer_name?: NullableStringFieldUpdateOperationsInput | string | null
     is_approved_by_customer?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
@@ -94519,6 +95060,10 @@ export namespace Prisma {
     customer_approver_name?: string | null
     engineer_signer_name?: string | null
     is_approved_by_customer?: boolean | null
+    customer_signature?: string | null
+    customer_signature_ip?: string | null
+    engineer_signature?: string | null
+    engineer_signature_ip?: string | null
     deleted_at?: Date | string | null
   }
 
@@ -94881,6 +95426,10 @@ export namespace Prisma {
     customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
     engineer_signer_name?: NullableStringFieldUpdateOperationsInput | string | null
     is_approved_by_customer?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     activity_photos?: activity_photosUpdateManyWithoutService_activitiesNestedInput
     audit_velocity_points?: audit_velocity_pointsUpdateManyWithoutService_activitiesNestedInput
@@ -94933,6 +95482,10 @@ export namespace Prisma {
     customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
     engineer_signer_name?: NullableStringFieldUpdateOperationsInput | string | null
     is_approved_by_customer?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     activity_photos?: activity_photosUncheckedUpdateManyWithoutService_activitiesNestedInput
     audit_velocity_points?: audit_velocity_pointsUncheckedUpdateManyWithoutService_activitiesNestedInput
@@ -94984,6 +95537,10 @@ export namespace Prisma {
     customer_approver_name?: NullableStringFieldUpdateOperationsInput | string | null
     engineer_signer_name?: NullableStringFieldUpdateOperationsInput | string | null
     is_approved_by_customer?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    customer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature?: NullableStringFieldUpdateOperationsInput | string | null
+    engineer_signature_ip?: NullableStringFieldUpdateOperationsInput | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 

@@ -405,6 +405,9 @@ model ahu_audits {
   created_at              DateTime?                   @default(now()) @db.Timestamp(0)
   approval_status         ahu_audits_approval_status? @default(Pending)
   approved_by             String?                     @db.VarChar(100)
+  customer_signature      String?                     @db.LongText
+  customer_signature_ip   String?                     @db.VarChar(45)
+  customer_signature_date DateTime?                   @db.DateTime(0)
 }
 
 model audit_tickets {
@@ -476,9 +479,13 @@ model corrective {
   perm_action     String?   @db.Text
   recommendation  String?   @db.Text
   photo_url       String?   @db.Text
-  status          String?   @default("Final Approved") @db.VarChar(50)
-  created_at      DateTime? @default(now()) @db.Timestamp(0)
-  deleted_at      DateTime? @db.DateTime(0)
+  status                  String?   @default("Final Approved") @db.VarChar(50)
+  created_at              DateTime? @default(now()) @db.Timestamp(0)
+  deleted_at              DateTime? @db.DateTime(0)
+  customer_approver_name  String?   @db.VarChar(255)
+  customer_approved_at    DateTime? @db.DateTime(0)
+  customer_signature      String?   @db.LongText
+  customer_signature_ip   String?   @db.VarChar(45)
   units           units     @relation(fields: [unit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "corrective_ibfk_1")
 
   @@index([unit_id], map: "unit_id")
@@ -554,6 +561,10 @@ model service_activities {
   customer_approver_name  String?                    @db.VarChar(255)
   engineer_signer_name    String?                    @db.VarChar(255)
   is_approved_by_customer Boolean?                   @default(false)
+  customer_signature      String?                    @db.LongText
+  customer_signature_ip   String?                    @db.VarChar(45)
+  engineer_signature      String?                    @db.LongText
+  engineer_signature_ip   String?                    @db.VarChar(45)
   deleted_at              DateTime?                  @db.DateTime(0)
   activity_photos         activity_photos[]
   audit_velocity_points   audit_velocity_points[]
@@ -813,8 +824,12 @@ model daily_ops_logs {
   static_pressure  Decimal?  @db.Decimal(10, 2)
   vibration_status String?   @db.VarChar(50)
   drainage_status  String?   @db.VarChar(50)
-  notes            String?   @db.Text
-  deleted_at       DateTime? @db.DateTime(0)
+  notes                   String?   @db.Text
+  deleted_at              DateTime? @db.DateTime(0)
+  customer_approver_name  String?   @db.VarChar(255)
+  customer_approved_at    DateTime? @db.DateTime(0)
+  customer_signature      String?   @db.LongText
+  customer_signature_ip   String?   @db.VarChar(45)
   units            units     @relation(fields: [unit_id], references: [id], onDelete: Cascade)
 
   @@index([unit_id], map: "idx_daily_ops_unit")

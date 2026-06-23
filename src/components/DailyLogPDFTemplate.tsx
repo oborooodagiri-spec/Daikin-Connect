@@ -186,6 +186,10 @@ export const getDailyLogSections = (data: any, unit: any, engineerName?: string,
          witnessedDate={options?.witnessedDate}
          lang={lang}
          isBulkSync={options?.isBulkSync}
+         customerSignatureUrl={typeof data !== 'undefined' ? (data.customerSignatureUrl || data.customer_signature) : undefined}
+         engineerSignatureUrl={typeof data !== 'undefined' ? (data.engineerSignatureUrl || data.engineer_signature) : undefined}
+         onCustomerSignClick={typeof data !== 'undefined' ? data.onCustomerSignClick : undefined}
+         onEngineerSignClick={typeof data !== 'undefined' ? data.onEngineerSignClick : undefined}
        />
     </div>
   ];
