@@ -703,6 +703,7 @@ export default function ReportHubPage() {
       {/* A4 REPORT PREVIEW (PAGINATED WITH AUTO-SCALE) */}
       <div 
         ref={reportRef} 
+        id="report-wrapper"
         className="flex flex-col items-center gap-8 mt-16 sm:mt-12 print:mt-0 print:gap-0"
         style={{ 
           transform: reportScale < 1 ? `scale(${reportScale})` : 'none',
@@ -772,6 +773,12 @@ export default function ReportHubPage() {
         @media print {
           title, .print-hidden, .fixed {
             display: none !important;
+          }
+          #report-wrapper {
+            transform: none !important;
+            width: auto !important;
+            height: auto !important;
+            margin-bottom: 0 !important;
           }
           body {
             background-color: white !important;
