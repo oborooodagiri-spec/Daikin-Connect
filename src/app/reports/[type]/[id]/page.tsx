@@ -22,7 +22,7 @@ import {
 import { approveServiceActivity, updateActivityReportUrls, getActivityDetailForReport } from "@/app/actions/units";
 import { logUserActivity } from "@/app/actions/user_security";
 import { getSession } from "@/app/actions/auth";
-import { translateReportStringsAction } from "@/app/actions/translate";
+
 import { Language, t } from "@/lib/i18n";
 import { processReportData } from "@/lib/reportDataHelper";
 import { SignatureModal } from "@/components/ui/SignatureModal";
@@ -45,10 +45,8 @@ export default function ReportHubPage() {
   const [signatureRole, setSignatureRole] = useState<'customer' | 'engineer'>('customer');
   const [signatureSaving, setSignatureSaving] = useState(false);
   
-  // Translation States
-  const [activeLang, setActiveLang] = useState<Language>('id');
-  const [translating, setTranslating] = useState(false);
-  const [translatedCache, setTranslatedCache] = useState<Record<Language, any>>({ id: null, en: null, ja: null });
+  // Translation States (Removed)
+  const activeLang: Language = 'en';
   
   // Smart Pagination States
   const [sectionHeights, setSectionHeights] = useState<number[]>([]);
@@ -94,7 +92,6 @@ export default function ReportHubPage() {
 
         if (res && "success" in res && res.success) {
           setData(res.data);
-          setTranslatedCache(prev => ({ ...prev, id: res.data }));
           setIsApprovedLocal(res.data.activity.is_approved_by_customer);
           setIsReviewedLocal(!!res.data.activity.engineer_signer_name);
         } else {
@@ -224,121 +221,7 @@ export default function ReportHubPage() {
     }
   };
 
-  const handleTranslate = async (targetLang: Language) => {
-    if (targetLang === activeLang || translating) return;
-    
-    // Check Cache first
-    if (translatedCache[targetLang]) {
-      setData(translatedCache[targetLang]);
-      setActiveLang(targetLang);
-      return;
-    }
 
-    setTranslating(true);
-    try {
-      const sourceData = translatedCache.id || data;
-      const activity = sourceData.activity || {};
-      const technicalJson = typeof activity.technical_json === 'string' 
-        ? JSON.parse(activity.technical_json) 
-        : (activity.technical_json || {});
-
-      // 1. EXTRACT MINIMAL PAYLOAD
-      const translatableMap: any = {
-        inspector_name: activity.inspector_name,
-        engineer_note: activity.engineer_note,
-        location: sourceData.unit?.area || "",
-        brand: sourceData.unit?.brand || "",
-        unit_type: sourceData.unit?.unit_type || "",
-        case_complain: activity.case_complain,
-        root_cause: activity.root_cause,
-        temp_action: activity.temp_action,
-        perm_action: activity.perm_action,
-        recommendation: activity.recommendation,
-        technical_advice: activity.technical_advice,
-        technicalAdvice: technicalJson.technicalAdvice || technicalJson.technical_advice,
-      };
-
-      // Extract Part comments for PM
-      if (technicalJson.parts) {
-        translatableMap.parts_vbelt = technicalJson.parts.vbelt_type;
-        translatableMap.parts_motor_p = technicalJson.parts.motor_pulley;
-        translatableMap.parts_motor_b = technicalJson.parts.motor_bearing;
-        translatableMap.parts_blower_p = technicalJson.parts.blower_pulley;
-        translatableMap.parts_blower_b = technicalJson.parts.blower_bearing;
-      }
-
-      if (technicalJson.scope) {
-        const scopeRemarks: any = {};
-        Object.keys(technicalJson.scope).forEach(key => {
-          if (technicalJson.scope[key].remarks) {
-            scopeRemarks[key] = technicalJson.scope[key].remarks;
-          }
-        });
-        translatableMap.scopeRemarks = scopeRemarks;
-      }
-
-      // 2. CALL LIGHTWEIGHT ACTION
-      const res = await translateReportStringsAction(translatableMap, targetLang);
-      
-      if (res && "success" in res && res.success && res.translatedMap) {
-        const translatedMap = res.translatedMap;
-        
-        // 3. MERGE BACK ON CLIENT (Deep Copy)
-        const translatedData = JSON.parse(JSON.stringify(sourceData));
-        const targetActivity = translatedData.activity;
-        
-        targetActivity.inspector_name = translatedMap.inspector_name;
-        targetActivity.engineer_note = translatedMap.engineer_note;
-        targetActivity.case_complain = translatedMap.case_complain;
-        targetActivity.root_cause = translatedMap.root_cause;
-        targetActivity.temp_action = translatedMap.temp_action;
-        targetActivity.perm_action = translatedMap.perm_action;
-        targetActivity.recommendation = translatedMap.recommendation;
-        targetActivity.technical_advice = translatedMap.technical_advice;
-
-        if (translatedData.unit) {
-          translatedData.unit.area = translatedMap.location || translatedData.unit.area;
-          translatedData.unit.brand = translatedMap.brand || translatedData.unit.brand;
-          translatedData.unit.unit_type = translatedMap.unit_type || translatedData.unit.unit_type;
-        }
-
-        if (targetActivity.technical_json) {
-           let tj = typeof targetActivity.technical_json === 'string' 
-             ? JSON.parse(targetActivity.technical_json) 
-             : targetActivity.technical_json;
-             
-           if (translatedMap.technicalAdvice) {
-             tj.technicalAdvice = translatedMap.technicalAdvice;
-           }
-           if (translatedMap.parts_vbelt && tj.parts) {
-             tj.parts.vbelt_type = translatedMap.parts_vbelt;
-             tj.parts.motor_pulley = translatedMap.parts_motor_p;
-             tj.parts.motor_bearing = translatedMap.parts_motor_b;
-             tj.parts.blower_pulley = translatedMap.parts_blower_p;
-             tj.parts.blower_bearing = translatedMap.parts_blower_b;
-           }
-           if (translatedMap.scopeRemarks && tj.scope) {
-             Object.keys(translatedMap.scopeRemarks).forEach(key => {
-                if (tj.scope[key]) {
-                   tj.scope[key].remarks = translatedMap.scopeRemarks[key];
-                }
-             });
-           }
-           targetActivity.technical_json = tj;
-        }
-
-        setTranslatedCache(prev => ({ ...prev, [targetLang]: translatedData }));
-        setData(translatedData);
-        setActiveLang(targetLang);
-      } else {
-        alert("AI Translation failed: " + (res as any).error);
-      }
-    } catch (err) {
-      console.error("Translation error:", err);
-    } finally {
-      setTranslating(false);
-    }
-  };
 
   const handlePrint = () => {
     window.print();
@@ -719,35 +602,7 @@ export default function ReportHubPage() {
           <X size={18} />
           <span className="hidden md:inline">Tutup</span>
         </button>
-        
-        <div className="w-px h-6 bg-slate-200 mx-1" />
 
-        {/* PREMIUM LANGUAGE SWITCHER */}
-        <div className="flex bg-slate-100 p-1 rounded-xl gap-1">
-          {[
-            { id: 'en', label: 'EN' },
-            { id: 'ja', label: 'JP' },
-            { id: 'id', label: 'ID' }
-          ].map((lang) => (
-            <button
-              key={lang.id}
-              onClick={() => handleTranslate(lang.id as Language)}
-              disabled={translating}
-              className={`px-3 py-2 rounded-lg text-[10px] font-black transition-all ${
-                activeLang === lang.id 
-                  ? 'bg-white text-[#00a1e4] shadow-sm scale-110 border border-slate-100' 
-                  : 'text-slate-400 hover:text-slate-600'
-              } ${translating ? 'opacity-50 cursor-not-allowed' : ''} shrink-0`}
-            >
-              {translating && activeLang !== lang.id ? '...' : lang.label}
-            </button>
-          ))}
-          {translating && (
-             <div className="flex items-center px-1">
-                <Loader2 size={10} className="animate-spin text-[#00a1e4]" />
-             </div>
-          )}
-        </div>
 
         <div className="w-px h-6 bg-slate-200 mx-1" />
         
