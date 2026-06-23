@@ -904,6 +904,14 @@ export default function ReportHubPage() {
         ))}
       </div>
 
+      <SignatureModal
+        isOpen={signatureModalOpen}
+        onClose={() => setSignatureModalOpen(false)}
+        onSave={handleSaveSignature}
+        title={signatureRole === 'engineer' ? "Tanda Tangan Engineer" : "Tanda Tangan Pelanggan"}
+        lang={activeLang}
+      />
+
       <style jsx global>{`
         @media print {
           title, .print-hidden, .fixed {
