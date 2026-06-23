@@ -80,11 +80,14 @@ function ReportsContent({ lang }: { lang: Language }) {
     });
     if ("success" in res && res.success) {
       setReports(res.data || []);
-      setStats(res.stats || { totalAudit: 0, totalPreventive: 0, totalCorrective: 0, totalComplaint: 0, totalAll: 0 });
+      setStats(res.stats || { totalAudit: 0, totalPreventive: 0, totalCorrective: 0, totalComplaint: 0, totalDailyLog: 0, totalAll: 0 });
       setPagination(res.pagination || { total: 0, page: 1, limit: 20, totalPages: 1 });
       if (res.enabledForms) {
         setEnabledForms(res.enabledForms.split(",").map((s: string) => s.trim()));
       }
+    } else if ("error" in res) {
+      console.error("GET REPORTS ERROR:", res.error);
+      alert("Error fetching reports: " + res.error);
     }
     setLoading(false);
   };
