@@ -704,7 +704,7 @@ export default function ReportHubPage() {
       <div 
         ref={reportRef} 
         id="report-wrapper"
-        className="flex flex-col items-center gap-8 mt-16 sm:mt-12 print:mt-0 print:gap-0"
+        className="flex flex-col items-center gap-8 mt-16 sm:mt-12 print:mt-0 print:gap-0 print:block"
         style={{ 
           transform: reportScale < 1 ? `scale(${reportScale})` : 'none',
           transformOrigin: 'top center',
@@ -714,7 +714,14 @@ export default function ReportHubPage() {
         }}
       >
         {pages.map((pageSections, index) => (
-          <div key={index} className="print:shadow-none shadow-2xl">
+          <div 
+            key={index} 
+            className="print:shadow-none shadow-2xl print:break-after-page print:break-inside-avoid print:block"
+            style={{ 
+               pageBreakAfter: index === pages.length - 1 ? 'auto' : 'always',
+               breakAfter: index === pages.length - 1 ? 'auto' : 'page'
+            }}
+          >
             {isRoesminLogsheet ? (
               /* LANDSCAPE LOGSHEET: Render directly without ReportBase wrapper */
               <div 
@@ -771,14 +778,19 @@ export default function ReportHubPage() {
 
       <style jsx global>{`
         @media print {
+          @page {
+            size: A4 portrait;
+            margin: 0;
+          }
           title, .print-hidden, .fixed {
             display: none !important;
           }
           #report-wrapper {
             transform: none !important;
-            width: auto !important;
+            width: 100% !important;
             height: auto !important;
             margin-bottom: 0 !important;
+            display: block !important;
           }
           body {
             background-color: white !important;
