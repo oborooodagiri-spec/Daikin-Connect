@@ -543,7 +543,12 @@ export default function ReportHubPage() {
   // Roesmin logsheet: each section IS a full page (landscape), skip pagination
   const MAX_PAGE_HEIGHT = isRoesminLogsheet ? 99999 : 720; // Safe height in px for A4 to avoid footer overlap
 
-  if (sectionHeights.length > 0 && techSections.length === sectionHeights.length) {
+  if (isRoesminLogsheet) {
+    // Roesmin logsheet: each section IS a full page (landscape), skip height-based pagination
+    techSections.forEach(section => {
+      pages.push([section]);
+    });
+  } else if (sectionHeights.length > 0 && techSections.length === sectionHeights.length) {
     let currentPage: React.ReactNode[] = [];
     let currentHeight = 0;
 
@@ -766,7 +771,7 @@ export default function ReportHubPage() {
       <style jsx global>{`
         @media print {
           @page {
-            size: A4 portrait;
+            size: A4 ${isRoesminLogsheet ? 'landscape' : 'portrait'};
             margin: 0;
           }
           title, .print-hidden, .fixed {
