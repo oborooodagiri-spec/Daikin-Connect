@@ -705,22 +705,24 @@ export default function ReportHubPage() {
           marginBottom: reportScale < 1 ? `-${(1 - reportScale) * 100}%` : '0' // Mitigate scale spacing
         }}
       >
-        {pages.map((pageSections, index) => (
+        {pages.map((pageSections, index) => {
+          const isPage2Portrait = isRoesminLogsheet && (pageSections as any)[0]?.key === "page-2-ahu-crac";
+          return (
           <div 
             key={index} 
-            className="print:shadow-none shadow-2xl print:break-after-page print:break-inside-avoid print:block"
+            className={`print:shadow-none shadow-2xl print:break-after-page print:break-inside-avoid print:block ${isPage2Portrait ? 'portrait-page' : ''}`}
             style={{ 
                pageBreakAfter: index === pages.length - 1 ? 'auto' : 'always',
                breakAfter: index === pages.length - 1 ? 'auto' : 'page'
             }}
           >
             {isRoesminLogsheet ? (
-              /* LANDSCAPE LOGSHEET: Render directly without ReportBase wrapper */
+              /* LANDSCAPE/PORTRAIT LOGSHEET: Render directly without ReportBase wrapper */
               <div 
-                data-landscape="true"
+                data-landscape={!isPage2Portrait}
                 style={{
-                  width: "297mm",
-                  minHeight: "210mm",
+                  width: isPage2Portrait ? "210mm" : "297mm",
+                  minHeight: isPage2Portrait ? "297mm" : "210mm",
                   backgroundColor: "white",
                   padding: "8mm 10mm",
                   boxSizing: "border-box",
@@ -773,6 +775,13 @@ export default function ReportHubPage() {
           @page {
             size: A4 ${isRoesminLogsheet ? 'landscape' : 'portrait'};
             margin: 0;
+          }
+          @page portrait-page {
+            size: A4 portrait;
+            margin: 0;
+          }
+          .portrait-page {
+            page: portrait-page;
           }
           title, .print-hidden, .fixed {
             display: none !important;
