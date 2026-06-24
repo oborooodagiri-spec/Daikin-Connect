@@ -299,7 +299,7 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
 
   pages.push(
     <div key="page-1-plant" style={S.page}>
-      {renderPageHeader('DAILY LOGSHEET — HVAC MONITORING REPORT', date, inspector, 'Page 1 of 4')}
+      {renderPageHeader('DAILY LOGSHEET — HVAC MONITORING REPORT', date, inspector, 'Page 1 of 5')}
       
       <div style={{ padding: '0 2mm' }}>
         <div style={{ ...S.catRow, marginBottom: '1.5mm', fontSize: '7.5pt' }}>CHILLER PERFORMANCE — CH-1 to CH-10</div>
@@ -478,8 +478,8 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
   ];
 
   pages.push(
-    <div key="page-2-ahu-crac" style={S.page}>
-      {renderPageHeader('AHU & CRAC MONITORING', date, inspector, 'Page 2 of 4')}
+    <div key="page-2-ahu" style={S.page}>
+      {renderPageHeader('AHU MONITORING', date, inspector, 'Page 2 of 5')}
       
       <div style={{ padding: '0 2mm' }}>
         <div style={{ ...S.catRow, marginBottom: '1.5mm', fontSize: '7.5pt' }}>AIR HANDLING UNIT (AHU)</div>
@@ -571,8 +571,16 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
             ))}
           </tbody>
         </table>
+      </div>
+    </div>
+  );
 
-        <div style={{ ...S.catRow, marginTop: '4mm', marginBottom: '1.5mm', fontSize: '7.5pt' }}>CRAC UNITS & POWER METER</div>
+  pages.push(
+    <div key="page-3-crac" style={S.page}>
+      {renderPageHeader('CRAC & POWER METER MONITORING', date, inspector, 'Page 3 of 5')}
+      
+      <div style={{ padding: '0 2mm' }}>
+        <div style={{ ...S.catRow, marginBottom: '1.5mm', fontSize: '7.5pt' }}>CRAC UNITS & POWER METER</div>
         <div style={{ display: 'flex', gap: '4mm' }}>
           {/* CRAC */}
           <div style={{ flex: 1.5 }}>
@@ -770,7 +778,7 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
 
   pages.push(
     <div key="page-3-fcu-gf" style={S.page}>
-      {renderPageHeader('FAN COIL UNIT (FCU) — GROUND FLOOR', date, inspector, 'Page 3 of 4')}
+      {renderPageHeader('FAN COIL UNIT (FCU) — GROUND FLOOR', date, inspector, 'Page 4 of 5')}
       <div style={{ padding: '0 2mm' }}>
         {renderFcuTable(fcuGFRooms)}
       </div>
@@ -810,7 +818,7 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
 
   pages.push(
     <div key="page-4-fcu-1f" style={S.page}>
-      {renderPageHeader('FAN COIL UNIT (FCU) — 1ST FLOOR', date, inspector, 'Page 4 of 4')}
+      {renderPageHeader('FAN COIL UNIT (FCU) — 1ST FLOOR', date, inspector, 'Page 5 of 5')}
       <div style={{ padding: '0 2mm' }}>
         {renderFcuTable(fcu1FRooms)}
 
