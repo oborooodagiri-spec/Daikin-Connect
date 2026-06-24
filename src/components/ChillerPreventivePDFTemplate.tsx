@@ -311,11 +311,11 @@ export const getChillerPreventiveSections = (data: any, unit: any, engineerName?
 
     <div key="op-header" style={categoryHeader}>OPERATING CONDITION</div>,
     renderVoltage(),
-    renderCheckRunning("B. CHECK RUNNING (COMPRESSOR) - PART 1", 0, 4),
+    renderCheckRunning("B. CHECK RUNNING (COMPRESSOR) - PART 1", 0, 3),
     
     // Force page break before C/D/E to prevent footer truncation
     <div key="cde-group" style={{ width: "100%" }}>
-      {renderCheckRunning("B. CHECK RUNNING (COMPRESSOR) - PART 2", 4, 5)}
+      {renderCheckRunning("B. CHECK RUNNING (COMPRESSOR) - PART 2", 3, 5)}
       {renderFanUnit()}
       {renderWaterParameters()}
       {renderSetting()}
