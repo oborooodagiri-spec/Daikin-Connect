@@ -270,6 +270,32 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
     { key: "mv_persen", label: "MV", unit: "%" },
   ];
 
+  const cracParams = [
+    { key: "status", label: "Status Unit" },
+    { key: "fan_status", label: "Status Fan" },
+    { key: "comp1", label: "Status Comp - 1" },
+    { key: "comp2", label: "Status Comp - 2" },
+    { key: "temp_alarm", label: "Temp High Alarm" },
+    { key: "rh_alarm", label: "RH High Alarm" },
+    { key: "alarm_status", label: "Alarm Status" },
+    { key: "fan_speed", label: "Supply Fan Speed", unit: "%" },
+    { key: "return_temp", label: "Return Air Temp", unit: "°C" },
+    { key: "return_rh", label: "Return Air RH", unit: "%" },
+  ];
+
+  const cracUnits = [
+    { id: "crac_gf_01", label: "CRAC-GF-01" },
+    { id: "crac_gf_02", label: "CRAC-GF-02" },
+    { id: "crac_2nd_01", label: "CRAC-2ND-01" },
+    { id: "crac_2nd_02", label: "CRAC-2ND-02" }
+  ];
+
+  const powerParams = [
+    { key: "l1_l2", label: "L1 - L2", unit: "V", design: "400" },
+    { key: "l2_l3", label: "L2 - L3", unit: "V", design: "400" },
+    { key: "l3_l1", label: "L3 - L1", unit: "V", design: "400" },
+  ];
+
 
   pages.push(
     <div key="page-1-plant" style={S.page}>
