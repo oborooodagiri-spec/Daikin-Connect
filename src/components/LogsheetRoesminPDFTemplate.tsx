@@ -474,6 +474,9 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
     { group: 'FILTERS', params: ahuFilterParams },
     { group: 'ELECTRIC HEATER', params: ahuHeaterParams },
     { group: 'SUPPLY FAN', params: ahuFanParams },
+  ];
+
+  const allAhuParamsPage3 = [
     { group: 'DAMPER & SUPPLY AIR', params: ahuDamperParams },
   ];
 
@@ -496,6 +499,67 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
           </thead>
           <tbody>
             {allAhuParams.map((group) => (
+              <React.Fragment key={group.group}>
+                {/* Group header row */}
+                <tr>
+                  <td colSpan={3 + ahuUnits.length} style={{
+                    ...S.catRow,
+                    padding: '1mm 3mm',
+                    border: `0.5pt solid ${C.border}`,
+                    fontSize: '7pt',
+                  }}>
+                    {group.group}
+                  </td>
+                </tr>
+                {group.params.map((p, pIdx) => (
+                  <tr key={p.key} style={{ backgroundColor: pIdx % 2 === 0 ? C.rowEven : C.rowOdd }}>
+                    <td style={{ ...S.tdCell, fontSize: '6pt', color: '#94a3b8' }}>{pIdx + 1}</td>
+                    <td style={S.tdLabel}>{p.label}</td>
+                    <td style={{ ...S.tdCell, color: C.designText, fontStyle: 'italic', fontSize: '6pt' }}>
+                      {p.design || '-'}
+                    </td>
+                    {ahuUnits.map((u) => {
+                      const val = getVal(u.id, p.key);
+                      const isStatus = p.key.includes('status');
+                      return (
+                        <td key={u.id} style={{
+                          ...S.tdCell,
+                          color: isStatus ? statusColor(val) : undefined,
+                          fontWeight: isStatus ? 800 : 600,
+                        }}>
+                          {val}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
+  pages.push(
+    <div key="page-3-crac" style={S.page}>
+      {renderPageHeader('CRAC & POWER METER MONITORING', date, inspector, 'Page 3 of 5')}
+      
+      <div style={{ padding: '0 2mm' }}>
+        <div style={{ ...S.catRow, marginBottom: '1.5mm', fontSize: '7.5pt' }}>AIR HANDLING UNIT (AHU) — CONTINUED</div>
+        <table style={{...S.table, marginBottom: '4mm'}}>
+          <thead>
+            <tr>
+              <th style={{ ...S.thCell, width: '40px' }}>#</th>
+              <th style={{ ...S.thCell, width: '130px', textAlign: 'left' as const }}>PARAMETER</th>
+              <th style={{ ...S.thCell, width: '50px' }}>DESIGN</th>
+              {ahuUnits.map((u) => (
+                <th key={u.id} style={S.thCell}>{u.label}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {allAhuParamsPage3.map((group) => (
               <React.Fragment key={group.group}>
                 {/* Group header row */}
                 <tr>
@@ -571,15 +635,7 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
             ))}
           </tbody>
         </table>
-      </div>
-    </div>
-  );
 
-  pages.push(
-    <div key="page-3-crac" style={S.page}>
-      {renderPageHeader('CRAC & POWER METER MONITORING', date, inspector, 'Page 3 of 5')}
-      
-      <div style={{ padding: '0 2mm' }}>
         <div style={{ ...S.catRow, marginBottom: '1.5mm', fontSize: '7.5pt' }}>CRAC UNITS & POWER METER</div>
         <div style={{ display: 'flex', gap: '4mm' }}>
           {/* CRAC */}
