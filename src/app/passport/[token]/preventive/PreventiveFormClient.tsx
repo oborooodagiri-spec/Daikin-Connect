@@ -12,6 +12,7 @@ import {
   CheckCircle2, AlertCircle, MapPin, X, Printer, Wrench, WifiOff,
   FileVideo, Play
 } from "lucide-react";
+import { SignatureModal } from "@/components/ui/SignatureModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { t, Language } from "@/lib/i18n";
 
@@ -275,6 +276,9 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
     lang === 'ja' ? "再調整" : "Reschedule"
   ];
 
+  // Signature Modal
+  const [showSignatureModal, setShowSignatureModal] = useState(false);
+
   // Media (Photos & Videos)
   const [mediaItems, setMediaItems] = useState<{file: File | null, type: "image" | "video", preview: string, caption: string}[]>(
     initialData?.activity_photos?.map((p: { photo_url: string; media_type?: string; description?: string }) => ({
@@ -410,7 +414,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
   // The data snapshot is now built inside handleSubmit for total synchronization.
 
   // --- SUBMIT ---
-  const handleSubmit = async () => {
+  const handleSubmit = async (signatureBase64: string, signerName: string) => {
     if (!engineerName) { 
         alert(lang === 'ja' ? "サービスエンジニア名は必須です！" : "Nama Service Engineer wajib diisi!"); 
         setStep(1); return; 
@@ -689,7 +693,8 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
         technical_json: JSON.stringify(finalRenderData, (_, v) => typeof v === 'bigint' ? v.toString() : v), 
         pdf_report_url: pdfUrl,
         berita_acara_pdf_url: baUrl,
-        engineer_signer_name: engineerName,
+        engineer_signer_name: signerName,
+        reviewer_signature: signatureBase64,
         photos: uploadedMedia
       };
 
@@ -1099,13 +1104,25 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
               <span className="hidden sm:inline">{t("Next", lang)}</span> <ChevronRight size={16} />
             </button>
           ) : (
-            <button onClick={handleSubmit} disabled={loading} className="flex-[2] py-4 bg-emerald-500 text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-200 uppercase text-xs tracking-widest disabled:opacity-50 whitespace-nowrap">
+            <button onClick={() => setShowSignatureModal(true)} disabled={loading} className="flex-[2] py-4 bg-emerald-500 text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-200 uppercase text-xs tracking-widest disabled:opacity-50 whitespace-nowrap">
               {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <Printer size={18} />}
               <span className="hidden sm:inline">{loading ? (lang === 'ja' ? '生成中...' : "Generating...") : t("Generate PDF & Submit", lang)}</span>
             </button>
           )}
         </div>
       </div>
+
+      <SignatureModal
+        isOpen={showSignatureModal}
+        onClose={() => setShowSignatureModal(false)}
+        onSave={(sig, name) => {
+          setShowSignatureModal(false);
+          handleSubmit(sig, name);
+        }}
+        title={lang === 'ja' ? 'エンジニアの署名' : 'Tanda Tangan Engineer'}
+        defaultName={engineerName}
+        lang={lang}
+      />
     </div>
   );
 }

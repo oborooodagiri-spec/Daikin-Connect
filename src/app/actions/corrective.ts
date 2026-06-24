@@ -20,6 +20,8 @@ export async function createCorrectiveActivity(data: any) {
       photos,
       location,
       unit_tag,
+      reviewer_signature,
+      engineer_signer_name,
     } = data;
     
     console.log(`[CORRECTIVE_SUBMIT] Incoming Payload for Unit #${unit_id}:`, JSON.stringify(data, null, 2));
@@ -37,6 +39,8 @@ export async function createCorrectiveActivity(data: any) {
         location: location || "",
         unit_tag: unit_tag || "",
         pdf_report_url,
+        reviewer_signature,
+        engineer_signer_name,
       },
     });
 
@@ -53,6 +57,7 @@ export async function createCorrectiveActivity(data: any) {
           perm_action: data.perm_action || "",
           recommendation: data.recommendation || "",
           photo_url: pdf_report_url || "",
+          reviewer_signature,
           status: "Submitted",
         },
       });
@@ -129,6 +134,8 @@ export async function updateCorrectiveActivity(id: number, data: any) {
       photos,
       location,
       unit_tag,
+      reviewer_signature,
+      engineer_signer_name,
     } = data;
 
     const updatedActivity = await prisma.service_activities.update({
@@ -140,7 +147,9 @@ export async function updateCorrectiveActivity(id: number, data: any) {
         technical_advice: data.recommendation || "",
         location: location || "",
         unit_tag: unit_tag || "",
-        pdf_report_url
+        pdf_report_url,
+        reviewer_signature,
+        engineer_signer_name,
       }
     });
 

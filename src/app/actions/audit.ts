@@ -48,7 +48,9 @@ export async function createAuditActivity(data: any) {
       
       // Related Data
       velocity_points, // Array of { point_number, velocity_value }
-      photos // Array of { photo_url, description } 
+      photos, // Array of { photo_url, description } 
+      reviewer_signature,
+      engineer_signer_name
     } = data;
 
     const newActivity = await prisma.service_activities.create({
@@ -91,7 +93,9 @@ export async function createAuditActivity(data: any) {
         volt_rt: parseInt(volt_rt) || 0,
         volt_ln: parseInt(volt_ln) || 0,
 
-        pdf_report_url
+        pdf_report_url,
+        reviewer_signature,
+        engineer_signer_name
       }
     });
 
@@ -186,7 +190,9 @@ export async function updateAuditActivity(id: number | string, data: any) {
       volt_ln,
       pdf_report_url,
       velocity_points,
-      photos
+      photos,
+      reviewer_signature,
+      engineer_signer_name
     } = data;
 
     // 1. Update the Main Activity Record
@@ -222,7 +228,9 @@ export async function updateAuditActivity(id: number | string, data: any) {
         volt_st: parseInt(volt_st) || 0,
         volt_rt: parseInt(volt_rt) || 0,
         volt_ln: parseInt(volt_ln) || 0,
-        pdf_report_url
+        pdf_report_url,
+        reviewer_signature,
+        engineer_signer_name
       }
     });
 

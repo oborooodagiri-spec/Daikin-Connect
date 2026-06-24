@@ -12,6 +12,7 @@ import {
   CheckCircle2, AlertCircle, MapPin, X, UploadCloud, Printer, WifiOff,
   FileVideo, Play
 } from "lucide-react";
+import { SignatureModal } from "@/components/ui/SignatureModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { calculateBalancedAHI, AHIResult } from "@/lib/physics/ahi-calculation";
 import { t, Language } from "@/lib/i18n";
@@ -25,6 +26,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
   const [showFormula, setShowFormula] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [lang, setLang] = useState<Language>('id');
+  const [showSignatureModal, setShowSignatureModal] = useState(false);
 
   React.useEffect(() => {
     setIsMounted(true);
@@ -320,7 +322,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
   };
 
   // --- SUBMIT PIPELINE ---
-  const handleSubmit = async () => {
+  const handleSubmit = async (signatureBase64: string, signerName: string) => {
     if (!formData.inspector_name) { 
         alert(lang === 'ja' ? "インスペクター名は必須です！" : "Nama Inspector (General Data) wajib diisi!"); 
         setStep(1); return; 
@@ -605,7 +607,8 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
         technical_json: JSON.stringify(finalRenderData.t, (_, v) => typeof v === 'bigint' ? v.toString() : v), 
         pdf_report_url: pdfUrl,
         berita_acara_pdf_url: baUrl,
-        engineer_signer_name: formData.inspector_name,
+        engineer_signer_name: signerName,
+        reviewer_signature: signatureBase64,
         velocity_points,
         photos: uploadedMedia
       };
@@ -979,7 +982,7 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
               <span className="hidden sm:inline">{t("Next", lang)}</span> <ChevronRight size={16} />
             </button>
           ) : (
-            <button onClick={handleSubmit} disabled={loading} className="flex-[2] py-4 bg-emerald-500 text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-200 uppercase text-xs tracking-widest disabled:opacity-50 whitespace-nowrap">
+            <button onClick={() => setShowSignatureModal(true)} disabled={loading} className="flex-[2] py-4 bg-emerald-500 text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-200 uppercase text-xs tracking-widest disabled:opacity-50 whitespace-nowrap">
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               ) : <Printer size={18} />}
@@ -1043,10 +1046,21 @@ export default function AuditFormClient({ unit, initialData, onSuccess }: { unit
           </div>
         )}
       </AnimatePresence>
+
+      <SignatureModal
+        isOpen={showSignatureModal}
+        onClose={() => setShowSignatureModal(false)}
+        onSave={(sig, name) => {
+          setShowSignatureModal(false);
+          handleSubmit(sig, name);
+        }}
+        title={lang === 'ja' ? 'エンジニアの署名' : 'Tanda Tangan Engineer'}
+        defaultName={formData.inspector_name || ''}
+        lang={lang}
+      />
     </div>
   );
 }
-
 function Zap(props: any) { 
   return (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>

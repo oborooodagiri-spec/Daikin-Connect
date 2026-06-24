@@ -20,6 +20,8 @@ export async function createPreventiveActivity(data: any) {
       // project, date, model, so_number, serial_number, visit,
       // unit_number, nominal_capacity, location, team_opt
       // scope_of_work rows, parts info, etc.
+      reviewer_signature,
+      engineer_signer_name
     } = data;
 
     const newActivity = await prisma.service_activities.create({
@@ -33,7 +35,9 @@ export async function createPreventiveActivity(data: any) {
         technical_advice: engineer_note,
         location: data.location || "",
         unit_tag: data.unit_tag || "",
-        pdf_report_url
+        pdf_report_url,
+        reviewer_signature,
+        engineer_signer_name
       }
     });
 
@@ -90,7 +94,9 @@ export async function updatePreventiveActivity(id: number, data: any) {
       engineer_note,
       technical_json,
       pdf_report_url,
-      photos
+      photos,
+      reviewer_signature,
+      engineer_signer_name
     } = data;
 
     const updatedActivity = await prisma.service_activities.update({
@@ -100,7 +106,9 @@ export async function updatePreventiveActivity(id: number, data: any) {
         inspector_name,
         technical_json,
         technical_advice: engineer_note,
-        pdf_report_url
+        pdf_report_url,
+        reviewer_signature,
+        engineer_signer_name
       }
     });
 

@@ -120,7 +120,10 @@ export async function submitDailyLog(unitId: number, data: any) {
         static_pressure: parseNum(data.static_pressure),
         vibration_status: data.vibration_status || null,
         drainage_status: data.drainage_status || null,
-        notes: data.notes || null
+        notes: data.notes || null,
+
+        reviewer_signature: data.reviewer_signature || null,
+        engineer_signer_name: data.inspectorName || null
       }
     });
 

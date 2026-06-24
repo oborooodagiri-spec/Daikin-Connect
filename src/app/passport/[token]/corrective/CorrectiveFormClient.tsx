@@ -13,6 +13,7 @@ import {
   User, Phone, Building2, Mail, Calendar, WifiOff,
   FileVideo, Play
 } from "lucide-react";
+import { SignatureModal } from "@/components/ui/SignatureModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { t, Language } from "@/lib/i18n";
 
@@ -25,6 +26,7 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
   const [isQueued, setIsQueued] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [lang, setLang] = useState<Language>('id');
+  const [showSignatureModal, setShowSignatureModal] = useState(false);
 
   React.useEffect(() => {
     setIsMounted(true);
@@ -215,7 +217,7 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
   // The data snapshot is now built inside handleSubmit to ensure it uses the freshest state variables.
 
   // Submit
-  const handleSubmit = async () => {
+  const handleSubmit = async (signatureBase64: string, signerName: string) => {
     if (!personnel.name) { alert(lang === 'ja' ? "エンジニア名は必須です！" : "Nama Teknisi wajib diisi!"); setStep(1); return; }
     if (!category) { alert(lang === 'ja' ? "苦情カテゴリを選択してください！" : "Kategori Komplain wajib dipilih!"); setStep(3); return; }
     if (!analysis.complain) { alert(lang === 'ja' ? "苦情内容を入力してください！" : "Keluhan/Case wajib diisi!"); setStep(3); return; }
@@ -506,7 +508,8 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
         technical_json: JSON.stringify({ ...finalRenderData, is_complaint: !!category }, (_, v) => typeof v === 'bigint' ? v.toString() : v),
         pdf_report_url: pdfUrl,
         berita_acara_pdf_url: baUrl,
-        engineer_signer_name: personnel.name,
+        engineer_signer_name: signerName,
+        reviewer_signature: signatureBase64,
         photos: uploadedMedia,
       };
 
@@ -810,13 +813,25 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
               <span className="hidden sm:inline">{t("Next", lang)}</span> <ChevronRight size={16} />
             </button>
           ) : (
-            <button onClick={handleSubmit} disabled={loading} className="flex-[2] py-4 bg-rose-600 text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-rose-700 transition-colors shadow-lg shadow-rose-200 uppercase text-xs tracking-widest disabled:opacity-50 whitespace-nowrap">
+            <button onClick={() => setShowSignatureModal(true)} disabled={loading} className="flex-[2] py-4 bg-rose-600 text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-rose-700 transition-colors shadow-lg shadow-rose-200 uppercase text-xs tracking-widest disabled:opacity-50 whitespace-nowrap">
               {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <Printer size={18} />}
               <span className="hidden sm:inline">{loading ? (lang === 'ja' ? '生成中...' : "Generating...") : t("Generate PDF & Submit", lang)}</span>
             </button>
           )}
         </div>
       </div>
+
+      <SignatureModal
+        isOpen={showSignatureModal}
+        onClose={() => setShowSignatureModal(false)}
+        onSave={(sig, name) => {
+          setShowSignatureModal(false);
+          handleSubmit(sig, name);
+        }}
+        title={lang === 'ja' ? 'エンジニアの署名' : 'Tanda Tangan Engineer'}
+        defaultName={personnel?.name || ''}
+        lang={lang}
+      />
     </div>
   );
 }

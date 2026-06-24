@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { checkDailyLogStatus, submitDailyLog } from "@/app/actions/daily_logs";
 import { savePendingSubmission, saveDraft, loadDraft, deleteDraft } from "@/lib/offline-db";
 import { t, Language } from "@/lib/i18n";
+import { SignatureModal } from "@/components/ui/SignatureModal";
 
 export default function DailyLogFormClient({ 
   unitId, 
@@ -28,6 +29,7 @@ export default function DailyLogFormClient({
   const [isMounted, setIsMounted] = useState(false);
   const [lang, setLang] = useState<Language>('id');
   const [draftStatus, setDraftStatus] = useState<string>('');
+  const [showSignatureModal, setShowSignatureModal] = useState(false);
 
   const [formData, setFormData] = useState({
     inspectorName: initialData?.inspector_name || "",
@@ -110,19 +112,28 @@ export default function DailyLogFormClient({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.inspectorName) {
         alert(lang === 'ja' ? "検査官名を入力してください。" : lang === 'id' ? "Mohon isi nama pemeriksa" : "Please fill in the inspector name.");
         return;
     }
+    setShowSignatureModal(true);
+  };
 
+  const executeSubmit = (signatureBase64: string, signerName: string) => {
     startTransition(async () => {
+      const payloadWithSignature = {
+        ...formData,
+        inspectorName: signerName,
+        reviewer_signature: signatureBase64,
+      };
+
       // --- OFFLINE CHECK ---
       if (!navigator.onLine) {
         await savePendingSubmission({
           type: 'CORRECTIVE', // Just to use existing offline queue, might need mapping if backend expects different
-          data: { ...formData, unit_id: unitId, type: 'DAILY_LOG' },
+          data: { ...payloadWithSignature, unit_id: unitId, type: 'DAILY_LOG' },
           photos: []
         });
         await deleteDraft(`DAILYLOG_${unitId}`);
@@ -131,7 +142,7 @@ export default function DailyLogFormClient({
         return;
       }
 
-      const res = await submitDailyLog(initialData ? initialData.unit_id : unitId, formData) as any;
+      const res = await submitDailyLog(initialData ? initialData.unit_id : unitId, payloadWithSignature) as any;
       if (res && "success" in res && res.success) {
         await deleteDraft(`DAILYLOG_${unitId}`);
         setSubmitSuccess(true);
@@ -225,7 +236,7 @@ export default function DailyLogFormClient({
         <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">{lang === 'ja' ? '運転監視パラメータ' : 'Operational Monitoring Parameter'}</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleFormSubmit} className="space-y-8">
         {/* Basic Info */}
         <Section title={lang === 'ja' ? '基本情報' : 'Informasi Dasar'} icon={<Info size={18}/>}>
           <div className="space-y-4">
@@ -408,6 +419,18 @@ export default function DailyLogFormClient({
           outline: none;
         }
       `}</style>
+
+      <SignatureModal
+        isOpen={showSignatureModal}
+        onClose={() => setShowSignatureModal(false)}
+        onSave={(sig, name) => {
+          setShowSignatureModal(false);
+          executeSubmit(sig, name);
+        }}
+        title={lang === 'ja' ? 'エンジニアの署名' : 'Tanda Tangan Engineer'}
+        defaultName={formData.inspectorName || ''}
+        lang={lang}
+      />
     </div>
   );
 }
