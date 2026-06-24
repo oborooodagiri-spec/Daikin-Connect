@@ -759,7 +759,8 @@ export default function ReportHubPage() {
             </ReportBase>
             )}
           </div>
-        ))}
+        );
+      })}
       </div>
 
       <SignatureModal
