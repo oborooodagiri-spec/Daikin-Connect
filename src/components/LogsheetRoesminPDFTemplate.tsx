@@ -248,6 +248,29 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
     { key: 'condenser', label: 'Condenser' },
   ];
 
+  const chwpIds = ["chwp_2.01", "chwp_2.02", "chwp_1.01", "chwp_1.02", "chwp_1.03", "chwp_1.04"];
+  const chwpLabels = ["CHWP 2.01", "CHWP 2.02", "CHWP 1.01", "CHWP 1.02", "CHWP 1.03", "CHWP 1.04"];
+  const chwpParams = [
+    { key: "status", label: "Status" },
+    { key: "press_inlet", label: "P.Inlet", unit: "Bar" },
+    { key: "press_outlet", label: "P.Outlet", unit: "Bar" },
+    { key: "delta_p", label: "ΔP", unit: "Bar" },
+    { key: "arus_r", label: "Arus R", unit: "Amp", design: "15.6" },
+    { key: "arus_s", label: "Arus S", unit: "Amp", design: "15.6" },
+    { key: "arus_t", label: "Arus T", unit: "Amp", design: "15.6" },
+    { key: "volt_rs", label: "V RS", unit: "V", design: "400" },
+    { key: "volt_rt", label: "V RT", unit: "V", design: "400" },
+    { key: "volt_st", label: "V ST", unit: "V", design: "400" },
+  ];
+
+  const mainLineParams = [
+    { key: "temp_inlet", label: "Temp Inlet", unit: "°C", design: "7" },
+    { key: "temp_outlet", label: "Temp Outlet", unit: "°C", design: "12" },
+    { key: "water_flow", label: "Water Flow", unit: "L/s" },
+    { key: "mv_persen", label: "MV", unit: "%" },
+  ];
+
+
   pages.push(
     <div key="page-1-plant" style={S.page}>
       {renderPageHeader('DAILY LOGSHEET — HVAC MONITORING REPORT', date, inspector, 'Page 1 of 4')}
