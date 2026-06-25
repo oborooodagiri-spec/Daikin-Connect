@@ -1,8 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Plus, Trash2, Printer, Loader2, Save, X, FolderPlus } from "lucide-react";
+import { 
+  ChevronLeft, 
+  Printer, 
+  Trash2, 
+  Plus, 
+  FileText,
+  Sparkles,
+  MapPin,
+  Building2,
+  Calendar,
+  User,
+  Sliders,
+  Search,
+  FolderPlus,
+  RefreshCw
+} from "lucide-react";
+import Link from "next/link";
 import { 
   getBoqProjectDetails, 
   addBoqCategory, 
@@ -13,53 +29,55 @@ import {
   updateBoqProjectMarkup 
 } from "@/app/actions/boq";
 import { getPricelistItems } from "@/app/actions/pricelist";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 
-export default function BoqEditorPage() {
+export default function BoqEditorClient() {
   const params = useParams();
-  const router = useRouter();
   const id = params.id as string;
+  const router = useRouter();
 
+  // Project Data
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  
-  // Modals
-  const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState("");
-
-  const [isAddItemOpen, setIsAddItemOpen] = useState(false);
-  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
-  const [itemMode, setItemMode] = useState<"pricelist" | "manual">("pricelist");
-  
-  // Pricelist Search
-  const [pricelist, setPricelist] = useState<any[]>([]);
-  const [search, setSearch] = useState("");
-  const [selectedPricelistItem, setSelectedPricelistItem] = useState<any>(null);
-  
-  // Form Data for Manual Item
-  const [manualItem, setManualItem] = useState({
-    name: "",
-    specification: "",
-    unit: "Unit",
-  });
-
-  const [quantity, setQuantity] = useState<number>(1);
-  const [materialPrice, setMaterialPrice] = useState<number>(0);
-  const [labourPrice, setLabourPrice] = useState<number>(0);
 
   // Markups
   const [markupMaterial, setMarkupMaterial] = useState<number>(0);
   const [markupLabour, setMarkupLabour] = useState<number>(0);
   const [savingMarkup, setSavingMarkup] = useState(false);
 
+  // Add Category
+  const [newCategoryName, setNewCategoryName] = useState("");
+
+  // Add Item states
+  const [activeCategoryId, setActiveCategoryId] = useState<string>("");
+  const [itemMode, setItemMode] = useState<"pricelist" | "manual">("pricelist");
+  
+  // Catalog search
+  const [pricelist, setPricelist] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedPricelistItem, setSelectedPricelistItem] = useState<any>(null);
+
+  // Manual item form
+  const [manualItem, setManualItem] = useState({
+    name: "",
+    specification: "",
+    unit: "Unit",
+  });
+  const [quantity, setQuantity] = useState<number>(1);
+  const [materialPrice, setMaterialPrice] = useState<number>(0);
+  const [labourPrice, setLabourPrice] = useState<number>(0);
+
+  // Inline editing state
+  const [activeInlineEdit, setActiveInlineEdit] = useState<{id: string, field: string} | null>(null);
+
   const loadData = async () => {
-    setLoading(true);
     const data = await getBoqProjectDetails(id);
     setProject(data);
     if (data) {
       setMarkupMaterial(Number(data.markup_material) || 0);
       setMarkupLabour(Number(data.markup_labour) || 0);
+      if (data.categories?.length > 0 && !activeCategoryId) {
+        setActiveCategoryId(data.categories[0].id);
+      }
     }
     setLoading(false);
   };
@@ -68,54 +86,37 @@ export default function BoqEditorPage() {
     loadData();
   }, [id]);
 
-  const loadPricelist = async (q: string) => {
-    const data = await getPricelistItems(1, 20, q);
-    setPricelist(data.items);
-  };
-
   useEffect(() => {
-    if (isAddItemOpen && itemMode === "pricelist") {
-      const timer = setTimeout(() => {
-        loadPricelist(search);
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-  }, [search, isAddItemOpen, itemMode]);
+    const timer = setTimeout(async () => {
+      if (itemMode === "pricelist") {
+        const data = await getPricelistItems(1, 20, searchQuery);
+        setPricelist(data.items);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery, itemMode]);
 
   const handleSaveMarkup = async () => {
     setSavingMarkup(true);
     await updateBoqProjectMarkup(id, markupMaterial, markupLabour);
     setSavingMarkup(false);
+    loadData();
   };
 
   const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCategoryName.trim()) return;
-    await addBoqCategory(id, newCategoryName);
-    setIsAddCategoryOpen(false);
+    const cat = await addBoqCategory(id, newCategoryName);
     setNewCategoryName("");
     loadData();
+    if (cat?.id) setActiveCategoryId(cat.id);
   };
 
   const handleDeleteCategory = async (catId: string) => {
     if (confirm("Are you sure you want to delete this category and ALL its items?")) {
       await deleteBoqCategory(catId, id);
+      if (activeCategoryId === catId) setActiveCategoryId("");
       loadData();
-    }
-  };
-
-  const handleOpenAddItem = (catId: string) => {
-    setActiveCategoryId(catId);
-    setIsAddItemOpen(true);
-    setItemMode("pricelist");
-    setSelectedItemData(null);
-  };
-
-  const setSelectedItemData = (item: any) => {
-    setSelectedPricelistItem(item);
-    if (item) {
-      setMaterialPrice(Number(item.price));
-      setLabourPrice(0);
     }
   };
 
@@ -138,14 +139,21 @@ export default function BoqEditorPage() {
       labour_price: labourPrice,
     });
     
-    setIsAddItemOpen(false);
     setSelectedItemData(null);
     setManualItem({ name: "", specification: "", unit: "Unit" });
     setQuantity(1);
     setMaterialPrice(0);
     setLabourPrice(0);
-    setSearch("");
+    setSearchQuery("");
     loadData();
+  };
+
+  const setSelectedItemData = (item: any) => {
+    setSelectedPricelistItem(item);
+    if (item) {
+      setMaterialPrice(Number(item.price));
+      setLabourPrice(0); // Labour usually manual
+    }
   };
 
   const handleDeleteItem = async (itemId: string) => {
@@ -156,528 +164,490 @@ export default function BoqEditorPage() {
   };
 
   const handleInlineUpdate = async (itemId: string, field: "quantity" | "material_price" | "labour_price", val: string) => {
+    setActiveInlineEdit(null);
     const num = Number(val);
     if (isNaN(num)) return;
     
     await updateBoqItem(itemId, id, { [field]: num });
-    loadData(); // Re-fetch to calculate accurate totals immediately
+    loadData();
+  };
+
+  const handlePrint = () => {
+    const originalTitle = document.title;
+    const cleanFilename = `BoQ_${project?.project_name?.replace(/[\/\\:\*\?"<>\|]/g, '-')}_${new Date().toISOString().split('T')[0]}`;
+    document.title = cleanFilename;
+    window.print();
+    setTimeout(() => {
+      document.title = originalTitle;
+    }, 1000);
   };
 
   const formatPrice = (val: number) => `Rp ${Math.round(val).toLocaleString("id-ID")}`;
 
-  const exportPDF = () => {
-    if (!project) return;
-    
-    const doc = new jsPDF("landscape");
-    
-    doc.setFontSize(18);
-    doc.text("BILL OF QUANTITY", 14, 22);
-    
-    doc.setFontSize(11);
-    doc.text(`Proyek    : ${project.project_name}`, 14, 32);
-    doc.text(`Customer  : ${project.customer_name || "-"}`, 14, 38);
-    doc.text(`Tanggal   : ${new Date().toLocaleDateString("id-ID")}`, 14, 44);
-    
-    doc.text(`Markup Material: ${(markupMaterial * 100).toFixed(0)}%`, 200, 32);
-    doc.text(`Markup Labour  : ${(markupLabour * 100).toFixed(0)}%`, 200, 38);
-
-    const tableData: any[] = [];
-    
-    let grandMatTotal = 0;
-    let grandLabTotal = 0;
-
-    project.categories.forEach((cat: any, catIndex: number) => {
-      // Category Header
-      tableData.push([
-        { content: String.fromCharCode(65 + catIndex), styles: { fontStyle: 'bold' } },
-        { content: cat.name, colSpan: 8, styles: { fontStyle: 'bold', fillColor: [240, 240, 240] } }
-      ]);
-
-      let catMatTotal = 0;
-      let catLabTotal = 0;
-
-      cat.items.forEach((item: any, idx: number) => {
-        const matTotal = Number(item.material_price) * item.quantity;
-        const labTotal = Number(item.labour_price) * item.quantity;
-        const rowTotal = matTotal + labTotal;
-        
-        catMatTotal += matTotal;
-        catLabTotal += labTotal;
-
-        const itemName = item.pricelist ? item.pricelist.name : item.manual_name;
-        const itemSpec = item.pricelist ? item.pricelist.specification : item.specification;
-        const unit = item.pricelist ? item.pricelist.unit : item.unit;
-
-        tableData.push([
-          idx + 1,
-          itemName,
-          itemSpec || "-",
-          item.quantity.toString(),
-          unit,
-          formatPrice(Number(item.material_price)),
-          formatPrice(Number(item.labour_price)),
-          formatPrice(matTotal),
-          formatPrice(labTotal),
-        ]);
-      });
-
-      grandMatTotal += catMatTotal;
-      grandLabTotal += catLabTotal;
-
-      // Category Subtotal
-      tableData.push([
-        "",
-        { content: `SUB TOTAL ${cat.name}`, colSpan: 6, styles: { fontStyle: 'bold', halign: 'right' } },
-        { content: formatPrice(catMatTotal), styles: { fontStyle: 'bold' } },
-        { content: formatPrice(catLabTotal), styles: { fontStyle: 'bold' } }
-      ]);
-      
-      tableData.push([{ content: "", colSpan: 9, styles: { cellPadding: 2 } }]); // Empty row for spacing
-    });
-
-    // Grand Totals Base
-    tableData.push([
-      { content: 'GRAND TOTAL BASE', colSpan: 7, styles: { halign: 'right', fontStyle: 'bold', fillColor: [220, 230, 245] } },
-      { content: formatPrice(grandMatTotal), styles: { fontStyle: 'bold', fillColor: [220, 230, 245] } },
-      { content: formatPrice(grandLabTotal), styles: { fontStyle: 'bold', fillColor: [220, 230, 245] } }
-    ]);
-
-    // Grand Totals with Markup
-    const grandMatMarkup = grandMatTotal * (1 + markupMaterial);
-    const grandLabMarkup = grandLabTotal * (1 + markupLabour);
-
-    tableData.push([
-      { content: 'GRAND TOTAL + MARKUP', colSpan: 7, styles: { halign: 'right', fontStyle: 'bold', fillColor: [0, 115, 234], textColor: 255 } },
-      { content: formatPrice(grandMatMarkup), styles: { fontStyle: 'bold', fillColor: [0, 115, 234], textColor: 255 } },
-      { content: formatPrice(grandLabMarkup), styles: { fontStyle: 'bold', fillColor: [0, 115, 234], textColor: 255 } }
-    ]);
-    
-    const finalTotal = grandMatMarkup + grandLabMarkup;
-    tableData.push([
-      { content: 'TOTAL PROJECT VALUE', colSpan: 7, styles: { halign: 'right', fontStyle: 'bold', fontSize: 12 } },
-      { content: formatPrice(finalTotal), colSpan: 2, styles: { fontStyle: 'bold', halign: 'center', fontSize: 12 } }
-    ]);
-
-    autoTable(doc, {
-      startY: 50,
-      head: [
-        [
-          { content: 'No', rowSpan: 2, styles: { valign: 'middle', halign: 'center' } },
-          { content: 'Deskripsi', rowSpan: 2, styles: { valign: 'middle' } },
-          { content: 'Spesifikasi', rowSpan: 2, styles: { valign: 'middle' } },
-          { content: 'QTY', rowSpan: 2, styles: { valign: 'middle', halign: 'center' } },
-          { content: 'Sat', rowSpan: 2, styles: { valign: 'middle', halign: 'center' } },
-          { content: 'Harga Satuan (Rp)', colSpan: 2, styles: { halign: 'center' } },
-          { content: 'Total Harga (Rp)', colSpan: 2, styles: { halign: 'center' } }
-        ],
-        ['Material', 'Labour', 'Material', 'Labour']
-      ],
-      body: tableData,
-      theme: 'grid',
-      headStyles: { fillColor: [50, 50, 50], textColor: 255 },
-      styles: { fontSize: 8 },
-    });
-    
-    doc.save(`BOQ_${project.project_name.replace(/\s+/g, '_')}.pdf`);
-  };
-
-  if (loading) {
+  if (loading || !project) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center">
+        <div className="flex flex-col items-center text-slate-400">
+          <RefreshCw className="w-8 h-8 animate-spin mb-4 text-[#0073ea]" />
+          <p className="font-medium">Memuat Workspace BoQ...</p>
+        </div>
       </div>
     );
   }
-
-  if (!project) return <div>Project not found</div>;
 
   let overallMatTotal = 0;
   let overallLabTotal = 0;
 
   return (
-    <div className="p-6 max-w-[1400px] mx-auto pb-32">
-      <div className="mb-4">
-        <button onClick={() => router.push('/admin/quotation/boq-builder')} className="text-gray-500 hover:text-gray-800 flex items-center font-medium transition-colors">
-          <ArrowLeft className="w-4 h-4 mr-1" /> Kembali ke Daftar
-        </button>
-      </div>
-
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-        <div className="flex flex-col md:flex-row justify-between items-start mb-6 gap-4 border-b border-gray-100 pb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{project.project_name}</h1>
-            <p className="text-gray-600 mt-2 font-medium">Customer: {project.customer_name || "-"}</p>
-          </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => setIsAddCategoryOpen(true)}
-              className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg font-medium flex items-center shadow-sm transition-colors"
+    <>
+      <style dangerouslySetInnerHTML={{__html: `
+        @media print {
+          @page { size: A4 landscape; margin: 0; }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .no-print { display: none !important; }
+        }
+      `}} />
+      
+      <div className="min-h-screen bg-[#f8f9fc] font-sans text-slate-700 flex flex-col lg:flex-row print:bg-white print:text-black print:block">
+        
+        {/* LEFT SIDEBAR CONTROLS (LIGHT MODE COHESIVE SYSTEM) */}
+        <div className="w-full lg:w-[450px] lg:border-r border-slate-200 bg-white p-6 md:p-8 flex flex-col gap-8 flex-shrink-0 lg:max-h-screen lg:overflow-y-auto custom-scrollbar no-print shadow-sm">
+          
+          {/* Back navigation */}
+          <div className="flex items-center justify-between">
+            <Link 
+              href="/admin/quotation/boq-builder/projects" 
+              className="flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-[#0073ea] transition-all"
             >
-              <FolderPlus className="w-4 h-4 mr-2" />
-              Tambah Kategori
-            </button>
-            <button
-              onClick={exportPDF}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium flex items-center shadow-sm transition-colors"
-            >
-              <Printer className="w-4 h-4 mr-2" />
-              Cetak PDF
-            </button>
-          </div>
-        </div>
-
-        <div className="bg-blue-50/50 p-4 rounded-lg border border-blue-100 flex flex-wrap items-end gap-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Markup Material (%)</label>
-            <div className="flex items-center">
-              <input 
-                type="number" 
-                value={markupMaterial * 100} 
-                onChange={e => setMarkupMaterial(Number(e.target.value) / 100)}
-                className="w-24 border border-gray-300 rounded-l-lg p-2 text-right focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-              <span className="bg-gray-100 border border-l-0 border-gray-300 px-3 py-2 rounded-r-lg text-gray-500">%</span>
+              <ChevronLeft size={16} /> Kembali ke Daftar
+            </Link>
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-100 rounded-lg">
+              <Sparkles size={12} className="text-blue-500 animate-pulse" />
+              <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest">BoQ Builder v3</span>
             </div>
           </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Markup Labour (%)</label>
-            <div className="flex items-center">
-              <input 
-                type="number" 
-                value={markupLabour * 100} 
-                onChange={e => setMarkupLabour(Number(e.target.value) / 100)}
-                className="w-24 border border-gray-300 rounded-l-lg p-2 text-right focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-              <span className="bg-gray-100 border border-l-0 border-gray-300 px-3 py-2 rounded-r-lg text-gray-500">%</span>
+
+          {/* Section: Project Information */}
+          <div className="space-y-5">
+            <div>
+              <h2 className="text-lg font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                <FileText size={20} className="text-[#0073ea]" /> Informasi BoQ
+              </h2>
+              <p className="text-[10px] text-slate-400 font-bold tracking-wider uppercase mt-1">Data Header Bill of Quantity</p>
+            </div>
+
+            <div className="space-y-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <div className="space-y-1">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5">Nama Proyek</label>
+                <div className="font-bold text-sm text-slate-800 px-1">{project.project_name}</div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5">Customer</label>
+                <div className="font-bold text-sm text-slate-800 px-1">{project.customer_name || "-"}</div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5">Tanggal Dibuat</label>
+                <div className="font-bold text-sm text-slate-800 px-1">{new Date(project.created_at).toLocaleDateString("id-ID")}</div>
+              </div>
             </div>
           </div>
-          <button 
-            onClick={handleSaveMarkup}
-            disabled={savingMarkup}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium flex items-center transition-colors h-[42px]"
-          >
-            {savingMarkup ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-            Simpan Markup
-          </button>
-        </div>
-      </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse whitespace-nowrap">
-            <thead>
-              <tr className="bg-gray-800 text-white text-xs uppercase tracking-wider">
-                <th className="p-3 font-semibold w-12 text-center border-r border-gray-700" rowSpan={2}>No</th>
-                <th className="p-3 font-semibold border-r border-gray-700" rowSpan={2}>Deskripsi</th>
-                <th className="p-3 font-semibold border-r border-gray-700" rowSpan={2}>Spesifikasi</th>
-                <th className="p-3 font-semibold text-center w-24 border-r border-gray-700" rowSpan={2}>QTY</th>
-                <th className="p-3 font-semibold text-center w-20 border-r border-gray-700" rowSpan={2}>Sat</th>
-                <th className="p-2 font-semibold text-center border-b border-gray-700 border-r border-gray-700" colSpan={2}>Harga Satuan (Rp)</th>
-                <th className="p-2 font-semibold text-center border-b border-gray-700 border-r border-gray-700" colSpan={2}>Total Harga (Rp)</th>
-                <th className="p-3 font-semibold text-center w-16" rowSpan={2}>Aksi</th>
-              </tr>
-              <tr className="bg-gray-700 text-gray-200 text-xs uppercase tracking-wider">
-                <th className="p-2 font-semibold text-right w-32 border-r border-gray-600">Material</th>
-                <th className="p-2 font-semibold text-right w-32 border-r border-gray-600">Labour</th>
-                <th className="p-2 font-semibold text-right w-36 border-r border-gray-600">Material</th>
-                <th className="p-2 font-semibold text-right w-36 border-r border-gray-600">Labour</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {project.categories.length === 0 ? (
-                <tr>
-                  <td colSpan={10} className="p-12 text-center text-gray-500">
-                    Belum ada kategori. Silakan tambah kategori terlebih dahulu.
-                  </td>
-                </tr>
-              ) : (
-                project.categories.map((cat: any, catIdx: number) => {
-                  let catMatTotal = 0;
-                  let catLabTotal = 0;
+          <div className="h-px bg-slate-100" />
 
-                  return (
-                    <React.Fragment key={cat.id}>
-                      {/* Category Header */}
-                      <tr className="bg-gray-100">
-                        <td className="p-3 font-bold text-center text-gray-800 border-r border-gray-200">
-                          {String.fromCharCode(65 + catIdx)}
-                        </td>
-                        <td colSpan={8} className="p-3 font-bold text-gray-800 border-r border-gray-200 uppercase">
-                          {cat.name}
-                        </td>
-                        <td className="p-2 text-center">
-                          <button onClick={() => handleDeleteCategory(cat.id)} className="text-red-500 hover:text-red-700 p-1 bg-red-50 rounded">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </td>
-                      </tr>
-                      
-                      {/* Items */}
-                      {cat.items.length === 0 ? (
-                        <tr>
-                          <td className="border-r border-gray-200"></td>
-                          <td colSpan={9} className="p-4 text-sm text-gray-500 italic bg-white">
-                            Kategori kosong. Tekan tombol di bawah untuk menambah baris.
-                          </td>
-                        </tr>
-                      ) : (
-                        cat.items.map((item: any, idx: number) => {
-                          const matTotal = Number(item.material_price) * item.quantity;
-                          const labTotal = Number(item.labour_price) * item.quantity;
-                          
-                          catMatTotal += matTotal;
-                          catLabTotal += labTotal;
-                          overallMatTotal += matTotal;
-                          overallLabTotal += labTotal;
+          {/* Section: Markup Configuration */}
+          <div className="space-y-5">
+            <div>
+              <h2 className="text-lg font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                <Sliders size={20} className="text-indigo-600" /> Pengaturan Markup
+              </h2>
+              <p className="text-[10px] text-slate-400 font-bold tracking-wider uppercase mt-1">Tentukan persentase markup material & labour</p>
+            </div>
 
-                          const itemName = item.pricelist ? item.pricelist.name : item.manual_name;
-                          const itemSpec = item.pricelist ? item.pricelist.specification : item.specification;
-                          const unit = item.pricelist ? item.pricelist.unit : item.unit;
-
-                          return (
-                            <tr key={item.id} className="hover:bg-blue-50/30 bg-white group transition-colors">
-                              <td className="p-3 text-center text-sm text-gray-500 border-r border-gray-200">{idx + 1}</td>
-                              <td className="p-3 text-sm font-medium text-gray-900 border-r border-gray-200 whitespace-normal min-w-[200px]">{itemName}</td>
-                              <td className="p-3 text-sm text-gray-500 border-r border-gray-200 whitespace-normal min-w-[150px]">{itemSpec || "-"}</td>
-                              <td className="p-2 text-center border-r border-gray-200">
-                                <input 
-                                  type="number" 
-                                  step="0.1" min="0"
-                                  className="w-16 border border-transparent hover:border-gray-300 focus:border-blue-500 rounded p-1 text-center text-sm outline-none transition-all"
-                                  defaultValue={item.quantity}
-                                  onBlur={(e) => handleInlineUpdate(item.id, "quantity", e.target.value)}
-                                />
-                              </td>
-                              <td className="p-3 text-center text-sm text-gray-600 border-r border-gray-200">{unit}</td>
-                              <td className="p-2 border-r border-gray-200">
-                                <input 
-                                  type="number" min="0"
-                                  className="w-full border border-transparent hover:border-gray-300 focus:border-blue-500 rounded p-1 text-right text-sm outline-none transition-all"
-                                  defaultValue={Number(item.material_price)}
-                                  onBlur={(e) => handleInlineUpdate(item.id, "material_price", e.target.value)}
-                                />
-                              </td>
-                              <td className="p-2 border-r border-gray-200">
-                                <input 
-                                  type="number" min="0"
-                                  className="w-full border border-transparent hover:border-gray-300 focus:border-blue-500 rounded p-1 text-right text-sm outline-none transition-all"
-                                  defaultValue={Number(item.labour_price)}
-                                  onBlur={(e) => handleInlineUpdate(item.id, "labour_price", e.target.value)}
-                                />
-                              </td>
-                              <td className="p-3 text-right text-sm text-gray-700 font-medium border-r border-gray-200 bg-gray-50/50">{formatPrice(matTotal)}</td>
-                              <td className="p-3 text-right text-sm text-gray-700 font-medium border-r border-gray-200 bg-gray-50/50">{formatPrice(labTotal)}</td>
-                              <td className="p-2 text-center">
-                                <button onClick={() => handleDeleteItem(item.id)} className="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <X className="w-5 h-5 mx-auto" />
-                                </button>
-                              </td>
-                            </tr>
-                          );
-                        })
-                      )}
-                      
-                      {/* Subtotal Row */}
-                      <tr className="bg-blue-50/50">
-                        <td colSpan={7} className="p-3 text-right text-sm font-bold text-gray-700 border-r border-gray-200">
-                          SUB TOTAL {cat.name}
-                        </td>
-                        <td className="p-3 text-right text-sm font-bold text-gray-900 border-r border-gray-200">{formatPrice(catMatTotal)}</td>
-                        <td className="p-3 text-right text-sm font-bold text-gray-900 border-r border-gray-200">{formatPrice(catLabTotal)}</td>
-                        <td></td>
-                      </tr>
-
-                      {/* Add Item Button Row */}
-                      <tr className="bg-white">
-                        <td className="border-r border-gray-200"></td>
-                        <td colSpan={9} className="p-2">
-                          <button 
-                            onClick={() => handleOpenAddItem(cat.id)}
-                            className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center py-1 px-2 rounded hover:bg-blue-50 transition-colors"
-                          >
-                            <Plus className="w-4 h-4 mr-1" /> Tambah Baris di {cat.name}
-                          </button>
-                        </td>
-                      </tr>
-                    </React.Fragment>
-                  );
-                })
-              )}
-
-              {/* Grand Totals */}
-              {project.categories.length > 0 && (
-                <>
-                  <tr className="bg-gray-800 text-white border-t-4 border-gray-900">
-                    <td colSpan={7} className="p-4 text-right font-bold text-sm tracking-wide">GRAND TOTAL BASE</td>
-                    <td className="p-4 text-right font-bold text-sm">{formatPrice(overallMatTotal)}</td>
-                    <td className="p-4 text-right font-bold text-sm">{formatPrice(overallLabTotal)}</td>
-                    <td></td>
-                  </tr>
-                  
-                  <tr className="bg-blue-700 text-white">
-                    <td colSpan={7} className="p-4 text-right font-bold text-sm tracking-wide">
-                      GRAND TOTAL + MARKUP (Mat: {markupMaterial*100}%, Lab: {markupLabour*100}%)
-                    </td>
-                    <td className="p-4 text-right font-bold text-sm text-blue-100">{formatPrice(overallMatTotal * (1 + markupMaterial))}</td>
-                    <td className="p-4 text-right font-bold text-sm text-blue-100">{formatPrice(overallLabTotal * (1 + markupLabour))}</td>
-                    <td></td>
-                  </tr>
-
-                  <tr className="bg-blue-900 text-white">
-                    <td colSpan={7} className="p-5 text-right font-bold text-base tracking-wide uppercase">TOTAL PROJECT VALUE</td>
-                    <td colSpan={2} className="p-5 text-center font-bold text-xl text-yellow-300 tracking-wider">
-                      {formatPrice((overallMatTotal * (1 + markupMaterial)) + (overallLabTotal * (1 + markupLabour)))}
-                    </td>
-                    <td></td>
-                  </tr>
-                </>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Modal Tambah Kategori */}
-      {isAddCategoryOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Tambah Kategori BoQ</h2>
-            <form onSubmit={handleAddCategory}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Kategori</label>
-                <input
-                  required
-                  autoFocus
-                  type="text"
-                  className="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                  placeholder="Misal: I. PRELIMINARY"
-                  value={newCategoryName}
-                  onChange={e => setNewCategoryName(e.target.value)}
-                />
+            <div className="space-y-4 p-5 bg-[#f8f9fc] border border-slate-200 rounded-3xl">
+              <div className="flex justify-between items-center">
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Markup Material</span>
+                <div className="flex items-center gap-1.5">
+                  <input 
+                    type="number" min="0" step="1"
+                    value={(markupMaterial * 100).toFixed(0)} 
+                    onChange={e => setMarkupMaterial(Number(e.target.value) / 100)}
+                    className="w-16 px-2 py-1 text-center bg-white border border-slate-200 rounded-xl text-xs font-black text-slate-800 focus:outline-none focus:border-indigo-400"
+                  />
+                  <span className="text-xs font-black text-indigo-600">%</span>
+                </div>
               </div>
-              <div className="flex justify-end gap-3 mt-6">
-                <button type="button" onClick={() => setIsAddCategoryOpen(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">Batal</button>
-                <button type="submit" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">Simpan Kategori</button>
+              <div className="flex justify-between items-center">
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Markup Labour</span>
+                <div className="flex items-center gap-1.5">
+                  <input 
+                    type="number" min="0" step="1"
+                    value={(markupLabour * 100).toFixed(0)} 
+                    onChange={e => setMarkupLabour(Number(e.target.value) / 100)}
+                    className="w-16 px-2 py-1 text-center bg-white border border-slate-200 rounded-xl text-xs font-black text-slate-800 focus:outline-none focus:border-indigo-400"
+                  />
+                  <span className="text-xs font-black text-indigo-600">%</span>
+                </div>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modal Tambah Item */}
-      {isAddItemOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-2xl shadow-2xl">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Tambah Item Baru</h2>
-              <button onClick={() => setIsAddItemOpen(false)} className="text-gray-400 hover:text-gray-600">
-                <X className="w-6 h-6" />
+              <button 
+                onClick={handleSaveMarkup}
+                disabled={savingMarkup}
+                className="w-full py-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-colors flex items-center justify-center"
+              >
+                {savingMarkup ? "Menyimpan..." : "Simpan Markup"}
               </button>
             </div>
-            
-            <div className="flex gap-4 mb-6 border-b border-gray-200">
+          </div>
+
+          <div className="h-px bg-slate-100" />
+
+          {/* Section: Category Management */}
+          <div className="space-y-5">
+            <div>
+              <h2 className="text-lg font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                <FolderPlus size={20} className="text-amber-500" /> Kategori & Baris
+              </h2>
+              <p className="text-[10px] text-slate-400 font-bold tracking-wider uppercase mt-1">Pilih kategori sebelum menambahkan item</p>
+            </div>
+
+            <form onSubmit={handleAddCategory} className="flex gap-2">
+              <input 
+                type="text" 
+                placeholder="Nama kategori baru..." 
+                value={newCategoryName}
+                onChange={e => setNewCategoryName(e.target.value)}
+                className="flex-1 px-4 py-3 bg-slate-50 border border-slate-250 rounded-xl font-bold text-xs text-slate-800 focus:outline-none focus:border-amber-500"
+              />
+              <button type="submit" className="px-4 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl transition-colors">
+                <Plus size={16} />
+              </button>
+            </form>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Pilih Kategori Aktif</label>
+              <select 
+                value={activeCategoryId}
+                onChange={e => setActiveCategoryId(e.target.value)}
+                className="w-full px-5 py-4 bg-amber-50 border border-amber-200 rounded-2xl font-bold text-xs text-slate-800 focus:outline-none focus:border-amber-500 cursor-pointer"
+              >
+                <option value="">Pilih Kategori...</option>
+                {project.categories.map((cat: any) => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="h-px bg-slate-100" />
+
+          {/* Section: Add Items */}
+          <div className={`space-y-5 transition-opacity ${!activeCategoryId ? 'opacity-50 pointer-events-none' : ''}`}>
+            <div>
+              <h2 className="text-lg font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                <Plus size={20} className="text-emerald-600" /> Tambah Item
+              </h2>
+              <p className="text-[10px] text-slate-400 font-bold tracking-wider uppercase mt-1">Masukkan data ke kategori terpilih</p>
+            </div>
+
+            <div className="flex gap-2 p-1 bg-slate-100 rounded-lg">
               <button 
-                className={`pb-3 px-2 font-medium text-sm transition-colors border-b-2 ${itemMode === "pricelist" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-800"}`}
+                className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${itemMode === "pricelist" ? "bg-white text-emerald-600 shadow-sm" : "text-slate-500"}`}
                 onClick={() => setItemMode("pricelist")}
               >
-                Pilih dari Master Pricelist
+                Dari Pricelist
               </button>
               <button 
-                className={`pb-3 px-2 font-medium text-sm transition-colors border-b-2 ${itemMode === "manual" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-800"}`}
+                className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${itemMode === "manual" ? "bg-white text-emerald-600 shadow-sm" : "text-slate-500"}`}
                 onClick={() => setItemMode("manual")}
               >
-                Input Manual (Custom)
+                Input Manual
               </button>
             </div>
 
-            <form onSubmit={handleAddItem}>
+            <form onSubmit={handleAddItem} className="space-y-4">
               {itemMode === "pricelist" ? (
-                <div className="mb-6">
-                  <input
-                    type="text"
-                    placeholder="Cari material dari Master Pricelist..."
-                    className="w-full border p-3 rounded-lg bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none mb-2"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
-                  <div className="border border-gray-200 rounded-lg max-h-48 overflow-y-auto bg-white shadow-inner">
+                <div className="space-y-3">
+                  <div className="relative group">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-emerald-500" />
+                    <input 
+                      type="text" 
+                      placeholder="Cari Master Pricelist..." 
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      className="w-full pl-11 pr-5 py-3.5 bg-slate-50 border border-slate-250 rounded-2xl font-bold text-xs text-slate-800 focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                  <div className="border border-slate-200 rounded-2xl max-h-40 overflow-y-auto bg-white custom-scrollbar">
                     {pricelist.length === 0 ? (
-                      <div className="p-4 text-center text-gray-500 text-sm">Tidak ada material yang cocok.</div>
+                      <div className="p-4 text-center text-xs text-slate-400">Pencarian kosong.</div>
                     ) : (
-                      pricelist.map(item => (
+                      pricelist.map((item) => (
                         <div 
                           key={item.id} 
-                          className={`p-3 border-b border-gray-100 last:border-0 cursor-pointer hover:bg-blue-50 transition-colors flex justify-between items-center ${selectedPricelistItem?.id === item.id ? 'bg-blue-50 border-l-4 border-l-blue-600' : ''}`}
                           onClick={() => setSelectedItemData(item)}
+                          className={`p-3 border-b border-slate-100 last:border-0 cursor-pointer hover:bg-emerald-50 transition-colors flex justify-between items-center ${selectedPricelistItem?.id === item.id ? 'bg-emerald-50 border-l-4 border-l-emerald-500' : ''}`}
                         >
                           <div>
-                            <div className="font-medium text-gray-900">{item.name}</div>
-                            <div className="text-xs text-gray-500 mt-1">{item.specification || "Tanpa spesifikasi"} • {item.unit}</div>
+                            <div className="text-xs font-bold text-slate-800">{item.name}</div>
+                            <div className="text-[10px] text-slate-400 mt-0.5">{item.unit}</div>
                           </div>
-                          <div className="font-semibold text-blue-600 bg-white px-2 py-1 rounded shadow-sm border border-blue-100">
-                            {formatPrice(Number(item.price))}
-                          </div>
+                          <div className="text-[10px] font-black text-emerald-600">{formatPrice(Number(item.price))}</div>
                         </div>
                       ))
                     )}
                   </div>
                 </div>
               ) : (
-                <div className="space-y-4 mb-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Deskripsi Item *</label>
-                    <input required type="text" className="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Misal: Biaya Transportasi" value={manualItem.name} onChange={e => setManualItem({...manualItem, name: e.target.value})} />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Spesifikasi</label>
-                      <input type="text" className="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Opsional" value={manualItem.specification} onChange={e => setManualItem({...manualItem, specification: e.target.value})} />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Satuan *</label>
-                      <input required type="text" className="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Misal: Ls, Unit, M" value={manualItem.unit} onChange={e => setManualItem({...manualItem, unit: e.target.value})} />
-                    </div>
+                <div className="space-y-3">
+                  <input required type="text" placeholder="Deskripsi Item" className="w-full px-4 py-3 bg-slate-50 border border-slate-250 rounded-xl font-bold text-xs text-slate-800 focus:border-emerald-500 outline-none" value={manualItem.name} onChange={e => setManualItem({...manualItem, name: e.target.value})} />
+                  <div className="grid grid-cols-2 gap-2">
+                    <input type="text" placeholder="Spesifikasi (Opsional)" className="w-full px-4 py-3 bg-slate-50 border border-slate-250 rounded-xl font-bold text-xs text-slate-800 focus:border-emerald-500 outline-none" value={manualItem.specification} onChange={e => setManualItem({...manualItem, specification: e.target.value})} />
+                    <input required type="text" placeholder="Satuan (mis. Unit)" className="w-full px-4 py-3 bg-slate-50 border border-slate-250 rounded-xl font-bold text-xs text-slate-800 focus:border-emerald-500 outline-none" value={manualItem.unit} onChange={e => setManualItem({...manualItem, unit: e.target.value})} />
                   </div>
                 </div>
               )}
 
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Volume (QTY)</label>
-                    <input required type="number" step="0.1" min="0" className="w-full border p-2.5 rounded-lg" value={quantity} onChange={e => setQuantity(Number(e.target.value))} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Harga Material (Rp)</label>
-                    <input required type="number" min="0" className="w-full border p-2.5 rounded-lg" value={materialPrice} onChange={e => setMaterialPrice(Number(e.target.value))} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Harga Labour (Rp)</label>
-                    <input required type="number" min="0" className="w-full border p-2.5 rounded-lg" value={labourPrice} onChange={e => setLabourPrice(Number(e.target.value))} />
-                  </div>
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl grid grid-cols-2 gap-3">
+                <div className="col-span-2">
+                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Volume (QTY)</label>
+                  <input required type="number" step="0.1" min="0" className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-bold focus:border-emerald-500 outline-none" value={quantity} onChange={e => setQuantity(Number(e.target.value))} />
                 </div>
-                
-                <div className="mt-4 flex justify-between items-center pt-4 border-t border-gray-200">
-                  <span className="font-semibold text-gray-600">Total Baris Ini:</span>
-                  <span className="text-xl font-bold text-blue-600">
-                    {formatPrice((materialPrice + labourPrice) * quantity)}
-                  </span>
+                <div>
+                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Harga Material</label>
+                  <input required type="number" min="0" className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-bold focus:border-emerald-500 outline-none" value={materialPrice} onChange={e => setMaterialPrice(Number(e.target.value))} />
+                </div>
+                <div>
+                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Harga Labour</label>
+                  <input required type="number" min="0" className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-bold focus:border-emerald-500 outline-none" value={labourPrice} onChange={e => setLabourPrice(Number(e.target.value))} />
                 </div>
               </div>
 
-              <div className="flex justify-end mt-6">
-                <button 
-                  type="submit" 
-                  disabled={itemMode === "pricelist" && !selectedPricelistItem}
-                  className="w-full md:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg font-bold text-lg transition-colors"
-                >
-                  Tambah ke BoQ
-                </button>
-              </div>
+              <button 
+                type="submit" 
+                disabled={itemMode === "pricelist" && !selectedPricelistItem}
+                className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/20"
+              >
+                + Tambah ke BoQ
+              </button>
             </form>
           </div>
+
+          <div className="h-px bg-slate-100" />
+
+          {/* Action Controls */}
+          <div className="flex flex-col gap-3 pt-2 pb-10">
+            <button 
+              onClick={handlePrint}
+              className="w-full flex items-center justify-center gap-2 py-4 bg-[#0073ea] hover:bg-[#0060c5] text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-500/20 group"
+            >
+              <Printer size={16} className="group-hover:scale-110 transition-transform" /> Cetak / Download PDF
+            </button>
+          </div>
+
         </div>
-      )}
-    </div>
+
+        {/* RIGHT PREVIEW WORKSPACE (LIGHT PREMIUM GREY CONTAINER) */}
+        <div className="flex-1 p-6 md:p-8 overflow-y-auto max-h-screen bg-slate-100 flex flex-col items-center custom-scrollbar print:bg-white print:p-0 print:overflow-visible print:max-h-none">
+          
+          <div 
+            className="a4-sheet-landscape relative bg-white text-black shadow-[0_10px_40px_rgba(0,0,0,0.06)] flex flex-col overflow-hidden print:shadow-none print:m-0"
+            style={{ width: '297mm', minHeight: '210mm' }}
+          >
+            {/* FULL BLEED HEADER */}
+            <div className="w-full flex-shrink-0 relative">
+              <div className="h-[4mm] bg-gradient-to-r from-[#009ce1] to-[#003366] w-full" />
+              
+              <div className="px-[15mm] pt-[8mm] pb-[4mm] flex justify-between items-start">
+                <div className="flex flex-col gap-1">
+                  <img 
+                    src="/logo_epllink.png" 
+                    alt="EPL Link" 
+                    className="h-[10mm] w-auto object-contain self-start" 
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  />
+                  <p className="text-[8px] font-black text-[#003366] uppercase tracking-[0.05em] leading-none mt-1">PT. Daikin Applied Solutions Indonesia</p>
+                </div>
+                <div className="text-right">
+                  <h2 className="text-[14px] font-black text-[#1e2229] uppercase tracking-wider">BILL OF QUANTITY</h2>
+                  <p className="text-[9px] font-bold text-slate-500 mt-1">{new Date(project.created_at).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                </div>
+              </div>
+              
+              <div className="mx-[15mm] h-[0.5px] bg-slate-200" />
+            </div>
+
+            {/* MAIN CONTENT BLOCK */}
+            <div className="flex-1 px-[15mm] py-[6mm] flex flex-col justify-start">
+              
+              {/* Project Info Panel */}
+              <div className="mb-[6mm] p-[4.5mm] bg-slate-50 border border-slate-150 rounded-lg grid grid-cols-3 gap-[4.5mm]">
+                <div className="flex flex-col border-r border-slate-200 pr-[4.5mm]">
+                  <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block">Proyek</span>
+                  <span className="text-[10px] font-bold text-slate-800 leading-tight block mt-0.5">{project.project_name}</span>
+                </div>
+                <div className="flex flex-col border-r border-slate-200 pr-[4.5mm]">
+                  <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block">Customer</span>
+                  <span className="text-[10px] font-bold text-slate-800 leading-tight block mt-0.5">{project.customer_name || "-"}</span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <div className="flex justify-between">
+                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Markup Material</span>
+                    <span className="text-[8px] font-bold text-indigo-600">{(markupMaterial * 100).toFixed(0)}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Markup Labour</span>
+                    <span className="text-[8px] font-bold text-indigo-600">{(markupLabour * 100).toFixed(0)}%</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* BoQ Table */}
+              <table className="w-full text-left border-collapse border border-slate-800 mb-6">
+                <thead>
+                  <tr className="bg-slate-800 text-white">
+                    <th className="p-1.5 border border-slate-700 text-[8px] font-bold text-center w-8" rowSpan={2}>No</th>
+                    <th className="p-1.5 border border-slate-700 text-[8px] font-bold" rowSpan={2}>Deskripsi Pekerjaan / Material</th>
+                    <th className="p-1.5 border border-slate-700 text-[8px] font-bold" rowSpan={2}>Spesifikasi</th>
+                    <th className="p-1.5 border border-slate-700 text-[8px] font-bold text-center w-12" rowSpan={2}>QTY</th>
+                    <th className="p-1.5 border border-slate-700 text-[8px] font-bold text-center w-12" rowSpan={2}>Sat</th>
+                    <th className="p-1 border border-slate-700 text-[8px] font-bold text-center" colSpan={2}>Harga Satuan (Rp)</th>
+                    <th className="p-1 border border-slate-700 text-[8px] font-bold text-center" colSpan={2}>Total Harga (Rp)</th>
+                    <th className="p-1.5 border border-slate-700 text-[8px] font-bold text-center w-8 no-print" rowSpan={2}>Aksi</th>
+                  </tr>
+                  <tr className="bg-slate-700 text-slate-100">
+                    <th className="p-1 border border-slate-600 text-[7px] font-bold text-right w-24">Material</th>
+                    <th className="p-1 border border-slate-600 text-[7px] font-bold text-right w-24">Labour</th>
+                    <th className="p-1 border border-slate-600 text-[7px] font-bold text-right w-28">Material</th>
+                    <th className="p-1 border border-slate-600 text-[7px] font-bold text-right w-28">Labour</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white">
+                  {project.categories.length === 0 ? (
+                    <tr>
+                      <td colSpan={10} className="p-6 text-center text-[9px] text-slate-400 italic border border-slate-300">Belum ada kategori dan item.</td>
+                    </tr>
+                  ) : (
+                    project.categories.map((cat: any, catIdx: number) => {
+                      let catMatTotal = 0;
+                      let catLabTotal = 0;
+
+                      return (
+                        <React.Fragment key={cat.id}>
+                          {/* Category Header */}
+                          <tr className="bg-slate-100">
+                            <td className="p-1.5 border border-slate-300 text-[8px] font-black text-center text-slate-800">{String.fromCharCode(65 + catIdx)}</td>
+                            <td colSpan={8} className="p-1.5 border border-slate-300 text-[8px] font-black text-slate-800 uppercase">{cat.name}</td>
+                            <td className="p-1 border border-slate-300 text-center no-print">
+                              <button onClick={() => handleDeleteCategory(cat.id)} className="text-red-400 hover:text-red-600"><Trash2 size={10} /></button>
+                            </td>
+                          </tr>
+
+                          {/* Items */}
+                          {cat.items.map((item: any, idx: number) => {
+                            const matTotal = Number(item.material_price) * item.quantity;
+                            const labTotal = Number(item.labour_price) * item.quantity;
+                            catMatTotal += matTotal;
+                            catLabTotal += labTotal;
+                            overallMatTotal += matTotal;
+                            overallLabTotal += labTotal;
+
+                            const itemName = item.pricelist ? item.pricelist.name : item.manual_name;
+                            const itemSpec = item.pricelist ? item.pricelist.specification : item.specification;
+                            const unit = item.pricelist ? item.pricelist.unit : item.unit;
+
+                            return (
+                              <tr key={item.id} className="hover:bg-blue-50/50 group">
+                                <td className="p-1.5 border border-slate-300 text-[8px] text-center text-slate-600">{idx + 1}</td>
+                                <td className="p-1.5 border border-slate-300 text-[8px] text-slate-800 font-medium">{itemName}</td>
+                                <td className="p-1.5 border border-slate-300 text-[8px] text-slate-600">{itemSpec || "-"}</td>
+                                <td className="p-1 border border-slate-300 text-center relative no-print-input">
+                                  <input 
+                                    type="number" step="0.1" min="0"
+                                    className="w-full text-center text-[8px] p-0.5 border-none bg-transparent outline-none focus:bg-white focus:ring-1 focus:ring-blue-400 rounded"
+                                    defaultValue={item.quantity}
+                                    onBlur={(e) => handleInlineUpdate(item.id, "quantity", e.target.value)}
+                                  />
+                                </td>
+                                <td className="p-1.5 border border-slate-300 text-[8px] text-center text-slate-600">{unit}</td>
+                                <td className="p-1 border border-slate-300 text-right relative no-print-input">
+                                  <input 
+                                    type="number" min="0"
+                                    className="w-full text-right text-[8px] p-0.5 border-none bg-transparent outline-none focus:bg-white focus:ring-1 focus:ring-blue-400 rounded"
+                                    defaultValue={Number(item.material_price)}
+                                    onBlur={(e) => handleInlineUpdate(item.id, "material_price", e.target.value)}
+                                  />
+                                </td>
+                                <td className="p-1 border border-slate-300 text-right relative no-print-input">
+                                  <input 
+                                    type="number" min="0"
+                                    className="w-full text-right text-[8px] p-0.5 border-none bg-transparent outline-none focus:bg-white focus:ring-1 focus:ring-blue-400 rounded"
+                                    defaultValue={Number(item.labour_price)}
+                                    onBlur={(e) => handleInlineUpdate(item.id, "labour_price", e.target.value)}
+                                  />
+                                </td>
+                                <td className="p-1.5 border border-slate-300 text-[8px] text-right font-medium text-slate-700 bg-slate-50/50">{formatPrice(matTotal)}</td>
+                                <td className="p-1.5 border border-slate-300 text-[8px] text-right font-medium text-slate-700 bg-slate-50/50">{formatPrice(labTotal)}</td>
+                                <td className="p-1 border border-slate-300 text-center no-print">
+                                  <button onClick={() => handleDeleteItem(item.id)} className="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100"><Trash2 size={10} /></button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+
+                          {/* Subtotal */}
+                          <tr className="bg-blue-50/30">
+                            <td colSpan={7} className="p-1.5 border border-slate-300 text-[8px] font-bold text-right text-slate-700">SUB TOTAL {cat.name}</td>
+                            <td className="p-1.5 border border-slate-300 text-[8px] font-bold text-right text-slate-900">{formatPrice(catMatTotal)}</td>
+                            <td className="p-1.5 border border-slate-300 text-[8px] font-bold text-right text-slate-900">{formatPrice(catLabTotal)}</td>
+                            <td className="border border-slate-300 no-print"></td>
+                          </tr>
+                        </React.Fragment>
+                      );
+                    })
+                  )}
+
+                  {/* Grand Totals */}
+                  {project.categories.length > 0 && (
+                    <>
+                      <tr className="bg-slate-100">
+                        <td colSpan={7} className="p-2 border border-slate-300 text-[9px] font-black text-right text-slate-800">GRAND TOTAL BASE</td>
+                        <td className="p-2 border border-slate-300 text-[9px] font-black text-right text-slate-900">{formatPrice(overallMatTotal)}</td>
+                        <td className="p-2 border border-slate-300 text-[9px] font-black text-right text-slate-900">{formatPrice(overallLabTotal)}</td>
+                        <td className="border border-slate-300 no-print"></td>
+                      </tr>
+                      
+                      <tr className="bg-[#0073ea] text-white">
+                        <td colSpan={7} className="p-2 border border-[#0060c5] text-[9px] font-black text-right">
+                          GRAND TOTAL + MARKUP (Mat: {markupMaterial*100}%, Lab: {markupLabour*100}%)
+                        </td>
+                        <td className="p-2 border border-[#0060c5] text-[9px] font-black text-right text-blue-50">{formatPrice(overallMatTotal * (1 + markupMaterial))}</td>
+                        <td className="p-2 border border-[#0060c5] text-[9px] font-black text-right text-blue-50">{formatPrice(overallLabTotal * (1 + markupLabour))}</td>
+                        <td className="border border-[#0060c5] no-print"></td>
+                      </tr>
+
+                      <tr className="bg-[#003366] text-white">
+                        <td colSpan={7} className="p-3 border border-[#002244] text-[10px] font-black text-right uppercase tracking-wider">TOTAL PROJECT VALUE</td>
+                        <td colSpan={2} className="p-3 border border-[#002244] text-[12px] font-black text-center text-yellow-400">
+                          {formatPrice((overallMatTotal * (1 + markupMaterial)) + (overallLabTotal * (1 + markupLabour)))}
+                        </td>
+                        <td className="border border-[#002244] no-print"></td>
+                      </tr>
+                    </>
+                  )}
+                </tbody>
+              </table>
+
+              {/* Tanda Tangan / Validation section could go here if needed in future */}
+              <div className="mt-8 flex justify-end">
+                <div className="w-[40mm] text-center">
+                  <p className="text-[8px] mb-[15mm]">Dibuat Oleh,</p>
+                  <p className="text-[8px] font-bold uppercase underline">Daikin Admin</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }

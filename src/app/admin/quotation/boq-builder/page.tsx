@@ -1,192 +1,50 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Plus, FolderOpen, Trash2, Loader2, Calendar, Database } from "lucide-react";
-import Link from "next/link";
-import { getBoqProjects, createBoqProject, deleteBoqProject } from "@/app/actions/boq";
 import { PricelistTab } from "./PricelistTab";
+import Link from "next/link";
+import { FolderOpen, Plus, Printer } from "lucide-react";
 
 export default function BoqBuilderPage() {
-  const [activeTab, setActiveTab] = useState<"projects" | "pricelist">("projects");
-  const [projects, setProjects] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isAddOpen, setIsAddOpen] = useState(false);
-  const [formData, setFormData] = useState({ project_name: "", customer_name: "" });
-
-  const loadProjects = async () => {
-    setLoading(true);
-    const data = await getBoqProjects();
-    setProjects(data);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    if (activeTab === "projects") {
-      loadProjects();
-    }
-  }, [activeTab]);
-
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await createBoqProject({
-      project_name: formData.project_name,
-      customer_name: formData.customer_name,
-    });
-    setIsAddOpen(false);
-    setFormData({ project_name: "", customer_name: "" });
-    loadProjects();
-  };
-
-  const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this BoQ Project?")) {
-      await deleteBoqProject(id);
-      loadProjects();
-    }
+  const handlePrintPricelist = () => {
+    window.print();
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex justify-between items-end mb-6">
+    <div className="p-6 max-w-7xl mx-auto pb-32">
+      <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4 border-b border-gray-200 pb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">EPL BoQ Builder</h1>
-          <p className="text-gray-500 mt-1">Buat BoQ dan kelola Master Pricelist secara terpusat</p>
+          <h1 className="text-3xl font-bold text-gray-900">Master Pricelist BoQ</h1>
+          <p className="text-gray-500 mt-1">Kelola database material dan harga untuk pembuatan Bill of Quantity</p>
         </div>
-        {activeTab === "projects" && (
+        
+        <div className="flex flex-wrap gap-3">
           <button
-            onClick={() => setIsAddOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium flex items-center transition-colors shadow-sm"
+            onClick={handlePrintPricelist}
+            className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2.5 rounded-lg font-medium flex items-center shadow-sm transition-colors"
           >
-            <Plus className="w-5 h-5 mr-2" />
-            Proyek BoQ Baru
+            <Printer className="w-4 h-4 mr-2" />
+            Print Pricelist
           </button>
-        )}
+          
+          <Link
+            href="/admin/quotation/boq-builder/projects"
+            className="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2.5 rounded-lg font-medium flex items-center shadow-sm transition-colors"
+          >
+            <FolderOpen className="w-4 h-4 mr-2" />
+            Daftar BoQ / Buat Baru
+          </Link>
+        </div>
       </div>
 
-      {/* TABS */}
-      <div className="flex space-x-2 border-b border-gray-200 mb-6">
-        <button
-          onClick={() => setActiveTab("projects")}
-          className={`flex items-center px-5 py-3 font-medium text-sm transition-colors border-b-2 ${
-            activeTab === "projects"
-              ? "border-blue-600 text-blue-600"
-              : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-          }`}
-        >
-          <FolderOpen className="w-4 h-4 mr-2" />
-          Daftar Proyek BoQ
-        </button>
-        <button
-          onClick={() => setActiveTab("pricelist")}
-          className={`flex items-center px-5 py-3 font-medium text-sm transition-colors border-b-2 ${
-            activeTab === "pricelist"
-              ? "border-blue-600 text-blue-600"
-              : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-          }`}
-        >
-          <Database className="w-4 h-4 mr-2" />
-          Master Pricelist
-        </button>
-      </div>
-
-      {activeTab === "pricelist" ? (
+      <div className="print:hidden">
         <PricelistTab />
-      ) : (
-        <>
-          {loading ? (
-            <div className="flex flex-col items-center justify-center p-12 text-gray-400">
-              <Loader2 className="w-8 h-8 animate-spin mb-4" />
-              <p>Memuat proyek...</p>
-            </div>
-          ) : projects.length === 0 ? (
-            <div className="bg-white border border-gray-200 rounded-xl p-12 text-center shadow-sm">
-              <FolderOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-medium text-gray-900 mb-2">Belum Ada Proyek</h3>
-              <p className="text-gray-500 mb-6 max-w-md mx-auto">
-                Anda belum membuat dokumen Bill of Quantity (BoQ) apapun. Mulai dengan membuat proyek BoQ baru sekarang.
-              </p>
-              <button
-                onClick={() => setIsAddOpen(true)}
-                className="bg-blue-50 text-blue-600 hover:bg-blue-100 px-6 py-2 rounded-lg font-medium transition-colors"
-              >
-                Buat Proyek BoQ
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {projects.map(project => (
-                <div key={project.id} className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition-all group flex flex-col h-full">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="p-2 bg-blue-50 rounded-lg">
-                      <FolderOpen className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <button 
-                      onClick={() => handleDelete(project.id)}
-                      className="text-gray-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-md opacity-0 group-hover:opacity-100 transition-all"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-900 line-clamp-2 mb-1">{project.project_name}</h3>
-                  {project.customer_name && (
-                    <p className="text-sm text-gray-600 mb-4 font-medium">{project.customer_name}</p>
-                  )}
-                  
-                  <div className="mt-auto pt-4 border-t border-gray-100 flex justify-between items-center">
-                    <div className="flex items-center text-xs text-gray-500">
-                      <Calendar className="w-3.5 h-3.5 mr-1.5" />
-                      {new Date(project.created_at).toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' })}
-                    </div>
-                    <Link 
-                      href={`/admin/quotation/boq-builder/${project.id}`}
-                      className="text-sm font-medium text-blue-600 hover:text-blue-800"
-                    >
-                      Buka Editor &rarr;
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+      </div>
 
-          {isAddOpen && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-              <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
-                <div className="p-5 border-b flex justify-between items-center bg-gray-50/50">
-                  <h2 className="text-lg font-bold text-gray-900">Buat Proyek BoQ Baru</h2>
-                </div>
-                <form onSubmit={handleCreate} className="p-5 space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Nama Proyek *</label>
-                    <input 
-                      required 
-                      type="text" 
-                      autoFocus
-                      className="w-full border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 p-2.5 rounded-lg outline-none transition-all" 
-                      placeholder="Contoh: Instalasi VRV Gedung A" 
-                      value={formData.project_name} 
-                      onChange={e => setFormData({...formData, project_name: e.target.value})} 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Nama Customer (Opsional)</label>
-                    <input 
-                      type="text" 
-                      className="w-full border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 p-2.5 rounded-lg outline-none transition-all" 
-                      placeholder="Contoh: PT Maju Jaya" 
-                      value={formData.customer_name} 
-                      onChange={e => setFormData({...formData, customer_name: e.target.value})} 
-                    />
-                  </div>
-                  <div className="pt-4 flex justify-end gap-3">
-                    <button type="button" onClick={() => setIsAddOpen(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors">Batal</button>
-                    <button type="submit" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">Buat Proyek</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
-        </>
-      )}
+      <div className="hidden print:block">
+        <h2 className="text-xl font-bold mb-4">Master Pricelist DASI</h2>
+        <p className="mb-4">Dicetak pada: {new Date().toLocaleDateString("id-ID")}</p>
+        <PricelistTab />
+      </div>
     </div>
   );
 }
