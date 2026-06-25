@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Package, Plus, Edit3, Trash2, X, Check, ChevronLeft,
   Search, Database, FileText, RefreshCw, Link2, ChevronRight,
-  ChevronDown, Image as ImageIcon, Box
+  ChevronDown, Image as ImageIcon, Box, ExternalLink
 } from "lucide-react";
 import {
   getUnitTypeCategories,
@@ -36,7 +36,7 @@ export default function UnitDatabaseClient() {
   const [search, setSearch] = useState("");
 
   // UI States
-  const [activeParentId, setActiveParentId] = useState<number | null>(null);
+  const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);
   const [expandedParents, setExpandedParents] = useState<number[]>([]);
   
   // Modal states
@@ -65,16 +65,16 @@ export default function UnitDatabaseClient() {
     if (res && "success" in res && res.success) {
       setCategories(res.data || []);
       // Set initial active parent if none selected
-      if (!activeParentId && res.data && res.data.length > 0) {
+      if (!activeCategoryId && res.data && res.data.length > 0) {
         const parents = res.data.filter((c: UnitCategory) => c.parent_id === null);
         if (parents.length > 0) {
-          setActiveParentId(parents[0].id);
+          setActiveCategoryId(parents[0].id);
           setExpandedParents([parents[0].id]);
         }
       }
     }
     setLoading(false);
-  }, [activeParentId]);
+  }, [activeCategoryId]);
 
   useEffect(() => {
     fetchCategories();
@@ -82,7 +82,9 @@ export default function UnitDatabaseClient() {
 
   // Derived data
   const mainCategories = categories.filter(c => c.parent_id === null);
-  const activeChildren = categories.filter(c => c.parent_id === activeParentId);
+  
+  // A product is considered anything that belongs to the currently active category
+  const activeChildren = categories.filter(c => c.parent_id === activeCategoryId);
   
   const filteredChildren = activeChildren.filter(
     (c) =>
@@ -90,13 +92,20 @@ export default function UnitDatabaseClient() {
       c.description.toLowerCase().includes(search.toLowerCase())
   );
 
-  const toggleParent = (id: number) => {
+  const toggleExpand = (id: number, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (expandedParents.includes(id)) {
       setExpandedParents(expandedParents.filter(p => p !== id));
     } else {
       setExpandedParents([...expandedParents, id]);
     }
-    setActiveParentId(id);
+  };
+
+  const selectCategory = (id: number) => {
+    setActiveCategoryId(id);
+    if (!expandedParents.includes(id)) {
+      setExpandedParents([...expandedParents, id]);
+    }
   };
 
   const openCreateModal = (isSubCategory = false) => {
@@ -107,11 +116,12 @@ export default function UnitDatabaseClient() {
     setFormColor("#0073ea");
     setFormCatalogUrl("");
     setFormImageUrl("");
-    setFormParentId(isSubCategory ? activeParentId : null);
+    setFormParentId(isSubCategory ? activeCategoryId : null);
     setModalOpen(true);
   };
 
-  const openEditModal = (cat: UnitCategory) => {
+  const openEditModal = (cat: UnitCategory, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     setModalMode("edit");
     setEditingCategory(cat);
     setFormName(cat.name);
@@ -161,14 +171,18 @@ export default function UnitDatabaseClient() {
     }
   };
 
-  const handleDelete = async (cat: UnitCategory) => {
-    if (!confirm(`Hapus kategori "${cat.name}"?`)) return;
+  const handleDelete = async (cat: UnitCategory, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (!confirm(`Hapus kategori/produk "${cat.name}"?`)) return;
     setDeleting(cat.id);
     const res = await deleteUnitTypeCategory(cat.id);
     setDeleting(null);
     if (res && "success" in res && res.success) {
       if (detailOpen && selectedProduct?.id === cat.id) {
         setDetailOpen(false);
+      }
+      if (activeCategoryId === cat.id) {
+        setActiveCategoryId(cat.parent_id || mainCategories[0]?.id || null);
       }
       fetchCategories();
     } else {
@@ -186,6 +200,74 @@ export default function UnitDatabaseClient() {
     } else {
       alert((res as any)?.error || "Gagal seed data.");
     }
+  };
+
+  // RECURSIVE SIDEBAR TREE NODE
+  const renderTree = (items: UnitCategory[], depth = 0) => {
+    return items.map((cat) => {
+      const isExpanded = expandedParents.includes(cat.id);
+      const isActive = activeCategoryId === cat.id;
+      const children = categories.filter(c => c.parent_id === cat.id);
+      const hasChildren = children.length > 0;
+
+      // Adjust padding based on depth
+      const paddingLeft = depth === 0 ? "12px" : `${12 + (depth * 16)}px`;
+
+      return (
+        <div key={cat.id} className="mb-0.5">
+          <div 
+            onClick={() => selectCategory(cat.id)}
+            className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all ${
+              isActive ? "bg-blue-50/80" : "hover:bg-slate-50"
+            }`}
+            style={{ paddingLeft }}
+          >
+            <div className="flex items-center gap-2.5 overflow-hidden">
+              {hasChildren ? (
+                <button 
+                  onClick={(e) => toggleExpand(cat.id, e)}
+                  className={`p-0.5 rounded-md hover:bg-slate-200 transition-colors ${isActive ? 'text-[#0073ea]' : 'text-slate-400'}`}
+                >
+                  {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                </button>
+              ) : (
+                <div className="w-[18px]" /> // spacer
+              )}
+              
+              {depth === 0 && (
+                <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: cat.icon_color }} />
+              )}
+              
+              <span className={`text-[13px] truncate ${isActive ? "font-black text-[#0073ea]" : "font-bold text-[#323338]"}`}>
+                {cat.name}
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-1 opacity-0 hover:opacity-100 transition-opacity flex-shrink-0 ml-2">
+              <button 
+                onClick={(e) => openEditModal(cat, e)}
+                className="p-1 hover:bg-white hover:shadow-sm rounded-md text-slate-400 hover:text-[#0073ea] transition-all"
+              >
+                <Edit3 size={12} />
+              </button>
+            </div>
+          </div>
+
+          <AnimatePresence>
+            {isExpanded && hasChildren && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden"
+              >
+                {renderTree(children, depth + 1)}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      );
+    });
   };
 
   return (
@@ -224,14 +306,14 @@ export default function UnitDatabaseClient() {
               onClick={() => openCreateModal(false)}
               className="px-5 py-2.5 bg-white border border-slate-200 text-[#323338] rounded-xl text-xs font-bold hover:bg-slate-50 transition-all flex items-center gap-2"
             >
-              <Plus size={16} /> Kategori Utama
+              <Plus size={16} /> Kategori Baru
             </button>
             <button
               onClick={() => openCreateModal(true)}
-              disabled={!activeParentId}
+              disabled={!activeCategoryId}
               className="px-5 py-2.5 bg-[#0073ea] text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-500/20 hover:bg-[#005bb5] hover:shadow-blue-500/30 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Plus size={16} /> Tambah Produk
+              <Plus size={16} /> Tambah Sub-Item
             </button>
           </div>
         </div>
@@ -239,11 +321,11 @@ export default function UnitDatabaseClient() {
 
       <main className="max-w-[1400px] mx-auto p-6">
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Sidebar */}
+          {/* Sidebar Tree */}
           <div className="w-full lg:w-72 flex-shrink-0">
             <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden sticky top-[100px]">
               <div className="p-4 border-b border-slate-100 bg-slate-50/50">
-                <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest">Kategori</h2>
+                <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest">Kategori Produk</h2>
               </div>
               <div className="p-2 custom-scrollbar overflow-y-auto" style={{ maxHeight: 'calc(100vh - 160px)' }}>
                 {mainCategories.length === 0 && !loading ? (
@@ -251,76 +333,21 @@ export default function UnitDatabaseClient() {
                     Belum ada kategori
                   </div>
                 ) : (
-                  mainCategories.map((cat) => {
-                    const isExpanded = expandedParents.includes(cat.id);
-                    const isActive = activeParentId === cat.id;
-                    const children = categories.filter(c => c.parent_id === cat.id);
-
-                    return (
-                      <div key={cat.id} className="mb-1">
-                        <div 
-                          onClick={() => toggleParent(cat.id)}
-                          className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all ${
-                            isActive ? "bg-blue-50/50" : "hover:bg-slate-50"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: cat.icon_color }} />
-                            <span className={`text-sm font-bold ${isActive ? "text-[#0073ea]" : "text-[#323338]"}`}>
-                              {cat.name}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <button 
-                              onClick={(e) => { e.stopPropagation(); openEditModal(cat); }}
-                              className="p-1 hover:bg-slate-200 rounded text-slate-400 opacity-0 hover:opacity-100 transition-opacity"
-                            >
-                              <Edit3 size={12} />
-                            </button>
-                            {children.length > 0 ? (
-                              isExpanded ? <ChevronDown size={16} className="text-slate-400" /> : <ChevronRight size={16} className="text-slate-400" />
-                            ) : null}
-                          </div>
-                        </div>
-
-                        {/* Children List in Sidebar */}
-                        <AnimatePresence>
-                          {isExpanded && children.length > 0 && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: "auto", opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              className="overflow-hidden ml-4 pl-3 border-l-2 border-slate-100 my-1 space-y-1"
-                            >
-                              {children.map(child => (
-                                <div 
-                                  key={child.id}
-                                  onClick={() => openDetail(child)}
-                                  className="text-[13px] py-1.5 px-3 text-slate-500 hover:text-[#0073ea] hover:bg-slate-50 rounded-lg cursor-pointer transition-colors"
-                                >
-                                  {child.name}
-                                </div>
-                              ))}
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    );
-                  })
+                  renderTree(mainCategories)
                 )}
               </div>
             </div>
           </div>
 
           {/* Main Content Area */}
-          <div className="flex-1">
+          <div className="flex-1 flex flex-col">
             {/* Search */}
             <div className="bg-white rounded-2xl border border-slate-100 p-4 mb-6 flex items-center gap-3">
               <Search size={18} className="text-slate-300" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Cari produk (e.g. Screw, VRV, UAAW...)"
+                placeholder="Cari produk di dalam kategori ini..."
                 className="flex-1 bg-transparent border-none focus:outline-none text-sm font-bold text-[#323338] placeholder-slate-300"
               />
             </div>
@@ -330,11 +357,11 @@ export default function UnitDatabaseClient() {
               <div className="flex items-center gap-3">
                 <Box size={24} className="text-slate-400" />
                 <h2 className="text-xl font-black text-[#323338]">
-                  {activeParentId ? mainCategories.find(c => c.id === activeParentId)?.name : "Semua Produk"}
+                  {activeCategoryId ? categories.find(c => c.id === activeCategoryId)?.name : "Semua Produk"}
                 </h2>
               </div>
               <span className="text-xs font-bold text-slate-400 bg-white px-3 py-1.5 rounded-full border border-slate-100">
-                Total {filteredChildren.length} Produk
+                Total {filteredChildren.length} Item
               </span>
             </div>
 
@@ -343,31 +370,42 @@ export default function UnitDatabaseClient() {
               <div className="flex justify-center py-20">
                 <div className="w-8 h-8 border-4 border-blue-100 border-t-[#0073ea] rounded-full animate-spin" />
               </div>
-            ) : !activeParentId ? (
+            ) : !activeCategoryId ? (
               <div className="text-center py-20 bg-white rounded-2xl border border-slate-100 border-dashed">
                 <Package size={48} className="text-slate-200 mx-auto mb-4" />
-                <p className="text-sm font-bold text-slate-400">Pilih kategori di sidebar untuk melihat produk.</p>
+                <p className="text-sm font-bold text-slate-400">Pilih kategori di sidebar untuk melihat isi.</p>
               </div>
             ) : filteredChildren.length === 0 ? (
               <div className="text-center py-20 bg-white rounded-2xl border border-slate-100 border-dashed">
                 <Package size={48} className="text-slate-200 mx-auto mb-4" />
-                <p className="text-sm font-bold text-slate-400 mb-4">Belum ada produk di kategori ini.</p>
+                <p className="text-sm font-bold text-slate-400 mb-4">Belum ada item di dalam kategori ini.</p>
                 <button
                   onClick={() => openCreateModal(true)}
                   className="text-xs font-bold text-[#0073ea] underline"
                 >
-                  Tambah Produk Baru
+                  Tambah Sub-Item Baru
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 items-start auto-rows-max">
                 {filteredChildren.map((product) => (
                   <motion.div
                     key={product.id}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     whileHover={{ y: -5, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01)" }}
-                    onClick={() => openDetail(product)}
+                    onClick={() => {
+                      // If it has children, treat it as a folder when clicked in the grid?
+                      // The Daikin UI: clicking a card either opens details (if it's a leaf) or opens it.
+                      // Let's just always open Detail modal, from which they can edit.
+                      // Actually, if it's a category card, they might want to navigate into it.
+                      const hasSubChildren = categories.some(c => c.parent_id === product.id);
+                      if (hasSubChildren) {
+                        selectCategory(product.id);
+                      } else {
+                        openDetail(product);
+                      }
+                    }}
                     className="bg-white rounded-2xl border border-slate-100 overflow-hidden cursor-pointer transition-all group flex flex-col h-full"
                   >
                     {/* Image Placeholder or Actual Image */}
@@ -380,14 +418,14 @@ export default function UnitDatabaseClient() {
                         />
                       ) : (
                         <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-slate-300">
-                          <ImageIcon size={24} />
+                          {categories.some(c => c.parent_id === product.id) ? <Package size={24} /> : <ImageIcon size={24} />}
                         </div>
                       )}
                     </div>
                     
                     <div className="p-4 flex-1 flex flex-col">
                       <h3 className="text-sm font-black text-[#323338] mb-1 group-hover:text-[#0073ea] transition-colors line-clamp-1">{product.name}</h3>
-                      <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed flex-1">{product.description || "Tidak ada deskripsi"}</p>
+                      <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed flex-1">{product.description || (categories.some(c => c.parent_id === product.id) ? "Kategori" : "Produk")}</p>
                       
                       {product.catalog_url && (
                         <div className="mt-3 pt-3 border-t border-slate-50">
@@ -414,10 +452,10 @@ export default function UnitDatabaseClient() {
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h2 className="text-xl font-black text-[#323338]">
-                    {modalMode === "create" ? (formParentId ? "Tambah Produk" : "Tambah Kategori") : "Edit Data"}
+                    {modalMode === "create" ? "Tambah Item Baru" : "Edit Item"}
                   </h2>
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                    {formParentId ? "Product Item" : "Main Category"}
+                    {formParentId ? "Sub-Item / Produk" : "Kategori Utama"}
                   </p>
                 </div>
                 <button onClick={() => setModalOpen(false)} className="p-2 bg-slate-100 text-slate-400 rounded-xl hover:bg-slate-200 transition-colors">
@@ -426,22 +464,20 @@ export default function UnitDatabaseClient() {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Parent Category Select (Only if creating a product) */}
-                {(formParentId || (!formParentId && mainCategories.length > 0 && modalMode === "create")) && (
-                  <div>
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1.5">Level</label>
-                    <select
-                      value={formParentId || ""}
-                      onChange={(e) => setFormParentId(e.target.value ? Number(e.target.value) : null)}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#0073ea] transition-all"
-                    >
-                      <option value="">Kategori Utama (Level 1)</option>
-                      {mainCategories.map(c => (
-                        <option key={c.id} value={c.id}>Sub-kategori di bawah "{c.name}"</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
+                {/* Parent Category Select */}
+                <div>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1.5">Lokasi Induk (Parent)</label>
+                  <select
+                    value={formParentId || ""}
+                    onChange={(e) => setFormParentId(e.target.value ? Number(e.target.value) : null)}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#0073ea] transition-all"
+                  >
+                    <option value="">-- Buat sebagai Kategori Utama (Level 1) --</option>
+                    {categories.map(c => (
+                      <option key={c.id} value={c.id}>Sub-item di dalam "{c.name}"</option>
+                    ))}
+                  </select>
+                </div>
 
                 <div>
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1.5">Nama</label>
@@ -450,7 +486,7 @@ export default function UnitDatabaseClient() {
                     value={formName}
                     onChange={(e) => setFormName(e.target.value)}
                     required
-                    placeholder={formParentId ? "e.g. UAAW-ST3-FAA" : "e.g. Air Cooled Chiller"}
+                    placeholder={formParentId ? "e.g. Screw, Modular Chiller..." : "e.g. Air Cooled Chiller"}
                     className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#0073ea] transition-all"
                   />
                 </div>
@@ -460,7 +496,7 @@ export default function UnitDatabaseClient() {
                   <textarea
                     value={formDescription}
                     onChange={(e) => setFormDescription(e.target.value)}
-                    placeholder="Penjelasan singkat produk atau kategori..."
+                    placeholder="Penjelasan singkat..."
                     rows={3}
                     className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#0073ea] transition-all resize-none"
                   />
@@ -471,7 +507,7 @@ export default function UnitDatabaseClient() {
                   <>
                     <div>
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1.5">
-                        <ImageIcon size={10} className="inline mr-1" /> Link Gambar Produk
+                        <ImageIcon size={10} className="inline mr-1" /> Link Gambar Ilustrasi
                       </label>
                       <input
                         type="url"
@@ -499,7 +535,7 @@ export default function UnitDatabaseClient() {
                 {/* Color for main categories */}
                 {!formParentId && (
                   <div>
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-2">Warna Identitas</label>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-2">Warna Kategori Utama</label>
                     <div className="flex flex-wrap gap-2">
                       {["#0073ea", "#00c875", "#e44258", "#fdab3d", "#579bfc", "#a25ddc", "#037f4c", "#66ccff", "#323338"].map((color) => (
                         <button
@@ -542,7 +578,7 @@ export default function UnitDatabaseClient() {
                 <div>
                   <h2 className="text-xl font-black text-[#323338]">Parts Details</h2>
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                    {mainCategories.find(c => c.id === selectedProduct.parent_id)?.name || "Product"}
+                    {categories.find(c => c.id === selectedProduct.parent_id)?.name || "Product"}
                   </p>
                 </div>
                 <div className="flex gap-2">
