@@ -284,7 +284,8 @@ export type projects_status = (typeof projects_status)[keyof typeof projects_sta
 export const service_activities_type: {
   Audit: 'Audit',
   Preventive: 'Preventive',
-  Corrective: 'Corrective'
+  Corrective: 'Corrective',
+  MCI: 'MCI'
 };
 
 export type service_activities_type = (typeof service_activities_type)[keyof typeof service_activities_type]

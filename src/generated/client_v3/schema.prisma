@@ -943,6 +943,7 @@ enum service_activities_type {
   Audit
   Preventive
   Corrective
+  MCI
 }
 
 enum service_logs_service_type {

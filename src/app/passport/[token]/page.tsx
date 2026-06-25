@@ -23,6 +23,7 @@ import PreventiveFormClient from "./preventive/PreventiveFormClient";
 import CorrectiveFormClient from "./corrective/CorrectiveFormClient";
 import AuditFormClient from "./audit/AuditFormClient";
 import DailyLogFormClient from "../daily/DailyLogFormClient";
+import MciFormClient from "./mci/MciFormClient";
 import HealthExplanationModal from "@/components/HealthExplanationModal";
 
 export default function PassportLandingPage() {
@@ -37,7 +38,13 @@ export default function PassportLandingPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [session, setSession] = useState<any>(null);
 
-  const [activeTab, setActiveTab] = useState<"info" | "history" | "media" | "complaint" | "form_preventive" | "form_corrective" | "form_audit" | "form_daily">("info");
+  const [activeTab, setActiveTab] = useState<"info" | "history" | "media" | "complaint" | "form_preventive" | "form_corrective" | "form_audit" | "form_daily" | "form_mci">("info");
+  
+  // Helper to determine if unit is a Chiller for MCI form
+  const isChiller = (unit?.unit_type?.toLowerCase().includes("chiller") || 
+                     unit?.unit_type?.toLowerCase().includes("water cooled") || 
+                     unit?.unit_type?.toLowerCase().includes("centrifugal") || 
+                     unit?.unit_type?.toLowerCase().includes("screw"));
   
   // UI States
   const [showEditModal, setShowEditModal] = useState(false);
@@ -321,6 +328,13 @@ export default function PassportLandingPage() {
                   <DailyLogFormClient unitId={unit.id} token={token} />
                </motion.div>
             )}
+
+            {activeTab === "form_mci" && (
+               <motion.div key="f_mci" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                  <button onClick={() => setActiveTab("info")} className="flex items-center gap-2 text-xs font-black uppercase text-slate-400 mb-6"><ChevronLeft size={16}/> Cancel</button>
+                  <MciFormClient unit={unit} />
+               </motion.div>
+            )}
           </AnimatePresence>
         </div>
 
@@ -340,6 +354,9 @@ export default function PassportLandingPage() {
                        <ActionButton icon={Hammer} label="Corrective" color="#e44258" onClick={() => {setActiveTab("form_corrective"); setShowActionSheet(false);}} />
                        <ActionButton icon={ClipboardCheck} label="Audit Tech" color="#00c875" onClick={() => {setActiveTab("form_audit"); setShowActionSheet(false);}} />
                        <ActionButton icon={Activity} label="Daily Log" color="#fdab3d" onClick={() => {setActiveTab("form_daily"); setShowActionSheet(false);}} />
+                       {isChiller && (
+                         <ActionButton icon={ClipboardCheck} label="MCI Form" color="#8b5cf6" onClick={() => {setActiveTab("form_mci"); setShowActionSheet(false);}} />
+                       )}
                     </div>
                     <button onClick={() => {setActiveTab("complaint"); setShowActionSheet(false);}} className="w-full py-4 bg-rose-50 text-rose-500 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2">
                        <AlertTriangle size={16}/> Report Problem (User)

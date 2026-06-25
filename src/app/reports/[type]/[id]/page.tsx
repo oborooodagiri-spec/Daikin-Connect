@@ -12,6 +12,7 @@ import { getFCUPreventiveSections } from "@/components/FCUPreventivePDFTemplate"
 import { getAHUPreventiveSections } from "@/components/AHUPreventivePDFTemplate";
 import { getChillerPreventiveSections } from "@/components/ChillerPreventivePDFTemplate";
 import { getLogsheetRoesminSections } from "@/components/LogsheetRoesminPDFTemplate";
+import { getMciSections } from "@/components/MciPDFTemplate";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas-pro";
 import { format } from "date-fns";
@@ -452,6 +453,7 @@ export default function ReportHubPage() {
     if (type.toLowerCase() === 'audit') docType = 'ahu_audits';
     else if (type.toLowerCase() === 'dailylog') docType = 'daily_ops_logs';
     else if (type.toLowerCase() === 'corrective') docType = 'corrective';
+    else if (type.toLowerCase() === 'mci') docType = 'service_activities';
 
     const res = await saveSignature(docType, parseInt(id), signatureRole, signatureBase64, name);
     if (res.success) {
@@ -531,6 +533,9 @@ export default function ReportHubPage() {
   } else if (type.toLowerCase() === 'dailylog') {
     reportTitle = t("DAILY OPERATIONAL LOGSHEET", activeLang);
     sections = getDailyLogSections(data.activity, data.unit, data.activity.inspector_name, data.customer?.name, activeLang, commonApproval);
+  } else if (type.toLowerCase() === 'mci') {
+    reportTitle = "WARRANTY VISIT CHECK LIST";
+    sections = getMciSections(data.activity, data.unit, data.activity.inspector_name, data.customer?.name, activeLang);
   }
 
   // Separate technical content from photos for smart partitioning

@@ -269,13 +269,14 @@ function ReportsContent({ lang }: { lang: Language }) {
         <div className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="flex gap-1 bg-slate-100 rounded-xl p-1 overflow-x-auto no-scrollbar shrink-0">
-            {["all", "Audit", "Preventive", "Corrective", "Complaint", "DailyLog"].filter(tab => {
+            {["all", "Audit", "Preventive", "Corrective", "Complaint", "MCI", "DailyLog"].filter(tab => {
               if (tab === "all") return true;
               if (tab === "Complaint") return true; // Always allow complaint sort if stats exist
+              if (tab === "MCI") return true; // Always allow MCI for now
               return enabledForms.includes(tab);
             }).map((tab) => (
               <button key={tab} onClick={() => setTypeFilter(tab)} className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${typeFilter === tab ? "bg-white text-[#003366] shadow-sm" : "text-slate-400 hover:text-slate-600"}`}>
-                {tab === "all" ? t("Semua", lang) : (lang === 'ja' ? (tab === 'Audit' ? '監査' : tab === 'Preventive' ? '予防' : tab === 'DailyLog' ? '日報' : tab === 'Complaint' ? '苦情' : '是正') : t(tab, lang))}
+                {tab === "all" ? t("Semua", lang) : (lang === 'ja' ? (tab === 'Audit' ? '監査' : tab === 'Preventive' ? '予防' : tab === 'DailyLog' ? '日報' : tab === 'Complaint' ? '苦情' : tab === 'MCI' ? 'MCI' : '是正') : t(tab, lang))}
               </button>
             ))}
           </div>

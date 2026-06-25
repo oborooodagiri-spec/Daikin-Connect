@@ -141,11 +141,12 @@ export async function getAllReports(filters?: {
     });
 
     // Stats
-    const [totalAudit, totalPreventive, totalCorrective, totalComplaint] = await Promise.all([
+    const [totalAudit, totalPreventive, totalCorrective, totalComplaint, totalMci] = await Promise.all([
       (prisma.service_activities as any).count({ where: { ...where, type: "Audit" } }),
       (prisma.service_activities as any).count({ where: { ...where, type: "Preventive" } }),
       (prisma.service_activities as any).count({ where: { ...where, type: "Corrective", technical_json: { not: { contains: "Complaint" } } } }),
       (prisma.service_activities as any).count({ where: { ...where, type: "Corrective", technical_json: { contains: "Complaint" } } }),
+      (prisma.service_activities as any).count({ where: { ...where, type: "MCI" } }),
     ]);
 
     // Fetch Project Config for UI control
@@ -200,8 +201,9 @@ export async function getAllReports(filters?: {
         totalPreventive,
         totalCorrective,
         totalComplaint,
+        totalMci,
         totalDailyLog: totalDailyLogDb,
-        totalAll: totalAudit + totalPreventive + totalCorrective + totalComplaint + totalDailyLogDb,
+        totalAll: totalAudit + totalPreventive + totalCorrective + totalComplaint + totalMci + totalDailyLogDb,
       },
       enabledForms,
     });

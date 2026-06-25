@@ -1270,7 +1270,8 @@ exports.contracts_status = exports.$Enums.contracts_status = {
 exports.service_activities_type = exports.$Enums.service_activities_type = {
   Audit: 'Audit',
   Preventive: 'Preventive',
-  Corrective: 'Corrective'
+  Corrective: 'Corrective',
+  MCI: 'MCI'
 };
 
 exports.service_activities_status = exports.$Enums.service_activities_status = {
