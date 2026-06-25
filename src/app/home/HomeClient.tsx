@@ -93,9 +93,13 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
 
   useEffect(() => {
     const h = new Date().getHours();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     if (h >= 5 && h < 12) setGreeting("Selamat Pagi");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     else if (h >= 12 && h < 15) setGreeting("Selamat Siang");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     else if (h >= 15 && h < 18) setGreeting("Selamat Sore");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     else setGreeting("Selamat Malam");
   }, []);
 
@@ -183,7 +187,7 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
       // Optional: Refresh local state if you have a fetch
       window.location.reload();
     } else {
-      alert((res as any)?.error || "Gagal membuat project.");
+      alert((res as unknown as { error?: string })?.error || "Gagal membuat project.");
     }
   };
 
