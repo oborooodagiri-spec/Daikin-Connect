@@ -1,153 +1,106 @@
 "use client";
 
-import { BookOpen, Briefcase, Database } from "lucide-react";
+import { BookOpen, Briefcase, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 export default function QuotationDashboard() {
   const router = useRouter();
 
   return (
-    <div style={{ minHeight: "100vh", background: "#fff", fontFamily: "'Inter', -apple-system, sans-serif" }}>
-      <main style={{ maxWidth: 960, margin: "0 auto", padding: "32px 20px 64px" }}>
-        
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-          <div style={{ padding: "6px 12px", background: "#323338", color: "#fff", borderRadius: 8, fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-            QUOTATION & RATES
+    <div className="min-h-screen bg-[#fafbfc] font-['Inter'] pb-24">
+      {/* Premium Header */}
+      <div className="bg-white border-b border-[#e6e9ef] pt-12 pb-10 px-6 shadow-sm">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="px-3 py-1 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-md text-xs font-black tracking-widest uppercase shadow-md shadow-slate-200">
+              Quotation & Rates
+            </div>
           </div>
+          <h1 className="text-4xl font-black text-[#1c1d22] tracking-tight mb-2">
+            Pricing Hub
+          </h1>
+          <p className="text-[#676879] text-base font-medium max-w-2xl">
+            Kelola Bill of Quantity (BoQ), Master Pricelist, dan Official Rate Cards untuk kemudahan proses penawaran harga Anda secara tersentralisasi.
+          </p>
         </div>
-        
-        <p style={{ fontSize: 13, color: "#676879", marginBottom: 24, fontWeight: 600 }}>
-          Manage BoQ and Official Rate Cards
-        </p>
+      </div>
 
-        <div className="app-grid">
-          {/* Master Pricelist */}
-          <div 
-            className="app-item"
-            onClick={() => router.push("/admin/pricelist")}
-          >
-             <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #2b9348 0%, #55a630 100%)" }}>
-                <Database size={22} />
-             </div>
-             <span className="app-label">Master Pricelist</span>
-          </div>
-
-          {/* BoQ Builder */}
-          <div 
-            className="app-item"
+      <main className="max-w-6xl mx-auto px-6 mt-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          {/* BoQ Builder & Pricelist */}
+          <motion.div 
+            whileHover={{ y: -8, scale: 1.01 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="group bg-white rounded-[24px] border border-[#e6e9ef] overflow-hidden cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(90,24,154,0.1)] hover:border-purple-200"
             onClick={() => router.push("/admin/quotation/boq-builder")}
           >
-             <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #5a189a 0%, #7b2cbf 100%)" }}>
-                <BookOpen size={22} />
-             </div>
-             <span className="app-label">EPL BoQ Builder</span>
-          </div>
+            <div className="h-32 bg-gradient-to-br from-[#5a189a] via-[#7b2cbf] to-[#9d4edd] relative overflow-hidden">
+              <div className="absolute -right-6 -top-10 opacity-20">
+                <BookOpen size={180} />
+              </div>
+              <div className="absolute inset-0 bg-black/10" />
+            </div>
+            
+            <div className="p-8 relative">
+              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-purple-100 absolute -top-8 border border-purple-50 text-[#7b2cbf]">
+                <BookOpen size={28} strokeWidth={2.5} />
+              </div>
+              
+              <div className="mt-8 flex justify-between items-end">
+                <div>
+                  <h2 className="text-2xl font-black text-[#1c1d22] tracking-tight mb-3 group-hover:text-[#7b2cbf] transition-colors">
+                    EPL BoQ Builder & Pricelist
+                  </h2>
+                  <p className="text-[#676879] font-medium leading-relaxed text-sm">
+                    Buat dan kelola Bill of Quantity (BoQ) untuk banyak project secara dinamis. Sudah terintegrasi langsung dengan database Master Pricelist material dan komponen.
+                  </p>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-purple-50 group-hover:text-[#7b2cbf] transition-all flex-shrink-0 ml-4">
+                  <ChevronRight size={20} />
+                </div>
+              </div>
+            </div>
+          </motion.div>
 
-          {/* Rate Card */}
-          <div 
-            className="app-item"
+          {/* Rate Card Maintenance */}
+          <motion.div 
+            whileHover={{ y: -8, scale: 1.01 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="group bg-white rounded-[24px] border border-[#e6e9ef] overflow-hidden cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(0,115,234,0.1)] hover:border-blue-200"
             onClick={() => router.push("/admin/quotation/rate-card")}
           >
-             <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #0073ea 0%, #00a1e4 100%)" }}>
-                <Briefcase size={22} />
-             </div>
-             <span className="app-label">Rate Card Maintenance</span>
-          </div>
+            <div className="h-32 bg-gradient-to-br from-[#005bb5] via-[#0073ea] to-[#4db8ff] relative overflow-hidden">
+              <div className="absolute -right-6 -top-10 opacity-20">
+                <Briefcase size={180} />
+              </div>
+              <div className="absolute inset-0 bg-black/10" />
+            </div>
+            
+            <div className="p-8 relative">
+              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-100 absolute -top-8 border border-blue-50 text-[#0073ea]">
+                <Briefcase size={28} strokeWidth={2.5} />
+              </div>
+              
+              <div className="mt-8 flex justify-between items-end">
+                <div>
+                  <h2 className="text-2xl font-black text-[#1c1d22] tracking-tight mb-3 group-hover:text-[#0073ea] transition-colors">
+                    Rate Card Maintenance
+                  </h2>
+                  <p className="text-[#676879] font-medium leading-relaxed text-sm">
+                    Akses dan kelola Buku Tarif Satuan (Rate Card) resmi untuk penawaran layanan pemeliharaan rutin, kontrak unit price, dan SLA VES.
+                  </p>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-[#0073ea] transition-all flex-shrink-0 ml-4">
+                  <ChevronRight size={20} />
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
         </div>
       </main>
-
-      <style>{`
-        .app-grid {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 12px;
-          width: 100%;
-        }
-        
-        @media (min-width: 640px) {
-          .app-grid {
-            gap: 20px;
-          }
-        }
-        
-        .app-item {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-          cursor: pointer;
-          background: #ffffff;
-          border: 1px solid #e6e9ef;
-          border-radius: 16px;
-          padding: 16px 8px;
-          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
-          user-select: none;
-          flex: 0 0 calc(33.333% - 8px);
-          max-width: calc(33.333% - 8px);
-        }
-
-        @media (min-width: 480px) {
-          .app-item {
-            flex: 0 0 110px;
-            max-width: 110px;
-          }
-        }
-
-        .app-item:hover {
-          border-color: #0073ea;
-          box-shadow: 0 10px 15px -3px rgba(0, 73, 234, 0.08), 0 4px 6px -2px rgba(0, 73, 234, 0.04);
-          transform: translateY(-2px);
-        }
-        
-        .app-item:active {
-          transform: translateY(0) scale(0.97);
-        }
-        
-        .app-icon-container {
-          width: 48px;
-          height: 48px;
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #fff;
-          margin-bottom: 10px;
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .app-item:hover .app-icon-container {
-          transform: scale(1.05);
-          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        .app-label {
-          font-size: 11px;
-          font-weight: 600;
-          color: #323338;
-          line-height: 1.3;
-          max-width: 90px;
-          word-wrap: break-word;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-        
-        @media (min-width: 640px) {
-          .app-icon-container {
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
-          }
-          .app-label {
-            font-size: 12px;
-            font-weight: 600;
-          }
-        }
-      `}</style>
     </div>
   );
 }
