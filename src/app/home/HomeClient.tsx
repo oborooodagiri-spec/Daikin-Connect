@@ -12,6 +12,8 @@ import {
 import StaticLogo from "@/components/ui/StaticLogo";
 import { updateProfile, saveAvatarUrl } from "@/app/actions/profile";
 import { logout } from "@/app/actions/auth";
+import { getAllCustomers } from "@/app/actions/customers";
+import { createProject } from "@/app/actions/projects";
 
 interface Project {
   id: string; name: string; code: string | null;
@@ -81,6 +83,13 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
   const [saving, setSaving] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [greeting, setGreeting] = useState("Selamat Datang");
+  
+  // New Project State
+  const [createProjectOpen, setCreateProjectOpen] = useState(false);
+  const [customersList, setCustomersList] = useState<any[]>([]);
+  const [newProjectName, setNewProjectName] = useState("");
+  const [newProjectCustomer, setNewProjectCustomer] = useState("");
+  const [creatingProject, setCreatingProject] = useState(false);
 
   useEffect(() => {
     const h = new Date().getHours();
@@ -147,6 +156,36 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
   };
 
   const initials = profile.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+
+  const handleOpenCreateProject = async () => {
+    setCreateProjectOpen(true);
+    const res = await getAllCustomers();
+    if (res && res.success && res.data) {
+      setCustomersList(res.data);
+    }
+  };
+
+  const handleCreateProjectSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newProjectName || !newProjectCustomer) {
+      alert("Nama Project dan Customer wajib diisi.");
+      return;
+    }
+    setCreatingProject(true);
+    const res = await createProject(newProjectCustomer, { name: newProjectName });
+    setCreatingProject(false);
+    if (res && res.success) {
+      setCreateProjectOpen(false);
+      setNewProjectName("");
+      setNewProjectCustomer("");
+      alert("Project berhasil dibuat. Silakan refresh halaman jika project tidak langsung muncul.");
+      router.refresh();
+      // Optional: Refresh local state if you have a fetch
+      window.location.reload();
+    } else {
+      alert((res as any)?.error || "Gagal membuat project.");
+    }
+  };
 
   return (
     <div style={{ minHeight: "100vh", background: "#fff", fontFamily: "'Inter', -apple-system, sans-serif" }}>
@@ -339,9 +378,31 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
             <h2 style={{ fontSize: 18, fontWeight: 700, color: "#323338", margin: 0 }}>
               Project Anda <span style={{ color: "#676879", fontWeight: 400, fontSize: 14 }}>({filtered.length})</span>
             </h2>
-            <div style={{ position: "relative" }}>
-              <Search size={16} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#c3c6d4" }} />
-              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Cari project..." style={{ padding: "8px 12px 8px 34px", border: "1px solid #e6e9ef", borderRadius: 8, fontSize: 13, outline: "none", width: 220, background: "#f7f8fa" }} />
+            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+              <div style={{ position: "relative" }}>
+                <Search size={16} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#c3c6d4" }} />
+                <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Cari project..." style={{ padding: "8px 12px 8px 34px", border: "1px solid #e6e9ef", borderRadius: 8, fontSize: 13, outline: "none", width: 220, background: "#f7f8fa" }} />
+              </div>
+              {profile.isAdmin && (
+                <button
+                  onClick={handleOpenCreateProject}
+                  style={{
+                    background: "#0073ea",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: 8,
+                    padding: "8px 16px",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6
+                  }}
+                >
+                  + Tambah Project Baru
+                </button>
+              )}
             </div>
           </div>
 
@@ -546,6 +607,41 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
               <button onClick={handleSaveProfile} disabled={saving} style={{ ...btnPrimary, width: "100%", justifyContent: "center" }}>
                 {saving ? "Menyimpan..." : <><Check size={16} /> Simpan</>}
               </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal Tambah Project Baru */}
+      <AnimatePresence>
+        {createProjectOpen && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setCreateProjectOpen(false)}
+            style={{ position: "fixed", inset: 0, background: "rgba(2,6,23,0.6)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 20 }}>
+            <motion.div initial={{ scale: 0.95, y: 20, opacity: 0 }} animate={{ scale: 1, y: 0, opacity: 1 }} exit={{ scale: 0.95, y: 20, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              style={{ background: "#fff", borderRadius: 24, padding: 32, width: "100%", maxWidth: 500, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+                <h3 style={{ fontSize: 20, fontWeight: 800, color: "#323338", margin: 0 }}>Tambah Project Baru</h3>
+                <button onClick={() => setCreateProjectOpen(false)} style={{ background: "#f4f5f7", border: "none", cursor: "pointer", color: "#676879", width: 32, height: 32, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={18} /></button>
+              </div>
+              <form onSubmit={handleCreateProjectSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#323338", marginBottom: 6 }}>Nama Project</label>
+                  <input type="text" value={newProjectName} onChange={e => setNewProjectName(e.target.value)} required placeholder="Masukkan nama project..." style={{ width: "100%", padding: "10px 14px", border: "1px solid #e6e9ef", borderRadius: 8, fontSize: 14, outline: "none" }} />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#323338", marginBottom: 6 }}>Customer</label>
+                  <select value={newProjectCustomer} onChange={e => setNewProjectCustomer(e.target.value)} required style={{ width: "100%", padding: "10px 14px", border: "1px solid #e6e9ef", borderRadius: 8, fontSize: 14, outline: "none", background: "#fff" }}>
+                    <option value="" disabled>-- Pilih Customer --</option>
+                    {customersList.map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <button type="submit" disabled={creatingProject} style={{ marginTop: 8, background: "#0073ea", color: "#fff", border: "none", borderRadius: 8, padding: "12px", fontSize: 14, fontWeight: 700, cursor: creatingProject ? "not-allowed" : "pointer", opacity: creatingProject ? 0.7 : 1 }}>
+                  {creatingProject ? "Menyimpan..." : "Simpan Project"}
+                </button>
+              </form>
             </motion.div>
           </motion.div>
         )}
