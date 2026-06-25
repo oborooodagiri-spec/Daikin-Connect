@@ -6,13 +6,14 @@ import { revalidatePath } from "next/cache";
 const prisma = new PrismaClient();
 
 export async function getBoqProjects() {
-  return await prisma.boq_projects.findMany({
+  const data = await prisma.boq_projects.findMany({
     orderBy: { created_at: "desc" },
   });
+  return JSON.parse(JSON.stringify(data));
 }
 
 export async function getBoqProjectDetails(boqId: string) {
-  return await prisma.boq_projects.findUnique({
+  const data = await prisma.boq_projects.findUnique({
     where: { id: boqId },
     include: {
       categories: {
@@ -28,6 +29,7 @@ export async function getBoqProjectDetails(boqId: string) {
       },
     },
   });
+  return data ? JSON.parse(JSON.stringify(data)) : null;
 }
 
 export async function createBoqProject(data: {
@@ -45,7 +47,7 @@ export async function createBoqProject(data: {
     },
   });
   revalidatePath("/admin/quotation/boq-builder");
-  return boq;
+  return JSON.parse(JSON.stringify(boq));
 }
 
 export async function updateBoqProjectMarkup(boqId: string, markup_material: number, markup_labour: number) {
@@ -57,7 +59,7 @@ export async function updateBoqProjectMarkup(boqId: string, markup_material: num
     },
   });
   revalidatePath(`/admin/quotation/boq-builder/${boqId}`);
-  return boq;
+  return JSON.parse(JSON.stringify(boq));
 }
 
 export async function deleteBoqProject(id: string) {
@@ -77,7 +79,7 @@ export async function addBoqCategory(boqId: string, name: string) {
     },
   });
   revalidatePath(`/admin/quotation/boq-builder/${boqId}`);
-  return cat;
+  return JSON.parse(JSON.stringify(cat));
 }
 
 export async function deleteBoqCategory(id: string, boqId: string) {
@@ -112,7 +114,7 @@ export async function addBoqItem(data: {
     },
   });
   revalidatePath(`/admin/quotation/boq-builder/${data.boq_id}`);
-  return item;
+  return JSON.parse(JSON.stringify(item));
 }
 
 export async function updateBoqItem(
@@ -129,7 +131,7 @@ export async function updateBoqItem(
     data: updates,
   });
   revalidatePath(`/admin/quotation/boq-builder/${boq_id}`);
-  return item;
+  return JSON.parse(JSON.stringify(item));
 }
 
 export async function deleteBoqItem(id: string, boq_id: string) {
