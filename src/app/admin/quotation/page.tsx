@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 export default function QuotationDashboard() {
   const router = useRouter();
 
+  return (
     <div style={{ minHeight: "100vh", background: "#fff", fontFamily: "'Inter', -apple-system, sans-serif" }}>
       <main style={{ maxWidth: 960, margin: "0 auto", padding: "32px 20px 64px" }}>
         
