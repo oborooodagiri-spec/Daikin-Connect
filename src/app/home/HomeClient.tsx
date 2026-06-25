@@ -318,6 +318,26 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
                  </div>
                  <span className="app-label">Unit Database</span>
               </div>
+
+              <div 
+                className="app-item"
+                onClick={() => router.push("/admin/pricelist")}
+              >
+                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #2b9348 0%, #55a630 100%)" }}>
+                    <Database size={22} />
+                 </div>
+                 <span className="app-label">Master Pricelist</span>
+              </div>
+
+              <div 
+                className="app-item"
+                onClick={() => router.push("/admin/boq-builder")}
+              >
+                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #5a189a 0%, #7b2cbf 100%)" }}>
+                    <BookOpen size={22} />
+                 </div>
+                 <span className="app-label">EPL BoQ Builder</span>
+              </div>
             </div>
           </motion.section>
         )}
