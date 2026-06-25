@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BookOpen, Briefcase, ChevronRight, FileText } from "lucide-react";
+import { BookOpen, Briefcase, ChevronRight, FileText, Database } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -58,6 +58,28 @@ export default function QuotationDashboard() {
           </h2>
           <p className="text-sm font-bold text-slate-500 leading-relaxed">
             Akses dan kelola Buku Tarif Satuan (Rate Card) resmi untuk pemeliharaan rutin, kontrak unit price, dan layanan SLA VES.
+          </p>
+        </motion.div>
+
+        {/* Master Pricelist Card */}
+        <motion.div 
+          whileHover={{ y: -5 }}
+          className="bg-white border border-[#e6e9ef] rounded-[2rem] p-8 shadow-sm hover:shadow-xl hover:border-[#0073ea]/30 transition-all cursor-pointer group md:col-span-2 lg:col-span-1"
+          onClick={() => router.push("/admin/pricelist")}
+        >
+          <div className="flex justify-between items-start mb-6">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2b9348] to-[#55a630] flex items-center justify-center text-white shadow-lg shadow-green-200">
+              <Database size={28} strokeWidth={2.5} />
+            </div>
+            <div className="p-2 bg-slate-50 text-slate-400 rounded-full group-hover:bg-green-50 group-hover:text-[#2b9348] transition-colors">
+              <ChevronRight size={20} />
+            </div>
+          </div>
+          <h2 className="text-xl font-black text-[#323338] uppercase tracking-tight mb-2 group-hover:text-[#2b9348] transition-colors">
+            Master Pricelist
+          </h2>
+          <p className="text-sm font-bold text-slate-500 leading-relaxed">
+            Database harga material, unit, dan komponen untuk keperluan pembuatan Bill of Quantity (BoQ) dan penawaran.
           </p>
         </motion.div>
 
