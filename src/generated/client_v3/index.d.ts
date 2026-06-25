@@ -268,6 +268,11 @@ export type shopping_list = $Result.DefaultSelection<Prisma.$shopping_listPayloa
  * 
  */
 export type rate_card_settings = $Result.DefaultSelection<Prisma.$rate_card_settingsPayload>
+/**
+ * Model unit_type_categories
+ * 
+ */
+export type unit_type_categories = $Result.DefaultSelection<Prisma.$unit_type_categoriesPayload>
 
 /**
  * Enums
@@ -1151,6 +1156,16 @@ export class PrismaClient<
     * ```
     */
   get rate_card_settings(): Prisma.rate_card_settingsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.unit_type_categories`: Exposes CRUD operations for the **unit_type_categories** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Unit_type_categories
+    * const unit_type_categories = await prisma.unit_type_categories.findMany()
+    * ```
+    */
+  get unit_type_categories(): Prisma.unit_type_categoriesDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1641,7 +1656,8 @@ export namespace Prisma {
     logsheet_templates: 'logsheet_templates',
     logsheet_entries: 'logsheet_entries',
     shopping_list: 'shopping_list',
-    rate_card_settings: 'rate_card_settings'
+    rate_card_settings: 'rate_card_settings',
+    unit_type_categories: 'unit_type_categories'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1657,7 +1673,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "customers" | "permissions" | "projects" | "knowledge_resources" | "refresh_tokens" | "work_orders" | "quotations" | "quotation_items" | "slas" | "role_permissions" | "roles" | "units" | "user_project_access" | "user_roles" | "user_unit_access" | "users" | "audit_logs" | "password_reset_tokens" | "activities" | "activity_photos" | "ahu_audits" | "audit_tickets" | "audit_velocity_points" | "audits" | "contracts" | "corrective" | "corrective_maintenances" | "maintenance_contracts" | "service_activities" | "service_logs" | "service_photos" | "sites" | "tickets" | "unit_comments" | "schedules" | "schedule_attendance" | "schedule_mom" | "schedule_messages" | "schedule_targets" | "complaints" | "unit_edit_requests" | "user_push_tokens" | "notifications" | "daily_ops_logs" | "vendor_attendance" | "project_intelligence" | "project_issues" | "logsheet_templates" | "logsheet_entries" | "shopping_list" | "rate_card_settings"
+      modelProps: "customers" | "permissions" | "projects" | "knowledge_resources" | "refresh_tokens" | "work_orders" | "quotations" | "quotation_items" | "slas" | "role_permissions" | "roles" | "units" | "user_project_access" | "user_roles" | "user_unit_access" | "users" | "audit_logs" | "password_reset_tokens" | "activities" | "activity_photos" | "ahu_audits" | "audit_tickets" | "audit_velocity_points" | "audits" | "contracts" | "corrective" | "corrective_maintenances" | "maintenance_contracts" | "service_activities" | "service_logs" | "service_photos" | "sites" | "tickets" | "unit_comments" | "schedules" | "schedule_attendance" | "schedule_mom" | "schedule_messages" | "schedule_targets" | "complaints" | "unit_edit_requests" | "user_push_tokens" | "notifications" | "daily_ops_logs" | "vendor_attendance" | "project_intelligence" | "project_issues" | "logsheet_templates" | "logsheet_entries" | "shopping_list" | "rate_card_settings" | "unit_type_categories"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -5027,6 +5043,72 @@ export namespace Prisma {
           }
         }
       }
+      unit_type_categories: {
+        payload: Prisma.$unit_type_categoriesPayload<ExtArgs>
+        fields: Prisma.unit_type_categoriesFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.unit_type_categoriesFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$unit_type_categoriesPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.unit_type_categoriesFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$unit_type_categoriesPayload>
+          }
+          findFirst: {
+            args: Prisma.unit_type_categoriesFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$unit_type_categoriesPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.unit_type_categoriesFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$unit_type_categoriesPayload>
+          }
+          findMany: {
+            args: Prisma.unit_type_categoriesFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$unit_type_categoriesPayload>[]
+          }
+          create: {
+            args: Prisma.unit_type_categoriesCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$unit_type_categoriesPayload>
+          }
+          createMany: {
+            args: Prisma.unit_type_categoriesCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.unit_type_categoriesDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$unit_type_categoriesPayload>
+          }
+          update: {
+            args: Prisma.unit_type_categoriesUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$unit_type_categoriesPayload>
+          }
+          deleteMany: {
+            args: Prisma.unit_type_categoriesDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.unit_type_categoriesUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.unit_type_categoriesUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$unit_type_categoriesPayload>
+          }
+          aggregate: {
+            args: Prisma.Unit_type_categoriesAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUnit_type_categories>
+          }
+          groupBy: {
+            args: Prisma.unit_type_categoriesGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Unit_type_categoriesGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.unit_type_categoriesCountArgs<ExtArgs>
+            result: $Utils.Optional<Unit_type_categoriesCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -5162,6 +5244,7 @@ export namespace Prisma {
     logsheet_entries?: logsheet_entriesOmit
     shopping_list?: shopping_listOmit
     rate_card_settings?: rate_card_settingsOmit
+    unit_type_categories?: unit_type_categoriesOmit
   }
 
   /* Types for Logging */
@@ -61136,6 +61219,944 @@ export namespace Prisma {
 
 
   /**
+   * Model unit_type_categories
+   */
+
+  export type AggregateUnit_type_categories = {
+    _count: Unit_type_categoriesCountAggregateOutputType | null
+    _avg: Unit_type_categoriesAvgAggregateOutputType | null
+    _sum: Unit_type_categoriesSumAggregateOutputType | null
+    _min: Unit_type_categoriesMinAggregateOutputType | null
+    _max: Unit_type_categoriesMaxAggregateOutputType | null
+  }
+
+  export type Unit_type_categoriesAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type Unit_type_categoriesSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type Unit_type_categoriesMinAggregateOutputType = {
+    id: number | null
+    name: string | null
+    description: string | null
+    icon_color: string | null
+    catalog_url: string | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type Unit_type_categoriesMaxAggregateOutputType = {
+    id: number | null
+    name: string | null
+    description: string | null
+    icon_color: string | null
+    catalog_url: string | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type Unit_type_categoriesCountAggregateOutputType = {
+    id: number
+    name: number
+    description: number
+    icon_color: number
+    catalog_url: number
+    created_at: number
+    updated_at: number
+    _all: number
+  }
+
+
+  export type Unit_type_categoriesAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type Unit_type_categoriesSumAggregateInputType = {
+    id?: true
+  }
+
+  export type Unit_type_categoriesMinAggregateInputType = {
+    id?: true
+    name?: true
+    description?: true
+    icon_color?: true
+    catalog_url?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type Unit_type_categoriesMaxAggregateInputType = {
+    id?: true
+    name?: true
+    description?: true
+    icon_color?: true
+    catalog_url?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type Unit_type_categoriesCountAggregateInputType = {
+    id?: true
+    name?: true
+    description?: true
+    icon_color?: true
+    catalog_url?: true
+    created_at?: true
+    updated_at?: true
+    _all?: true
+  }
+
+  export type Unit_type_categoriesAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which unit_type_categories to aggregate.
+     */
+    where?: unit_type_categoriesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of unit_type_categories to fetch.
+     */
+    orderBy?: unit_type_categoriesOrderByWithRelationInput | unit_type_categoriesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: unit_type_categoriesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` unit_type_categories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` unit_type_categories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned unit_type_categories
+    **/
+    _count?: true | Unit_type_categoriesCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Unit_type_categoriesAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Unit_type_categoriesSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Unit_type_categoriesMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Unit_type_categoriesMaxAggregateInputType
+  }
+
+  export type GetUnit_type_categoriesAggregateType<T extends Unit_type_categoriesAggregateArgs> = {
+        [P in keyof T & keyof AggregateUnit_type_categories]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUnit_type_categories[P]>
+      : GetScalarType<T[P], AggregateUnit_type_categories[P]>
+  }
+
+
+
+
+  export type unit_type_categoriesGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: unit_type_categoriesWhereInput
+    orderBy?: unit_type_categoriesOrderByWithAggregationInput | unit_type_categoriesOrderByWithAggregationInput[]
+    by: Unit_type_categoriesScalarFieldEnum[] | Unit_type_categoriesScalarFieldEnum
+    having?: unit_type_categoriesScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Unit_type_categoriesCountAggregateInputType | true
+    _avg?: Unit_type_categoriesAvgAggregateInputType
+    _sum?: Unit_type_categoriesSumAggregateInputType
+    _min?: Unit_type_categoriesMinAggregateInputType
+    _max?: Unit_type_categoriesMaxAggregateInputType
+  }
+
+  export type Unit_type_categoriesGroupByOutputType = {
+    id: number
+    name: string
+    description: string | null
+    icon_color: string | null
+    catalog_url: string | null
+    created_at: Date
+    updated_at: Date
+    _count: Unit_type_categoriesCountAggregateOutputType | null
+    _avg: Unit_type_categoriesAvgAggregateOutputType | null
+    _sum: Unit_type_categoriesSumAggregateOutputType | null
+    _min: Unit_type_categoriesMinAggregateOutputType | null
+    _max: Unit_type_categoriesMaxAggregateOutputType | null
+  }
+
+  type GetUnit_type_categoriesGroupByPayload<T extends unit_type_categoriesGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Unit_type_categoriesGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Unit_type_categoriesGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Unit_type_categoriesGroupByOutputType[P]>
+            : GetScalarType<T[P], Unit_type_categoriesGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type unit_type_categoriesSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    description?: boolean
+    icon_color?: boolean
+    catalog_url?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }, ExtArgs["result"]["unit_type_categories"]>
+
+
+
+  export type unit_type_categoriesSelectScalar = {
+    id?: boolean
+    name?: boolean
+    description?: boolean
+    icon_color?: boolean
+    catalog_url?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }
+
+  export type unit_type_categoriesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "icon_color" | "catalog_url" | "created_at" | "updated_at", ExtArgs["result"]["unit_type_categories"]>
+
+  export type $unit_type_categoriesPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "unit_type_categories"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      name: string
+      description: string | null
+      icon_color: string | null
+      catalog_url: string | null
+      created_at: Date
+      updated_at: Date
+    }, ExtArgs["result"]["unit_type_categories"]>
+    composites: {}
+  }
+
+  type unit_type_categoriesGetPayload<S extends boolean | null | undefined | unit_type_categoriesDefaultArgs> = $Result.GetResult<Prisma.$unit_type_categoriesPayload, S>
+
+  type unit_type_categoriesCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<unit_type_categoriesFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Unit_type_categoriesCountAggregateInputType | true
+    }
+
+  export interface unit_type_categoriesDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['unit_type_categories'], meta: { name: 'unit_type_categories' } }
+    /**
+     * Find zero or one Unit_type_categories that matches the filter.
+     * @param {unit_type_categoriesFindUniqueArgs} args - Arguments to find a Unit_type_categories
+     * @example
+     * // Get one Unit_type_categories
+     * const unit_type_categories = await prisma.unit_type_categories.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends unit_type_categoriesFindUniqueArgs>(args: SelectSubset<T, unit_type_categoriesFindUniqueArgs<ExtArgs>>): Prisma__unit_type_categoriesClient<$Result.GetResult<Prisma.$unit_type_categoriesPayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one Unit_type_categories that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {unit_type_categoriesFindUniqueOrThrowArgs} args - Arguments to find a Unit_type_categories
+     * @example
+     * // Get one Unit_type_categories
+     * const unit_type_categories = await prisma.unit_type_categories.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends unit_type_categoriesFindUniqueOrThrowArgs>(args: SelectSubset<T, unit_type_categoriesFindUniqueOrThrowArgs<ExtArgs>>): Prisma__unit_type_categoriesClient<$Result.GetResult<Prisma.$unit_type_categoriesPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Unit_type_categories that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {unit_type_categoriesFindFirstArgs} args - Arguments to find a Unit_type_categories
+     * @example
+     * // Get one Unit_type_categories
+     * const unit_type_categories = await prisma.unit_type_categories.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends unit_type_categoriesFindFirstArgs>(args?: SelectSubset<T, unit_type_categoriesFindFirstArgs<ExtArgs>>): Prisma__unit_type_categoriesClient<$Result.GetResult<Prisma.$unit_type_categoriesPayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Unit_type_categories that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {unit_type_categoriesFindFirstOrThrowArgs} args - Arguments to find a Unit_type_categories
+     * @example
+     * // Get one Unit_type_categories
+     * const unit_type_categories = await prisma.unit_type_categories.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends unit_type_categoriesFindFirstOrThrowArgs>(args?: SelectSubset<T, unit_type_categoriesFindFirstOrThrowArgs<ExtArgs>>): Prisma__unit_type_categoriesClient<$Result.GetResult<Prisma.$unit_type_categoriesPayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more Unit_type_categories that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {unit_type_categoriesFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Unit_type_categories
+     * const unit_type_categories = await prisma.unit_type_categories.findMany()
+     * 
+     * // Get first 10 Unit_type_categories
+     * const unit_type_categories = await prisma.unit_type_categories.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const unit_type_categoriesWithIdOnly = await prisma.unit_type_categories.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends unit_type_categoriesFindManyArgs>(args?: SelectSubset<T, unit_type_categoriesFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$unit_type_categoriesPayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a Unit_type_categories.
+     * @param {unit_type_categoriesCreateArgs} args - Arguments to create a Unit_type_categories.
+     * @example
+     * // Create one Unit_type_categories
+     * const Unit_type_categories = await prisma.unit_type_categories.create({
+     *   data: {
+     *     // ... data to create a Unit_type_categories
+     *   }
+     * })
+     * 
+     */
+    create<T extends unit_type_categoriesCreateArgs>(args: SelectSubset<T, unit_type_categoriesCreateArgs<ExtArgs>>): Prisma__unit_type_categoriesClient<$Result.GetResult<Prisma.$unit_type_categoriesPayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many Unit_type_categories.
+     * @param {unit_type_categoriesCreateManyArgs} args - Arguments to create many Unit_type_categories.
+     * @example
+     * // Create many Unit_type_categories
+     * const unit_type_categories = await prisma.unit_type_categories.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends unit_type_categoriesCreateManyArgs>(args?: SelectSubset<T, unit_type_categoriesCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Unit_type_categories.
+     * @param {unit_type_categoriesDeleteArgs} args - Arguments to delete one Unit_type_categories.
+     * @example
+     * // Delete one Unit_type_categories
+     * const Unit_type_categories = await prisma.unit_type_categories.delete({
+     *   where: {
+     *     // ... filter to delete one Unit_type_categories
+     *   }
+     * })
+     * 
+     */
+    delete<T extends unit_type_categoriesDeleteArgs>(args: SelectSubset<T, unit_type_categoriesDeleteArgs<ExtArgs>>): Prisma__unit_type_categoriesClient<$Result.GetResult<Prisma.$unit_type_categoriesPayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one Unit_type_categories.
+     * @param {unit_type_categoriesUpdateArgs} args - Arguments to update one Unit_type_categories.
+     * @example
+     * // Update one Unit_type_categories
+     * const unit_type_categories = await prisma.unit_type_categories.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends unit_type_categoriesUpdateArgs>(args: SelectSubset<T, unit_type_categoriesUpdateArgs<ExtArgs>>): Prisma__unit_type_categoriesClient<$Result.GetResult<Prisma.$unit_type_categoriesPayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more Unit_type_categories.
+     * @param {unit_type_categoriesDeleteManyArgs} args - Arguments to filter Unit_type_categories to delete.
+     * @example
+     * // Delete a few Unit_type_categories
+     * const { count } = await prisma.unit_type_categories.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends unit_type_categoriesDeleteManyArgs>(args?: SelectSubset<T, unit_type_categoriesDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Unit_type_categories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {unit_type_categoriesUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Unit_type_categories
+     * const unit_type_categories = await prisma.unit_type_categories.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends unit_type_categoriesUpdateManyArgs>(args: SelectSubset<T, unit_type_categoriesUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Unit_type_categories.
+     * @param {unit_type_categoriesUpsertArgs} args - Arguments to update or create a Unit_type_categories.
+     * @example
+     * // Update or create a Unit_type_categories
+     * const unit_type_categories = await prisma.unit_type_categories.upsert({
+     *   create: {
+     *     // ... data to create a Unit_type_categories
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Unit_type_categories we want to update
+     *   }
+     * })
+     */
+    upsert<T extends unit_type_categoriesUpsertArgs>(args: SelectSubset<T, unit_type_categoriesUpsertArgs<ExtArgs>>): Prisma__unit_type_categoriesClient<$Result.GetResult<Prisma.$unit_type_categoriesPayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of Unit_type_categories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {unit_type_categoriesCountArgs} args - Arguments to filter Unit_type_categories to count.
+     * @example
+     * // Count the number of Unit_type_categories
+     * const count = await prisma.unit_type_categories.count({
+     *   where: {
+     *     // ... the filter for the Unit_type_categories we want to count
+     *   }
+     * })
+    **/
+    count<T extends unit_type_categoriesCountArgs>(
+      args?: Subset<T, unit_type_categoriesCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Unit_type_categoriesCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Unit_type_categories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Unit_type_categoriesAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Unit_type_categoriesAggregateArgs>(args: Subset<T, Unit_type_categoriesAggregateArgs>): Prisma.PrismaPromise<GetUnit_type_categoriesAggregateType<T>>
+
+    /**
+     * Group by Unit_type_categories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {unit_type_categoriesGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends unit_type_categoriesGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: unit_type_categoriesGroupByArgs['orderBy'] }
+        : { orderBy?: unit_type_categoriesGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, unit_type_categoriesGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUnit_type_categoriesGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the unit_type_categories model
+   */
+  readonly fields: unit_type_categoriesFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for unit_type_categories.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__unit_type_categoriesClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the unit_type_categories model
+   */ 
+  interface unit_type_categoriesFieldRefs {
+    readonly id: FieldRef<"unit_type_categories", 'Int'>
+    readonly name: FieldRef<"unit_type_categories", 'String'>
+    readonly description: FieldRef<"unit_type_categories", 'String'>
+    readonly icon_color: FieldRef<"unit_type_categories", 'String'>
+    readonly catalog_url: FieldRef<"unit_type_categories", 'String'>
+    readonly created_at: FieldRef<"unit_type_categories", 'DateTime'>
+    readonly updated_at: FieldRef<"unit_type_categories", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * unit_type_categories findUnique
+   */
+  export type unit_type_categoriesFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_type_categories
+     */
+    select?: unit_type_categoriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_type_categories
+     */
+    omit?: unit_type_categoriesOmit<ExtArgs> | null
+    /**
+     * Filter, which unit_type_categories to fetch.
+     */
+    where: unit_type_categoriesWhereUniqueInput
+  }
+
+  /**
+   * unit_type_categories findUniqueOrThrow
+   */
+  export type unit_type_categoriesFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_type_categories
+     */
+    select?: unit_type_categoriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_type_categories
+     */
+    omit?: unit_type_categoriesOmit<ExtArgs> | null
+    /**
+     * Filter, which unit_type_categories to fetch.
+     */
+    where: unit_type_categoriesWhereUniqueInput
+  }
+
+  /**
+   * unit_type_categories findFirst
+   */
+  export type unit_type_categoriesFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_type_categories
+     */
+    select?: unit_type_categoriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_type_categories
+     */
+    omit?: unit_type_categoriesOmit<ExtArgs> | null
+    /**
+     * Filter, which unit_type_categories to fetch.
+     */
+    where?: unit_type_categoriesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of unit_type_categories to fetch.
+     */
+    orderBy?: unit_type_categoriesOrderByWithRelationInput | unit_type_categoriesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for unit_type_categories.
+     */
+    cursor?: unit_type_categoriesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` unit_type_categories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` unit_type_categories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of unit_type_categories.
+     */
+    distinct?: Unit_type_categoriesScalarFieldEnum | Unit_type_categoriesScalarFieldEnum[]
+  }
+
+  /**
+   * unit_type_categories findFirstOrThrow
+   */
+  export type unit_type_categoriesFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_type_categories
+     */
+    select?: unit_type_categoriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_type_categories
+     */
+    omit?: unit_type_categoriesOmit<ExtArgs> | null
+    /**
+     * Filter, which unit_type_categories to fetch.
+     */
+    where?: unit_type_categoriesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of unit_type_categories to fetch.
+     */
+    orderBy?: unit_type_categoriesOrderByWithRelationInput | unit_type_categoriesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for unit_type_categories.
+     */
+    cursor?: unit_type_categoriesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` unit_type_categories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` unit_type_categories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of unit_type_categories.
+     */
+    distinct?: Unit_type_categoriesScalarFieldEnum | Unit_type_categoriesScalarFieldEnum[]
+  }
+
+  /**
+   * unit_type_categories findMany
+   */
+  export type unit_type_categoriesFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_type_categories
+     */
+    select?: unit_type_categoriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_type_categories
+     */
+    omit?: unit_type_categoriesOmit<ExtArgs> | null
+    /**
+     * Filter, which unit_type_categories to fetch.
+     */
+    where?: unit_type_categoriesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of unit_type_categories to fetch.
+     */
+    orderBy?: unit_type_categoriesOrderByWithRelationInput | unit_type_categoriesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing unit_type_categories.
+     */
+    cursor?: unit_type_categoriesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` unit_type_categories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` unit_type_categories.
+     */
+    skip?: number
+    distinct?: Unit_type_categoriesScalarFieldEnum | Unit_type_categoriesScalarFieldEnum[]
+  }
+
+  /**
+   * unit_type_categories create
+   */
+  export type unit_type_categoriesCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_type_categories
+     */
+    select?: unit_type_categoriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_type_categories
+     */
+    omit?: unit_type_categoriesOmit<ExtArgs> | null
+    /**
+     * The data needed to create a unit_type_categories.
+     */
+    data: XOR<unit_type_categoriesCreateInput, unit_type_categoriesUncheckedCreateInput>
+  }
+
+  /**
+   * unit_type_categories createMany
+   */
+  export type unit_type_categoriesCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many unit_type_categories.
+     */
+    data: unit_type_categoriesCreateManyInput | unit_type_categoriesCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * unit_type_categories update
+   */
+  export type unit_type_categoriesUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_type_categories
+     */
+    select?: unit_type_categoriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_type_categories
+     */
+    omit?: unit_type_categoriesOmit<ExtArgs> | null
+    /**
+     * The data needed to update a unit_type_categories.
+     */
+    data: XOR<unit_type_categoriesUpdateInput, unit_type_categoriesUncheckedUpdateInput>
+    /**
+     * Choose, which unit_type_categories to update.
+     */
+    where: unit_type_categoriesWhereUniqueInput
+  }
+
+  /**
+   * unit_type_categories updateMany
+   */
+  export type unit_type_categoriesUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update unit_type_categories.
+     */
+    data: XOR<unit_type_categoriesUpdateManyMutationInput, unit_type_categoriesUncheckedUpdateManyInput>
+    /**
+     * Filter which unit_type_categories to update
+     */
+    where?: unit_type_categoriesWhereInput
+    /**
+     * Limit how many unit_type_categories to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * unit_type_categories upsert
+   */
+  export type unit_type_categoriesUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_type_categories
+     */
+    select?: unit_type_categoriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_type_categories
+     */
+    omit?: unit_type_categoriesOmit<ExtArgs> | null
+    /**
+     * The filter to search for the unit_type_categories to update in case it exists.
+     */
+    where: unit_type_categoriesWhereUniqueInput
+    /**
+     * In case the unit_type_categories found by the `where` argument doesn't exist, create a new unit_type_categories with this data.
+     */
+    create: XOR<unit_type_categoriesCreateInput, unit_type_categoriesUncheckedCreateInput>
+    /**
+     * In case the unit_type_categories was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<unit_type_categoriesUpdateInput, unit_type_categoriesUncheckedUpdateInput>
+  }
+
+  /**
+   * unit_type_categories delete
+   */
+  export type unit_type_categoriesDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_type_categories
+     */
+    select?: unit_type_categoriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_type_categories
+     */
+    omit?: unit_type_categoriesOmit<ExtArgs> | null
+    /**
+     * Filter which unit_type_categories to delete.
+     */
+    where: unit_type_categoriesWhereUniqueInput
+  }
+
+  /**
+   * unit_type_categories deleteMany
+   */
+  export type unit_type_categoriesDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which unit_type_categories to delete
+     */
+    where?: unit_type_categoriesWhereInput
+    /**
+     * Limit how many unit_type_categories to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * unit_type_categories without action
+   */
+  export type unit_type_categoriesDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the unit_type_categories
+     */
+    select?: unit_type_categoriesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the unit_type_categories
+     */
+    omit?: unit_type_categoriesOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -62018,6 +63039,19 @@ export namespace Prisma {
   export type Rate_card_settingsScalarFieldEnum = (typeof Rate_card_settingsScalarFieldEnum)[keyof typeof Rate_card_settingsScalarFieldEnum]
 
 
+  export const Unit_type_categoriesScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    description: 'description',
+    icon_color: 'icon_color',
+    catalog_url: 'catalog_url',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
+  };
+
+  export type Unit_type_categoriesScalarFieldEnum = (typeof Unit_type_categoriesScalarFieldEnum)[keyof typeof Unit_type_categoriesScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -62543,6 +63577,16 @@ export namespace Prisma {
   };
 
   export type rate_card_settingsOrderByRelevanceFieldEnum = (typeof rate_card_settingsOrderByRelevanceFieldEnum)[keyof typeof rate_card_settingsOrderByRelevanceFieldEnum]
+
+
+  export const unit_type_categoriesOrderByRelevanceFieldEnum: {
+    name: 'name',
+    description: 'description',
+    icon_color: 'icon_color',
+    catalog_url: 'catalog_url'
+  };
+
+  export type unit_type_categoriesOrderByRelevanceFieldEnum = (typeof unit_type_categoriesOrderByRelevanceFieldEnum)[keyof typeof unit_type_categoriesOrderByRelevanceFieldEnum]
 
 
   /**
@@ -67433,6 +68477,71 @@ export namespace Prisma {
     setting_key?: StringWithAggregatesFilter<"rate_card_settings"> | string
     setting_value?: StringNullableWithAggregatesFilter<"rate_card_settings"> | string | null
     updated_at?: DateTimeWithAggregatesFilter<"rate_card_settings"> | Date | string
+  }
+
+  export type unit_type_categoriesWhereInput = {
+    AND?: unit_type_categoriesWhereInput | unit_type_categoriesWhereInput[]
+    OR?: unit_type_categoriesWhereInput[]
+    NOT?: unit_type_categoriesWhereInput | unit_type_categoriesWhereInput[]
+    id?: IntFilter<"unit_type_categories"> | number
+    name?: StringFilter<"unit_type_categories"> | string
+    description?: StringNullableFilter<"unit_type_categories"> | string | null
+    icon_color?: StringNullableFilter<"unit_type_categories"> | string | null
+    catalog_url?: StringNullableFilter<"unit_type_categories"> | string | null
+    created_at?: DateTimeFilter<"unit_type_categories"> | Date | string
+    updated_at?: DateTimeFilter<"unit_type_categories"> | Date | string
+  }
+
+  export type unit_type_categoriesOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    icon_color?: SortOrderInput | SortOrder
+    catalog_url?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    _relevance?: unit_type_categoriesOrderByRelevanceInput
+  }
+
+  export type unit_type_categoriesWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    name?: string
+    AND?: unit_type_categoriesWhereInput | unit_type_categoriesWhereInput[]
+    OR?: unit_type_categoriesWhereInput[]
+    NOT?: unit_type_categoriesWhereInput | unit_type_categoriesWhereInput[]
+    description?: StringNullableFilter<"unit_type_categories"> | string | null
+    icon_color?: StringNullableFilter<"unit_type_categories"> | string | null
+    catalog_url?: StringNullableFilter<"unit_type_categories"> | string | null
+    created_at?: DateTimeFilter<"unit_type_categories"> | Date | string
+    updated_at?: DateTimeFilter<"unit_type_categories"> | Date | string
+  }, "id" | "name">
+
+  export type unit_type_categoriesOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    icon_color?: SortOrderInput | SortOrder
+    catalog_url?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    _count?: unit_type_categoriesCountOrderByAggregateInput
+    _avg?: unit_type_categoriesAvgOrderByAggregateInput
+    _max?: unit_type_categoriesMaxOrderByAggregateInput
+    _min?: unit_type_categoriesMinOrderByAggregateInput
+    _sum?: unit_type_categoriesSumOrderByAggregateInput
+  }
+
+  export type unit_type_categoriesScalarWhereWithAggregatesInput = {
+    AND?: unit_type_categoriesScalarWhereWithAggregatesInput | unit_type_categoriesScalarWhereWithAggregatesInput[]
+    OR?: unit_type_categoriesScalarWhereWithAggregatesInput[]
+    NOT?: unit_type_categoriesScalarWhereWithAggregatesInput | unit_type_categoriesScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"unit_type_categories"> | number
+    name?: StringWithAggregatesFilter<"unit_type_categories"> | string
+    description?: StringNullableWithAggregatesFilter<"unit_type_categories"> | string | null
+    icon_color?: StringNullableWithAggregatesFilter<"unit_type_categories"> | string | null
+    catalog_url?: StringNullableWithAggregatesFilter<"unit_type_categories"> | string | null
+    created_at?: DateTimeWithAggregatesFilter<"unit_type_categories"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"unit_type_categories"> | Date | string
   }
 
   export type customersCreateInput = {
@@ -72526,6 +73635,73 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type unit_type_categoriesCreateInput = {
+    name: string
+    description?: string | null
+    icon_color?: string | null
+    catalog_url?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type unit_type_categoriesUncheckedCreateInput = {
+    id?: number
+    name: string
+    description?: string | null
+    icon_color?: string | null
+    catalog_url?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type unit_type_categoriesUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon_color?: NullableStringFieldUpdateOperationsInput | string | null
+    catalog_url?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type unit_type_categoriesUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon_color?: NullableStringFieldUpdateOperationsInput | string | null
+    catalog_url?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type unit_type_categoriesCreateManyInput = {
+    id?: number
+    name: string
+    description?: string | null
+    icon_color?: string | null
+    catalog_url?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type unit_type_categoriesUpdateManyMutationInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon_color?: NullableStringFieldUpdateOperationsInput | string | null
+    catalog_url?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type unit_type_categoriesUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon_color?: NullableStringFieldUpdateOperationsInput | string | null
+    catalog_url?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -76860,6 +78036,50 @@ export namespace Prisma {
   }
 
   export type rate_card_settingsSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type unit_type_categoriesOrderByRelevanceInput = {
+    fields: unit_type_categoriesOrderByRelevanceFieldEnum | unit_type_categoriesOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type unit_type_categoriesCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    icon_color?: SortOrder
+    catalog_url?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type unit_type_categoriesAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type unit_type_categoriesMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    icon_color?: SortOrder
+    catalog_url?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type unit_type_categoriesMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    icon_color?: SortOrder
+    catalog_url?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type unit_type_categoriesSumOrderByAggregateInput = {
     id?: SortOrder
   }
 

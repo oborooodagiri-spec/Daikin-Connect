@@ -91,9 +91,9 @@ export default function UnitFormModal({
              </div>
 
              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Asset Type</label>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unit Type</label>
                     <select 
                       value={formData.unit_type} 
                       onChange={e => setFormData({...formData, unit_type: e.target.value})} 
@@ -102,21 +102,6 @@ export default function UnitFormModal({
                        {enabledTypes.split(",").map((t) => (
                          <option key={t} value={t}>{t}</option>
                        ))}
-                    </select>
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Current Health Status</label>
-                    <select 
-                      value={formData.status} 
-                      onChange={e => setFormData({...formData, status: e.target.value})} 
-                      className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-[#0073ea] transition-all"
-                    >
-                       <option value="Normal">Normal</option>
-                       <option value="Problem">Problem</option>
-                       <option value="Critical">Critical</option>
-                       <option value="Warning">Warning</option>
-                       <option value="Pending">Pending</option>
-                       <option value="On_Progress">On Progress</option>
                     </select>
                   </div>
                 </div>

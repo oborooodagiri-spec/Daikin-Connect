@@ -7,7 +7,7 @@ import {
   User, Mail, Phone, Building2, Shield, ChevronRight,
   Camera, X, Check, Search, LogOut, Settings, Clock,
   FileText, Calendar, Upload, Download, Activity, Edit3,
-  LayoutDashboard, ExternalLink, Database, Users, Briefcase, BookOpen, Wrench
+  LayoutDashboard, ExternalLink, Database, Users, Briefcase, BookOpen, Wrench, Package
 } from "lucide-react";
 import StaticLogo from "@/components/ui/StaticLogo";
 import { updateProfile, saveAvatarUrl } from "@/app/actions/profile";
@@ -307,6 +307,16 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
                     <Settings size={22} />
                  </div>
                  <span className="app-label">Pengaturan</span>
+              </div>
+
+              <div 
+                className="app-item"
+                onClick={() => router.push("/admin/unit-database")}
+              >
+                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #0073ea 0%, #66ccff 100%)" }}>
+                    <Package size={22} />
+                 </div>
+                 <span className="app-label">Unit Database</span>
               </div>
             </div>
           </motion.section>
