@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Plus, Trash2, Printer, Loader2, Save } from "lucide-react";
-import { getBoqProjectDetails, addBoqItem, deleteBoqItem, updateBoqItemQuantity } from "../@/app/actions/boq";
+import { getBoqProjectDetails, addBoqItem, deleteBoqItem, updateBoqItemQuantity } from "@/app/actions/boq";
 import { getPricelistItems } from "@/app/actions/pricelist";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
