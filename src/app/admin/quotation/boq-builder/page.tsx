@@ -15,8 +15,7 @@ export default function BoqBuilderPage() {
 
   const loadProjects = async () => {
     setLoading(true);
-    // Hardcode user ID for admin demo, you should get this from session
-    const data = await getBoqProjects(1);
+    const data = await getBoqProjects();
     setProjects(data);
     setLoading(false);
   };
@@ -32,7 +31,6 @@ export default function BoqBuilderPage() {
     await createBoqProject({
       project_name: formData.project_name,
       customer_name: formData.customer_name,
-      created_by: 1, // hardcoded admin user id
     });
     setIsAddOpen(false);
     setFormData({ project_name: "", customer_name: "" });

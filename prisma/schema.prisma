@@ -1106,31 +1106,53 @@ model pricelist_items {
 
 // BoQ Projects
 model boq_projects {
-  id            String   @id @default(uuid())
-  project_name  String   @db.VarChar(255)
-  customer_name String?  @db.VarChar(150)
-  created_by    Int
-  created_at    DateTime @default(now()) @db.Timestamp(0)
-  updated_at    DateTime @updatedAt
+  id              String   @id @default(uuid())
+  project_name    String   @db.VarChar(255)
+  customer_name   String?  @db.VarChar(150)
+  markup_material Decimal? @default(0) @db.Decimal(5, 2)
+  markup_labour   Decimal? @default(0) @db.Decimal(5, 2)
+  created_by      Int
+  created_at      DateTime @default(now()) @db.Timestamp(0)
+  updated_at      DateTime @updatedAt
 
   items         boq_items[]
+  categories    boq_categories[]
   users         users    @relation(fields: [created_by], references: [id])
   
   @@index([created_by])
 }
 
-// BoQ Line Items
-model boq_items {
+// BoQ Categories
+model boq_categories {
   id            String   @id @default(uuid())
   boq_id        String
-  item_id       String
-  quantity      Float
-  unit_price    Decimal  @db.Decimal(15, 2)
-  total_price   Decimal  @db.Decimal(15, 2)
+  name          String   @db.VarChar(255)
+  order_index   Int      @default(0)
   
-  boq           boq_projects    @relation(fields: [boq_id], references: [id], onDelete: Cascade)
-  pricelist     pricelist_items @relation(fields: [item_id], references: [id])
+  boq           boq_projects @relation(fields: [boq_id], references: [id], onDelete: Cascade)
+  items         boq_items[]
 
   @@index([boq_id])
+}
+
+// BoQ Line Items
+model boq_items {
+  id              String   @id @default(uuid())
+  boq_id          String
+  category_id     String
+  item_id         String?
+  manual_name     String?  @db.VarChar(255)
+  specification   String?  @db.VarChar(255)
+  unit            String?  @db.VarChar(50)
+  quantity        Float
+  material_price  Decimal  @default(0) @db.Decimal(15, 2)
+  labour_price    Decimal  @default(0) @db.Decimal(15, 2)
+  
+  boq           boq_projects    @relation(fields: [boq_id], references: [id], onDelete: Cascade)
+  category      boq_categories  @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  pricelist     pricelist_items? @relation(fields: [item_id], references: [id])
+
+  @@index([boq_id])
+  @@index([category_id])
   @@index([item_id])
 }
