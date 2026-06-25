@@ -839,6 +839,9 @@ exports.Prisma.Unit_type_categoriesScalarFieldEnum = {
   description: 'description',
   icon_color: 'icon_color',
   catalog_url: 'catalog_url',
+  image_url: 'image_url',
+  parent_id: 'parent_id',
+  sort_order: 'sort_order',
   created_at: 'created_at',
   updated_at: 'updated_at'
 };
@@ -1233,7 +1236,8 @@ exports.Prisma.unit_type_categoriesOrderByRelevanceFieldEnum = {
   name: 'name',
   description: 'description',
   icon_color: 'icon_color',
-  catalog_url: 'catalog_url'
+  catalog_url: 'catalog_url',
+  image_url: 'image_url'
 };
 exports.customers_customer_type = exports.$Enums.customers_customer_type = {
   Corporate: 'Corporate',

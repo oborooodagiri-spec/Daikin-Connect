@@ -12,7 +12,10 @@ export async function getUnitTypeCategories() {
 
   try {
     const categories = await (prisma.unit_type_categories as any).findMany({
-      orderBy: { name: "asc" },
+      orderBy: [
+        { sort_order: "asc" },
+        { name: "asc" }
+      ],
     });
 
     // Count units per type
@@ -36,6 +39,9 @@ export async function getUnitTypeCategories() {
         description: c.description || "",
         icon_color: c.icon_color || "#0073ea",
         catalog_url: c.catalog_url || "",
+        image_url: c.image_url || "",
+        parent_id: c.parent_id,
+        sort_order: c.sort_order,
         created_at: c.created_at?.toISOString() || "",
         unit_count: countMap[c.name.toUpperCase()] || 0,
       })),
@@ -52,6 +58,9 @@ export async function createUnitTypeCategory(data: {
   description?: string;
   icon_color?: string;
   catalog_url?: string;
+  image_url?: string;
+  parent_id?: number | null;
+  sort_order?: number;
 }) {
   const session = await getSession();
   if (!session || !session.isInternal) return { error: "Unauthorized — Admin only" };
@@ -67,6 +76,9 @@ export async function createUnitTypeCategory(data: {
         description: data.description || null,
         icon_color: data.icon_color || "#0073ea",
         catalog_url: data.catalog_url || null,
+        image_url: data.image_url || null,
+        parent_id: data.parent_id || null,
+        sort_order: data.sort_order || 0,
       },
     });
 
@@ -74,7 +86,7 @@ export async function createUnitTypeCategory(data: {
     return { success: true };
   } catch (error: any) {
     if (error.code === "P2002") {
-      return { error: `Tipe unit "${data.name}" sudah ada.` };
+      return { error: `Tipe unit "${data.name}" sudah ada di level ini.` };
     }
     console.error("createUnitTypeCategory error:", error);
     return { error: error.message || "Gagal membuat kategori." };
@@ -89,6 +101,9 @@ export async function updateUnitTypeCategory(
     description?: string;
     icon_color?: string;
     catalog_url?: string;
+    image_url?: string;
+    parent_id?: number | null;
+    sort_order?: number;
   }
 ) {
   const session = await getSession();
@@ -100,6 +115,9 @@ export async function updateUnitTypeCategory(
     if (data.description !== undefined) updateData.description = data.description || null;
     if (data.icon_color !== undefined) updateData.icon_color = data.icon_color;
     if (data.catalog_url !== undefined) updateData.catalog_url = data.catalog_url || null;
+    if (data.image_url !== undefined) updateData.image_url = data.image_url || null;
+    if (data.parent_id !== undefined) updateData.parent_id = data.parent_id;
+    if (data.sort_order !== undefined) updateData.sort_order = data.sort_order;
 
     await (prisma.unit_type_categories as any).update({
       where: { id },
@@ -110,7 +128,7 @@ export async function updateUnitTypeCategory(
     return { success: true };
   } catch (error: any) {
     if (error.code === "P2002") {
-      return { error: `Tipe unit "${data.name}" sudah ada.` };
+      return { error: `Tipe unit "${data.name}" sudah ada di level ini.` };
     }
     console.error("updateUnitTypeCategory error:", error);
     return { error: error.message || "Gagal mengupdate kategori." };
@@ -140,6 +158,17 @@ export async function deleteUnitTypeCategory(id: number) {
       };
     }
 
+    // Check if it has children
+    const childCount = await (prisma.unit_type_categories as any).count({
+      where: { parent_id: id },
+    });
+
+    if (childCount > 0) {
+      return {
+        error: `Tidak dapat menghapus. Kategori ini memiliki ${childCount} sub-kategori. Hapus sub-kategori terlebih dahulu.`,
+      };
+    }
+
     await (prisma.unit_type_categories as any).delete({
       where: { id },
     });
@@ -158,29 +187,25 @@ export async function seedDefaultUnitTypes() {
   if (!session || !session.isInternal) return { error: "Unauthorized" };
 
   const defaults = [
-    { name: "Chiller", description: "Water Cooled / Air Cooled Chiller", icon_color: "#0073ea" },
-    { name: "AHU", description: "Air Handling Unit", icon_color: "#00c875" },
-    { name: "FCU", description: "Fan Coil Unit", icon_color: "#579bfc" },
-    { name: "Split Duct", description: "AC Split Duct", icon_color: "#fdab3d" },
-    { name: "VRV", description: "Variable Refrigerant Volume", icon_color: "#a25ddc" },
-    { name: "VRF", description: "Variable Refrigerant Flow", icon_color: "#ff5ac4" },
-    { name: "Package", description: "Packaged Air Conditioner", icon_color: "#037f4c" },
-    { name: "AC Split", description: "AC Split Wall Mounted", icon_color: "#66ccff" },
-    { name: "AC Standing", description: "AC Floor Standing", icon_color: "#ff642e" },
+    { name: "Air Cooled Chiller", description: "Chiller dengan pendinginan udara", icon_color: "#0073ea", sort_order: 1 },
+    { name: "Air Side", description: "AHU, FCU, dan perangkat sisi udara", icon_color: "#00c875", sort_order: 2 },
+    { name: "Water Cooled Chiller", description: "Chiller dengan pendinginan air", icon_color: "#579bfc", sort_order: 3 },
+    { name: "DX", description: "Direct Expansion - VRV, Split, dll", icon_color: "#fdab3d", sort_order: 4 },
+    { name: "Filter", description: "Filter udara dan komponen filtrasi", icon_color: "#a25ddc", sort_order: 5 },
   ];
 
   try {
     let created = 0;
     for (const d of defaults) {
-      const exists = await (prisma.unit_type_categories as any).findUnique({
-        where: { name: d.name },
+      const exists = await (prisma.unit_type_categories as any).findFirst({
+        where: { name: d.name, parent_id: null },
       });
       if (!exists) {
         await (prisma.unit_type_categories as any).create({ data: d });
         created++;
       }
     }
-    return { success: true, message: `${created} kategori default berhasil ditambahkan.` };
+    return { success: true, message: `${created} kategori utama berhasil ditambahkan.` };
   } catch (error: any) {
     console.error("seedDefaultUnitTypes error:", error);
     return { error: error.message || "Gagal seed data." };

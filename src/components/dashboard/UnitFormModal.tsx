@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { X, Save, Building2, Package } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createUnit, updateUnit } from "@/app/actions/units";
+import { getUnitTypeCategories } from "@/app/actions/unit_database";
 
 interface UnitFormModalProps {
   isOpen: boolean;
@@ -22,18 +23,31 @@ export default function UnitFormModal({
   monitoringFocus = "UNIT"
 }: UnitFormModalProps) {
   const [loading, setLoading] = useState(false);
+  const [dbCategories, setDbCategories] = useState<any[]>([]);
   const [formData, setFormData] = useState({
-    unit_type: "VRV", brand: "Daikin", model: "", 
+    unit_type: "", brand: "Daikin", model: "", 
     capacity: "0", yoi: new Date().getFullYear().toString(),
     serial_number: "", tag_number: "", area: "",
     building_floor: "", room_tenant: "", status: "Normal"
   });
 
   useEffect(() => {
+    async function fetchCategories() {
+      const res = await getUnitTypeCategories();
+      if (res && "success" in res && res.success && res.data) {
+        setDbCategories(res.data);
+      }
+    }
+    if (isOpen) {
+      fetchCategories();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
     const types = enabledTypes.split(",");
     if (unit && mode === "edit") {
       setFormData({
-        unit_type: unit.unit_type || types[0],
+        unit_type: unit.unit_type || (dbCategories.length > 0 ? dbCategories[0].name : types[0]),
         brand: unit.brand || "Daikin",
         model: unit.model || "",
         capacity: unit.capacity || "",
@@ -47,13 +61,14 @@ export default function UnitFormModal({
       });
     } else {
       setFormData({
-        unit_type: types[0], brand: "Daikin", model: "", 
+        unit_type: dbCategories.length > 0 ? dbCategories[0].name : types[0],
+        brand: "Daikin", model: "", 
         capacity: "0", yoi: new Date().getFullYear().toString(),
         serial_number: "", tag_number: "", area: "",
         building_floor: "", room_tenant: "", status: "Normal"
       });
     }
-  }, [unit, mode, isOpen, enabledTypes]);
+  }, [unit, mode, isOpen, enabledTypes, dbCategories]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,15 +108,33 @@ export default function UnitFormModal({
              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 gap-6">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unit Type</label>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unit Type / Category</label>
                     <select 
                       value={formData.unit_type} 
                       onChange={e => setFormData({...formData, unit_type: e.target.value})} 
                       className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-[#0073ea] transition-all"
                     >
-                       {enabledTypes.split(",").map((t) => (
-                         <option key={t} value={t}>{t}</option>
-                       ))}
+                       {dbCategories.length > 0 ? (
+                         <>
+                           {dbCategories.filter((c: any) => c.parent_id === null).map((parent: any) => {
+                             const children = dbCategories.filter((c: any) => c.parent_id === parent.id);
+                             if (children.length > 0) {
+                               return (
+                                 <optgroup key={parent.id} label={parent.name}>
+                                   {children.map((child: any) => (
+                                     <option key={child.id} value={child.name}>{child.name}</option>
+                                   ))}
+                                 </optgroup>
+                               );
+                             }
+                             return <option key={parent.id} value={parent.name}>{parent.name}</option>;
+                           })}
+                         </>
+                       ) : (
+                         enabledTypes.split(",").map((t) => (
+                           <option key={t} value={t}>{t}</option>
+                         ))
+                       )}
                     </select>
                   </div>
                 </div>

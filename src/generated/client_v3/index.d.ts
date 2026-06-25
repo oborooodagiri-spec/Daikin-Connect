@@ -61232,10 +61232,14 @@ export namespace Prisma {
 
   export type Unit_type_categoriesAvgAggregateOutputType = {
     id: number | null
+    parent_id: number | null
+    sort_order: number | null
   }
 
   export type Unit_type_categoriesSumAggregateOutputType = {
     id: number | null
+    parent_id: number | null
+    sort_order: number | null
   }
 
   export type Unit_type_categoriesMinAggregateOutputType = {
@@ -61244,6 +61248,9 @@ export namespace Prisma {
     description: string | null
     icon_color: string | null
     catalog_url: string | null
+    image_url: string | null
+    parent_id: number | null
+    sort_order: number | null
     created_at: Date | null
     updated_at: Date | null
   }
@@ -61254,6 +61261,9 @@ export namespace Prisma {
     description: string | null
     icon_color: string | null
     catalog_url: string | null
+    image_url: string | null
+    parent_id: number | null
+    sort_order: number | null
     created_at: Date | null
     updated_at: Date | null
   }
@@ -61264,6 +61274,9 @@ export namespace Prisma {
     description: number
     icon_color: number
     catalog_url: number
+    image_url: number
+    parent_id: number
+    sort_order: number
     created_at: number
     updated_at: number
     _all: number
@@ -61272,10 +61285,14 @@ export namespace Prisma {
 
   export type Unit_type_categoriesAvgAggregateInputType = {
     id?: true
+    parent_id?: true
+    sort_order?: true
   }
 
   export type Unit_type_categoriesSumAggregateInputType = {
     id?: true
+    parent_id?: true
+    sort_order?: true
   }
 
   export type Unit_type_categoriesMinAggregateInputType = {
@@ -61284,6 +61301,9 @@ export namespace Prisma {
     description?: true
     icon_color?: true
     catalog_url?: true
+    image_url?: true
+    parent_id?: true
+    sort_order?: true
     created_at?: true
     updated_at?: true
   }
@@ -61294,6 +61314,9 @@ export namespace Prisma {
     description?: true
     icon_color?: true
     catalog_url?: true
+    image_url?: true
+    parent_id?: true
+    sort_order?: true
     created_at?: true
     updated_at?: true
   }
@@ -61304,6 +61327,9 @@ export namespace Prisma {
     description?: true
     icon_color?: true
     catalog_url?: true
+    image_url?: true
+    parent_id?: true
+    sort_order?: true
     created_at?: true
     updated_at?: true
     _all?: true
@@ -61401,6 +61427,9 @@ export namespace Prisma {
     description: string | null
     icon_color: string | null
     catalog_url: string | null
+    image_url: string | null
+    parent_id: number | null
+    sort_order: number
     created_at: Date
     updated_at: Date
     _count: Unit_type_categoriesCountAggregateOutputType | null
@@ -61430,6 +61459,9 @@ export namespace Prisma {
     description?: boolean
     icon_color?: boolean
     catalog_url?: boolean
+    image_url?: boolean
+    parent_id?: boolean
+    sort_order?: boolean
     created_at?: boolean
     updated_at?: boolean
   }, ExtArgs["result"]["unit_type_categories"]>
@@ -61442,11 +61474,14 @@ export namespace Prisma {
     description?: boolean
     icon_color?: boolean
     catalog_url?: boolean
+    image_url?: boolean
+    parent_id?: boolean
+    sort_order?: boolean
     created_at?: boolean
     updated_at?: boolean
   }
 
-  export type unit_type_categoriesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "icon_color" | "catalog_url" | "created_at" | "updated_at", ExtArgs["result"]["unit_type_categories"]>
+  export type unit_type_categoriesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "icon_color" | "catalog_url" | "image_url" | "parent_id" | "sort_order" | "created_at" | "updated_at", ExtArgs["result"]["unit_type_categories"]>
 
   export type $unit_type_categoriesPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "unit_type_categories"
@@ -61457,6 +61492,9 @@ export namespace Prisma {
       description: string | null
       icon_color: string | null
       catalog_url: string | null
+      image_url: string | null
+      parent_id: number | null
+      sort_order: number
       created_at: Date
       updated_at: Date
     }, ExtArgs["result"]["unit_type_categories"]>
@@ -61833,6 +61871,9 @@ export namespace Prisma {
     readonly description: FieldRef<"unit_type_categories", 'String'>
     readonly icon_color: FieldRef<"unit_type_categories", 'String'>
     readonly catalog_url: FieldRef<"unit_type_categories", 'String'>
+    readonly image_url: FieldRef<"unit_type_categories", 'String'>
+    readonly parent_id: FieldRef<"unit_type_categories", 'Int'>
+    readonly sort_order: FieldRef<"unit_type_categories", 'Int'>
     readonly created_at: FieldRef<"unit_type_categories", 'DateTime'>
     readonly updated_at: FieldRef<"unit_type_categories", 'DateTime'>
   }
@@ -63045,6 +63086,9 @@ export namespace Prisma {
     description: 'description',
     icon_color: 'icon_color',
     catalog_url: 'catalog_url',
+    image_url: 'image_url',
+    parent_id: 'parent_id',
+    sort_order: 'sort_order',
     created_at: 'created_at',
     updated_at: 'updated_at'
   };
@@ -63583,7 +63627,8 @@ export namespace Prisma {
     name: 'name',
     description: 'description',
     icon_color: 'icon_color',
-    catalog_url: 'catalog_url'
+    catalog_url: 'catalog_url',
+    image_url: 'image_url'
   };
 
   export type unit_type_categoriesOrderByRelevanceFieldEnum = (typeof unit_type_categoriesOrderByRelevanceFieldEnum)[keyof typeof unit_type_categoriesOrderByRelevanceFieldEnum]
@@ -68488,6 +68533,9 @@ export namespace Prisma {
     description?: StringNullableFilter<"unit_type_categories"> | string | null
     icon_color?: StringNullableFilter<"unit_type_categories"> | string | null
     catalog_url?: StringNullableFilter<"unit_type_categories"> | string | null
+    image_url?: StringNullableFilter<"unit_type_categories"> | string | null
+    parent_id?: IntNullableFilter<"unit_type_categories"> | number | null
+    sort_order?: IntFilter<"unit_type_categories"> | number
     created_at?: DateTimeFilter<"unit_type_categories"> | Date | string
     updated_at?: DateTimeFilter<"unit_type_categories"> | Date | string
   }
@@ -68498,6 +68546,9 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     icon_color?: SortOrderInput | SortOrder
     catalog_url?: SortOrderInput | SortOrder
+    image_url?: SortOrderInput | SortOrder
+    parent_id?: SortOrderInput | SortOrder
+    sort_order?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     _relevance?: unit_type_categoriesOrderByRelevanceInput
@@ -68505,16 +68556,20 @@ export namespace Prisma {
 
   export type unit_type_categoriesWhereUniqueInput = Prisma.AtLeast<{
     id?: number
-    name?: string
+    name_parent_id?: unit_type_categoriesNameParent_idCompoundUniqueInput
     AND?: unit_type_categoriesWhereInput | unit_type_categoriesWhereInput[]
     OR?: unit_type_categoriesWhereInput[]
     NOT?: unit_type_categoriesWhereInput | unit_type_categoriesWhereInput[]
+    name?: StringFilter<"unit_type_categories"> | string
     description?: StringNullableFilter<"unit_type_categories"> | string | null
     icon_color?: StringNullableFilter<"unit_type_categories"> | string | null
     catalog_url?: StringNullableFilter<"unit_type_categories"> | string | null
+    image_url?: StringNullableFilter<"unit_type_categories"> | string | null
+    parent_id?: IntNullableFilter<"unit_type_categories"> | number | null
+    sort_order?: IntFilter<"unit_type_categories"> | number
     created_at?: DateTimeFilter<"unit_type_categories"> | Date | string
     updated_at?: DateTimeFilter<"unit_type_categories"> | Date | string
-  }, "id" | "name">
+  }, "id" | "name_parent_id">
 
   export type unit_type_categoriesOrderByWithAggregationInput = {
     id?: SortOrder
@@ -68522,6 +68577,9 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     icon_color?: SortOrderInput | SortOrder
     catalog_url?: SortOrderInput | SortOrder
+    image_url?: SortOrderInput | SortOrder
+    parent_id?: SortOrderInput | SortOrder
+    sort_order?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     _count?: unit_type_categoriesCountOrderByAggregateInput
@@ -68540,6 +68598,9 @@ export namespace Prisma {
     description?: StringNullableWithAggregatesFilter<"unit_type_categories"> | string | null
     icon_color?: StringNullableWithAggregatesFilter<"unit_type_categories"> | string | null
     catalog_url?: StringNullableWithAggregatesFilter<"unit_type_categories"> | string | null
+    image_url?: StringNullableWithAggregatesFilter<"unit_type_categories"> | string | null
+    parent_id?: IntNullableWithAggregatesFilter<"unit_type_categories"> | number | null
+    sort_order?: IntWithAggregatesFilter<"unit_type_categories"> | number
     created_at?: DateTimeWithAggregatesFilter<"unit_type_categories"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"unit_type_categories"> | Date | string
   }
@@ -73640,6 +73701,9 @@ export namespace Prisma {
     description?: string | null
     icon_color?: string | null
     catalog_url?: string | null
+    image_url?: string | null
+    parent_id?: number | null
+    sort_order?: number
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -73650,6 +73714,9 @@ export namespace Prisma {
     description?: string | null
     icon_color?: string | null
     catalog_url?: string | null
+    image_url?: string | null
+    parent_id?: number | null
+    sort_order?: number
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -73659,6 +73726,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     icon_color?: NullableStringFieldUpdateOperationsInput | string | null
     catalog_url?: NullableStringFieldUpdateOperationsInput | string | null
+    image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_id?: NullableIntFieldUpdateOperationsInput | number | null
+    sort_order?: IntFieldUpdateOperationsInput | number
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -73669,6 +73739,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     icon_color?: NullableStringFieldUpdateOperationsInput | string | null
     catalog_url?: NullableStringFieldUpdateOperationsInput | string | null
+    image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_id?: NullableIntFieldUpdateOperationsInput | number | null
+    sort_order?: IntFieldUpdateOperationsInput | number
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -73679,6 +73752,9 @@ export namespace Prisma {
     description?: string | null
     icon_color?: string | null
     catalog_url?: string | null
+    image_url?: string | null
+    parent_id?: number | null
+    sort_order?: number
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -73688,6 +73764,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     icon_color?: NullableStringFieldUpdateOperationsInput | string | null
     catalog_url?: NullableStringFieldUpdateOperationsInput | string | null
+    image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_id?: NullableIntFieldUpdateOperationsInput | number | null
+    sort_order?: IntFieldUpdateOperationsInput | number
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -73698,6 +73777,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     icon_color?: NullableStringFieldUpdateOperationsInput | string | null
     catalog_url?: NullableStringFieldUpdateOperationsInput | string | null
+    image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_id?: NullableIntFieldUpdateOperationsInput | number | null
+    sort_order?: IntFieldUpdateOperationsInput | number
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -78045,18 +78127,28 @@ export namespace Prisma {
     search: string
   }
 
+  export type unit_type_categoriesNameParent_idCompoundUniqueInput = {
+    name: string
+    parent_id: number
+  }
+
   export type unit_type_categoriesCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrder
     icon_color?: SortOrder
     catalog_url?: SortOrder
+    image_url?: SortOrder
+    parent_id?: SortOrder
+    sort_order?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }
 
   export type unit_type_categoriesAvgOrderByAggregateInput = {
     id?: SortOrder
+    parent_id?: SortOrder
+    sort_order?: SortOrder
   }
 
   export type unit_type_categoriesMaxOrderByAggregateInput = {
@@ -78065,6 +78157,9 @@ export namespace Prisma {
     description?: SortOrder
     icon_color?: SortOrder
     catalog_url?: SortOrder
+    image_url?: SortOrder
+    parent_id?: SortOrder
+    sort_order?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }
@@ -78075,12 +78170,17 @@ export namespace Prisma {
     description?: SortOrder
     icon_color?: SortOrder
     catalog_url?: SortOrder
+    image_url?: SortOrder
+    parent_id?: SortOrder
+    sort_order?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }
 
   export type unit_type_categoriesSumOrderByAggregateInput = {
     id?: SortOrder
+    parent_id?: SortOrder
+    sort_order?: SortOrder
   }
 
   export type contractsCreateNestedManyWithoutCustomersInput = {
