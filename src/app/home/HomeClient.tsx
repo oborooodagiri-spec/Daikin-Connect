@@ -331,12 +331,12 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
 
               <div 
                 className="app-item"
-                onClick={() => router.push("/admin/boq-builder")}
+                onClick={() => router.push("/admin/quotation")}
               >
                  <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #5a189a 0%, #7b2cbf 100%)" }}>
                     <BookOpen size={22} />
                  </div>
-                 <span className="app-label">EPL BoQ Builder</span>
+                 <span className="app-label">Quotation</span>
               </div>
             </div>
           </motion.section>

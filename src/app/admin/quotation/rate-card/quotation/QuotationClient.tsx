@@ -455,7 +455,7 @@ export default function QuotationClient({
       };
       
       sessionStorage.setItem("pending_sla_data", JSON.stringify(slaData));
-      router.push("/admin/database/rate-card/quotation/sla-ves");
+      router.push("/admin/quotation/rate-card/quotation/sla-ves");
     } catch (err) {
       console.error("Generate SLA failed:", err);
       alert("Gagal memproses data ke database. " + (err as Error).message);
@@ -487,13 +487,13 @@ export default function QuotationClient({
         {/* Navigation */}
         <div className="flex items-center justify-between">
           <Link 
-            href="/admin/database/rate-card"
+            href="/admin/quotation/rate-card"
             className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest hover:text-[#0073ea] transition-colors"
           >
             <ChevronLeft size={16} /> Kembali ke Manager
           </Link>
           <Link 
-            href="/admin/database/rate-card/commercial-history"
+            href="/admin/quotation/rate-card/commercial-history"
             className="flex items-center gap-1.5 text-[10px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-100 hover:bg-emerald-100 transition-colors"
           >
             Riwayat Dokumen <ChevronRight size={14} />

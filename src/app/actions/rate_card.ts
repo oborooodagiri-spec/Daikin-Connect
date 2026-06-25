@@ -57,7 +57,7 @@ export async function createShoppingItem(data: any) {
         vendor_name: data.vendor_name || "Daikin Certified Partner",
       },
     });
-    revalidatePath("/admin/database/rate-card");
+    revalidatePath("/admin/quotation/rate-card");
     return { success: true, data: item };
   } catch (error: any) {
     console.error("Error creating shopping item:", error);
@@ -82,7 +82,7 @@ export async function updateShoppingItem(id: string, data: any) {
         vendor_name: data.vendor_name,
       },
     });
-    revalidatePath("/admin/database/rate-card");
+    revalidatePath("/admin/quotation/rate-card");
     return { success: true, data: item };
   } catch (error: any) {
     console.error("Error updating shopping item:", error);
@@ -95,7 +95,7 @@ export async function deleteShoppingItem(id: string) {
     await (prisma as any).shopping_list.delete({
       where: { id: BigInt(id) },
     });
-    revalidatePath("/admin/database/rate-card");
+    revalidatePath("/admin/quotation/rate-card");
     return { success: true };
   } catch (error: any) {
     console.error("Error deleting shopping item:", error);

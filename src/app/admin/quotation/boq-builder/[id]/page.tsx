@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Plus, Trash2, Printer, Loader2, Save } from "lucide-react";
-import { getBoqProjectDetails, addBoqItem, deleteBoqItem, updateBoqItemQuantity } from "../../../actions/boq";
-import { getPricelistItems } from "../../../actions/pricelist";
+import { getBoqProjectDetails, addBoqItem, deleteBoqItem, updateBoqItemQuantity } from "../@/app/actions/boq";
+import { getPricelistItems } from "@/app/actions/pricelist";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
@@ -134,7 +134,7 @@ export default function BoqEditorPage() {
   return (
     <div className="p-6 max-w-7xl mx-auto pb-32">
       <div className="mb-4">
-        <button onClick={() => router.push('/admin/boq-builder')} className="text-gray-500 hover:text-gray-800 flex items-center font-medium transition-colors">
+        <button onClick={() => router.push('/admin/quotation/boq-builder')} className="text-gray-500 hover:text-gray-800 flex items-center font-medium transition-colors">
           <ArrowLeft className="w-4 h-4 mr-1" /> Kembali ke Daftar
         </button>
       </div>

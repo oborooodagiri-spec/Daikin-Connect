@@ -37,13 +37,13 @@ export async function createBoqProject(data: {
       created_by: data.created_by,
     },
   });
-  revalidatePath("/admin/boq-builder");
+  revalidatePath("/admin/quotation/boq-builder");
   return boq;
 }
 
 export async function deleteBoqProject(id: string) {
   await prisma.boq_projects.delete({ where: { id } });
-  revalidatePath("/admin/boq-builder");
+  revalidatePath("/admin/quotation/boq-builder");
 }
 
 export async function addBoqItem(data: {
@@ -63,13 +63,13 @@ export async function addBoqItem(data: {
       total_price: total_price,
     },
   });
-  revalidatePath(`/admin/boq-builder/${data.boq_id}`);
+  revalidatePath(`/admin/quotation/boq-builder/${data.boq_id}`);
   return item;
 }
 
 export async function deleteBoqItem(id: string, boq_id: string) {
   await prisma.boq_items.delete({ where: { id } });
-  revalidatePath(`/admin/boq-builder/${boq_id}`);
+  revalidatePath(`/admin/quotation/boq-builder/${boq_id}`);
 }
 
 export async function updateBoqItemQuantity(id: string, boq_id: string, quantity: number, unit_price: number) {
@@ -81,6 +81,6 @@ export async function updateBoqItemQuantity(id: string, boq_id: string, quantity
       total_price,
     },
   });
-  revalidatePath(`/admin/boq-builder/${boq_id}`);
+  revalidatePath(`/admin/quotation/boq-builder/${boq_id}`);
   return item;
 }

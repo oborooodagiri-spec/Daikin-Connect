@@ -273,6 +273,21 @@ export type rate_card_settings = $Result.DefaultSelection<Prisma.$rate_card_sett
  * 
  */
 export type unit_type_categories = $Result.DefaultSelection<Prisma.$unit_type_categoriesPayload>
+/**
+ * Model pricelist_items
+ * 
+ */
+export type pricelist_items = $Result.DefaultSelection<Prisma.$pricelist_itemsPayload>
+/**
+ * Model boq_projects
+ * 
+ */
+export type boq_projects = $Result.DefaultSelection<Prisma.$boq_projectsPayload>
+/**
+ * Model boq_items
+ * 
+ */
+export type boq_items = $Result.DefaultSelection<Prisma.$boq_itemsPayload>
 
 /**
  * Enums
@@ -1166,6 +1181,36 @@ export class PrismaClient<
     * ```
     */
   get unit_type_categories(): Prisma.unit_type_categoriesDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.pricelist_items`: Exposes CRUD operations for the **pricelist_items** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Pricelist_items
+    * const pricelist_items = await prisma.pricelist_items.findMany()
+    * ```
+    */
+  get pricelist_items(): Prisma.pricelist_itemsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.boq_projects`: Exposes CRUD operations for the **boq_projects** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Boq_projects
+    * const boq_projects = await prisma.boq_projects.findMany()
+    * ```
+    */
+  get boq_projects(): Prisma.boq_projectsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.boq_items`: Exposes CRUD operations for the **boq_items** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Boq_items
+    * const boq_items = await prisma.boq_items.findMany()
+    * ```
+    */
+  get boq_items(): Prisma.boq_itemsDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1657,7 +1702,10 @@ export namespace Prisma {
     logsheet_entries: 'logsheet_entries',
     shopping_list: 'shopping_list',
     rate_card_settings: 'rate_card_settings',
-    unit_type_categories: 'unit_type_categories'
+    unit_type_categories: 'unit_type_categories',
+    pricelist_items: 'pricelist_items',
+    boq_projects: 'boq_projects',
+    boq_items: 'boq_items'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1673,7 +1721,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "customers" | "permissions" | "projects" | "knowledge_resources" | "refresh_tokens" | "work_orders" | "quotations" | "quotation_items" | "slas" | "role_permissions" | "roles" | "units" | "user_project_access" | "user_roles" | "user_unit_access" | "users" | "audit_logs" | "password_reset_tokens" | "activities" | "activity_photos" | "ahu_audits" | "audit_tickets" | "audit_velocity_points" | "audits" | "contracts" | "corrective" | "corrective_maintenances" | "maintenance_contracts" | "service_activities" | "service_logs" | "service_photos" | "sites" | "tickets" | "unit_comments" | "schedules" | "schedule_attendance" | "schedule_mom" | "schedule_messages" | "schedule_targets" | "complaints" | "unit_edit_requests" | "user_push_tokens" | "notifications" | "daily_ops_logs" | "vendor_attendance" | "project_intelligence" | "project_issues" | "logsheet_templates" | "logsheet_entries" | "shopping_list" | "rate_card_settings" | "unit_type_categories"
+      modelProps: "customers" | "permissions" | "projects" | "knowledge_resources" | "refresh_tokens" | "work_orders" | "quotations" | "quotation_items" | "slas" | "role_permissions" | "roles" | "units" | "user_project_access" | "user_roles" | "user_unit_access" | "users" | "audit_logs" | "password_reset_tokens" | "activities" | "activity_photos" | "ahu_audits" | "audit_tickets" | "audit_velocity_points" | "audits" | "contracts" | "corrective" | "corrective_maintenances" | "maintenance_contracts" | "service_activities" | "service_logs" | "service_photos" | "sites" | "tickets" | "unit_comments" | "schedules" | "schedule_attendance" | "schedule_mom" | "schedule_messages" | "schedule_targets" | "complaints" | "unit_edit_requests" | "user_push_tokens" | "notifications" | "daily_ops_logs" | "vendor_attendance" | "project_intelligence" | "project_issues" | "logsheet_templates" | "logsheet_entries" | "shopping_list" | "rate_card_settings" | "unit_type_categories" | "pricelist_items" | "boq_projects" | "boq_items"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -5109,6 +5157,204 @@ export namespace Prisma {
           }
         }
       }
+      pricelist_items: {
+        payload: Prisma.$pricelist_itemsPayload<ExtArgs>
+        fields: Prisma.pricelist_itemsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.pricelist_itemsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$pricelist_itemsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.pricelist_itemsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$pricelist_itemsPayload>
+          }
+          findFirst: {
+            args: Prisma.pricelist_itemsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$pricelist_itemsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.pricelist_itemsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$pricelist_itemsPayload>
+          }
+          findMany: {
+            args: Prisma.pricelist_itemsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$pricelist_itemsPayload>[]
+          }
+          create: {
+            args: Prisma.pricelist_itemsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$pricelist_itemsPayload>
+          }
+          createMany: {
+            args: Prisma.pricelist_itemsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.pricelist_itemsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$pricelist_itemsPayload>
+          }
+          update: {
+            args: Prisma.pricelist_itemsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$pricelist_itemsPayload>
+          }
+          deleteMany: {
+            args: Prisma.pricelist_itemsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.pricelist_itemsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.pricelist_itemsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$pricelist_itemsPayload>
+          }
+          aggregate: {
+            args: Prisma.Pricelist_itemsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePricelist_items>
+          }
+          groupBy: {
+            args: Prisma.pricelist_itemsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Pricelist_itemsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.pricelist_itemsCountArgs<ExtArgs>
+            result: $Utils.Optional<Pricelist_itemsCountAggregateOutputType> | number
+          }
+        }
+      }
+      boq_projects: {
+        payload: Prisma.$boq_projectsPayload<ExtArgs>
+        fields: Prisma.boq_projectsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.boq_projectsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$boq_projectsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.boq_projectsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$boq_projectsPayload>
+          }
+          findFirst: {
+            args: Prisma.boq_projectsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$boq_projectsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.boq_projectsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$boq_projectsPayload>
+          }
+          findMany: {
+            args: Prisma.boq_projectsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$boq_projectsPayload>[]
+          }
+          create: {
+            args: Prisma.boq_projectsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$boq_projectsPayload>
+          }
+          createMany: {
+            args: Prisma.boq_projectsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.boq_projectsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$boq_projectsPayload>
+          }
+          update: {
+            args: Prisma.boq_projectsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$boq_projectsPayload>
+          }
+          deleteMany: {
+            args: Prisma.boq_projectsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.boq_projectsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.boq_projectsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$boq_projectsPayload>
+          }
+          aggregate: {
+            args: Prisma.Boq_projectsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBoq_projects>
+          }
+          groupBy: {
+            args: Prisma.boq_projectsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Boq_projectsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.boq_projectsCountArgs<ExtArgs>
+            result: $Utils.Optional<Boq_projectsCountAggregateOutputType> | number
+          }
+        }
+      }
+      boq_items: {
+        payload: Prisma.$boq_itemsPayload<ExtArgs>
+        fields: Prisma.boq_itemsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.boq_itemsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$boq_itemsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.boq_itemsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$boq_itemsPayload>
+          }
+          findFirst: {
+            args: Prisma.boq_itemsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$boq_itemsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.boq_itemsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$boq_itemsPayload>
+          }
+          findMany: {
+            args: Prisma.boq_itemsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$boq_itemsPayload>[]
+          }
+          create: {
+            args: Prisma.boq_itemsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$boq_itemsPayload>
+          }
+          createMany: {
+            args: Prisma.boq_itemsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.boq_itemsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$boq_itemsPayload>
+          }
+          update: {
+            args: Prisma.boq_itemsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$boq_itemsPayload>
+          }
+          deleteMany: {
+            args: Prisma.boq_itemsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.boq_itemsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.boq_itemsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$boq_itemsPayload>
+          }
+          aggregate: {
+            args: Prisma.Boq_itemsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBoq_items>
+          }
+          groupBy: {
+            args: Prisma.boq_itemsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Boq_itemsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.boq_itemsCountArgs<ExtArgs>
+            result: $Utils.Optional<Boq_itemsCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -5245,6 +5491,9 @@ export namespace Prisma {
     shopping_list?: shopping_listOmit
     rate_card_settings?: rate_card_settingsOmit
     unit_type_categories?: unit_type_categoriesOmit
+    pricelist_items?: pricelist_itemsOmit
+    boq_projects?: boq_projectsOmit
+    boq_items?: boq_itemsOmit
   }
 
   /* Types for Logging */
@@ -5817,6 +6066,7 @@ export namespace Prisma {
     created_work_orders: number
     created_quotations: number
     created_slas: number
+    created_boq_projects: number
   }
 
   export type UsersCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5838,6 +6088,7 @@ export namespace Prisma {
     created_work_orders?: boolean | UsersCountOutputTypeCountCreated_work_ordersArgs
     created_quotations?: boolean | UsersCountOutputTypeCountCreated_quotationsArgs
     created_slas?: boolean | UsersCountOutputTypeCountCreated_slasArgs
+    created_boq_projects?: boolean | UsersCountOutputTypeCountCreated_boq_projectsArgs
   }
 
   // Custom InputTypes
@@ -5977,6 +6228,13 @@ export namespace Prisma {
     where?: slasWhereInput
   }
 
+  /**
+   * UsersCountOutputType without action
+   */
+  export type UsersCountOutputTypeCountCreated_boq_projectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: boq_projectsWhereInput
+  }
+
 
   /**
    * Count Type Service_activitiesCountOutputType
@@ -6095,6 +6353,68 @@ export namespace Prisma {
    */
   export type Logsheet_templatesCountOutputTypeCountEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: logsheet_entriesWhereInput
+  }
+
+
+  /**
+   * Count Type Pricelist_itemsCountOutputType
+   */
+
+  export type Pricelist_itemsCountOutputType = {
+    boq_items: number
+  }
+
+  export type Pricelist_itemsCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    boq_items?: boolean | Pricelist_itemsCountOutputTypeCountBoq_itemsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * Pricelist_itemsCountOutputType without action
+   */
+  export type Pricelist_itemsCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Pricelist_itemsCountOutputType
+     */
+    select?: Pricelist_itemsCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * Pricelist_itemsCountOutputType without action
+   */
+  export type Pricelist_itemsCountOutputTypeCountBoq_itemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: boq_itemsWhereInput
+  }
+
+
+  /**
+   * Count Type Boq_projectsCountOutputType
+   */
+
+  export type Boq_projectsCountOutputType = {
+    items: number
+  }
+
+  export type Boq_projectsCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    items?: boolean | Boq_projectsCountOutputTypeCountItemsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * Boq_projectsCountOutputType without action
+   */
+  export type Boq_projectsCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Boq_projectsCountOutputType
+     */
+    select?: Boq_projectsCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * Boq_projectsCountOutputType without action
+   */
+  export type Boq_projectsCountOutputTypeCountItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: boq_itemsWhereInput
   }
 
 
@@ -22656,6 +22976,7 @@ export namespace Prisma {
     created_work_orders?: boolean | users$created_work_ordersArgs<ExtArgs>
     created_quotations?: boolean | users$created_quotationsArgs<ExtArgs>
     created_slas?: boolean | users$created_slasArgs<ExtArgs>
+    created_boq_projects?: boolean | users$created_boq_projectsArgs<ExtArgs>
     _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["users"]>
 
@@ -22704,6 +23025,7 @@ export namespace Prisma {
     created_work_orders?: boolean | users$created_work_ordersArgs<ExtArgs>
     created_quotations?: boolean | users$created_quotationsArgs<ExtArgs>
     created_slas?: boolean | users$created_slasArgs<ExtArgs>
+    created_boq_projects?: boolean | users$created_boq_projectsArgs<ExtArgs>
     _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -22729,6 +23051,7 @@ export namespace Prisma {
       created_work_orders: Prisma.$work_ordersPayload<ExtArgs>[]
       created_quotations: Prisma.$quotationsPayload<ExtArgs>[]
       created_slas: Prisma.$slasPayload<ExtArgs>[]
+      created_boq_projects: Prisma.$boq_projectsPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -23109,6 +23432,7 @@ export namespace Prisma {
     created_work_orders<T extends users$created_work_ordersArgs<ExtArgs> = {}>(args?: Subset<T, users$created_work_ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$work_ordersPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     created_quotations<T extends users$created_quotationsArgs<ExtArgs> = {}>(args?: Subset<T, users$created_quotationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$quotationsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     created_slas<T extends users$created_slasArgs<ExtArgs> = {}>(args?: Subset<T, users$created_slasArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$slasPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    created_boq_projects<T extends users$created_boq_projectsArgs<ExtArgs> = {}>(args?: Subset<T, users$created_boq_projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$boq_projectsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -23948,6 +24272,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SlasScalarFieldEnum | SlasScalarFieldEnum[]
+  }
+
+  /**
+   * users.created_boq_projects
+   */
+  export type users$created_boq_projectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_projects
+     */
+    select?: boq_projectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_projects
+     */
+    omit?: boq_projectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_projectsInclude<ExtArgs> | null
+    where?: boq_projectsWhereInput
+    orderBy?: boq_projectsOrderByWithRelationInput | boq_projectsOrderByWithRelationInput[]
+    cursor?: boq_projectsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Boq_projectsScalarFieldEnum | Boq_projectsScalarFieldEnum[]
   }
 
   /**
@@ -62198,6 +62546,3018 @@ export namespace Prisma {
 
 
   /**
+   * Model pricelist_items
+   */
+
+  export type AggregatePricelist_items = {
+    _count: Pricelist_itemsCountAggregateOutputType | null
+    _avg: Pricelist_itemsAvgAggregateOutputType | null
+    _sum: Pricelist_itemsSumAggregateOutputType | null
+    _min: Pricelist_itemsMinAggregateOutputType | null
+    _max: Pricelist_itemsMaxAggregateOutputType | null
+  }
+
+  export type Pricelist_itemsAvgAggregateOutputType = {
+    price: Decimal | null
+  }
+
+  export type Pricelist_itemsSumAggregateOutputType = {
+    price: Decimal | null
+  }
+
+  export type Pricelist_itemsMinAggregateOutputType = {
+    id: string | null
+    category: string | null
+    name: string | null
+    specification: string | null
+    unit: string | null
+    price: Decimal | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type Pricelist_itemsMaxAggregateOutputType = {
+    id: string | null
+    category: string | null
+    name: string | null
+    specification: string | null
+    unit: string | null
+    price: Decimal | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type Pricelist_itemsCountAggregateOutputType = {
+    id: number
+    category: number
+    name: number
+    specification: number
+    unit: number
+    price: number
+    created_at: number
+    updated_at: number
+    _all: number
+  }
+
+
+  export type Pricelist_itemsAvgAggregateInputType = {
+    price?: true
+  }
+
+  export type Pricelist_itemsSumAggregateInputType = {
+    price?: true
+  }
+
+  export type Pricelist_itemsMinAggregateInputType = {
+    id?: true
+    category?: true
+    name?: true
+    specification?: true
+    unit?: true
+    price?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type Pricelist_itemsMaxAggregateInputType = {
+    id?: true
+    category?: true
+    name?: true
+    specification?: true
+    unit?: true
+    price?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type Pricelist_itemsCountAggregateInputType = {
+    id?: true
+    category?: true
+    name?: true
+    specification?: true
+    unit?: true
+    price?: true
+    created_at?: true
+    updated_at?: true
+    _all?: true
+  }
+
+  export type Pricelist_itemsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which pricelist_items to aggregate.
+     */
+    where?: pricelist_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of pricelist_items to fetch.
+     */
+    orderBy?: pricelist_itemsOrderByWithRelationInput | pricelist_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: pricelist_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` pricelist_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` pricelist_items.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned pricelist_items
+    **/
+    _count?: true | Pricelist_itemsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Pricelist_itemsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Pricelist_itemsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Pricelist_itemsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Pricelist_itemsMaxAggregateInputType
+  }
+
+  export type GetPricelist_itemsAggregateType<T extends Pricelist_itemsAggregateArgs> = {
+        [P in keyof T & keyof AggregatePricelist_items]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePricelist_items[P]>
+      : GetScalarType<T[P], AggregatePricelist_items[P]>
+  }
+
+
+
+
+  export type pricelist_itemsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: pricelist_itemsWhereInput
+    orderBy?: pricelist_itemsOrderByWithAggregationInput | pricelist_itemsOrderByWithAggregationInput[]
+    by: Pricelist_itemsScalarFieldEnum[] | Pricelist_itemsScalarFieldEnum
+    having?: pricelist_itemsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Pricelist_itemsCountAggregateInputType | true
+    _avg?: Pricelist_itemsAvgAggregateInputType
+    _sum?: Pricelist_itemsSumAggregateInputType
+    _min?: Pricelist_itemsMinAggregateInputType
+    _max?: Pricelist_itemsMaxAggregateInputType
+  }
+
+  export type Pricelist_itemsGroupByOutputType = {
+    id: string
+    category: string
+    name: string
+    specification: string | null
+    unit: string
+    price: Decimal
+    created_at: Date
+    updated_at: Date
+    _count: Pricelist_itemsCountAggregateOutputType | null
+    _avg: Pricelist_itemsAvgAggregateOutputType | null
+    _sum: Pricelist_itemsSumAggregateOutputType | null
+    _min: Pricelist_itemsMinAggregateOutputType | null
+    _max: Pricelist_itemsMaxAggregateOutputType | null
+  }
+
+  type GetPricelist_itemsGroupByPayload<T extends pricelist_itemsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Pricelist_itemsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Pricelist_itemsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Pricelist_itemsGroupByOutputType[P]>
+            : GetScalarType<T[P], Pricelist_itemsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type pricelist_itemsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    category?: boolean
+    name?: boolean
+    specification?: boolean
+    unit?: boolean
+    price?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    boq_items?: boolean | pricelist_items$boq_itemsArgs<ExtArgs>
+    _count?: boolean | Pricelist_itemsCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["pricelist_items"]>
+
+
+
+  export type pricelist_itemsSelectScalar = {
+    id?: boolean
+    category?: boolean
+    name?: boolean
+    specification?: boolean
+    unit?: boolean
+    price?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }
+
+  export type pricelist_itemsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "category" | "name" | "specification" | "unit" | "price" | "created_at" | "updated_at", ExtArgs["result"]["pricelist_items"]>
+  export type pricelist_itemsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    boq_items?: boolean | pricelist_items$boq_itemsArgs<ExtArgs>
+    _count?: boolean | Pricelist_itemsCountOutputTypeDefaultArgs<ExtArgs>
+  }
+
+  export type $pricelist_itemsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "pricelist_items"
+    objects: {
+      boq_items: Prisma.$boq_itemsPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      category: string
+      name: string
+      specification: string | null
+      unit: string
+      price: Prisma.Decimal
+      created_at: Date
+      updated_at: Date
+    }, ExtArgs["result"]["pricelist_items"]>
+    composites: {}
+  }
+
+  type pricelist_itemsGetPayload<S extends boolean | null | undefined | pricelist_itemsDefaultArgs> = $Result.GetResult<Prisma.$pricelist_itemsPayload, S>
+
+  type pricelist_itemsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<pricelist_itemsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Pricelist_itemsCountAggregateInputType | true
+    }
+
+  export interface pricelist_itemsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['pricelist_items'], meta: { name: 'pricelist_items' } }
+    /**
+     * Find zero or one Pricelist_items that matches the filter.
+     * @param {pricelist_itemsFindUniqueArgs} args - Arguments to find a Pricelist_items
+     * @example
+     * // Get one Pricelist_items
+     * const pricelist_items = await prisma.pricelist_items.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends pricelist_itemsFindUniqueArgs>(args: SelectSubset<T, pricelist_itemsFindUniqueArgs<ExtArgs>>): Prisma__pricelist_itemsClient<$Result.GetResult<Prisma.$pricelist_itemsPayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one Pricelist_items that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {pricelist_itemsFindUniqueOrThrowArgs} args - Arguments to find a Pricelist_items
+     * @example
+     * // Get one Pricelist_items
+     * const pricelist_items = await prisma.pricelist_items.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends pricelist_itemsFindUniqueOrThrowArgs>(args: SelectSubset<T, pricelist_itemsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__pricelist_itemsClient<$Result.GetResult<Prisma.$pricelist_itemsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Pricelist_items that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {pricelist_itemsFindFirstArgs} args - Arguments to find a Pricelist_items
+     * @example
+     * // Get one Pricelist_items
+     * const pricelist_items = await prisma.pricelist_items.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends pricelist_itemsFindFirstArgs>(args?: SelectSubset<T, pricelist_itemsFindFirstArgs<ExtArgs>>): Prisma__pricelist_itemsClient<$Result.GetResult<Prisma.$pricelist_itemsPayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Pricelist_items that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {pricelist_itemsFindFirstOrThrowArgs} args - Arguments to find a Pricelist_items
+     * @example
+     * // Get one Pricelist_items
+     * const pricelist_items = await prisma.pricelist_items.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends pricelist_itemsFindFirstOrThrowArgs>(args?: SelectSubset<T, pricelist_itemsFindFirstOrThrowArgs<ExtArgs>>): Prisma__pricelist_itemsClient<$Result.GetResult<Prisma.$pricelist_itemsPayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more Pricelist_items that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {pricelist_itemsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Pricelist_items
+     * const pricelist_items = await prisma.pricelist_items.findMany()
+     * 
+     * // Get first 10 Pricelist_items
+     * const pricelist_items = await prisma.pricelist_items.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const pricelist_itemsWithIdOnly = await prisma.pricelist_items.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends pricelist_itemsFindManyArgs>(args?: SelectSubset<T, pricelist_itemsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$pricelist_itemsPayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a Pricelist_items.
+     * @param {pricelist_itemsCreateArgs} args - Arguments to create a Pricelist_items.
+     * @example
+     * // Create one Pricelist_items
+     * const Pricelist_items = await prisma.pricelist_items.create({
+     *   data: {
+     *     // ... data to create a Pricelist_items
+     *   }
+     * })
+     * 
+     */
+    create<T extends pricelist_itemsCreateArgs>(args: SelectSubset<T, pricelist_itemsCreateArgs<ExtArgs>>): Prisma__pricelist_itemsClient<$Result.GetResult<Prisma.$pricelist_itemsPayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many Pricelist_items.
+     * @param {pricelist_itemsCreateManyArgs} args - Arguments to create many Pricelist_items.
+     * @example
+     * // Create many Pricelist_items
+     * const pricelist_items = await prisma.pricelist_items.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends pricelist_itemsCreateManyArgs>(args?: SelectSubset<T, pricelist_itemsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Pricelist_items.
+     * @param {pricelist_itemsDeleteArgs} args - Arguments to delete one Pricelist_items.
+     * @example
+     * // Delete one Pricelist_items
+     * const Pricelist_items = await prisma.pricelist_items.delete({
+     *   where: {
+     *     // ... filter to delete one Pricelist_items
+     *   }
+     * })
+     * 
+     */
+    delete<T extends pricelist_itemsDeleteArgs>(args: SelectSubset<T, pricelist_itemsDeleteArgs<ExtArgs>>): Prisma__pricelist_itemsClient<$Result.GetResult<Prisma.$pricelist_itemsPayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one Pricelist_items.
+     * @param {pricelist_itemsUpdateArgs} args - Arguments to update one Pricelist_items.
+     * @example
+     * // Update one Pricelist_items
+     * const pricelist_items = await prisma.pricelist_items.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends pricelist_itemsUpdateArgs>(args: SelectSubset<T, pricelist_itemsUpdateArgs<ExtArgs>>): Prisma__pricelist_itemsClient<$Result.GetResult<Prisma.$pricelist_itemsPayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more Pricelist_items.
+     * @param {pricelist_itemsDeleteManyArgs} args - Arguments to filter Pricelist_items to delete.
+     * @example
+     * // Delete a few Pricelist_items
+     * const { count } = await prisma.pricelist_items.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends pricelist_itemsDeleteManyArgs>(args?: SelectSubset<T, pricelist_itemsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Pricelist_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {pricelist_itemsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Pricelist_items
+     * const pricelist_items = await prisma.pricelist_items.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends pricelist_itemsUpdateManyArgs>(args: SelectSubset<T, pricelist_itemsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Pricelist_items.
+     * @param {pricelist_itemsUpsertArgs} args - Arguments to update or create a Pricelist_items.
+     * @example
+     * // Update or create a Pricelist_items
+     * const pricelist_items = await prisma.pricelist_items.upsert({
+     *   create: {
+     *     // ... data to create a Pricelist_items
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Pricelist_items we want to update
+     *   }
+     * })
+     */
+    upsert<T extends pricelist_itemsUpsertArgs>(args: SelectSubset<T, pricelist_itemsUpsertArgs<ExtArgs>>): Prisma__pricelist_itemsClient<$Result.GetResult<Prisma.$pricelist_itemsPayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of Pricelist_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {pricelist_itemsCountArgs} args - Arguments to filter Pricelist_items to count.
+     * @example
+     * // Count the number of Pricelist_items
+     * const count = await prisma.pricelist_items.count({
+     *   where: {
+     *     // ... the filter for the Pricelist_items we want to count
+     *   }
+     * })
+    **/
+    count<T extends pricelist_itemsCountArgs>(
+      args?: Subset<T, pricelist_itemsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Pricelist_itemsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Pricelist_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Pricelist_itemsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Pricelist_itemsAggregateArgs>(args: Subset<T, Pricelist_itemsAggregateArgs>): Prisma.PrismaPromise<GetPricelist_itemsAggregateType<T>>
+
+    /**
+     * Group by Pricelist_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {pricelist_itemsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends pricelist_itemsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: pricelist_itemsGroupByArgs['orderBy'] }
+        : { orderBy?: pricelist_itemsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, pricelist_itemsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPricelist_itemsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the pricelist_items model
+   */
+  readonly fields: pricelist_itemsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for pricelist_items.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__pricelist_itemsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    boq_items<T extends pricelist_items$boq_itemsArgs<ExtArgs> = {}>(args?: Subset<T, pricelist_items$boq_itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$boq_itemsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the pricelist_items model
+   */ 
+  interface pricelist_itemsFieldRefs {
+    readonly id: FieldRef<"pricelist_items", 'String'>
+    readonly category: FieldRef<"pricelist_items", 'String'>
+    readonly name: FieldRef<"pricelist_items", 'String'>
+    readonly specification: FieldRef<"pricelist_items", 'String'>
+    readonly unit: FieldRef<"pricelist_items", 'String'>
+    readonly price: FieldRef<"pricelist_items", 'Decimal'>
+    readonly created_at: FieldRef<"pricelist_items", 'DateTime'>
+    readonly updated_at: FieldRef<"pricelist_items", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * pricelist_items findUnique
+   */
+  export type pricelist_itemsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the pricelist_items
+     */
+    select?: pricelist_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the pricelist_items
+     */
+    omit?: pricelist_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: pricelist_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which pricelist_items to fetch.
+     */
+    where: pricelist_itemsWhereUniqueInput
+  }
+
+  /**
+   * pricelist_items findUniqueOrThrow
+   */
+  export type pricelist_itemsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the pricelist_items
+     */
+    select?: pricelist_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the pricelist_items
+     */
+    omit?: pricelist_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: pricelist_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which pricelist_items to fetch.
+     */
+    where: pricelist_itemsWhereUniqueInput
+  }
+
+  /**
+   * pricelist_items findFirst
+   */
+  export type pricelist_itemsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the pricelist_items
+     */
+    select?: pricelist_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the pricelist_items
+     */
+    omit?: pricelist_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: pricelist_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which pricelist_items to fetch.
+     */
+    where?: pricelist_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of pricelist_items to fetch.
+     */
+    orderBy?: pricelist_itemsOrderByWithRelationInput | pricelist_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for pricelist_items.
+     */
+    cursor?: pricelist_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` pricelist_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` pricelist_items.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of pricelist_items.
+     */
+    distinct?: Pricelist_itemsScalarFieldEnum | Pricelist_itemsScalarFieldEnum[]
+  }
+
+  /**
+   * pricelist_items findFirstOrThrow
+   */
+  export type pricelist_itemsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the pricelist_items
+     */
+    select?: pricelist_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the pricelist_items
+     */
+    omit?: pricelist_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: pricelist_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which pricelist_items to fetch.
+     */
+    where?: pricelist_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of pricelist_items to fetch.
+     */
+    orderBy?: pricelist_itemsOrderByWithRelationInput | pricelist_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for pricelist_items.
+     */
+    cursor?: pricelist_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` pricelist_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` pricelist_items.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of pricelist_items.
+     */
+    distinct?: Pricelist_itemsScalarFieldEnum | Pricelist_itemsScalarFieldEnum[]
+  }
+
+  /**
+   * pricelist_items findMany
+   */
+  export type pricelist_itemsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the pricelist_items
+     */
+    select?: pricelist_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the pricelist_items
+     */
+    omit?: pricelist_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: pricelist_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which pricelist_items to fetch.
+     */
+    where?: pricelist_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of pricelist_items to fetch.
+     */
+    orderBy?: pricelist_itemsOrderByWithRelationInput | pricelist_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing pricelist_items.
+     */
+    cursor?: pricelist_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` pricelist_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` pricelist_items.
+     */
+    skip?: number
+    distinct?: Pricelist_itemsScalarFieldEnum | Pricelist_itemsScalarFieldEnum[]
+  }
+
+  /**
+   * pricelist_items create
+   */
+  export type pricelist_itemsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the pricelist_items
+     */
+    select?: pricelist_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the pricelist_items
+     */
+    omit?: pricelist_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: pricelist_itemsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a pricelist_items.
+     */
+    data: XOR<pricelist_itemsCreateInput, pricelist_itemsUncheckedCreateInput>
+  }
+
+  /**
+   * pricelist_items createMany
+   */
+  export type pricelist_itemsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many pricelist_items.
+     */
+    data: pricelist_itemsCreateManyInput | pricelist_itemsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * pricelist_items update
+   */
+  export type pricelist_itemsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the pricelist_items
+     */
+    select?: pricelist_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the pricelist_items
+     */
+    omit?: pricelist_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: pricelist_itemsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a pricelist_items.
+     */
+    data: XOR<pricelist_itemsUpdateInput, pricelist_itemsUncheckedUpdateInput>
+    /**
+     * Choose, which pricelist_items to update.
+     */
+    where: pricelist_itemsWhereUniqueInput
+  }
+
+  /**
+   * pricelist_items updateMany
+   */
+  export type pricelist_itemsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update pricelist_items.
+     */
+    data: XOR<pricelist_itemsUpdateManyMutationInput, pricelist_itemsUncheckedUpdateManyInput>
+    /**
+     * Filter which pricelist_items to update
+     */
+    where?: pricelist_itemsWhereInput
+    /**
+     * Limit how many pricelist_items to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * pricelist_items upsert
+   */
+  export type pricelist_itemsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the pricelist_items
+     */
+    select?: pricelist_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the pricelist_items
+     */
+    omit?: pricelist_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: pricelist_itemsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the pricelist_items to update in case it exists.
+     */
+    where: pricelist_itemsWhereUniqueInput
+    /**
+     * In case the pricelist_items found by the `where` argument doesn't exist, create a new pricelist_items with this data.
+     */
+    create: XOR<pricelist_itemsCreateInput, pricelist_itemsUncheckedCreateInput>
+    /**
+     * In case the pricelist_items was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<pricelist_itemsUpdateInput, pricelist_itemsUncheckedUpdateInput>
+  }
+
+  /**
+   * pricelist_items delete
+   */
+  export type pricelist_itemsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the pricelist_items
+     */
+    select?: pricelist_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the pricelist_items
+     */
+    omit?: pricelist_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: pricelist_itemsInclude<ExtArgs> | null
+    /**
+     * Filter which pricelist_items to delete.
+     */
+    where: pricelist_itemsWhereUniqueInput
+  }
+
+  /**
+   * pricelist_items deleteMany
+   */
+  export type pricelist_itemsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which pricelist_items to delete
+     */
+    where?: pricelist_itemsWhereInput
+    /**
+     * Limit how many pricelist_items to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * pricelist_items.boq_items
+   */
+  export type pricelist_items$boq_itemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_items
+     */
+    select?: boq_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_items
+     */
+    omit?: boq_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_itemsInclude<ExtArgs> | null
+    where?: boq_itemsWhereInput
+    orderBy?: boq_itemsOrderByWithRelationInput | boq_itemsOrderByWithRelationInput[]
+    cursor?: boq_itemsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Boq_itemsScalarFieldEnum | Boq_itemsScalarFieldEnum[]
+  }
+
+  /**
+   * pricelist_items without action
+   */
+  export type pricelist_itemsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the pricelist_items
+     */
+    select?: pricelist_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the pricelist_items
+     */
+    omit?: pricelist_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: pricelist_itemsInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model boq_projects
+   */
+
+  export type AggregateBoq_projects = {
+    _count: Boq_projectsCountAggregateOutputType | null
+    _avg: Boq_projectsAvgAggregateOutputType | null
+    _sum: Boq_projectsSumAggregateOutputType | null
+    _min: Boq_projectsMinAggregateOutputType | null
+    _max: Boq_projectsMaxAggregateOutputType | null
+  }
+
+  export type Boq_projectsAvgAggregateOutputType = {
+    created_by: number | null
+  }
+
+  export type Boq_projectsSumAggregateOutputType = {
+    created_by: number | null
+  }
+
+  export type Boq_projectsMinAggregateOutputType = {
+    id: string | null
+    project_name: string | null
+    customer_name: string | null
+    created_by: number | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type Boq_projectsMaxAggregateOutputType = {
+    id: string | null
+    project_name: string | null
+    customer_name: string | null
+    created_by: number | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type Boq_projectsCountAggregateOutputType = {
+    id: number
+    project_name: number
+    customer_name: number
+    created_by: number
+    created_at: number
+    updated_at: number
+    _all: number
+  }
+
+
+  export type Boq_projectsAvgAggregateInputType = {
+    created_by?: true
+  }
+
+  export type Boq_projectsSumAggregateInputType = {
+    created_by?: true
+  }
+
+  export type Boq_projectsMinAggregateInputType = {
+    id?: true
+    project_name?: true
+    customer_name?: true
+    created_by?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type Boq_projectsMaxAggregateInputType = {
+    id?: true
+    project_name?: true
+    customer_name?: true
+    created_by?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type Boq_projectsCountAggregateInputType = {
+    id?: true
+    project_name?: true
+    customer_name?: true
+    created_by?: true
+    created_at?: true
+    updated_at?: true
+    _all?: true
+  }
+
+  export type Boq_projectsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which boq_projects to aggregate.
+     */
+    where?: boq_projectsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of boq_projects to fetch.
+     */
+    orderBy?: boq_projectsOrderByWithRelationInput | boq_projectsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: boq_projectsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` boq_projects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` boq_projects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned boq_projects
+    **/
+    _count?: true | Boq_projectsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Boq_projectsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Boq_projectsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Boq_projectsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Boq_projectsMaxAggregateInputType
+  }
+
+  export type GetBoq_projectsAggregateType<T extends Boq_projectsAggregateArgs> = {
+        [P in keyof T & keyof AggregateBoq_projects]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBoq_projects[P]>
+      : GetScalarType<T[P], AggregateBoq_projects[P]>
+  }
+
+
+
+
+  export type boq_projectsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: boq_projectsWhereInput
+    orderBy?: boq_projectsOrderByWithAggregationInput | boq_projectsOrderByWithAggregationInput[]
+    by: Boq_projectsScalarFieldEnum[] | Boq_projectsScalarFieldEnum
+    having?: boq_projectsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Boq_projectsCountAggregateInputType | true
+    _avg?: Boq_projectsAvgAggregateInputType
+    _sum?: Boq_projectsSumAggregateInputType
+    _min?: Boq_projectsMinAggregateInputType
+    _max?: Boq_projectsMaxAggregateInputType
+  }
+
+  export type Boq_projectsGroupByOutputType = {
+    id: string
+    project_name: string
+    customer_name: string | null
+    created_by: number
+    created_at: Date
+    updated_at: Date
+    _count: Boq_projectsCountAggregateOutputType | null
+    _avg: Boq_projectsAvgAggregateOutputType | null
+    _sum: Boq_projectsSumAggregateOutputType | null
+    _min: Boq_projectsMinAggregateOutputType | null
+    _max: Boq_projectsMaxAggregateOutputType | null
+  }
+
+  type GetBoq_projectsGroupByPayload<T extends boq_projectsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Boq_projectsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Boq_projectsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Boq_projectsGroupByOutputType[P]>
+            : GetScalarType<T[P], Boq_projectsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type boq_projectsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    project_name?: boolean
+    customer_name?: boolean
+    created_by?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    items?: boolean | boq_projects$itemsArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
+    _count?: boolean | Boq_projectsCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["boq_projects"]>
+
+
+
+  export type boq_projectsSelectScalar = {
+    id?: boolean
+    project_name?: boolean
+    customer_name?: boolean
+    created_by?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }
+
+  export type boq_projectsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "project_name" | "customer_name" | "created_by" | "created_at" | "updated_at", ExtArgs["result"]["boq_projects"]>
+  export type boq_projectsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    items?: boolean | boq_projects$itemsArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
+    _count?: boolean | Boq_projectsCountOutputTypeDefaultArgs<ExtArgs>
+  }
+
+  export type $boq_projectsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "boq_projects"
+    objects: {
+      items: Prisma.$boq_itemsPayload<ExtArgs>[]
+      users: Prisma.$usersPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      project_name: string
+      customer_name: string | null
+      created_by: number
+      created_at: Date
+      updated_at: Date
+    }, ExtArgs["result"]["boq_projects"]>
+    composites: {}
+  }
+
+  type boq_projectsGetPayload<S extends boolean | null | undefined | boq_projectsDefaultArgs> = $Result.GetResult<Prisma.$boq_projectsPayload, S>
+
+  type boq_projectsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<boq_projectsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Boq_projectsCountAggregateInputType | true
+    }
+
+  export interface boq_projectsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['boq_projects'], meta: { name: 'boq_projects' } }
+    /**
+     * Find zero or one Boq_projects that matches the filter.
+     * @param {boq_projectsFindUniqueArgs} args - Arguments to find a Boq_projects
+     * @example
+     * // Get one Boq_projects
+     * const boq_projects = await prisma.boq_projects.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends boq_projectsFindUniqueArgs>(args: SelectSubset<T, boq_projectsFindUniqueArgs<ExtArgs>>): Prisma__boq_projectsClient<$Result.GetResult<Prisma.$boq_projectsPayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one Boq_projects that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {boq_projectsFindUniqueOrThrowArgs} args - Arguments to find a Boq_projects
+     * @example
+     * // Get one Boq_projects
+     * const boq_projects = await prisma.boq_projects.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends boq_projectsFindUniqueOrThrowArgs>(args: SelectSubset<T, boq_projectsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__boq_projectsClient<$Result.GetResult<Prisma.$boq_projectsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Boq_projects that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {boq_projectsFindFirstArgs} args - Arguments to find a Boq_projects
+     * @example
+     * // Get one Boq_projects
+     * const boq_projects = await prisma.boq_projects.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends boq_projectsFindFirstArgs>(args?: SelectSubset<T, boq_projectsFindFirstArgs<ExtArgs>>): Prisma__boq_projectsClient<$Result.GetResult<Prisma.$boq_projectsPayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Boq_projects that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {boq_projectsFindFirstOrThrowArgs} args - Arguments to find a Boq_projects
+     * @example
+     * // Get one Boq_projects
+     * const boq_projects = await prisma.boq_projects.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends boq_projectsFindFirstOrThrowArgs>(args?: SelectSubset<T, boq_projectsFindFirstOrThrowArgs<ExtArgs>>): Prisma__boq_projectsClient<$Result.GetResult<Prisma.$boq_projectsPayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more Boq_projects that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {boq_projectsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Boq_projects
+     * const boq_projects = await prisma.boq_projects.findMany()
+     * 
+     * // Get first 10 Boq_projects
+     * const boq_projects = await prisma.boq_projects.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const boq_projectsWithIdOnly = await prisma.boq_projects.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends boq_projectsFindManyArgs>(args?: SelectSubset<T, boq_projectsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$boq_projectsPayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a Boq_projects.
+     * @param {boq_projectsCreateArgs} args - Arguments to create a Boq_projects.
+     * @example
+     * // Create one Boq_projects
+     * const Boq_projects = await prisma.boq_projects.create({
+     *   data: {
+     *     // ... data to create a Boq_projects
+     *   }
+     * })
+     * 
+     */
+    create<T extends boq_projectsCreateArgs>(args: SelectSubset<T, boq_projectsCreateArgs<ExtArgs>>): Prisma__boq_projectsClient<$Result.GetResult<Prisma.$boq_projectsPayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many Boq_projects.
+     * @param {boq_projectsCreateManyArgs} args - Arguments to create many Boq_projects.
+     * @example
+     * // Create many Boq_projects
+     * const boq_projects = await prisma.boq_projects.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends boq_projectsCreateManyArgs>(args?: SelectSubset<T, boq_projectsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Boq_projects.
+     * @param {boq_projectsDeleteArgs} args - Arguments to delete one Boq_projects.
+     * @example
+     * // Delete one Boq_projects
+     * const Boq_projects = await prisma.boq_projects.delete({
+     *   where: {
+     *     // ... filter to delete one Boq_projects
+     *   }
+     * })
+     * 
+     */
+    delete<T extends boq_projectsDeleteArgs>(args: SelectSubset<T, boq_projectsDeleteArgs<ExtArgs>>): Prisma__boq_projectsClient<$Result.GetResult<Prisma.$boq_projectsPayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one Boq_projects.
+     * @param {boq_projectsUpdateArgs} args - Arguments to update one Boq_projects.
+     * @example
+     * // Update one Boq_projects
+     * const boq_projects = await prisma.boq_projects.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends boq_projectsUpdateArgs>(args: SelectSubset<T, boq_projectsUpdateArgs<ExtArgs>>): Prisma__boq_projectsClient<$Result.GetResult<Prisma.$boq_projectsPayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more Boq_projects.
+     * @param {boq_projectsDeleteManyArgs} args - Arguments to filter Boq_projects to delete.
+     * @example
+     * // Delete a few Boq_projects
+     * const { count } = await prisma.boq_projects.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends boq_projectsDeleteManyArgs>(args?: SelectSubset<T, boq_projectsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Boq_projects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {boq_projectsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Boq_projects
+     * const boq_projects = await prisma.boq_projects.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends boq_projectsUpdateManyArgs>(args: SelectSubset<T, boq_projectsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Boq_projects.
+     * @param {boq_projectsUpsertArgs} args - Arguments to update or create a Boq_projects.
+     * @example
+     * // Update or create a Boq_projects
+     * const boq_projects = await prisma.boq_projects.upsert({
+     *   create: {
+     *     // ... data to create a Boq_projects
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Boq_projects we want to update
+     *   }
+     * })
+     */
+    upsert<T extends boq_projectsUpsertArgs>(args: SelectSubset<T, boq_projectsUpsertArgs<ExtArgs>>): Prisma__boq_projectsClient<$Result.GetResult<Prisma.$boq_projectsPayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of Boq_projects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {boq_projectsCountArgs} args - Arguments to filter Boq_projects to count.
+     * @example
+     * // Count the number of Boq_projects
+     * const count = await prisma.boq_projects.count({
+     *   where: {
+     *     // ... the filter for the Boq_projects we want to count
+     *   }
+     * })
+    **/
+    count<T extends boq_projectsCountArgs>(
+      args?: Subset<T, boq_projectsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Boq_projectsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Boq_projects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Boq_projectsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Boq_projectsAggregateArgs>(args: Subset<T, Boq_projectsAggregateArgs>): Prisma.PrismaPromise<GetBoq_projectsAggregateType<T>>
+
+    /**
+     * Group by Boq_projects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {boq_projectsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends boq_projectsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: boq_projectsGroupByArgs['orderBy'] }
+        : { orderBy?: boq_projectsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, boq_projectsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBoq_projectsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the boq_projects model
+   */
+  readonly fields: boq_projectsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for boq_projects.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__boq_projectsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    items<T extends boq_projects$itemsArgs<ExtArgs> = {}>(args?: Subset<T, boq_projects$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$boq_itemsPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    users<T extends usersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, usersDefaultArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the boq_projects model
+   */ 
+  interface boq_projectsFieldRefs {
+    readonly id: FieldRef<"boq_projects", 'String'>
+    readonly project_name: FieldRef<"boq_projects", 'String'>
+    readonly customer_name: FieldRef<"boq_projects", 'String'>
+    readonly created_by: FieldRef<"boq_projects", 'Int'>
+    readonly created_at: FieldRef<"boq_projects", 'DateTime'>
+    readonly updated_at: FieldRef<"boq_projects", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * boq_projects findUnique
+   */
+  export type boq_projectsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_projects
+     */
+    select?: boq_projectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_projects
+     */
+    omit?: boq_projectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_projectsInclude<ExtArgs> | null
+    /**
+     * Filter, which boq_projects to fetch.
+     */
+    where: boq_projectsWhereUniqueInput
+  }
+
+  /**
+   * boq_projects findUniqueOrThrow
+   */
+  export type boq_projectsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_projects
+     */
+    select?: boq_projectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_projects
+     */
+    omit?: boq_projectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_projectsInclude<ExtArgs> | null
+    /**
+     * Filter, which boq_projects to fetch.
+     */
+    where: boq_projectsWhereUniqueInput
+  }
+
+  /**
+   * boq_projects findFirst
+   */
+  export type boq_projectsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_projects
+     */
+    select?: boq_projectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_projects
+     */
+    omit?: boq_projectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_projectsInclude<ExtArgs> | null
+    /**
+     * Filter, which boq_projects to fetch.
+     */
+    where?: boq_projectsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of boq_projects to fetch.
+     */
+    orderBy?: boq_projectsOrderByWithRelationInput | boq_projectsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for boq_projects.
+     */
+    cursor?: boq_projectsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` boq_projects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` boq_projects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of boq_projects.
+     */
+    distinct?: Boq_projectsScalarFieldEnum | Boq_projectsScalarFieldEnum[]
+  }
+
+  /**
+   * boq_projects findFirstOrThrow
+   */
+  export type boq_projectsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_projects
+     */
+    select?: boq_projectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_projects
+     */
+    omit?: boq_projectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_projectsInclude<ExtArgs> | null
+    /**
+     * Filter, which boq_projects to fetch.
+     */
+    where?: boq_projectsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of boq_projects to fetch.
+     */
+    orderBy?: boq_projectsOrderByWithRelationInput | boq_projectsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for boq_projects.
+     */
+    cursor?: boq_projectsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` boq_projects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` boq_projects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of boq_projects.
+     */
+    distinct?: Boq_projectsScalarFieldEnum | Boq_projectsScalarFieldEnum[]
+  }
+
+  /**
+   * boq_projects findMany
+   */
+  export type boq_projectsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_projects
+     */
+    select?: boq_projectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_projects
+     */
+    omit?: boq_projectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_projectsInclude<ExtArgs> | null
+    /**
+     * Filter, which boq_projects to fetch.
+     */
+    where?: boq_projectsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of boq_projects to fetch.
+     */
+    orderBy?: boq_projectsOrderByWithRelationInput | boq_projectsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing boq_projects.
+     */
+    cursor?: boq_projectsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` boq_projects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` boq_projects.
+     */
+    skip?: number
+    distinct?: Boq_projectsScalarFieldEnum | Boq_projectsScalarFieldEnum[]
+  }
+
+  /**
+   * boq_projects create
+   */
+  export type boq_projectsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_projects
+     */
+    select?: boq_projectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_projects
+     */
+    omit?: boq_projectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_projectsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a boq_projects.
+     */
+    data: XOR<boq_projectsCreateInput, boq_projectsUncheckedCreateInput>
+  }
+
+  /**
+   * boq_projects createMany
+   */
+  export type boq_projectsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many boq_projects.
+     */
+    data: boq_projectsCreateManyInput | boq_projectsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * boq_projects update
+   */
+  export type boq_projectsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_projects
+     */
+    select?: boq_projectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_projects
+     */
+    omit?: boq_projectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_projectsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a boq_projects.
+     */
+    data: XOR<boq_projectsUpdateInput, boq_projectsUncheckedUpdateInput>
+    /**
+     * Choose, which boq_projects to update.
+     */
+    where: boq_projectsWhereUniqueInput
+  }
+
+  /**
+   * boq_projects updateMany
+   */
+  export type boq_projectsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update boq_projects.
+     */
+    data: XOR<boq_projectsUpdateManyMutationInput, boq_projectsUncheckedUpdateManyInput>
+    /**
+     * Filter which boq_projects to update
+     */
+    where?: boq_projectsWhereInput
+    /**
+     * Limit how many boq_projects to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * boq_projects upsert
+   */
+  export type boq_projectsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_projects
+     */
+    select?: boq_projectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_projects
+     */
+    omit?: boq_projectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_projectsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the boq_projects to update in case it exists.
+     */
+    where: boq_projectsWhereUniqueInput
+    /**
+     * In case the boq_projects found by the `where` argument doesn't exist, create a new boq_projects with this data.
+     */
+    create: XOR<boq_projectsCreateInput, boq_projectsUncheckedCreateInput>
+    /**
+     * In case the boq_projects was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<boq_projectsUpdateInput, boq_projectsUncheckedUpdateInput>
+  }
+
+  /**
+   * boq_projects delete
+   */
+  export type boq_projectsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_projects
+     */
+    select?: boq_projectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_projects
+     */
+    omit?: boq_projectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_projectsInclude<ExtArgs> | null
+    /**
+     * Filter which boq_projects to delete.
+     */
+    where: boq_projectsWhereUniqueInput
+  }
+
+  /**
+   * boq_projects deleteMany
+   */
+  export type boq_projectsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which boq_projects to delete
+     */
+    where?: boq_projectsWhereInput
+    /**
+     * Limit how many boq_projects to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * boq_projects.items
+   */
+  export type boq_projects$itemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_items
+     */
+    select?: boq_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_items
+     */
+    omit?: boq_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_itemsInclude<ExtArgs> | null
+    where?: boq_itemsWhereInput
+    orderBy?: boq_itemsOrderByWithRelationInput | boq_itemsOrderByWithRelationInput[]
+    cursor?: boq_itemsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Boq_itemsScalarFieldEnum | Boq_itemsScalarFieldEnum[]
+  }
+
+  /**
+   * boq_projects without action
+   */
+  export type boq_projectsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_projects
+     */
+    select?: boq_projectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_projects
+     */
+    omit?: boq_projectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_projectsInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model boq_items
+   */
+
+  export type AggregateBoq_items = {
+    _count: Boq_itemsCountAggregateOutputType | null
+    _avg: Boq_itemsAvgAggregateOutputType | null
+    _sum: Boq_itemsSumAggregateOutputType | null
+    _min: Boq_itemsMinAggregateOutputType | null
+    _max: Boq_itemsMaxAggregateOutputType | null
+  }
+
+  export type Boq_itemsAvgAggregateOutputType = {
+    quantity: number | null
+    unit_price: Decimal | null
+    total_price: Decimal | null
+  }
+
+  export type Boq_itemsSumAggregateOutputType = {
+    quantity: number | null
+    unit_price: Decimal | null
+    total_price: Decimal | null
+  }
+
+  export type Boq_itemsMinAggregateOutputType = {
+    id: string | null
+    boq_id: string | null
+    item_id: string | null
+    quantity: number | null
+    unit_price: Decimal | null
+    total_price: Decimal | null
+  }
+
+  export type Boq_itemsMaxAggregateOutputType = {
+    id: string | null
+    boq_id: string | null
+    item_id: string | null
+    quantity: number | null
+    unit_price: Decimal | null
+    total_price: Decimal | null
+  }
+
+  export type Boq_itemsCountAggregateOutputType = {
+    id: number
+    boq_id: number
+    item_id: number
+    quantity: number
+    unit_price: number
+    total_price: number
+    _all: number
+  }
+
+
+  export type Boq_itemsAvgAggregateInputType = {
+    quantity?: true
+    unit_price?: true
+    total_price?: true
+  }
+
+  export type Boq_itemsSumAggregateInputType = {
+    quantity?: true
+    unit_price?: true
+    total_price?: true
+  }
+
+  export type Boq_itemsMinAggregateInputType = {
+    id?: true
+    boq_id?: true
+    item_id?: true
+    quantity?: true
+    unit_price?: true
+    total_price?: true
+  }
+
+  export type Boq_itemsMaxAggregateInputType = {
+    id?: true
+    boq_id?: true
+    item_id?: true
+    quantity?: true
+    unit_price?: true
+    total_price?: true
+  }
+
+  export type Boq_itemsCountAggregateInputType = {
+    id?: true
+    boq_id?: true
+    item_id?: true
+    quantity?: true
+    unit_price?: true
+    total_price?: true
+    _all?: true
+  }
+
+  export type Boq_itemsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which boq_items to aggregate.
+     */
+    where?: boq_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of boq_items to fetch.
+     */
+    orderBy?: boq_itemsOrderByWithRelationInput | boq_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: boq_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` boq_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` boq_items.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned boq_items
+    **/
+    _count?: true | Boq_itemsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Boq_itemsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Boq_itemsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Boq_itemsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Boq_itemsMaxAggregateInputType
+  }
+
+  export type GetBoq_itemsAggregateType<T extends Boq_itemsAggregateArgs> = {
+        [P in keyof T & keyof AggregateBoq_items]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBoq_items[P]>
+      : GetScalarType<T[P], AggregateBoq_items[P]>
+  }
+
+
+
+
+  export type boq_itemsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: boq_itemsWhereInput
+    orderBy?: boq_itemsOrderByWithAggregationInput | boq_itemsOrderByWithAggregationInput[]
+    by: Boq_itemsScalarFieldEnum[] | Boq_itemsScalarFieldEnum
+    having?: boq_itemsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Boq_itemsCountAggregateInputType | true
+    _avg?: Boq_itemsAvgAggregateInputType
+    _sum?: Boq_itemsSumAggregateInputType
+    _min?: Boq_itemsMinAggregateInputType
+    _max?: Boq_itemsMaxAggregateInputType
+  }
+
+  export type Boq_itemsGroupByOutputType = {
+    id: string
+    boq_id: string
+    item_id: string
+    quantity: number
+    unit_price: Decimal
+    total_price: Decimal
+    _count: Boq_itemsCountAggregateOutputType | null
+    _avg: Boq_itemsAvgAggregateOutputType | null
+    _sum: Boq_itemsSumAggregateOutputType | null
+    _min: Boq_itemsMinAggregateOutputType | null
+    _max: Boq_itemsMaxAggregateOutputType | null
+  }
+
+  type GetBoq_itemsGroupByPayload<T extends boq_itemsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Boq_itemsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Boq_itemsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Boq_itemsGroupByOutputType[P]>
+            : GetScalarType<T[P], Boq_itemsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type boq_itemsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    boq_id?: boolean
+    item_id?: boolean
+    quantity?: boolean
+    unit_price?: boolean
+    total_price?: boolean
+    boq?: boolean | boq_projectsDefaultArgs<ExtArgs>
+    pricelist?: boolean | pricelist_itemsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["boq_items"]>
+
+
+
+  export type boq_itemsSelectScalar = {
+    id?: boolean
+    boq_id?: boolean
+    item_id?: boolean
+    quantity?: boolean
+    unit_price?: boolean
+    total_price?: boolean
+  }
+
+  export type boq_itemsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "boq_id" | "item_id" | "quantity" | "unit_price" | "total_price", ExtArgs["result"]["boq_items"]>
+  export type boq_itemsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    boq?: boolean | boq_projectsDefaultArgs<ExtArgs>
+    pricelist?: boolean | pricelist_itemsDefaultArgs<ExtArgs>
+  }
+
+  export type $boq_itemsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "boq_items"
+    objects: {
+      boq: Prisma.$boq_projectsPayload<ExtArgs>
+      pricelist: Prisma.$pricelist_itemsPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      boq_id: string
+      item_id: string
+      quantity: number
+      unit_price: Prisma.Decimal
+      total_price: Prisma.Decimal
+    }, ExtArgs["result"]["boq_items"]>
+    composites: {}
+  }
+
+  type boq_itemsGetPayload<S extends boolean | null | undefined | boq_itemsDefaultArgs> = $Result.GetResult<Prisma.$boq_itemsPayload, S>
+
+  type boq_itemsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<boq_itemsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Boq_itemsCountAggregateInputType | true
+    }
+
+  export interface boq_itemsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['boq_items'], meta: { name: 'boq_items' } }
+    /**
+     * Find zero or one Boq_items that matches the filter.
+     * @param {boq_itemsFindUniqueArgs} args - Arguments to find a Boq_items
+     * @example
+     * // Get one Boq_items
+     * const boq_items = await prisma.boq_items.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends boq_itemsFindUniqueArgs>(args: SelectSubset<T, boq_itemsFindUniqueArgs<ExtArgs>>): Prisma__boq_itemsClient<$Result.GetResult<Prisma.$boq_itemsPayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one Boq_items that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {boq_itemsFindUniqueOrThrowArgs} args - Arguments to find a Boq_items
+     * @example
+     * // Get one Boq_items
+     * const boq_items = await prisma.boq_items.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends boq_itemsFindUniqueOrThrowArgs>(args: SelectSubset<T, boq_itemsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__boq_itemsClient<$Result.GetResult<Prisma.$boq_itemsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Boq_items that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {boq_itemsFindFirstArgs} args - Arguments to find a Boq_items
+     * @example
+     * // Get one Boq_items
+     * const boq_items = await prisma.boq_items.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends boq_itemsFindFirstArgs>(args?: SelectSubset<T, boq_itemsFindFirstArgs<ExtArgs>>): Prisma__boq_itemsClient<$Result.GetResult<Prisma.$boq_itemsPayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first Boq_items that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {boq_itemsFindFirstOrThrowArgs} args - Arguments to find a Boq_items
+     * @example
+     * // Get one Boq_items
+     * const boq_items = await prisma.boq_items.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends boq_itemsFindFirstOrThrowArgs>(args?: SelectSubset<T, boq_itemsFindFirstOrThrowArgs<ExtArgs>>): Prisma__boq_itemsClient<$Result.GetResult<Prisma.$boq_itemsPayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more Boq_items that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {boq_itemsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Boq_items
+     * const boq_items = await prisma.boq_items.findMany()
+     * 
+     * // Get first 10 Boq_items
+     * const boq_items = await prisma.boq_items.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const boq_itemsWithIdOnly = await prisma.boq_items.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends boq_itemsFindManyArgs>(args?: SelectSubset<T, boq_itemsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$boq_itemsPayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a Boq_items.
+     * @param {boq_itemsCreateArgs} args - Arguments to create a Boq_items.
+     * @example
+     * // Create one Boq_items
+     * const Boq_items = await prisma.boq_items.create({
+     *   data: {
+     *     // ... data to create a Boq_items
+     *   }
+     * })
+     * 
+     */
+    create<T extends boq_itemsCreateArgs>(args: SelectSubset<T, boq_itemsCreateArgs<ExtArgs>>): Prisma__boq_itemsClient<$Result.GetResult<Prisma.$boq_itemsPayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many Boq_items.
+     * @param {boq_itemsCreateManyArgs} args - Arguments to create many Boq_items.
+     * @example
+     * // Create many Boq_items
+     * const boq_items = await prisma.boq_items.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends boq_itemsCreateManyArgs>(args?: SelectSubset<T, boq_itemsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Boq_items.
+     * @param {boq_itemsDeleteArgs} args - Arguments to delete one Boq_items.
+     * @example
+     * // Delete one Boq_items
+     * const Boq_items = await prisma.boq_items.delete({
+     *   where: {
+     *     // ... filter to delete one Boq_items
+     *   }
+     * })
+     * 
+     */
+    delete<T extends boq_itemsDeleteArgs>(args: SelectSubset<T, boq_itemsDeleteArgs<ExtArgs>>): Prisma__boq_itemsClient<$Result.GetResult<Prisma.$boq_itemsPayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one Boq_items.
+     * @param {boq_itemsUpdateArgs} args - Arguments to update one Boq_items.
+     * @example
+     * // Update one Boq_items
+     * const boq_items = await prisma.boq_items.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends boq_itemsUpdateArgs>(args: SelectSubset<T, boq_itemsUpdateArgs<ExtArgs>>): Prisma__boq_itemsClient<$Result.GetResult<Prisma.$boq_itemsPayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more Boq_items.
+     * @param {boq_itemsDeleteManyArgs} args - Arguments to filter Boq_items to delete.
+     * @example
+     * // Delete a few Boq_items
+     * const { count } = await prisma.boq_items.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends boq_itemsDeleteManyArgs>(args?: SelectSubset<T, boq_itemsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Boq_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {boq_itemsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Boq_items
+     * const boq_items = await prisma.boq_items.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends boq_itemsUpdateManyArgs>(args: SelectSubset<T, boq_itemsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Boq_items.
+     * @param {boq_itemsUpsertArgs} args - Arguments to update or create a Boq_items.
+     * @example
+     * // Update or create a Boq_items
+     * const boq_items = await prisma.boq_items.upsert({
+     *   create: {
+     *     // ... data to create a Boq_items
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Boq_items we want to update
+     *   }
+     * })
+     */
+    upsert<T extends boq_itemsUpsertArgs>(args: SelectSubset<T, boq_itemsUpsertArgs<ExtArgs>>): Prisma__boq_itemsClient<$Result.GetResult<Prisma.$boq_itemsPayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of Boq_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {boq_itemsCountArgs} args - Arguments to filter Boq_items to count.
+     * @example
+     * // Count the number of Boq_items
+     * const count = await prisma.boq_items.count({
+     *   where: {
+     *     // ... the filter for the Boq_items we want to count
+     *   }
+     * })
+    **/
+    count<T extends boq_itemsCountArgs>(
+      args?: Subset<T, boq_itemsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Boq_itemsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Boq_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Boq_itemsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Boq_itemsAggregateArgs>(args: Subset<T, Boq_itemsAggregateArgs>): Prisma.PrismaPromise<GetBoq_itemsAggregateType<T>>
+
+    /**
+     * Group by Boq_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {boq_itemsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends boq_itemsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: boq_itemsGroupByArgs['orderBy'] }
+        : { orderBy?: boq_itemsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, boq_itemsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBoq_itemsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the boq_items model
+   */
+  readonly fields: boq_itemsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for boq_items.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__boq_itemsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    boq<T extends boq_projectsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, boq_projectsDefaultArgs<ExtArgs>>): Prisma__boq_projectsClient<$Result.GetResult<Prisma.$boq_projectsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    pricelist<T extends pricelist_itemsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, pricelist_itemsDefaultArgs<ExtArgs>>): Prisma__pricelist_itemsClient<$Result.GetResult<Prisma.$pricelist_itemsPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the boq_items model
+   */ 
+  interface boq_itemsFieldRefs {
+    readonly id: FieldRef<"boq_items", 'String'>
+    readonly boq_id: FieldRef<"boq_items", 'String'>
+    readonly item_id: FieldRef<"boq_items", 'String'>
+    readonly quantity: FieldRef<"boq_items", 'Float'>
+    readonly unit_price: FieldRef<"boq_items", 'Decimal'>
+    readonly total_price: FieldRef<"boq_items", 'Decimal'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * boq_items findUnique
+   */
+  export type boq_itemsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_items
+     */
+    select?: boq_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_items
+     */
+    omit?: boq_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which boq_items to fetch.
+     */
+    where: boq_itemsWhereUniqueInput
+  }
+
+  /**
+   * boq_items findUniqueOrThrow
+   */
+  export type boq_itemsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_items
+     */
+    select?: boq_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_items
+     */
+    omit?: boq_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which boq_items to fetch.
+     */
+    where: boq_itemsWhereUniqueInput
+  }
+
+  /**
+   * boq_items findFirst
+   */
+  export type boq_itemsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_items
+     */
+    select?: boq_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_items
+     */
+    omit?: boq_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which boq_items to fetch.
+     */
+    where?: boq_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of boq_items to fetch.
+     */
+    orderBy?: boq_itemsOrderByWithRelationInput | boq_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for boq_items.
+     */
+    cursor?: boq_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` boq_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` boq_items.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of boq_items.
+     */
+    distinct?: Boq_itemsScalarFieldEnum | Boq_itemsScalarFieldEnum[]
+  }
+
+  /**
+   * boq_items findFirstOrThrow
+   */
+  export type boq_itemsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_items
+     */
+    select?: boq_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_items
+     */
+    omit?: boq_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which boq_items to fetch.
+     */
+    where?: boq_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of boq_items to fetch.
+     */
+    orderBy?: boq_itemsOrderByWithRelationInput | boq_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for boq_items.
+     */
+    cursor?: boq_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` boq_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` boq_items.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of boq_items.
+     */
+    distinct?: Boq_itemsScalarFieldEnum | Boq_itemsScalarFieldEnum[]
+  }
+
+  /**
+   * boq_items findMany
+   */
+  export type boq_itemsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_items
+     */
+    select?: boq_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_items
+     */
+    omit?: boq_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which boq_items to fetch.
+     */
+    where?: boq_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of boq_items to fetch.
+     */
+    orderBy?: boq_itemsOrderByWithRelationInput | boq_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing boq_items.
+     */
+    cursor?: boq_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` boq_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` boq_items.
+     */
+    skip?: number
+    distinct?: Boq_itemsScalarFieldEnum | Boq_itemsScalarFieldEnum[]
+  }
+
+  /**
+   * boq_items create
+   */
+  export type boq_itemsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_items
+     */
+    select?: boq_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_items
+     */
+    omit?: boq_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_itemsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a boq_items.
+     */
+    data: XOR<boq_itemsCreateInput, boq_itemsUncheckedCreateInput>
+  }
+
+  /**
+   * boq_items createMany
+   */
+  export type boq_itemsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many boq_items.
+     */
+    data: boq_itemsCreateManyInput | boq_itemsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * boq_items update
+   */
+  export type boq_itemsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_items
+     */
+    select?: boq_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_items
+     */
+    omit?: boq_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_itemsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a boq_items.
+     */
+    data: XOR<boq_itemsUpdateInput, boq_itemsUncheckedUpdateInput>
+    /**
+     * Choose, which boq_items to update.
+     */
+    where: boq_itemsWhereUniqueInput
+  }
+
+  /**
+   * boq_items updateMany
+   */
+  export type boq_itemsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update boq_items.
+     */
+    data: XOR<boq_itemsUpdateManyMutationInput, boq_itemsUncheckedUpdateManyInput>
+    /**
+     * Filter which boq_items to update
+     */
+    where?: boq_itemsWhereInput
+    /**
+     * Limit how many boq_items to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * boq_items upsert
+   */
+  export type boq_itemsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_items
+     */
+    select?: boq_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_items
+     */
+    omit?: boq_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_itemsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the boq_items to update in case it exists.
+     */
+    where: boq_itemsWhereUniqueInput
+    /**
+     * In case the boq_items found by the `where` argument doesn't exist, create a new boq_items with this data.
+     */
+    create: XOR<boq_itemsCreateInput, boq_itemsUncheckedCreateInput>
+    /**
+     * In case the boq_items was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<boq_itemsUpdateInput, boq_itemsUncheckedUpdateInput>
+  }
+
+  /**
+   * boq_items delete
+   */
+  export type boq_itemsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_items
+     */
+    select?: boq_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_items
+     */
+    omit?: boq_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_itemsInclude<ExtArgs> | null
+    /**
+     * Filter which boq_items to delete.
+     */
+    where: boq_itemsWhereUniqueInput
+  }
+
+  /**
+   * boq_items deleteMany
+   */
+  export type boq_itemsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which boq_items to delete
+     */
+    where?: boq_itemsWhereInput
+    /**
+     * Limit how many boq_items to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * boq_items without action
+   */
+  export type boq_itemsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the boq_items
+     */
+    select?: boq_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the boq_items
+     */
+    omit?: boq_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: boq_itemsInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -63096,6 +66456,44 @@ export namespace Prisma {
   export type Unit_type_categoriesScalarFieldEnum = (typeof Unit_type_categoriesScalarFieldEnum)[keyof typeof Unit_type_categoriesScalarFieldEnum]
 
 
+  export const Pricelist_itemsScalarFieldEnum: {
+    id: 'id',
+    category: 'category',
+    name: 'name',
+    specification: 'specification',
+    unit: 'unit',
+    price: 'price',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
+  };
+
+  export type Pricelist_itemsScalarFieldEnum = (typeof Pricelist_itemsScalarFieldEnum)[keyof typeof Pricelist_itemsScalarFieldEnum]
+
+
+  export const Boq_projectsScalarFieldEnum: {
+    id: 'id',
+    project_name: 'project_name',
+    customer_name: 'customer_name',
+    created_by: 'created_by',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
+  };
+
+  export type Boq_projectsScalarFieldEnum = (typeof Boq_projectsScalarFieldEnum)[keyof typeof Boq_projectsScalarFieldEnum]
+
+
+  export const Boq_itemsScalarFieldEnum: {
+    id: 'id',
+    boq_id: 'boq_id',
+    item_id: 'item_id',
+    quantity: 'quantity',
+    unit_price: 'unit_price',
+    total_price: 'total_price'
+  };
+
+  export type Boq_itemsScalarFieldEnum = (typeof Boq_itemsScalarFieldEnum)[keyof typeof Boq_itemsScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -63632,6 +67030,35 @@ export namespace Prisma {
   };
 
   export type unit_type_categoriesOrderByRelevanceFieldEnum = (typeof unit_type_categoriesOrderByRelevanceFieldEnum)[keyof typeof unit_type_categoriesOrderByRelevanceFieldEnum]
+
+
+  export const pricelist_itemsOrderByRelevanceFieldEnum: {
+    id: 'id',
+    category: 'category',
+    name: 'name',
+    specification: 'specification',
+    unit: 'unit'
+  };
+
+  export type pricelist_itemsOrderByRelevanceFieldEnum = (typeof pricelist_itemsOrderByRelevanceFieldEnum)[keyof typeof pricelist_itemsOrderByRelevanceFieldEnum]
+
+
+  export const boq_projectsOrderByRelevanceFieldEnum: {
+    id: 'id',
+    project_name: 'project_name',
+    customer_name: 'customer_name'
+  };
+
+  export type boq_projectsOrderByRelevanceFieldEnum = (typeof boq_projectsOrderByRelevanceFieldEnum)[keyof typeof boq_projectsOrderByRelevanceFieldEnum]
+
+
+  export const boq_itemsOrderByRelevanceFieldEnum: {
+    id: 'id',
+    boq_id: 'boq_id',
+    item_id: 'item_id'
+  };
+
+  export type boq_itemsOrderByRelevanceFieldEnum = (typeof boq_itemsOrderByRelevanceFieldEnum)[keyof typeof boq_itemsOrderByRelevanceFieldEnum]
 
 
   /**
@@ -65079,6 +68506,7 @@ export namespace Prisma {
     created_work_orders?: Work_ordersListRelationFilter
     created_quotations?: QuotationsListRelationFilter
     created_slas?: SlasListRelationFilter
+    created_boq_projects?: Boq_projectsListRelationFilter
   }
 
   export type usersOrderByWithRelationInput = {
@@ -65120,6 +68548,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersOrderByRelationAggregateInput
     created_quotations?: quotationsOrderByRelationAggregateInput
     created_slas?: slasOrderByRelationAggregateInput
+    created_boq_projects?: boq_projectsOrderByRelationAggregateInput
     _relevance?: usersOrderByRelevanceInput
   }
 
@@ -65165,6 +68594,7 @@ export namespace Prisma {
     created_work_orders?: Work_ordersListRelationFilter
     created_quotations?: QuotationsListRelationFilter
     created_slas?: SlasListRelationFilter
+    created_boq_projects?: Boq_projectsListRelationFilter
   }, "id" | "email">
 
   export type usersOrderByWithAggregationInput = {
@@ -68605,6 +72035,211 @@ export namespace Prisma {
     updated_at?: DateTimeWithAggregatesFilter<"unit_type_categories"> | Date | string
   }
 
+  export type pricelist_itemsWhereInput = {
+    AND?: pricelist_itemsWhereInput | pricelist_itemsWhereInput[]
+    OR?: pricelist_itemsWhereInput[]
+    NOT?: pricelist_itemsWhereInput | pricelist_itemsWhereInput[]
+    id?: StringFilter<"pricelist_items"> | string
+    category?: StringFilter<"pricelist_items"> | string
+    name?: StringFilter<"pricelist_items"> | string
+    specification?: StringNullableFilter<"pricelist_items"> | string | null
+    unit?: StringFilter<"pricelist_items"> | string
+    price?: DecimalFilter<"pricelist_items"> | Decimal | DecimalJsLike | number | string
+    created_at?: DateTimeFilter<"pricelist_items"> | Date | string
+    updated_at?: DateTimeFilter<"pricelist_items"> | Date | string
+    boq_items?: Boq_itemsListRelationFilter
+  }
+
+  export type pricelist_itemsOrderByWithRelationInput = {
+    id?: SortOrder
+    category?: SortOrder
+    name?: SortOrder
+    specification?: SortOrderInput | SortOrder
+    unit?: SortOrder
+    price?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    boq_items?: boq_itemsOrderByRelationAggregateInput
+    _relevance?: pricelist_itemsOrderByRelevanceInput
+  }
+
+  export type pricelist_itemsWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: pricelist_itemsWhereInput | pricelist_itemsWhereInput[]
+    OR?: pricelist_itemsWhereInput[]
+    NOT?: pricelist_itemsWhereInput | pricelist_itemsWhereInput[]
+    category?: StringFilter<"pricelist_items"> | string
+    name?: StringFilter<"pricelist_items"> | string
+    specification?: StringNullableFilter<"pricelist_items"> | string | null
+    unit?: StringFilter<"pricelist_items"> | string
+    price?: DecimalFilter<"pricelist_items"> | Decimal | DecimalJsLike | number | string
+    created_at?: DateTimeFilter<"pricelist_items"> | Date | string
+    updated_at?: DateTimeFilter<"pricelist_items"> | Date | string
+    boq_items?: Boq_itemsListRelationFilter
+  }, "id">
+
+  export type pricelist_itemsOrderByWithAggregationInput = {
+    id?: SortOrder
+    category?: SortOrder
+    name?: SortOrder
+    specification?: SortOrderInput | SortOrder
+    unit?: SortOrder
+    price?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    _count?: pricelist_itemsCountOrderByAggregateInput
+    _avg?: pricelist_itemsAvgOrderByAggregateInput
+    _max?: pricelist_itemsMaxOrderByAggregateInput
+    _min?: pricelist_itemsMinOrderByAggregateInput
+    _sum?: pricelist_itemsSumOrderByAggregateInput
+  }
+
+  export type pricelist_itemsScalarWhereWithAggregatesInput = {
+    AND?: pricelist_itemsScalarWhereWithAggregatesInput | pricelist_itemsScalarWhereWithAggregatesInput[]
+    OR?: pricelist_itemsScalarWhereWithAggregatesInput[]
+    NOT?: pricelist_itemsScalarWhereWithAggregatesInput | pricelist_itemsScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"pricelist_items"> | string
+    category?: StringWithAggregatesFilter<"pricelist_items"> | string
+    name?: StringWithAggregatesFilter<"pricelist_items"> | string
+    specification?: StringNullableWithAggregatesFilter<"pricelist_items"> | string | null
+    unit?: StringWithAggregatesFilter<"pricelist_items"> | string
+    price?: DecimalWithAggregatesFilter<"pricelist_items"> | Decimal | DecimalJsLike | number | string
+    created_at?: DateTimeWithAggregatesFilter<"pricelist_items"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"pricelist_items"> | Date | string
+  }
+
+  export type boq_projectsWhereInput = {
+    AND?: boq_projectsWhereInput | boq_projectsWhereInput[]
+    OR?: boq_projectsWhereInput[]
+    NOT?: boq_projectsWhereInput | boq_projectsWhereInput[]
+    id?: StringFilter<"boq_projects"> | string
+    project_name?: StringFilter<"boq_projects"> | string
+    customer_name?: StringNullableFilter<"boq_projects"> | string | null
+    created_by?: IntFilter<"boq_projects"> | number
+    created_at?: DateTimeFilter<"boq_projects"> | Date | string
+    updated_at?: DateTimeFilter<"boq_projects"> | Date | string
+    items?: Boq_itemsListRelationFilter
+    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+  }
+
+  export type boq_projectsOrderByWithRelationInput = {
+    id?: SortOrder
+    project_name?: SortOrder
+    customer_name?: SortOrderInput | SortOrder
+    created_by?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    items?: boq_itemsOrderByRelationAggregateInput
+    users?: usersOrderByWithRelationInput
+    _relevance?: boq_projectsOrderByRelevanceInput
+  }
+
+  export type boq_projectsWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: boq_projectsWhereInput | boq_projectsWhereInput[]
+    OR?: boq_projectsWhereInput[]
+    NOT?: boq_projectsWhereInput | boq_projectsWhereInput[]
+    project_name?: StringFilter<"boq_projects"> | string
+    customer_name?: StringNullableFilter<"boq_projects"> | string | null
+    created_by?: IntFilter<"boq_projects"> | number
+    created_at?: DateTimeFilter<"boq_projects"> | Date | string
+    updated_at?: DateTimeFilter<"boq_projects"> | Date | string
+    items?: Boq_itemsListRelationFilter
+    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+  }, "id">
+
+  export type boq_projectsOrderByWithAggregationInput = {
+    id?: SortOrder
+    project_name?: SortOrder
+    customer_name?: SortOrderInput | SortOrder
+    created_by?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    _count?: boq_projectsCountOrderByAggregateInput
+    _avg?: boq_projectsAvgOrderByAggregateInput
+    _max?: boq_projectsMaxOrderByAggregateInput
+    _min?: boq_projectsMinOrderByAggregateInput
+    _sum?: boq_projectsSumOrderByAggregateInput
+  }
+
+  export type boq_projectsScalarWhereWithAggregatesInput = {
+    AND?: boq_projectsScalarWhereWithAggregatesInput | boq_projectsScalarWhereWithAggregatesInput[]
+    OR?: boq_projectsScalarWhereWithAggregatesInput[]
+    NOT?: boq_projectsScalarWhereWithAggregatesInput | boq_projectsScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"boq_projects"> | string
+    project_name?: StringWithAggregatesFilter<"boq_projects"> | string
+    customer_name?: StringNullableWithAggregatesFilter<"boq_projects"> | string | null
+    created_by?: IntWithAggregatesFilter<"boq_projects"> | number
+    created_at?: DateTimeWithAggregatesFilter<"boq_projects"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"boq_projects"> | Date | string
+  }
+
+  export type boq_itemsWhereInput = {
+    AND?: boq_itemsWhereInput | boq_itemsWhereInput[]
+    OR?: boq_itemsWhereInput[]
+    NOT?: boq_itemsWhereInput | boq_itemsWhereInput[]
+    id?: StringFilter<"boq_items"> | string
+    boq_id?: StringFilter<"boq_items"> | string
+    item_id?: StringFilter<"boq_items"> | string
+    quantity?: FloatFilter<"boq_items"> | number
+    unit_price?: DecimalFilter<"boq_items"> | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFilter<"boq_items"> | Decimal | DecimalJsLike | number | string
+    boq?: XOR<Boq_projectsScalarRelationFilter, boq_projectsWhereInput>
+    pricelist?: XOR<Pricelist_itemsScalarRelationFilter, pricelist_itemsWhereInput>
+  }
+
+  export type boq_itemsOrderByWithRelationInput = {
+    id?: SortOrder
+    boq_id?: SortOrder
+    item_id?: SortOrder
+    quantity?: SortOrder
+    unit_price?: SortOrder
+    total_price?: SortOrder
+    boq?: boq_projectsOrderByWithRelationInput
+    pricelist?: pricelist_itemsOrderByWithRelationInput
+    _relevance?: boq_itemsOrderByRelevanceInput
+  }
+
+  export type boq_itemsWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: boq_itemsWhereInput | boq_itemsWhereInput[]
+    OR?: boq_itemsWhereInput[]
+    NOT?: boq_itemsWhereInput | boq_itemsWhereInput[]
+    boq_id?: StringFilter<"boq_items"> | string
+    item_id?: StringFilter<"boq_items"> | string
+    quantity?: FloatFilter<"boq_items"> | number
+    unit_price?: DecimalFilter<"boq_items"> | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFilter<"boq_items"> | Decimal | DecimalJsLike | number | string
+    boq?: XOR<Boq_projectsScalarRelationFilter, boq_projectsWhereInput>
+    pricelist?: XOR<Pricelist_itemsScalarRelationFilter, pricelist_itemsWhereInput>
+  }, "id">
+
+  export type boq_itemsOrderByWithAggregationInput = {
+    id?: SortOrder
+    boq_id?: SortOrder
+    item_id?: SortOrder
+    quantity?: SortOrder
+    unit_price?: SortOrder
+    total_price?: SortOrder
+    _count?: boq_itemsCountOrderByAggregateInput
+    _avg?: boq_itemsAvgOrderByAggregateInput
+    _max?: boq_itemsMaxOrderByAggregateInput
+    _min?: boq_itemsMinOrderByAggregateInput
+    _sum?: boq_itemsSumOrderByAggregateInput
+  }
+
+  export type boq_itemsScalarWhereWithAggregatesInput = {
+    AND?: boq_itemsScalarWhereWithAggregatesInput | boq_itemsScalarWhereWithAggregatesInput[]
+    OR?: boq_itemsScalarWhereWithAggregatesInput[]
+    NOT?: boq_itemsScalarWhereWithAggregatesInput | boq_itemsScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"boq_items"> | string
+    boq_id?: StringWithAggregatesFilter<"boq_items"> | string
+    item_id?: StringWithAggregatesFilter<"boq_items"> | string
+    quantity?: FloatWithAggregatesFilter<"boq_items"> | number
+    unit_price?: DecimalWithAggregatesFilter<"boq_items"> | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalWithAggregatesFilter<"boq_items"> | Decimal | DecimalJsLike | number | string
+  }
+
   export type customersCreateInput = {
     name: string
     pic_name?: string | null
@@ -69904,6 +73539,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsCreateNestedManyWithoutUsersInput
     created_slas?: slasCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateInput = {
@@ -69944,6 +73580,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
     created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersUpdateInput = {
@@ -69983,6 +73620,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
     created_slas?: slasUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateInput = {
@@ -70023,6 +73661,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
     created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type usersCreateManyInput = {
@@ -73784,6 +77423,214 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type pricelist_itemsCreateInput = {
+    id?: string
+    category: string
+    name: string
+    specification?: string | null
+    unit: string
+    price: Decimal | DecimalJsLike | number | string
+    created_at?: Date | string
+    updated_at?: Date | string
+    boq_items?: boq_itemsCreateNestedManyWithoutPricelistInput
+  }
+
+  export type pricelist_itemsUncheckedCreateInput = {
+    id?: string
+    category: string
+    name: string
+    specification?: string | null
+    unit: string
+    price: Decimal | DecimalJsLike | number | string
+    created_at?: Date | string
+    updated_at?: Date | string
+    boq_items?: boq_itemsUncheckedCreateNestedManyWithoutPricelistInput
+  }
+
+  export type pricelist_itemsUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    specification?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    boq_items?: boq_itemsUpdateManyWithoutPricelistNestedInput
+  }
+
+  export type pricelist_itemsUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    specification?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    boq_items?: boq_itemsUncheckedUpdateManyWithoutPricelistNestedInput
+  }
+
+  export type pricelist_itemsCreateManyInput = {
+    id?: string
+    category: string
+    name: string
+    specification?: string | null
+    unit: string
+    price: Decimal | DecimalJsLike | number | string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type pricelist_itemsUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    specification?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type pricelist_itemsUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    specification?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type boq_projectsCreateInput = {
+    id?: string
+    project_name: string
+    customer_name?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    items?: boq_itemsCreateNestedManyWithoutBoqInput
+    users: usersCreateNestedOneWithoutCreated_boq_projectsInput
+  }
+
+  export type boq_projectsUncheckedCreateInput = {
+    id?: string
+    project_name: string
+    customer_name?: string | null
+    created_by: number
+    created_at?: Date | string
+    updated_at?: Date | string
+    items?: boq_itemsUncheckedCreateNestedManyWithoutBoqInput
+  }
+
+  export type boq_projectsUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    project_name?: StringFieldUpdateOperationsInput | string
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    items?: boq_itemsUpdateManyWithoutBoqNestedInput
+    users?: usersUpdateOneRequiredWithoutCreated_boq_projectsNestedInput
+  }
+
+  export type boq_projectsUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    project_name?: StringFieldUpdateOperationsInput | string
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    created_by?: IntFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    items?: boq_itemsUncheckedUpdateManyWithoutBoqNestedInput
+  }
+
+  export type boq_projectsCreateManyInput = {
+    id?: string
+    project_name: string
+    customer_name?: string | null
+    created_by: number
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type boq_projectsUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    project_name?: StringFieldUpdateOperationsInput | string
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type boq_projectsUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    project_name?: StringFieldUpdateOperationsInput | string
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    created_by?: IntFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type boq_itemsCreateInput = {
+    id?: string
+    quantity: number
+    unit_price: Decimal | DecimalJsLike | number | string
+    total_price: Decimal | DecimalJsLike | number | string
+    boq: boq_projectsCreateNestedOneWithoutItemsInput
+    pricelist: pricelist_itemsCreateNestedOneWithoutBoq_itemsInput
+  }
+
+  export type boq_itemsUncheckedCreateInput = {
+    id?: string
+    boq_id: string
+    item_id: string
+    quantity: number
+    unit_price: Decimal | DecimalJsLike | number | string
+    total_price: Decimal | DecimalJsLike | number | string
+  }
+
+  export type boq_itemsUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: FloatFieldUpdateOperationsInput | number
+    unit_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    boq?: boq_projectsUpdateOneRequiredWithoutItemsNestedInput
+    pricelist?: pricelist_itemsUpdateOneRequiredWithoutBoq_itemsNestedInput
+  }
+
+  export type boq_itemsUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    boq_id?: StringFieldUpdateOperationsInput | string
+    item_id?: StringFieldUpdateOperationsInput | string
+    quantity?: FloatFieldUpdateOperationsInput | number
+    unit_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+  }
+
+  export type boq_itemsCreateManyInput = {
+    id?: string
+    boq_id: string
+    item_id: string
+    quantity: number
+    unit_price: Decimal | DecimalJsLike | number | string
+    total_price: Decimal | DecimalJsLike | number | string
+  }
+
+  export type boq_itemsUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: FloatFieldUpdateOperationsInput | number
+    unit_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+  }
+
+  export type boq_itemsUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    boq_id?: StringFieldUpdateOperationsInput | string
+    item_id?: StringFieldUpdateOperationsInput | string
+    quantity?: FloatFieldUpdateOperationsInput | number
+    unit_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -75304,6 +79151,12 @@ export namespace Prisma {
     none?: slasWhereInput
   }
 
+  export type Boq_projectsListRelationFilter = {
+    every?: boq_projectsWhereInput
+    some?: boq_projectsWhereInput
+    none?: boq_projectsWhereInput
+  }
+
   export type audit_logsOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -75325,6 +79178,10 @@ export namespace Prisma {
   }
 
   export type slasOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type boq_projectsOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -78183,6 +82040,186 @@ export namespace Prisma {
     sort_order?: SortOrder
   }
 
+  export type Boq_itemsListRelationFilter = {
+    every?: boq_itemsWhereInput
+    some?: boq_itemsWhereInput
+    none?: boq_itemsWhereInput
+  }
+
+  export type boq_itemsOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type pricelist_itemsOrderByRelevanceInput = {
+    fields: pricelist_itemsOrderByRelevanceFieldEnum | pricelist_itemsOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type pricelist_itemsCountOrderByAggregateInput = {
+    id?: SortOrder
+    category?: SortOrder
+    name?: SortOrder
+    specification?: SortOrder
+    unit?: SortOrder
+    price?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type pricelist_itemsAvgOrderByAggregateInput = {
+    price?: SortOrder
+  }
+
+  export type pricelist_itemsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    category?: SortOrder
+    name?: SortOrder
+    specification?: SortOrder
+    unit?: SortOrder
+    price?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type pricelist_itemsMinOrderByAggregateInput = {
+    id?: SortOrder
+    category?: SortOrder
+    name?: SortOrder
+    specification?: SortOrder
+    unit?: SortOrder
+    price?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type pricelist_itemsSumOrderByAggregateInput = {
+    price?: SortOrder
+  }
+
+  export type boq_projectsOrderByRelevanceInput = {
+    fields: boq_projectsOrderByRelevanceFieldEnum | boq_projectsOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type boq_projectsCountOrderByAggregateInput = {
+    id?: SortOrder
+    project_name?: SortOrder
+    customer_name?: SortOrder
+    created_by?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type boq_projectsAvgOrderByAggregateInput = {
+    created_by?: SortOrder
+  }
+
+  export type boq_projectsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    project_name?: SortOrder
+    customer_name?: SortOrder
+    created_by?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type boq_projectsMinOrderByAggregateInput = {
+    id?: SortOrder
+    project_name?: SortOrder
+    customer_name?: SortOrder
+    created_by?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type boq_projectsSumOrderByAggregateInput = {
+    created_by?: SortOrder
+  }
+
+  export type FloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type Boq_projectsScalarRelationFilter = {
+    is?: boq_projectsWhereInput
+    isNot?: boq_projectsWhereInput
+  }
+
+  export type Pricelist_itemsScalarRelationFilter = {
+    is?: pricelist_itemsWhereInput
+    isNot?: pricelist_itemsWhereInput
+  }
+
+  export type boq_itemsOrderByRelevanceInput = {
+    fields: boq_itemsOrderByRelevanceFieldEnum | boq_itemsOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type boq_itemsCountOrderByAggregateInput = {
+    id?: SortOrder
+    boq_id?: SortOrder
+    item_id?: SortOrder
+    quantity?: SortOrder
+    unit_price?: SortOrder
+    total_price?: SortOrder
+  }
+
+  export type boq_itemsAvgOrderByAggregateInput = {
+    quantity?: SortOrder
+    unit_price?: SortOrder
+    total_price?: SortOrder
+  }
+
+  export type boq_itemsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    boq_id?: SortOrder
+    item_id?: SortOrder
+    quantity?: SortOrder
+    unit_price?: SortOrder
+    total_price?: SortOrder
+  }
+
+  export type boq_itemsMinOrderByAggregateInput = {
+    id?: SortOrder
+    boq_id?: SortOrder
+    item_id?: SortOrder
+    quantity?: SortOrder
+    unit_price?: SortOrder
+    total_price?: SortOrder
+  }
+
+  export type boq_itemsSumOrderByAggregateInput = {
+    quantity?: SortOrder
+    unit_price?: SortOrder
+    total_price?: SortOrder
+  }
+
+  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
+  }
+
   export type contractsCreateNestedManyWithoutCustomersInput = {
     create?: XOR<contractsCreateWithoutCustomersInput, contractsUncheckedCreateWithoutCustomersInput> | contractsCreateWithoutCustomersInput[] | contractsUncheckedCreateWithoutCustomersInput[]
     connectOrCreate?: contractsCreateOrConnectWithoutCustomersInput | contractsCreateOrConnectWithoutCustomersInput[]
@@ -80181,6 +84218,13 @@ export namespace Prisma {
     connect?: slasWhereUniqueInput | slasWhereUniqueInput[]
   }
 
+  export type boq_projectsCreateNestedManyWithoutUsersInput = {
+    create?: XOR<boq_projectsCreateWithoutUsersInput, boq_projectsUncheckedCreateWithoutUsersInput> | boq_projectsCreateWithoutUsersInput[] | boq_projectsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: boq_projectsCreateOrConnectWithoutUsersInput | boq_projectsCreateOrConnectWithoutUsersInput[]
+    createMany?: boq_projectsCreateManyUsersInputEnvelope
+    connect?: boq_projectsWhereUniqueInput | boq_projectsWhereUniqueInput[]
+  }
+
   export type audit_logsUncheckedCreateNestedManyWithoutUsersInput = {
     create?: XOR<audit_logsCreateWithoutUsersInput, audit_logsUncheckedCreateWithoutUsersInput> | audit_logsCreateWithoutUsersInput[] | audit_logsUncheckedCreateWithoutUsersInput[]
     connectOrCreate?: audit_logsCreateOrConnectWithoutUsersInput | audit_logsCreateOrConnectWithoutUsersInput[]
@@ -80305,6 +84349,13 @@ export namespace Prisma {
     connectOrCreate?: slasCreateOrConnectWithoutUsersInput | slasCreateOrConnectWithoutUsersInput[]
     createMany?: slasCreateManyUsersInputEnvelope
     connect?: slasWhereUniqueInput | slasWhereUniqueInput[]
+  }
+
+  export type boq_projectsUncheckedCreateNestedManyWithoutUsersInput = {
+    create?: XOR<boq_projectsCreateWithoutUsersInput, boq_projectsUncheckedCreateWithoutUsersInput> | boq_projectsCreateWithoutUsersInput[] | boq_projectsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: boq_projectsCreateOrConnectWithoutUsersInput | boq_projectsCreateOrConnectWithoutUsersInput[]
+    createMany?: boq_projectsCreateManyUsersInputEnvelope
+    connect?: boq_projectsWhereUniqueInput | boq_projectsWhereUniqueInput[]
   }
 
   export type audit_logsUpdateManyWithoutUsersNestedInput = {
@@ -80569,6 +84620,20 @@ export namespace Prisma {
     deleteMany?: slasScalarWhereInput | slasScalarWhereInput[]
   }
 
+  export type boq_projectsUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<boq_projectsCreateWithoutUsersInput, boq_projectsUncheckedCreateWithoutUsersInput> | boq_projectsCreateWithoutUsersInput[] | boq_projectsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: boq_projectsCreateOrConnectWithoutUsersInput | boq_projectsCreateOrConnectWithoutUsersInput[]
+    upsert?: boq_projectsUpsertWithWhereUniqueWithoutUsersInput | boq_projectsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: boq_projectsCreateManyUsersInputEnvelope
+    set?: boq_projectsWhereUniqueInput | boq_projectsWhereUniqueInput[]
+    disconnect?: boq_projectsWhereUniqueInput | boq_projectsWhereUniqueInput[]
+    delete?: boq_projectsWhereUniqueInput | boq_projectsWhereUniqueInput[]
+    connect?: boq_projectsWhereUniqueInput | boq_projectsWhereUniqueInput[]
+    update?: boq_projectsUpdateWithWhereUniqueWithoutUsersInput | boq_projectsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: boq_projectsUpdateManyWithWhereWithoutUsersInput | boq_projectsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: boq_projectsScalarWhereInput | boq_projectsScalarWhereInput[]
+  }
+
   export type audit_logsUncheckedUpdateManyWithoutUsersNestedInput = {
     create?: XOR<audit_logsCreateWithoutUsersInput, audit_logsUncheckedCreateWithoutUsersInput> | audit_logsCreateWithoutUsersInput[] | audit_logsUncheckedCreateWithoutUsersInput[]
     connectOrCreate?: audit_logsCreateOrConnectWithoutUsersInput | audit_logsCreateOrConnectWithoutUsersInput[]
@@ -80819,6 +84884,20 @@ export namespace Prisma {
     update?: slasUpdateWithWhereUniqueWithoutUsersInput | slasUpdateWithWhereUniqueWithoutUsersInput[]
     updateMany?: slasUpdateManyWithWhereWithoutUsersInput | slasUpdateManyWithWhereWithoutUsersInput[]
     deleteMany?: slasScalarWhereInput | slasScalarWhereInput[]
+  }
+
+  export type boq_projectsUncheckedUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<boq_projectsCreateWithoutUsersInput, boq_projectsUncheckedCreateWithoutUsersInput> | boq_projectsCreateWithoutUsersInput[] | boq_projectsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: boq_projectsCreateOrConnectWithoutUsersInput | boq_projectsCreateOrConnectWithoutUsersInput[]
+    upsert?: boq_projectsUpsertWithWhereUniqueWithoutUsersInput | boq_projectsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: boq_projectsCreateManyUsersInputEnvelope
+    set?: boq_projectsWhereUniqueInput | boq_projectsWhereUniqueInput[]
+    disconnect?: boq_projectsWhereUniqueInput | boq_projectsWhereUniqueInput[]
+    delete?: boq_projectsWhereUniqueInput | boq_projectsWhereUniqueInput[]
+    connect?: boq_projectsWhereUniqueInput | boq_projectsWhereUniqueInput[]
+    update?: boq_projectsUpdateWithWhereUniqueWithoutUsersInput | boq_projectsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: boq_projectsUpdateManyWithWhereWithoutUsersInput | boq_projectsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: boq_projectsScalarWhereInput | boq_projectsScalarWhereInput[]
   }
 
   export type usersCreateNestedOneWithoutAudit_logsInput = {
@@ -81731,6 +85810,140 @@ export namespace Prisma {
     update?: XOR<XOR<logsheet_templatesUpdateToOneWithWhereWithoutEntriesInput, logsheet_templatesUpdateWithoutEntriesInput>, logsheet_templatesUncheckedUpdateWithoutEntriesInput>
   }
 
+  export type boq_itemsCreateNestedManyWithoutPricelistInput = {
+    create?: XOR<boq_itemsCreateWithoutPricelistInput, boq_itemsUncheckedCreateWithoutPricelistInput> | boq_itemsCreateWithoutPricelistInput[] | boq_itemsUncheckedCreateWithoutPricelistInput[]
+    connectOrCreate?: boq_itemsCreateOrConnectWithoutPricelistInput | boq_itemsCreateOrConnectWithoutPricelistInput[]
+    createMany?: boq_itemsCreateManyPricelistInputEnvelope
+    connect?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+  }
+
+  export type boq_itemsUncheckedCreateNestedManyWithoutPricelistInput = {
+    create?: XOR<boq_itemsCreateWithoutPricelistInput, boq_itemsUncheckedCreateWithoutPricelistInput> | boq_itemsCreateWithoutPricelistInput[] | boq_itemsUncheckedCreateWithoutPricelistInput[]
+    connectOrCreate?: boq_itemsCreateOrConnectWithoutPricelistInput | boq_itemsCreateOrConnectWithoutPricelistInput[]
+    createMany?: boq_itemsCreateManyPricelistInputEnvelope
+    connect?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+  }
+
+  export type boq_itemsUpdateManyWithoutPricelistNestedInput = {
+    create?: XOR<boq_itemsCreateWithoutPricelistInput, boq_itemsUncheckedCreateWithoutPricelistInput> | boq_itemsCreateWithoutPricelistInput[] | boq_itemsUncheckedCreateWithoutPricelistInput[]
+    connectOrCreate?: boq_itemsCreateOrConnectWithoutPricelistInput | boq_itemsCreateOrConnectWithoutPricelistInput[]
+    upsert?: boq_itemsUpsertWithWhereUniqueWithoutPricelistInput | boq_itemsUpsertWithWhereUniqueWithoutPricelistInput[]
+    createMany?: boq_itemsCreateManyPricelistInputEnvelope
+    set?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+    disconnect?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+    delete?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+    connect?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+    update?: boq_itemsUpdateWithWhereUniqueWithoutPricelistInput | boq_itemsUpdateWithWhereUniqueWithoutPricelistInput[]
+    updateMany?: boq_itemsUpdateManyWithWhereWithoutPricelistInput | boq_itemsUpdateManyWithWhereWithoutPricelistInput[]
+    deleteMany?: boq_itemsScalarWhereInput | boq_itemsScalarWhereInput[]
+  }
+
+  export type boq_itemsUncheckedUpdateManyWithoutPricelistNestedInput = {
+    create?: XOR<boq_itemsCreateWithoutPricelistInput, boq_itemsUncheckedCreateWithoutPricelistInput> | boq_itemsCreateWithoutPricelistInput[] | boq_itemsUncheckedCreateWithoutPricelistInput[]
+    connectOrCreate?: boq_itemsCreateOrConnectWithoutPricelistInput | boq_itemsCreateOrConnectWithoutPricelistInput[]
+    upsert?: boq_itemsUpsertWithWhereUniqueWithoutPricelistInput | boq_itemsUpsertWithWhereUniqueWithoutPricelistInput[]
+    createMany?: boq_itemsCreateManyPricelistInputEnvelope
+    set?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+    disconnect?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+    delete?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+    connect?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+    update?: boq_itemsUpdateWithWhereUniqueWithoutPricelistInput | boq_itemsUpdateWithWhereUniqueWithoutPricelistInput[]
+    updateMany?: boq_itemsUpdateManyWithWhereWithoutPricelistInput | boq_itemsUpdateManyWithWhereWithoutPricelistInput[]
+    deleteMany?: boq_itemsScalarWhereInput | boq_itemsScalarWhereInput[]
+  }
+
+  export type boq_itemsCreateNestedManyWithoutBoqInput = {
+    create?: XOR<boq_itemsCreateWithoutBoqInput, boq_itemsUncheckedCreateWithoutBoqInput> | boq_itemsCreateWithoutBoqInput[] | boq_itemsUncheckedCreateWithoutBoqInput[]
+    connectOrCreate?: boq_itemsCreateOrConnectWithoutBoqInput | boq_itemsCreateOrConnectWithoutBoqInput[]
+    createMany?: boq_itemsCreateManyBoqInputEnvelope
+    connect?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+  }
+
+  export type usersCreateNestedOneWithoutCreated_boq_projectsInput = {
+    create?: XOR<usersCreateWithoutCreated_boq_projectsInput, usersUncheckedCreateWithoutCreated_boq_projectsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutCreated_boq_projectsInput
+    connect?: usersWhereUniqueInput
+  }
+
+  export type boq_itemsUncheckedCreateNestedManyWithoutBoqInput = {
+    create?: XOR<boq_itemsCreateWithoutBoqInput, boq_itemsUncheckedCreateWithoutBoqInput> | boq_itemsCreateWithoutBoqInput[] | boq_itemsUncheckedCreateWithoutBoqInput[]
+    connectOrCreate?: boq_itemsCreateOrConnectWithoutBoqInput | boq_itemsCreateOrConnectWithoutBoqInput[]
+    createMany?: boq_itemsCreateManyBoqInputEnvelope
+    connect?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+  }
+
+  export type boq_itemsUpdateManyWithoutBoqNestedInput = {
+    create?: XOR<boq_itemsCreateWithoutBoqInput, boq_itemsUncheckedCreateWithoutBoqInput> | boq_itemsCreateWithoutBoqInput[] | boq_itemsUncheckedCreateWithoutBoqInput[]
+    connectOrCreate?: boq_itemsCreateOrConnectWithoutBoqInput | boq_itemsCreateOrConnectWithoutBoqInput[]
+    upsert?: boq_itemsUpsertWithWhereUniqueWithoutBoqInput | boq_itemsUpsertWithWhereUniqueWithoutBoqInput[]
+    createMany?: boq_itemsCreateManyBoqInputEnvelope
+    set?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+    disconnect?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+    delete?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+    connect?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+    update?: boq_itemsUpdateWithWhereUniqueWithoutBoqInput | boq_itemsUpdateWithWhereUniqueWithoutBoqInput[]
+    updateMany?: boq_itemsUpdateManyWithWhereWithoutBoqInput | boq_itemsUpdateManyWithWhereWithoutBoqInput[]
+    deleteMany?: boq_itemsScalarWhereInput | boq_itemsScalarWhereInput[]
+  }
+
+  export type usersUpdateOneRequiredWithoutCreated_boq_projectsNestedInput = {
+    create?: XOR<usersCreateWithoutCreated_boq_projectsInput, usersUncheckedCreateWithoutCreated_boq_projectsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutCreated_boq_projectsInput
+    upsert?: usersUpsertWithoutCreated_boq_projectsInput
+    connect?: usersWhereUniqueInput
+    update?: XOR<XOR<usersUpdateToOneWithWhereWithoutCreated_boq_projectsInput, usersUpdateWithoutCreated_boq_projectsInput>, usersUncheckedUpdateWithoutCreated_boq_projectsInput>
+  }
+
+  export type boq_itemsUncheckedUpdateManyWithoutBoqNestedInput = {
+    create?: XOR<boq_itemsCreateWithoutBoqInput, boq_itemsUncheckedCreateWithoutBoqInput> | boq_itemsCreateWithoutBoqInput[] | boq_itemsUncheckedCreateWithoutBoqInput[]
+    connectOrCreate?: boq_itemsCreateOrConnectWithoutBoqInput | boq_itemsCreateOrConnectWithoutBoqInput[]
+    upsert?: boq_itemsUpsertWithWhereUniqueWithoutBoqInput | boq_itemsUpsertWithWhereUniqueWithoutBoqInput[]
+    createMany?: boq_itemsCreateManyBoqInputEnvelope
+    set?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+    disconnect?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+    delete?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+    connect?: boq_itemsWhereUniqueInput | boq_itemsWhereUniqueInput[]
+    update?: boq_itemsUpdateWithWhereUniqueWithoutBoqInput | boq_itemsUpdateWithWhereUniqueWithoutBoqInput[]
+    updateMany?: boq_itemsUpdateManyWithWhereWithoutBoqInput | boq_itemsUpdateManyWithWhereWithoutBoqInput[]
+    deleteMany?: boq_itemsScalarWhereInput | boq_itemsScalarWhereInput[]
+  }
+
+  export type boq_projectsCreateNestedOneWithoutItemsInput = {
+    create?: XOR<boq_projectsCreateWithoutItemsInput, boq_projectsUncheckedCreateWithoutItemsInput>
+    connectOrCreate?: boq_projectsCreateOrConnectWithoutItemsInput
+    connect?: boq_projectsWhereUniqueInput
+  }
+
+  export type pricelist_itemsCreateNestedOneWithoutBoq_itemsInput = {
+    create?: XOR<pricelist_itemsCreateWithoutBoq_itemsInput, pricelist_itemsUncheckedCreateWithoutBoq_itemsInput>
+    connectOrCreate?: pricelist_itemsCreateOrConnectWithoutBoq_itemsInput
+    connect?: pricelist_itemsWhereUniqueInput
+  }
+
+  export type FloatFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type boq_projectsUpdateOneRequiredWithoutItemsNestedInput = {
+    create?: XOR<boq_projectsCreateWithoutItemsInput, boq_projectsUncheckedCreateWithoutItemsInput>
+    connectOrCreate?: boq_projectsCreateOrConnectWithoutItemsInput
+    upsert?: boq_projectsUpsertWithoutItemsInput
+    connect?: boq_projectsWhereUniqueInput
+    update?: XOR<XOR<boq_projectsUpdateToOneWithWhereWithoutItemsInput, boq_projectsUpdateWithoutItemsInput>, boq_projectsUncheckedUpdateWithoutItemsInput>
+  }
+
+  export type pricelist_itemsUpdateOneRequiredWithoutBoq_itemsNestedInput = {
+    create?: XOR<pricelist_itemsCreateWithoutBoq_itemsInput, pricelist_itemsUncheckedCreateWithoutBoq_itemsInput>
+    connectOrCreate?: pricelist_itemsCreateOrConnectWithoutBoq_itemsInput
+    upsert?: pricelist_itemsUpsertWithoutBoq_itemsInput
+    connect?: pricelist_itemsWhereUniqueInput
+    update?: XOR<XOR<pricelist_itemsUpdateToOneWithWhereWithoutBoq_itemsInput, pricelist_itemsUpdateWithoutBoq_itemsInput>, pricelist_itemsUncheckedUpdateWithoutBoq_itemsInput>
+  }
+
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -82377,6 +86590,22 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumLogsheetTypeFilter<$PrismaModel>
     _max?: NestedEnumLogsheetTypeFilter<$PrismaModel>
+  }
+
+  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
   }
 
   export type contractsCreateWithoutCustomersInput = {
@@ -83792,6 +88021,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsCreateNestedManyWithoutUsersInput
     created_slas?: slasCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutRefresh_tokensInput = {
@@ -83831,6 +88061,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
     created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutRefresh_tokensInput = {
@@ -83885,6 +88116,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
     created_slas?: slasUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutRefresh_tokensInput = {
@@ -83924,6 +88156,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
     created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type customersCreateWithoutWork_ordersInput = {
@@ -84057,6 +88290,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsCreateNestedManyWithoutUsersInput
     created_slas?: slasCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutCreated_work_ordersInput = {
@@ -84096,6 +88330,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
     created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutCreated_work_ordersInput = {
@@ -84298,6 +88533,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
     created_slas?: slasUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutCreated_work_ordersInput = {
@@ -84337,6 +88573,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
     created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type quotationsUpsertWithWhereUniqueWithoutWork_ordersInput = {
@@ -84441,6 +88678,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
     created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
     created_slas?: slasCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutCreated_quotationsInput = {
@@ -84480,6 +88718,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
     created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
     created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutCreated_quotationsInput = {
@@ -84629,6 +88868,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
     created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
     created_slas?: slasUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutCreated_quotationsInput = {
@@ -84668,6 +88908,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
     created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
     created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type quotation_itemsUpsertWithWhereUniqueWithoutQuotationsInput = {
@@ -84885,6 +89126,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
     created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutCreated_slasInput = {
@@ -84924,6 +89166,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
     created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutCreated_slasInput = {
@@ -85020,6 +89263,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
     created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutCreated_slasInput = {
@@ -85059,6 +89303,7 @@ export namespace Prisma {
     vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
     created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type permissionsCreateWithoutRole_permissionsInput = {
@@ -85211,6 +89456,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsCreateNestedManyWithoutUsersInput
     created_slas?: slasCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutRolesInput = {
@@ -85250,6 +89496,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
     created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutRolesInput = {
@@ -86627,6 +90874,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsCreateNestedManyWithoutUsersInput
     created_slas?: slasCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutUser_project_accessInput = {
@@ -86666,6 +90914,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
     created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutUser_project_accessInput = {
@@ -86785,6 +91034,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
     created_slas?: slasUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutUser_project_accessInput = {
@@ -86824,6 +91074,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
     created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type rolesCreateWithoutUser_rolesInput = {
@@ -86880,6 +91131,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsCreateNestedManyWithoutUsersInput
     created_slas?: slasCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutUser_rolesInput = {
@@ -86919,6 +91171,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
     created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutUser_rolesInput = {
@@ -86997,6 +91250,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
     created_slas?: slasUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutUser_rolesInput = {
@@ -87036,6 +91290,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
     created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type unitsCreateWithoutUser_unit_accessInput = {
@@ -87154,6 +91409,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsCreateNestedManyWithoutUsersInput
     created_slas?: slasCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutUser_unit_accessInput = {
@@ -87193,6 +91449,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
     created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutUser_unit_accessInput = {
@@ -87333,6 +91590,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
     created_slas?: slasUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutUser_unit_accessInput = {
@@ -87372,6 +91630,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
     created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type audit_logsCreateWithoutUsersInput = {
@@ -88040,6 +92299,34 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type boq_projectsCreateWithoutUsersInput = {
+    id?: string
+    project_name: string
+    customer_name?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    items?: boq_itemsCreateNestedManyWithoutBoqInput
+  }
+
+  export type boq_projectsUncheckedCreateWithoutUsersInput = {
+    id?: string
+    project_name: string
+    customer_name?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    items?: boq_itemsUncheckedCreateNestedManyWithoutBoqInput
+  }
+
+  export type boq_projectsCreateOrConnectWithoutUsersInput = {
+    where: boq_projectsWhereUniqueInput
+    create: XOR<boq_projectsCreateWithoutUsersInput, boq_projectsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type boq_projectsCreateManyUsersInputEnvelope = {
+    data: boq_projectsCreateManyUsersInput | boq_projectsCreateManyUsersInput[]
+    skipDuplicates?: boolean
+  }
+
   export type audit_logsUpsertWithWhereUniqueWithoutUsersInput = {
     where: audit_logsWhereUniqueInput
     update: XOR<audit_logsUpdateWithoutUsersInput, audit_logsUncheckedUpdateWithoutUsersInput>
@@ -88438,6 +92725,34 @@ export namespace Prisma {
     created_by?: IntNullableFilter<"slas"> | number | null
   }
 
+  export type boq_projectsUpsertWithWhereUniqueWithoutUsersInput = {
+    where: boq_projectsWhereUniqueInput
+    update: XOR<boq_projectsUpdateWithoutUsersInput, boq_projectsUncheckedUpdateWithoutUsersInput>
+    create: XOR<boq_projectsCreateWithoutUsersInput, boq_projectsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type boq_projectsUpdateWithWhereUniqueWithoutUsersInput = {
+    where: boq_projectsWhereUniqueInput
+    data: XOR<boq_projectsUpdateWithoutUsersInput, boq_projectsUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type boq_projectsUpdateManyWithWhereWithoutUsersInput = {
+    where: boq_projectsScalarWhereInput
+    data: XOR<boq_projectsUpdateManyMutationInput, boq_projectsUncheckedUpdateManyWithoutUsersInput>
+  }
+
+  export type boq_projectsScalarWhereInput = {
+    AND?: boq_projectsScalarWhereInput | boq_projectsScalarWhereInput[]
+    OR?: boq_projectsScalarWhereInput[]
+    NOT?: boq_projectsScalarWhereInput | boq_projectsScalarWhereInput[]
+    id?: StringFilter<"boq_projects"> | string
+    project_name?: StringFilter<"boq_projects"> | string
+    customer_name?: StringNullableFilter<"boq_projects"> | string | null
+    created_by?: IntFilter<"boq_projects"> | number
+    created_at?: DateTimeFilter<"boq_projects"> | Date | string
+    updated_at?: DateTimeFilter<"boq_projects"> | Date | string
+  }
+
   export type usersCreateWithoutAudit_logsInput = {
     name: string
     email: string
@@ -88474,6 +92789,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsCreateNestedManyWithoutUsersInput
     created_slas?: slasCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutAudit_logsInput = {
@@ -88513,6 +92829,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
     created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutAudit_logsInput = {
@@ -88567,6 +92884,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
     created_slas?: slasUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutAudit_logsInput = {
@@ -88606,6 +92924,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
     created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type unitsCreateWithoutActivitiesInput = {
@@ -90000,6 +94319,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsCreateNestedManyWithoutUsersInput
     created_slas?: slasCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutService_activitiesInput = {
@@ -90039,6 +94359,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
     created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutService_activitiesInput = {
@@ -90235,6 +94556,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
     created_slas?: slasUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutService_activitiesInput = {
@@ -90274,6 +94596,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
     created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type unitsCreateWithoutService_logsInput = {
@@ -91046,6 +95369,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsCreateNestedManyWithoutUsersInput
     created_slas?: slasCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutSchedulesInput = {
@@ -91085,6 +95409,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
     created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutSchedulesInput = {
@@ -91349,6 +95674,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
     created_slas?: slasUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutSchedulesInput = {
@@ -91388,6 +95714,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
     created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type projectsUpsertWithoutSchedulesInput = {
@@ -91784,6 +96111,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsCreateNestedManyWithoutUsersInput
     created_slas?: slasCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutSchedule_messagesInput = {
@@ -91823,6 +96151,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
     created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutSchedule_messagesInput = {
@@ -91922,6 +96251,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
     created_slas?: slasUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutSchedule_messagesInput = {
@@ -91961,6 +96291,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
     created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type usersCreateWithoutSchedule_targetsInput = {
@@ -91999,6 +96330,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsCreateNestedManyWithoutUsersInput
     created_slas?: slasCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutSchedule_targetsInput = {
@@ -92038,6 +96370,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
     created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutSchedule_targetsInput = {
@@ -92151,6 +96484,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
     created_slas?: slasUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutSchedule_targetsInput = {
@@ -92190,6 +96524,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
     created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type projectsUpsertWithoutSchedule_targetsInput = {
@@ -92539,6 +96874,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsCreateNestedManyWithoutUsersInput
     created_slas?: slasCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutUnit_edit_requestsInput = {
@@ -92578,6 +96914,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
     created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutUnit_edit_requestsInput = {
@@ -92621,6 +96958,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsCreateNestedManyWithoutUsersInput
     created_slas?: slasCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutProcessed_requestsInput = {
@@ -92660,6 +96998,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
     created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutProcessed_requestsInput = {
@@ -92800,6 +97139,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
     created_slas?: slasUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutUnit_edit_requestsInput = {
@@ -92839,6 +97179,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
     created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUpsertWithoutProcessed_requestsInput = {
@@ -92888,6 +97229,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
     created_slas?: slasUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutProcessed_requestsInput = {
@@ -92927,6 +97269,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
     created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type usersCreateWithoutUser_push_tokensInput = {
@@ -92965,6 +97308,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsCreateNestedManyWithoutUsersInput
     created_slas?: slasCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutUser_push_tokensInput = {
@@ -93004,6 +97348,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
     created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutUser_push_tokensInput = {
@@ -93058,6 +97403,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
     created_slas?: slasUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutUser_push_tokensInput = {
@@ -93097,6 +97443,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
     created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type usersCreateWithoutNotificationsInput = {
@@ -93135,6 +97482,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsCreateNestedManyWithoutUsersInput
     created_slas?: slasCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutNotificationsInput = {
@@ -93174,6 +97522,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
     created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutNotificationsInput = {
@@ -93287,6 +97636,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
     created_slas?: slasUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutNotificationsInput = {
@@ -93326,6 +97676,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
     created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type projectsUpsertWithoutNotificationsInput = {
@@ -93654,6 +98005,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsCreateNestedManyWithoutUsersInput
     created_slas?: slasCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutVendor_attendanceInput = {
@@ -93693,6 +98045,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
     created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutVendor_attendanceInput = {
@@ -93812,6 +98165,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
     created_slas?: slasUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutVendor_attendanceInput = {
@@ -93851,6 +98205,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
     created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type projectsCreateWithoutProject_intelligenceInput = {
@@ -93948,6 +98303,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsCreateNestedManyWithoutUsersInput
     created_slas?: slasCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutIntelligence_updatesInput = {
@@ -93987,6 +98343,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
     created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
     created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+    created_boq_projects?: boq_projectsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutIntelligence_updatesInput = {
@@ -94106,6 +98463,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
     created_slas?: slasUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutIntelligence_updatesInput = {
@@ -94145,6 +98503,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
     created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type projectsCreateWithoutProject_issuesInput = {
@@ -94522,6 +98881,388 @@ export namespace Prisma {
     time_slots?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type boq_itemsCreateWithoutPricelistInput = {
+    id?: string
+    quantity: number
+    unit_price: Decimal | DecimalJsLike | number | string
+    total_price: Decimal | DecimalJsLike | number | string
+    boq: boq_projectsCreateNestedOneWithoutItemsInput
+  }
+
+  export type boq_itemsUncheckedCreateWithoutPricelistInput = {
+    id?: string
+    boq_id: string
+    quantity: number
+    unit_price: Decimal | DecimalJsLike | number | string
+    total_price: Decimal | DecimalJsLike | number | string
+  }
+
+  export type boq_itemsCreateOrConnectWithoutPricelistInput = {
+    where: boq_itemsWhereUniqueInput
+    create: XOR<boq_itemsCreateWithoutPricelistInput, boq_itemsUncheckedCreateWithoutPricelistInput>
+  }
+
+  export type boq_itemsCreateManyPricelistInputEnvelope = {
+    data: boq_itemsCreateManyPricelistInput | boq_itemsCreateManyPricelistInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type boq_itemsUpsertWithWhereUniqueWithoutPricelistInput = {
+    where: boq_itemsWhereUniqueInput
+    update: XOR<boq_itemsUpdateWithoutPricelistInput, boq_itemsUncheckedUpdateWithoutPricelistInput>
+    create: XOR<boq_itemsCreateWithoutPricelistInput, boq_itemsUncheckedCreateWithoutPricelistInput>
+  }
+
+  export type boq_itemsUpdateWithWhereUniqueWithoutPricelistInput = {
+    where: boq_itemsWhereUniqueInput
+    data: XOR<boq_itemsUpdateWithoutPricelistInput, boq_itemsUncheckedUpdateWithoutPricelistInput>
+  }
+
+  export type boq_itemsUpdateManyWithWhereWithoutPricelistInput = {
+    where: boq_itemsScalarWhereInput
+    data: XOR<boq_itemsUpdateManyMutationInput, boq_itemsUncheckedUpdateManyWithoutPricelistInput>
+  }
+
+  export type boq_itemsScalarWhereInput = {
+    AND?: boq_itemsScalarWhereInput | boq_itemsScalarWhereInput[]
+    OR?: boq_itemsScalarWhereInput[]
+    NOT?: boq_itemsScalarWhereInput | boq_itemsScalarWhereInput[]
+    id?: StringFilter<"boq_items"> | string
+    boq_id?: StringFilter<"boq_items"> | string
+    item_id?: StringFilter<"boq_items"> | string
+    quantity?: FloatFilter<"boq_items"> | number
+    unit_price?: DecimalFilter<"boq_items"> | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFilter<"boq_items"> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type boq_itemsCreateWithoutBoqInput = {
+    id?: string
+    quantity: number
+    unit_price: Decimal | DecimalJsLike | number | string
+    total_price: Decimal | DecimalJsLike | number | string
+    pricelist: pricelist_itemsCreateNestedOneWithoutBoq_itemsInput
+  }
+
+  export type boq_itemsUncheckedCreateWithoutBoqInput = {
+    id?: string
+    item_id: string
+    quantity: number
+    unit_price: Decimal | DecimalJsLike | number | string
+    total_price: Decimal | DecimalJsLike | number | string
+  }
+
+  export type boq_itemsCreateOrConnectWithoutBoqInput = {
+    where: boq_itemsWhereUniqueInput
+    create: XOR<boq_itemsCreateWithoutBoqInput, boq_itemsUncheckedCreateWithoutBoqInput>
+  }
+
+  export type boq_itemsCreateManyBoqInputEnvelope = {
+    data: boq_itemsCreateManyBoqInput | boq_itemsCreateManyBoqInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type usersCreateWithoutCreated_boq_projectsInput = {
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceCreateNestedManyWithoutUpdated_byInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsCreateNestedManyWithoutUsersInput
+    schedules?: schedulesCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
+    roles?: rolesCreateNestedOneWithoutUsersInput
+    vendor_attendance?: vendor_attendanceCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsCreateNestedManyWithoutUsersInput
+    created_slas?: slasCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateWithoutCreated_boq_projectsInput = {
+    id?: number
+    role_id?: number | null
+    name: string
+    email: string
+    password: string
+    phone?: string | null
+    is_active?: boolean
+    company_name?: string | null
+    failed_login_attempts?: number
+    locked_until?: Date | string | null
+    otp_code?: string | null
+    otp_expiry?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    attendance_enabled?: boolean
+    face_reference_url?: string | null
+    face_verification_enabled?: boolean
+    avatar_url?: string | null
+    bio?: string | null
+    audit_logs?: audit_logsUncheckedCreateNestedManyWithoutUsersInput
+    intelligence_updates?: project_intelligenceUncheckedCreateNestedManyWithoutUpdated_byInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
+    schedule_messages?: schedule_messagesUncheckedCreateNestedManyWithoutUsersInput
+    schedule_targets?: schedule_targetsUncheckedCreateNestedManyWithoutUsersInput
+    schedules?: schedulesUncheckedCreateNestedManyWithoutUsersInput
+    service_activities?: service_activitiesUncheckedCreateNestedManyWithoutUsersInput
+    user_project_access?: user_project_accessUncheckedCreateNestedManyWithoutUsersInput
+    user_push_tokens?: user_push_tokensUncheckedCreateNestedManyWithoutUsersInput
+    user_roles?: user_rolesUncheckedCreateNestedManyWithoutUsersInput
+    user_unit_access?: user_unit_accessUncheckedCreateNestedManyWithoutUsersInput
+    unit_edit_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutUsersInput
+    processed_requests?: unit_edit_requestsUncheckedCreateNestedManyWithoutProcessorInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
+    vendor_attendance?: vendor_attendanceUncheckedCreateNestedManyWithoutUsersInput
+    created_work_orders?: work_ordersUncheckedCreateNestedManyWithoutUsersInput
+    created_quotations?: quotationsUncheckedCreateNestedManyWithoutUsersInput
+    created_slas?: slasUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersCreateOrConnectWithoutCreated_boq_projectsInput = {
+    where: usersWhereUniqueInput
+    create: XOR<usersCreateWithoutCreated_boq_projectsInput, usersUncheckedCreateWithoutCreated_boq_projectsInput>
+  }
+
+  export type boq_itemsUpsertWithWhereUniqueWithoutBoqInput = {
+    where: boq_itemsWhereUniqueInput
+    update: XOR<boq_itemsUpdateWithoutBoqInput, boq_itemsUncheckedUpdateWithoutBoqInput>
+    create: XOR<boq_itemsCreateWithoutBoqInput, boq_itemsUncheckedCreateWithoutBoqInput>
+  }
+
+  export type boq_itemsUpdateWithWhereUniqueWithoutBoqInput = {
+    where: boq_itemsWhereUniqueInput
+    data: XOR<boq_itemsUpdateWithoutBoqInput, boq_itemsUncheckedUpdateWithoutBoqInput>
+  }
+
+  export type boq_itemsUpdateManyWithWhereWithoutBoqInput = {
+    where: boq_itemsScalarWhereInput
+    data: XOR<boq_itemsUpdateManyMutationInput, boq_itemsUncheckedUpdateManyWithoutBoqInput>
+  }
+
+  export type usersUpsertWithoutCreated_boq_projectsInput = {
+    update: XOR<usersUpdateWithoutCreated_boq_projectsInput, usersUncheckedUpdateWithoutCreated_boq_projectsInput>
+    create: XOR<usersCreateWithoutCreated_boq_projectsInput, usersUncheckedCreateWithoutCreated_boq_projectsInput>
+    where?: usersWhereInput
+  }
+
+  export type usersUpdateToOneWithWhereWithoutCreated_boq_projectsInput = {
+    where?: usersWhereInput
+    data: XOR<usersUpdateWithoutCreated_boq_projectsInput, usersUncheckedUpdateWithoutCreated_boq_projectsInput>
+  }
+
+  export type usersUpdateWithoutCreated_boq_projectsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUpdateManyWithoutUpdated_byNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
+    roles?: rolesUpdateOneWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUpdateManyWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateWithoutCreated_boq_projectsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    role_id?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    failed_login_attempts?: IntFieldUpdateOperationsInput | number
+    locked_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    otp_code?: NullableStringFieldUpdateOperationsInput | string | null
+    otp_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    attendance_enabled?: BoolFieldUpdateOperationsInput | boolean
+    face_reference_url?: NullableStringFieldUpdateOperationsInput | string | null
+    face_verification_enabled?: BoolFieldUpdateOperationsInput | boolean
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    audit_logs?: audit_logsUncheckedUpdateManyWithoutUsersNestedInput
+    intelligence_updates?: project_intelligenceUncheckedUpdateManyWithoutUpdated_byNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_messages?: schedule_messagesUncheckedUpdateManyWithoutUsersNestedInput
+    schedule_targets?: schedule_targetsUncheckedUpdateManyWithoutUsersNestedInput
+    schedules?: schedulesUncheckedUpdateManyWithoutUsersNestedInput
+    service_activities?: service_activitiesUncheckedUpdateManyWithoutUsersNestedInput
+    user_project_access?: user_project_accessUncheckedUpdateManyWithoutUsersNestedInput
+    user_push_tokens?: user_push_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    user_roles?: user_rolesUncheckedUpdateManyWithoutUsersNestedInput
+    user_unit_access?: user_unit_accessUncheckedUpdateManyWithoutUsersNestedInput
+    unit_edit_requests?: unit_edit_requestsUncheckedUpdateManyWithoutUsersNestedInput
+    processed_requests?: unit_edit_requestsUncheckedUpdateManyWithoutProcessorNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
+    vendor_attendance?: vendor_attendanceUncheckedUpdateManyWithoutUsersNestedInput
+    created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
+    created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
+    created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type boq_projectsCreateWithoutItemsInput = {
+    id?: string
+    project_name: string
+    customer_name?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    users: usersCreateNestedOneWithoutCreated_boq_projectsInput
+  }
+
+  export type boq_projectsUncheckedCreateWithoutItemsInput = {
+    id?: string
+    project_name: string
+    customer_name?: string | null
+    created_by: number
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type boq_projectsCreateOrConnectWithoutItemsInput = {
+    where: boq_projectsWhereUniqueInput
+    create: XOR<boq_projectsCreateWithoutItemsInput, boq_projectsUncheckedCreateWithoutItemsInput>
+  }
+
+  export type pricelist_itemsCreateWithoutBoq_itemsInput = {
+    id?: string
+    category: string
+    name: string
+    specification?: string | null
+    unit: string
+    price: Decimal | DecimalJsLike | number | string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type pricelist_itemsUncheckedCreateWithoutBoq_itemsInput = {
+    id?: string
+    category: string
+    name: string
+    specification?: string | null
+    unit: string
+    price: Decimal | DecimalJsLike | number | string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type pricelist_itemsCreateOrConnectWithoutBoq_itemsInput = {
+    where: pricelist_itemsWhereUniqueInput
+    create: XOR<pricelist_itemsCreateWithoutBoq_itemsInput, pricelist_itemsUncheckedCreateWithoutBoq_itemsInput>
+  }
+
+  export type boq_projectsUpsertWithoutItemsInput = {
+    update: XOR<boq_projectsUpdateWithoutItemsInput, boq_projectsUncheckedUpdateWithoutItemsInput>
+    create: XOR<boq_projectsCreateWithoutItemsInput, boq_projectsUncheckedCreateWithoutItemsInput>
+    where?: boq_projectsWhereInput
+  }
+
+  export type boq_projectsUpdateToOneWithWhereWithoutItemsInput = {
+    where?: boq_projectsWhereInput
+    data: XOR<boq_projectsUpdateWithoutItemsInput, boq_projectsUncheckedUpdateWithoutItemsInput>
+  }
+
+  export type boq_projectsUpdateWithoutItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    project_name?: StringFieldUpdateOperationsInput | string
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: usersUpdateOneRequiredWithoutCreated_boq_projectsNestedInput
+  }
+
+  export type boq_projectsUncheckedUpdateWithoutItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    project_name?: StringFieldUpdateOperationsInput | string
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    created_by?: IntFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type pricelist_itemsUpsertWithoutBoq_itemsInput = {
+    update: XOR<pricelist_itemsUpdateWithoutBoq_itemsInput, pricelist_itemsUncheckedUpdateWithoutBoq_itemsInput>
+    create: XOR<pricelist_itemsCreateWithoutBoq_itemsInput, pricelist_itemsUncheckedCreateWithoutBoq_itemsInput>
+    where?: pricelist_itemsWhereInput
+  }
+
+  export type pricelist_itemsUpdateToOneWithWhereWithoutBoq_itemsInput = {
+    where?: pricelist_itemsWhereInput
+    data: XOR<pricelist_itemsUpdateWithoutBoq_itemsInput, pricelist_itemsUncheckedUpdateWithoutBoq_itemsInput>
+  }
+
+  export type pricelist_itemsUpdateWithoutBoq_itemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    specification?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type pricelist_itemsUncheckedUpdateWithoutBoq_itemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    specification?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type contractsCreateManyCustomersInput = {
@@ -95549,6 +100290,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUpdateManyWithoutUsersNestedInput
     created_slas?: slasUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutRolesInput = {
@@ -95588,6 +100330,7 @@ export namespace Prisma {
     created_work_orders?: work_ordersUncheckedUpdateManyWithoutUsersNestedInput
     created_quotations?: quotationsUncheckedUpdateManyWithoutUsersNestedInput
     created_slas?: slasUncheckedUpdateManyWithoutUsersNestedInput
+    created_boq_projects?: boq_projectsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateManyWithoutRolesInput = {
@@ -96785,6 +101528,14 @@ export namespace Prisma {
     updated_at?: Date | string
   }
 
+  export type boq_projectsCreateManyUsersInput = {
+    id?: string
+    project_name: string
+    customer_name?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
   export type audit_logsUpdateWithoutUsersInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     action?: StringFieldUpdateOperationsInput | string
@@ -97484,6 +102235,32 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type boq_projectsUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    project_name?: StringFieldUpdateOperationsInput | string
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    items?: boq_itemsUpdateManyWithoutBoqNestedInput
+  }
+
+  export type boq_projectsUncheckedUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    project_name?: StringFieldUpdateOperationsInput | string
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    items?: boq_itemsUncheckedUpdateManyWithoutBoqNestedInput
+  }
+
+  export type boq_projectsUncheckedUpdateManyWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    project_name?: StringFieldUpdateOperationsInput | string
+    customer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type activity_photosCreateManyService_activitiesInput = {
     id?: number
     type?: string | null
@@ -97683,6 +102460,70 @@ export namespace Prisma {
     values_json?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type boq_itemsCreateManyPricelistInput = {
+    id?: string
+    boq_id: string
+    quantity: number
+    unit_price: Decimal | DecimalJsLike | number | string
+    total_price: Decimal | DecimalJsLike | number | string
+  }
+
+  export type boq_itemsUpdateWithoutPricelistInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: FloatFieldUpdateOperationsInput | number
+    unit_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    boq?: boq_projectsUpdateOneRequiredWithoutItemsNestedInput
+  }
+
+  export type boq_itemsUncheckedUpdateWithoutPricelistInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    boq_id?: StringFieldUpdateOperationsInput | string
+    quantity?: FloatFieldUpdateOperationsInput | number
+    unit_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+  }
+
+  export type boq_itemsUncheckedUpdateManyWithoutPricelistInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    boq_id?: StringFieldUpdateOperationsInput | string
+    quantity?: FloatFieldUpdateOperationsInput | number
+    unit_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+  }
+
+  export type boq_itemsCreateManyBoqInput = {
+    id?: string
+    item_id: string
+    quantity: number
+    unit_price: Decimal | DecimalJsLike | number | string
+    total_price: Decimal | DecimalJsLike | number | string
+  }
+
+  export type boq_itemsUpdateWithoutBoqInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: FloatFieldUpdateOperationsInput | number
+    unit_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    pricelist?: pricelist_itemsUpdateOneRequiredWithoutBoq_itemsNestedInput
+  }
+
+  export type boq_itemsUncheckedUpdateWithoutBoqInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    item_id?: StringFieldUpdateOperationsInput | string
+    quantity?: FloatFieldUpdateOperationsInput | number
+    unit_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+  }
+
+  export type boq_itemsUncheckedUpdateManyWithoutBoqInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    item_id?: StringFieldUpdateOperationsInput | string
+    quantity?: FloatFieldUpdateOperationsInput | number
+    unit_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
   }
 
 

@@ -46,7 +46,7 @@ export async function updateRateCardSetting(key: string, value: any) {
       create: { setting_key: key, setting_value: stringValue }
     });
 
-    revalidatePath("/admin/database/rate-card");
+    revalidatePath("/admin/quotation/rate-card");
     return { success: true };
   } catch (error) {
     console.error("Error updating rate card setting:", error);

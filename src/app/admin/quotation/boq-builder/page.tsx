@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Plus, FolderOpen, Trash2, Loader2, Calendar } from "lucide-react";
 import Link from "next/link";
-import { getBoqProjects, createBoqProject, deleteBoqProject } from "../../actions/boq";
+import { getBoqProjects, createBoqProject, deleteBoqProject } from "@/app/actions/boq";
 
 export default function BoqBuilderPage() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -103,7 +103,7 @@ export default function BoqBuilderPage() {
                   {new Date(project.created_at).toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' })}
                 </div>
                 <Link 
-                  href={`/admin/boq-builder/${project.id}`}
+                  href={`/admin/quotation/boq-builder/${project.id}`}
                   className="text-sm font-medium text-blue-600 hover:text-blue-800"
                 >
                   Buka Editor &rarr;

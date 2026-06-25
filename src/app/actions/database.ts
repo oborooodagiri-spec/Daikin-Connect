@@ -38,7 +38,7 @@ export async function getResources() {
             "Rate Card",
             "DATABASE",
             null,
-            "/admin/database/rate-card",
+            "/admin/quotation/rate-card",
             "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600",
             "LIVE",
             "Contract, Pricing, Official",

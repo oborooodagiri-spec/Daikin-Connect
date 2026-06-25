@@ -282,7 +282,7 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
           {/* Header */}
           <div className="flex items-center gap-4">
             <Link 
-              href="/admin/database/rate-card"
+              href="/admin/quotation/rate-card"
               className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-400 hover:text-[#0073ea] hover:border-[#0073ea] transition-all"
             >
               <ChevronLeft size={20} />

@@ -846,6 +846,35 @@ exports.Prisma.Unit_type_categoriesScalarFieldEnum = {
   updated_at: 'updated_at'
 };
 
+exports.Prisma.Pricelist_itemsScalarFieldEnum = {
+  id: 'id',
+  category: 'category',
+  name: 'name',
+  specification: 'specification',
+  unit: 'unit',
+  price: 'price',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Boq_projectsScalarFieldEnum = {
+  id: 'id',
+  project_name: 'project_name',
+  customer_name: 'customer_name',
+  created_by: 'created_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Boq_itemsScalarFieldEnum = {
+  id: 'id',
+  boq_id: 'boq_id',
+  item_id: 'item_id',
+  quantity: 'quantity',
+  unit_price: 'unit_price',
+  total_price: 'total_price'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1239,6 +1268,26 @@ exports.Prisma.unit_type_categoriesOrderByRelevanceFieldEnum = {
   catalog_url: 'catalog_url',
   image_url: 'image_url'
 };
+
+exports.Prisma.pricelist_itemsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  category: 'category',
+  name: 'name',
+  specification: 'specification',
+  unit: 'unit'
+};
+
+exports.Prisma.boq_projectsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  project_name: 'project_name',
+  customer_name: 'customer_name'
+};
+
+exports.Prisma.boq_itemsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  boq_id: 'boq_id',
+  item_id: 'item_id'
+};
 exports.customers_customer_type = exports.$Enums.customers_customer_type = {
   Corporate: 'Corporate',
   Individual: 'Individual'
@@ -1408,7 +1457,10 @@ exports.Prisma.ModelName = {
   logsheet_entries: 'logsheet_entries',
   shopping_list: 'shopping_list',
   rate_card_settings: 'rate_card_settings',
-  unit_type_categories: 'unit_type_categories'
+  unit_type_categories: 'unit_type_categories',
+  pricelist_items: 'pricelist_items',
+  boq_projects: 'boq_projects',
+  boq_items: 'boq_items'
 };
 
 /**

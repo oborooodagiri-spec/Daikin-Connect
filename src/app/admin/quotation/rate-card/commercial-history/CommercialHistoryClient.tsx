@@ -134,7 +134,7 @@ export default function CommercialHistoryClient({ projects }: { projects: any[] 
             <p className="text-sm font-medium text-slate-500 mt-1">Pilih proyek untuk melihat riwayat Work Order, Quotation, dan SLA.</p>
           </div>
           <Link 
-            href="/admin/database/rate-card/quotation"
+            href="/admin/quotation/rate-card/quotation"
             className="flex items-center gap-2 px-4 py-2.5 bg-[#0073ea] hover:bg-[#0060c5] text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-500/20 transition-all"
           >
             <FileText size={16} /> Buat Penawaran Baru

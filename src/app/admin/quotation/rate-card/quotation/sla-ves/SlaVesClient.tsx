@@ -210,7 +210,7 @@ export default function SlaVesClient() {
           <ShieldCheck size={48} className="mx-auto text-slate-300 mb-4" />
           <h2 className="text-xl font-black text-slate-800 uppercase tracking-tight mb-2">Data Tidak Ditemukan</h2>
           <p className="text-sm font-medium text-slate-500 mb-6">Silakan men-*generate* SLA langsung dari halaman Quotation Creator.</p>
-          <Link href="/admin/database/rate-card/quotation" className="px-6 py-3 bg-[#0073ea] text-white rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-[#0060c5] transition-colors">
+          <Link href="/admin/quotation/rate-card/quotation" className="px-6 py-3 bg-[#0073ea] text-white rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-[#0060c5] transition-colors">
             Kembali ke Quotation
           </Link>
         </div>
@@ -237,7 +237,7 @@ export default function SlaVesClient() {
             <ChevronLeft size={16} /> Kembali
           </button>
           <Link 
-            href="/admin/database/rate-card/commercial-history"
+            href="/admin/quotation/rate-card/commercial-history"
             className="flex items-center gap-1.5 text-[10px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-100 hover:bg-emerald-100 transition-colors"
           >
             Riwayat Dokumen <ChevronRight size={14} />

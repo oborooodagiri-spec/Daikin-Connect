@@ -327,7 +327,7 @@ export default function WorkOrderClient({
         {/* Back navigation */}
         <div className="flex items-center justify-between">
           <Link 
-            href="/admin/database/rate-card" 
+            href="/admin/quotation/rate-card" 
             className="flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-[#0073ea] transition-all"
           >
             <ChevronLeft size={16} /> Kembali ke Rate Card
