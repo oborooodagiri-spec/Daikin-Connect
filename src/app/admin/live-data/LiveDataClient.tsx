@@ -10,6 +10,7 @@ import {
   ArrowDownRight, Activity, Globe2, Layers, RefreshCw, X,
   CheckCircle2, Clock, AlertTriangle, Briefcase, ArrowLeft
 } from "lucide-react";
+import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 
 // ============================================
 // TYPES
@@ -78,43 +79,43 @@ const TABS = [
 ];
 
 // ============================================
-// INDONESIA MAP COMPONENT (SVG-based)
+// INDONESIA MAP COMPONENT
 // ============================================
-const PROVINCE_COORDS: Record<string, { x: number; y: number; name: string }> = {
-  "jakarta": { x: 310, y: 330, name: "DKI Jakarta" },
-  "west_java": { x: 320, y: 340, name: "Jawa Barat" },
-  "central_java": { x: 360, y: 345, name: "Jawa Tengah" },
-  "east_java": { x: 400, y: 340, name: "Jawa Timur" },
-  "banten": { x: 295, y: 330, name: "Banten" },
-  "bali": { x: 435, y: 350, name: "Bali" },
-  "north_sumatra": { x: 180, y: 220, name: "Sumatera Utara" },
-  "west_sumatra": { x: 190, y: 260, name: "Sumatera Barat" },
-  "south_sumatra": { x: 240, y: 300, name: "Sumatera Selatan" },
-  "riau": { x: 220, y: 240, name: "Riau" },
-  "lampung": { x: 270, y: 310, name: "Lampung" },
-  "west_kalimantan": { x: 330, y: 260, name: "Kalimantan Barat" },
-  "east_kalimantan": { x: 400, y: 240, name: "Kalimantan Timur" },
-  "south_kalimantan": { x: 380, y: 290, name: "Kalimantan Selatan" },
-  "north_sulawesi": { x: 470, y: 240, name: "Sulawesi Utara" },
-  "south_sulawesi": { x: 450, y: 310, name: "Sulawesi Selatan" },
-  "ntb": { x: 450, y: 360, name: "NTB" },
-  "ntt": { x: 480, y: 370, name: "NTT" },
-  "papua": { x: 620, y: 280, name: "Papua" },
-  "maluku": { x: 540, y: 280, name: "Maluku" },
-  "batam": { x: 240, y: 220, name: "Batam" },
-  "medan": { x: 170, y: 200, name: "Medan" },
-  "bandung": { x: 330, y: 345, name: "Bandung" },
-  "surabaya": { x: 410, y: 340, name: "Surabaya" },
-  "yogyakarta": { x: 365, y: 350, name: "Yogyakarta" },
-  "semarang": { x: 365, y: 340, name: "Semarang" },
-  "makassar": { x: 455, y: 315, name: "Makassar" },
-  "manado": { x: 475, y: 235, name: "Manado" },
-  "palembang": { x: 250, y: 295, name: "Palembang" },
-  "pekanbaru": { x: 215, y: 240, name: "Pekanbaru" },
+const PROVINCE_COORDS: Record<string, { coords: [number, number]; name: string }> = {
+  "jakarta": { coords: [106.8456, -6.2088], name: "DKI Jakarta" },
+  "west_java": { coords: [107.6191, -6.9175], name: "Jawa Barat" },
+  "central_java": { coords: [110.4225, -6.9697], name: "Jawa Tengah" },
+  "east_java": { coords: [112.7521, -7.2504], name: "Jawa Timur" },
+  "banten": { coords: [106.1503, -6.1200], name: "Banten" },
+  "bali": { coords: [115.2167, -8.6500], name: "Bali" },
+  "north_sumatra": { coords: [99.0689, 2.1154], name: "Sumatera Utara" },
+  "west_sumatra": { coords: [100.4651, -0.9471], name: "Sumatera Barat" },
+  "south_sumatra": { coords: [104.7458, -2.9909], name: "Sumatera Selatan" },
+  "riau": { coords: [101.4498, 0.5116], name: "Riau" },
+  "lampung": { coords: [105.2667, -5.4500], name: "Lampung" },
+  "west_kalimantan": { coords: [109.3333, -0.0227], name: "Kalimantan Barat" },
+  "east_kalimantan": { coords: [117.1536, -0.4705], name: "Kalimantan Timur" },
+  "south_kalimantan": { coords: [114.5901, -3.3194], name: "Kalimantan Selatan" },
+  "north_sulawesi": { coords: [124.8455, 1.4931], name: "Sulawesi Utara" },
+  "south_sulawesi": { coords: [119.4327, -5.1476], name: "Sulawesi Selatan" },
+  "ntb": { coords: [116.1167, -8.5833], name: "NTB" },
+  "ntt": { coords: [123.5833, -10.1667], name: "NTT" },
+  "papua": { coords: [140.7060, -2.5337], name: "Papua" },
+  "maluku": { coords: [128.1814, -3.6954], name: "Maluku" },
+  "batam": { coords: [104.0305, 1.1301], name: "Batam" },
+  "medan": { coords: [98.6722, 3.5952], name: "Medan" },
+  "bandung": { coords: [107.6191, -6.9175], name: "Bandung" },
+  "surabaya": { coords: [112.7521, -7.2504], name: "Surabaya" },
+  "yogyakarta": { coords: [110.3695, -7.7956], name: "Yogyakarta" },
+  "semarang": { coords: [110.4225, -6.9697], name: "Semarang" },
+  "makassar": { coords: [119.4327, -5.1476], name: "Makassar" },
+  "manado": { coords: [124.8455, 1.4931], name: "Manado" },
+  "palembang": { coords: [104.7458, -2.9909], name: "Palembang" },
+  "pekanbaru": { coords: [101.4498, 0.5116], name: "Pekanbaru" },
 };
 
-// Map region keywords to rough coordinates
-function guessCoords(deal: Deal): { x: number; y: number } | null {
+// Map region keywords to rough geographic coordinates
+function guessCoords(deal: Deal): { coords: [number, number] } | null {
   const text = `${deal.client_name} ${deal.project_name} ${deal.area || ""} ${deal.remarks || ""}`.toLowerCase();
   
   if (text.includes("medan")) return PROVINCE_COORDS.medan;
@@ -132,7 +133,7 @@ function guessCoords(deal: Deal): { x: number; y: number } | null {
   if (text.includes("papua")) return PROVINCE_COORDS.papua;
   
   // Default: Region based
-  if (deal.region === "East") return { x: 410, y: 340 };
+  if (deal.region === "East") return { coords: [112.7521, -7.2504] }; // East defaults to Surabaya roughly
   if (deal.region === "Bali") return PROVINCE_COORDS.bali;
   
   // Default West = Jakarta area
@@ -143,30 +144,31 @@ function IndonesiaMap({ deals }: { deals: Deal[] }) {
   const [hoveredCluster, setHoveredCluster] = useState<string | null>(null);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; data: any } | null>(null);
 
-  // Cluster deals by approximate location
+  // Cluster deals by approximate geographic location
   const clusters = useMemo(() => {
-    const clusterMap: Record<string, { x: number; y: number; deals: Deal[]; totalValue: number; name: string }> = {};
+    const clusterMap: Record<string, { coords: [number, number]; deals: Deal[]; totalValue: number; name: string }> = {};
     
     deals.forEach(deal => {
       if (deal.status === "L") return; // Skip lost deals
-      const coords = guessCoords(deal);
-      if (!coords) return;
+      const geo = guessCoords(deal);
+      if (!geo) return;
       
-      // Snap to grid for clustering
-      const key = `${Math.round(coords.x / 30) * 30}-${Math.round(coords.y / 30) * 30}`;
+      // Cluster by roughly grouping coordinates (round to 1 decimal place = ~11km)
+      const key = `${geo.coords[0].toFixed(1)}-${geo.coords[1].toFixed(1)}`;
       
       if (!clusterMap[key]) {
         // Find nearest named location
         let nearestName = "Other";
         let nearestDist = Infinity;
         for (const [, prov] of Object.entries(PROVINCE_COORDS)) {
-          const dist = Math.sqrt((coords.x - prov.x) ** 2 + (coords.y - prov.y) ** 2);
+          // simple euclidean dist for finding nearest named point (good enough for labeling)
+          const dist = Math.sqrt((geo.coords[0] - prov.coords[0]) ** 2 + (geo.coords[1] - prov.coords[1]) ** 2);
           if (dist < nearestDist) {
             nearestDist = dist;
             nearestName = prov.name;
           }
         }
-        clusterMap[key] = { x: coords.x, y: coords.y, deals: [], totalValue: 0, name: nearestName };
+        clusterMap[key] = { coords: geo.coords, deals: [], totalValue: 0, name: nearestName };
       }
       clusterMap[key].deals.push(deal);
       clusterMap[key].totalValue += Number(deal.quotation) || 0;
@@ -180,7 +182,7 @@ function IndonesiaMap({ deals }: { deals: Deal[] }) {
   return (
     <div style={{ position: "relative", width: "100%", background: "linear-gradient(135deg, #0a1628 0%, #0d2137 50%, #0a1628 100%)", borderRadius: 24, overflow: "hidden", padding: "20px 0" }}>
       {/* Grid overlay */}
-      <svg width="100%" viewBox="0 0 700 450" style={{ opacity: 0.06 }}>
+      <svg width="100%" viewBox="0 0 700 450" style={{ opacity: 0.06, position: "absolute", top: 0, left: 0, pointerEvents: "none" }}>
         {Array.from({ length: 35 }).map((_, i) => (
           <line key={`v${i}`} x1={i * 20} y1={0} x2={i * 20} y2={450} stroke="#66ccff" strokeWidth={0.5} />
         ))}
@@ -189,29 +191,38 @@ function IndonesiaMap({ deals }: { deals: Deal[] }) {
         ))}
       </svg>
 
-      {/* Main Map SVG */}
-      <svg width="100%" viewBox="0 0 700 450" style={{ position: "absolute", top: 20, left: 0 }}>
-        {/* Simplified Indonesia Outline */}
-        <g opacity={0.15} fill="none" stroke="#66ccff" strokeWidth={1}>
-          {/* Sumatra */}
-          <path d="M140,170 L160,180 L190,210 L210,240 L230,260 L260,290 L280,310 L260,320 L240,310 L220,290 L200,270 L180,250 L160,230 L140,210 Z" fill="#66ccff" fillOpacity={0.08} />
-          {/* Java */}
-          <path d="M280,325 L300,320 L320,325 L340,330 L360,335 L380,335 L400,330 L420,335 L435,340 L420,350 L400,350 L380,350 L360,350 L340,345 L320,340 L300,335 L285,330 Z" fill="#66ccff" fillOpacity={0.08} />
-          {/* Kalimantan */}
-          <path d="M300,220 L330,210 L360,220 L400,210 L420,230 L410,260 L400,280 L380,300 L360,290 L340,280 L320,270 L310,250 L300,230 Z" fill="#66ccff" fillOpacity={0.08} />
-          {/* Sulawesi */}
-          <path d="M430,230 L450,220 L470,230 L480,250 L470,270 L460,280 L450,300 L440,320 L450,310 L460,300 L470,290 L460,280 L450,270 L440,260 L430,250 Z" fill="#66ccff" fillOpacity={0.08} />
-          {/* Bali & Nusa */}
-          <ellipse cx={437} cy={352} rx={8} ry={6} fill="#66ccff" fillOpacity={0.1} />
-          <ellipse cx={458} cy={362} rx={12} ry={5} fill="#66ccff" fillOpacity={0.08} />
-          <ellipse cx={485} cy={368} rx={15} ry={5} fill="#66ccff" fillOpacity={0.08} />
-          {/* Papua */}
-          <path d="M560,250 L580,240 L610,250 L640,260 L650,280 L640,300 L620,310 L600,300 L580,290 L570,270 Z" fill="#66ccff" fillOpacity={0.08} />
-          {/* Maluku */}
-          <ellipse cx={530} cy={275} rx={15} ry={20} fill="#66ccff" fillOpacity={0.06} />
-        </g>
+      {/* Main Geographic Map */}
+      <ComposableMap
+        projection="geoMercator"
+        projectionConfig={{
+          scale: 900,
+          center: [118, -2.5]
+        }}
+        width={700}
+        height={450}
+        style={{ width: "100%", height: "auto" }}
+      >
+        <Geographies geography="/maps/indonesia.json">
+          {({ geographies }) =>
+            geographies.map((geo) => (
+              <Geography
+                key={geo.rsmKey}
+                geography={geo}
+                fill="#66ccff"
+                fillOpacity={0.12}
+                stroke="#66ccff"
+                strokeWidth={0.5}
+                style={{
+                  default: { outline: "none" },
+                  hover: { fillOpacity: 0.25, outline: "none", cursor: "pointer" },
+                  pressed: { outline: "none" },
+                }}
+              />
+            ))
+          }
+        </Geographies>
 
-        {/* Animated Pulse rings for clusters */}
+        {/* Animated Markers for clusters */}
         {clusters.map((cluster) => {
           const radius = Math.max(8, Math.min(35, (cluster.totalValue / maxValue) * 35));
           const isHovered = hoveredCluster === cluster.key;
@@ -221,41 +232,43 @@ function IndonesiaMap({ deals }: { deals: Deal[] }) {
           const color = wonRatio > 0.5 ? "#00c875" : wonRatio > 0.2 ? "#fdab3d" : "#66ccff";
           
           return (
-            <g key={cluster.key}>
-              {/* Pulse animation */}
-              <circle cx={cluster.x} cy={cluster.y} r={radius + 8} fill="none" stroke={color} strokeWidth={1} opacity={0.3}>
-                <animate attributeName="r" from={radius} to={radius + 20} dur="2s" repeatCount="indefinite" />
-                <animate attributeName="opacity" from="0.4" to="0" dur="2s" repeatCount="indefinite" />
-              </circle>
-              
-              {/* Main dot */}
-              <circle
-                cx={cluster.x} cy={cluster.y} r={radius}
-                fill={color} fillOpacity={isHovered ? 0.5 : 0.25}
-                stroke={color} strokeWidth={isHovered ? 2 : 1}
-                style={{ cursor: "pointer", transition: "all 0.2s" }}
-                onMouseEnter={(e) => {
-                  setHoveredCluster(cluster.key);
-                  const rect = (e.target as SVGElement).closest("svg")?.getBoundingClientRect();
-                  if (rect) {
-                    setTooltip({
-                      x: e.clientX - rect.left,
-                      y: e.clientY - rect.top - 10,
-                      data: cluster
-                    });
-                  }
-                }}
-                onMouseLeave={() => { setHoveredCluster(null); setTooltip(null); }}
-              />
-              
-              {/* Count label */}
-              <text x={cluster.x} y={cluster.y + 4} textAnchor="middle" fill="white" fontSize={radius > 15 ? 11 : 9} fontWeight="800">
-                {totalDeals}
-              </text>
-            </g>
+            <Marker key={cluster.key} coordinates={cluster.coords}>
+              <g>
+                {/* Pulse animation */}
+                <circle cx={0} cy={0} r={radius + 8} fill="none" stroke={color} strokeWidth={1} opacity={0.3}>
+                  <animate attributeName="r" from={radius} to={radius + 20} dur="2s" repeatCount="indefinite" />
+                  <animate attributeName="opacity" from="0.4" to="0" dur="2s" repeatCount="indefinite" />
+                </circle>
+                
+                {/* Main dot */}
+                <circle
+                  cx={0} cy={0} r={radius}
+                  fill={color} fillOpacity={isHovered ? 0.5 : 0.25}
+                  stroke={color} strokeWidth={isHovered ? 2 : 1}
+                  style={{ cursor: "pointer", transition: "all 0.2s" }}
+                  onMouseEnter={(e) => {
+                    setHoveredCluster(cluster.key);
+                    const rect = (e.target as SVGElement).closest("svg")?.getBoundingClientRect();
+                    if (rect) {
+                      setTooltip({
+                        x: e.clientX - rect.left,
+                        y: e.clientY - rect.top - 10,
+                        data: cluster
+                      });
+                    }
+                  }}
+                  onMouseLeave={() => { setHoveredCluster(null); setTooltip(null); }}
+                />
+                
+                {/* Count label */}
+                <text x={0} y={4} textAnchor="middle" fill="white" fontSize={radius > 15 ? 11 : 9} fontWeight="800">
+                  {totalDeals}
+                </text>
+              </g>
+            </Marker>
           );
         })}
-      </svg>
+      </ComposableMap>
 
       {/* Tooltip */}
       {tooltip && (
