@@ -7,7 +7,7 @@ import {
   User, Mail, Phone, Building2, Shield, ChevronRight,
   Camera, X, Check, Search, LogOut, Settings, Clock,
   FileText, Calendar, Upload, Download, Activity, Edit3,
-  LayoutDashboard, ExternalLink, Database, Users, Briefcase, BookOpen, Wrench, Package
+  LayoutDashboard, ExternalLink, Database, Users, Briefcase, BookOpen, Wrench, Package, TrendingUp
 } from "lucide-react";
 import StaticLogo from "@/components/ui/StaticLogo";
 import { updateProfile, saveAvatarUrl } from "@/app/actions/profile";
@@ -333,6 +333,16 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
                     <BookOpen size={22} />
                  </div>
                  <span className="app-label">Quotation</span>
+              </div>
+
+              <div 
+                className="app-item"
+                onClick={() => router.push("/admin/live-data")}
+              >
+                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)" }}>
+                    <TrendingUp size={22} />
+                 </div>
+                 <span className="app-label">Live Data</span>
               </div>
             </div>
           </motion.section>

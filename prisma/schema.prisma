@@ -1156,3 +1156,66 @@ model boq_items {
   @@index([category_id])
   @@index([item_id])
 }
+
+// ============================================
+// PIPELINE DEALS (Sales Pipeline — EPL + Partnership)
+// ============================================
+model pipeline_deals {
+  id                Int       @id @default(autoincrement())
+  client_name       String    @db.VarChar(255)
+  area              String?   @db.VarChar(100)
+  project_name      String    @db.VarChar(500)
+  bill_material     String?   @db.VarChar(255)
+  type              String?   @db.VarChar(100)
+  region            String?   @db.VarChar(50)
+  sales_planner     String?   @db.VarChar(100)
+  pic               String?   @db.VarChar(100)
+  category          String?   @db.VarChar(50)
+  sector            String?   @db.VarChar(50)
+  quotation         BigInt    @default(0)
+  status            String    @default("E") @db.VarChar(5)
+  est_booking_month DateTime? @db.Date
+  booking_fc        String?   @db.VarChar(50)
+  remarks           String?   @db.Text
+  source            String    @default("EPL") @db.VarChar(20)
+  priority          String?   @db.VarChar(20)
+  latitude          Float?
+  longitude         Float?
+  created_at        DateTime  @default(now()) @db.Timestamp(0)
+  updated_at        DateTime  @updatedAt @db.Timestamp(0)
+
+  @@index([status])
+  @@index([pic])
+  @@index([category])
+  @@index([sector])
+  @@index([region])
+  @@index([source])
+}
+
+// ============================================
+// PIPELINE OPS (Operations/Service Pipeline)
+// ============================================
+model pipeline_ops {
+  id                Int       @id @default(autoincrement())
+  status            String    @default("E") @db.VarChar(5)
+  customer          String    @db.VarChar(255)
+  project_name      String    @db.VarChar(500)
+  total_value       BigInt    @default(0)
+  values_by_month   Json?
+  remark            String?   @db.Text
+  created_at        DateTime  @default(now()) @db.Timestamp(0)
+  updated_at        DateTime  @updatedAt @db.Timestamp(0)
+
+  @@index([status])
+  @@index([customer])
+}
+
+// ============================================
+// PIPELINE SETTINGS (Lookup/Reference Values)
+// ============================================
+model pipeline_settings {
+  id          Int     @id @default(autoincrement())
+  key         String  @unique @db.VarChar(100)
+  value       Json
+  description String? @db.VarChar(255)
+}
