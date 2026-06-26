@@ -44,26 +44,11 @@ export async function getUnitsByProject(projectId: string) {
   }
 
   try {
-    // Fetch project config for filtering
-    let enabledTypes: string[] = [];
-    try {
-        const project = await (prisma as any).projects.findUnique({
-            where: { id: BigInt(projectId) },
-            select: { enabled_unit_types: true }
-        });
-        if (project?.enabled_unit_types) {
-            enabledTypes = project.enabled_unit_types.split(",").map((s: string) => s.trim());
-        }
-    } catch (configError) {
-        console.warn("Failed to fetch project config, showing all types as fallback:", configError);
-        // Fallback to most common types if config fetch fails
-        enabledTypes = ["Chiller", "FCU", "AHU", "Split", "AC SPLIT", "SPLIT DUCT", "VRV", "AC STANDING"];
-    }
+    // Fetch project config for filtering is removed as all units in a project should be visible
 
     const units = await (prisma.units as any).findMany({
       where: { 
-        project_ref_id: BigInt(projectId),
-        ...(enabledTypes.length > 0 ? { unit_type: { in: enabledTypes } } : {})
+        project_ref_id: BigInt(projectId)
       },
       orderBy: [
         { status: 'asc' }, // Trick: Critical, On_Progress, Problem start with C, O, P. Actually better use manual CASE in Raw Query if needed, but let's try frontend sort or a smarter approach.
