@@ -683,6 +683,69 @@ export default function LiveDataClient() {
           </div>
         </div>
       </div>
+
+      {/* SECTOR & CATEGORY DISTRIBUTION */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+        {/* Pipeline by Sector */}
+        <div style={cardStyle}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(0, 115, 234, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Building2 size={16} color="#0073ea" />
+            </div>
+            <h3 style={{ fontSize: 13, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em", color: "#323338" }}>Pipeline by Sector</h3>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {(() => {
+              const sectorColors = ["#0073ea", "#00c875", "#fdab3d", "#7b2cbf", "#e44258"];
+              const entries = Object.entries(stats.bySector).sort(([, a], [, b]) => b.value - a.value).slice(0, 5);
+              const maxVal = Math.max(...entries.map(([, v]) => v.value), 1);
+              return entries.map(([sector, data], idx) => (
+                <div key={sector} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <span style={{ width: 90, fontSize: 10, fontWeight: 800, color: sectorColors[idx % sectorColors.length] }}>{sector}</span>
+                  <div style={{ flex: 1, height: 28, background: "#f8fafc", borderRadius: 8, overflow: "hidden", position: "relative" }}>
+                    <motion.div initial={{ width: 0 }} animate={{ width: `${(data.value / maxVal) * 100}%` }} transition={{ duration: 0.8 }}
+                      style={{ height: "100%", background: sectorColors[idx % sectorColors.length], borderRadius: 8, opacity: 0.8 }}
+                    />
+                    <span style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", fontSize: 10, fontWeight: 800, color: "#323338" }}>
+                      {formatRp(data.value)}
+                    </span>
+                  </div>
+                </div>
+              ));
+            })()}
+          </div>
+        </div>
+
+        {/* Pipeline by Category */}
+        <div style={cardStyle}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(253, 171, 61, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Layers size={16} color="#fdab3d" />
+            </div>
+            <h3 style={{ fontSize: 13, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em", color: "#323338" }}>Pipeline by Category</h3>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {(() => {
+              const catColors = ["#fdab3d", "#7b2cbf", "#00c875", "#0073ea", "#ff9f43"];
+              const entries = Object.entries(stats.byCategory).sort(([, a], [, b]) => b.value - a.value).slice(0, 5);
+              const maxVal = Math.max(...entries.map(([, v]) => v.value), 1);
+              return entries.map(([category, data], idx) => (
+                <div key={category} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <span style={{ width: 90, fontSize: 10, fontWeight: 800, color: catColors[idx % catColors.length] }}>{category}</span>
+                  <div style={{ flex: 1, height: 28, background: "#f8fafc", borderRadius: 8, overflow: "hidden", position: "relative" }}>
+                    <motion.div initial={{ width: 0 }} animate={{ width: `${(data.value / maxVal) * 100}%` }} transition={{ duration: 0.8 }}
+                      style={{ height: "100%", background: catColors[idx % catColors.length], borderRadius: 8, opacity: 0.8 }}
+                    />
+                    <span style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", fontSize: 10, fontWeight: 800, color: "#323338" }}>
+                      {formatRp(data.value)}
+                    </span>
+                  </div>
+                </div>
+              ));
+            })()}
+          </div>
+        </div>
+      </div>
     </div>
   );
 
