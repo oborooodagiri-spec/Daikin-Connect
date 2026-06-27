@@ -8,7 +8,7 @@ import {
   Download, Upload, Edit2, Trash2, ChevronRight, ChevronLeft,
   Filter, DollarSign, Target, Users, Building2, ArrowUpRight,
   ArrowDownRight, Activity, Globe2, Layers, RefreshCw, X,
-  CheckCircle2, Clock, AlertTriangle, Briefcase, ArrowLeft
+  CheckCircle2, Clock, AlertTriangle, Briefcase, ArrowLeft, Trophy
 } from "lucide-react";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 
@@ -195,8 +195,8 @@ function IndonesiaMap({ deals }: { deals: Deal[] }) {
       <ComposableMap
         projection="geoMercator"
         projectionConfig={{
-          scale: 900,
-          center: [118, -2.5]
+          scale: 750,
+          center: [118.5, -2]
         }}
         width={700}
         height={450}
@@ -324,7 +324,7 @@ function IndonesiaMap({ deals }: { deals: Deal[] }) {
       <div style={{ position: "absolute", top: 20, left: 24 }}>
         <p style={{ color: "rgba(102,204,255,0.6)", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em" }}>Project Distribution</p>
         <h3 style={{ color: "white", fontSize: 20, fontWeight: 900, marginTop: 4 }}>
-          Peta Indonesia
+          Expanded Product Line - National
         </h3>
       </div>
     </div>
@@ -399,54 +399,78 @@ export default function LiveDataClient() {
   // COMPUTED VALUES
   // ============================================
   const stats = useMemo(() => {
-    const total = deals.reduce((s, d) => s + Number(d.quotation), 0);
-    const won = deals.filter(d => d.status === "A").reduce((s, d) => s + Number(d.quotation), 0);
-    const pipeline = deals.filter(d => ["B", "C", "D", "E", "T"].includes(d.status)).reduce((s, d) => s + Number(d.quotation), 0);
-    const lost = deals.filter(d => d.status === "L").reduce((s, d) => s + Number(d.quotation), 0);
-    const wonCount = deals.filter(d => d.status === "A").length;
-    const activeCount = deals.filter(d => !["L", "H"].includes(d.status)).length;
-    const conversionRate = activeCount > 0 ? ((wonCount / activeCount) * 100).toFixed(1) : "0";
+    let total = 0, won = 0, pipeline = 0, lost = 0;
+    let wonCount = 0, activeCount = 0;
+    let weightedPipeline = 0;
 
-    // By status
     const byStatus: Record<string, { count: number; value: number }> = {};
+    const byPic: Record<string, { 
+      totalValue: number; totalCount: number; 
+      wonValue: number; wonCount: number; 
+      lostValue: number; lostCount: number;
+    }> = {};
+    const bySector: Record<string, { count: number; value: number }> = {};
+    const byCategory: Record<string, { count: number; value: number }> = {};
+
+    const PROBABILITIES: Record<string, number> = {
+      "A": 1,     // Won: 100%
+      "B": 0.8,   // Budgeted: 80%
+      "C": 0.6,   // Contracted: 60%
+      "D": 0.4,   // Planning: 40%
+      "E": 0.2,   // Estimated: 20%
+      "T": 0.1,   // Targeted: 10%
+      "L": 0,     // Lost: 0%
+      "H": 0      // Hold: 0%
+    };
+
     deals.forEach(d => {
+      const val = Number(d.quotation) || 0;
+      total += val;
+      
+      // Funnel & Totals
+      if (d.status === "A") { won += val; wonCount++; }
+      else if (d.status === "L") { lost += val; }
+      else { pipeline += val; }
+      
+      if (!["L", "H"].includes(d.status)) activeCount++;
+
+      // Weighted expected revenue
+      const prob = PROBABILITIES[d.status] !== undefined ? PROBABILITIES[d.status] : 0;
+      weightedPipeline += (val * prob);
+
+      // By Status
       if (!byStatus[d.status]) byStatus[d.status] = { count: 0, value: 0 };
       byStatus[d.status].count++;
-      byStatus[d.status].value += Number(d.quotation);
-    });
+      byStatus[d.status].value += val;
 
-    // By PIC
-    const byPic: Record<string, { count: number; value: number }> = {};
-    deals.forEach(d => {
+      // By PIC (Advanced)
       const pic = d.pic || "Unassigned";
-      if (!byPic[pic]) byPic[pic] = { count: 0, value: 0 };
-      byPic[pic].count++;
-      byPic[pic].value += Number(d.quotation);
-    });
+      if (!byPic[pic]) byPic[pic] = { totalValue: 0, totalCount: 0, wonValue: 0, wonCount: 0, lostValue: 0, lostCount: 0 };
+      byPic[pic].totalValue += val;
+      byPic[pic].totalCount++;
+      if (d.status === "A") { byPic[pic].wonValue += val; byPic[pic].wonCount++; }
+      if (d.status === "L") { byPic[pic].lostValue += val; byPic[pic].lostCount++; }
 
-    // By sector
-    const bySector: Record<string, { count: number; value: number }> = {};
-    deals.forEach(d => {
+      // By Sector
       const sec = d.sector || "Other";
       if (!bySector[sec]) bySector[sec] = { count: 0, value: 0 };
       bySector[sec].count++;
-      bySector[sec].value += Number(d.quotation);
-    });
+      bySector[sec].value += val;
 
-    // By category
-    const byCategory: Record<string, { count: number; value: number }> = {};
-    deals.forEach(d => {
+      // By Category
       const cat = d.category || "Other";
       if (!byCategory[cat]) byCategory[cat] = { count: 0, value: 0 };
       byCategory[cat].count++;
-      byCategory[cat].value += Number(d.quotation);
+      byCategory[cat].value += val;
     });
 
-    // OPS stats
+    const conversionRate = activeCount > 0 ? ((wonCount / activeCount) * 100).toFixed(1) : "0";
+    const conversionRateValue = (pipeline + won) > 0 ? ((won / (pipeline + won)) * 100).toFixed(1) : "0";
+
     const opsTotal = opsRecords.reduce((s, o) => s + Number(o.total_value), 0);
     const opsDone = opsRecords.filter(o => o.status === "S").reduce((s, o) => s + Number(o.total_value), 0);
 
-    return { total, won, pipeline, lost, wonCount, activeCount, conversionRate, byStatus, byPic, bySector, byCategory, opsTotal, opsDone };
+    return { total, won, pipeline, lost, wonCount, activeCount, conversionRate, conversionRateValue, weightedPipeline, byStatus, byPic, bySector, byCategory, opsTotal, opsDone };
   }, [deals, opsRecords]);
 
   // Filtered lists
@@ -493,57 +517,62 @@ export default function LiveDataClient() {
   const renderDashboard = () => (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       {/* KPI CARDS */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
         {[
-          { label: "Total Pipeline", value: formatRp(stats.total), sub: `${deals.length} projects`, icon: DollarSign, color: "#0073ea", gradient: "linear-gradient(135deg, #0073ea 0%, #66ccff 100%)" },
-          { label: "Won / Approved", value: formatRp(stats.won), sub: `${stats.wonCount} deals`, icon: CheckCircle2, color: "#00c875", gradient: "linear-gradient(135deg, #00c875 0%, #00e68a 100%)" },
-          { label: "Active Pipeline", value: formatRp(stats.pipeline), sub: `Conversion: ${stats.conversionRate}%`, icon: Target, color: "#fdab3d", gradient: "linear-gradient(135deg, #fdab3d 0%, #ffc107 100%)" },
-          { label: "Operations", value: formatRp(stats.opsTotal), sub: `${opsRecords.length} records`, icon: Activity, color: "#7b2cbf", gradient: "linear-gradient(135deg, #7b2cbf 0%, #a855f7 100%)" },
+          { label: "Gross Pipeline", value: formatRp(stats.pipeline), sub: `${deals.length} active projects`, icon: DollarSign, color: "#0073ea", gradient: "linear-gradient(135deg, #0073ea 0%, #66ccff 100%)" },
+          { label: "Expected Revenue", value: formatRp(stats.weightedPipeline), sub: `Risk-adjusted projection`, icon: Target, color: "#7b2cbf", gradient: "linear-gradient(135deg, #7b2cbf 0%, #a855f7 100%)" },
+          { label: "Secured PO (Won)", value: formatRp(stats.won), sub: `${stats.conversionRate}% Win Rate (Count) • ${stats.conversionRateValue}% (Value)`, icon: CheckCircle2, color: "#00c875", gradient: "linear-gradient(135deg, #00c875 0%, #00e68a 100%)" },
+          { label: "Lost / Dropped", value: formatRp(stats.lost), sub: `Value of lost opportunities`, icon: AlertTriangle, color: "#e44258", gradient: "linear-gradient(135deg, #e44258 0%, #ff6b81 100%)" },
         ].map((kpi, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-            style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 16, cursor: "default" }}
+            style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 16, cursor: "default", padding: "20px" }}
           >
-            <div style={{ width: 52, height: 52, borderRadius: 16, background: kpi.gradient, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <kpi.icon size={24} color="white" />
+            <div style={{ width: 48, height: 48, borderRadius: 14, background: kpi.gradient, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: `0 4px 12px ${kpi.color}40` }}>
+              <kpi.icon size={22} color="white" />
             </div>
             <div style={{ minWidth: 0 }}>
               <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#676879", marginBottom: 4 }}>{kpi.label}</p>
-              <p style={{ fontSize: 22, fontWeight: 900, color: "#323338", letterSpacing: "-0.02em" }}>{kpi.value}</p>
-              <p style={{ fontSize: 11, fontWeight: 700, color: kpi.color }}>{kpi.sub}</p>
+              <p style={{ fontSize: 20, fontWeight: 900, color: "#323338", letterSpacing: "-0.02em" }}>{kpi.value}</p>
+              <p style={{ fontSize: 10, fontWeight: 700, color: kpi.color, marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{kpi.sub}</p>
             </div>
           </motion.div>
         ))}
       </div>
 
       {/* INDONESIA MAP */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
         <IndonesiaMap deals={deals} />
       </motion.div>
 
-      {/* CHARTS ROW */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-        {/* Pipeline by Status - Bar */}
-        <div style={cardStyle}>
-          <h3 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#676879", marginBottom: 20 }}>Pipeline by Status</h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {Object.entries(stats.byStatus)
-              .sort(([, a], [, b]) => b.value - a.value)
-              .map(([status, data]) => {
-                const maxBarVal = Math.max(...Object.values(stats.byStatus).map(v => v.value));
-                const pct = maxBarVal > 0 ? (data.value / maxBarVal) * 100 : 0;
-                const cfg = STATUS_CONFIG[status] || { label: status, color: "#888" };
+      {/* SALES PERFORMANCE MATRIX */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+        {/* TOP PERFORMERS (MOST PO) */}
+        <div style={{ ...cardStyle, background: "linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(0, 200, 117, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Trophy size={16} color="#00c875" />
+            </div>
+            <h3 style={{ fontSize: 13, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em", color: "#323338" }}>Top Sales Performers (PO)</h3>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {Object.entries(stats.byPic)
+              .filter(([name, data]) => name !== "Unassigned" && data.wonValue > 0)
+              .sort(([, a], [, b]) => b.wonValue - a.wonValue)
+              .slice(0, 5)
+              .map(([pic, data], idx) => {
+                const maxVal = Math.max(...Object.values(stats.byPic).map(v => v.wonValue));
+                const winRate = data.totalValue > 0 ? Math.round((data.wonValue / data.totalValue) * 100) : 0;
                 return (
-                  <div key={status} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <span style={{ width: 70, fontSize: 10, fontWeight: 800, color: cfg.color }}>{cfg.label}</span>
-                    <div style={{ flex: 1, height: 28, background: "#f5f6f8", borderRadius: 8, overflow: "hidden", position: "relative" }}>
-                      <motion.div
-                        initial={{ width: 0 }} animate={{ width: `${pct}%` }}
-                        transition={{ duration: 0.8, delay: 0.1 }}
-                        style={{ height: "100%", background: cfg.color, borderRadius: 8, opacity: 0.8 }}
-                      />
-                      <span style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", fontSize: 10, fontWeight: 800, color: "#323338" }}>
-                        {formatRp(data.value)} ({data.count})
-                      </span>
+                  <div key={pic} style={{ position: "relative" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, alignItems: "flex-end" }}>
+                      <span style={{ fontSize: 12, fontWeight: 800, color: "#323338" }}>{idx + 1}. {pic}</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ fontSize: 10, fontWeight: 800, color: "#00c875", background: "rgba(0,200,117,0.1)", padding: "2px 6px", borderRadius: 4 }}>Win: {winRate}%</span>
+                        <span style={{ fontSize: 12, fontWeight: 900, color: "#00c875" }}>{formatRp(data.wonValue)}</span>
+                      </div>
+                    </div>
+                    <div style={{ height: 8, background: "#e2e8f0", borderRadius: 4, overflow: "hidden" }}>
+                      <motion.div initial={{ width: 0 }} animate={{ width: `${(data.wonValue / maxVal) * 100}%` }} transition={{ duration: 1 }} style={{ height: "100%", background: "#00c875", borderRadius: 4 }} />
                     </div>
                   </div>
                 );
@@ -551,57 +580,107 @@ export default function LiveDataClient() {
           </div>
         </div>
 
-        {/* Pipeline by Sector - Donut-like */}
-        <div style={cardStyle}>
-          <h3 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#676879", marginBottom: 20 }}>Pipeline by Sector</h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {(() => {
-              const sectorColors = ["#0073ea", "#00c875", "#fdab3d", "#7b2cbf", "#e44258"];
-              const entries = Object.entries(stats.bySector).sort(([, a], [, b]) => b.value - a.value);
-              const maxVal = Math.max(...entries.map(([, v]) => v.value));
-              return entries.map(([sector, data], idx) => (
-                <div key={sector} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <span style={{ width: 90, fontSize: 10, fontWeight: 800, color: sectorColors[idx % sectorColors.length] }}>{sector}</span>
-                  <div style={{ flex: 1, height: 28, background: "#f5f6f8", borderRadius: 8, overflow: "hidden", position: "relative" }}>
-                    <motion.div
-                      initial={{ width: 0 }} animate={{ width: `${(data.value / maxVal) * 100}%` }}
-                      transition={{ duration: 0.8, delay: 0.1 }}
-                      style={{ height: "100%", background: sectorColors[idx % sectorColors.length], borderRadius: 8, opacity: 0.7 }}
-                    />
-                    <span style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", fontSize: 10, fontWeight: 800, color: "#323338" }}>
-                      {formatRp(data.value)}
-                    </span>
+        {/* LOST OPPORTUNITIES */}
+        <div style={{ ...cardStyle, background: "linear-gradient(180deg, #ffffff 0%, #fff1f2 100%)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(228, 66, 88, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <AlertTriangle size={16} color="#e44258" />
+            </div>
+            <h3 style={{ fontSize: 13, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em", color: "#323338" }}>Critical Loss (Lost Value)</h3>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {Object.entries(stats.byPic)
+              .filter(([name, data]) => name !== "Unassigned" && data.lostValue > 0)
+              .sort(([, a], [, b]) => b.lostValue - a.lostValue)
+              .slice(0, 5)
+              .map(([pic, data], idx) => {
+                const maxVal = Math.max(...Object.values(stats.byPic).map(v => v.lostValue));
+                return (
+                  <div key={pic} style={{ position: "relative" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, alignItems: "flex-end" }}>
+                      <span style={{ fontSize: 12, fontWeight: 800, color: "#323338" }}>{idx + 1}. {pic}</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ fontSize: 10, fontWeight: 800, color: "#e44258", background: "rgba(228,66,88,0.1)", padding: "2px 6px", borderRadius: 4 }}>{data.lostCount} projects</span>
+                        <span style={{ fontSize: 12, fontWeight: 900, color: "#e44258" }}>{formatRp(data.lostValue)}</span>
+                      </div>
+                    </div>
+                    <div style={{ height: 8, background: "#fee2e2", borderRadius: 4, overflow: "hidden" }}>
+                      <motion.div initial={{ width: 0 }} animate={{ width: `${(data.lostValue / maxVal) * 100}%` }} transition={{ duration: 1 }} style={{ height: "100%", background: "#e44258", borderRadius: 4 }} />
+                    </div>
                   </div>
-                </div>
-              ));
-            })()}
+                );
+              })}
           </div>
         </div>
       </div>
 
-      {/* TOP PIC PERFORMERS */}
-      <div style={cardStyle}>
-        <h3 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#676879", marginBottom: 20 }}>Top Sales Performance (by PIC)</h3>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 12 }}>
-          {Object.entries(stats.byPic)
-            .filter(([name]) => name !== "Unassigned")
-            .sort(([, a], [, b]) => b.value - a.value)
-            .slice(0, 12)
-            .map(([pic, data], idx) => {
-              const colors = ["#0073ea", "#00c875", "#fdab3d", "#7b2cbf", "#e44258", "#ff9f43"];
-              const color = colors[idx % colors.length];
-              return (
-                <div key={pic} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", background: "#f8f9fb", borderRadius: 16, border: `1px solid ${idx < 3 ? color + "30" : "#e8e8e8"}` }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 12, background: color + "20", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 900, color }}>
-                    {idx + 1}
+      {/* PIPELINE FUNNEL & COMPARATIVE ANALYTICS */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+        <div style={cardStyle}>
+          <h3 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#676879", marginBottom: 20 }}>Pipeline Status Funnel</h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {["T", "E", "D", "C", "B", "A"]
+              .map((status) => {
+                const data = stats.byStatus[status];
+                if (!data) return null;
+                const maxVal = Math.max(...Object.values(stats.byStatus).map(v => v.value));
+                const cfg = STATUS_CONFIG[status] || { label: status, color: "#888" };
+                const pct = (data.value / maxVal) * 100;
+                return (
+                  <div key={status} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <span style={{ width: 80, fontSize: 10, fontWeight: 800, color: cfg.color, textAlign: "right" }}>{cfg.label}</span>
+                    <div style={{ flex: 1, height: 32, background: "#f8fafc", borderRadius: 6, display: "flex", alignItems: "center" }}>
+                      <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8 }}
+                        style={{ height: "100%", background: cfg.color, borderRadius: 6, display: "flex", alignItems: "center", paddingLeft: 12, minWidth: 20 }}
+                      >
+                        {pct > 15 && <span style={{ color: "white", fontSize: 10, fontWeight: 800 }}>{formatRp(data.value)}</span>}
+                      </motion.div>
+                      {pct <= 15 && <span style={{ marginLeft: 8, color: "#323338", fontSize: 10, fontWeight: 800 }}>{formatRp(data.value)}</span>}
+                    </div>
                   </div>
-                  <div>
-                    <p style={{ fontSize: 13, fontWeight: 800, color: "#323338" }}>{pic}</p>
-                    <p style={{ fontSize: 11, fontWeight: 700, color }}>{formatRp(data.value)} · {data.count} deals</p>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+          </div>
+        </div>
+
+        <div style={cardStyle}>
+          <h3 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#676879", marginBottom: 20 }}>Pipeline vs PO Conversion</h3>
+          <div style={{ position: "relative", height: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            {/* Simple CSS Donut Chart for Win/Loss/Pipeline */}
+            <svg width="200" height="200" viewBox="0 0 200 200" style={{ transform: "rotate(-90deg)" }}>
+              <circle cx="100" cy="100" r="80" fill="none" stroke="#f1f5f9" strokeWidth="20" />
+              {(() => {
+                const total = stats.pipeline + stats.won + stats.lost;
+                if (total === 0) return null;
+                const wonPct = stats.won / total;
+                const lostPct = stats.lost / total;
+                const circumference = 2 * Math.PI * 80;
+                const wonStroke = wonPct * circumference;
+                const lostStroke = lostPct * circumference;
+                return (
+                  <>
+                    <circle cx="100" cy="100" r="80" fill="none" stroke="#00c875" strokeWidth="20" strokeDasharray={`${wonStroke} ${circumference}`} />
+                    <circle cx="100" cy="100" r="80" fill="none" stroke="#e44258" strokeWidth="20" strokeDasharray={`${lostStroke} ${circumference}`} strokeDashoffset={-wonStroke} />
+                  </>
+                );
+              })()}
+            </svg>
+            <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+              <text style={{ fontSize: 10, fontWeight: 800, color: "#676879", letterSpacing: "0.05em" }}>GROSS PIPELINE</text>
+              <text style={{ fontSize: 18, fontWeight: 900, color: "#323338", marginTop: 2 }}>{formatRp(stats.pipeline + stats.won + stats.lost)}</text>
+            </div>
+            
+            <div style={{ position: "absolute", bottom: -20, left: 0, right: 0, display: "flex", justifyContent: "space-between", padding: "0 10px" }}>
+              <div style={{ textAlign: "center" }}>
+                <p style={{ fontSize: 10, fontWeight: 800, color: "#00c875", textTransform: "uppercase" }}>Secured PO</p>
+                <p style={{ fontSize: 13, fontWeight: 900, color: "#323338" }}>{formatRp(stats.won)}</p>
+              </div>
+              <div style={{ textAlign: "center" }}>
+                <p style={{ fontSize: 10, fontWeight: 800, color: "#e44258", textTransform: "uppercase" }}>Lost Value</p>
+                <p style={{ fontSize: 13, fontWeight: 900, color: "#323338" }}>{formatRp(stats.lost)}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
