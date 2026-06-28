@@ -612,25 +612,23 @@ export async function updatePipelineSetting(
   }
 }
 
- / /   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
- / /   G E T   P I P E L I N E   L E A D E R B O A R D   ( G l o b a l ) 
- / /   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
- e x p o r t   a s y n c   f u n c t i o n   g e t P i p e l i n e L e a d e r b o a r d ( )   { 
-     n o S t o r e ( ) ; 
-     t r y   { 
-         c o n s t   s e s s i o n   =   a w a i t   g e t S e s s i o n ( ) ; 
-         i f   ( ! s e s s i o n )   r e t u r n   {   e r r o r :   " U n a u t h o r i z e d "   } ; 
- 
-         / /   W e   o n l y   e x p o s e   a g g r e g a t e d   n u m b e r s   ( q u o t a t i o n ,   s t a t u s ,   p i c )   f o r   l e a d e r b o a r d ,   N O T   p r o j e c t   d e t a i l s . 
-         c o n s t   d e a l s   =   a w a i t   p r i s m a . p i p e l i n e _ d e a l s . f i n d M a n y ( { 
-             s e l e c t :   {   p i c :   t r u e ,   s t a t u s :   t r u e ,   q u o t a t i o n :   t r u e   } 
-         } ) ; 
- 
-         r e t u r n   s e r i a l i z e P r i s m a ( {   s u c c e s s :   t r u e ,   d a t a :   d e a l s   } ) ; 
-     }   c a t c h   ( e r r o r )   { 
-         c o n s o l e . e r r o r ( " g e t P i p e l i n e L e a d e r b o a r d   e r r o r : " ,   e r r o r ) ; 
-         r e t u r n   {   e r r o r :   " F a i l e d   t o   f e t c h   l e a d e r b o a r d . "   } ; 
-     } 
- } 
-  
- 
+// ============================================
+// GET PIPELINE LEADERBOARD (Global)
+// ============================================
+export async function getPipelineLeaderboard() {
+  noStore();
+  try {
+    const session = await getSession();
+    if (!session) return { error: "Unauthorized" };
+
+    // We only expose aggregated numbers (quotation, status, pic) for leaderboard, NOT project details.
+    const deals = await prisma.pipeline_deals.findMany({
+      select: { pic: true, status: true, quotation: true }
+    });
+
+    return serializePrisma({ success: true, data: deals });
+  } catch (error) {
+    console.error("getPipelineLeaderboard error:", error);
+    return { error: "Failed to fetch leaderboard." };
+  }
+}
