@@ -67,40 +67,42 @@ export async function getDealsPipeline(filters?: DealFilters) {
     const session = await getSession();
     if (!session) return { error: "Unauthorized" };
 
-    const where: any = {};
+    const whereConditions: any[] = [];
+    
+    // Role-based filtering: strict RBAC
+    const isAdminOrMgmt = session.roles?.some((r: string) => 
+      ["admin", "super", "management", "director"].some(kw => r.toLowerCase().includes(kw))
+    );
 
-    // Role-based filtering: non-internal users only see their own deals
-    if (!session.isInternal) {
-      where.pic = session.name;
+    if (!isAdminOrMgmt) {
+      whereConditions.push({
+        OR: [
+          { pic_id: parseInt(session.userId, 10) },
+          { pic: session.name }
+        ]
+      });
     }
 
     // Apply optional filters
-    if (filters?.status) {
-      where.status = filters.status;
-    }
-    if (filters?.pic && session.isInternal) {
-      where.pic = filters.pic;
-    }
-    if (filters?.category) {
-      where.category = filters.category;
-    }
-    if (filters?.sector) {
-      where.sector = filters.sector;
-    }
-    if (filters?.region) {
-      where.region = filters.region;
-    }
-    if (filters?.source) {
-      where.source = filters.source;
-    }
+    if (filters?.status) whereConditions.push({ status: filters.status });
+    if (filters?.pic && isAdminOrMgmt) whereConditions.push({ pic: filters.pic });
+    if (filters?.category) whereConditions.push({ category: filters.category });
+    if (filters?.sector) whereConditions.push({ sector: filters.sector });
+    if (filters?.region) whereConditions.push({ region: filters.region });
+    if (filters?.source) whereConditions.push({ source: filters.source });
+
     if (filters?.search) {
-      where.OR = [
-        { client_name: { contains: filters.search } },
-        { project_name: { contains: filters.search } },
-        { bill_material: { contains: filters.search } },
-        { remarks: { contains: filters.search } },
-      ];
+      whereConditions.push({
+        OR: [
+          { client_name: { contains: filters.search } },
+          { project_name: { contains: filters.search } },
+          { bill_material: { contains: filters.search } },
+          { remarks: { contains: filters.search } },
+        ]
+      });
     }
+
+    const where = whereConditions.length > 0 ? { AND: whereConditions } : {};
 
     const deals = await prisma.pipeline_deals.findMany({
       where,
@@ -122,9 +124,19 @@ export async function createDeal(data: DealData) {
     const session = await getSession();
     if (!session) return { error: "Unauthorized" };
 
-    // Non-internal users can only create deals with themselves as PIC
-    if (!session.isInternal && data.pic && data.pic !== session.name) {
+    // Role-based RBAC
+    const isAdminOrMgmt = session.roles?.some((r: string) => 
+      ["admin", "super", "management", "director"].some(kw => r.toLowerCase().includes(kw))
+    );
+
+    if (!isAdminOrMgmt && data.pic && data.pic !== session.name) {
       return { error: "You can only create deals assigned to yourself." };
+    }
+
+    let assignedPicId = parseInt(session.userId, 10);
+    if (isAdminOrMgmt && data.pic && data.pic !== session.name) {
+       const userMatch = await prisma.users.findFirst({ where: { name: data.pic } });
+       if (userMatch) assignedPicId = userMatch.id;
     }
 
     const deal = await prisma.pipeline_deals.create({
@@ -137,6 +149,7 @@ export async function createDeal(data: DealData) {
         region: data.region || null,
         sales_planner: data.sales_planner || null,
         pic: data.pic || session.name,
+        pic_id: assignedPicId,
         category: data.category || null,
         sector: data.sector || null,
         quotation: data.quotation ? BigInt(data.quotation) : BigInt(0),
@@ -598,3 +611,26 @@ export async function updatePipelineSetting(
     return { error: "Failed to update pipeline setting." };
   }
 }
+
+ / /   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+ / /   G E T   P I P E L I N E   L E A D E R B O A R D   ( G l o b a l ) 
+ / /   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+ e x p o r t   a s y n c   f u n c t i o n   g e t P i p e l i n e L e a d e r b o a r d ( )   { 
+     n o S t o r e ( ) ; 
+     t r y   { 
+         c o n s t   s e s s i o n   =   a w a i t   g e t S e s s i o n ( ) ; 
+         i f   ( ! s e s s i o n )   r e t u r n   {   e r r o r :   " U n a u t h o r i z e d "   } ; 
+ 
+         / /   W e   o n l y   e x p o s e   a g g r e g a t e d   n u m b e r s   ( q u o t a t i o n ,   s t a t u s ,   p i c )   f o r   l e a d e r b o a r d ,   N O T   p r o j e c t   d e t a i l s . 
+         c o n s t   d e a l s   =   a w a i t   p r i s m a . p i p e l i n e _ d e a l s . f i n d M a n y ( { 
+             s e l e c t :   {   p i c :   t r u e ,   s t a t u s :   t r u e ,   q u o t a t i o n :   t r u e   } 
+         } ) ; 
+ 
+         r e t u r n   s e r i a l i z e P r i s m a ( {   s u c c e s s :   t r u e ,   d a t a :   d e a l s   } ) ; 
+     }   c a t c h   ( e r r o r )   { 
+         c o n s o l e . e r r o r ( " g e t P i p e l i n e L e a d e r b o a r d   e r r o r : " ,   e r r o r ) ; 
+         r e t u r n   {   e r r o r :   " F a i l e d   t o   f e t c h   l e a d e r b o a r d . "   } ; 
+     } 
+ } 
+  
+ 

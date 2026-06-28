@@ -362,6 +362,7 @@ export default function LiveDataClient() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [deals, setDeals] = useState<Deal[]>([]);
+  const [leaderboardDeals, setLeaderboardDeals] = useState<Deal[]>([]);
   const [opsRecords, setOpsRecords] = useState<OpsRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -383,12 +384,14 @@ export default function LiveDataClient() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [dealsRes, opsRes] = await Promise.all([
+      const [dealsRes, opsRes, leaderboardRes] = await Promise.all([
         fetch("/api/v1/pipeline/deals").then(r => r.json()),
         fetch("/api/v1/pipeline/ops").then(r => r.json()),
+        fetch("/api/v1/pipeline/deals?type=leaderboard").then(r => r.json()),
       ]);
       if (dealsRes.success) setDeals(dealsRes.data || []);
       if (opsRes.success) setOpsRecords(opsRes.data || []);
+      if (leaderboardRes.success) setLeaderboardDeals(leaderboardRes.data || []);
     } catch (e) {
       console.error("Load error:", e);
     }
@@ -443,13 +446,8 @@ export default function LiveDataClient() {
       byStatus[d.status].count++;
       byStatus[d.status].value += val;
 
-      // By PIC (Advanced)
-      const pic = d.pic || "Unassigned";
-      if (!byPic[pic]) byPic[pic] = { totalValue: 0, totalCount: 0, wonValue: 0, wonCount: 0, lostValue: 0, lostCount: 0 };
-      byPic[pic].totalValue += val;
-      byPic[pic].totalCount++;
-      if (d.status === "A") { byPic[pic].wonValue += val; byPic[pic].wonCount++; }
-      if (d.status === "L") { byPic[pic].lostValue += val; byPic[pic].lostCount++; }
+      // By PIC (Advanced) - Now handled via leaderboardDeals separately
+      // Removed from this deals.forEach loop to avoid duplicate/missing global PIC stats
 
       // By Sector
       const sec = d.sector || "Other";
@@ -464,6 +462,16 @@ export default function LiveDataClient() {
       byCategory[cat].value += val;
     });
 
+    leaderboardDeals.forEach(d => {
+      const val = Number(d.quotation) || 0;
+      const pic = d.pic || "Unassigned";
+      if (!byPic[pic]) byPic[pic] = { totalValue: 0, totalCount: 0, wonValue: 0, wonCount: 0, lostValue: 0, lostCount: 0 };
+      byPic[pic].totalValue += val;
+      byPic[pic].totalCount++;
+      if (d.status === "A") { byPic[pic].wonValue += val; byPic[pic].wonCount++; }
+      if (d.status === "L") { byPic[pic].lostValue += val; byPic[pic].lostCount++; }
+    });
+
     const conversionRate = activeCount > 0 ? ((wonCount / activeCount) * 100).toFixed(1) : "0";
     const conversionRateValue = (pipeline + won) > 0 ? ((won / (pipeline + won)) * 100).toFixed(1) : "0";
 
@@ -471,7 +479,7 @@ export default function LiveDataClient() {
     const opsDone = opsRecords.filter(o => o.status === "S").reduce((s, o) => s + Number(o.total_value), 0);
 
     return { total, won, pipeline, lost, wonCount, activeCount, conversionRate, conversionRateValue, weightedPipeline, byStatus, byPic, bySector, byCategory, opsTotal, opsDone };
-  }, [deals, opsRecords]);
+  }, [deals, opsRecords, leaderboardDeals]);
 
   // Filtered lists
   const filteredDeals = useMemo(() => {

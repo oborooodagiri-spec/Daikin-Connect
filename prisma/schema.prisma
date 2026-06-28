@@ -307,6 +307,7 @@ model users {
   created_quotations        quotations[]
   created_slas              slas[]
   created_boq_projects      boq_projects[]
+  pipeline_deals            pipeline_deals[]
 
   @@index([role_id], map: "role_id")
 }
@@ -1170,6 +1171,7 @@ model pipeline_deals {
   region            String?   @db.VarChar(50)
   sales_planner     String?   @db.VarChar(100)
   pic               String?   @db.VarChar(100)
+  pic_id            Int?
   category          String?   @db.VarChar(50)
   sector            String?   @db.VarChar(50)
   quotation         BigInt    @default(0)
@@ -1184,8 +1186,11 @@ model pipeline_deals {
   created_at        DateTime  @default(now()) @db.Timestamp(0)
   updated_at        DateTime  @updatedAt @db.Timestamp(0)
 
+  users             users?    @relation(fields: [pic_id], references: [id], onDelete: SetNull)
+
   @@index([status])
   @@index([pic])
+  @@index([pic_id])
   @@index([category])
   @@index([sector])
   @@index([region])

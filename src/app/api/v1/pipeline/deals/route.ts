@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDealsPipeline, getOpsPipeline, getPipelineStats } from "@/app/actions/pipeline";
+import { getDealsPipeline, getOpsPipeline, getPipelineStats, getPipelineLeaderboard } from "@/app/actions/pipeline";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -7,6 +7,11 @@ export async function GET(req: NextRequest) {
 
   if (type === "stats") {
     const result = await getPipelineStats();
+    return NextResponse.json(result);
+  }
+
+  if (type === "leaderboard") {
+    const result = await getPipelineLeaderboard();
     return NextResponse.json(result);
   }
 
