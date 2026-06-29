@@ -99,10 +99,11 @@ export async function sendPasswordResetEmail(to: string, name: string, resetToke
 }
 
 export async function sendOtpEmail(to: string, otpCode: string) {
-  console.log(`[MAIL] Attempting to send OTP to ${to}...`);
+  const securityFrom = `"EPL Link Security" <${process.env.SMTP_USER || 'no-reply@epllink.com'}>`;
+  console.log(`[MAIL] Attempting to send OTP to ${to} from ${securityFrom}...`);
   try {
     const info = await transporter.sendMail({
-      from: '"EPL Link Security" <no-reply@epllink.com>',
+      from: securityFrom,
       to,
       subject: 'Security Verification Code - EPL Link',
       html: getVerificationCodeTemplate(otpCode),
