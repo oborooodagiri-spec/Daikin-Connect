@@ -19,6 +19,7 @@ import QRCode from "react-qr-code";
 import { getUnitMediaHistory } from "@/app/actions/media";
 import { getUnitComplaints, deleteComplaint } from "@/app/actions/complaints";
 import HealthExplanationModal from "@/components/HealthExplanationModal";
+import UnitFormModal from "@/components/dashboard/UnitFormModal";
 
 export default function UnitDetailPage() {
   const router = useRouter();
@@ -509,57 +510,16 @@ export default function UnitDetailPage() {
          </div>
       </div>
 
-      {/* Monday Style Edit Modal */}
-      <AnimatePresence>
-         {isEditing && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsEditing(false)} />
-               <motion.div 
-                  initial={{ opacity: 0, scale: 0.95, y: 20 }} 
-                  animate={{ opacity: 1, scale: 1, y: 0 }} 
-                  exit={{ opacity: 0, scale: 0.95, y: 20 }} 
-                  className="bg-white rounded-2xl shadow-2xl relative z-10 w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
-               >
-                  <div className="px-6 md:px-8 py-5 md:py-6 border-b border-[#e6e9ef] flex items-center justify-between">
-                     <div>
-                        <h2 className="text-lg md:text-xl font-black text-[#323338] uppercase tracking-tight">Edit Asset Specifications</h2>
-                        <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Manual data override</p>
-                     </div>
-                     <button onClick={() => setIsEditing(false)} className="p-2 hover:bg-slate-100 rounded-lg transition-all">
-                        <XIcon size={20} className="text-slate-400" />
-                     </button>
-                  </div>
-                  
-                  <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <InputField label="Tag Number" value={formData.tag_number} onChange={(v: string) => setFormData({...formData, tag_number: v})} />
-                        <InputField label="Serial Number" value={formData.serial_number} onChange={(v: string) => setFormData({...formData, serial_number: v})} />
-                     </div>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <InputField label="Unit Model" value={formData.model} onChange={(v: string) => setFormData({...formData, model: v})} />
-                        <InputField label="Capacity" value={formData.capacity} onChange={(v: string) => setFormData({...formData, capacity: v})} />
-                     </div>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <InputField label="Area" value={formData.area} onChange={(v: string) => setFormData({...formData, area: v})} />
-                        <InputField label="Floor" value={formData.building_floor} onChange={(v: string) => setFormData({...formData, building_floor: v})} />
-                     </div>
-                     <InputField label="Operational Room / Tenant" value={formData.room_tenant} onChange={(v: string) => setFormData({...formData, room_tenant: v})} />
-                  </div>
-                  
-                  <div className="px-8 py-5 md:py-6 border-t border-[#e6e9ef] bg-slate-50/50 flex items-center justify-end gap-3">
-                     <button onClick={() => setIsEditing(false)} className="px-6 py-2.5 rounded-xl text-[13px] font-bold text-slate-500 hover:bg-white border border-transparent hover:border-[#e6e9ef] transition-all">Cancel</button>
-                     <button 
-                        onClick={handleSave} 
-                        disabled={isSaving}
-                        className="px-8 py-2.5 bg-[#0073ea] hover:bg-[#0060c4] text-white text-[13px] font-bold rounded-xl transition-all shadow-md shadow-blue-500/20 disabled:opacity-50"
-                     >
-                        {isSaving ? "Saving..." : "Save Changes"}
-                     </button>
-                  </div>
-               </motion.div>
-            </div>
-         )}
-      </AnimatePresence>
+      <UnitFormModal
+         isOpen={isEditing}
+         onClose={() => setIsEditing(false)}
+         onRefresh={() => fetchInitialData()}
+         projectId={projectId}
+         unit={unit}
+         mode="edit"
+         enabledTypes={unit?.projects?.enabled_unit_types || "VRV,Split,Package,Chiller"}
+         monitoringFocus={unit?.projects?.monitoring_focus || "UNIT"}
+      />
 
       <HealthExplanationModal 
         isOpen={showHealthModal} 
