@@ -11,6 +11,7 @@ import { getDailyLogSections } from "@/components/DailyLogPDFTemplate";
 import { getFCUPreventiveSections } from "@/components/FCUPreventivePDFTemplate";
 import { getAHUPreventiveSections } from "@/components/AHUPreventivePDFTemplate";
 import { getChillerPreventiveSections } from "@/components/ChillerPreventivePDFTemplate";
+import { getUWAPPreventiveSections } from "@/components/UWAPPreventivePDFTemplate";
 import { getLogsheetRoesminSections } from "@/components/LogsheetRoesminPDFTemplate";
 import { getMciSections } from "@/components/MciPDFTemplate";
 import { jsPDF } from "jspdf";
@@ -507,6 +508,7 @@ export default function ReportHubPage() {
     const uType = (data.unit?.unit_type || "").toUpperCase().trim();
     const isFCU = uType === 'FCU';
     const isAHU = uType === 'AHU' || uType.includes('AHU');
+    const isUWAP = uType.includes('UWAP');
     const isChiller = uType.includes('CHILL') || uType.includes('WCP');
     
     if (isAHU) {
@@ -515,6 +517,9 @@ export default function ReportHubPage() {
     } else if (isFCU) {
       reportTitle = activityData.reportTitle || "PREVENTIVE MAINTENANCE FCU";
       sections = getFCUPreventiveSections({...activityData, ...commonApproval}, data.unit, data.activity.inspector_name, data.customer?.name, activeLang);
+    } else if (isUWAP) {
+      reportTitle = activityData.reportTitle || "PREVENTIVE MAINTENANCE CHILLER";
+      sections = getUWAPPreventiveSections({...activityData, ...commonApproval}, data.unit, data.activity.inspector_name, data.customer?.name, activeLang);
     } else if (isChiller) {
       reportTitle = activityData.reportTitle || "PREVENTIVE MAINTENANCE CHILLER";
       sections = getChillerPreventiveSections({...activityData, ...commonApproval}, data.unit, data.activity.inspector_name, data.customer?.name, activeLang);

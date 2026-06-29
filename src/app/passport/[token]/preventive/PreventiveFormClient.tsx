@@ -787,13 +787,13 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
         <div className={`w-24 h-24 ${isQueued ? 'bg-orange-500' : 'bg-emerald-500'} rounded-full flex items-center justify-center mb-6 animate-bounce`}>
           {isQueued ? <WifiOff size={48} /> : <CheckCircle2 size={48} />}
         </div>
-        <h1 className="text-3xl font-black tracking-tight mb-2">
+        <h1 className="text-3xl font-black text-white tracking-tight mb-2">
           {isQueued ? (lang === 'ja' ? 'オフラインでキューされました！' : "Queued Offline!") : (lang === 'ja' ? '提出完了！' : "Preventive Submitted!")}
         </h1>
         <p className="text-blue-200 mb-8 max-w-sm font-medium">
           {isQueued
             ? (lang === 'ja' ? "接続がありません。レポートは保存されました。インターネット接続時に自動送信されます。" : "Koneksi mati. Checksheet Anda telah disimpan di HP dan akan otomatis terkirim saat internet kembali aktif.")
-            : (lang === 'ja' ? "メンテナンスチェックシートとPDFドキュメントが正常に生成され、サーバーに送信されました。" : "Maintenance Checksheet & PDF dokumen berlogo telah berhasil digenerate dan dikirim ke server.")}
+            : (lang === 'ja' ? "メンテナンスチェックシートとPDFドキュメントが正常に生成され、サーバーに送信されました。" : "Maintenance Checksheet telah berhasil dikirim ke server.")}
         </p>
         <button onClick={() => router.push(`/unit/${unit.qr_code_token}`)} className="px-8 py-4 bg-white text-[#003366] font-black rounded-2xl uppercase tracking-widest text-sm hover:scale-105 transition-transform shadow-xl">
           {lang === 'ja' ? "パスポートに戻る" : "Kembali ke Passport"}
