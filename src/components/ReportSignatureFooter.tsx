@@ -88,13 +88,6 @@ export const ReportSignatureFooter = ({
         <div style={{ height: "35mm", position: "relative" }}>
           {customerSignatureUrl ? (
             <img src={customerSignatureUrl} alt="Customer Signature" style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", margin: "auto" }} />
-          ) : witnessedBy ? (
-            <DigitalStamp 
-              label="APPROVED" 
-              subLabel="CUSTOMER" 
-              name={witnessedBy} 
-              date={witnessedDate} 
-            />
           ) : (
             <div 
               style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", cursor: onCustomerSignClick ? 'pointer' : 'default' }}

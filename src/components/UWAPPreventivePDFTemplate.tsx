@@ -342,16 +342,16 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
         
         <div style={{ marginTop: "10mm" }}>
           <ReportSignatureFooter 
-             preparedBy={engineerName || "TEKNISI LAPANGAN"}
+             preparedBy={data.reviewedBy || engineerName || "TEKNISI LAPANGAN"}
              witnessedBy={customerName}
-             reviewedBy={data.reviewedBy}
+             reviewedBy={""}
              reviewedDate={data.reviewedAt}
              witnessedDate={data.approvedAt}
              lang={lang}
              isBulkSync={data.isBulkSync}
              customerSignatureUrl={typeof data !== 'undefined' ? (data.customerSignatureUrl || data.customer_signature) : undefined}
-             engineerSignatureUrl={typeof data !== 'undefined' ? (data.engineerSignatureUrl || data.engineer_signature) : undefined}
-             reviewerSignatureUrl={typeof data !== 'undefined' ? (data.reviewerSignatureUrl || data.reviewer_signature) : undefined}
+             engineerSignatureUrl={typeof data !== 'undefined' ? (data.reviewerSignatureUrl || data.reviewer_signature || data.engineerSignatureUrl || data.engineer_signature) : undefined}
+             reviewerSignatureUrl={undefined}
              onCustomerSignClick={typeof data !== 'undefined' ? data.onCustomerSignClick : undefined}
              onEngineerSignClick={typeof data !== 'undefined' ? data.onEngineerSignClick : undefined}
           />
