@@ -731,116 +731,16 @@ export default function UnitsPage() {
         unit={selectedQuickUnit}
       />
 
-      <AnimatePresence>
-        {isModalOpen && (
-          <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={closeModal} />
-            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white rounded-[2rem] shadow-2xl relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8">
-               <div className="flex justify-between items-start mb-8">
-                  <h2 className="text-2xl font-black text-[#003366]">{modalMode === "create" ? `Add New ${projectData?.monitoring_focus === 'ROOM' ? 'Room' : 'Unit'}` : `Edit ${projectData?.monitoring_focus === 'ROOM' ? 'Room' : 'Unit'} Data`}</h2>
-                  <button onClick={closeModal} className="p-2 bg-slate-100 rounded-full"><X size={20}/></button>
-               </div>
-               <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Type</label>
-                      <select 
-                        value={formData.unit_type} 
-                        onChange={e => setFormData({...formData, unit_type: e.target.value})} 
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]"
-                      >
-                         {(projectData?.enabled_unit_types || "Chiller").split(",").map((t: string) => (
-                           <option key={t} value={t}>{t}</option>
-                         ))}
-                      </select>
-                    </div>
-                    <div className="space-y-1 md:col-span-1">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</label>
-                      <select 
-                        value={formData.status} 
-                        onChange={e => setFormData({...formData, status: e.target.value})} 
-                        className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]"
-                      >
-                         <option value="Normal">Normal</option>
-                         <option value="Problem">Problem</option>
-                         <option value="Critical">Critical</option>
-                         <option value="Warning">Warning</option>
-                         <option value="Pending">Pending</option>
-                         <option value="On_Progress">On Progress</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tag Number</label>
-                      <input type="text" value={formData.tag_number} onChange={e => setFormData({...formData, tag_number: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Serial Number</label>
-                      <input type="text" value={formData.serial_number} onChange={e => setFormData({...formData, serial_number: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Brand</label>
-                      <input type="text" value={formData.brand} onChange={e => setFormData({...formData, brand: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Model</label>
-                      <input type="text" value={formData.model} onChange={e => setFormData({...formData, model: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Capacity (Btu/h)</label>
-                      <input type="text" value={formData.capacity} onChange={e => setFormData({...formData, capacity: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Area</label>
-                      <input type="text" value={formData.area} onChange={e => setFormData({...formData, area: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Floor</label>
-                      <input type="text" value={formData.building_floor} onChange={e => setFormData({...formData, building_floor: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Room / Tenant</label>
-                      {projectData?.monitoring_focus === 'ROOM' && availableRooms.length > 0 && !formData.unit_type?.toLowerCase().includes('room') ? (
-                        <select 
-                          value={formData.room_tenant} 
-                          onChange={e => setFormData({...formData, room_tenant: e.target.value})}
-                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]"
-                        >
-                          <option value="">Select Room...</option>
-                          {availableRooms.map(r => (
-                            <option key={r} value={r}>{r}</option>
-                          ))}
-                          <option value="custom">+ Type Manually...</option>
-                        </select>
-                      ) : (
-                        <input 
-                          type="text" 
-                          list="room-options"
-                          value={formData.room_tenant} 
-                          onChange={e => setFormData({...formData, room_tenant: e.target.value})} 
-                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a1e4]" 
-                          placeholder="e.g. Server Room A"
-                        />
-                      )}
-                      <datalist id="room-options">
-                        {availableRooms.map(r => <option key={r} value={r} />)}
-                      </datalist>
-                    </div>
-                  </div>
-                  <button type="submit" className="w-full py-4 bg-[#00a1e4] text-white font-black rounded-2xl shadow-lg shadow-blue-200 hover:bg-[#008cc6] transition-all flex items-center justify-center gap-2">
-                    <Save size={20}/> Save Unit Data
-                  </button>
-               </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <UnitFormModal 
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onRefresh={fetchData}
+        projectId={targetProjectId}
+        unit={editId ? units.find(u => u.id === editId) : null}
+        mode={modalMode as any}
+        enabledTypes={projectData?.enabled_unit_types || "VRV,Split,Package,Chiller"}
+        monitoringFocus={projectData?.monitoring_focus}
+      />
 
       <AnimatePresence>
         {isPrintModalOpen && selectedQR && (
