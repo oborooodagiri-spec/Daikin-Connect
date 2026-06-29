@@ -190,11 +190,7 @@ export async function login(formData: FormData) {
             html: getVerificationCodeTemplate(generatedOtp)
           });
           
-          // Don't wait forever for the mail server
-          await Promise.race([
-            mailPromise,
-            new Promise((_, reject) => setTimeout(() => reject(new Error("Mail timeout")), 8000))
-          ]);
+          await mailPromise;
         } catch (mailError) {
           console.error("Mail Delivery Failed or Timed Out:", mailError);
           // We still proceed so the user gets the chance to enter a code if it actually arrived late
