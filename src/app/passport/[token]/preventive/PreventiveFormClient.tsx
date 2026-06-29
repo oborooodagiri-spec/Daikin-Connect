@@ -99,6 +99,14 @@ const getScopeRows = (unitType: string) => {
       { key: "current_t", label: "Current T (Amps)", type: "measure", category: "6. ELECTRICAL MEASUREMENT (Current)", format: "single" },
       { key: "grounding_amps", label: "Grounding Amps (Amps)", type: "measure", category: "6. ELECTRICAL MEASUREMENT (Current)", format: "single" },
       { key: "number_of_fans_on", label: "Number of Fans On", type: "measure", category: "6. ELECTRICAL MEASUREMENT (Current)", format: "single" },
+
+      { key: "check_leak", label: "Check Oil & Refrigerant Leaks", type: "action", category: "MAINTENANCE CHECKLIST" },
+      { key: "check_vibration", label: "Check Compressor Vibration & Noise", type: "action", category: "MAINTENANCE CHECKLIST" },
+      { key: "check_oil_level", label: "Check Oil Level & Color", type: "action", category: "MAINTENANCE CHECKLIST" },
+      { key: "check_refrigerant", label: "Check Refrigerant Charge (Sight Glass)", type: "action", category: "MAINTENANCE CHECKLIST" },
+      { key: "clean_condenser", label: "Clean Condenser Coils / Tubes", type: "action", category: "MAINTENANCE CHECKLIST" },
+      { key: "check_strainer", label: "Check Water Strainer", type: "action", category: "MAINTENANCE CHECKLIST" },
+      { key: "check_control", label: "Check Control Panel & Safety Devices", type: "action", category: "MAINTENANCE CHECKLIST" }
     ];
   }
 
