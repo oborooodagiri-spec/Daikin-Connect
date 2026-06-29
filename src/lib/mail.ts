@@ -3,7 +3,8 @@ import {
   getRegistrationReceivedTemplate, 
   getAccountApprovedTemplate, 
   getAccountSuspendedTemplate, 
-  getPasswordResetTemplate 
+  getPasswordResetTemplate,
+  getVerificationCodeTemplate
 } from './mail-templates';
 
 // Using Hostinger SMTP Configuration
@@ -93,6 +94,23 @@ export async function sendPasswordResetEmail(to: string, name: string, resetToke
     return { success: true, messageId: info.messageId };
   } catch (err) {
     console.error('[MAIL] SMTP Error (Reset):', err);
+    return { error: err };
+  }
+}
+
+export async function sendOtpEmail(to: string, otpCode: string) {
+  console.log(`[MAIL] Attempting to send OTP to ${to}...`);
+  try {
+    const info = await transporter.sendMail({
+      from: '"EPL Link Security" <no-reply@epllink.com>',
+      to,
+      subject: 'Security Verification Code - EPL Link',
+      html: getVerificationCodeTemplate(otpCode),
+    });
+    console.log(`[MAIL] OTP sent successfully: ${info.messageId}`);
+    return { success: true, messageId: info.messageId };
+  } catch (err) {
+    console.error('[MAIL] SMTP Error (OTP):', err);
     return { error: err };
   }
 }

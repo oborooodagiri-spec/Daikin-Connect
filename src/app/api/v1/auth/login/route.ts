@@ -2,27 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@/generated/client_v2";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
 import { checkRateLimit, handleFailedLogin, resetLoginFails, recordAuditLog } from "@/lib/security";
-import { getVerificationCodeTemplate } from "@/lib/mail-templates";
+import { sendOtpEmail } from "@/lib/mail";
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret";
 const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "refresh_fallback_secret";
 
-// SMTP Configuration from test-email.js
-const transportConfig = {
-  host: 'smtp.hostinger.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: 'no-reply@epllink.com',
-    pass: process.env.SMTP_PASS || 'Onta12345@',
-  },
-  tls: { rejectUnauthorized: false }
-};
 
-const transporter = nodemailer.createTransport(transportConfig);
 
 export async function POST(req: NextRequest) {
   try {
@@ -82,16 +69,11 @@ export async function POST(req: NextRequest) {
           data: { otp_code: generatedOtp, otp_expiry: expiry }
         });
 
-        // Send Email
+        // Send OTP Email via centralized mailer
         try {
-          await transporter.sendMail({
-            from: '"EPL Link Security" <no-reply@epllink.com>',
-            to: user.email,
-            subject: 'Security Verification Code - EPL Link',
-            html: getVerificationCodeTemplate(generatedOtp)
-          });
+          await sendOtpEmail(user.email, generatedOtp);
         } catch (mailError) {
-          console.error("Mail Delivery Failed:", mailError);
+          console.error("OTP Mail Delivery Failed:", mailError);
         }
 
         await recordAuditLog({ userId: user.id, action: "2FA_CHALLENGE", details: "OTP Sent to email" });

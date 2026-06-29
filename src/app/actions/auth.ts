@@ -5,33 +5,15 @@ import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { sendRegistrationReceivedEmail } from "@/lib/mail";
+import { sendRegistrationReceivedEmail, sendOtpEmail } from "@/lib/mail";
 import { serializePrisma } from "@/lib/serialize";
 import { checkRateLimit, handleFailedLogin, resetLoginFails, recordAuditLog } from "@/lib/security";
-import nodemailer from "nodemailer";
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "daikin-connect-secret-key-change-in-production"
 );
 
-// SMTP Configuration from test-email.js
-const transportConfig = {
-  host: 'smtp.hostinger.com',
-  port: 465,
-  secure: true,
-  pool: true,
-  maxConnections: 3,
-  connectionTimeout: 15000,
-  greetingTimeout: 15000,
-  socketTimeout: 15000,
-  auth: {
-    user: 'no-reply@epllink.com',
-    pass: process.env.SMTP_PASS || 'Onta12345@',
-  },
-  tls: { rejectUnauthorized: false }
-};
 
-const transporter = nodemailer.createTransport(transportConfig);
 
 async function verifyTurnstile(token: string) {
   const secretKey = process.env.TURNSTILE_SECRET_KEY;
@@ -102,7 +84,7 @@ export async function register(formData: FormData) {
   }
 }
 
-import { getVerificationCodeTemplate } from "@/lib/mail-templates";
+
 
 export async function login(formData: FormData) {
   const email = formData.get("email") as string;
@@ -186,21 +168,8 @@ export async function login(formData: FormData) {
           data: { otp_code: generatedOtp, otp_expiry: expiry }
         });
 
-        // Send Email detached to prevent UI hanging
-        try {
-          const mailPromise = transporter.sendMail({
-            from: '"EPL Link Security" <no-reply@epllink.com>',
-            to: user.email,
-            subject: 'Security Verification Code - EPL Link',
-            html: getVerificationCodeTemplate(generatedOtp)
-          });
-          
-          // Don't await it so we don't block the UI.
-          // In a PM2 long-running Node environment, this will finish in the background.
-          mailPromise.catch(e => console.error("Detached Mail Error:", e));
-        } catch (mailError) {
-          console.error("Mail Dispatch Failed:", mailError);
-        }  // We still proceed so the user gets the chance to enter a code if it actually arrived late
+        // Send OTP Email via centralized mailer (fire-and-forget to avoid blocking UI)
+        sendOtpEmail(user.email, generatedOtp).catch(e => console.error("OTP Mail Error:", e));
 
         await recordAuditLog({ userId: user.id, action: "2FA_CHALLENGE_WEB" });
         return { requires2f: true };
