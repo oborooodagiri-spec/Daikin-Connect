@@ -219,7 +219,7 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
 
   const renderElectricalMeasurement = () => {
     return (
-      <div key="section-electrical" style={{ pageBreakBefore: "always", marginBottom: "5mm" }}>
+      <div key="force-break-electrical" style={{ marginBottom: "5mm" }}>
         <div style={subHeaderStyle}>6. ELECTRICAL MEASUREMENT</div>
         <table style={mainTableStyle}>
           <tbody>
@@ -324,7 +324,7 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
 
   const renderAdviceAndSignature = () => {
     return (
-      <div key="section-signature" style={{ breakInside: "avoid", marginTop: "10mm", marginBottom: "5mm" }}>
+      <div key="force-break-signature" style={{ marginTop: "10mm", marginBottom: "5mm" }}>
         <div style={{...subHeaderStyle, marginBottom:"2mm"}}>DOCUMENTATION & ADVICE</div>
         <div style={{ fontSize: "9pt", fontWeight: "bold", marginBottom: "2mm", color:"#003366" }}>{t("TECHNICAL ADVICE & SUMMARY", lang)}</div>
         <table style={mainTableStyle}>
@@ -380,7 +380,7 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
       </div>
     ];
     return photoChunks.map((chunk, chunkIndex) => (
-      <div key={`section-photos-${chunkIndex}`} style={{ width: "100%", pageBreakBefore: "always", marginTop: "5mm", marginBottom: "5mm" }}>
+      <div key={`force-break-photos-${chunkIndex}`} style={{ width: "100%", marginTop: "5mm", marginBottom: "5mm" }}>
         <div style={categoryHeader}>
           {t("Maintenance Documentation Photos", lang)} {photoChunks.length > 1 ? `(Page ${chunkIndex + 1})` : ''}
         </div>
@@ -433,7 +433,7 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
 
   return [
     renderUnitInformation(),
-    renderParameters(),
+    ...renderParameters(),
     renderOtherMeasures(),
     renderElectricalMeasurement(),
     renderChecklist(),
