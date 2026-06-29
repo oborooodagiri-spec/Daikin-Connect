@@ -170,6 +170,11 @@ export default function UnitFormModal({
                     >
                        {dbCategories.length > 0 ? (
                          <>
+                           {/* Fallback for legacy data */}
+                           {formData.unit_type && !dbCategories.some((c: any) => c.name === formData.unit_type || dbCategories.some((p: any) => `${p.name} > ${c.name}` === formData.unit_type)) && (
+                             <option value={formData.unit_type}>{formData.unit_type} (Legacy)</option>
+                           )}
+                           
                            {dbCategories.filter((c: any) => c.parent_id === null).map((parent: any) => {
                              const children = dbCategories.filter((c: any) => c.parent_id === parent.id);
                              if (children.length > 0) {
