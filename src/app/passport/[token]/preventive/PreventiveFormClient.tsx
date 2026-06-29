@@ -57,7 +57,52 @@ const getScopeRows = (unitType: string) => {
     ];
   }
 
-  // 3. CHILLER / WCP
+  // 3. UWAP (Air Cooled Screw Compressor Chiller)
+  if (type.includes("UWAP")) {
+    return [
+      { key: "error", label: "Error", type: "measure", category: "1. PARAMETER" },
+      { key: "temp_set_point_lwt", label: "Temp Set Point (LWT) (°C)", type: "measure", category: "1. PARAMETER" },
+      { key: "temp_set_point_heat", label: "Temp Set Point (Heat) (°C)", type: "measure", category: "1. PARAMETER" },
+      { key: "inlet_water_temp", label: "Inlet Water Temp (°C)", type: "measure", category: "1. PARAMETER" },
+      { key: "outlet_water_temp", label: "Outlet Water Temp (°C)", type: "measure", category: "1. PARAMETER" },
+      { key: "outdoor_temp", label: "Outdoor Temp (°C)", type: "measure", category: "1. PARAMETER" },
+      { key: "discharge_temp_1", label: "Discharge Temp 1 (°C)", type: "measure", category: "1. PARAMETER" },
+      { key: "discharge_temp_2", label: "Discharge Temp 2 (°C)", type: "measure", category: "1. PARAMETER" },
+      { key: "suction_temp_1", label: "Suction Temp 1 (°C)", type: "measure", category: "1. PARAMETER" },
+      { key: "suction_temp_2", label: "Suction Temp 2 (°C)", type: "measure", category: "1. PARAMETER" },
+      { key: "capacity_1", label: "Capacity 1 (%)", type: "measure", category: "1. PARAMETER" },
+      { key: "capacity_2", label: "Capacity 2 (%)", type: "measure", category: "1. PARAMETER" },
+      { key: "fan_mode_1", label: "Fan Mode 1", type: "measure", category: "1. PARAMETER" },
+      { key: "fan_mode_2", label: "Fan Mode 2", type: "measure", category: "1. PARAMETER" },
+      { key: "running_time", label: "Running Time (min)", type: "measure", category: "1. PARAMETER" },
+      { key: "running_hour_comp_1", label: "Running Hour Comp#1 (Hour)", type: "measure", category: "1. PARAMETER" },
+      { key: "running_hour_comp_2", label: "Running Hour Comp#2 (Hour)", type: "measure", category: "1. PARAMETER" },
+
+      { key: "refrigerant_high_pressure", label: "High Pressure (Mpa)", type: "measure", category: "2. REFRIGERANT PRESSURE" },
+      { key: "refrigerant_low_pressure", label: "Low Pressure (Mpa)", type: "measure", category: "2. REFRIGERANT PRESSURE" },
+
+      { key: "oil_upper_level", label: "Upper Level Sight Glass (%)", type: "measure", category: "3. OIL LEVEL" },
+      { key: "oil_lower_level", label: "Lower Level Sight Glass (%)", type: "measure", category: "3. OIL LEVEL" },
+
+      { key: "liquid_sight_glass", label: "Sight Glass (Clear/Bubble)", type: "measure", category: "4. LIQUID LINE" },
+
+      { key: "water_inlet_evap_press", label: "Inlet Evap Press (Kg/cm²)", type: "measure", category: "5. WATER PRESSURE" },
+      { key: "water_outlet_evap_press", label: "Outlet Evap Press (Kg/cm²)", type: "measure", category: "5. WATER PRESSURE" },
+      { key: "water_evap_delta_press", label: "Evap Delta Press (Kg/cm²)", type: "measure", category: "5. WATER PRESSURE" },
+
+      { key: "voltage_rs", label: "Voltage R-S (Volts)", type: "measure", category: "6. ELECTRICAL MEASUREMENT (Voltage)" },
+      { key: "voltage_rt", label: "Voltage R-T (Volts)", type: "measure", category: "6. ELECTRICAL MEASUREMENT (Voltage)" },
+      { key: "voltage_st", label: "Voltage S-T (Volts)", type: "measure", category: "6. ELECTRICAL MEASUREMENT (Voltage)" },
+
+      { key: "current_r", label: "Current R (Amps)", type: "measure", category: "6. ELECTRICAL MEASUREMENT (Current)" },
+      { key: "current_s", label: "Current S (Amps)", type: "measure", category: "6. ELECTRICAL MEASUREMENT (Current)" },
+      { key: "current_t", label: "Current T (Amps)", type: "measure", category: "6. ELECTRICAL MEASUREMENT (Current)" },
+      { key: "grounding_amps", label: "Grounding Amps (Amps)", type: "measure", category: "6. ELECTRICAL MEASUREMENT (Current)" },
+      { key: "number_of_fans_on", label: "Number of Fans On", type: "measure", category: "6. ELECTRICAL MEASUREMENT (Current)" },
+    ];
+  }
+
+  // 4. CHILLER / WCP
   if (type.includes("CHILL") || type.includes("WCP")) {
     const rows = [
       { key: "voltage_rs", label: "Voltage RS", type: "measure", category: "A. Voltage" },
