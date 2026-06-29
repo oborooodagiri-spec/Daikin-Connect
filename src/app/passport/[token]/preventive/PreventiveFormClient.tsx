@@ -270,6 +270,11 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
   });
 
   const SCOPE_ROWS = getScopeRows(unit.unit_type);
+  const hasActionItems = SCOPE_ROWS.some(r => r.type === "action");
+  const hasPartsItems = !unit.unit_type?.toUpperCase().includes("CHILL") && !unit.unit_type?.toUpperCase().includes("WCP");
+  const hasStep3 = hasActionItems || hasPartsItems;
+  const totalSteps = hasStep3 ? 4 : 3;
+  const displayStep = step === 4 && !hasStep3 ? 3 : step;
 
   // Scope of Work rows
   const [scope, setScope] = useState<Record<string, { before: string; after: string; remarks: string; done: string }>>(() => {
@@ -799,10 +804,10 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
         </h1>
         <div className="flex justify-between items-center mt-3">
           <p className="text-sm font-medium opacity-80 flex items-center gap-1"><MapPin size={14} /> {unit.area}</p>
-          <span className="px-3 py-1 bg-[#00a1e4] rounded-lg text-xs font-black uppercase tracking-widest">{lang === 'ja' ? 'ステップ' : 'Step'} {step} / 4</span>
+          <span className="px-3 py-1 bg-[#00a1e4] rounded-lg text-xs font-black uppercase tracking-widest">{lang === 'ja' ? 'ステップ' : 'Step'} {displayStep} / {totalSteps}</span>
         </div>
         <div className="w-full bg-slate-800 h-2 mt-4 rounded-full overflow-hidden">
-          <div className="bg-[#00a1e4] h-full transition-all duration-500" style={{ width: `${(step / 4) * 100}%` }}></div>
+          <div className="bg-[#00a1e4] h-full transition-all duration-500" style={{ width: `${(displayStep / totalSteps) * 100}%` }}></div>
         </div>
       </div>
 
@@ -979,7 +984,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
           )}
 
           {/* STEP 3: ACTION ITEMS + PARTS */}
-          {step === 3 && (
+          {step === 3 && hasStep3 && (
             <motion.div key="s3" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} className="space-y-5">
               <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
                 <div className="flex justify-between items-center mb-4 border-b pb-2">
@@ -1131,6 +1136,8 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
               onClick={() => {
                 if (step === 4 && serviceStatus === "NOT_SERVICED") {
                    setStep(1);
+                } else if (step === 4 && !hasStep3) {
+                   setStep(2);
                 } else {
                    setStep(step - 1);
                 }
@@ -1154,6 +1161,8 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
                 }
                 // If not serviced, skip steps 2 and 3 and go straight to step 4 (Advice & Photos)
                 if (step === 1 && serviceStatus === "NOT_SERVICED") {
+                   setStep(4);
+                } else if (step === 2 && !hasStep3) {
                    setStep(4);
                 } else {
                    setStep(step + 1);
