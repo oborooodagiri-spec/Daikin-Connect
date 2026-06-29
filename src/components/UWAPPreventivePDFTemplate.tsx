@@ -29,6 +29,50 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
     return "N/A";
   };
 
+  const renderUnitInformation = () => {
+    return (
+      <div key="page1-header" style={{ marginBottom: "5mm" }}>
+        <div style={categoryHeader}>UNIT INFORMATION</div>
+        <table style={mainTableStyle}>
+          <tbody>
+            <tr>
+              <td style={cellLabel}>{t("Category", lang)}</td>
+              <td style={cellVal}>{unit?.unit_type?.split(" > ").pop() || unit?.unit_type || "-"}</td>
+              <td style={cellLabel}>{t("Brand", lang)}</td>
+              <td style={cellVal}>{header?.brand || unit?.brand || "-"}</td>
+              <td style={cellLabel}>{t("Date of Service", lang)}</td>
+              <td style={cellVal}>{header?.date ? new Date(header.date).toLocaleDateString() : "-"}</td>
+            </tr>
+            <tr>
+              <td style={cellLabel}>{t("Building Floor", lang)}</td>
+              <td style={cellVal}>{header?.floor || unit?.building_floor || "-"}</td>
+              <td style={cellLabel}>{t("Model Number", lang)}</td>
+              <td style={cellVal}>{header?.model || unit?.model || "-"}</td>
+              <td style={cellLabel}>SO / WO Number</td>
+              <td style={cellVal}>{header?.so_number || "-"}</td>
+            </tr>
+            <tr>
+              <td style={cellLabel}>{t("Area", lang)}</td>
+              <td style={cellVal}>{header?.area || unit?.area || "-"}</td>
+              <td style={cellLabel}>{t("Serial Number", lang)}</td>
+              <td style={cellVal}>{header?.serial_number || unit?.serial_number || "-"}</td>
+              <td style={cellLabel}>{t("Visit Count", lang)}</td>
+              <td style={cellVal}>1</td>
+            </tr>
+            <tr>
+              <td style={cellLabel}>{t("Room / Tenant", lang)}</td>
+              <td style={cellVal}>{header?.tenant || "-"}</td>
+              <td style={cellLabel}>{t("Unit Tag Number", lang)}</td>
+              <td style={cellVal}>{header?.unit_number || unit?.tag_number || "-"}</td>
+              <td style={cellLabel}>{t("Capacity", lang)}</td>
+              <td style={cellVal}>{header?.nominal_capacity || "-"}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
   const renderParameters = () => {
     return (
       <div key="section-1" style={{ marginBottom: "5mm" }}>
@@ -147,8 +191,13 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
             </tr>
           </tbody>
         </table>
-        <br/>
+      </div>
+    );
+  };
 
+  const renderElectricalMeasurement = () => {
+    return (
+      <div key="section-electrical" style={{ pageBreakBefore: "always", marginBottom: "5mm" }}>
         <div style={subHeaderStyle}>6. ELECTRICAL MEASUREMENT</div>
         <table style={mainTableStyle}>
           <tbody>
@@ -273,8 +322,8 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
           <ReportSignatureFooter 
             engineerName={engineerName || "Engineer"}
             customerName={customerName || "Customer PIC"}
-            customerSignature={data.customerSignature}
-            engineerSignature={data.engineerSignature}
+            customerSignature={typeof data !== 'undefined' ? (data.customerSignatureUrl || data.customer_signature) : undefined}
+            engineerSignature={typeof data !== 'undefined' ? (data.engineerSignatureUrl || data.engineer_signature) : undefined}
             preparedByLabel={t("PREPARED BY:", lang)}
             reviewedByLabel={t("REVIEWED BY:", lang)}
             approvedByLabel={t("APPROVED BY:", lang)}
@@ -287,17 +336,36 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
   };
 
   const renderPhotos = () => {
-    if (!photoChunks || photoChunks.length === 0) return null;
+    if (!photoChunks || photoChunks.length === 0) return [
+      <div key="photos-placeholder" style={{ width: "100%", marginTop: "5mm" }}>
+        <div style={categoryHeader}>{t("Maintenance Documentation Photos", lang)}</div>
+        <div style={{ 
+          border: "1px dashed #cbd5e1", 
+          borderRadius: "2mm", 
+          paddingTop: "10mm", 
+          paddingBottom: "10mm", 
+          paddingLeft: "10mm", 
+          paddingRight: "10mm", 
+          textAlign: "center", 
+          color: "#94a3b8", 
+          fontSize: "8pt" 
+        }}>
+          {t("No reports found.", lang)}
+        </div>
+      </div>
+    ];
     return photoChunks.map((chunk, chunkIndex) => (
-      <div key={`section-photos-${chunkIndex}`} style={{ pageBreakBefore: chunkIndex === 0 ? "always" : "auto", marginBottom: "5mm" }}>
-        {chunkIndex === 0 && <div style={{...subHeaderStyle, marginBottom:"5mm"}}>MAINTENANCE DOCUMENTATION PHOTOS</div>}
+      <div key={`section-photos-${chunkIndex}`} style={{ width: "100%", pageBreakBefore: "always", marginTop: "5mm", marginBottom: "5mm" }}>
+        <div style={categoryHeader}>
+          {t("Maintenance Documentation Photos", lang)} {photoChunks.length > 1 ? `(Page ${chunkIndex + 1})` : ''}
+        </div>
         <div style={{
           display: "flex",
           flexWrap: "wrap",
           gap: "4mm",
           justifyContent: "flex-start",
         }}>
-          {chunk.map((photo: any, index: number) => (
+          {chunk.map((p: any, index: number) => (
             <div key={index} style={{
               width: "calc(50% - 2mm)",
               border: "1px solid #e2e8f0",
@@ -316,7 +384,7 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
                 borderBottom: "1px solid #e2e8f0"
               }}>
                 <img 
-                  src={getPhotoUrl(photo.url)} 
+                  src={getPhotoUrl(p.photo_url || p.url || p)} 
                   style={{ width: "100%", height: "100%", objectFit: "cover" }} 
                   alt="Documentation" 
                 />
@@ -329,7 +397,7 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
                 fontWeight: 600,
                 minHeight: "15px"
               }}>
-                {photo.caption || `Photo ${chunkIndex * 6 + index + 1}: -`}
+                {p.label || p.description || `Photo ${chunkIndex * 6 + index + 1}: -`}
               </div>
             </div>
           ))}
@@ -339,13 +407,17 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
   };
 
   return [
+    renderUnitInformation(),
     renderParameters(),
     renderOtherMeasures(),
+    renderElectricalMeasurement(),
     renderChecklist(),
     renderAdviceAndSignature(),
     ...renderPhotos()
   ];
 };
+
+const categoryHeader: React.CSSProperties = { backgroundColor: "#f1f5f9", paddingTop: "2.5mm", paddingBottom: "2.5mm", paddingLeft: "4mm", paddingRight: "4mm", fontSize: "10pt", fontWeight: 900, color: "#003366", borderLeft: "5px solid #00a1e4", marginBottom: "4mm", textTransform: "uppercase", letterSpacing: "0.5px" };
 
 const subHeaderStyle = {
   backgroundColor: "#f1f5f9",
@@ -368,6 +440,9 @@ const tableHeaderRow = {
   backgroundColor: "#f8fafc",
   color: "#003366",
 };
+
+const cellLabel: React.CSSProperties = { width: "18%", backgroundColor: "#f8fafc", border: "1px solid #e2e8f0", paddingTop: "1.5mm", paddingBottom: "1.5mm", paddingLeft: "2mm", paddingRight: "2mm", fontSize: "7pt", fontWeight: 700, color: "#475569", textTransform: "uppercase" };
+const cellVal: React.CSSProperties = { width: "15%", border: "1px solid #e2e8f0", paddingTop: "1.5mm", paddingBottom: "1.5mm", paddingLeft: "2mm", paddingRight: "2mm", fontSize: "8pt", fontWeight: 700, color: "#0f172a" };
 
 const thStyle: React.CSSProperties = {
   border: "1px solid #e2e8f0",
