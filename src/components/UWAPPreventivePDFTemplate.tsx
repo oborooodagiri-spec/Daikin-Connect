@@ -136,9 +136,8 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
   };
 
   const renderOtherMeasures = () => {
-    return (
-      <div key="section-measures" style={{ marginBottom: "5mm" }}>
-        
+    return [
+      <div key="section-other-part1" style={{ marginBottom: "5mm" }}>
         <div style={subHeaderStyle}>2. REFRIGERANT PRESSURE</div>
         <table style={mainTableStyle}>
           <tbody>
@@ -190,8 +189,9 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
             </tr>
           </tbody>
         </table>
-        <br/>
+      </div>,
 
+      <div key="force-break-section-5" style={{ marginBottom: "5mm" }}>
         <div style={subHeaderStyle}>5. WATER PRESSURE</div>
         <table style={mainTableStyle}>
           <tbody>
@@ -214,7 +214,7 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
           </tbody>
         </table>
       </div>
-    );
+    ];
   };
 
   const renderElectricalMeasurement = () => {
@@ -434,7 +434,7 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
   return [
     renderUnitInformation(),
     ...renderParameters(),
-    renderOtherMeasures(),
+    ...renderOtherMeasures(),
     renderElectricalMeasurement(),
     renderChecklist(),
     renderAdviceAndSignature(),
