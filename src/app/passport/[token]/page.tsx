@@ -248,7 +248,12 @@ export default function PassportLandingPage() {
                 <Section title="Asset Specifications" icon={Settings2}>
                   <div className="grid grid-cols-2 gap-y-6 gap-x-8">
                      <SpecItem label="Model" value={unit.model} icon={Database} />
-                     <SpecItem label="Unit Type" value={unit.unit_type} icon={Zap} />
+                     <SpecItem 
+                        label="Unit Type" 
+                        value={unit.unit_type?.includes(" > ") ? unit.unit_type.split(" > ")[1] : unit.unit_type} 
+                        suffix={unit.unit_type?.includes(" > ") ? `(${unit.unit_type.split(" > ")[0]})` : undefined}
+                        icon={Zap} 
+                     />
                      <SpecItem label="Capacity" value={unit.capacity} icon={Activity} />
                      <SpecItem label="Year of Install" value={unit.yoi} icon={Calendar} />
                      <div className="col-span-2 pt-2 border-t border-slate-50"><SpecItem label="Serial Number" value={unit.serial_number} icon={ShieldCheck} monospace /></div>
@@ -492,14 +497,16 @@ function Section({ title, icon: Icon, children }: any) {
    );
 }
 
-function SpecItem({ label, value, icon: Icon, monospace }: any) {
+function SpecItem({ label, value, icon: Icon, monospace, suffix }: any) {
    return (
       <div className="space-y-1.5">
          <div className="flex items-center gap-1.5 text-slate-300">
             <Icon size={12} />
             <span className="text-[8px] font-black uppercase tracking-widest">{label}</span>
          </div>
-         <p className={`text-[13px] font-black text-[#323338] leading-tight break-words ${monospace ? 'font-mono' : ''}`}>{value || "---"}</p>
+         <p className={`text-[13px] font-black text-[#323338] leading-tight break-words ${monospace ? 'font-mono' : ''}`}>
+            {value || "---"} {suffix && <span className="text-slate-400 font-bold ml-1">{suffix}</span>}
+         </p>
       </div>
    );
 }

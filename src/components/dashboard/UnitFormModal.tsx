@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { X, Save, Building2, Package } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createUnit, updateUnit } from "@/app/actions/units";
@@ -17,6 +17,36 @@ interface UnitFormModalProps {
   monitoringFocus?: string;
 }
 
+// Helper: Find the first valid child option from categories
+function getFirstValidChild(categories: any[]): string {
+  for (const parent of categories.filter((c: any) => c.parent_id === null)) {
+    const children = categories.filter((c: any) => c.parent_id === parent.id);
+    if (children.length > 0) {
+      // Return "Parent > Child" format for first child
+      return `${parent.name} > ${children[0].name}`;
+    }
+  }
+  // If no parent-child structure, return first category name
+  if (categories.length > 0) return categories[0].name;
+  return "";
+}
+
+// Helper: Build "Parent > Child" value for a given child
+function buildCategoryValue(categories: any[], child: any): string {
+  const parent = categories.find((c: any) => c.id === child.parent_id);
+  if (parent) return `${parent.name} > ${child.name}`;
+  return child.name;
+}
+
+// Helper: Parse display label from "Parent > Child" format
+function parseDisplayLabel(value: string): { parent: string; child: string } {
+  if (value.includes(" > ")) {
+    const [parent, child] = value.split(" > ");
+    return { parent, child };
+  }
+  return { parent: "", child: value };
+}
+
 export default function UnitFormModal({ 
   isOpen, onClose, onRefresh, projectId, unit, mode, 
   enabledTypes = "VRV,Split,Package,Chiller",
@@ -24,6 +54,8 @@ export default function UnitFormModal({
 }: UnitFormModalProps) {
   const [loading, setLoading] = useState(false);
   const [dbCategories, setDbCategories] = useState<any[]>([]);
+  const [categoriesLoaded, setCategoriesLoaded] = useState(false);
+  const hasUserInteracted = useRef(false);
   const [formData, setFormData] = useState({
     unit_type: "", brand: "Daikin", model: "", 
     capacity: "0", yoi: new Date().getFullYear().toString(),
@@ -31,23 +63,34 @@ export default function UnitFormModal({
     building_floor: "", room_tenant: "", status: "Normal"
   });
 
+  // Fetch categories once when modal opens
   useEffect(() => {
-    async function fetchCategories() {
-      const res = await getUnitTypeCategories();
-      if (res && "success" in res && res.success && res.data) {
-        setDbCategories(res.data);
-      }
-    }
     if (isOpen) {
+      hasUserInteracted.current = false;
+      setCategoriesLoaded(false);
+      async function fetchCategories() {
+        const res = await getUnitTypeCategories();
+        if (res && "success" in res && res.success && res.data) {
+          setDbCategories(res.data);
+        }
+        setCategoriesLoaded(true);
+      }
       fetchCategories();
     }
   }, [isOpen]);
 
+  // Initialize form ONLY when modal opens or categories finish loading (not on every change)
   useEffect(() => {
+    if (!isOpen || !categoriesLoaded) return;
+    // Don't reset if user has already started interacting
+    if (hasUserInteracted.current) return;
+
     const types = enabledTypes.split(",");
+
     if (unit && mode === "edit") {
+      // For edit mode, preserve the existing unit_type from DB
       setFormData({
-        unit_type: unit.unit_type || (dbCategories.length > 0 ? dbCategories[0].name : types[0]),
+        unit_type: unit.unit_type || (dbCategories.length > 0 ? getFirstValidChild(dbCategories) : types[0]),
         brand: unit.brand || "Daikin",
         model: unit.model || "",
         capacity: unit.capacity || "",
@@ -60,15 +103,20 @@ export default function UnitFormModal({
         status: unit.status || "Normal"
       });
     } else {
+      // For create mode, use first valid child (not parent/optgroup)
+      const defaultType = dbCategories.length > 0 
+        ? getFirstValidChild(dbCategories) 
+        : types[0];
+      
       setFormData({
-        unit_type: dbCategories.length > 0 ? dbCategories[0].name : types[0],
+        unit_type: defaultType,
         brand: "Daikin", model: "", 
         capacity: "0", yoi: new Date().getFullYear().toString(),
         serial_number: "", tag_number: "", area: "",
         building_floor: "", room_tenant: "", status: "Normal"
       });
     }
-  }, [unit, mode, isOpen, enabledTypes, dbCategories]);
+  }, [isOpen, categoriesLoaded, unit, mode, enabledTypes]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,6 +135,12 @@ export default function UnitFormModal({
       alert((res as any)?.error || "Failed to save data.");
     }
     setLoading(false);
+  };
+
+  // Handle user interaction with the select
+  const handleUnitTypeChange = (value: string) => {
+    hasUserInteracted.current = true;
+    setFormData({...formData, unit_type: value});
   };
 
   return (
@@ -111,7 +165,7 @@ export default function UnitFormModal({
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unit Type / Category</label>
                     <select 
                       value={formData.unit_type} 
-                      onChange={e => setFormData({...formData, unit_type: e.target.value})} 
+                      onChange={e => handleUnitTypeChange(e.target.value)} 
                       className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-[#0073ea] transition-all"
                     >
                        {dbCategories.length > 0 ? (
@@ -121,9 +175,12 @@ export default function UnitFormModal({
                              if (children.length > 0) {
                                return (
                                  <optgroup key={parent.id} label={parent.name}>
-                                   {children.map((child: any) => (
-                                     <option key={child.id} value={child.name}>{child.name}</option>
-                                   ))}
+                                   {children.map((child: any) => {
+                                     const val = `${parent.name} > ${child.name}`;
+                                     return (
+                                       <option key={child.id} value={val}>{child.name}</option>
+                                     );
+                                   })}
                                  </optgroup>
                                );
                              }
@@ -136,6 +193,12 @@ export default function UnitFormModal({
                          ))
                        )}
                     </select>
+                    {/* Show selected category info */}
+                    {formData.unit_type.includes(" > ") && (
+                      <p className="text-[9px] font-bold text-blue-400 ml-1 mt-1">
+                        📂 {parseDisplayLabel(formData.unit_type).parent} → {parseDisplayLabel(formData.unit_type).child}
+                      </p>
+                    )}
                   </div>
                 </div>
 

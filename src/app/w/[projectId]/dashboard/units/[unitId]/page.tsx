@@ -387,7 +387,13 @@ export default function UnitDetailPage() {
                   <div className="p-6 md:p-8 grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-y-6 md:gap-y-8 gap-x-8 md:gap-x-12">
                      <SpecField label="Serial Number" value={unit.serial_number} icon={Database} />
                      <SpecField label="Reference Code" value={unit.code} icon={Info} />
-                     <SpecField label="Unit Type" value={unit.unit_type} icon={Activity} badge />
+                     <SpecField 
+                        label="Unit Type" 
+                        value={unit.unit_type?.includes(" > ") ? unit.unit_type.split(" > ")[1] : unit.unit_type} 
+                        suffix={unit.unit_type?.includes(" > ") ? `(${unit.unit_type.split(" > ")[0]})` : undefined}
+                        icon={Activity} 
+                        badge 
+                     />
                      <SpecField label="Model Design" value={unit.model} icon={Zap} />
                      <SpecField label="Capacity" value={unit.capacity} suffix="BTU/H" icon={Activity} />
                      <SpecField label="Age of Unit" value={unit.yoi ? `${new Date().getFullYear() - unit.yoi} Years` : "Unknown"} icon={Calendar} />
@@ -606,7 +612,7 @@ function SpecField({ label, value, icon: Icon, badge, suffix }: any) {
          </div>
          {badge ? (
             <span className="inline-block px-3 py-1 bg-slate-100 text-slate-700 text-[10px] font-black uppercase rounded-lg border border-[#e6e9ef] truncate max-w-full">
-               {value || "N/A"}
+               {value || "N/A"} {suffix && <span className="text-slate-400 ml-1 font-bold">{suffix}</span>}
             </span>
          ) : (
             <p className="text-[13px] md:text-[14px] font-black text-[#323338] tracking-tight break-all">
