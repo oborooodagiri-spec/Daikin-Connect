@@ -250,8 +250,8 @@ export default function PassportLandingPage() {
                      <SpecItem label="Model" value={unit.model} icon={Database} />
                      <SpecItem 
                         label="Unit Type" 
-                        value={unit.unit_type?.includes(" > ") ? unit.unit_type.split(" > ")[1] : unit.unit_type} 
-                        suffix={unit.unit_type?.includes(" > ") ? `(${unit.unit_type.split(" > ")[0]})` : undefined}
+                        value={unit.unit_type?.includes(" > ") ? unit.unit_type.split(" > ").pop() : unit.unit_type} 
+                        suffix={unit.unit_type?.includes(" > ") ? `(${unit.unit_type.split(" > ").slice(0, -1).join(" - ")})` : undefined}
                         icon={Zap} 
                      />
                      <SpecItem label="Capacity" value={unit.capacity} icon={Activity} />
