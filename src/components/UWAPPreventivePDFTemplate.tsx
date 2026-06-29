@@ -74,8 +74,31 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
   };
 
   const renderParameters = () => {
-    return (
-      <div key="section-1" style={{ marginBottom: "5mm" }}>
+    const rows = [
+      { k: "error", l: "Error" },
+      { k: "temp_set_point_lwt", l: "Temp Set Point (LWT) (°C)" },
+      { k: "temp_set_point_heat", l: "Temp Set Point (Heat) (°C)" },
+      { k: "inlet_water_temp", l: "Inlet Water Temp (°C)" },
+      { k: "outlet_water_temp", l: "Outlet Water Temp (°C)" },
+      { k: "outdoor_temp", l: "Outdoor Temp (°C)" },
+      { k: "discharge_temp_1", l: "Discharge Temp 1 (°C)" },
+      { k: "discharge_temp_2", l: "Discharge Temp 2 (°C)" },
+      { k: "suction_temp_1", l: "Suction Temp 1 (°C)" },
+      { k: "suction_temp_2", l: "Suction Temp 2 (°C)" },
+      { k: "capacity_1", l: "Capacity 1 (%)" },
+      { k: "capacity_2", l: "Capacity 2 (%)" },
+      { k: "fan_mode_1", l: "Fan Mode 1" },
+      { k: "fan_mode_2", l: "Fan Mode 2" },
+      { k: "running_time", l: "Running Time (min)" },
+      { k: "running_hour_comp_1", l: "Running Hour Comp#1 (Hour)" },
+      { k: "running_hour_comp_2", l: "Running Hour Comp#2 (Hour)" }
+    ];
+
+    const part1 = rows.slice(0, 14); // Up to Fan Mode 2
+    const part2 = rows.slice(14); // From Running Time onwards
+
+    return [
+      <div key="section-1-part1" style={{ marginBottom: "5mm" }}>
         <div style={subHeaderStyle}>1. PARAMETER</div>
         <table style={mainTableStyle}>
           <tbody>
@@ -83,25 +106,24 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
               <th style={{...thStyle, width:"50%", textAlign:"left", paddingLeft:"8px"}}>Description / Menu</th>
               <th style={{...thStyle, width:"50%"}}>Value</th>
             </tr>
-            {[
-              { k: "error", l: "Error" },
-              { k: "temp_set_point_lwt", l: "Temp Set Point (LWT) (°C)" },
-              { k: "temp_set_point_heat", l: "Temp Set Point (Heat) (°C)" },
-              { k: "inlet_water_temp", l: "Inlet Water Temp (°C)" },
-              { k: "outlet_water_temp", l: "Outlet Water Temp (°C)" },
-              { k: "outdoor_temp", l: "Outdoor Temp (°C)" },
-              { k: "discharge_temp_1", l: "Discharge Temp 1 (°C)" },
-              { k: "discharge_temp_2", l: "Discharge Temp 2 (°C)" },
-              { k: "suction_temp_1", l: "Suction Temp 1 (°C)" },
-              { k: "suction_temp_2", l: "Suction Temp 2 (°C)" },
-              { k: "capacity_1", l: "Capacity 1 (%)" },
-              { k: "capacity_2", l: "Capacity 2 (%)" },
-              { k: "fan_mode_1", l: "Fan Mode 1" },
-              { k: "fan_mode_2", l: "Fan Mode 2" },
-              { k: "running_time", l: "Running Time (min)" },
-              { k: "running_hour_comp_1", l: "Running Hour Comp#1 (Hour)" },
-              { k: "running_hour_comp_2", l: "Running Hour Comp#2 (Hour)" }
-            ].map((row, i) => (
+            {part1.map((row, i) => (
+              <tr key={i} style={{ height: "6mm" }}>
+                <td style={{ ...tdStyle, paddingLeft:"8px", fontSize:"8pt", fontWeight: 700, backgroundColor: "#f8fafc" }}>{row.l}</td>
+                <td style={{ ...tdStyle, textAlign: "center", fontSize:"9pt", fontWeight: 800, color: "#003366" }}>{getVal(row.k)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>,
+      <div key="section-1-part2" style={{ pageBreakBefore: "always", marginBottom: "5mm" }}>
+        <div style={subHeaderStyle}>1. PARAMETER (CONT.)</div>
+        <table style={mainTableStyle}>
+          <tbody>
+            <tr style={tableHeaderRow}>
+              <th style={{...thStyle, width:"50%", textAlign:"left", paddingLeft:"8px"}}>Description / Menu</th>
+              <th style={{...thStyle, width:"50%"}}>Value</th>
+            </tr>
+            {part2.map((row, i) => (
               <tr key={i} style={{ height: "6mm" }}>
                 <td style={{ ...tdStyle, paddingLeft:"8px", fontSize:"8pt", fontWeight: 700, backgroundColor: "#f8fafc" }}>{row.l}</td>
                 <td style={{ ...tdStyle, textAlign: "center", fontSize:"9pt", fontWeight: 800, color: "#003366" }}>{getVal(row.k)}</td>
@@ -110,7 +132,7 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
           </tbody>
         </table>
       </div>
-    );
+    ];
   };
 
   const renderOtherMeasures = () => {
@@ -320,15 +342,18 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
         
         <div style={{ marginTop: "10mm" }}>
           <ReportSignatureFooter 
-            engineerName={engineerName || "Engineer"}
-            customerName={customerName || "Customer PIC"}
-            customerSignature={typeof data !== 'undefined' ? (data.customerSignatureUrl || data.customer_signature) : undefined}
-            engineerSignature={typeof data !== 'undefined' ? (data.engineerSignatureUrl || data.engineer_signature) : undefined}
-            preparedByLabel={t("PREPARED BY:", lang)}
-            reviewedByLabel={t("REVIEWED BY:", lang)}
-            approvedByLabel={t("APPROVED BY:", lang)}
-            fieldTechnicianLabel={t("Field Technician", lang)}
-            internalEngineerLabel={t("Internal Engineer", lang)}
+             preparedBy={engineerName || "TEKNISI LAPANGAN"}
+             witnessedBy={customerName}
+             reviewedBy={data.reviewedBy}
+             reviewedDate={data.reviewedAt}
+             witnessedDate={data.approvedAt}
+             lang={lang}
+             isBulkSync={data.isBulkSync}
+             customerSignatureUrl={typeof data !== 'undefined' ? (data.customerSignatureUrl || data.customer_signature) : undefined}
+             engineerSignatureUrl={typeof data !== 'undefined' ? (data.engineerSignatureUrl || data.engineer_signature) : undefined}
+             reviewerSignatureUrl={typeof data !== 'undefined' ? (data.reviewerSignatureUrl || data.reviewer_signature) : undefined}
+             onCustomerSignClick={typeof data !== 'undefined' ? data.onCustomerSignClick : undefined}
+             onEngineerSignClick={typeof data !== 'undefined' ? data.onEngineerSignClick : undefined}
           />
         </div>
       </div>
