@@ -22,8 +22,12 @@ function getFirstValidChild(categories: any[]): string {
   for (const parent of categories.filter((c: any) => c.parent_id === null)) {
     const children = categories.filter((c: any) => c.parent_id === parent.id);
     if (children.length > 0) {
-      // Return "Parent > Child" format for first child
-      return `${parent.name} > ${children[0].name}`;
+      const child = children[0];
+      const grandchildren = categories.filter((c: any) => c.parent_id === child.id);
+      if (grandchildren.length > 0) {
+        return `${parent.name} > ${child.name} > ${grandchildren[0].name}`;
+      }
+      return `${parent.name} > ${child.name}`;
     }
   }
   // If no parent-child structure, return first category name
@@ -31,20 +35,15 @@ function getFirstValidChild(categories: any[]): string {
   return "";
 }
 
-// Helper: Build "Parent > Child" value for a given child
-function buildCategoryValue(categories: any[], child: any): string {
-  const parent = categories.find((c: any) => c.id === child.parent_id);
-  if (parent) return `${parent.name} > ${child.name}`;
-  return child.name;
-}
-
-// Helper: Parse display label from "Parent > Child" format
-function parseDisplayLabel(value: string): { parent: string; child: string } {
+// Helper: Parse display label from "Parent > Child > Grandchild" format
+function parseDisplayLabel(value: string): { path: string; name: string } {
   if (value.includes(" > ")) {
-    const [parent, child] = value.split(" > ");
-    return { parent, child };
+    const parts = value.split(" > ");
+    const name = parts.pop() || "";
+    const path = parts.join(" → ");
+    return { path, name };
   }
-  return { parent: "", child: value };
+  return { path: "", name: value };
 }
 
 export default function UnitFormModal({ 
@@ -181,6 +180,26 @@ export default function UnitFormModal({
                                return (
                                  <optgroup key={parent.id} label={parent.name}>
                                    {children.map((child: any) => {
+                                     const grandchildren = dbCategories.filter((c: any) => c.parent_id === child.id);
+                                     
+                                     if (grandchildren.length > 0) {
+                                       return (
+                                         <React.Fragment key={child.id}>
+                                           <option disabled className="font-bold text-slate-800 bg-slate-100">
+                                             ── {child.name} ──
+                                           </option>
+                                           {grandchildren.map((grandchild: any) => {
+                                             const val = `${parent.name} > ${child.name} > ${grandchild.name}`;
+                                             return (
+                                               <option key={grandchild.id} value={val}>
+                                                 &nbsp;&nbsp;&nbsp;&nbsp;{grandchild.name}
+                                               </option>
+                                             );
+                                           })}
+                                         </React.Fragment>
+                                       );
+                                     }
+                                     
                                      const val = `${parent.name} > ${child.name}`;
                                      return (
                                        <option key={child.id} value={val}>{child.name}</option>
@@ -201,7 +220,7 @@ export default function UnitFormModal({
                     {/* Show selected category info */}
                     {formData.unit_type.includes(" > ") && (
                       <p className="text-[9px] font-bold text-blue-400 ml-1 mt-1">
-                        📂 {parseDisplayLabel(formData.unit_type).parent} → {parseDisplayLabel(formData.unit_type).child}
+                        📂 {parseDisplayLabel(formData.unit_type).path} → {parseDisplayLabel(formData.unit_type).name}
                       </p>
                     )}
                   </div>
