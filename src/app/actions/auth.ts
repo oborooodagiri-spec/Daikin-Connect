@@ -19,6 +19,11 @@ const transportConfig = {
   host: 'smtp.hostinger.com',
   port: 465,
   secure: true,
+  pool: true,
+  maxConnections: 3,
+  connectionTimeout: 15000,
+  greetingTimeout: 15000,
+  socketTimeout: 15000,
   auth: {
     user: 'no-reply@epllink.com',
     pass: process.env.SMTP_PASS || 'Onta12345@',
@@ -181,7 +186,7 @@ export async function login(formData: FormData) {
           data: { otp_code: generatedOtp, otp_expiry: expiry }
         });
 
-        // Send Email with Timeout Resilience
+        // Send Email detached to prevent UI hanging
         try {
           const mailPromise = transporter.sendMail({
             from: '"EPL Link Security" <no-reply@epllink.com>',
@@ -190,11 +195,12 @@ export async function login(formData: FormData) {
             html: getVerificationCodeTemplate(generatedOtp)
           });
           
-          await mailPromise;
+          // Don't await it so we don't block the UI.
+          // In a PM2 long-running Node environment, this will finish in the background.
+          mailPromise.catch(e => console.error("Detached Mail Error:", e));
         } catch (mailError) {
-          console.error("Mail Delivery Failed or Timed Out:", mailError);
-          // We still proceed so the user gets the chance to enter a code if it actually arrived late
-        }
+          console.error("Mail Dispatch Failed:", mailError);
+        }  // We still proceed so the user gets the chance to enter a code if it actually arrived late
 
         await recordAuditLog({ userId: user.id, action: "2FA_CHALLENGE_WEB" });
         return { requires2f: true };
