@@ -348,10 +348,11 @@ export default function ScheduleClient() {
       
       if (eplLogo) {
         const ratio = eplLogo.width / eplLogo.height;
-        const h = headerLogoHeight;
+        const h = 13; // Make EPL logo larger to balance visual weight
         const w = h * ratio;
-        // Position on the right with the same margin
-        pdf.addImage(eplLogo, "PNG", pdfWidth - headerMargin - w, headerLogoY, w, h);
+        // Adjust Y to keep it vertically centered with the Daikin logo
+        const eplY = headerLogoY - ((h - headerLogoHeight) / 2);
+        pdf.addImage(eplLogo, "PNG", pdfWidth - headerMargin - w, eplY, w, h);
       }
 
       pdf.setDrawColor(220, 225, 230);
