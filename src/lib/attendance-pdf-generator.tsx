@@ -29,6 +29,7 @@ interface AttendanceRecord {
   check_in_notes?: string | null;
   projects?: {
     name: string;
+    shift_start_time?: string;
   } | null;
 }
 
@@ -107,12 +108,12 @@ export async function generateAttendancePDF(
   const pageChunks: AttendanceRecord[][] = [];
   let tempRecords = [...records];
   
-  if (tempRecords.length <= 14) {
+  if (tempRecords.length <= 7) {
     pageChunks.push(tempRecords);
   } else {
-    pageChunks.push(tempRecords.splice(0, 14));
+    pageChunks.push(tempRecords.splice(0, 7));
     while (tempRecords.length > 0) {
-      pageChunks.push(tempRecords.splice(0, 18));
+      pageChunks.push(tempRecords.splice(0, 12));
     }
   }
 
@@ -200,8 +201,30 @@ export async function generateAttendancePDF(
                       <td className="p-3 font-bold text-slate-700">
                         {formatDateFull(r.check_in_time)}
                       </td>
-                      <td className="p-3 text-emerald-600 font-bold">
-                        {formatTime(r.check_in_time)}
+                      <td className="p-3 font-bold">
+                        <div className="flex flex-col text-emerald-600">
+                          <span>{formatTime(r.check_in_time)}</span>
+                          {(() => {
+                            if (!r.check_in_time) return null;
+                            const checkIn = new Date(r.check_in_time);
+                            const shiftStart = r.projects?.shift_start_time || "08:00";
+                            const [sh, sm] = shiftStart.split(":").map(Number);
+                            const checkInMins = checkIn.getHours() * 60 + checkIn.getMinutes();
+                            const shiftMins = sh * 60 + sm;
+                            if (checkInMins > shiftMins) {
+                               const diff = checkInMins - shiftMins;
+                               const hrs = Math.floor(diff / 60);
+                               const mins = diff % 60;
+                               const diffStr = hrs > 0 ? `${hrs}j ${mins}m` : `${mins}m`;
+                               return (
+                                  <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1 py-0.5 rounded border border-rose-100 w-max">
+                                     Terlambat {diffStr}
+                                  </span>
+                               );
+                            }
+                            return null;
+                          })()}
+                        </div>
                       </td>
                       <td className="p-3">
                         {r.check_in_lat !== null ? (
