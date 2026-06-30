@@ -191,9 +191,8 @@ export default function PassportLandingPage() {
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
           <div className="relative z-10 space-y-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2" onClick={() => router.push('/dashboard')}>
-                <img src="/app-logo.png" alt="Logo" className="h-8 w-auto object-contain" />
-                <span className="text-sm font-black tracking-tighter uppercase">EPL <span className="text-[#00a1e4]">CONNECT</span></span>
+              <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push('/dashboard')}>
+                <img src="/logo_epl_connect_1.png" alt="Logo" className="h-8 w-auto object-contain" />
               </div>
               <div className="flex items-center gap-2">
                  <button onClick={() => setShowEditModal(true)} className="p-2 bg-[#00a1e4] hover:bg-blue-400 rounded-lg transition-all shadow-lg shadow-blue-500/20"><Edit2 size={16} /></button>

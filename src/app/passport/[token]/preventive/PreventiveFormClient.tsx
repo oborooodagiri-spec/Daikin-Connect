@@ -84,7 +84,7 @@ const getScopeRows = (unitType: string) => {
       { key: "oil_upper_level", label: "Upper Level Sight Glass (%)", type: "measure", category: "3. OIL LEVEL", format: "single" },
       { key: "oil_lower_level", label: "Lower Level Sight Glass (%)", type: "measure", category: "3. OIL LEVEL", format: "single" },
 
-      { key: "liquid_sight_glass", label: "Sight Glass (Clear/Bubble)", type: "measure", category: "4. LIQUID LINE", format: "single" },
+      { key: "liquid_sight_glass", label: "Sight Glass (Clear/Bubble)", type: "measure", category: "4. LIQUID LINE", format: "dropdown", options: ["Clear", "Bubble"] },
 
       { key: "water_inlet_evap_press", label: "Inlet Evap Press (Kg/cm²)", type: "measure", category: "5. WATER PRESSURE", format: "single" },
       { key: "water_outlet_evap_press", label: "Outlet Evap Press (Kg/cm²)", type: "measure", category: "5. WATER PRESSURE", format: "single" },
@@ -932,21 +932,36 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
                     <div className="space-y-4">
                       {rows.map((row: any) => {
                         const isCalculated = row.key === 'water_delta_t' || row.key === 'water_delta_p';
-                        const isSingle = row.format === "single";
+                        const isSingle = row.format === "single" || row.format === "dropdown";
                         return (
                           <div key={row.key} className="pb-3 border-b border-slate-100 last:border-0">
                             <label className="text-xs font-black text-slate-700 mb-2 block">{t(row.label, lang)} {isCalculated && <span className="text-[10px] text-blue-500 ml-1">(AUTO)</span>}</label>
                             
                             {isSingle ? (
-                              <div className="grid grid-cols-1">
-                                <input 
-                                  type="text" 
-                                  placeholder="Input value..."
-                                  value={scope[row.key]?.before || ""} 
-                                  onChange={e => updateScope(row.key, "before", e.target.value)} 
-                                  className="w-full p-2.5 border rounded-lg text-xs font-bold text-slate-700 bg-white border-slate-200 focus:ring-blue-400" 
-                                />
-                              </div>
+                              row.format === "dropdown" ? (
+                                <div className="grid grid-cols-1">
+                                  <select 
+                                    value={scope[row.key]?.before || ""} 
+                                    onChange={e => updateScope(row.key, "before", e.target.value)} 
+                                    className="w-full p-2.5 border rounded-lg text-xs font-bold text-slate-700 bg-white border-slate-200 focus:ring-blue-400"
+                                  >
+                                    <option value="" disabled>Pilih...</option>
+                                    {row.options?.map((opt: string) => (
+                                      <option key={opt} value={opt}>{opt}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                              ) : (
+                                <div className="grid grid-cols-1">
+                                  <input 
+                                    type="text" 
+                                    placeholder="Input value..."
+                                    value={scope[row.key]?.before || ""} 
+                                    onChange={e => updateScope(row.key, "before", e.target.value)} 
+                                    className="w-full p-2.5 border rounded-lg text-xs font-bold text-slate-700 bg-white border-slate-200 focus:ring-blue-400" 
+                                  />
+                                </div>
+                              )
                             ) : (
                               <div className="grid grid-cols-3 gap-2">
                                 <div>
@@ -1058,19 +1073,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
                 <textarea rows={4} value={technicalAdvice} onChange={e => setTechnicalAdvice(e.target.value)} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#00a1e4]" />
               </div>
 
-              <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">{t("Digital Signature", lang)}</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase">{lang === 'ja' ? '顧客名' : 'Nama Customer'}</label>
-                    <input type="text" value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" />
-                  </div>
-                  <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase">{lang === 'ja' ? '署名日' : 'Tanggal TTD'}</label>
-                    <input type="date" value={header.date} readOnly className="w-full mt-1 p-3 bg-slate-100 border border-slate-200 rounded-xl text-sm font-bold text-slate-400" />
-                  </div>
-                </div>
-              </div>
+
 
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
                 <h3 className="text-xs font-black uppercase text-slate-500 mb-2 flex justify-between">
@@ -1126,8 +1129,8 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
             >
               <div className="text-center p-10 bg-white rounded-xl shadow-2xl">
                 <Printer className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-slate-800">{lang === 'ja' ? 'レポート作成の準備ができました' : 'Laporan Siap Dibuat'}</h3>
-                <p className="text-slate-500 text-sm">{lang === 'ja' ? '「送信」をクリックすると、プロフェッショナルなページに分割されたレポートが自動的に作成されます。' : 'Laporan akan secara otomatis dibagi menjadi halaman-halaman profesional saat tombol "Selesai & Simpan" diklik.'}</p>
+                <h3 className="text-xl font-bold text-slate-800">{lang === 'ja' ? 'レポート作成の準備ができました' : 'Laporan Siap.'}</h3>
+                <p className="text-slate-500 text-sm">{lang === 'ja' ? '「送信」をクリックすると、プロフェッショナルなページに分割されたレポートが自動的に作成されます。' : 'Klik simpan untuk melanjutkan.'}</p>
               </div>
             </motion.div>
            </motion.div>
@@ -1183,7 +1186,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
           ) : (
             <button onClick={() => setShowSignatureModal(true)} disabled={loading} className="flex-[2] py-4 bg-emerald-500 text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-200 uppercase text-xs tracking-widest disabled:opacity-50 whitespace-nowrap">
               {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <Printer size={18} />}
-              <span className="hidden sm:inline">{loading ? (lang === 'ja' ? '生成中...' : "Generating...") : t("Generate PDF & Submit", lang)}</span>
+              <span className="hidden sm:inline">{loading ? (lang === 'ja' ? '生成中...' : "Menyimpan...") : t("Simpan", lang)}</span>
             </button>
           )}
         </div>
