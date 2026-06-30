@@ -93,7 +93,16 @@ export default function UnitEditRequestsPage() {
 }
 
 function RequestCard({ request, onApprove, onReject, disabled }: any) {
-  const details = JSON.parse(request.details_json);
+  let details: any = {};
+  try {
+    details = JSON.parse(request.details_json || "{}");
+  } catch (e) {}
+
+  const userName = request.users?.name || "Unknown User";
+  const companyName = request.users?.company_name || "Vendor";
+  const tagNumber = request.units?.tag_number || "Unknown Unit";
+  const unitBrand = request.units?.brand || "-";
+  const unitModel = request.units?.model || "-";
 
   return (
     <motion.div 
@@ -105,13 +114,13 @@ function RequestCard({ request, onApprove, onReject, disabled }: any) {
         <div className="md:w-1/4 space-y-4">
           <div className="space-y-1">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Requested By</p>
-            <p className="text-sm font-bold text-slate-800">{request.users.name}</p>
-            <p className="text-[10px] font-bold text-blue-500 uppercase">{request.users.company_name || 'Vendor'}</p>
+            <p className="text-sm font-bold text-slate-800">{userName}</p>
+            <p className="text-[10px] font-bold text-blue-500 uppercase">{companyName}</p>
           </div>
           <div className="space-y-1">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Unit</p>
-            <p className="text-sm font-black text-[#003366] uppercase">{request.units.tag_number}</p>
-            <p className="text-[10px] font-medium text-slate-400">{request.units.brand} - {request.units.model}</p>
+            <p className="text-sm font-black text-[#003366] uppercase">{tagNumber}</p>
+            <p className="text-[10px] font-medium text-slate-400">{unitBrand} - {unitModel}</p>
           </div>
           <div className="pt-2 text-[10px] text-slate-300 font-medium">
              {new Date(request.requested_at).toLocaleString()}
@@ -121,17 +130,17 @@ function RequestCard({ request, onApprove, onReject, disabled }: any) {
         {/* Changes Diff */}
         <div className="flex-1 bg-slate-50 rounded-2xl p-5 border border-slate-100">
            <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6">
-              <DiffItem label="Brand" current={request.units.brand} proposed={details.brand} />
-              <DiffItem label="Model" current={request.units.model} proposed={details.model} />
-              <DiffItem label="Unit Type" current={request.units.unit_type} proposed={details.unit_type} />
-              <DiffItem label="Capacity" current={request.units.capacity} proposed={details.capacity} />
-              <DiffItem label="Location" current={request.units.location} proposed={details.location} />
-              <DiffItem label="Area" current={request.units.area} proposed={details.area} />
-              <DiffItem label="Floor" current={request.units.building_floor} proposed={details.building_floor} />
-              <DiffItem label="Tenant" current={request.units.room_tenant} proposed={details.room_tenant} />
-              <DiffItem label="Serial Num" current={request.units.serial_number} proposed={details.serial_number} />
-              <DiffItem label="Status" current={request.units.status} proposed={details.status} />
-              <DiffItem label="YOI" current={request.units.yoi} proposed={details.yoi} />
+              <DiffItem label="Brand" current={request.units?.brand} proposed={details.brand} />
+              <DiffItem label="Model" current={request.units?.model} proposed={details.model} />
+              <DiffItem label="Unit Type" current={request.units?.unit_type} proposed={details.unit_type} />
+              <DiffItem label="Capacity" current={request.units?.capacity} proposed={details.capacity} />
+              <DiffItem label="Location" current={request.units?.location} proposed={details.location} />
+              <DiffItem label="Area" current={request.units?.area} proposed={details.area} />
+              <DiffItem label="Floor" current={request.units?.building_floor} proposed={details.building_floor} />
+              <DiffItem label="Tenant" current={request.units?.room_tenant} proposed={details.room_tenant} />
+              <DiffItem label="Serial Num" current={request.units?.serial_number} proposed={details.serial_number} />
+              <DiffItem label="Status" current={request.units?.status} proposed={details.status} />
+              <DiffItem label="YOI" current={request.units?.yoi} proposed={details.yoi} />
            </div>
         </div>
 
