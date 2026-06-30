@@ -348,7 +348,7 @@ export default function ScheduleClient() {
       
       if (eplLogo) {
         const ratio = eplLogo.width / eplLogo.height;
-        const h = 13; // Make EPL logo larger to balance visual weight
+        const h = 18; // Make EPL logo larger to balance visual weight
         const w = h * ratio;
         // Adjust Y to keep it vertically centered with the Daikin logo
         const eplY = headerLogoY - ((h - headerLogoHeight) / 2);
