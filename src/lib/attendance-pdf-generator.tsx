@@ -49,21 +49,18 @@ export async function generateAttendancePDF(
   
   // Calculate total hours and overtime
   let totalMinutes = 0;
-  let totalOvertimeMinutes = 0;
   
   records.forEach((r) => {
     if (r.check_in_time && r.check_out_time) {
       const diff = new Date(r.check_out_time).getTime() - new Date(r.check_in_time).getTime();
       const diffMins = Math.floor(diff / 60000);
       totalMinutes += diffMins;
-      
-      // Standard work hours: 8 hours = 480 minutes
-      const overtime = diffMins - 480;
-      if (overtime > 0) {
-        totalOvertimeMinutes += overtime;
-      }
     }
   });
+
+  // Monthly threshold: 184 hours
+  const maxMonthlyMinutes = 184 * 60;
+  const totalOvertimeMinutes = Math.max(0, totalMinutes - maxMonthlyMinutes);
 
   const totalHoursStr = `${Math.floor(totalMinutes / 60)} Jam ${totalMinutes % 60} Menit`;
   const totalOvertimeStr = totalOvertimeMinutes > 0 
@@ -88,17 +85,6 @@ export async function generateAttendancePDF(
     return `${hrs}j ${mins}m`;
   };
 
-  const getOvertimeStr = (r: AttendanceRecord) => {
-    if (!r.check_out_time) return "-";
-    const diffMs = new Date(r.check_out_time).getTime() - new Date(r.check_in_time).getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const overtime = diffMins - 480;
-    if (overtime <= 0) return "-";
-    const hrs = Math.floor(overtime / 60);
-    const mins = overtime % 60;
-    return `${hrs}j ${mins}m`;
-  };
-
   const getMapsLink = (lat: number | null, lng: number | null) => {
     if (lat === null || lng === null) return "-";
     return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
@@ -108,12 +94,12 @@ export async function generateAttendancePDF(
   const pageChunks: AttendanceRecord[][] = [];
   let tempRecords = [...records];
   
-  if (tempRecords.length <= 7) {
+  if (tempRecords.length <= 5) {
     pageChunks.push(tempRecords);
   } else {
-    pageChunks.push(tempRecords.splice(0, 7));
+    pageChunks.push(tempRecords.splice(0, 5));
     while (tempRecords.length > 0) {
-      pageChunks.push(tempRecords.splice(0, 12));
+      pageChunks.push(tempRecords.splice(0, 10));
     }
   }
 
@@ -187,12 +173,11 @@ export async function generateAttendancePDF(
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200 text-[9px] font-black text-slate-400 uppercase tracking-wider">
                     <th className="p-3 w-[20%]">Tanggal</th>
-                    <th className="p-3 w-[12%]">Masuk</th>
-                    <th className="p-3 w-[18%]">Lokasi Masuk</th>
-                    <th className="p-3 w-[12%]">Keluar</th>
-                    <th className="p-3 w-[18%]">Lokasi Keluar</th>
+                    <th className="p-3 w-[15%]">Masuk</th>
+                    <th className="p-3 w-[20%]">Lokasi Masuk</th>
+                    <th className="p-3 w-[15%]">Keluar</th>
+                    <th className="p-3 w-[20%]">Lokasi Keluar</th>
                     <th className="p-3 w-[10%] text-center">Durasi</th>
-                    <th className="p-3 w-[10%] text-center">Kelebihan</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -259,9 +244,6 @@ export async function generateAttendancePDF(
                       </td>
                       <td className="p-3 font-black text-slate-800 text-center">
                         {getDuration(r)}
-                      </td>
-                      <td className="p-3 font-black text-amber-700 text-center">
-                        {getOvertimeStr(r)}
                       </td>
                     </tr>
                   ))}
