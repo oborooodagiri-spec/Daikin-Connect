@@ -251,26 +251,6 @@ export async function generateAttendancePDF(
               </table>
             </div>
 
-            {/* Signature Block - ONLY ON LAST PAGE */}
-            {isLastPage && (
-              <div className="pt-8 border-t border-slate-100">
-                <div className="grid grid-cols-2 gap-10">
-                  <div className="text-center space-y-16">
-                    <p className="text-[9px] font-black text-[#003366] uppercase tracking-widest">Tanda Tangan Personel</p>
-                    <div className="w-40 h-16 border-b border-slate-200 mx-auto relative flex items-end justify-center">
-                      <span className="absolute -bottom-5 text-[8px] font-bold text-slate-400 uppercase">( {user.name} )</span>
-                    </div>
-                  </div>
-
-                  <div className="text-center space-y-16">
-                    <p className="text-[9px] font-black text-[#003366] uppercase tracking-widest">Verifikasi HRD / Supervisor</p>
-                    <div className="w-40 h-16 border-b border-slate-200 mx-auto relative flex items-end justify-center">
-                      <span className="absolute -bottom-5 text-[8px] font-bold text-slate-400 uppercase">( PT Daikin Applied Solutions )</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </ReportBase>
       );
