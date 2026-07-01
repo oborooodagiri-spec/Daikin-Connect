@@ -514,10 +514,7 @@ export default function LiveDataClient() {
       total, won, pipeline, lost, wonCount, activeCount, weightedPipeline,
       conversionRate, conversionRateValue,
       backlogValue, backlogCount, newFyValue, newFyCount,
-      byStatus: Object.entries(byStatus).map(([status, d]) => ({ status, count: d.count, value: d.value })).sort((a, b) => b.value - a.value),
-      byPic: Object.entries(byPic).map(([pic, d]) => ({ pic, ...d })).sort((a, b) => b.totalValue - a.totalValue),
-      bySector: Object.entries(bySector).map(([sector, d]) => ({ sector, ...d })).sort((a, b) => b.value - a.value),
-      byCategory: Object.entries(byCategory).map(([category, d]) => ({ category, ...d })).sort((a, b) => b.value - a.value),
+      byStatus, byPic, bySector, byCategory
     };
   }, [deals, leaderboardDeals, selectedFY]);
 
