@@ -247,8 +247,33 @@ export default function UnitFormModal({
                     <input type="text" value={formData.model} onChange={e => setFormData({...formData, model: e.target.value})} className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-[#0073ea] transition-all" />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Capacity (Btu/h)</label>
-                    <input type="text" value={formData.capacity} onChange={e => setFormData({...formData, capacity: e.target.value})} className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-[#0073ea] transition-all" />
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Capacity</label>
+                    <div className="flex gap-2">
+                      <input 
+                        type="number" 
+                        value={formData.capacity ? formData.capacity.replace(/[^\d.]/g, '') : ''} 
+                        onChange={e => {
+                          hasUserInteracted.current = true;
+                          const u = (formData.capacity || "").match(/[A-Za-z/]+/) || ["KW"];
+                          setFormData({...formData, capacity: `${e.target.value}${u[0]}`});
+                        }} 
+                        className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-[#0073ea] transition-all" 
+                        placeholder="0"
+                      />
+                      <select 
+                        value={((formData.capacity || "").match(/[A-Za-z/]+/) || ["KW"])[0].toUpperCase()}
+                        onChange={e => {
+                          hasUserInteracted.current = true;
+                          const num = (formData.capacity || "").replace(/[^\d.]/g, '');
+                          setFormData({...formData, capacity: `${num}${e.target.value}`});
+                        }}
+                        className="w-32 px-4 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-[#0073ea] transition-all"
+                      >
+                        <option value="KW">KW</option>
+                        <option value="BTU/H">BTU/H</option>
+                        <option value="TR">TR</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
 

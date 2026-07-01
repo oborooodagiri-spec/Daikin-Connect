@@ -396,7 +396,7 @@ export default function UnitDetailPage() {
                         badge 
                      />
                      <SpecField label="Model Design" value={unit.model} icon={Zap} />
-                     <SpecField label="Capacity" value={unit.capacity} suffix="BTU/H" icon={Activity} />
+                     <AnimatedCapacityField label="Capacity" value={unit.capacity} icon={Activity} />
                      <SpecField label="Age of Unit" value={unit.yoi ? `${new Date().getFullYear() - unit.yoi} Years` : "Unknown"} icon={Calendar} />
                   </div>
                </div>
@@ -559,6 +559,64 @@ function InsightCard({ label, value, subValue, color, icon: Icon, progress }: an
                <div className={`h-full ${c.bar}`} style={{ width: `${progress}%` }}></div>
             </div>
          )}
+      </div>
+   );
+}
+
+function AnimatedCapacityField({ label, value, icon: Icon }: any) {
+   const [unitIndex, setUnitIndex] = useState(0);
+   const units = ['KW', 'BTU/H', 'TR'];
+   
+   // Parse initial value
+   const strValue = (value || "").toString();
+   const match = strValue.match(/^([\d.]+)\s*(KW|BTU\/H|TR)?$/i);
+   const baseNum = match ? parseFloat(match[1]) : parseFloat(strValue) || 0;
+   const baseUnit = match && match[2] ? match[2].toUpperCase() : "KW";
+   
+   // Convert base to BTU/H first
+   let btu = baseNum;
+   if (baseUnit === "KW") btu = baseNum * 3412.14;
+   else if (baseUnit === "TR") btu = baseNum * 12000;
+   
+   // Get values for each unit
+   const values = {
+     'KW': (btu / 3412.14).toFixed(1),
+     'BTU/H': Math.round(btu).toLocaleString('id-ID'),
+     'TR': (btu / 12000).toFixed(1)
+   };
+   
+   useEffect(() => {
+     const interval = setInterval(() => {
+       setUnitIndex((prev) => (prev + 1) % units.length);
+     }, 3000);
+     return () => clearInterval(interval);
+   }, []);
+   
+   const activeUnit = units[unitIndex];
+   const displayValue = values[activeUnit as keyof typeof values];
+
+   return (
+      <div className="space-y-2 md:space-y-3 cursor-pointer select-none group" onClick={() => setUnitIndex((prev) => (prev + 1) % units.length)}>
+         <div className="flex items-center gap-2">
+            <Icon size={14} className="text-slate-300 shrink-0 group-hover:text-[#0073ea] transition-colors" />
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none truncate group-hover:text-[#0073ea] transition-colors">{label}</p>
+         </div>
+         <div className="relative h-6 overflow-hidden">
+            <AnimatePresence mode="popLayout">
+               <motion.div
+                  key={activeUnit}
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -20, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="absolute inset-0"
+               >
+                  <p className="text-[13px] md:text-[14px] font-black text-[#323338] tracking-tight break-all">
+                     {displayValue} <span className="text-[10px] text-[#0073ea] ml-1 font-black px-1.5 py-0.5 bg-blue-50 rounded-md">{activeUnit}</span>
+                  </p>
+               </motion.div>
+            </AnimatePresence>
+         </div>
       </div>
    );
 }
