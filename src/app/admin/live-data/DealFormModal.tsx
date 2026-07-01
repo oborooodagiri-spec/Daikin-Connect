@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Save, Trash2, Building2, MapPin, User, FolderArchive, Activity, FileText, LayoutList } from "lucide-react";
-import { createDeal, updateDeal, deleteDeal } from "@/app/actions/pipeline";
+import { createDeal, updateDeal, deleteDeal, getSalesEngineers } from "@/app/actions/pipeline";
 
 interface DealFormModalProps {
   isOpen: boolean;
@@ -24,6 +24,9 @@ const STATUS_OPTIONS = [
   { val: "L", label: "Lost" }
 ];
 
+const CATEGORY_OPTIONS = ["RC", "EPL", "IAQ", "VES", "Controls", "VRV", "Applied", "Other"];
+const REGION_OPTIONS = ["West", "East", "Bali", "National", "Other"];
+
 export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessionName }: DealFormModalProps) {
   const [formData, setFormData] = useState({
     client_name: "",
@@ -39,17 +42,22 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [salesEngineers, setSalesEngineers] = useState<any[]>([]);
 
   useEffect(() => {
     if (isOpen) {
+      getSalesEngineers().then(res => {
+        if (res?.success) setSalesEngineers(res.data);
+      });
+      
       if (deal) {
         setFormData({
           client_name: deal.client_name || "",
           project_name: deal.project_name || "",
           pic: deal.pic || sessionName,
-          category: deal.category || "",
+          category: deal.category || "EPL",
           sector: deal.sector || "",
-          region: deal.region || "",
+          region: deal.region || "West",
           quotation: deal.quotation ? deal.quotation.toString() : "",
           status: deal.status || "T",
           source: deal.source || "Sales",
@@ -60,9 +68,9 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           client_name: "",
           project_name: "",
           pic: sessionName,
-          category: "",
+          category: "EPL",
           sector: "",
-          region: "",
+          region: "West",
           quotation: "",
           status: "T",
           source: "Sales",
@@ -199,24 +207,33 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
 
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><LayoutList size={12}/> Category</label>
-                <input name="category" value={formData.category} onChange={handleChange} placeholder="e.g. RC, EPL, IAQ"
-                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
+                <select name="category" value={formData.category} onChange={handleChange}
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all cursor-pointer">
+                  {CATEGORY_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
               </div>
 
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><MapPin size={12}/> Region / Sector</label>
                 <div className="flex gap-3">
-                  <input name="region" value={formData.region} onChange={handleChange} placeholder="Region"
-                    className="w-1/2 h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 outline-none" />
-                  <input name="sector" value={formData.sector} onChange={handleChange} placeholder="Sector"
+                  <select name="region" value={formData.region} onChange={handleChange}
+                    className="w-1/2 h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 outline-none cursor-pointer">
+                    {REGION_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                  <input name="sector" value={formData.sector} onChange={handleChange} placeholder="Sector (e.g. Hospital)"
                     className="w-1/2 h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 outline-none" />
                 </div>
               </div>
 
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><User size={12}/> PIC (Person In Charge)</label>
-                <input name="pic" value={formData.pic} onChange={handleChange} placeholder="Sales Name"
-                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
+                <select name="pic" value={formData.pic} onChange={handleChange}
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all cursor-pointer">
+                  <option value={sessionName}>{sessionName} (You)</option>
+                  {salesEngineers.map(se => (
+                    se.name !== sessionName && <option key={se.id} value={se.name}>{se.name}</option>
+                  ))}
+                </select>
               </div>
 
               <div className="space-y-1.5">

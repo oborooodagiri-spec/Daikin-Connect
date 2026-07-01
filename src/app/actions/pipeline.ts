@@ -58,6 +58,34 @@ interface OpsData {
 }
 
 // ============================================
+// GET SALES ENGINEERS
+// ============================================
+export async function getSalesEngineers() {
+  noStore();
+  try {
+    const users = await prisma.users.findMany({
+      where: {
+        is_active: true,
+        user_roles: {
+          some: {
+            roles: {
+              role_name: {
+                contains: "sales engineer"
+              }
+            }
+          }
+        }
+      },
+      select: { name: true, id: true },
+      orderBy: { name: 'asc' }
+    });
+    return serializePrisma({ success: true, data: users });
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+// ============================================
 // 1. GET DEALS PIPELINE
 // ============================================
 export async function getDealsPipeline(filters?: DealFilters) {
