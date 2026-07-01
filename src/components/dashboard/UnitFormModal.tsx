@@ -151,7 +151,7 @@ export default function UnitFormModal({
              <div className="flex justify-between items-start mb-8">
                 <div>
                   <h2 className="text-2xl font-black text-[#323338] tracking-tight uppercase">
-                    {mode === "create" ? "Add New Asset" : "Edit Asset Details"}
+                    {mode === "create" ? "Add New Asset" : "Edit Unit Informations"}
                   </h2>
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Registry Management</p>
                 </div>
