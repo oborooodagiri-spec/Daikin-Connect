@@ -246,7 +246,7 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
         </motion.section>
 
         {/* Admin Section - Only for Authorized Roles */}
-        {(profile.isAdmin || profile.roles.some((r: string) => r.toLowerCase().includes("management"))) && (
+        {(profile.isAdmin || profile.roles.some((r: string) => r.toLowerCase().includes("management") || r.toLowerCase().includes("sales engineer"))) && (
           <motion.section 
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
@@ -337,7 +337,7 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
                 </>
               )}
 
-              {(profile.isAdmin || profile.roles.some((r: string) => r.toLowerCase().includes("management"))) && (
+              {(profile.isAdmin || profile.roles.some((r: string) => r.toLowerCase().includes("management") || r.toLowerCase().includes("sales engineer"))) && (
                 <div 
                   className="app-item"
                   onClick={() => router.push("/admin/live-data")}
