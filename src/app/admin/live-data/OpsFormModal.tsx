@@ -13,15 +13,16 @@ interface OpsFormModalProps {
 }
 
 const STATUS_OPTIONS = [
-  { val: "S", label: "Done / Success" },
-  { val: "A", label: "Won / Secured PO" },
+  { val: "A", label: "Won" },
   { val: "B", label: "Budgeted" },
   { val: "C", label: "Contracted" },
   { val: "D", label: "Planning" },
-  { val: "E", label: "Estimated/Submitted" },
-  { val: "N", label: "No Response" },
+  { val: "E", label: "Submitted" },
   { val: "H", label: "Hold" },
-  { val: "L", label: "Lost" }
+  { val: "L", label: "Lost" },
+  { val: "T", label: "Tender" },
+  { val: "S", label: "Menyusul" },
+  { val: "N", label: "Menyusul" }
 ];
 
 export default function OpsFormModal({ isOpen, onClose, onSuccess, opsRecord }: OpsFormModalProps) {

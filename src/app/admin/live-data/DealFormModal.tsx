@@ -14,18 +14,21 @@ interface DealFormModalProps {
 }
 
 const STATUS_OPTIONS = [
-  { val: "A", label: "Won / Secured PO" },
+  { val: "A", label: "Won" },
   { val: "B", label: "Budgeted" },
   { val: "C", label: "Contracted" },
   { val: "D", label: "Planning" },
-  { val: "E", label: "Estimated/Submitted" },
-  { val: "T", label: "Targeted/Tender" },
+  { val: "E", label: "Submitted" },
   { val: "H", label: "Hold" },
-  { val: "L", label: "Lost" }
+  { val: "L", label: "Lost" },
+  { val: "T", label: "Tender" },
+  { val: "S", label: "Menyusul" },
+  { val: "N", label: "Menyusul" }
 ];
 
-const CATEGORY_OPTIONS = ["RC", "EPL", "IAQ", "VES", "Controls", "VRV", "Applied", "Other"];
+const CATEGORY_OPTIONS = ["CONT DEVICE", "CONT INST", "CONT OTHERS", "EPL", "IAQ", "RC", "VES"];
 const REGION_OPTIONS = ["West", "East", "Bali", "National", "Other"];
+const SECTOR_OPTIONS = ["GOVERNMENT", "HEAVY INDUSTRI", "HOSPITAL", "INDUSTRI", "KOMERSIAL", "OTHER"];
 
 export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessionName }: DealFormModalProps) {
   const [formData, setFormData] = useState({
@@ -218,10 +221,14 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
                 <div className="flex gap-3">
                   <select name="region" value={formData.region} onChange={handleChange}
                     className="w-1/2 h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 outline-none cursor-pointer">
+                    <option value="">Select Region</option>
                     {REGION_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
                   </select>
-                  <input name="sector" value={formData.sector} onChange={handleChange} placeholder="Sector (e.g. Hospital)"
-                    className="w-1/2 h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 outline-none" />
+                  <select name="sector" value={formData.sector} onChange={handleChange}
+                    className="w-1/2 h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 outline-none cursor-pointer">
+                    <option value="">Select Sector</option>
+                    {SECTOR_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
                 </div>
               </div>
 
