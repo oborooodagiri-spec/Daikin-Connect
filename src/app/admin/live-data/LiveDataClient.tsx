@@ -11,6 +11,8 @@ import {
   CheckCircle2, Clock, AlertTriangle, Briefcase, ArrowLeft, Trophy
 } from "lucide-react";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
+import DealFormModal from "./DealFormModal";
+import OpsFormModal from "./OpsFormModal";
 
 // ============================================
 // TYPES
@@ -374,6 +376,8 @@ export default function LiveDataClient() {
   const [currentPage, setCurrentPage] = useState(1);
   const [editingDeal, setEditingDeal] = useState<Deal | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingOps, setEditingOps] = useState<OpsRecord | null>(null);
+  const [showOpsModal, setShowOpsModal] = useState(false);
   const itemsPerPage = 20;
 
   // Load data
@@ -792,10 +796,14 @@ export default function LiveDataClient() {
             </select>
           ))}
 
-          <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
-            <span style={{ fontSize: 11, fontWeight: 800, color: "#676879", alignSelf: "center" }}>
+          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 800, color: "#676879" }}>
               {data.length} results · {formatRp(data.reduce((s, d) => s + Number(d.quotation), 0))}
             </span>
+            <button onClick={() => { setEditingDeal(null); setShowAddModal(true); }}
+              className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20">
+              <Plus size={14} /> Add Project
+            </button>
           </div>
         </div>
 
@@ -805,7 +813,7 @@ export default function LiveDataClient() {
             <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1000 }}>
               <thead>
                 <tr style={{ background: "#f8f9fb", borderBottom: "1px solid #e8e8e8" }}>
-                  {["Client / Project", "Category", "Sector", "PIC", "Quotation", "Status", "Remarks"].map(h => (
+                  {["Client / Project", "Category", "Sector", "PIC", "Quotation", "Status", "Remarks", "Actions"].map(h => (
                     <th key={h} style={{ padding: "14px 16px", textAlign: "left", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em", color: "#676879" }}>{h}</th>
                   ))}
                 </tr>
@@ -834,10 +842,16 @@ export default function LiveDataClient() {
                     <td style={{ padding: "12px 16px", fontSize: 11, fontWeight: 600, color: "#676879", maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {deal.remarks || "-"}
                     </td>
+                    <td style={{ padding: "12px 16px", textAlign: "right" }}>
+                      <button onClick={(e) => { e.stopPropagation(); setEditingDeal(deal); setShowAddModal(true); }}
+                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors inline-flex">
+                        <Edit2 size={16} />
+                      </button>
+                    </td>
                   </tr>
                 ))}
                 {paginated.length === 0 && (
-                  <tr><td colSpan={7} style={{ padding: 60, textAlign: "center", fontSize: 13, fontWeight: 700, color: "#c4c4c4", fontStyle: "italic" }}>No matching records found</td></tr>
+                  <tr><td colSpan={8} style={{ padding: 60, textAlign: "center", fontSize: 13, fontWeight: 700, color: "#c4c4c4", fontStyle: "italic" }}>No matching records found</td></tr>
                 )}
               </tbody>
             </table>
@@ -885,9 +899,15 @@ export default function LiveDataClient() {
             <option value="All">All Status</option>
             {["S", "A", "B", "C", "D", "E", "N", "H", "L"].map(s => <option key={s} value={s}>{s} - {STATUS_CONFIG[s]?.label || s}</option>)}
           </select>
-          <span style={{ marginLeft: "auto", fontSize: 11, fontWeight: 800, color: "#676879" }}>
-            {data.length} records · {formatRp(data.reduce((s, o) => s + Number(o.total_value), 0))}
-          </span>
+          <div style={{ marginLeft: "auto", display: "flex", gap: 12, alignItems: "center" }}>
+            <span style={{ fontSize: 11, fontWeight: 800, color: "#676879" }}>
+              {data.length} records · {formatRp(data.reduce((s, o) => s + Number(o.total_value), 0))}
+            </span>
+            <button onClick={() => { setEditingOps(null); setShowOpsModal(true); }}
+              className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20">
+              <Plus size={14} /> Add Record
+            </button>
+          </div>
         </div>
 
         <div style={{ ...cardStyle, padding: 0, overflow: "hidden" }}>
@@ -895,7 +915,7 @@ export default function LiveDataClient() {
             <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 800 }}>
               <thead>
                 <tr style={{ background: "#f8f9fb", borderBottom: "1px solid #e8e8e8" }}>
-                  {["#", "Customer", "Project", "Total Value", "Status", "Remark"].map(h => (
+                  {["#", "Customer", "Project", "Total Value", "Status", "Remark", "Actions"].map(h => (
                     <th key={h} style={{ padding: "14px 16px", textAlign: "left", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em", color: "#676879" }}>{h}</th>
                   ))}
                 </tr>
@@ -912,10 +932,16 @@ export default function LiveDataClient() {
                     <td style={{ padding: "12px 16px", fontSize: 13, fontWeight: 800, color: "#323338", fontVariantNumeric: "tabular-nums" }}>{formatRp(Number(ops.total_value))}</td>
                     <td style={{ padding: "12px 16px" }}><StatusBadge status={ops.status} /></td>
                     <td style={{ padding: "12px 16px", fontSize: 11, fontWeight: 600, color: "#676879", maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{ops.remark || "-"}</td>
+                    <td style={{ padding: "12px 16px", textAlign: "right" }}>
+                      <button onClick={(e) => { e.stopPropagation(); setEditingOps(ops); setShowOpsModal(true); }}
+                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors inline-flex">
+                        <Edit2 size={16} />
+                      </button>
+                    </td>
                   </tr>
                 ))}
                 {paginated.length === 0 && (
-                  <tr><td colSpan={6} style={{ padding: 60, textAlign: "center", fontSize: 13, fontWeight: 700, color: "#c4c4c4", fontStyle: "italic" }}>No matching records found</td></tr>
+                  <tr><td colSpan={7} style={{ padding: 60, textAlign: "center", fontSize: 13, fontWeight: 700, color: "#c4c4c4", fontStyle: "italic" }}>No matching records found</td></tr>
                 )}
               </tbody>
             </table>
@@ -1064,6 +1090,9 @@ export default function LiveDataClient() {
           </AnimatePresence>
         )}
       </div>
+
+      <DealFormModal isOpen={showAddModal} onClose={() => setShowAddModal(false)} onSuccess={loadData} deal={editingDeal} sessionName="" />
+      <OpsFormModal isOpen={showOpsModal} onClose={() => setShowOpsModal(false)} onSuccess={loadData} opsRecord={editingOps} />
     </div>
   );
 }
