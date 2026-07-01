@@ -525,7 +525,7 @@ export default function LiveDataClient() {
   const renderDashboard = () => (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       {/* KPI CARDS */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: "Gross Pipeline", value: formatRp(stats.pipeline), sub: `${deals.length} active projects`, icon: DollarSign, color: "#0073ea", gradient: "linear-gradient(135deg, #0073ea 0%, #66ccff 100%)" },
           { label: "Expected Revenue", value: formatRp(stats.weightedPipeline), sub: `Risk-adjusted projection`, icon: Target, color: "#7b2cbf", gradient: "linear-gradient(135deg, #7b2cbf 0%, #a855f7 100%)" },
@@ -553,7 +553,7 @@ export default function LiveDataClient() {
       </motion.div>
 
       {/* SALES PERFORMANCE MATRIX */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* TOP PERFORMERS (MOST PO) */}
         <div style={{ ...cardStyle, background: "linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
@@ -623,7 +623,7 @@ export default function LiveDataClient() {
       </div>
 
       {/* PIPELINE FUNNEL & COMPARATIVE ANALYTICS */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div style={cardStyle}>
           <h3 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#676879", marginBottom: 20 }}>Pipeline Status Funnel</h3>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -693,7 +693,7 @@ export default function LiveDataClient() {
       </div>
 
       {/* SECTOR & CATEGORY DISTRIBUTION */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Pipeline by Sector */}
         <div style={cardStyle}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
@@ -996,7 +996,7 @@ export default function LiveDataClient() {
   return (
     <div style={{ minHeight: "100vh", background: "#f5f6f8", fontFamily: "'Inter', system-ui, sans-serif" }}>
       {/* HEADER */}
-      <div style={{ background: "white", borderBottom: "1px solid #e8e8e8", padding: "16px 32px", position: "sticky", top: 0, zIndex: 50 }}>
+      <div className="px-4 md:px-8 py-4" style={{ background: "white", borderBottom: "1px solid #e8e8e8", position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", maxWidth: 1400, margin: "0 auto" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             <button onClick={() => router.push("/home")} style={{ width: 40, height: 40, borderRadius: 12, border: "1px solid #e8e8e8", background: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -1022,8 +1022,8 @@ export default function LiveDataClient() {
       </div>
 
       {/* TAB NAV */}
-      <div style={{ background: "white", borderBottom: "1px solid #e8e8e8", padding: "0 32px" }}>
-        <div style={{ display: "flex", gap: 0, maxWidth: 1400, margin: "0 auto" }}>
+      <div className="px-4 md:px-8" style={{ background: "white", borderBottom: "1px solid #e8e8e8" }}>
+        <div className="overflow-x-auto whitespace-nowrap scrollbar-hide" style={{ display: "flex", gap: 0, maxWidth: 1400, margin: "0 auto" }}>
           {TABS.map(tab => {
             const isActive = activeTab === tab.id;
             return (
@@ -1045,7 +1045,7 @@ export default function LiveDataClient() {
       </div>
 
       {/* CONTENT */}
-      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "24px 32px" }}>
+      <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-6">
         {loading ? (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 100 }}>
             <RefreshCw size={32} color="#0073ea" style={{ animation: "spin 1s linear infinite" }} />
