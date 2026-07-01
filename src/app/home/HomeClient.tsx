@@ -246,7 +246,7 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
         </motion.section>
 
         {/* Admin Section - Only for Authorized Roles */}
-        {profile.isAdmin && (
+        {(profile.isAdmin || profile.roles.some((r: string) => r.toLowerCase().includes("management"))) && (
           <motion.section 
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
@@ -260,90 +260,94 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
             </div>
             
             <div className="app-grid">
-              <div 
-                className="app-item"
-                onClick={() => router.push("/admin/attendance")}
-              >
-                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #e44258 0%, #ff6b81 100%)" }}>
-                    <Calendar size={22} />
-                 </div>
-                 <span className="app-label">Kehadiran</span>
-              </div>
+              {profile.isAdmin && (
+                <>
+                  <div 
+                    className="app-item"
+                    onClick={() => router.push("/admin/attendance")}
+                  >
+                     <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #e44258 0%, #ff6b81 100%)" }}>
+                        <Calendar size={22} />
+                     </div>
+                     <span className="app-label">Kehadiran</span>
+                  </div>
 
-              <div 
-                className="app-item"
-                onClick={() => router.push("/admin/security")}
-              >
-                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #00c875 0%, #00e68a 100%)" }}>
-                    <Shield size={22} />
-                 </div>
-                 <span className="app-label">Keamanan</span>
-              </div>
+                  <div 
+                    className="app-item"
+                    onClick={() => router.push("/admin/security")}
+                  >
+                     <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #00c875 0%, #00e68a 100%)" }}>
+                        <Shield size={22} />
+                     </div>
+                     <span className="app-label">Keamanan</span>
+                  </div>
 
-              <div 
-                className="app-item"
-                onClick={() => router.push("/admin/users")}
-              >
-                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #fdab3d 0%, #ffc107 100%)" }}>
-                    <Users size={22} />
-                 </div>
-                 <span className="app-label">Kelola User</span>
-              </div>
+                  <div 
+                    className="app-item"
+                    onClick={() => router.push("/admin/users")}
+                  >
+                     <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #fdab3d 0%, #ffc107 100%)" }}>
+                        <Users size={22} />
+                     </div>
+                     <span className="app-label">Kelola User</span>
+                  </div>
 
-              <div 
-                className="app-item"
-                onClick={() => {
-                  const pid = profile.projects[0]?.id || "empty";
-                  router.push(`/w/${pid}/dashboard/customers`);
-                }}
-              >
-                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #a25ddc 0%, #c084fc 100%)" }}>
-                    <Briefcase size={22} />
-                 </div>
-                 <span className="app-label">Proyek</span>
-              </div>
+                  <div 
+                    className="app-item"
+                    onClick={() => {
+                      const pid = profile.projects[0]?.id || "empty";
+                      router.push(`/w/${pid}/dashboard/customers`);
+                    }}
+                  >
+                     <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #a25ddc 0%, #c084fc 100%)" }}>
+                        <Briefcase size={22} />
+                     </div>
+                     <span className="app-label">Proyek</span>
+                  </div>
 
-              <div 
-                className="app-item"
-                onClick={() => router.push("/admin/settings")}
-              >
-                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #676879 0%, #323338 100%)" }}>
-                    <Settings size={22} />
-                 </div>
-                 <span className="app-label">Pengaturan</span>
-              </div>
+                  <div 
+                    className="app-item"
+                    onClick={() => router.push("/admin/settings")}
+                  >
+                     <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #676879 0%, #323338 100%)" }}>
+                        <Settings size={22} />
+                     </div>
+                     <span className="app-label">Pengaturan</span>
+                  </div>
 
-              <div 
-                className="app-item"
-                onClick={() => router.push("/admin/unit-database")}
-              >
-                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #0073ea 0%, #66ccff 100%)" }}>
-                    <Package size={22} />
-                 </div>
-                 <span className="app-label">Unit Database</span>
-              </div>
+                  <div 
+                    className="app-item"
+                    onClick={() => router.push("/admin/unit-database")}
+                  >
+                     <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #0073ea 0%, #66ccff 100%)" }}>
+                        <Package size={22} />
+                     </div>
+                     <span className="app-label">Unit Database</span>
+                  </div>
 
+                  <div 
+                    className="app-item"
+                    onClick={() => router.push("/admin/quotation")}
+                  >
+                     <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #5a189a 0%, #7b2cbf 100%)" }}>
+                        <BookOpen size={22} />
+                     </div>
+                     <span className="app-label">Quotation</span>
+                  </div>
+                </>
+              )}
 
-
-              <div 
-                className="app-item"
-                onClick={() => router.push("/admin/quotation")}
-              >
-                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #5a189a 0%, #7b2cbf 100%)" }}>
-                    <BookOpen size={22} />
-                 </div>
-                 <span className="app-label">Quotation</span>
-              </div>
-
-              <div 
-                className="app-item"
-                onClick={() => router.push("/admin/live-data")}
-              >
-                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)" }}>
-                    <TrendingUp size={22} />
-                 </div>
-                 <span className="app-label">Live Data</span>
-              </div>
+              {(profile.isAdmin || profile.roles.some((r: string) => r.toLowerCase().includes("management"))) && (
+                <div 
+                  className="app-item"
+                  onClick={() => router.push("/admin/live-data")}
+                >
+                   <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)" }}>
+                      <TrendingUp size={22} />
+                   </div>
+                   <span className="app-label">Live Data</span>
+                </div>
+              )}
             </div>
           </motion.section>
         )}
