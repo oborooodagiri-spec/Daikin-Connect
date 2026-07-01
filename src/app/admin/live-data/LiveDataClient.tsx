@@ -37,6 +37,7 @@ interface Deal {
   source: string;
   priority?: string;
   created_at: string;
+  updated_at: string;
 }
 
 interface OpsRecord {
@@ -380,6 +381,13 @@ export default function LiveDataClient() {
   const [showOpsModal, setShowOpsModal] = useState(false);
   const itemsPerPage = 20;
 
+  const currentFY = useMemo(() => {
+    const d = new Date();
+    return d.getMonth() >= 4 ? d.getFullYear() - 2000 : d.getFullYear() - 2000 - 1;
+  }, []);
+  const [selectedFY, setSelectedFY] = useState(currentFY);
+  const fyOptions = Array.from({ length: 5 }, (_, i) => currentFY - i);
+
   // Load data
   useEffect(() => {
     loadData();
@@ -409,6 +417,8 @@ export default function LiveDataClient() {
     let total = 0, won = 0, pipeline = 0, lost = 0;
     let wonCount = 0, activeCount = 0;
     let weightedPipeline = 0;
+    let backlogValue = 0, backlogCount = 0;
+    let newFyValue = 0, newFyCount = 0;
 
     const byStatus: Record<string, { count: number; value: number }> = {};
     const byPic: Record<string, { 
@@ -427,12 +437,33 @@ export default function LiveDataClient() {
       "E": 0.2,   // Estimated: 20%
       "T": 0.1,   // Targeted: 10%
       "L": 0,     // Lost: 0%
-      "H": 0      // Hold: 0%
+      "H": 0,     // Hold: 0%
+      "S": 0,
+      "N": 0
     };
 
+    const fyStart = new Date(2000 + selectedFY, 4, 1).getTime(); // May 1
+    const fyEnd = new Date(2000 + selectedFY + 1, 3, 30, 23, 59, 59, 999).getTime(); // April 30
+
     deals.forEach(d => {
+      const cTime = new Date(d.created_at).getTime();
+      const uTime = new Date(d.updated_at).getTime();
+
+      // FY FILTERING LOGIC
+      if (cTime > fyEnd) return; // Created after this FY ended
+      if (['A', 'L'].includes(d.status) && uTime < fyStart) return; // Closed before this FY started
+      
+      const isBacklog = cTime < fyStart;
       const val = Number(d.quotation) || 0;
+      
       total += val;
+      if (isBacklog) {
+        backlogValue += val;
+        backlogCount++;
+      } else {
+        newFyValue += val;
+        newFyCount++;
+      }
       
       // Funnel & Totals
       if (d.status === "A") { won += val; wonCount++; }
@@ -479,11 +510,16 @@ export default function LiveDataClient() {
     const conversionRate = activeCount > 0 ? ((wonCount / activeCount) * 100).toFixed(1) : "0";
     const conversionRateValue = (pipeline + won) > 0 ? ((won / (pipeline + won)) * 100).toFixed(1) : "0";
 
-    const opsTotal = opsRecords.reduce((s, o) => s + Number(o.total_value), 0);
-    const opsDone = opsRecords.filter(o => o.status === "S").reduce((s, o) => s + Number(o.total_value), 0);
-
-    return { total, won, pipeline, lost, wonCount, activeCount, conversionRate, conversionRateValue, weightedPipeline, byStatus, byPic, bySector, byCategory, opsTotal, opsDone };
-  }, [deals, opsRecords, leaderboardDeals]);
+    return {
+      total, won, pipeline, lost, wonCount, activeCount, weightedPipeline,
+      conversionRate, conversionRateValue,
+      backlogValue, backlogCount, newFyValue, newFyCount,
+      byStatus: Object.entries(byStatus).map(([status, d]) => ({ status, count: d.count, value: d.value })).sort((a, b) => b.value - a.value),
+      byPic: Object.entries(byPic).map(([pic, d]) => ({ pic, ...d })).sort((a, b) => b.totalValue - a.totalValue),
+      bySector: Object.entries(bySector).map(([sector, d]) => ({ sector, ...d })).sort((a, b) => b.value - a.value),
+      byCategory: Object.entries(byCategory).map(([category, d]) => ({ category, ...d })).sort((a, b) => b.value - a.value),
+    };
+  }, [deals, leaderboardDeals, selectedFY]);
 
   // Filtered lists
   const filteredDeals = useMemo(() => {
@@ -529,12 +565,13 @@ export default function LiveDataClient() {
   const renderDashboard = () => (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       {/* KPI CARDS */}
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {[
-          { label: "Gross Pipeline", value: formatRp(stats.pipeline), sub: `${deals.length} active projects`, icon: DollarSign, color: "#0073ea", gradient: "linear-gradient(135deg, #0073ea 0%, #66ccff 100%)" },
+          { label: `FY${selectedFY} Pipeline`, value: formatRp(stats.newFyValue), sub: `${stats.newFyCount} projects created this year`, icon: Briefcase, color: "#00c875", gradient: "linear-gradient(135deg, #00c875 0%, #34d399 100%)" },
+          { label: "Backlog Pipeline", value: formatRp(stats.backlogValue), sub: `${stats.backlogCount} projects carried over`, icon: Clock, color: "#f59e0b", gradient: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)" },
+          { label: "Gross Pipeline (Total)", value: formatRp(stats.pipeline), sub: `${deals.length} active projects`, icon: DollarSign, color: "#0073ea", gradient: "linear-gradient(135deg, #0073ea 0%, #66ccff 100%)" },
           { label: "Expected Revenue", value: formatRp(stats.weightedPipeline), sub: `Risk-adjusted projection`, icon: Target, color: "#7b2cbf", gradient: "linear-gradient(135deg, #7b2cbf 0%, #a855f7 100%)" },
-          { label: "Secured PO (Won)", value: formatRp(stats.won), sub: `${stats.conversionRate}% Win Rate (Count) • ${stats.conversionRateValue}% (Value)`, icon: CheckCircle2, color: "#00c875", gradient: "linear-gradient(135deg, #00c875 0%, #00e68a 100%)" },
-          { label: "Lost / Dropped", value: formatRp(stats.lost), sub: `Value of lost opportunities`, icon: AlertTriangle, color: "#e44258", gradient: "linear-gradient(135deg, #e44258 0%, #ff6b81 100%)" },
+          { label: "Total Won", value: formatRp(stats.won), sub: `${stats.wonCount} projects secured`, icon: Trophy, color: "#10b981", gradient: "linear-gradient(135deg, #10b981 0%, #34d399 100%)" },
         ].map((kpi, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
             style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 16, cursor: "default", padding: "20px" }}
@@ -825,7 +862,12 @@ export default function LiveDataClient() {
                     onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                   >
                     <td style={{ padding: "12px 16px", maxWidth: 300 }}>
-                      <p style={{ fontSize: 13, fontWeight: 700, color: "#323338", marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{deal.client_name}</p>
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#323338", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{deal.client_name}</p>
+                        {new Date(deal.created_at).getTime() < new Date(2000 + selectedFY, 4, 1).getTime() && (
+                          <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-amber-100 text-amber-700 leading-none">BACKLOG</span>
+                        )}
+                      </div>
                       <p style={{ fontSize: 11, fontWeight: 600, color: "#676879", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{deal.project_name}</p>
                     </td>
                     <td style={{ padding: "12px 16px" }}>
@@ -1041,11 +1083,19 @@ export default function LiveDataClient() {
             </div>
           </div>
 
-          <button onClick={loadData} style={{ padding: "10px 20px", borderRadius: 12, border: "1px solid #e8e8e8", background: "white", fontSize: 11, fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, color: "#676879" }}>
-            <RefreshCw size={14} /> Refresh
-          </button>
+            <div className="flex items-center gap-4">
+              <select value={selectedFY} onChange={e => setSelectedFY(Number(e.target.value))}
+                className="px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
+                {fyOptions.map(fy => (
+                  <option key={fy} value={fy}>FY{fy} {fy === currentFY ? "(Current)" : ""}</option>
+                ))}
+              </select>
+              <button onClick={loadData} style={{ padding: "10px 20px", borderRadius: 12, border: "1px solid #e8e8e8", background: "white", fontSize: 11, fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, color: "#676879" }}>
+                <RefreshCw size={14} /> Refresh
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
 
       {/* TAB NAV */}
       <div className="px-4 md:px-8" style={{ background: "white", borderBottom: "1px solid #e8e8e8" }}>
