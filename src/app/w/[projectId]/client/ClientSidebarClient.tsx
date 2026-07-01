@@ -87,8 +87,8 @@ export default function ClientSidebarClient({
         ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0
       `}>
         <div className="p-8 border-b border-white/5 flex flex-col items-center shrink-0">
-          <div className="relative h-10 w-48 mb-6">
-            <img src="/logo_epl_connect_1.png" className="h-10 brightness-0 invert" alt="EPL Link" />
+          <div className="relative h-14 w-52 mb-6">
+            <img src="/logo_epl_connect_1.png" className="h-14 brightness-0 invert" alt="EPL Link" />
           </div>
           <div className="text-center space-y-2">
             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-300/50">

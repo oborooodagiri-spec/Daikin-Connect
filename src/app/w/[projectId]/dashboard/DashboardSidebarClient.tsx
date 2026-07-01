@@ -110,9 +110,9 @@ export default function DashboardSidebarClient({
         ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0
       `}>
         <div className="p-8 border-b border-[#f7f8fa] flex flex-col items-center shrink-0">
-          <div className="relative h-10 lg:h-12 w-48 mb-6">
+          <div className="relative h-14 lg:h-16 w-52 mb-6">
             <Image 
-              src="/logo_epllink.png" 
+              src="/logo_epl_connect_1.png" 
               alt="EPL Link" 
               fill
               className="object-contain"
