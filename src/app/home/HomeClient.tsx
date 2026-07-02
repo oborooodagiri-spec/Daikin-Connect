@@ -315,15 +315,7 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
                      <span className="app-label">Pengaturan</span>
                   </div>
 
-                  <div 
-                    className="app-item"
-                    onClick={() => router.push("/admin/unit-database")}
-                  >
-                     <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #0073ea 0%, #66ccff 100%)" }}>
-                        <Package size={22} />
-                     </div>
-                     <span className="app-label">Unit Database</span>
-                  </div>
+
 
                   <div 
                     className="app-item"
