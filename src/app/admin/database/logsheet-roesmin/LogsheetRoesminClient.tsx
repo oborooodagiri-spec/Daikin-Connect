@@ -543,7 +543,11 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
                           >
                             <div className="px-5 pb-5 pt-2 border-t border-slate-50">
                               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {unit.params.map(p => (
+                                {unit.params.map(p => {
+                                  const unitStatus = formData[unit.id]?.status || formData[unit.id]?.ahu_status || "";
+                                  const isOff = ["OFF", "Standby", "Trip"].includes(unitStatus);
+                                  const isDisabled = isOff && p.key !== "status" && p.key !== "ahu_status";
+                                  return (
                                   <div key={p.key} className="space-y-1.5">
                                     <div className="flex items-center justify-between">
                                       <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider truncate">
@@ -558,9 +562,10 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
                                     </div>
                                     {p.type === "select" ? (
                                       <select
+                                        disabled={isDisabled}
                                         value={formData[unit.id]?.[p.key] || ""}
                                         onChange={e => handleInput(unit.id, p.key, e.target.value)}
-                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold text-[#003366] outline-none focus:bg-white focus:border-[#00a1e4] focus:ring-4 focus:ring-[#00a1e4]/5 transition-all appearance-none"
+                                        className={`w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold text-[#003366] outline-none transition-all appearance-none ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'focus:bg-white focus:border-[#00a1e4] focus:ring-4 focus:ring-[#00a1e4]/5'}`}
                                       >
                                         <option value="">Pilih...</option>
                                         {p.options?.map(o => <option key={o} value={o}>{o}</option>)}
@@ -568,16 +573,17 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
                                     ) : (
                                       <input
                                         type="number"
+                                        disabled={isDisabled}
                                         step="0.1"
                                         inputMode="decimal"
                                         placeholder="0"
                                         value={formData[unit.id]?.[p.key] || ""}
                                         onChange={e => handleInput(unit.id, p.key, e.target.value)}
-                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold text-[#003366] outline-none focus:bg-white focus:border-[#00a1e4] focus:ring-4 focus:ring-[#00a1e4]/5 transition-all"
+                                        className={`w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold text-[#003366] outline-none transition-all ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'focus:bg-white focus:border-[#00a1e4] focus:ring-4 focus:ring-[#00a1e4]/5'}`}
                                       />
                                     )}
                                   </div>
-                                ))}
+                                )})}
                               </div>
                             </div>
                           </motion.div>
