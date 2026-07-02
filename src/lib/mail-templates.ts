@@ -2,7 +2,8 @@
  * Professional Bilingual (Indonesian & English) Email Templates for EPL Link
  */
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://epllink.com';
+// Force using APP_URL to bypass sticky NEXT_PUBLIC build caches
+const APP_URL = process.env.APP_URL || 'https://epllink.com';
 const LOGO_URL = `${APP_URL}/logo_epllink.png`;
 
 const baseStyles = `
