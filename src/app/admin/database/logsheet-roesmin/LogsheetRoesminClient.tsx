@@ -70,6 +70,7 @@ const mainLineParams: ParamDef[] = [
 
 /* ── AHU params ── */
 const ahuSimParams: ParamDef[] = [
+  { key: "ahu_status", label: "AHU Status", type: "select", options: UNIT_STATUS },
   { key: "room_temp", label: "Room Temperature", unit: "°C", type: "number", design: "19" },
   { key: "room_rh", label: "Room Humidity", unit: "%", type: "number", design: "50-60" },
   { key: "room_press", label: "Room Pressure", unit: "Pa", type: "number", design: "10-15" },
