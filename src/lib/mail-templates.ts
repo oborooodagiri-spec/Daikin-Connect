@@ -3,8 +3,8 @@
  */
 
 // Force using APP_URL to bypass sticky NEXT_PUBLIC build caches
-const APP_URL = process.env.APP_URL || 'https://epllink.com';
-const LOGO_URL = `${APP_URL}/logo_epllink.png`;
+const APP_URL = process.env.APP_URL || 'https://dconnect.id';
+const LOGO_URL = `${APP_URL}/logo/Logo DSSI.png`;
 
 const baseStyles = `
   font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;

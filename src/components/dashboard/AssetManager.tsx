@@ -227,7 +227,7 @@ export default function AssetManager({
 
       const [logoDaikin, logoEpl] = await Promise.all([
         loadImage("/daikin_logo.png"),
-        loadImage("/logo_epllink.png")
+        loadImage("/logo/Logo DSSI.png")
       ]);
 
       ctx.fillStyle = "#ffffff";

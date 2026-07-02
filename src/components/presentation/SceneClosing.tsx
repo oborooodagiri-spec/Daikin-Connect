@@ -49,7 +49,7 @@ export function SceneClosing({ isVisible }: SceneProps) {
                      <div className="flex items-center gap-8">
                         <img src="/daikin_logo.png" className="h-10 brightness-0 invert" alt="Daikin" />
                         <div className="w-[1px] h-10 bg-white/20"></div>
-                        <img src="/logo_epllink.png" className="h-14 brightness-0 invert" alt="EPL" />
+                        <img src="/logo/Logo DSSI.png" className="h-14 brightness-0 invert" alt="EPL" />
                      </div>
                      <h2 className="text-[120px] font-black italic tracking-tighter leading-none text-blue-500 shadow-glow-blue uppercase">
                        CONNECT

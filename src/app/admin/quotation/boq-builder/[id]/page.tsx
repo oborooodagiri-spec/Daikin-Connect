@@ -459,7 +459,7 @@ export default function BoqEditorClient() {
               <div className="px-[15mm] pt-[8mm] pb-[4mm] flex justify-between items-start">
                 <div className="flex flex-col gap-1">
                   <img 
-                    src="/logo_epllink.png" 
+                    src="/logo/Logo DSSI.png" 
                     alt="EPL Link" 
                     className="h-[10mm] w-auto object-contain self-start" 
                     onError={(e) => { e.currentTarget.style.display = 'none'; }}

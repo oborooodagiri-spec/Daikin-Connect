@@ -800,7 +800,7 @@ export default function QuotationClient({
             <div className="h-[4mm] bg-gradient-to-r from-[#009ce1] to-[#003366] w-full" />
             <div className="px-[15mm] pt-[8mm] pb-[4mm] flex justify-between items-center border-b-[2px] border-[#003366] mx-[15mm]">
               <div className="flex items-center gap-4">
-                <img src="/logo_epllink.png" alt="EPL CONNECT" className="h-[18mm] object-contain" />
+                <img src="/logo/Logo DSSI.png" alt="EPL CONNECT" className="h-[18mm] object-contain" />
                 <div className="h-6 w-px bg-slate-300" />
                 <div className="text-[8px] font-black text-[#003366] uppercase leading-tight max-w-[150px]">
                   PT. DAIKIN APPLIED SOLUTIONS INDONESIA
@@ -902,7 +902,7 @@ export default function QuotationClient({
                 <div className="h-[4mm] bg-gradient-to-r from-[#009ce1] to-[#003366] w-full" />
                 <div className="px-[15mm] pt-[8mm] pb-[4mm] flex justify-between items-start">
                   <div className="flex flex-col gap-1">
-                    <img src="/logo_epllink.png" alt="EPL CONNECT" className="h-[12mm] object-contain" />
+                    <img src="/logo/Logo DSSI.png" alt="EPL CONNECT" className="h-[12mm] object-contain" />
                     <span className="text-[6.5px] font-bold text-slate-450 tracking-wide uppercase">PT. DAIKIN APPLIED SOLUTIONS INDONESIA</span>
                   </div>
                   <div className="text-right">

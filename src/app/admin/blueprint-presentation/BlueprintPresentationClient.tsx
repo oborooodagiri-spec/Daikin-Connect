@@ -129,7 +129,7 @@ export default function BlueprintPresentationClient() {
            >
               <img src="/daikin_logo.png" className="h-10 object-contain" alt="Daikin" />
               <div className="w-px h-10 bg-slate-200" />
-              <img src="/logo_epllink.png" className="h-14 object-contain" alt="EPL" />
+              <img src="/logo/Logo DSSI.png" className="h-14 object-contain" alt="EPL" />
            </motion.div>
            <h1 className="text-6xl md:text-9xl font-black tracking-tighter uppercase leading-[0.8] mb-12 text-slate-900">
               Value Engineering<br />

@@ -144,7 +144,7 @@ export default function ForgotPasswordPage() {
 
             <div className="mt-12 text-center border-t border-slate-100 pt-8">
                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                 © 2026 EPLLINK <span className="text-[#0073ea] mx-2">•</span> RECOVERY
+                 © 2026 DCONNECT <span className="text-[#0073ea] mx-2">•</span> RECOVERY
                </p>
             </div>
           </motion.div>

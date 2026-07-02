@@ -18,7 +18,7 @@ export default function PrivacyPolicyPage() {
             <p>
               Welcome to EPL Link. We respect your privacy and are committed to protecting your personal data. 
               This privacy policy will inform you as to how we look after your personal data when you visit our website 
-              (epllink.com) and use our enterprise service management systems.
+              (dconnect.id) and use our enterprise service management systems.
             </p>
           </section>
 

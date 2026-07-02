@@ -58,7 +58,7 @@ export const ReportBase = ({
               </div>
             </div>
             <div style={{ textAlign: "right" }}>
-              <img src="/logo_epllink.png" alt="EPL Link" style={{ height: "24mm", objectFit: "contain" }} />
+              <img src="/logo/Logo DSSI.png" alt="EPL Link" style={{ height: "24mm", objectFit: "contain" }} />
             </div>
           </div>
 
@@ -201,7 +201,7 @@ export const ReportBase = ({
                {lang === 'id' ? `Halaman ${pageNumber} dari ${totalPages}` : lang === 'ja' ? `${totalPages} ページ中 ${pageNumber} ページ` : `Page ${pageNumber} of ${totalPages}`}
             </span>
             <span style={{ color: "white", fontSize: "10pt", fontWeight: 700, fontStyle: "italic" }}>
-              www.epllink.com
+              www.dconnect.id
             </span>
           </div>
         </div>

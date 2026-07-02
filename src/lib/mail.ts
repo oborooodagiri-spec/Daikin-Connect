@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
   port: parseInt(process.env.SMTP_PORT || '465'),
   secure: true, // true for 465, false for 587
   auth: {
-    user: process.env.SMTP_USER || 'no-reply@epllink.com',
+    user: process.env.SMTP_USER || 'no-reply@dconnect.id',
     pass: process.env.SMTP_PASS || 'Doda4244@#',
   },
   tls: {
@@ -22,14 +22,14 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-const fromEmail = `"EPL Link" <${process.env.SMTP_USER || 'no-reply@epllink.com'}>`;
+const fromEmail = `"EPL Link" <${process.env.SMTP_USER || 'no-reply@dconnect.id'}>`;
 
 export async function sendRegistrationReceivedEmail(to: string, name: string) {
   console.log(`[MAIL] Attempting to send Registration Confirmation to ${to}...`);
   try {
     const info = await transporter.sendMail({
       from: fromEmail,
-      replyTo: 'admin@epllink.com',
+      replyTo: 'admin@dconnect.id',
       to,
       subject: 'EPL Link: Permintaan Akses Diterima / Access Request Received',
       html: getRegistrationReceivedTemplate(name),
@@ -47,7 +47,7 @@ export async function sendAccountApprovedEmail(to: string, name: string, role: s
   try {
     const info = await transporter.sendMail({
       from: fromEmail,
-      replyTo: 'admin@epllink.com',
+      replyTo: 'admin@dconnect.id',
       to,
       subject: 'EPL Link: Akun Disetujui / Account Approved',
       html: getAccountApprovedTemplate(name, role),
@@ -65,7 +65,7 @@ export async function sendAccountSuspendedEmail(to: string, name: string) {
   try {
     const info = await transporter.sendMail({
       from: fromEmail,
-      replyTo: 'admin@epllink.com',
+      replyTo: 'admin@dconnect.id',
       to,
       subject: 'EPL Link: Akun Ditangguhkan / Account Suspended',
       html: getAccountSuspendedTemplate(name),
@@ -82,12 +82,12 @@ export async function sendPasswordResetEmail(to: string, name: string, resetToke
   console.log(`[MAIL] Attempting to send Password Reset to ${to}...`);
   try {
     // Force using the correct domain to avoid old NEXT_PUBLIC build caches
-    const baseUrl = process.env.APP_URL || 'https://epllink.com';
+    const baseUrl = process.env.APP_URL || 'https://dconnect.id';
     const resetLink = `${baseUrl}/reset-password/${resetToken}`;
     
     const info = await transporter.sendMail({
       from: fromEmail,
-      replyTo: 'admin@epllink.com',
+      replyTo: 'admin@dconnect.id',
       to,
       subject: 'EPL Link: Atur Ulang Kata Sandi / Password Reset',
       html: getPasswordResetTemplate(name, resetLink),
@@ -101,7 +101,7 @@ export async function sendPasswordResetEmail(to: string, name: string, resetToke
 }
 
 export async function sendOtpEmail(to: string, otpCode: string) {
-  const securityFrom = `"EPL Link Security" <${process.env.SMTP_USER || 'no-reply@epllink.com'}>`;
+  const securityFrom = `"EPL Link Security" <${process.env.SMTP_USER || 'no-reply@dconnect.id'}>`;
   console.log(`[MAIL] Attempting to send OTP to ${to} from ${securityFrom}...`);
   try {
     const info = await transporter.sendMail({

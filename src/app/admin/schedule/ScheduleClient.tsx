@@ -306,7 +306,7 @@ export default function ScheduleClient() {
 
       const [daikinLogo, eplLogo, wmkLogo] = await Promise.all([
         loadImage("/daikin_logo.png"),
-        loadImage("/logo_epllink.png"),
+        loadImage("/logo/Logo DSSI.png"),
         loadImage("/logo_wmk.png")
       ]);
 

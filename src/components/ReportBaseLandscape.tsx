@@ -56,7 +56,7 @@ export const ReportBaseLandscape = ({
                )}
             </div>
             <div style={{ textAlign: "right" }}>
-              <img src="/logo_epllink.png" alt="EPL Link" style={{ height: "20mm", objectFit: "contain" }} />
+              <img src="/logo/Logo DSSI.png" alt="EPL Link" style={{ height: "20mm", objectFit: "contain" }} />
             </div>
           </div>
           

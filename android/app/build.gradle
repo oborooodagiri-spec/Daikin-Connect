@@ -22,7 +22,7 @@ plugins {
 
 def twaManifest = [
     applicationId: 'com.daikin.connect.epl',
-    hostName: 'epllink.com', // The domain being opened in the TWA.
+    hostName: 'dconnect.id', // The domain being opened in the TWA.
     launchUrl: '/', // The start path for the TWA. Must be relative to the domain.
     name: 'Daikin Connect', // The application name.
     launcherName: 'EPL Connect', // The name shown on the Android Launcher.
@@ -81,7 +81,7 @@ android {
 
         
             // This is used by Meta Quest.
-            resValue "string", "fullScopeUrl", 'https://epllink.com/'
+            resValue "string", "fullScopeUrl", 'https://dconnect.id/'
         
 
         

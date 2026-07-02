@@ -8,13 +8,13 @@
   "theme_color": "#00a1e4",
   "icons": [
     {
-      "src": "/logo_epllink.png",
+      "src": "/logo/Logo DSSI.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo_epllink.png",
+      "src": "/logo/Logo DSSI.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

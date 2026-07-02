@@ -47,7 +47,7 @@ class _WebDashboardScreenState extends State<WebDashboardScreen> {
           },
         ),
       )
-      ..loadRequest(Uri.parse("https://epllink.com${widget.path}${widget.path.contains('?') ? '&' : '?'}isApp=true"));
+      ..loadRequest(Uri.parse("https://dconnect.id${widget.path}${widget.path.contains('?') ? '&' : '?'}isApp=true"));
   }
 
   @override

@@ -249,7 +249,7 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
           Halaman {pageNum} dari {totalPages}
         </span>
         <span className="text-[9px] font-extrabold italic text-white">
-          www.epllink.com
+          www.dconnect.id
         </span>
       </div>
     </div>
@@ -536,7 +536,7 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
                   </div>
                 </div>
                 <div className="text-right">
-                  <img src="/logo_epllink.png" alt="EPL Link" className="h-[14mm] object-contain" />
+                  <img src="/logo/Logo DSSI.png" alt="EPL Link" className="h-[14mm] object-contain" />
                 </div>
               </div>
             </div>

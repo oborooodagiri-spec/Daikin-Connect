@@ -350,7 +350,7 @@ export default function SlaVesClient() {
             <div className="h-[4mm] bg-gradient-to-r from-emerald-500 to-[#003366] w-full" />
             <div className="px-[15mm] pt-[8mm] pb-[4mm] flex justify-between items-center border-b-[2px] border-[#003366] mx-[15mm]">
               <div className="flex items-center gap-4">
-                <img src="/logo_epllink.png" alt="EPL CONNECT" className="h-[18mm] object-contain" />
+                <img src="/logo/Logo DSSI.png" alt="EPL CONNECT" className="h-[18mm] object-contain" />
               </div>
               <div className="text-right">
                 <span className="text-[12px] font-black text-[#003366] uppercase tracking-wide">SERVICE LEVEL AGREEMENT (SLA)</span>
@@ -542,7 +542,7 @@ export default function SlaVesClient() {
                 <div className="h-[4mm] bg-gradient-to-r from-emerald-500 to-[#003366] w-full" />
                 <div className="px-[15mm] pt-[8mm] pb-[4mm] flex justify-between items-start">
                   <div className="flex flex-col gap-1">
-                    <img src="/logo_epllink.png" alt="EPL CONNECT" className="h-[12mm] object-contain" />
+                    <img src="/logo/Logo DSSI.png" alt="EPL CONNECT" className="h-[12mm] object-contain" />
                     <span className="text-[6.5px] font-bold text-slate-450 tracking-wide uppercase">PT. DAIKIN APPLIED SOLUTIONS INDONESIA</span>
                   </div>
                   <div className="text-right">
