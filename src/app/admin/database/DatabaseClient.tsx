@@ -38,7 +38,7 @@ import { getAllUsers } from "@/app/actions/users";
 import { getSession } from "@/app/actions/auth";
 import { getAllProjects } from "@/app/actions/projects";
 
-const CATEGORIES = ["All", "Rate Card", "Logsheet", "Interactive App", "Presentation", "Catalog", "Technical", "Marketing"];
+const CATEGORIES = ["All", "Strategy", "Juklak", "Juknis", "Rate Card", "Logsheet", "Interactive App", "Presentation", "Catalog", "Technical", "Marketing"];
 
 export default function KnowledgeCenterPage() {
   const router = useRouter();

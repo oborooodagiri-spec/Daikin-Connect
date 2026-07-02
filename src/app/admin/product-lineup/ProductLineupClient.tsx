@@ -29,7 +29,8 @@ interface UnitCategory {
   unit_count: number;
 }
 
-export default function UnitDatabaseClient() {
+export default function ProductLineupClient({ session }: { session?: any }) {
+  const isAdmin = session?.isInternal || session?.roles?.some((r: string) => ["Admin", "Super Admin"].includes(r));
   const router = useRouter();
   const [categories, setCategories] = useState<UnitCategory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -243,14 +244,16 @@ export default function UnitDatabaseClient() {
               </span>
             </div>
             
-            <div className="flex items-center gap-1 opacity-0 hover:opacity-100 transition-opacity flex-shrink-0 ml-2">
-              <button 
-                onClick={(e) => openEditModal(cat, e)}
-                className="p-1 hover:bg-white hover:shadow-sm rounded-md text-slate-400 hover:text-[#0073ea] transition-all"
-              >
-                <Edit3 size={12} />
-              </button>
-            </div>
+            {isAdmin && (
+              <div className="flex items-center gap-1 opacity-0 hover:opacity-100 transition-opacity flex-shrink-0 ml-2">
+                <button 
+                  onClick={(e) => openEditModal(cat, e)}
+                  className="p-1 hover:bg-white hover:shadow-sm rounded-md text-slate-400 hover:text-[#0073ea] transition-all"
+                >
+                  <Edit3 size={12} />
+                </button>
+              </div>
+            )}
           </div>
 
           <AnimatePresence>
@@ -292,7 +295,7 @@ export default function UnitDatabaseClient() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            {categories.length === 0 && !loading && (
+            {isAdmin && categories.length === 0 && !loading && (
               <button
                 onClick={handleSeed}
                 disabled={seeding}
@@ -302,19 +305,23 @@ export default function UnitDatabaseClient() {
                 Seed Default
               </button>
             )}
-            <button
-              onClick={() => openCreateModal(false)}
-              className="px-5 py-2.5 bg-white border border-slate-200 text-[#323338] rounded-xl text-xs font-bold hover:bg-slate-50 transition-all flex items-center gap-2"
-            >
-              <Plus size={16} /> Kategori Baru
-            </button>
-            <button
-              onClick={() => openCreateModal(true)}
-              disabled={!activeCategoryId}
-              className="px-5 py-2.5 bg-[#0073ea] text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-500/20 hover:bg-[#005bb5] hover:shadow-blue-500/30 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Plus size={16} /> Tambah Sub-Item
-            </button>
+            {isAdmin && (
+              <>
+                <button
+                  onClick={() => openCreateModal(false)}
+                  className="px-5 py-2.5 bg-white border border-slate-200 text-[#323338] rounded-xl text-xs font-bold hover:bg-slate-50 transition-all flex items-center gap-2"
+                >
+                  <Plus size={16} /> Kategori Baru
+                </button>
+                <button
+                  onClick={() => openCreateModal(true)}
+                  disabled={!activeCategoryId}
+                  className="px-5 py-2.5 bg-[#0073ea] text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-500/20 hover:bg-[#005bb5] hover:shadow-blue-500/30 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Plus size={16} /> Tambah Sub-Item
+                </button>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -379,12 +386,14 @@ export default function UnitDatabaseClient() {
               <div className="text-center py-20 bg-white rounded-2xl border border-slate-100 border-dashed">
                 <Package size={48} className="text-slate-200 mx-auto mb-4" />
                 <p className="text-sm font-bold text-slate-400 mb-4">Belum ada item di dalam kategori ini.</p>
-                <button
-                  onClick={() => openCreateModal(true)}
-                  className="text-xs font-bold text-[#0073ea] underline"
-                >
-                  Tambah Sub-Item Baru
-                </button>
+                {isAdmin && (
+                  <button
+                    onClick={() => openCreateModal(true)}
+                    className="text-xs font-bold text-[#0073ea] underline"
+                  >
+                    Tambah Sub-Item Baru
+                  </button>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 items-start auto-rows-max">
@@ -582,12 +591,16 @@ export default function UnitDatabaseClient() {
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => { setDetailOpen(false); openEditModal(selectedProduct); }} className="p-2 bg-blue-50 text-[#0073ea] rounded-xl hover:bg-blue-100 transition-colors">
-                    <Edit3 size={18} />
-                  </button>
-                  <button onClick={() => handleDelete(selectedProduct)} disabled={deleting === selectedProduct.id} className="p-2 bg-red-50 text-[#e44258] rounded-xl hover:bg-red-100 transition-colors">
-                    {deleting === selectedProduct.id ? <div className="w-4 h-4 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin" /> : <Trash2 size={18} />}
-                  </button>
+                  {isAdmin && (
+                    <>
+                      <button onClick={() => { setDetailOpen(false); openEditModal(selectedProduct); }} className="p-2 bg-blue-50 text-[#0073ea] rounded-xl hover:bg-blue-100 transition-colors">
+                        <Edit3 size={18} />
+                      </button>
+                      <button onClick={() => handleDelete(selectedProduct)} disabled={deleting === selectedProduct.id} className="p-2 bg-red-50 text-[#e44258] rounded-xl hover:bg-red-100 transition-colors">
+                        {deleting === selectedProduct.id ? <div className="w-4 h-4 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin" /> : <Trash2 size={18} />}
+                      </button>
+                    </>
+                  )}
                   <button onClick={() => setDetailOpen(false)} className="p-2 bg-slate-100 text-slate-400 rounded-xl hover:bg-slate-200 transition-colors ml-2">
                     <X size={18} />
                   </button>

@@ -1,6 +1,6 @@
 import { getSession } from "@/app/actions/auth";
 import { redirect } from "next/navigation";
-import { getKnowledgeResources } from "@/app/actions/knowledge";
+
 import KnowledgeClient from "./KnowledgeClient";
 
 export const metadata = {
@@ -19,12 +19,7 @@ export default async function KnowledgePage() {
     redirect("/home");
   }
 
-  const resources = await getKnowledgeResources();
-
   return (
-    <KnowledgeClient 
-      resources={resources} 
-      isAdmin={session.isInternal} 
-    />
+    <KnowledgeClient />
   );
 }
