@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
   secure: true, // true for 465, false for 587
   auth: {
     user: process.env.SMTP_USER || 'no-reply@epllink.com',
-    pass: process.env.SMTP_PASS || 'Onta12345@',
+    pass: process.env.SMTP_PASS || 'Doda4244@#',
   },
   tls: {
     // Allows sending with custom certificate chains (required by some environments/Hostinger)
