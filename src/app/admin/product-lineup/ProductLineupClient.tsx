@@ -205,11 +205,16 @@ export default function ProductLineupClient({ session }: { session?: any }) {
 
   // RECURSIVE SIDEBAR TREE NODE
   const renderTree = (items: UnitCategory[], depth = 0) => {
-    return items.map((cat) => {
+    // Only render items that are root categories (depth === 0) OR have children (folders)
+    const folders = items.filter(cat => depth === 0 || categories.some(c => c.parent_id === cat.id));
+
+    return folders.map((cat) => {
       const isExpanded = expandedParents.includes(cat.id);
       const isActive = activeCategoryId === cat.id;
       const children = categories.filter(c => c.parent_id === cat.id);
-      const hasChildren = children.length > 0;
+      
+      // Only show chevron if this folder contains ANY other folders
+      const hasFolderChildren = children.some(child => categories.some(grandchild => grandchild.parent_id === child.id));
 
       // Adjust padding based on depth
       const paddingLeft = depth === 0 ? "12px" : `${12 + (depth * 16)}px`;
@@ -224,7 +229,7 @@ export default function ProductLineupClient({ session }: { session?: any }) {
             style={{ paddingLeft }}
           >
             <div className="flex items-center gap-2.5 overflow-hidden">
-              {hasChildren ? (
+              {hasFolderChildren ? (
                 <button 
                   onClick={(e) => toggleExpand(cat.id, e)}
                   className={`p-0.5 rounded-md hover:bg-slate-200 transition-colors ${isActive ? 'text-[#0073ea]' : 'text-slate-400'}`}
@@ -257,7 +262,7 @@ export default function ProductLineupClient({ session }: { session?: any }) {
           </div>
 
           <AnimatePresence>
-            {isExpanded && hasChildren && (
+            {isExpanded && hasFolderChildren && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
