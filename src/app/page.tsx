@@ -1,17 +1,21 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  AlertCircle, ArrowRight, CheckCircle2, Eye, EyeOff
+  Mail, Lock, AlertCircle, ArrowRight, CheckCircle2, Eye, EyeOff, 
+  Wind, Zap, Fan, ShieldCheck, ArrowUp
 } from "lucide-react";
 
 import { login, register } from "./actions/auth";
+import { APP_VERSION } from "@/lib/version";
 import TwoFactorModal from "@/components/auth/TwoFactorModal";
+import StaticLogo from "@/components/ui/StaticLogo";
 import LoadingLogo from "@/components/ui/LoadingLogo";
 
-// New About Components
+// About Us Section Components
+import AnimatedCounter from "@/components/about/AnimatedCounter";
 import ScrollIndicator from "@/components/about/ScrollIndicator";
 import OrgChart from "@/components/about/OrgChart";
 import IndonesiaMap from "@/components/about/IndonesiaMap";
@@ -19,6 +23,8 @@ import ServiceGrid from "@/components/about/ServiceGrid";
 import ChillerDiagram from "@/components/about/ChillerDiagram";
 import DSSIShowcase from "@/components/about/DSSIShowcase";
 import DeviceMockup from "@/components/about/DeviceMockup";
+
+// --- Custom Animated HVAC Illustration Components ---
 
 const HVACIllustration = () => {
   return (
@@ -45,6 +51,8 @@ export default function LoginPage() {
 
   useEffect(() => {
     setIsMounted(true);
+    
+    // Dynamic Greeting Logic - More precise ranges
     const hour = new Date().getHours();
     if (hour >= 5 && hour < 12) setGreeting("Selamat Pagi");
     else if (hour >= 12 && hour < 15) setGreeting("Selamat Siang");
@@ -56,9 +64,13 @@ export default function LoginPage() {
     }
   }, []);
 
+  // Load Cloudflare Turnstile script dynamically (implicit mode)
   useEffect(() => {
     if (!isMounted || isRequestMode) return;
+    
+    // Remove any existing turnstile scripts to force re-scan
     document.querySelectorAll('script[src*="challenges.cloudflare.com/turnstile"]').forEach(s => s.remove());
+    // Reset turnstile global
     delete (window as any).turnstile;
 
     const script = document.createElement('script');
@@ -68,6 +80,7 @@ export default function LoginPage() {
     document.body.appendChild(script);
 
     return () => {
+      // Cleanup widget on unmount
       const container = document.querySelector('.cf-turnstile');
       if (container) container.innerHTML = '';
     };
@@ -84,6 +97,8 @@ export default function LoginPage() {
     try {
       const form = e.target as HTMLFormElement;
       const formData = new FormData(form);
+      
+      // Ensure email and password from state are used (or just rely on form data if fields have names)
       formData.set("email", email);
       formData.set("password", password);
       
@@ -120,377 +135,419 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="h-screen w-full overflow-y-auto lg:snap-y lg:snap-mandatory overflow-x-hidden bg-white text-[#323338] selection:bg-blue-100 selection:text-blue-600 smooth-scroll">
+    <div className="min-h-screen bg-[#ffffff] flex flex-col text-[#323338] font-sans selection:bg-blue-100 selection:text-blue-600 relative overflow-x-hidden
+      lg:snap-y lg:snap-mandatory lg:h-screen lg:overflow-y-auto" style={{ scrollBehavior: "smooth" }}>
       
-      {/* SECTION 0: HERO & LOGIN */}
-      <section id="login" className="relative min-h-screen lg:h-screen lg:snap-start flex flex-col pt-8 lg:pt-0">
+      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* SEKSI 0: HERO LOGIN                                       */}
+      {/* ═══════════════════════════════════════════════════════════ */}
+      <div className="min-h-screen lg:h-screen lg:snap-start flex flex-col relative" id="hero">
+      <div className="absolute top-8 left-8 z-50 flex items-center gap-6 group">
+         <img src="/daikin_logo.png" className="h-5 w-auto object-contain transition-transform group-hover:scale-105" alt="Daikin" />
+      </div>
+
+      <div className="flex-1 flex flex-col lg:flex-row w-full max-w-[1600px] mx-auto px-6 lg:px-20 pt-32 lg:pt-0">
         
-        {/* Navbar Desktop Only */}
-        <div className="absolute top-8 left-0 right-0 z-50 px-8 lg:px-20 hidden lg:flex items-center justify-between pointer-events-none">
-          <div className="pointer-events-auto">
-             <img src="/daikin_logo.png" className="h-5 w-auto object-contain transition-transform hover:scale-105 cursor-pointer" alt="Daikin" />
-          </div>
-          <div className="flex items-center gap-8 text-[11px] font-black tracking-widest uppercase pointer-events-auto text-slate-500">
-            <button onClick={() => document.getElementById("global")?.scrollIntoView({ behavior: "smooth" })} className="hover:text-[#0073ea] transition-colors">About Us</button>
-            <button onClick={() => document.getElementById("services")?.scrollIntoView({ behavior: "smooth" })} className="hover:text-[#0073ea] transition-colors">Services</button>
-            <button onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })} className="hover:text-[#0073ea] transition-colors">Contact</button>
-          </div>
+        {/* Left Side: Animated Brand Illustration */}
+        <div className="hidden lg:flex lg:w-1/2 flex-col justify-center items-center pr-12">
+           <HVACIllustration />
         </div>
 
-        {/* Mobile Logo */}
-        <div className="lg:hidden px-6 flex justify-center mb-8">
-           <img src="/daikin_logo.png" className="h-5 w-auto object-contain" alt="Daikin" />
-        </div>
+        {/* Right Side: Login Form */}
+        <div className="flex-1 flex items-center justify-center lg:justify-end py-12 lg:py-0">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-md"
+          >
+            <div className="mb-10 text-center">
+              <h2 className="text-4xl font-black tracking-tight text-[#323338] mb-2">
+                {isRequestMode ? "Access Request" : greeting}
+              </h2>
+              {isRequestMode && (
+                <p className="text-sm font-bold text-slate-400">
+                  Silakan isi data untuk permintaan akses
+                </p>
+              )}
+            </div>
 
-        <div className="flex-1 flex flex-col lg:flex-row w-full max-w-[1600px] mx-auto px-6 lg:px-20 relative">
-          
-          {/* Left Side: Animated Brand Illustration */}
-          <div className="hidden lg:flex lg:w-1/2 flex-col justify-center items-center pr-12">
-             <HVACIllustration />
-          </div>
-
-          {/* Right Side: Login Form */}
-          <div className="flex-1 flex items-center justify-center lg:justify-end pb-24 lg:pb-0 z-10">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="w-full max-w-md bg-white lg:bg-transparent p-6 lg:p-0 rounded-3xl lg:rounded-none shadow-2xl lg:shadow-none"
-            >
-              <div className="mb-10 text-center">
-                <h2 className="text-4xl font-black tracking-tight text-[#323338] mb-2">
-                  {isRequestMode ? "Access Request" : greeting}
-                </h2>
-                {isRequestMode && (
-                  <p className="text-sm font-bold text-slate-400">
-                    Silakan isi data untuk permintaan akses
-                  </p>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <AnimatePresence mode="popLayout">
+                {error && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="bg-red-50 border border-red-100 text-red-600 px-5 py-4 rounded-2xl text-xs font-bold flex items-center gap-3 shadow-sm"
+                  >
+                    <AlertCircle className="w-5 h-5 shrink-0" />
+                    <p>{error}</p>
+                  </motion.div>
                 )}
+
+                {message && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="bg-emerald-50 border border-emerald-100 text-emerald-600 px-5 py-4 rounded-2xl text-xs font-bold flex items-center gap-3 shadow-sm"
+                  >
+                    <CheckCircle2 className="w-5 h-5 shrink-0" />
+                    <p>{message}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {isRequestMode && (
+                <div className="space-y-4">
+                   <div className="space-y-1.5">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Nama Lengkap</label>
+                      <input 
+                        type="text" 
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                        className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-4 focus:ring-blue-100 outline-none transition-all duration-300 placeholder:text-slate-300"
+                        placeholder="John Doe"
+                      />
+                   </div>
+                   <div className="space-y-1.5">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Perusahaan</label>
+                      <input 
+                        type="text" 
+                        value={companyName}
+                        onChange={(e) => setCompanyName(e.target.value)}
+                        required
+                        className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-4 focus:ring-blue-100 outline-none transition-all duration-300 placeholder:text-slate-300"
+                        placeholder="PT. Example Indonesia"
+                      />
+                   </div>
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Alamat Email</label>
+                <input 
+                  type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-4 focus:ring-blue-100 outline-none transition-all duration-300 placeholder:text-slate-300"
+                  placeholder="email@domain.com"
+                />
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <AnimatePresence mode="popLayout">
-                  {error && (
-                    <motion.div 
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      className="bg-red-50 border border-red-100 text-red-600 px-5 py-4 rounded-2xl text-xs font-bold flex items-center gap-3 shadow-sm"
-                    >
-                      <AlertCircle className="w-5 h-5 shrink-0" />
-                      <p>{error}</p>
-                    </motion.div>
-                  )}
-
-                  {message && (
-                    <motion.div 
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      className="bg-emerald-50 border border-emerald-100 text-emerald-600 px-5 py-4 rounded-2xl text-xs font-bold flex items-center gap-3 shadow-sm"
-                    >
-                      <CheckCircle2 className="w-5 h-5 shrink-0" />
-                      <p>{message}</p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {isRequestMode && (
-                  <div className="space-y-4">
-                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Nama Lengkap</label>
-                        <input 
-                          type="text" 
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          required
-                          className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-4 focus:ring-blue-100 outline-none transition-all duration-300 placeholder:text-slate-300"
-                          placeholder="John Doe"
-                        />
-                     </div>
-                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Perusahaan</label>
-                        <input 
-                          type="text" 
-                          value={companyName}
-                          onChange={(e) => setCompanyName(e.target.value)}
-                          required
-                          className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-4 focus:ring-blue-100 outline-none transition-all duration-300 placeholder:text-slate-300"
-                          placeholder="PT. Example Indonesia"
-                        />
-                     </div>
-                  </div>
-                )}
-
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Alamat Email</label>
+              <div className="space-y-1.5 relative">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Kata Sandi</label>
+                <div className="relative">
                   <input 
-                    type="email" 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
+                    type={showPassword ? "text" : "password"} 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required={!isRequestMode}
                     className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-4 focus:ring-blue-100 outline-none transition-all duration-300 placeholder:text-slate-300"
-                    placeholder="email@domain.com"
+                    placeholder="••••••••"
                   />
-                </div>
-
-                <div className="space-y-1.5 relative">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Kata Sandi</label>
-                  <div className="relative">
-                    <input 
-                      type={showPassword ? "text" : "password"} 
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required={!isRequestMode}
-                      className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-4 focus:ring-blue-100 outline-none transition-all duration-300 placeholder:text-slate-300"
-                      placeholder="••••••••"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#323338] transition-colors"
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                  {!isRequestMode && (
-                    <div className="flex justify-end pt-1 px-2">
-                      <Link href="/forgot-password" className="text-[10px] font-bold text-[#0073ea] hover:underline transition-all uppercase tracking-widest">
-                        Lupa Sandi?
-                      </Link>
-                    </div>
-                  )}
-                </div>
-
-                {!isRequestMode && (
-                  <div className="flex justify-center py-2 min-h-[65px] mb-4">
-                    <div 
-                      className="cf-turnstile" 
-                      data-sitekey="0x4AAAAAAADGD9nT3x6TSaE8-"
-                      data-theme="light"
-                    ></div>
-                  </div>
-                )}
-
-                {isRequestMode && (
-                  <div className="flex items-start gap-2 pb-2 px-2">
-                    <input 
-                      type="checkbox" 
-                      id="privacy-policy-agree"
-                      required 
-                      className="mt-1 w-4 h-4 text-[#0073ea] border-slate-300 rounded focus:ring-[#0073ea]"
-                    />
-                    <label htmlFor="privacy-policy-agree" className="text-xs text-slate-500 leading-snug">
-                      Saya telah membaca dan menyetujui <Link href="/privacy-policy" target="_blank" className="text-[#0073ea] font-bold hover:underline">Kebijakan Privasi</Link> DSSI Connect.
-                    </label>
-                  </div>
-                )}
-
-                <div className="pt-6">
-                  <button 
-                    type="submit"
-                    disabled={isLoading}
-                    className="w-full bg-[#0073ea] text-white rounded-2xl font-black uppercase text-[11px] tracking-[0.2em] py-5 transition-all duration-300 transform hover:shadow-[0_8px_30px_rgb(0,115,234,0.3)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#323338] transition-colors"
                   >
-                    {isLoading ? (
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto" />
-                    ) : (
-                      <span className="flex items-center justify-center gap-3">
-                        {isRequestMode ? "Kirim Permintaan" : "Masuk Sekarang"}
-                        <ArrowRight className="w-4 h-4" />
-                      </span>
-                    )}
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-              </form>
+                {!isRequestMode && (
+                  <div className="flex justify-end pt-1 px-2">
+                    <Link href="/forgot-password" className="text-[10px] font-bold text-[#0073ea] hover:underline transition-all uppercase tracking-widest">
+                      Lupa Sandi?
+                    </Link>
+                  </div>
+                )}
+              </div>
 
-              <div className="mt-8 text-center text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                {isRequestMode ? "Sudah punya akses?" : "Belum punya akun?"}{" "}
+              {!isRequestMode && (
+                <div className="flex justify-center py-2 min-h-[65px] mb-4">
+                  <div 
+                    className="cf-turnstile" 
+                    data-sitekey="0x4AAAAAAADGD9nT3x6TSaE8-"
+                    data-theme="light"
+                  ></div>
+                </div>
+              )}
+
+              {isRequestMode && (
+                <div className="flex items-start gap-2 pb-2 px-2">
+                  <input 
+                    type="checkbox" 
+                    id="privacy-policy-agree"
+                    required 
+                    className="mt-1 w-4 h-4 text-[#0073ea] border-slate-300 rounded focus:ring-[#0073ea]"
+                  />
+                  <label htmlFor="privacy-policy-agree" className="text-xs text-slate-500 leading-snug">
+                    Saya telah membaca dan menyetujui <Link href="/privacy-policy" target="_blank" className="text-[#0073ea] font-bold hover:underline">Kebijakan Privasi</Link> DSSI Connect.
+                  </label>
+                </div>
+              )}
+
+              <div className="pt-6">
                 <button 
-                  onClick={() => {
-                    setIsRequestMode(!isRequestMode);
-                    setError(null);
-                    setMessage(null);
-                  }}
-                  className="text-[#0073ea] hover:underline ml-1"
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-[#0073ea] text-white rounded-2xl font-black uppercase text-[11px] tracking-[0.2em] py-5 transition-all duration-300 transform hover:shadow-[0_8px_30px_rgb(0,115,234,0.3)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isRequestMode ? "Masuk Di Sini" : "Minta Akses"}
+                  {isLoading ? (
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto" />
+                  ) : (
+                    <span className="flex items-center justify-center gap-3">
+                      {isRequestMode ? "Kirim Permintaan" : "Masuk Sekarang"}
+                      <ArrowRight className="w-4 h-4" />
+                    </span>
+                  )}
                 </button>
               </div>
-            </motion.div>
-          </div>
-        </div>
-        
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-6 left-0 right-0 flex justify-center z-20 pointer-events-auto">
-          <ScrollIndicator targetId="global" />
-        </div>
-      </section>
+            </form>
 
-      {/* SECTION 1: DAIKIN GLOBAL */}
-      <section id="global" className="relative min-h-screen lg:h-screen lg:snap-start bg-slate-900 flex items-center justify-center py-20 lg:py-0 overflow-hidden">
-        {/* Background Particles/Glow */}
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900 to-slate-800" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none" />
+            <div className="mt-8 text-center text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+              {isRequestMode ? "Sudah punya akses?" : "Belum punya akun?"}{" "}
+              <button 
+                onClick={() => {
+                  setIsRequestMode(!isRequestMode);
+                  setError(null);
+                  setMessage(null);
+                }}
+                className="text-[#0073ea] hover:underline ml-1"
+              >
+                {isRequestMode ? "Masuk Di Sini" : "Minta Akses"}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Scroll Indicator */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40">
+        <ScrollIndicator text="Discover Our Heritage" targetId="section-global" />
+      </div>
+
+      </div>{/* End SEKSI 0 */}
+
+      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* SEKSI 1: DAIKIN GLOBAL HERITAGE                           */}
+      {/* ═══════════════════════════════════════════════════════════ */}
+      <section id="section-global" className="min-h-screen lg:h-screen lg:snap-start flex flex-col items-center justify-center relative py-16 lg:py-0"
+        style={{ background: "linear-gradient(135deg, #0c1929 0%, #112240 50%, #0a192f 100%)" }}>
         
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-6 lg:px-20 text-center">
+        {/* Floating particles effect */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(20)].map((_, i) => (
+            <motion.div key={i}
+              className="absolute w-1 h-1 bg-cyan-400/20 rounded-full"
+              style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }}
+              animate={{ y: [-20, 20, -20], opacity: [0.1, 0.4, 0.1] }}
+              transition={{ duration: 3 + Math.random() * 4, repeat: Infinity, delay: Math.random() * 2 }}
+            />
+          ))}
+        </div>
+
+        <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <div className="flex justify-center mb-8">
-              <div className="bg-white px-6 py-3 rounded-full inline-block shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                 <img src="/daikin_logo.png" className="h-6 w-auto" alt="Daikin" />
-              </div>
-            </div>
-            <h2 className="text-3xl lg:text-5xl font-black text-white mb-4 tracking-tight">A Century of Engineering Excellence</h2>
-            <p className="text-cyan-400 font-bold tracking-widest uppercase text-xs lg:text-sm mb-16">Founded in 1924 · Osaka, Japan</p>
-            
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-              <div className="text-center">
-                <div className="text-4xl lg:text-6xl font-black text-white mb-2">100</div>
-                <div className="text-slate-400 text-xs font-bold uppercase tracking-widest">Years of History</div>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl lg:text-6xl font-black text-white mb-2">160</div>
-                <div className="text-slate-400 text-xs font-bold uppercase tracking-widest">Countries</div>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl lg:text-6xl font-black text-white mb-2">213</div>
-                <div className="text-slate-400 text-xs font-bold uppercase tracking-widest">Group Companies</div>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl lg:text-6xl font-black text-white mb-2">100+</div>
-                <div className="text-slate-400 text-xs font-bold uppercase tracking-widest">Production Bases</div>
-              </div>
-            </div>
-            
-            <div className="mt-16 text-slate-300 font-medium text-sm lg:text-base max-w-2xl mx-auto">
-              Global & Comprehensive HVAC Equipment Manufacturer
-            </div>
+            <img src="/daikin_logo.png" className="h-6 lg:h-8 mx-auto mb-6 opacity-60 invert brightness-200" alt="Daikin" />
+            <h2 className="text-3xl lg:text-6xl font-black text-white mb-4 tracking-tight">
+              A Century of Engineering
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">Excellence</span>
+            </h2>
+            <p className="text-sm lg:text-base text-slate-400 mb-10 lg:mb-16">Founded in 1924 · Osaka, Japan</p>
           </motion.div>
-        </div>
-      </section>
 
-      {/* SECTION 2: DAIKIN INDONESIA (OrgChart) */}
-      <section id="indonesia" className="relative min-h-screen lg:h-screen lg:snap-start bg-slate-50 flex items-center justify-center py-20 lg:py-0">
-        <div className="w-full">
-          <div className="text-center mb-12 lg:mb-20">
-            <h2 className="text-3xl lg:text-5xl font-black text-slate-800 mb-4 tracking-tight">The Indonesian Chapter</h2>
-            <p className="text-[#0073ea] font-bold tracking-widest uppercase text-xs lg:text-sm">Daikin Group of Companies in Indonesia</p>
-          </div>
-          <OrgChart />
-        </div>
-      </section>
-
-      {/* SECTION 3: MAP */}
-      <section id="map" className="relative min-h-screen lg:h-screen lg:snap-start bg-slate-900 flex items-center justify-center py-20 lg:py-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 pointer-events-none" />
-        <div className="w-full relative z-10">
-          <div className="text-center mb-12 lg:mb-16">
-            <h2 className="text-3xl lg:text-5xl font-black text-white mb-4 tracking-tight">From Surabaya to Timika</h2>
-            <p className="text-cyan-400 font-bold tracking-widest uppercase text-xs lg:text-sm">Serving Indonesia's Critical Infrastructure</p>
-          </div>
-          <IndonesiaMap />
-        </div>
-      </section>
-
-      {/* SECTION 4: SERVICES & SOLUTIONS */}
-      <section id="services" className="relative min-h-screen lg:h-screen lg:snap-start bg-gradient-to-b from-white to-slate-50 flex items-center justify-center py-20 lg:py-0">
-        <div className="w-full max-w-[1600px] mx-auto px-6 lg:px-12">
-          <div className="text-center mb-12 lg:mb-16">
-            <h2 className="text-3xl lg:text-5xl font-black text-slate-800 mb-4 tracking-tight">Service & Solutions</h2>
-            <p className="text-[#0073ea] font-bold tracking-widest uppercase text-xs lg:text-sm">Comprehensive Excellence</p>
-          </div>
-          
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-center justify-center">
-            <div className="w-full lg:w-1/2">
-              <ServiceGrid />
-            </div>
-            <div className="w-full lg:w-1/2 flex justify-center">
-               <ChillerDiagram />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 5: DSSI SHOWCASE */}
-      <section id="dssi" className="relative min-h-screen lg:h-screen lg:snap-start bg-slate-950 flex flex-col items-center justify-center py-20 lg:py-0">
-        <div className="w-full mb-12 lg:mb-20">
-          <DSSIShowcase />
-        </div>
-        
-        <div className="w-full max-w-4xl mx-auto px-4">
-          <DeviceMockup>
-            <div className="w-full h-full bg-slate-900 flex flex-col items-center justify-center p-8 text-center relative overflow-hidden">
-               {/* Mock UI inside laptop */}
-               <div className="absolute inset-0 bg-blue-900/20" />
-               <div className="absolute top-0 left-0 right-0 h-10 border-b border-white/10 flex items-center px-4 gap-4 bg-slate-900/50">
-                  <div className="w-24 h-3 bg-white/20 rounded-full" />
-                  <div className="w-16 h-3 bg-white/10 rounded-full" />
-                  <div className="w-16 h-3 bg-white/10 rounded-full" />
-               </div>
-               <div className="relative z-10 w-full mt-10">
-                 <div className="flex justify-between items-end mb-8">
-                   <div className="text-left">
-                     <div className="text-white/50 text-[10px] font-bold tracking-widest uppercase mb-1">Daikin Unit Performance</div>
-                     <div className="text-white text-2xl font-black">98.5% Efficiency</div>
-                   </div>
-                   <div className="w-32 h-16 bg-gradient-to-t from-cyan-500/20 to-transparent flex items-end justify-between px-2 pb-1 border-b border-cyan-500/50">
-                     <div className="w-3 h-8 bg-cyan-500 rounded-t-sm" />
-                     <div className="w-3 h-12 bg-cyan-500 rounded-t-sm" />
-                     <div className="w-3 h-6 bg-cyan-500 rounded-t-sm" />
-                     <div className="w-3 h-14 bg-cyan-500 rounded-t-sm" />
-                     <div className="w-3 h-10 bg-cyan-500 rounded-t-sm" />
-                   </div>
-                 </div>
-                 <div className="grid grid-cols-3 gap-4">
-                   <div className="bg-white/5 rounded-xl p-4 text-left border border-white/10">
-                     <div className="text-white/40 text-[9px] font-bold uppercase mb-2">Chiller 1 Status</div>
-                     <div className="flex items-center gap-2">
-                       <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                       <span className="text-white text-xs font-bold">Running (Normal)</span>
-                     </div>
-                   </div>
-                   <div className="bg-white/5 rounded-xl p-4 text-left border border-white/10">
-                     <div className="text-white/40 text-[9px] font-bold uppercase mb-2">Evaporator Temp</div>
-                     <div className="text-white text-lg font-black">7.2°C</div>
-                   </div>
-                   <div className="bg-white/5 rounded-xl p-4 text-left border border-white/10">
-                     <div className="text-white/40 text-[9px] font-bold uppercase mb-2">Condenser Press.</div>
-                     <div className="text-white text-lg font-black">320 kPa</div>
-                   </div>
-                 </div>
-               </div>
-            </div>
-          </DeviceMockup>
-        </div>
-      </section>
-
-      {/* SECTION 6: FOOTER / CTA */}
-      <section id="contact" className="relative py-20 lg:py-32 bg-white flex flex-col items-center justify-center lg:snap-end">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl lg:text-5xl font-black text-slate-800 mb-6 tracking-tight">Siap Memulai?</h2>
-          <button 
-            onClick={() => document.getElementById("login")?.scrollIntoView({ behavior: "smooth" })}
-            className="bg-[#0073ea] text-white px-10 py-5 rounded-full font-black uppercase tracking-[0.2em] text-xs transition-all duration-300 transform hover:shadow-[0_8px_30px_rgb(0,115,234,0.3)] hover:-translate-y-1 active:scale-95"
+          <motion.div
+            className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.3 }}
           >
-            Kembali ke Login ↑
-          </button>
+            {[
+              { end: 100, suffix: "+", label: "Years of History" },
+              { end: 60805, label: "Employees Worldwide" },
+              { end: 160, suffix: "+", label: "Countries" },
+              { end: 213, label: "Group Companies" },
+            ].map((stat) => (
+              <div key={stat.label} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 lg:p-6">
+                <div className="text-2xl lg:text-4xl font-black text-white">
+                  <AnimatedCounter end={stat.end} suffix={stat.suffix || ""} />
+                </div>
+                <div className="text-[10px] lg:text-xs text-slate-400 font-bold mt-2 uppercase tracking-wider">{stat.label}</div>
+              </div>
+            ))}
+          </motion.div>
+
+          <motion.p
+            className="text-xs lg:text-sm text-slate-500 mt-8 lg:mt-12 font-bold uppercase tracking-widest"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.8 }}
+          >
+            Global & Comprehensive HVAC Equipment Manufacturer
+          </motion.p>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* SEKSI 2: DAIKIN INDONESIA — ORG CHART                     */}
+      {/* ═══════════════════════════════════════════════════════════ */}
+      <section id="section-indonesia" className="min-h-screen lg:h-screen lg:snap-start flex flex-col items-center justify-center py-16 lg:py-0 bg-gradient-to-b from-slate-50 to-white">
+        <div className="text-center mb-8 lg:mb-12 px-6">
+          <motion.h2
+            className="text-2xl lg:text-5xl font-black text-slate-800 mb-3"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            The Indonesian <span className="text-[#0073ea]">Chapter</span>
+          </motion.h2>
+          <motion.p
+            className="text-xs lg:text-sm text-slate-500 font-medium"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            4 Operating Companies · 50+ Years in Indonesia
+          </motion.p>
+        </div>
+        <OrgChart />
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* SEKSI 3: PETA INDONESIA — DASI NATIONWIDE                 */}
+      {/* ═══════════════════════════════════════════════════════════ */}
+      <section id="section-map" className="min-h-screen lg:h-screen lg:snap-start flex flex-col items-center justify-center py-16 lg:py-0 bg-gradient-to-b from-slate-900 to-slate-800">
+        <div className="text-center mb-8 lg:mb-12 px-6">
+          <motion.h2
+            className="text-2xl lg:text-5xl font-black text-white mb-3"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            From Surabaya to <span className="text-cyan-400">Timika</span>
+          </motion.h2>
+          <motion.p
+            className="text-xs lg:text-sm text-slate-400 font-medium"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            Serving Indonesia&apos;s Critical Infrastructure
+          </motion.p>
+        </div>
+        <IndonesiaMap />
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* SEKSI 4: SERVICE & SOLUTIONS + CHILLER DIAGRAM            */}
+      {/* ═══════════════════════════════════════════════════════════ */}
+      <section id="section-services" className="min-h-screen lg:h-screen lg:snap-start flex flex-col items-center justify-center py-16 lg:py-0 bg-gradient-to-b from-blue-50 to-white">
+        <div className="text-center mb-8 lg:mb-12 px-6">
+          <motion.h2
+            className="text-2xl lg:text-5xl font-black text-slate-800 mb-3"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            Comprehensive <span className="text-[#0073ea]">Service & Solutions</span>
+          </motion.h2>
+          <motion.p
+            className="text-xs lg:text-sm text-slate-500 font-medium"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            End-to-end HVAC solutions for your business
+          </motion.p>
         </div>
         
-        <footer className="w-full text-center text-xs text-slate-400 font-medium mt-20 px-6">
-          <div className="mb-4 flex items-center justify-center gap-6 text-[10px] uppercase tracking-widest font-bold">
-            <Link href="/privacy-policy" className="hover:text-[#0073ea] transition-colors">Privacy Policy</Link>
-            <span>•</span>
-            <Link href="/sitemap.xml" className="hover:text-[#0073ea] transition-colors">Sitemap</Link>
+        <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12 px-4">
+          <div className="w-full lg:w-1/2">
+            <ChillerDiagram />
           </div>
-          <p>
-            &copy; {new Date().getFullYear()} DSSI Connect — Daikin Applied Solutions Indonesia. All rights reserved.
-          </p>
-        </footer>
+          <div className="w-full lg:w-1/2">
+            <ServiceGrid />
+          </div>
+        </div>
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* SEKSI 5: DSSI — THE DIGITAL POWERHOUSE                    */}
+      {/* ═══════════════════════════════════════════════════════════ */}
+      <section id="section-dssi" className="min-h-screen lg:h-screen lg:snap-start flex flex-col items-center justify-center py-16 lg:py-0"
+        style={{ background: "linear-gradient(135deg, #0a0f1a 0%, #111827 50%, #0c1222 100%)" }}>
+        <div className="text-center mb-6 lg:mb-10 px-6">
+          <motion.h2
+            className="text-2xl lg:text-5xl font-black text-white mb-3"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            The Digital <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Revolution</span>
+          </motion.h2>
+          <motion.p
+            className="text-xs lg:text-sm text-slate-400 font-medium"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            Innovation born from DASI Service Division
+          </motion.p>
+        </div>
+        <DSSIShowcase />
+
+        {/* CTA back to login */}
+        <motion.button
+          onClick={() => document.getElementById("hero")?.scrollIntoView({ behavior: "smooth" })}
+          className="mt-8 lg:mt-12 flex items-center gap-2 bg-gradient-to-r from-[#0073ea] to-blue-600 text-white text-xs font-black uppercase tracking-widest px-8 py-4 rounded-full hover:shadow-[0_8px_30px_rgba(0,115,234,0.4)] transition-all"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <ArrowUp className="w-4 h-4" />
+          Masuk Sekarang
+        </motion.button>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* FOOTER                                                     */}
+      {/* ═══════════════════════════════════════════════════════════ */}
+      <footer className="lg:snap-start w-full py-10 lg:py-16 bg-slate-950 text-center">
+        <div className="max-w-4xl mx-auto px-6">
+          <img src="/daikin_logo.png" className="h-5 mx-auto mb-4 opacity-40 invert brightness-200" alt="Daikin" />
+          <p className="text-xs text-slate-500 font-medium mb-2">
+            DASI Service & Solutions Indonesia (DSSI) · Expanded Product Line (EPL)
+          </p>
+          <p className="text-xs text-slate-600">
+            Head Office: Jl. Opak No.33, Darmo, Wonokromo, Surabaya 60241
+          </p>
+          <div className="mt-6 pt-6 border-t border-slate-800">
+            <p className="text-[11px] text-slate-600">
+              &copy; {new Date().getFullYear()} DSSI Connect. All rights reserved. {" | "}
+              <Link href="/privacy-policy" className="text-[#0073ea] hover:underline font-bold">
+                Privacy Policy
+              </Link>
+            </p>
+          </div>
+        </div>
+      </footer>
 
       <TwoFactorModal 
         isOpen={show2fModal}
