@@ -41,7 +41,7 @@ const ASSETS = {
     { start: 18, text: "Developed by Daikin Applied Solutions Indonesia." },
     { start: 24, text: "Aggregate data into a single source of truth. Take control." },
     { start: 30, text: "Predict failures. Optimize performance. Reduce your footprint." },
-    { start: 38, text: "Daikin Connect. Connectivity Without Limits." }
+    { start: 38, text: "DSSI Connect. Connectivity Without Limits." }
   ]
 };
 
@@ -242,7 +242,7 @@ export default function CinematicAdPage() {
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-center gap-6 mb-4">
                   <img src="/daikin_logo.png" className="h-6 brightness-0 invert" alt="Daikin" />
                   <div className="w-[1px] h-6 bg-white/20"></div>
-                  <img src="/logo/Logo DSSI.png" className="h-8 brightness-0 invert" alt="EPL Link" />
+                  <img src="/logo/Logo DSSI.png" className="h-8 brightness-0 invert" alt="DSSI Connect" />
                 </motion.div>
                 <div className="space-y-4">
                   <MaskedText text="THE FUTURE REVEALED" className="text-6xl md:text-8xl font-black italic text-white" highlight="FUTURE" />
@@ -315,7 +315,7 @@ export default function CinematicAdPage() {
               </motion.div>
               
               <div className="absolute inset-0 flex flex-col items-center justify-center z-50 pointer-events-none">
-                 <MaskedText text="Introducing: Daikin Connect Hub." className="text-7xl font-black italic shadow-text" delay={1} />
+                 <MaskedText text="Introducing: DSSI Connect Hub." className="text-7xl font-black italic shadow-text" delay={1} />
               </div>
            </div>
         </Scene>

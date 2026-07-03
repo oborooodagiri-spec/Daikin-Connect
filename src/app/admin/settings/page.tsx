@@ -157,7 +157,7 @@ export default function AdminSettingsPage() {
           <div className="space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#003366] border border-[#004488] text-[10px] font-black uppercase tracking-widest text-blue-300">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>EPL LINK system configuration</span>
+              <span>DSSI Connect system configuration</span>
             </div>
             <h1 className="text-5xl font-black text-[#003366] tracking-tight">
               System <span className="text-[#00a1e4]">Settings</span>
@@ -345,7 +345,7 @@ export default function AdminSettingsPage() {
           </div>
           <div className="p-10 bg-slate-50/50 border-t border-slate-100 text-center">
              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.5em] flex items-center justify-center gap-4">
-               <ShieldCheck size={14} /> EPL LINK SECURITY SYSTEMS
+               <ShieldCheck size={14} /> DSSI Connect SECURITY SYSTEMS
              </p>
           </div>
         </div>

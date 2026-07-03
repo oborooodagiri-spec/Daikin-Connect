@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import RateCardClient from "./RateCardClient";
 
 export const metadata = {
-  title: "Rate Card Manager | Daikin Connect",
+  title: "Rate Card Manager | DSSI Connect",
   description: "Kelola Buku Tarif Satuan (Rate Card) pemeliharaan dan kontrak unit price.",
 };
 

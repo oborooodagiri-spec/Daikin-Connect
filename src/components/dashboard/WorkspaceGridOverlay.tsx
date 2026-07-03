@@ -121,7 +121,7 @@ export default function WorkspaceGridOverlay({ isOpen, onClose, data, onSelect }
           </div>
           <div className="text-right flex flex-col items-end">
             <img src="/daikin_logo.png" className="h-6 w-auto brightness-0 invert mb-2 opacity-50" alt="Daikin" />
-            <p className="text-[9px] font-black tracking-[0.3em] opacity-40 uppercase">EPL Link Enterprise</p>
+            <p className="text-[9px] font-black tracking-[0.3em] opacity-40 uppercase">DSSI Connect Enterprise</p>
           </div>
         </div>
       </motion.div>

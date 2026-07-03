@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import RoiCalculatorClient from "./RoiCalculatorClient";
 
 export const metadata = {
-  title: "ROI Calculator | Daikin Connect",
+  title: "ROI Calculator | DSSI Connect",
   description: "Financial analysis and energy saving potential for VES Tier 3.",
 };
 

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import ToolsClient from "./ToolsClient";
 
 export const metadata = {
-  title: "HVAC Tools | Daikin Connect",
+  title: "HVAC Tools | DSSI Connect",
   description: "Engineering tools suite for HVAC professionals — unit converters, psychrometric calculators, and more.",
 };
 

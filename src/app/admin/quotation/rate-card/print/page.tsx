@@ -5,7 +5,7 @@ import { getRateCardSettings } from "@/app/actions/rate_card_settings";
 import PrintRateCardClient from "./PrintRateCardClient";
 
 export const metadata = {
-  title: "Cetak Kontrak Payung | Daikin Connect",
+  title: "Cetak Kontrak Payung | DSSI Connect",
   description: "Cetak dan kustomisasi kesepakatan kontrak payung tarif harga satuan pemeliharaan.",
 };
 

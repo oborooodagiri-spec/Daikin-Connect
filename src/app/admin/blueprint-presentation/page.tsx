@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import BlueprintPresentationClient from "./BlueprintPresentationClient";
 
 export const metadata = {
-  title: "Master Blueprint V2 Presentation | Daikin Connect",
+  title: "Master Blueprint V2 Presentation | DSSI Connect",
   description: "Internal presentation for VES National Operational Guidelines Tier 1, 2, and 3.",
 };
 

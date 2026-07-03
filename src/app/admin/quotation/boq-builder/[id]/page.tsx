@@ -460,7 +460,7 @@ export default function BoqEditorClient() {
                 <div className="flex flex-col gap-1">
                   <img 
                     src="/logo/Logo DSSI.png" 
-                    alt="EPL Link" 
+                    alt="DSSI Connect" 
                     className="h-[10mm] w-auto object-contain self-start" 
                     onError={(e) => { e.currentTarget.style.display = 'none'; }}
                   />

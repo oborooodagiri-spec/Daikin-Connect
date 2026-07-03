@@ -383,7 +383,7 @@ export default function AttendanceRecordsPage() {
               </div>
               <div className="p-4 sm:p-10 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
                 <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] sm:tracking-[0.4em] flex items-center justify-center sm:justify-start gap-2">
-                  <CheckCircle2 size={14} className="text-emerald-500 shrink-0" /> EPL Link Management Portal
+                  <CheckCircle2 size={14} className="text-emerald-500 shrink-0" /> DSSI Connect Management Portal
                 </p>
                 <p className="text-[9px] sm:text-[10px] font-bold text-slate-300">Displaying {filteredUsers.length} active personnel</p>
               </div>
@@ -445,7 +445,7 @@ export default function AttendanceRecordsPage() {
                         PT DAIKIN APPLIED SOLUTIONS INDONESIA
                       </div>
                     </div>
-                    <img src="/logo/Logo DSSI.png" alt="EPL Link" className="h-10 sm:h-12 w-auto object-contain" />
+                    <img src="/logo/Logo DSSI.png" alt="DSSI Connect" className="h-10 sm:h-12 w-auto object-contain" />
                   </div>
 
                   {/* Document Title */}

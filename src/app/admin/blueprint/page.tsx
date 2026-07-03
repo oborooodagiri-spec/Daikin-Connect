@@ -3,8 +3,8 @@ import { redirect } from "next/navigation";
 import BlueprintClient from "./BlueprintClient";
 
 export const metadata = {
-  title: "The Blueprint | Daikin Connect Executive Showcase",
-  description: "Executive strategic presentation for Daikin Connect - Private Admin Access",
+  title: "The Blueprint | DSSI Connect Executive Showcase",
+  description: "Executive strategic presentation for DSSI Connect - Private Admin Access",
 };
 
 export default async function BlueprintPage() {

@@ -1,5 +1,5 @@
 /**
- * Professional Bilingual (Indonesian & English) Email Templates for EPL Link
+ * Professional Bilingual (Indonesian & English) Email Templates for DSSI Connect
  */
 
 // Force using APP_URL to bypass sticky NEXT_PUBLIC build caches
@@ -90,19 +90,19 @@ function getEmailWrapper(content: string) {
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Daikin Connect Notification</title>
+      <title>DSSI Connect Notification</title>
     </head>
     <body style="margin: 0; padding: 0; background-color: #f8fafc;">
       <div style="${baseStyles}">
         <div style="${cardStyles}">
           <div style="${headerStyles}">
-            <h1 style="color: #003366; margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;">EPL LINK</h1>
+            <h1 style="color: #003366; margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;">DSSI Connect</h1>
           </div>
           <div style="${contentStyles}">
             ${content}
           </div>
           <div style="${footerStyles}">
-            <p style="margin: 0 0 10px 0;"><strong>Daikin Connect</strong> by Expanded Product Line of Service and Solution Division</p>
+            <p style="margin: 0 0 10px 0;"><strong>DSSI Connect</strong> by Expanded Product Line of Service and Solution Division</p>
             <p style="margin: 0;">&copy; ${new Date().getFullYear()} All rights reserved.</p>
             <p style="margin: 5px 0 0 0;">Daikin Applied Solution Indonesia</p>
             <p style="margin: 10px 0 0 0; font-size: 11px;">If you didn't request this email, please safely ignore it.</p>
@@ -130,16 +130,16 @@ export function getVerificationCodeTemplate(code: string) {
 
 export function getRegistrationReceivedTemplate(name: string) {
   const content = `
-    <h2 style="color: #0f172a; margin-top: 0; font-size: 20px;">Welcome to Daikin Connect / Selamat Datang</h2>
+    <h2 style="color: #0f172a; margin-top: 0; font-size: 20px;">Welcome to DSSI Connect / Selamat Datang</h2>
     
     <p>Halo <strong>${name}</strong>,</p>
-    <p>Terima kasih telah mendaftar di <strong>Daikin Connect</strong>. Permintaan akses Anda telah kami terima dan saat ini sedang dalam proses validasi oleh tim Admin kami.</p>
+    <p>Terima kasih telah mendaftar di <strong>DSSI Connect</strong>. Permintaan akses Anda telah kami terima dan saat ini sedang dalam proses validasi oleh tim Admin kami.</p>
     <p>Mohon tunggu informasi selanjutnya melalui email ini jika akun Anda telah disetujui.</p>
     
     <hr style="${dividerStyles}">
     
     <p>Hello <strong>${name}</strong>,</p>
-    <p>Thank you for registering with <strong>Daikin Connect</strong>. Your access request has been received and is currently being validated by our Admin team.</p>
+    <p>Thank you for registering with <strong>DSSI Connect</strong>. Your access request has been received and is currently being validated by our Admin team.</p>
     <p>Please wait for further information via email once your account has been approved.</p>
   `;
   return getEmailWrapper(content);
@@ -179,13 +179,13 @@ export function getAccountSuspendedTemplate(name: string) {
     </div>
     
     <p>Halo <strong>${name}</strong>,</p>
-    <p>Kami memberitahukan bahwa akun Anda pada <strong>Daikin Connect</strong> telah <strong>ditangguhkan</strong> untuk sementara waktu.</p>
+    <p>Kami memberitahukan bahwa akun Anda pada <strong>DSSI Connect</strong> telah <strong>ditangguhkan</strong> untuk sementara waktu.</p>
     <p>Jika Anda merasa ini adalah kesalahan, silakan hubungi tim Admin kami untuk klarifikasi lebih lanjut.</p>
     
     <hr style="${dividerStyles}">
     
     <p>Hello <strong>${name}</strong>,</p>
-    <p>We are informing you that your <strong>Daikin Connect</strong> account has been <strong>suspended</strong> temporarily.</p>
+    <p>We are informing you that your <strong>DSSI Connect</strong> account has been <strong>suspended</strong> temporarily.</p>
     <p>If you believe this is a mistake, please contact our Admin team for further clarification.</p>
   `;
   return getEmailWrapper(content);

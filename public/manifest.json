@@ -1,7 +1,7 @@
 {
-  "name": "Daikin Connect",
+  "name": "DSSI Connect",
   "short_name": "D2 Connect",
-  "description": "Daikin Connect Enterprise App",
+  "description": "DSSI Connect Enterprise App",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#040814",

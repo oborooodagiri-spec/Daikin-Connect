@@ -7,7 +7,7 @@ import { getAllUsers } from "@/app/actions/users";
 import WorkOrderClient from "./WorkOrderClient";
 
 export const metadata = {
-  title: "Buat Work Order | Daikin Connect",
+  title: "Buat Work Order | DSSI Connect",
   description: "Buat dan simulasikan penawaran Surat Perintah Kerja (Work Order) HVAC.",
 };
 

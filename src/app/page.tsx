@@ -270,7 +270,7 @@ export default function LoginPage() {
                     className="mt-1 w-4 h-4 text-[#0073ea] border-slate-300 rounded focus:ring-[#0073ea]"
                   />
                   <label htmlFor="privacy-policy-agree" className="text-xs text-slate-500 leading-snug">
-                    Saya telah membaca dan menyetujui <Link href="/privacy-policy" target="_blank" className="text-[#0073ea] font-bold hover:underline">Kebijakan Privasi</Link> EPL Link.
+                    Saya telah membaca dan menyetujui <Link href="/privacy-policy" target="_blank" className="text-[#0073ea] font-bold hover:underline">Kebijakan Privasi</Link> DSSI Connect.
                   </label>
                 </div>
               )}
@@ -313,7 +313,7 @@ export default function LoginPage() {
       <div className="py-8" />
       <footer className="w-full py-6 text-center text-xs text-slate-400 font-medium">
         <p>
-          &copy; {new Date().getFullYear()} EPL Link. All rights reserved. {" | "}
+          &copy; {new Date().getFullYear()} DSSI Connect. All rights reserved. {" | "}
           <Link href="/privacy-policy" className="text-[#0073ea] hover:underline font-bold">
             Privacy Policy
           </Link>

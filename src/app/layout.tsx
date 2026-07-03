@@ -24,8 +24,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "EPL Link - Daikin",
-  description: "Daikin Connect - Value Engineering Services",
+  title: "DSSI Connect - Daikin",
+  description: "DSSI Connect - Value Engineering Services",
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.png",

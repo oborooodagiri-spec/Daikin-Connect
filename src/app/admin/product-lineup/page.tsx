@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import ProductLineupClient from "./ProductLineupClient";
 
 export const metadata = {
-  title: "Product Lineup | Daikin Connect",
+  title: "Product Lineup | DSSI Connect",
   description: "Daikin equipment product lineup and specifications",
 };
 

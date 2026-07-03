@@ -216,7 +216,7 @@ function ReportsContent({ lang }: { lang: Language }) {
           setIsPrinting(false);
           setIsExporting(false);
           setPrintPages([]);
-          document.title = "Daikin Connect Reports";
+          document.title = "DSSI Connect Reports";
         }, 1500);
       }
     } catch (e) {

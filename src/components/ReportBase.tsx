@@ -58,7 +58,7 @@ export const ReportBase = ({
               </div>
             </div>
             <div style={{ textAlign: "right" }}>
-              <img src="/logo/Logo DSSI.png" alt="EPL Link" style={{ height: "24mm", objectFit: "contain" }} />
+              <img src="/logo/Logo DSSI.png" alt="DSSI Connect" style={{ height: "24mm", objectFit: "contain" }} />
             </div>
           </div>
 

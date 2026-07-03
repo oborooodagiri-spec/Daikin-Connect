@@ -1,8 +1,8 @@
 import React from 'react';
 
 export const metadata = {
-  title: 'Privacy Policy | EPL Link',
-  description: 'Privacy Policy and Data Collection statement for EPL Link.',
+  title: 'Privacy Policy | DSSI Connect',
+  description: 'Privacy Policy and Data Collection statement for DSSI Connect.',
 };
 
 export default function PrivacyPolicyPage() {
@@ -16,7 +16,7 @@ export default function PrivacyPolicyPage() {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Introduction</h2>
             <p>
-              Welcome to EPL Link. We respect your privacy and are committed to protecting your personal data. 
+              Welcome to DSSI Connect. We respect your privacy and are committed to protecting your personal data. 
               This privacy policy will inform you as to how we look after your personal data when you visit our website 
               (dconnect.id) and use our enterprise service management systems.
             </p>

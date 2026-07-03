@@ -457,7 +457,7 @@ export default function RateCardClient() {
     // Kop Surat & Header
     doc.setFontSize(22);
     doc.setTextColor(0, 115, 234);
-    doc.text("DAIKIN CONNECT", 14, 22);
+    doc.text("DSSI Connect", 14, 22);
     doc.setFontSize(14);
     doc.setTextColor(50);
     doc.text("RATE CARD PEMELIHARAAN (UNIT PRICE CONTRACT)", 14, 30);

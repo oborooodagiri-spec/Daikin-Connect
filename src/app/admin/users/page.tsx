@@ -168,7 +168,7 @@ export default function UsersPage() {
           <div className="space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#003366] border border-[#004488] text-[10px] font-black uppercase tracking-widest text-blue-300">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>EPL LINK SECURITY SYSTEMS</span>
+              <span>DSSI Connect SECURITY SYSTEMS</span>
             </div>
             <h1 className="text-5xl font-black text-[#003366] tracking-tight">
               User <span className="text-[#00a1e4]">Management</span>

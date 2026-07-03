@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import KnowledgeClient from "./KnowledgeClient";
 
 export const metadata = {
-  title: "Knowledge Hub | Daikin Connect",
+  title: "Knowledge Hub | DSSI Connect",
   description: "Master Blueprint, Juklak, and Juknis for Value Engineering Services.",
 };
 

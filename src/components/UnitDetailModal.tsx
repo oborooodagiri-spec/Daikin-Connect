@@ -1003,7 +1003,7 @@ export default function UnitDetailModal({
                     </button>
                   </div>
                   
-                  <p className="text-center text-[8px] font-black text-[#00a1e4]/40 uppercase tracking-[0.3em]">DAIKIN CONNECT DIGITAL ASSET HUB</p>
+                  <p className="text-center text-[8px] font-black text-[#00a1e4]/40 uppercase tracking-[0.3em]">DSSI Connect DIGITAL ASSET HUB</p>
                 </div>
               </motion.div>
             </div>

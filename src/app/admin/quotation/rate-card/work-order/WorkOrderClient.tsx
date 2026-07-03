@@ -543,7 +543,7 @@ export default function WorkOrderClient({
                   <div className="flex flex-col gap-1">
                     <img 
                       src="/logo/Logo DSSI.png" 
-                      alt="EPL Link" 
+                      alt="DSSI Connect" 
                       className="h-[10mm] w-auto object-contain self-start" 
                     />
                     <p className="text-[7px] font-black text-[#003366] uppercase tracking-[0.05em] leading-none mt-1">PT. Daikin Applied Solutions Indonesia</p>

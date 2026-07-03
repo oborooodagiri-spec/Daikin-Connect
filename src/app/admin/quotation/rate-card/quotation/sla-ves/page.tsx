@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import SlaVesClient from "./SlaVesClient";
 
 export const metadata = {
-  title: "SLA Document Generator | Daikin Connect",
+  title: "SLA Document Generator | DSSI Connect",
   description: "Generate Service Level Agreement based on quotation.",
 };
 

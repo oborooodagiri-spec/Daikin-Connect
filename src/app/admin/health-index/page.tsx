@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import HealthIndexClient from "./HealthIndexClient";
 
 export const metadata = {
-  title: "Health Index Dashboard | Daikin Connect",
+  title: "Health Index Dashboard | DSSI Connect",
   description: "Real-time unit health monitoring and proactive diagnostics for VES Tier 2.",
 };
 

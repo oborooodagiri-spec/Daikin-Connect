@@ -61,7 +61,7 @@ export async function generateConsolidatedPDF(data: any) {
         </div>
 
         <div className="absolute bottom-10 left-10 right-10 p-8 border-t border-slate-100 text-center">
-           <p className="text-[8pt] font-bold text-slate-300 uppercase tracking-[0.2em]">Automated Output via Daikin Connect Intelligence Hub</p>
+           <p className="text-[8pt] font-bold text-slate-300 uppercase tracking-[0.2em]">Automated Output via DSSI Connect Intelligence Hub</p>
         </div>
       </div>
     </div>,

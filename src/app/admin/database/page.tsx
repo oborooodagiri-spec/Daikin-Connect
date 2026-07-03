@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import DatabaseClient from "./DatabaseClient";
 
 export const metadata = {
-  title: "Resource Database | Daikin Connect",
+  title: "Resource Database | DSSI Connect",
   description: "Internal repository for presentation materials, catalogs, and technical documents.",
 };
 

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import LogsheetRoesminClient from "./LogsheetRoesminClient";
 
 export const metadata = {
-  title: "Logsheet Lanud Roesmin Nurjadin | Daikin Connect",
+  title: "Logsheet Lanud Roesmin Nurjadin | DSSI Connect",
   description: "Daily Logsheet monitoring HVAC — Lanud Roesmin Nurjadin (Rafale Simulator)",
 };
 

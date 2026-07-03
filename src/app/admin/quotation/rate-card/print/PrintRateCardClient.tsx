@@ -45,7 +45,7 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
   
   const [pihak1Pic, setPihak1Pic] = useState("");
   const [pihak1Title, setPihak1Title] = useState("");
-  const [pihak1Company, setPihak1Company] = useState("PT Daikin Connect Indonesia");
+  const [pihak1Company, setPihak1Company] = useState("PT DSSI Connect Indonesia");
   
   const [pihak2Pic, setPihak2Pic] = useState("");
   const [pihak2Title, setPihak2Title] = useState("");
@@ -339,9 +339,9 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
 
             <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Penandatangan Perjanjian</h3>
 
-            {/* Pihak I (Daikin Connect) */}
+            {/* Pihak I (DSSI Connect) */}
             <div className="bg-blue-50/30 border border-blue-100 rounded-2xl p-4 space-y-4">
-              <span className="text-[9px] font-black text-[#0073ea] uppercase tracking-widest">Pihak I (Daikin Connect)</span>
+              <span className="text-[9px] font-black text-[#0073ea] uppercase tracking-widest">Pihak I (DSSI Connect)</span>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Nama PIC</label>
@@ -536,7 +536,7 @@ export default function PrintRateCardClient({ initialItems, initialSettings }: P
                   </div>
                 </div>
                 <div className="text-right">
-                  <img src="/logo/Logo DSSI.png" alt="EPL Link" className="h-[14mm] object-contain" />
+                  <img src="/logo/Logo DSSI.png" alt="DSSI Connect" className="h-[14mm] object-contain" />
                 </div>
               </div>
             </div>

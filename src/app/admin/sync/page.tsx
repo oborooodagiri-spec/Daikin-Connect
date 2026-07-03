@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import SyncCenterClient from "./SyncCenterClient";
 
 export const metadata = {
-  title: "Sync Center | Daikin Connect Admin",
+  title: "Sync Center | DSSI Connect Admin",
   description: "Advanced data synchronization and reconciliation engine.",
 };
 

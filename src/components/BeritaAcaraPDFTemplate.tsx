@@ -117,7 +117,7 @@ export const getBeritaAcaraSections = (data: any, unit: any, engineerName: strin
       </div>
 
       <p style={{ marginTop: "3mm", fontSize: "8pt", color: "#64748b", lineHeight: "1.2" }}>
-        {lang === 'id' ? "Demikian Berita Acara ini dibuat sebenarnya untuk dipergunakan semestinya. Data teknis tersedia di sistem Daikin Connect." : lang === 'ja' ? "この報告書は正当な目的のために作成されました。技術データはDaikin Connectシステムで利用可能です。" : "Thus, these minutes are made correctly to be used appropriately. Technical data is available in the Daikin Connect system."}
+        {lang === 'id' ? "Demikian Berita Acara ini dibuat sebenarnya untuk dipergunakan semestinya. Data teknis tersedia di sistem DSSI Connect." : lang === 'ja' ? "この報告書は正当な目的のために作成されました。技術データはDSSI Connectシステムで利用可能です。" : "Thus, these minutes are made correctly to be used appropriately. Technical data is available in the DSSI Connect system."}
       </p>
     </div>,
 

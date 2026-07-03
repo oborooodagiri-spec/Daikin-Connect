@@ -299,7 +299,7 @@ export default function ProfileSecurityPage() {
 
                 <div className="p-6 bg-slate-50/50 border-t border-slate-100 text-center">
                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] flex items-center justify-center gap-2">
-                    <ShieldCheck size={12} /> EPL LINK SECURITY SYSTEMS
+                    <ShieldCheck size={12} /> DSSI Connect SECURITY SYSTEMS
                   </p>
                 </div>
             </div>

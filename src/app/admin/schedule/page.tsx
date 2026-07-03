@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import ScheduleClient from "./ScheduleClient";
 
 export const metadata = {
-  title: "Operational Daily Schedule | Daikin Connect",
+  title: "Operational Daily Schedule | DSSI Connect",
   description: "Advanced interactive scheduling tool for operations and maintenance teams.",
 };
 

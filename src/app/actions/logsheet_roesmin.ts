@@ -72,7 +72,7 @@ export async function saveRoesminLogsheet(data: RoesminLogsheetData, projectId?:
             project_id: String(projectId),
             unit_type: "Virtual Room",
             tag_number: "LOGSHEET-ROOM",
-            brand: "Daikin Connect",
+            brand: "DSSI Connect",
             model: "Logsheet System",
             location: "Virtual Space",
             area: "Facility Wide",

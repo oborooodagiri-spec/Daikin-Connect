@@ -52,7 +52,7 @@ export function SceneUnifiedHub({ mode, isVisible }: SceneUnifiedHubProps) {
                      variants={textVariant}
                      className="text-slate-400 text-2xl font-light tracking-wide max-w-3xl mx-auto"
                    >
-                     Introducing Daikin Connect. One Ecosystem. Absolute Control.
+                     Introducing DSSI Connect. One Ecosystem. Absolute Control.
                    </motion.p>
                 </div>
               </div>
