@@ -22,7 +22,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-const fromEmail = `"EPL Link" <${process.env.SMTP_USER || 'no-reply@dconnect.id'}>`;
+const fromEmail = `"Daikin Connect" <${process.env.SMTP_USER || 'no-reply@dconnect.id'}>`;
 
 export async function sendRegistrationReceivedEmail(to: string, name: string) {
   console.log(`[MAIL] Attempting to send Registration Confirmation to ${to}...`);
@@ -31,7 +31,7 @@ export async function sendRegistrationReceivedEmail(to: string, name: string) {
       from: fromEmail,
       replyTo: 'admin@dconnect.id',
       to,
-      subject: 'EPL Link: Permintaan Akses Diterima / Access Request Received',
+      subject: 'Daikin Connect: Permintaan Akses Diterima / Access Request Received',
       html: getRegistrationReceivedTemplate(name),
     });
     console.log(`[MAIL] Registration Confirmation sent: ${info.messageId}`);
@@ -49,7 +49,7 @@ export async function sendAccountApprovedEmail(to: string, name: string, role: s
       from: fromEmail,
       replyTo: 'admin@dconnect.id',
       to,
-      subject: 'EPL Link: Akun Disetujui / Account Approved',
+      subject: 'Daikin Connect: Akun Disetujui / Account Approved',
       html: getAccountApprovedTemplate(name, role),
     });
     console.log(`[MAIL] Approval Notification sent: ${info.messageId}`);
@@ -67,7 +67,7 @@ export async function sendAccountSuspendedEmail(to: string, name: string) {
       from: fromEmail,
       replyTo: 'admin@dconnect.id',
       to,
-      subject: 'EPL Link: Akun Ditangguhkan / Account Suspended',
+      subject: 'Daikin Connect: Akun Ditangguhkan / Account Suspended',
       html: getAccountSuspendedTemplate(name),
     });
     console.log(`[MAIL] Suspension Notification sent: ${info.messageId}`);
@@ -89,7 +89,7 @@ export async function sendPasswordResetEmail(to: string, name: string, resetToke
       from: fromEmail,
       replyTo: 'admin@dconnect.id',
       to,
-      subject: 'EPL Link: Atur Ulang Kata Sandi / Password Reset',
+      subject: 'Daikin Connect: Atur Ulang Kata Sandi / Password Reset',
       html: getPasswordResetTemplate(name, resetLink),
     });
     console.log(`[MAIL] Password Reset sent: ${info.messageId}`);
@@ -101,13 +101,13 @@ export async function sendPasswordResetEmail(to: string, name: string, resetToke
 }
 
 export async function sendOtpEmail(to: string, otpCode: string) {
-  const securityFrom = `"EPL Link Security" <${process.env.SMTP_USER || 'no-reply@dconnect.id'}>`;
+  const securityFrom = `"Daikin Connect Security" <${process.env.SMTP_USER || 'no-reply@dconnect.id'}>`;
   console.log(`[MAIL] Attempting to send OTP to ${to} from ${securityFrom}...`);
   try {
     const info = await transporter.sendMail({
       from: securityFrom,
       to,
-      subject: 'Security Verification Code - EPL Link',
+      subject: 'Security Verification Code - Daikin Connect',
       html: getVerificationCodeTemplate(otpCode),
     });
     console.log(`[MAIL] OTP sent successfully: ${info.messageId}`);
