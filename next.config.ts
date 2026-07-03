@@ -45,11 +45,11 @@ const nextConfig: NextConfig = {
           // Content Security Policy (Report-Only — does not block, only monitors)
           // In production, Cloudflare WAF provides enforcement layer
           {
-            key: 'Content-Security-Policy-Report-Only',
+            key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:",
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https:",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https:",
               "font-src 'self' https://fonts.gstatic.com data:",
               "img-src 'self' data: blob: https:",
               "connect-src 'self' https: wss: ws:",

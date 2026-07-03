@@ -84,7 +84,7 @@ function isMaliciousBot(userAgent: string | null): boolean {
 
 // ─── Main Proxy Handler ────────────────────────────────────────────────
 
-export async function proxy(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
   const session = request.cookies.get("session")?.value;
   const { pathname } = request.nextUrl;
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
