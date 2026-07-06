@@ -29,7 +29,14 @@ import DeviceMockup from "@/components/about/DeviceMockup";
 const HVACIllustration = () => {
   return (
     <div className="relative w-full max-w-2xl aspect-square flex items-center justify-center">
-      <LoadingLogo size={320} />
+      <video
+        src="/logo/DSSI - Animation - No Background.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="w-[80%] h-[80%] object-contain"
+      />
     </div>
   );
 };
