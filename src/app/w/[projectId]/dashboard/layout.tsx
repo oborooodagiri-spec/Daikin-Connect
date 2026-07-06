@@ -78,7 +78,7 @@ export default async function DashboardLayout({
                 </div>
                 
 
-                <div className="flex items-center gap-4">
+                <div className="hidden sm:flex items-center gap-4">
                   <NotificationCenter projectId={projectId} />
                 </div>
               </div>
@@ -86,9 +86,14 @@ export default async function DashboardLayout({
 
             {children}
           </MainContentWrapper>
+
+          {/* Mobile FAB — Always visible, even on unit detail pages where header is hidden */}
+          <NotificationCenter projectId={projectId} variant="fab" />
+
           <NotificationManager />
         </div>
       </AppViewWrapper>
     </Suspense>
   );
 }
+

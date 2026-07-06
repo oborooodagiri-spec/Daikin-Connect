@@ -10,6 +10,7 @@ import {
   LayoutDashboard, ExternalLink, Database, Users, Briefcase, BookOpen, Wrench, Package, TrendingUp
 } from "lucide-react";
 import StaticLogo from "@/components/ui/StaticLogo";
+import NotificationCenter from "@/components/NotificationCenter";
 import { updateProfile, saveAvatarUrl } from "@/app/actions/profile";
 import { logout } from "@/app/actions/auth";
 import { getAllCustomers } from "@/app/actions/customers";
@@ -197,6 +198,7 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
       <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 24px", borderBottom: "1px solid #e6e9ef", background: "#fff", position: "sticky", top: 0, zIndex: 50 }}>
         <StaticLogo size={32} />
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <NotificationCenter />
           {profile.isAdmin && (
             <button onClick={() => router.push("/admin")} style={{ ...btnGhost, fontSize: 13 }}>
               <Settings size={16} /> Admin

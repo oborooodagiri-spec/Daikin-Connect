@@ -5,61 +5,79 @@ import { getSession } from "./auth";
 import { revalidatePath } from "next/cache";
 
 /**
- * Get notifications for current user
+ * Get notifications for current user.
+ * - Project Mode (projectId provided): Only shows notifications for that specific project.
+ * - Global Mode (no projectId): Shows all notifications, but ONLY from projects
+ *   the user has explicit access to (via user_project_access). This prevents
+ *   cross-project data leaks for multi-tenant security.
  */
 export async function getMyNotifications(projectId?: string) {
   const session = await getSession();
   if (!session) return { error: "Unauthorized" };
 
-  // Sanitize input to handle stringified "undefined" or "empty" from client context
   const cleanProjectId = (projectId && projectId !== "empty" && projectId !== "undefined") ? projectId : undefined;
+  const userId = parseInt(session.userId);
 
   try {
-    console.log(`[getMyNotifications] user_id=${session.userId} | projectId=${projectId} | cleanProjectId=${cleanProjectId} | type=${typeof projectId}`);
-
-    // Build query filter: always filter by user, optionally filter by project at DB level
-    const whereClause: any = { user_id: parseInt(session.userId) };
+    const whereClause: any = { user_id: userId };
 
     if (cleanProjectId) {
-      // Primary filter: only fetch notifications that belong to this project
-      // This includes notifications with matching project_id OR no project_id (to be filtered further)
+      // PROJECT MODE: strict isolation — only this project's notifications
       whereClause.OR = [
         { project_id: BigInt(cleanProjectId) },
         { project_id: null }
       ];
+    } else {
+      // GLOBAL MODE: get user's accessible project IDs for security filtering
+      const accessibleProjects = await (prisma as any).user_project_access.findMany({
+        where: { user_id: userId },
+        select: { project_id: true }
+      });
+      const accessibleIds = accessibleProjects.map((a: any) => a.project_id);
+
+      if (accessibleIds.length > 0) {
+        whereClause.OR = [
+          { project_id: { in: accessibleIds } },
+          { project_id: null }
+        ];
+      } else {
+        // User has no project access — only show project-less notifications
+        whereClause.project_id = null;
+      }
     }
 
     const notifications = await (prisma as any).notifications.findMany({
       where: whereClause,
+      include: {
+        projects: { select: { id: true, name: true } }
+      },
       orderBy: { created_at: "desc" },
-      take: 100
+      take: 50
     });
 
     let filtered = notifications;
     if (cleanProjectId) {
-      // Secondary filter: for notifications without project_id, check link pattern
       filtered = notifications.filter((n: any) => {
-        // 1. If project_id is set in database, it was already filtered by the query above
-        if (n.project_id !== null && n.project_id !== undefined) {
-          return true; // Already matched by DB query
-        }
-
-        // 2. Fallback: Parse project from link URL pattern
+        if (n.project_id !== null && n.project_id !== undefined) return true;
         if (n.link) {
           const match = n.link.match(/\/w\/(\d+)/);
-          if (match) {
-            return match[1] === cleanProjectId;
-          }
+          if (match) return match[1] === cleanProjectId;
         }
-
-        // 3. Notification has no project context — do NOT show in project views
-        //    (prevents cross-project leaking)
         return false;
       });
     }
 
-    // Limit output to top 20 after filtering
-    return { success: true, data: filtered.slice(0, 20) };
+    // Serialize BigInt for client transport
+    const serialized = filtered.slice(0, 30).map((n: any) => ({
+      ...n,
+      id: Number(n.id),
+      user_id: Number(n.user_id),
+      project_id: n.project_id ? n.project_id.toString() : null,
+      project_name: n.projects?.name || null,
+      projects: undefined
+    }));
+
+    return { success: true, data: serialized };
   } catch (error) {
     console.error("Failed to fetch notifications:", error);
     return { error: "Failed to fetch notifications" };
@@ -67,17 +85,113 @@ export async function getMyNotifications(projectId?: string) {
 }
 
 /**
- * Mark notification as read
+ * Get unread count only — lightweight endpoint for badge polling
+ */
+export async function getUnreadCount(projectId?: string) {
+  const session = await getSession();
+  if (!session) return { count: 0 };
+
+  const cleanProjectId = (projectId && projectId !== "empty" && projectId !== "undefined") ? projectId : undefined;
+  const userId = parseInt(session.userId);
+
+  try {
+    const whereClause: any = { user_id: userId, is_read: false };
+
+    if (cleanProjectId) {
+      whereClause.project_id = BigInt(cleanProjectId);
+    } else {
+      const accessibleProjects = await (prisma as any).user_project_access.findMany({
+        where: { user_id: userId },
+        select: { project_id: true }
+      });
+      const accessibleIds = accessibleProjects.map((a: any) => a.project_id);
+      if (accessibleIds.length > 0) {
+        whereClause.OR = [
+          { project_id: { in: accessibleIds } },
+          { project_id: null }
+        ];
+        delete whereClause.project_id;
+      }
+    }
+
+    const count = await (prisma as any).notifications.count({ where: whereClause });
+    return { count };
+  } catch (error) {
+    return { count: 0 };
+  }
+}
+
+/**
+ * Mark a single notification as read
  */
 export async function markAsRead(id: number) {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
   try {
     await (prisma as any).notifications.update({
-      where: { id },
+      where: { id, user_id: parseInt(session.userId) },
       data: { is_read: true }
     });
     return { success: true };
   } catch (error) {
     return { error: "Failed to mark as read" };
+  }
+}
+
+/**
+ * Mark ALL notifications as read for current user
+ */
+export async function markAllAsRead(projectId?: string) {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
+  const cleanProjectId = (projectId && projectId !== "empty" && projectId !== "undefined") ? projectId : undefined;
+
+  try {
+    const whereClause: any = {
+      user_id: parseInt(session.userId),
+      is_read: false
+    };
+
+    if (cleanProjectId) {
+      whereClause.project_id = BigInt(cleanProjectId);
+    }
+
+    await (prisma as any).notifications.updateMany({
+      where: whereClause,
+      data: { is_read: true }
+    });
+
+    return { success: true };
+  } catch (error) {
+    return { error: "Failed to mark all as read" };
+  }
+}
+
+/**
+ * Clear (delete) all READ notifications for current user
+ */
+export async function clearAllNotifications(projectId?: string) {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
+  const cleanProjectId = (projectId && projectId !== "empty" && projectId !== "undefined") ? projectId : undefined;
+
+  try {
+    const whereClause: any = {
+      user_id: parseInt(session.userId),
+      is_read: true
+    };
+
+    if (cleanProjectId) {
+      whereClause.project_id = BigInt(cleanProjectId);
+    }
+
+    await (prisma as any).notifications.deleteMany({ where: whereClause });
+    return { success: true };
+  } catch (error) {
+    return { error: "Failed to clear notifications" };
   }
 }
 
