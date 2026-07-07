@@ -1,105 +1,114 @@
 "use client";
 
-import { BookOpen, Briefcase, ChevronRight } from "lucide-react";
+import { BookOpen, Briefcase, ArrowRight, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function QuotationDashboard() {
   const router = useRouter();
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  };
+
   return (
-    <div className="min-h-screen bg-[#fafbfc] font-['Inter'] pb-24">
-      {/* Premium Header */}
-      <div className="bg-white border-b border-[#e6e9ef] pt-12 pb-10 px-6 shadow-sm">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="px-3 py-1 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-md text-xs font-black tracking-widest uppercase shadow-md shadow-slate-200">
-              Quotation & Rates
+    <div className="min-h-screen bg-[#fafbfc] font-['Inter'] selection:bg-blue-100 selection:text-blue-600">
+      
+      {/* Sleek Minimal Header */}
+      <div className="bg-white border-b border-[#e6e9ef] sticky top-0 z-10">
+        <div className="max-w-5xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link 
+              href="/home"
+              className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors"
+            >
+              <ArrowLeft size={18} />
+            </Link>
+            <div>
+              <div className="text-[10px] font-black text-slate-400 tracking-widest uppercase mb-0.5">Quotation & Rates</div>
+              <h1 className="text-xl font-black text-[#1c1d22] tracking-tight">Pricing Hub</h1>
             </div>
           </div>
-          <h1 className="text-4xl font-black text-[#1c1d22] tracking-tight mb-2">
-            Pricing Hub
-          </h1>
-          <p className="text-[#676879] text-base font-medium max-w-2xl">
-            Kelola Bill of Quantity (BoQ), Master Pricelist, dan Official Rate Cards untuk kemudahan proses penawaran harga Anda secara tersentralisasi.
-          </p>
         </div>
       </div>
 
-      <main className="max-w-6xl mx-auto px-6 mt-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <main className="max-w-5xl mx-auto px-6 py-12">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6"
+        >
           
           {/* BoQ Builder & Pricelist */}
           <motion.div 
-            whileHover={{ y: -8, scale: 1.01 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="group bg-white rounded-[24px] border border-[#e6e9ef] overflow-hidden cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(90,24,154,0.1)] hover:border-purple-200"
+            variants={itemVariants}
+            whileHover={{ y: -4, scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            className="group relative bg-white rounded-3xl border border-[#e6e9ef] p-6 lg:p-8 cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(90,24,154,0.08)] hover:border-purple-200 transition-all duration-300 overflow-hidden"
             onClick={() => router.push("/admin/quotation/boq-builder")}
           >
-            <div className="h-32 bg-gradient-to-br from-[#5a189a] via-[#7b2cbf] to-[#9d4edd] relative overflow-hidden">
-              <div className="absolute -right-6 -top-10 opacity-20">
-                <BookOpen size={180} />
-              </div>
-              <div className="absolute inset-0 bg-black/10" />
-            </div>
+            <div className="absolute right-0 top-0 w-32 h-32 bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-bl-full -z-0 opacity-50 group-hover:scale-110 transition-transform duration-500" />
             
-            <div className="p-8 relative">
-              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-purple-100 absolute -top-8 border border-purple-50 text-[#7b2cbf]">
-                <BookOpen size={28} strokeWidth={2.5} />
+            <div className="flex flex-col h-full relative z-10">
+              <div className="w-14 h-14 bg-purple-50 text-[#7b2cbf] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#7b2cbf] group-hover:text-white transition-colors duration-300">
+                <BookOpen size={24} strokeWidth={2.5} />
               </div>
               
-              <div className="mt-8 flex justify-between items-end">
-                <div>
-                  <h2 className="text-2xl font-black text-[#1c1d22] tracking-tight mb-3 group-hover:text-[#7b2cbf] transition-colors">
-                    EPL BoQ Builder & Pricelist
-                  </h2>
-                  <p className="text-[#676879] font-medium leading-relaxed text-sm">
-                    Buat dan kelola Bill of Quantity (BoQ) untuk banyak project secara dinamis. Sudah terintegrasi langsung dengan database Master Pricelist material dan komponen.
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-purple-50 group-hover:text-[#7b2cbf] transition-all flex-shrink-0 ml-4">
-                  <ChevronRight size={20} />
-                </div>
+              <h2 className="text-xl lg:text-2xl font-black text-[#1c1d22] tracking-tight mb-2 group-hover:text-[#7b2cbf] transition-colors">
+                BoQ & Pricelist
+              </h2>
+              <p className="text-slate-500 text-sm font-medium leading-relaxed mb-8 flex-1">
+                Kelola Bill of Quantity secara dinamis, terintegrasi dengan Master Pricelist material.
+              </p>
+              
+              <div className="flex items-center text-sm font-bold text-[#7b2cbf] group/btn">
+                <span>Buka Modul</span>
+                <ArrowRight size={16} className="ml-2 group-hover/btn:translate-x-1 transition-transform" />
               </div>
             </div>
           </motion.div>
 
           {/* Rate Card Maintenance */}
           <motion.div 
-            whileHover={{ y: -8, scale: 1.01 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="group bg-white rounded-[24px] border border-[#e6e9ef] overflow-hidden cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(0,115,234,0.1)] hover:border-blue-200"
+            variants={itemVariants}
+            whileHover={{ y: -4, scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            className="group relative bg-white rounded-3xl border border-[#e6e9ef] p-6 lg:p-8 cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(0,115,234,0.08)] hover:border-blue-200 transition-all duration-300 overflow-hidden"
             onClick={() => router.push("/admin/quotation/rate-card")}
           >
-            <div className="h-32 bg-gradient-to-br from-[#005bb5] via-[#0073ea] to-[#4db8ff] relative overflow-hidden">
-              <div className="absolute -right-6 -top-10 opacity-20">
-                <Briefcase size={180} />
-              </div>
-              <div className="absolute inset-0 bg-black/10" />
-            </div>
+            <div className="absolute right-0 top-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-bl-full -z-0 opacity-50 group-hover:scale-110 transition-transform duration-500" />
             
-            <div className="p-8 relative">
-              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-100 absolute -top-8 border border-blue-50 text-[#0073ea]">
-                <Briefcase size={28} strokeWidth={2.5} />
+            <div className="flex flex-col h-full relative z-10">
+              <div className="w-14 h-14 bg-blue-50 text-[#0073ea] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#0073ea] group-hover:text-white transition-colors duration-300">
+                <Briefcase size={24} strokeWidth={2.5} />
               </div>
               
-              <div className="mt-8 flex justify-between items-end">
-                <div>
-                  <h2 className="text-2xl font-black text-[#1c1d22] tracking-tight mb-3 group-hover:text-[#0073ea] transition-colors">
-                    Rate Card Maintenance
-                  </h2>
-                  <p className="text-[#676879] font-medium leading-relaxed text-sm">
-                    Akses dan kelola Buku Tarif Satuan (Rate Card) resmi untuk penawaran layanan pemeliharaan rutin, kontrak unit price, dan SLA VES.
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-[#0073ea] transition-all flex-shrink-0 ml-4">
-                  <ChevronRight size={20} />
-                </div>
+              <h2 className="text-xl lg:text-2xl font-black text-[#1c1d22] tracking-tight mb-2 group-hover:text-[#0073ea] transition-colors">
+                Rate Cards
+              </h2>
+              <p className="text-slate-500 text-sm font-medium leading-relaxed mb-8 flex-1">
+                Buku Tarif Satuan pemeliharaan rutin, kontrak unit price, dan SLA VES.
+              </p>
+              
+              <div className="flex items-center text-sm font-bold text-[#0073ea] group/btn">
+                <span>Buka Modul</span>
+                <ArrowRight size={16} className="ml-2 group-hover/btn:translate-x-1 transition-transform" />
               </div>
             </div>
           </motion.div>
 
-        </div>
+        </motion.div>
       </main>
     </div>
   );
