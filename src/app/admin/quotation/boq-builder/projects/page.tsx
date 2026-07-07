@@ -13,6 +13,7 @@ export default function BoqProjectsPage() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [formData, setFormData] = useState({ project_name: "", customer_name: "" });
   const [isCreating, setIsCreating] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const loadProjects = async () => {
     setLoading(true);
@@ -24,6 +25,12 @@ export default function BoqProjectsPage() {
   useEffect(() => {
     loadProjects();
   }, []);
+
+  const filteredProjects = projects.filter(
+    (p) =>
+      p.project_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.customer_name?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,16 +67,26 @@ export default function BoqProjectsPage() {
 
       <div className="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Daftar Proyek BoQ</h1>
-          <p className="text-gray-500 mt-1">Kelola dan lihat histori Bill of Quantity yang pernah dibuat</p>
+          <h1 className="text-3xl font-bold text-gray-900">Daftar BoQ</h1>
         </div>
-        <button
-          onClick={() => setIsAddOpen(true)}
-          className="bg-[#0073ea] hover:bg-[#0060c5] text-white px-5 py-2.5 rounded-lg font-medium flex items-center transition-colors shadow-sm"
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          Proyek BoQ Baru
-        </button>
+        <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Cari nama proyek/customer..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full md:w-72 border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-[#0073ea] outline-none transition-shadow pl-4"
+            />
+          </div>
+          <button
+            onClick={() => setIsAddOpen(true)}
+            className="bg-[#0073ea] hover:bg-[#0060c5] text-white px-5 py-2.5 rounded-lg font-medium flex items-center transition-colors shadow-sm whitespace-nowrap"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            Proyek BoQ Baru
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -93,7 +110,7 @@ export default function BoqProjectsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project: any) => (
+          {filteredProjects.map((project: any) => (
             <div key={project.id} className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow flex flex-col relative group">
               <button 
                 onClick={(e) => { e.preventDefault(); handleDelete(project.id); }}
