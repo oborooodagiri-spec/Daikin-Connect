@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, Snowflake, Wind, Server, Fan,
   ChevronDown, ChevronRight, Save, Calendar,
-  User, ClipboardList, Zap, Folder, FileText, History, FileDown
+  User, ClipboardList, Zap, Folder, FileText, History, FileDown,
+  Search, Filter, CheckCircle, Clock
 } from "lucide-react";
 import Link from "next/link";
 
@@ -245,6 +246,8 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
 
   const [historyData, setHistoryData] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("Semua");
 
   useEffect(() => {
     if (activeTab === "history") {
@@ -282,87 +285,145 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
   };
 
   const renderHistory = () => {
-    // Group historyData by Year > Month > Date/Day
-    const grouped: any = {};
+    // 1. Filter Data
+    let filtered = historyData.filter(item => {
+      const isDraft = (() => {
+        try { return JSON.parse(item.technical_json || "{}").is_draft; }
+        catch { return false; }
+      })();
+      
+      const searchStr = searchQuery.toLowerCase();
+      const matchSearch = 
+        (item.id?.toString().toLowerCase().includes(searchStr)) ||
+        (item.inspector_name?.toLowerCase().includes(searchStr));
+
+      const matchStatus = 
+        statusFilter === "Semua" ? true :
+        statusFilter === "Draft" ? isDraft :
+        statusFilter === "Selesai" ? !isDraft : true;
+
+      return matchSearch && matchStatus;
+    });
+
+    // 2. Group by Month-Year
+    const grouped: { [key: string]: any[] } = {};
     const monthsStr = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const daysStr = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
     
-    historyData.forEach(item => {
+    filtered.forEach(item => {
       if (!item.service_date) return;
       const d = new Date(item.service_date);
-      const year = d.getFullYear();
-      const month = monthsStr[d.getMonth()];
-      const dateKey = `${daysStr[d.getDay()]}, ${d.getDate()} ${month} ${year}`;
-      
-      if (!grouped[year]) grouped[year] = {};
-      if (!grouped[year][month]) grouped[year][month] = {};
-      if (!grouped[year][month][dateKey]) grouped[year][month][dateKey] = [];
-      
-      grouped[year][month][dateKey].push(item);
+      const groupKey = `${monthsStr[d.getMonth()]} ${d.getFullYear()}`;
+      if (!grouped[groupKey]) grouped[groupKey] = [];
+      grouped[groupKey].push(item);
     });
 
     return (
-      <div className="max-w-5xl mx-auto py-8 pb-32">
-        <h2 className="text-xl font-black text-[#003366] mb-6 flex items-center gap-2 px-4 md:px-0">
-          <History className="text-[#00a1e4]" /> Riwayat Logsheet
+      <div className="max-w-4xl mx-auto py-8 pb-32">
+        <h2 className="text-2xl font-black text-[#003366] mb-8 flex items-center gap-3 px-4 md:px-0">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#00a1e4] flex items-center justify-center">
+            <History size={20} strokeWidth={2.5} />
+          </div>
+          Riwayat Logsheet
         </h2>
+
+        {/* Filter & Search Bar */}
+        <div className="px-4 md:px-0 mb-8 flex flex-col md:flex-row gap-4 justify-between items-center">
+          <div className="relative w-full md:w-72">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <input 
+              type="text" 
+              placeholder="Cari ID atau Nama Inspektor..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-white border border-slate-200 pl-10 pr-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00a1e4]/50 focus:border-[#00a1e4] transition-all shadow-sm"
+            />
+          </div>
+          <div className="flex bg-slate-100 p-1 rounded-xl w-full md:w-auto">
+            {["Semua", "Selesai", "Draft"].map(status => (
+              <button
+                key={status}
+                onClick={() => setStatusFilter(status)}
+                className={`flex-1 md:flex-none px-6 py-2 rounded-lg text-sm font-bold transition-all ${statusFilter === status ? "bg-white text-[#00a1e4] shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+              >
+                {status}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {loadingHistory ? (
-          <div className="flex justify-center py-10"><div className="w-8 h-8 border-4 border-[#003366]/20 border-t-[#00a1e4] rounded-full animate-spin" /></div>
-        ) : historyData.length === 0 ? (
-          <div className="mx-4 md:mx-0 text-center py-20 text-slate-400 font-bold bg-white rounded-3xl border border-slate-100">Belum ada riwayat logsheet.</div>
+          <div className="flex justify-center py-20"><div className="w-10 h-10 border-4 border-[#003366]/20 border-t-[#00a1e4] rounded-full animate-spin" /></div>
+        ) : filtered.length === 0 ? (
+          <div className="mx-4 md:mx-0 text-center py-24 text-slate-400 bg-white rounded-3xl border border-slate-100 shadow-sm flex flex-col items-center">
+            <FileText size={48} className="mb-4 text-slate-200" />
+            <p className="font-bold text-lg text-slate-500">Tidak ada data ditemukan</p>
+            <p className="text-sm mt-1">Coba sesuaikan kata kunci pencarian atau filter status.</p>
+          </div>
         ) : (
-          <div className="space-y-4 px-4 md:px-0">
-            {Object.keys(grouped).sort((a,b) => Number(b) - Number(a)).map(year => (
-              <div key={year} className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
-                <h3 className="text-lg font-black text-[#003366] flex items-center gap-2 mb-4">
-                  <Folder className="text-amber-400" fill="currentColor" /> Tahun {year}
-                </h3>
-                <div className="pl-4 border-l-2 border-slate-100 space-y-4 ml-3">
-                  {Object.keys(grouped[year]).map(month => (
-                    <div key={month}>
-                      <h4 className="text-md font-bold text-slate-700 flex items-center gap-2 mb-3">
-                        <Folder className="text-blue-400 w-5 h-5" fill="currentColor" /> {month}
-                      </h4>
-                      <div className="pl-4 border-l-2 border-slate-100 space-y-3 ml-2.5">
-                        {Object.keys(grouped[year][month]).map(dateKey => (
-                          <div key={dateKey}>
-                            <h5 className="text-sm font-bold text-slate-500 mb-2">{dateKey}</h5>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                              {grouped[year][month][dateKey].map((item: any) => {
-                                const isDraft = (() => {
-                                  try { return JSON.parse(item.technical_json || "{}").is_draft; }
-                                  catch { return false; }
-                                })();
-                                return (
-                                <div key={item.id} className="bg-slate-50 border border-slate-100 p-4 rounded-2xl flex items-center justify-between hover:border-[#00a1e4]/30 hover:shadow-md transition-all group">
-                                  <div>
-                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
-                                      ID: #{item.id}
-                                      {isDraft && <span className="ml-2 text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded font-black">DRAFT</span>}
-                                    </p>
-                                    <p className="text-sm font-black text-[#003366] flex items-center gap-2">
-                                      <User size={14} className="text-[#00a1e4]" /> {item.inspector_name || "Unknown"}
-                                    </p>
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <button onClick={() => handleEdit(item)}
-                                      className="p-3 bg-white text-slate-500 border border-slate-200 rounded-xl hover:bg-slate-100 hover:text-[#003366] transition-all flex items-center gap-2">
-                                      <span className="text-xs font-bold hidden sm:inline">{isDraft ? 'Lanjutkan' : 'Edit'}</span>
-                                    </button>
-                                    <Link href={`/reports/preventive/${item.id}`} target="_blank"
-                                      className="p-3 bg-white text-[#003366] border border-slate-200 rounded-xl hover:bg-[#00a1e4] hover:text-white hover:border-[#00a1e4] transition-all flex items-center gap-2">
-                                      <FileDown size={16} /> <span className="text-xs font-bold hidden sm:inline">Buka PDF</span>
-                                    </Link>
-                                  </div>
-                                </div>
-                                );
-                              })}
+          <div className="px-4 md:px-0 space-y-10">
+            {Object.keys(grouped).map(groupKey => (
+              <div key={groupKey} className="relative">
+                {/* Timeline Header */}
+                <div className="sticky top-20 z-10 bg-[#fafbfc]/95 backdrop-blur-sm py-2 mb-4">
+                  <h3 className="text-lg font-black text-slate-800 flex items-center gap-2">
+                    <Calendar className="text-[#00a1e4]" size={20} />
+                    {groupKey}
+                  </h3>
+                </div>
+
+                {/* Timeline Content */}
+                <div className="relative pl-6 md:pl-10 space-y-6 before:absolute before:inset-0 before:ml-6 md:before:ml-10 before:-translate-x-px md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-slate-200 before:via-slate-200 before:to-transparent">
+                  {grouped[groupKey].map(item => {
+                    const isDraft = (() => {
+                      try { return JSON.parse(item.technical_json || "{}").is_draft; }
+                      catch { return false; }
+                    })();
+                    const d = new Date(item.service_date);
+                    const formattedDate = `${daysStr[d.getDay()]}, ${d.getDate()} ${monthsStr[d.getMonth()]}`;
+
+                    return (
+                      <div key={item.id} className="relative flex items-start group">
+                        {/* Timeline Dot */}
+                        <div className={`absolute -left-6 md:-left-10 w-4 h-4 rounded-full border-4 border-[#fafbfc] ${isDraft ? 'bg-amber-400' : 'bg-[#00a1e4]'} shadow-sm mt-5 group-hover:scale-125 transition-transform z-10`} />
+
+                        {/* Card */}
+                        <div className="bg-white border border-slate-100 p-5 rounded-2xl w-full shadow-sm hover:shadow-md hover:border-[#00a1e4]/30 transition-all">
+                          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                            <div>
+                              <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                <p className="text-xs font-bold text-slate-400 flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-md">
+                                  <Clock size={12} /> {formattedDate}
+                                </p>
+                                <p className="text-xs font-bold text-slate-400 px-2 py-1 bg-slate-50 rounded-md">ID: #{item.id}</p>
+                                {isDraft ? (
+                                  <span className="text-[10px] bg-amber-50 text-amber-600 border border-amber-200 px-2 py-1 rounded-md font-black flex items-center gap-1">DRAFT</span>
+                                ) : (
+                                  <span className="text-[10px] bg-emerald-50 text-emerald-600 border border-emerald-200 px-2 py-1 rounded-md font-black flex items-center gap-1"><CheckCircle size={10}/> SELESAI</span>
+                                )}
+                              </div>
+                              <h4 className="text-base font-black text-[#003366] flex items-center gap-2">
+                                <User size={16} className="text-[#00a1e4]" /> {item.inspector_name || "Unknown Inspector"}
+                              </h4>
+                            </div>
+                            
+                            <div className="flex w-full md:w-auto gap-2 mt-2 md:mt-0">
+                              <button onClick={() => handleEdit(item)}
+                                className={`flex-1 md:flex-none px-4 py-2 text-sm font-bold border rounded-xl flex items-center justify-center gap-2 transition-all ${isDraft ? 'bg-white border-amber-200 text-amber-600 hover:bg-amber-50' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-[#003366]'}`}>
+                                {isDraft ? 'Lanjutkan' : 'Edit'}
+                              </button>
+                              {!isDraft && (
+                                <Link href={`/reports/preventive/${item.id}`} target="_blank"
+                                  className="flex-1 md:flex-none px-4 py-2 text-sm font-bold bg-[#00a1e4] text-white border border-[#00a1e4] rounded-xl hover:bg-[#008cc7] transition-all flex items-center justify-center gap-2 shadow-sm shadow-blue-500/20">
+                                  <FileDown size={16} /> Buka PDF
+                                </Link>
+                              )}
                             </div>
                           </div>
-                        ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ))}
