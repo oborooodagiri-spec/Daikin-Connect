@@ -10,8 +10,8 @@ export default function BoqBuilderPage() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto pb-32">
-      <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4 border-b border-gray-200 pb-6">
+    <div className="p-6 max-w-7xl mx-auto pb-32 print-safe print:p-0 print:m-0 print:absolute print:top-0 print:left-0 print:w-full">
+      <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4 border-b border-gray-200 pb-6 print:hidden">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Master Pricelist BoQ</h1>
           <p className="text-gray-500 mt-1">Kelola database material dan harga untuk pembuatan Bill of Quantity</p>
@@ -36,15 +36,12 @@ export default function BoqBuilderPage() {
         </div>
       </div>
 
-      <div className="print:hidden">
-        <PricelistTab />
+      <div className="hidden print:block mb-4">
+        <h2 className="text-2xl font-bold mb-2">Master Pricelist DASI</h2>
+        <p className="text-gray-600">Dicetak pada: {new Date().toLocaleDateString("id-ID")}</p>
       </div>
 
-      <div className="hidden print:block">
-        <h2 className="text-xl font-bold mb-4">Master Pricelist DASI</h2>
-        <p className="mb-4">Dicetak pada: {new Date().toLocaleDateString("id-ID")}</p>
-        <PricelistTab />
-      </div>
+      <PricelistTab />
     </div>
   );
 }

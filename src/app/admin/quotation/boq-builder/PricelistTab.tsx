@@ -76,8 +76,8 @@ export function PricelistTab() {
 
   return (
     <>
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-4 border-b border-gray-100 flex gap-4 bg-gray-50/50">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden print:overflow-visible print:shadow-none print:border-none">
+        <div className="p-4 border-b border-gray-100 flex gap-4 bg-gray-50/50 print:hidden">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
@@ -99,16 +99,16 @@ export function PricelistTab() {
             Item Baru
           </button>
         </div>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto print:overflow-visible">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 text-gray-600 text-sm border-b border-gray-200">
                 <th className="p-4 font-semibold whitespace-nowrap">Kategori</th>
                 <th className="p-4 font-semibold">Nama Barang</th>
-                <th className="p-4 font-semibold hidden md:table-cell">Spesifikasi</th>
+                <th className="p-4 font-semibold hidden md:table-cell print:table-cell">Spesifikasi</th>
                 <th className="p-4 font-semibold whitespace-nowrap">Satuan</th>
                 <th className="p-4 font-semibold text-right whitespace-nowrap">Harga (Rp)</th>
-                <th className="p-4 font-semibold text-center whitespace-nowrap">Aksi</th>
+                <th className="p-4 font-semibold text-center whitespace-nowrap print:hidden">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-sm">
@@ -155,7 +155,7 @@ export function PricelistTab() {
                         <input type="number" className="w-24 border p-1.5 rounded text-right" value={formData.price} onChange={e => setFormData({...formData, price: Number(e.target.value)})} />
                       ) : new Intl.NumberFormat('id-ID').format(item.price)}
                     </td>
-                    <td className="p-4 text-center whitespace-nowrap">
+                    <td className="p-4 text-center whitespace-nowrap print:hidden">
                       {editId === item.id ? (
                         <div className="flex gap-2 justify-center">
                           <button onClick={() => handleUpdate(item.id, item)} className="p-1.5 text-green-600 bg-green-50 rounded hover:bg-green-100"><Save className="w-4 h-4"/></button>
@@ -176,7 +176,7 @@ export function PricelistTab() {
         </div>
         
         {totalPages > 1 && (
-          <div className="p-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+          <div className="p-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between print:hidden">
             <button 
               disabled={page === 1} 
               onClick={() => setPage(page - 1)}
