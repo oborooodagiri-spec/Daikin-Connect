@@ -88,7 +88,7 @@ export default function ClientSidebarClient({
       `}>
         <div className="p-8 border-b border-white/5 flex flex-col items-center shrink-0">
           <div className="relative h-24 lg:h-28 w-full max-w-[240px] mb-6 flex justify-center">
-            <img src="/logo_epl_connect_1.png" className="h-full w-full object-contain brightness-0 invert" alt="DSSI Connect" />
+            <img src="/dssi_logo.png" className="h-full w-full object-contain brightness-0 invert" alt="DSSI Connect" />
           </div>
           <div className="text-center space-y-2">
             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-300/50">

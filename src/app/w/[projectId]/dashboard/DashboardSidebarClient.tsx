@@ -112,7 +112,7 @@ export default function DashboardSidebarClient({
         <div className="p-8 border-b border-[#f7f8fa] flex flex-col items-center shrink-0">
           <div className="relative h-24 lg:h-28 w-full max-w-[240px] mb-6">
             <Image 
-              src="/logo_epl_connect_1.png" 
+              src="/dssi_logo.png" 
               alt="DSSI Connect" 
               fill
               className="object-contain"
