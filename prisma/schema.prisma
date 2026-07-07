@@ -1115,6 +1115,8 @@ model boq_projects {
   created_by      Int
   created_at      DateTime @default(now()) @db.Timestamp(0)
   updated_at      DateTime @updatedAt
+  folder_color    String?  @default("#0073ea") @db.VarChar(20)
+  allowed_users   String?  @db.Text
 
   items         boq_items[]
   categories    boq_categories[]

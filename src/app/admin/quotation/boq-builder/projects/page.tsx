@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { Plus, Trash2, Loader2, ArrowLeft, Calendar, User } from "lucide-react";
+import { Settings, Users } from "lucide-react";
 import Link from "next/link";
-import { getBoqProjects, createBoqProject, deleteBoqProject } from "@/app/actions/boq";
+import { getBoqProjects, createBoqProject, deleteBoqProject, getShareableUsers, updateBoqProjectSettings } from "@/app/actions/boq";
 import { useRouter } from "next/navigation";
 
 export default function BoqProjectsPage() {
@@ -14,11 +15,22 @@ export default function BoqProjectsPage() {
   const [formData, setFormData] = useState({ project_name: "", customer_name: "" });
   const [isCreating, setIsCreating] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [users, setUsers] = useState<any[]>([]);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [settingsData, setSettingsData] = useState({ folder_color: "#0073ea", allowed_users: [] as string[] });
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
+
+  const FOLDER_COLORS = ["#0073ea", "#e11d48", "#16a34a", "#ca8a04", "#7c3aed", "#ec4899", "#0891b2"];
 
   const loadProjects = async () => {
     setLoading(true);
-    const data = await getBoqProjects();
+    const [data, usersData] = await Promise.all([
+      getBoqProjects(),
+      getShareableUsers()
+    ]);
     setProjects(data);
+    setUsers(usersData);
     setLoading(false);
   };
 
@@ -55,6 +67,40 @@ export default function BoqProjectsPage() {
       await deleteBoqProject(id);
       loadProjects();
     }
+  };
+
+  const openSettings = (project: any) => {
+    setSelectedProject(project);
+    setSettingsData({
+      folder_color: project.folder_color || "#0073ea",
+      allowed_users: project.allowed_users ? project.allowed_users.split(",").map((id: string) => id.trim()) : []
+    });
+    setIsSettingsOpen(true);
+  };
+
+  const handleSaveSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedProject) return;
+    setIsSavingSettings(true);
+    await updateBoqProjectSettings(
+      selectedProject.id, 
+      settingsData.folder_color, 
+      settingsData.allowed_users.join(",")
+    );
+    setIsSavingSettings(false);
+    setIsSettingsOpen(false);
+    loadProjects();
+  };
+
+  const toggleUserSelection = (userId: string) => {
+    setSettingsData(prev => {
+      const isSelected = prev.allowed_users.includes(userId);
+      if (isSelected) {
+        return { ...prev, allowed_users: prev.allowed_users.filter(id => id !== userId) };
+      } else {
+        return { ...prev, allowed_users: [...prev.allowed_users, userId] };
+      }
+    });
   };
 
   return (
@@ -112,26 +158,46 @@ export default function BoqProjectsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProjects.map((project: any) => (
             <div key={project.id} className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow flex flex-col relative group">
-              <button 
-                onClick={(e) => { e.preventDefault(); handleDelete(project.id); }}
-                className="absolute top-4 right-4 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-1 bg-white/80 rounded-full backdrop-blur z-10"
-                title="Hapus Proyek"
-              >
-                <Trash2 className="w-5 h-5" />
-              </button>
+              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2 z-10">
+                <button 
+                  onClick={(e) => { e.preventDefault(); openSettings(project); }}
+                  className="text-gray-400 hover:text-[#0073ea] p-1.5 bg-white/90 rounded-full backdrop-blur shadow-sm border border-gray-100"
+                  title="Pengaturan Proyek"
+                >
+                  <Settings className="w-4 h-4" />
+                </button>
+                <button 
+                  onClick={(e) => { e.preventDefault(); handleDelete(project.id); }}
+                  className="text-gray-400 hover:text-red-500 p-1.5 bg-white/90 rounded-full backdrop-blur shadow-sm border border-gray-100"
+                  title="Hapus Proyek"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
               
               <Link href={`/admin/quotation/boq-builder/${project.id}`} className="p-6 flex-1 flex flex-col cursor-pointer">
-                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4 border border-blue-100">
+                <div 
+                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-white shadow-sm"
+                  style={{ backgroundColor: project.folder_color || "#0073ea" }}
+                >
                   <span className="font-bold text-xl">{project.project_name.charAt(0).toUpperCase()}</span>
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-1 leading-tight group-hover:text-blue-600 transition-colors">{project.project_name}</h3>
                 
-                {project.customer_name && (
-                  <p className="text-sm font-medium text-gray-600 flex items-center mt-2 bg-gray-50 px-2.5 py-1 rounded-md w-fit">
-                    <User className="w-3.5 h-3.5 mr-1.5 text-gray-400" />
-                    {project.customer_name}
-                  </p>
-                )}
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {project.customer_name && (
+                    <p className="text-sm font-medium text-gray-600 flex items-center bg-gray-50 px-2.5 py-1 rounded-md w-fit">
+                      <User className="w-3.5 h-3.5 mr-1.5 text-gray-400" />
+                      {project.customer_name}
+                    </p>
+                  )}
+                  {project.allowed_users && (
+                    <p className="text-sm font-medium text-[#0073ea] flex items-center bg-blue-50 px-2.5 py-1 rounded-md w-fit">
+                      <Users className="w-3.5 h-3.5 mr-1.5 text-[#0073ea]" />
+                      Shared ({project.allowed_users.split(",").length})
+                    </p>
+                  )}
+                </div>
 
                 <div className="mt-auto pt-6 flex items-center text-xs text-gray-500 font-medium">
                   <Calendar className="w-3.5 h-3.5 mr-1.5 text-gray-400" />
@@ -195,6 +261,91 @@ export default function BoqProjectsPage() {
                 >
                   {isCreating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                   {isCreating ? "Membuat..." : "Buat & Buka Editor"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Settings */}
+      {isSettingsOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <div className="flex items-center gap-3 mb-6">
+              <div 
+                className="w-10 h-10 rounded-lg flex items-center justify-center text-white"
+                style={{ backgroundColor: settingsData.folder_color }}
+              >
+                <Settings className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Pengaturan Proyek</h2>
+                <p className="text-sm text-gray-500 truncate max-w-[250px]">{selectedProject?.project_name}</p>
+              </div>
+            </div>
+            
+            <form onSubmit={handleSaveSettings}>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">Warna Folder</label>
+                  <div className="flex flex-wrap gap-3">
+                    {FOLDER_COLORS.map(color => (
+                      <button
+                        key={color}
+                        type="button"
+                        onClick={() => setSettingsData({ ...settingsData, folder_color: color })}
+                        className={`w-8 h-8 rounded-full shadow-sm transition-transform ${settingsData.folder_color === color ? 'ring-2 ring-offset-2 ring-gray-900 scale-110' : 'hover:scale-110'}`}
+                        style={{ backgroundColor: color }}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Bagikan dengan Engineer Lain</label>
+                  <p className="text-xs text-gray-500 mb-3">Pilih akun yang dapat melihat dan mengedit BoQ ini bersama Anda.</p>
+                  <div className="border border-gray-200 rounded-lg max-h-48 overflow-y-auto bg-gray-50/50">
+                    {users.length === 0 ? (
+                      <div className="p-4 text-center text-sm text-gray-500">Tidak ada user lain.</div>
+                    ) : (
+                      <div className="flex flex-col divide-y divide-gray-100">
+                        {users.map(u => (
+                          <label key={u.id} className="flex items-center gap-3 p-3 hover:bg-white cursor-pointer transition-colors">
+                            <input 
+                              type="checkbox"
+                              className="w-4 h-4 text-[#0073ea] rounded border-gray-300 focus:ring-[#0073ea]"
+                              checked={settingsData.allowed_users.includes(u.id.toString())}
+                              onChange={() => toggleUserSelection(u.id.toString())}
+                            />
+                            <div className="flex flex-col">
+                              <span className="text-sm font-medium text-gray-800">{u.name}</span>
+                              <span className="text-xs text-gray-500">{u.email}</span>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 mt-8">
+                <button 
+                  type="button" 
+                  onClick={() => setIsSettingsOpen(false)} 
+                  disabled={isSavingSettings}
+                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors"
+                >
+                  Batal
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isSavingSettings}
+                  className="px-6 py-2 bg-[#0073ea] hover:bg-[#0060c5] text-white rounded-lg font-medium transition-colors flex items-center disabled:opacity-70"
+                >
+                  {isSavingSettings ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                  Simpan Pengaturan
                 </button>
               </div>
             </form>

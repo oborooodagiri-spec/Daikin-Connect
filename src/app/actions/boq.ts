@@ -2,17 +2,58 @@
 
 import { PrismaClient } from "../../generated/client_v3";
 import { revalidatePath } from "next/cache";
+import { getSession } from "@/app/actions/auth";
 
 const prisma = new PrismaClient();
 
+export async function getShareableUsers() {
+  const session = await getSession();
+  if (!session) return [];
+  const users = await prisma.users.findMany({
+    where: { is_active: true },
+    select: { id: true, name: true, email: true },
+    orderBy: { name: 'asc' }
+  });
+  return users;
+}
+
 export async function getBoqProjects() {
+  const session = await getSession();
+  if (!session) return [];
+  const userId = parseInt(session.userId, 10);
+  const isManagement = session.roles.some((r: string) => 
+    ["admin", "super", "management", "administrator"].includes(r.toLowerCase())
+  );
+
   const data = await prisma.boq_projects.findMany({
     orderBy: { created_at: "desc" },
   });
-  return JSON.parse(JSON.stringify(data));
+
+  if (isManagement) {
+    return JSON.parse(JSON.stringify(data));
+  }
+
+  // Filter for personal and shared
+  const filtered = data.filter(d => {
+    if (d.created_by === userId) return true;
+    if (d.allowed_users) {
+      const allowed = d.allowed_users.split(",").map(id => id.trim());
+      if (allowed.includes(userId.toString())) return true;
+    }
+    return false;
+  });
+
+  return JSON.parse(JSON.stringify(filtered));
 }
 
 export async function getBoqProjectDetails(boqId: string) {
+  const session = await getSession();
+  if (!session) return null;
+  const userId = parseInt(session.userId, 10);
+  const isManagement = session.roles.some((r: string) => 
+    ["admin", "super", "management", "administrator"].includes(r.toLowerCase())
+  );
+
   const data = await prisma.boq_projects.findUnique({
     where: { id: boqId },
     include: {
@@ -29,15 +70,28 @@ export async function getBoqProjectDetails(boqId: string) {
       },
     },
   });
-  return data ? JSON.parse(JSON.stringify(data)) : null;
+
+  if (!data) return null;
+
+  if (!isManagement && data.created_by !== userId) {
+    let hasAccess = false;
+    if (data.allowed_users) {
+      const allowed = data.allowed_users.split(",").map(id => id.trim());
+      if (allowed.includes(userId.toString())) hasAccess = true;
+    }
+    if (!hasAccess) return null; // Unauthorized
+  }
+
+  return JSON.parse(JSON.stringify(data));
 }
 
 export async function createBoqProject(data: {
   project_name: string;
   customer_name?: string;
 }) {
-  const user = await prisma.users.findFirst();
-  const userId = user ? user.id : 1;
+  const session = await getSession();
+  if (!session) throw new Error("Unauthorized");
+  const userId = parseInt(session.userId, 10);
 
   const defaultCategories = [
     { name: "I. PRELIMINARY", order_index: 0 },
@@ -65,6 +119,18 @@ export async function createBoqProject(data: {
     },
   });
   revalidatePath("/admin/quotation/boq-builder");
+  return JSON.parse(JSON.stringify(boq));
+}
+
+export async function updateBoqProjectSettings(boqId: string, folder_color: string, allowed_users: string) {
+  const boq = await prisma.boq_projects.update({
+    where: { id: boqId },
+    data: {
+      folder_color,
+      allowed_users,
+    },
+  });
+  revalidatePath("/admin/quotation/boq-builder/projects");
   return JSON.parse(JSON.stringify(boq));
 }
 
