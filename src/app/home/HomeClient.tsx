@@ -321,7 +321,7 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
                 </>
               )}
 
-              {(profile.isAdmin || profile.roles.some((r: string) => r.toLowerCase().includes("management") || r.toLowerCase().includes("engineer"))) && (
+              {(profile.isAdmin || profile.roles.some((r: string) => r.toLowerCase() === "management" || r.toLowerCase() === "engineer")) && (
                 <div 
                   className="app-item"
                   onClick={() => router.push("/admin/quotation")}

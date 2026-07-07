@@ -21,17 +21,10 @@ export async function getBoqProjects() {
   const session = await getSession();
   if (!session) return [];
   const userId = parseInt(session.userId, 10);
-  const isManagement = session.roles.some((r: string) => 
-    ["admin", "super", "management", "administrator"].includes(r.toLowerCase())
-  );
 
   const data = await prisma.boq_projects.findMany({
     orderBy: { created_at: "desc" },
   });
-
-  if (isManagement) {
-    return JSON.parse(JSON.stringify(data));
-  }
 
   // Filter for personal and shared
   const filtered = data.filter(d => {
@@ -50,9 +43,6 @@ export async function getBoqProjectDetails(boqId: string) {
   const session = await getSession();
   if (!session) return null;
   const userId = parseInt(session.userId, 10);
-  const isManagement = session.roles.some((r: string) => 
-    ["admin", "super", "management", "administrator"].includes(r.toLowerCase())
-  );
 
   const data = await prisma.boq_projects.findUnique({
     where: { id: boqId },
@@ -73,7 +63,7 @@ export async function getBoqProjectDetails(boqId: string) {
 
   if (!data) return null;
 
-  if (!isManagement && data.created_by !== userId) {
+  if (data.created_by !== userId) {
     let hasAccess = false;
     if (data.allowed_users) {
       const allowed = data.allowed_users.split(",").map(id => id.trim());
