@@ -25,13 +25,19 @@ export default function BoqProjectsPage() {
 
   const loadProjects = async () => {
     setLoading(true);
-    const [data, usersData] = await Promise.all([
-      getBoqProjects(),
-      getShareableUsers()
-    ]);
-    setProjects(data);
-    setUsers(usersData);
-    setLoading(false);
+    try {
+      const [data, usersData] = await Promise.all([
+        getBoqProjects(),
+        getShareableUsers()
+      ]);
+      setProjects(data || []);
+      setUsers(usersData || []);
+    } catch (err) {
+      console.error("Failed to load BOQ projects:", err);
+      alert("Terjadi kesalahan saat memuat data BOQ.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

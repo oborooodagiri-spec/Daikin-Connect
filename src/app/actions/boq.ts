@@ -7,36 +7,46 @@ import { getSession } from "@/app/actions/auth";
 const prisma = new PrismaClient();
 
 export async function getShareableUsers() {
-  const session = await getSession();
-  if (!session) return [];
-  const users = await prisma.users.findMany({
-    where: { is_active: true },
-    select: { id: true, name: true, email: true },
-    orderBy: { name: 'asc' }
-  });
-  return users;
+  try {
+    const session = await getSession();
+    if (!session) return [];
+    const users = await prisma.users.findMany({
+      where: { is_active: true },
+      select: { id: true, name: true, email: true },
+      orderBy: { name: 'asc' }
+    });
+    return users;
+  } catch (error) {
+    console.error("Error in getShareableUsers:", error);
+    return [];
+  }
 }
 
 export async function getBoqProjects() {
-  const session = await getSession();
-  if (!session) return [];
-  const userId = parseInt(session.userId, 10);
+  try {
+    const session = await getSession();
+    if (!session) return [];
+    const userId = parseInt(session.userId, 10);
 
-  const data = await prisma.boq_projects.findMany({
-    orderBy: { created_at: "desc" },
-  });
+    const data = await prisma.boq_projects.findMany({
+      orderBy: { created_at: "desc" },
+    });
 
-  // Filter for personal and shared
-  const filtered = data.filter(d => {
-    if (d.created_by === userId) return true;
-    if (d.allowed_users) {
-      const allowed = d.allowed_users.split(",").map(id => id.trim());
-      if (allowed.includes(userId.toString())) return true;
-    }
-    return false;
-  });
+    // Filter for personal and shared
+    const filtered = data.filter(d => {
+      if (d.created_by === userId) return true;
+      if (d.allowed_users) {
+        const allowed = d.allowed_users.split(",").map(id => id.trim());
+        if (allowed.includes(userId.toString())) return true;
+      }
+      return false;
+    });
 
-  return JSON.parse(JSON.stringify(filtered));
+    return JSON.parse(JSON.stringify(filtered));
+  } catch (error) {
+    console.error("Error in getBoqProjects:", error);
+    return [];
+  }
 }
 
 export async function getBoqProjectDetails(boqId: string) {
