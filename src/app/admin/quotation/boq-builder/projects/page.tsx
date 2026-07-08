@@ -15,6 +15,7 @@ export default function BoqProjectsPage() {
   const [formData, setFormData] = useState({ project_name: "", customer_name: "" });
   const [isCreating, setIsCreating] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchUserQuery, setSearchUserQuery] = useState("");
   const [users, setUsers] = useState<any[]>([]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<any>(null);
@@ -48,6 +49,11 @@ export default function BoqProjectsPage() {
     (p) =>
       p.project_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.customer_name?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredUsers = users.filter((u) => 
+    u.name?.toLowerCase().includes(searchUserQuery.toLowerCase()) || 
+    u.email?.toLowerCase().includes(searchUserQuery.toLowerCase())
   );
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -93,6 +99,7 @@ export default function BoqProjectsPage() {
       folder_color: project.folder_color || "#0073ea",
       allowed_users: project.allowed_users ? project.allowed_users.split(",").map((id: string) => id.trim()) : []
     });
+    setSearchUserQuery("");
     setIsSettingsOpen(true);
   };
 
@@ -322,12 +329,23 @@ export default function BoqProjectsPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Bagikan dengan Engineer Lain</label>
                   <p className="text-xs text-gray-500 mb-3">Pilih akun yang dapat melihat dan mengedit BoQ ini bersama Anda.</p>
+                  
+                  <div className="mb-3">
+                    <input 
+                      type="text" 
+                      placeholder="Cari nama atau email..." 
+                      value={searchUserQuery}
+                      onChange={(e) => setSearchUserQuery(e.target.value)}
+                      className="w-full text-sm border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-[#0073ea] outline-none transition-shadow"
+                    />
+                  </div>
+
                   <div className="border border-gray-200 rounded-lg max-h-48 overflow-y-auto bg-gray-50/50">
-                    {users.length === 0 ? (
-                      <div className="p-4 text-center text-sm text-gray-500">Tidak ada user lain.</div>
+                    {filteredUsers.length === 0 ? (
+                      <div className="p-4 text-center text-sm text-gray-500">Tidak ada user ditemukan.</div>
                     ) : (
                       <div className="flex flex-col divide-y divide-gray-100">
-                        {users.map(u => (
+                        {filteredUsers.map(u => (
                           <label key={u.id} className="flex items-center gap-3 p-3 hover:bg-white cursor-pointer transition-colors">
                             <input 
                               type="checkbox"
