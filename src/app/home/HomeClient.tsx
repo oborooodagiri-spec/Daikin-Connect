@@ -404,17 +404,15 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
                <span className="app-label">Tools</span>
             </div>
 
-            {profile.isAdmin && (
-              <div 
-                className="app-item"
-                onClick={() => router.push("/home/knowledge")}
-              >
-                 <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #0073ea 0%, #579bfc 100%)" }}>
-                    <BookOpen size={22} />
-                 </div>
-                 <span className="app-label">Pusat Ilmu</span>
-              </div>
-            )}
+            <div 
+              className="app-item"
+              onClick={() => router.push("/home/knowledge")}
+            >
+               <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #0073ea 0%, #579bfc 100%)" }}>
+                  <BookOpen size={22} />
+               </div>
+               <span className="app-label">Pusat Ilmu</span>
+            </div>
           </div>
         </motion.section>
 
