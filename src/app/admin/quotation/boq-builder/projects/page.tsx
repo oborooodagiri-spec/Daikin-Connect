@@ -53,18 +53,24 @@ export default function BoqProjectsPage() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsCreating(true);
-    const newBoq = await createBoqProject({
-      project_name: formData.project_name,
-      customer_name: formData.customer_name,
-    });
-    setIsCreating(false);
-    setIsAddOpen(false);
-    setFormData({ project_name: "", customer_name: "" });
-    // Go directly to editor
-    if (newBoq && newBoq.id) {
-      router.push(`/admin/quotation/boq-builder/${newBoq.id}`);
-    } else {
-      loadProjects();
+    try {
+      const newBoq = await createBoqProject({
+        project_name: formData.project_name,
+        customer_name: formData.customer_name,
+      });
+      setIsCreating(false);
+      setIsAddOpen(false);
+      setFormData({ project_name: "", customer_name: "" });
+      // Go directly to editor
+      if (newBoq && newBoq.id) {
+        router.push(`/admin/quotation/boq-builder/${newBoq.id}`);
+      } else {
+        loadProjects();
+      }
+    } catch (error) {
+      console.error("Gagal membuat project:", error);
+      setIsCreating(false);
+      alert("Gagal membuat proyek. Silakan coba lagi.");
     }
   };
 
@@ -223,8 +229,7 @@ export default function BoqProjectsPage() {
       {isAddOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
-            <h2 className="text-xl font-bold text-gray-900 mb-1">Proyek BoQ Baru</h2>
-            <p className="text-sm text-gray-500 mb-6">Format standar (Preliminary, Supply, dsb) akan digenerate otomatis.</p>
+            <h2 className="text-xl font-bold text-gray-900 mb-6">Proyek BoQ Baru</h2>
             
             <form onSubmit={handleCreate}>
               <div className="space-y-4">
