@@ -54,10 +54,16 @@ export default function BoqProjectsPage() {
     e.preventDefault();
     setIsCreating(true);
     try {
-      const newBoq = await createBoqProject({
+      const res = await createBoqProject({
         project_name: formData.project_name,
         customer_name: formData.customer_name,
       });
+
+      if (!res.success) {
+        throw new Error(res.error);
+      }
+
+      const newBoq = res.data;
       setIsCreating(false);
       setIsAddOpen(false);
       setFormData({ project_name: "", customer_name: "" });
@@ -67,10 +73,10 @@ export default function BoqProjectsPage() {
       } else {
         loadProjects();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Gagal membuat project:", error);
       setIsCreating(false);
-      alert("Gagal membuat proyek. Silakan coba lagi.");
+      alert(`Gagal membuat proyek. Error: ${error.message || "Unknown"}`);
     }
   };
 

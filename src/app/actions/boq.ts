@@ -89,37 +89,42 @@ export async function createBoqProject(data: {
   project_name: string;
   customer_name?: string;
 }) {
-  const session = await getSession();
-  if (!session) throw new Error("Unauthorized");
-  const userId = parseInt(session.userId, 10);
+  try {
+    const session = await getSession();
+    if (!session) throw new Error("Unauthorized");
+    const userId = parseInt(session.userId, 10);
 
-  const defaultCategories = [
-    { name: "I. PRELIMINARY", order_index: 0 },
-    { name: "II. SUPPLY MAIN EQUIPMENT", order_index: 1 },
-    { name: "III. SCOPE OF WORK INSTALLATION", order_index: 2 },
-    { name: "III.A. Installation Pipe Chiller Water Supply", order_index: 3 },
-    { name: "III.B. Installation Pipe Condenser Water Supply", order_index: 4 },
-    { name: "III.C. Accesories Chiller", order_index: 5 },
-    { name: "III.D. Accesories Primary Chilled Water Pump", order_index: 6 },
-    { name: "III.E. Accesories Secondary Chilled Water Pump", order_index: 7 },
-    { name: "III.F. Accesories Condenser Water Pump", order_index: 8 },
-    { name: "III.G. Accesories Cooling Tower", order_index: 9 },
-    { name: "IV. INSTALLATION ELECTRICAL", order_index: 10 },
-    { name: "V. LIFTING AND CIVIL INSTALLATION", order_index: 11 },
-  ];
+    const defaultCategories = [
+      { name: "I. PRELIMINARY", order_index: 0 },
+      { name: "II. SUPPLY MAIN EQUIPMENT", order_index: 1 },
+      { name: "III. SCOPE OF WORK INSTALLATION", order_index: 2 },
+      { name: "III.A. Installation Pipe Chiller Water Supply", order_index: 3 },
+      { name: "III.B. Installation Pipe Condenser Water Supply", order_index: 4 },
+      { name: "III.C. Accesories Chiller", order_index: 5 },
+      { name: "III.D. Accesories Primary Chilled Water Pump", order_index: 6 },
+      { name: "III.E. Accesories Secondary Chilled Water Pump", order_index: 7 },
+      { name: "III.F. Accesories Condenser Water Pump", order_index: 8 },
+      { name: "III.G. Accesories Cooling Tower", order_index: 9 },
+      { name: "IV. INSTALLATION ELECTRICAL", order_index: 10 },
+      { name: "V. LIFTING AND CIVIL INSTALLATION", order_index: 11 },
+    ];
 
-  const boq = await prisma.boq_projects.create({
-    data: {
-      project_name: data.project_name,
-      customer_name: data.customer_name,
-      created_by: userId,
-      categories: {
-        create: defaultCategories
-      }
-    },
-  });
-  revalidatePath("/admin/quotation/boq-builder");
-  return JSON.parse(JSON.stringify(boq));
+    const boq = await prisma.boq_projects.create({
+      data: {
+        project_name: data.project_name,
+        customer_name: data.customer_name,
+        created_by: userId,
+        categories: {
+          create: defaultCategories
+        }
+      },
+    });
+    revalidatePath("/admin/quotation/boq-builder");
+    return { success: true, data: JSON.parse(JSON.stringify(boq)) };
+  } catch (error: any) {
+    console.error("createBoqProject Error:", error);
+    return { success: false, error: error.message || String(error) };
+  }
 }
 
 export async function updateBoqProjectSettings(boqId: string, folder_color: string, allowed_users: string) {
