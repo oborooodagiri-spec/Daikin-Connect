@@ -58,11 +58,12 @@ export async function getResources() {
     let resources: any[];
 
     if (isInternal) {
-      // Internal staff see all
+      // Internal staff see all EXCEPT videos
       resources = await prisma.$queryRawUnsafe(`
         SELECT kr.*, p.name as project_name 
         FROM knowledge_resources kr
         LEFT JOIN projects p ON kr.project_id = p.id
+        WHERE kr.type != 'VIDEO'
         ORDER BY kr.created_at DESC
       `);
     } else {
@@ -80,8 +81,11 @@ export async function getResources() {
         SELECT kr.*, p.name as project_name 
         FROM knowledge_resources kr
         LEFT JOIN projects p ON kr.project_id = p.id
-        WHERE (kr.allowed_users IS NOT NULL AND FIND_IN_SET(?, kr.allowed_users))
-           OR (kr.allowed_users IS NULL AND (kr.visibility = 'Public' OR kr.project_id IN (${projectIdsStr})))
+        WHERE kr.type != 'VIDEO'
+          AND (
+            (kr.allowed_users IS NOT NULL AND FIND_IN_SET(?, kr.allowed_users))
+            OR (kr.allowed_users IS NULL AND (kr.visibility = 'Public' OR kr.project_id IN (${projectIdsStr})))
+          )
         ORDER BY kr.created_at DESC
       `, userId.toString());
     }
