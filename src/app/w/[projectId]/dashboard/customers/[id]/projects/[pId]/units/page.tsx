@@ -266,7 +266,7 @@ export default function UnitsPage() {
 
       const [logoDaikin, logoEpl] = await Promise.all([
         loadImage("/daikin_logo.png"),
-        loadImage("/logo_epl_connect_1.png")
+        loadImage("/dssi_logo.png")
       ]);
 
       ctx.fillStyle = "#ffffff";
@@ -777,7 +777,7 @@ export default function UnitsPage() {
                      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#003366 1px, transparent 0)', backgroundSize: '15px 15px' }}></div>
                      
                      <div className="flex items-center justify-between relative z-10 w-full pb-2 border-b border-slate-50 px-2">
-                        <img src="/logo_epl_connect_1.png" alt="EPL" className="h-4 object-contain" />
+                        <img src="/dssi_logo.png" alt="DSSI Connect" className="h-4 object-contain" />
                         <img src="/daikin_logo.png" alt="Daikin" className="h-4 object-contain" />
                      </div>
                      
