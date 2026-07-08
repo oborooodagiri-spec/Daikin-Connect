@@ -253,8 +253,9 @@ export default function KnowledgeClient({ isInternal, isAdmin, initialVideos }: 
               <div className="relative w-full pt-[56.25%] bg-black rounded-xl overflow-hidden shadow-2xl">
                 <iframe 
                   className="absolute inset-0 w-full h-full"
-                  src={`https://www.youtube.com/embed/${playingVideo.tags || extractYoutubeId(playingVideo.href || "")}?autoplay=1&rel=0`}
+                  src={`https://www.youtube-nocookie.com/embed/${playingVideo.tags || extractYoutubeId(playingVideo.href || "")}?autoplay=1&rel=0`}
                   title={playingVideo.title}
+                  referrerPolicy="strict-origin-when-cross-origin"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                   allowFullScreen
                 ></iframe>
