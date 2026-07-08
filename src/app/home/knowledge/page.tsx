@@ -14,12 +14,7 @@ export default async function KnowledgePage() {
     redirect("/");
   }
 
-  // Restrict to Internal users only for now
-  if (!session.isInternal) {
-    redirect("/home");
-  }
-
   return (
-    <KnowledgeClient />
+    <KnowledgeClient isInternal={session.isInternal} />
   );
 }
