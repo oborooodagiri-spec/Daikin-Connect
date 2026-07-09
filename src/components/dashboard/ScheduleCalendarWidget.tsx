@@ -181,9 +181,11 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
                 <div className="relative z-10 flex justify-between items-start">
                   <div>
                     <span className="px-2 py-0.5 bg-white/20 text-white text-[9px] font-black uppercase tracking-widest rounded-md border border-white/10 mb-2 inline-block">
-                      {selectedSchedule.type} • {selectedSchedule.status}
+                      {selectedSchedule.title?.includes('(Auto-Generated)') ? 'ATTENDANCE' : selectedSchedule.type} • {selectedSchedule.status}
                     </span>
-                    <h3 className="text-xl font-black tracking-tight leading-tight uppercase italic">{selectedSchedule.title}</h3>
+                    <h3 className="text-xl font-black tracking-tight leading-tight uppercase italic">
+                      {selectedSchedule.title?.includes('(Auto-Generated)') ? `ATTENDANCE: ${selectedSchedule.assigneeName}` : selectedSchedule.title}
+                    </h3>
                   </div>
                   <button onClick={() => setSelectedSchedule(null)} className="p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-all">
                     <X size={18} />
@@ -220,7 +222,7 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
                   </div>
                 </div>
 
-                {selectedSchedule.unitTag && (
+                {selectedSchedule.unitTag && !selectedSchedule.title?.includes('(Auto-Generated)') && (
                   <div className="space-y-1">
                     <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Assigned Unit</p>
                     <div className="flex items-center gap-2 text-slate-700 bg-blue-50 p-3 rounded-2xl border border-blue-100">
@@ -234,13 +236,27 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
                   </div>
                 )}
 
+                {selectedSchedule.title?.includes('(Auto-Generated)') && (
+                  <div className="space-y-1">
+                    <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Attendance Logs</p>
+                    <div className="flex gap-2 text-slate-700 bg-emerald-50 p-3 rounded-2xl border border-emerald-100">
+                      <Info size={16} className="text-emerald-500 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-600 whitespace-pre-wrap">{selectedSchedule.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="pt-4 flex gap-3">
-                  <button 
-                    onClick={() => handleOpenForm(selectedSchedule)}
-                    className="flex-1 py-3 bg-[#003366] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
-                  >
-                    <FileText size={14} /> Open Input Form
-                  </button>
+                  {!selectedSchedule.title?.includes('(Auto-Generated)') && (
+                    <button 
+                      onClick={() => handleOpenForm(selectedSchedule)}
+                      className="flex-1 py-3 bg-[#003366] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
+                    >
+                      <FileText size={14} /> Open Input Form
+                    </button>
+                  )}
                   <button 
                     onClick={() => setSelectedSchedule(null)}
                     className="px-6 py-3 bg-slate-100 text-slate-500 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-slate-200 transition-all"
@@ -400,7 +416,9 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
                                                 <IconComp size={10} />
                                             </div>
                                             <div>
-                                                <h4 className="text-xs font-black text-[#003366] line-clamp-1 truncate max-w-[120px] uppercase tracking-tight leading-tight">{s.title}</h4>
+                                                <h4 className="text-xs font-black text-[#003366] line-clamp-1 truncate max-w-[120px] uppercase tracking-tight leading-tight">
+                                                  {s.title?.includes('(Auto-Generated)') ? `ATTENDANCE: ${s.assigneeName}` : s.title}
+                                                </h4>
                                                 <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">{s.projectName}</p>
                                             </div>
                                         </div>
