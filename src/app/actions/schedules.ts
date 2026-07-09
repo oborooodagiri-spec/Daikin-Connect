@@ -382,9 +382,40 @@ export async function getCalendarSchedules(month: number, year: number, projectI
       orderBy: { start_at: 'asc' }
     });
 
+    // Fetch matching vendor_attendance to fix incorrect UTC string conversion in UI
+    const startDate = new Date(year, month, 1);
+    const endDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
+    
+    let attWhereClause: any = { check_in_time: { gte: startDate, lte: endDate } };
+    if (whereClause.project_id) attWhereClause.project_id = whereClause.project_id;
+    
+    const attendances = await (prisma as any).vendor_attendance.findMany({
+      where: attWhereClause
+    });
+
+    const enrichedSchedules = schedules.map(s => {
+      if (s.type === 'DailyLog' && s.assignee_id) {
+        // Find matching attendance by exact same UTC date string
+        const sDateStr = s.start_at.toISOString().split('T')[0];
+        const match = attendances.find((a: any) => 
+          a.user_id === s.assignee_id &&
+          a.check_in_time.toISOString().split('T')[0] === sDateStr
+        );
+        if (match) {
+          return {
+            ...s,
+            true_check_in: match.check_in_time,
+            true_check_out: match.check_out_time,
+            true_check_out_notes: match.check_out_notes
+          };
+        }
+      }
+      return s;
+    });
+
     return serializePrisma({
       success: true,
-      data: schedules
+      data: enrichedSchedules
     });
   } catch (error) {
     console.error("Fetch calendar schedules error:", error);

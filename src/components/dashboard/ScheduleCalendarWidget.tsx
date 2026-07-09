@@ -253,20 +253,30 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
                   let clockIn = format(safeParseDate(selectedSchedule.start_at), "HH:mm");
                   let clockOut = '--:--';
                   let notes = '';
-                  const desc = selectedSchedule.description || '';
-                  const outMatch = desc.match(/\[Auto OUT\].*?at\s+([0-9:]+\s+[AMPM]+)(?:\s+- Notes: (.*))?/);
                   
-                  if (outMatch) {
-                    const utcTimeStr = outMatch[1].trim();
-                    if (outMatch[2]) notes = outMatch[2].trim();
-                    const [time, period] = utcTimeStr.split(' ');
-                    let [hours, minutes, seconds] = time.split(':').map(Number);
-                    if (period === 'PM' && hours !== 12) hours += 12;
-                    if (period === 'AM' && hours === 12) hours = 0;
-                    
-                    const d = new Date();
-                    d.setUTCHours(hours, minutes, seconds || 0);
-                    clockOut = format(d, "HH:mm");
+                  if (selectedSchedule.true_check_in) {
+                    clockIn = format(safeParseDate(selectedSchedule.true_check_in), "HH:mm");
+                  }
+
+                  if (selectedSchedule.true_check_out) {
+                    clockOut = format(safeParseDate(selectedSchedule.true_check_out), "HH:mm");
+                    notes = selectedSchedule.true_check_out_notes || '';
+                  } else {
+                    // Fallback to parsing description if backend fails to fetch
+                    const desc = selectedSchedule.description || '';
+                    const outMatch = desc.match(/\[Auto OUT\].*?at\s+([0-9:]+\s+[AMPM]+)(?:\s+- Notes: (.*))?/);
+                    if (outMatch) {
+                      const utcTimeStr = outMatch[1].trim();
+                      if (outMatch[2]) notes = outMatch[2].trim();
+                      const [time, period] = utcTimeStr.split(' ');
+                      let [hours, minutes, seconds] = time.split(':').map(Number);
+                      if (period === 'PM' && hours !== 12) hours += 12;
+                      if (period === 'AM' && hours === 12) hours = 0;
+                      
+                      const d = new Date();
+                      d.setUTCHours(hours, minutes, seconds || 0);
+                      clockOut = format(d, "HH:mm");
+                    }
                   }
 
                   return (
