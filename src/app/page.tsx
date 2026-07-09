@@ -363,7 +363,7 @@ export default function LoginPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <img src="/daikin_logo.png" className="h-6 lg:h-8 mx-auto mb-6 opacity-60 invert brightness-200" alt="Daikin" />
+            <img src="/daikin_logo.png" className="h-6 lg:h-8 mx-auto mb-6" alt="Daikin" />
             <h2 className="text-3xl lg:text-6xl font-black text-white mb-4 tracking-tight">
               A Century of Engineering
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">Excellence</span>
@@ -538,7 +538,7 @@ export default function LoginPage() {
       {/* ═══════════════════════════════════════════════════════════ */}
       <footer className="lg:snap-start w-full py-10 lg:py-16 bg-slate-950 text-center">
         <div className="max-w-4xl mx-auto px-6">
-          <img src="/daikin_logo.png" className="h-5 mx-auto mb-4 opacity-40 invert brightness-200" alt="Daikin" />
+          <img src="/daikin_logo.png" className="h-5 mx-auto mb-4" alt="Daikin" />
           <p className="text-xs text-slate-500 font-medium mb-2">
             DASI Service & Solutions Indonesia (DSSI) · Expanded Product Line (EPL)
           </p>
