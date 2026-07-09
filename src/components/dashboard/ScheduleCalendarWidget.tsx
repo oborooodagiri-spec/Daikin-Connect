@@ -68,7 +68,18 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
       const year = currentMonth.getFullYear();
       const res = await getCalendarSchedules(month, year, projectId);
       if (res && 'success' in res && res.success) {
-        setSchedules(res.data);
+        const mapped = res.data.map((s: any) => ({
+          ...s,
+          assigneeName: s.users?.name,
+          projectName: s.projects?.name,
+          customerName: s.projects?.customers?.name,
+          unitTag: s.units?.tag_number,
+          unitRoom: s.units?.room_tenant,
+          unitArea: s.units?.area,
+          unitModel: s.units?.model,
+          unitToken: s.units?.qr_code_token
+        }));
+        setSchedules(mapped);
       }
     } catch (e) {
       console.error(e);
@@ -195,13 +206,15 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
               
               <div className="p-6 space-y-6 text-left">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Time & Date</p>
-                    <div className="flex items-center gap-2 text-slate-700 font-bold text-xs uppercase">
-                      <Clock size={14} className="text-[#00a1e4]" />
-                      <span>{format(safeParseDate(selectedSchedule.start_at), "EEEE, dd MMM HH:mm")}</span>
+                  {!selectedSchedule.title?.includes('(Auto-Generated)') && (
+                    <div className="space-y-1">
+                      <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Time & Date</p>
+                      <div className="flex items-center gap-2 text-slate-700 font-bold text-xs uppercase">
+                        <Clock size={14} className="text-[#00a1e4]" />
+                        <span>{format(safeParseDate(selectedSchedule.start_at), "EEEE, dd MMM HH:mm")}</span>
+                      </div>
                     </div>
-                  </div>
+                  )}
                   <div className="space-y-1">
                     <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Assignee</p>
                     <div className="flex items-center gap-2 text-slate-700 font-bold text-xs uppercase">
