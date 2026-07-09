@@ -24,20 +24,24 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "DSSI Connect - Layanan Chiller Daikin Indonesia",
-  description: "Platform resmi operasional dan pelayanan Daikin Chiller Indonesia. Kami menyediakan layanan maintenance chiller, perbaikan, instalasi, dan value engineering terbaik untuk sistem tata udara (HVAC) skala industri dan komersial.",
-  keywords: ["Daikin Indonesia", "Daikin Chiller", "Service Chiller", "Maintenance Chiller", "Value Engineering Services", "DSSI Connect", "HVAC Indonesia"],
+  title: "Daikin Service Indonesia - DSSI Connect | Perawatan & Perbaikan Chiller",
+  description: "DSSI Connect adalah platform layanan resmi dari Daikin Applied Solutions Indonesia. Pusat Service Daikin, perbaikan chiller, pemeliharaan (maintenance), instalasi HVAC, dan Value Engineering Services terpercaya di Indonesia.",
+  keywords: ["Daikin Service Indonesia", "Service Daikin", "DSSI", "Daikin Applied Solutions Indonesia", "Daikin Indonesia", "Daikin Chiller", "Service Chiller", "Maintenance Chiller", "Value Engineering Services", "DSSI Connect", "HVAC Indonesia"],
   authors: [{ name: "Daikin Applied Solutions Indonesia" }],
+  alternates: {
+    canonical: "https://dconnect.id",
+  },
   openGraph: {
-    title: "DSSI Connect - Layanan Chiller Daikin Indonesia",
-    description: "Platform resmi pelayanan operasional dan pemeliharaan chiller dari Daikin Applied Solutions Indonesia.",
+    title: "Daikin Service Indonesia - DSSI Connect | Perawatan & Perbaikan Chiller",
+    description: "Platform resmi pelayanan operasional, perbaikan, dan pemeliharaan chiller dari Daikin Applied Solutions Indonesia (DSSI).",
     url: "https://dconnect.id",
-    siteName: "DSSI Connect",
+    siteName: "DSSI Connect - Daikin Service Indonesia",
     images: [
       {
         url: "https://dconnect.id/favicon.png",
         width: 800,
         height: 600,
+        alt: "Logo Daikin Applied Solutions Indonesia",
       },
     ],
     locale: "id_ID",
@@ -67,7 +71,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="id">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
@@ -78,24 +82,30 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "HVACBusiness",
-              "name": "Daikin Applied Solutions Indonesia (DSSI)",
+              "name": "Daikin Applied Solutions Indonesia (DSSI) - Service Chiller",
               "url": "https://dconnect.id",
               "logo": "https://dconnect.id/favicon.png",
               "image": "https://dconnect.id/favicon.png",
-              "description": "Layanan operasional, perawatan (maintenance), dan perbaikan Chiller komersial maupun industri dari Daikin Indonesia.",
+              "description": "Pusat Layanan resmi Service Daikin Indonesia. Kami menangani operasional, perawatan (maintenance), perbaikan Chiller komersial maupun industri.",
               "telephone": "+62-21-29337000",
               "address": {
                 "@type": "PostalAddress",
-                "addressLocality": "Jakarta",
+                "streetAddress": "Jl. Opak No.33, Darmo, Wonokromo",
+                "addressLocality": "Surabaya",
+                "postalCode": "60241",
                 "addressCountry": "ID"
               },
               "areaServed": "Indonesia",
+              "sameAs": [
+                "https://www.daikinapplied.com/",
+                "https://www.daikin.co.id/"
+              ],
               "makesOffer": [
                 {
                   "@type": "Offer",
                   "itemOffered": {
                     "@type": "Service",
-                    "name": "Service Chiller"
+                    "name": "Service Daikin Chiller"
                   }
                 },
                 {
@@ -103,6 +113,13 @@ export default function RootLayout({
                   "itemOffered": {
                     "@type": "Service",
                     "name": "Maintenance Chiller"
+                  }
+                },
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Value Engineering Services"
                   }
                 }
               ]

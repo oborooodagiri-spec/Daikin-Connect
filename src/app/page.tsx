@@ -142,9 +142,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#ffffff] flex flex-col text-[#323338] font-sans selection:bg-blue-100 selection:text-blue-600 relative overflow-x-hidden
+    <main className="min-h-screen bg-[#ffffff] flex flex-col text-[#323338] font-sans selection:bg-blue-100 selection:text-blue-600 relative overflow-x-hidden
       lg:snap-y lg:snap-mandatory lg:h-screen lg:overflow-y-auto" style={{ scrollBehavior: "smooth" }}>
       
+      {/* SEO Optimized H1 - Visually hidden but readable by search engines */}
+      <h1 className="sr-only">
+        Daikin Service Indonesia - Pusat Perbaikan, Instalasi, & Maintenance Chiller (DSSI Connect)
+      </h1>
+
       {/* ═══════════════════════════════════════════════════════════ */}
       {/* SEKSI 0: HERO LOGIN                                       */}
       {/* ═══════════════════════════════════════════════════════════ */}
@@ -591,6 +596,6 @@ export default function LoginPage() {
           }
         }}
       />
-    </div>
+    </main>
   );
 }
