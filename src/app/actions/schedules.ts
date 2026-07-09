@@ -383,9 +383,6 @@ export async function getCalendarSchedules(month: number, year: number, projectI
     });
 
     // Fetch matching vendor_attendance to fix incorrect UTC string conversion in UI
-    const startDate = new Date(year, month, 1);
-    const endDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
-    
     let attWhereClause: any = { check_in_time: { gte: startDate, lte: endDate } };
     if (whereClause.project_id) attWhereClause.project_id = whereClause.project_id;
     
