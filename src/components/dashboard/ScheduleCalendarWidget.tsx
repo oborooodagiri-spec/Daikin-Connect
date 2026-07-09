@@ -249,17 +249,49 @@ export default function ScheduleCalendarWidget({ projectId, isInternal = true }:
                   </div>
                 )}
 
-                {selectedSchedule.title?.includes('(Auto-Generated)') && (
-                  <div className="space-y-1">
-                    <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Attendance Logs</p>
-                    <div className="flex gap-2 text-slate-700 bg-emerald-50 p-3 rounded-2xl border border-emerald-100">
-                      <Info size={16} className="text-emerald-500 shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-[10px] font-bold text-slate-600 whitespace-pre-wrap">{selectedSchedule.description}</p>
+                {selectedSchedule.title?.includes('(Auto-Generated)') && (() => {
+                  let clockIn = format(safeParseDate(selectedSchedule.start_at), "HH:mm");
+                  let clockOut = '--:--';
+                  let notes = '';
+                  const desc = selectedSchedule.description || '';
+                  const outMatch = desc.match(/\[Auto OUT\].*?at\s+([0-9:]+\s+[AMPM]+)(?:\s+- Notes: (.*))?/);
+                  
+                  if (outMatch) {
+                    const utcTimeStr = outMatch[1].trim();
+                    if (outMatch[2]) notes = outMatch[2].trim();
+                    const [time, period] = utcTimeStr.split(' ');
+                    let [hours, minutes, seconds] = time.split(':').map(Number);
+                    if (period === 'PM' && hours !== 12) hours += 12;
+                    if (period === 'AM' && hours === 12) hours = 0;
+                    
+                    const d = new Date();
+                    d.setUTCHours(hours, minutes, seconds || 0);
+                    clockOut = format(d, "HH:mm");
+                  }
+
+                  return (
+                    <div className="space-y-1">
+                      <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Attendance Logs</p>
+                      <div className="flex gap-2 text-slate-700 bg-emerald-50 p-4 rounded-2xl border border-emerald-100 flex-col">
+                        <div className="flex justify-between items-center w-full">
+                          <div className="flex flex-col items-start gap-1">
+                            <span className="text-[9px] font-black uppercase tracking-widest text-emerald-600">Clock In</span>
+                            <span className="text-xl font-black tracking-tight text-emerald-700">{clockIn}</span>
+                          </div>
+                          <div className="flex flex-col items-end gap-1">
+                            <span className="text-[9px] font-black uppercase tracking-widest text-emerald-600">Clock Out</span>
+                            <span className="text-xl font-black tracking-tight text-emerald-700">{clockOut}</span>
+                          </div>
+                        </div>
+                        {notes && (
+                          <div className="mt-2 pt-2 border-t border-emerald-200/50">
+                            <p className="text-[10px] font-bold text-emerald-800">{notes}</p>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
 
                 <div className="pt-4 flex gap-3">
                   {!selectedSchedule.title?.includes('(Auto-Generated)') && (
