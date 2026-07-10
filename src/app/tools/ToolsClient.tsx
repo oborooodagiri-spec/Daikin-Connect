@@ -15,6 +15,7 @@ import {
   Ruler,
   X,
   Info,
+  Stethoscope,
 } from "lucide-react";
 import StaticLogo from "@/components/ui/StaticLogo";
 
@@ -99,6 +100,15 @@ const TOOLS: Tool[] = [
     icon: <Gauge size={24} />,
     gradient: "linear-gradient(135deg, #a25ddc 0%, #c084fc 100%)",
     href: "/tools/electrical",
+    active: true,
+  },
+  {
+    id: "error-codes",
+    name: "Error Diagnosis",
+    description: "Self-Diagnosis kode error Daikin — cari penyebab & solusi instan",
+    icon: <Stethoscope size={24} />,
+    gradient: "linear-gradient(135deg, #e44258 0%, #ff6b81 100%)",
+    href: "/tools/error-codes",
     active: true,
   },
 ];
