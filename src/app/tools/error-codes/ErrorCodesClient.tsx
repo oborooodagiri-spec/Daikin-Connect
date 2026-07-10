@@ -1,434 +1,270 @@
 "use client";
 
-import React, { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Search, X, ArrowLeft, AlertTriangle, AlertCircle, Info, ChevronDown, ChevronUp,
-  Cpu, Fan, Network, Layers, Stethoscope, Wifi, Zap, Thermometer, Shield, BookOpen
-} from "lucide-react";
-import { ERROR_CODES, REMOTE_GUIDES, type ErrorCode, type UnitCategory, type ModelType, type ErrorSeverity } from "@/data/errorCodes";
-
-const CATEGORY_META: Record<UnitCategory, { label: string; icon: React.ReactNode; color: string; bg: string }> = {
-  indoor:  { label: "Indoor Unit",  icon: <Fan size={16} />,     color: "#0073ea", bg: "rgba(0,115,234,0.08)" },
-  outdoor: { label: "Outdoor Unit", icon: <Cpu size={16} />,     color: "#00c875", bg: "rgba(0,200,117,0.08)" },
-  system:  { label: "System",       icon: <Network size={16} />, color: "#fdab3d", bg: "rgba(253,171,61,0.08)" },
-  others:  { label: "Others",       icon: <Layers size={16} />,  color: "#a25ddc", bg: "rgba(162,93,220,0.08)" },
-};
-
-const SEVERITY_META: Record<ErrorSeverity, { label: string; icon: React.ReactNode; color: string; bg: string; border: string }> = {
-  critical: { label: "Critical",  icon: <AlertTriangle size={14} />, color: "#e44258", bg: "rgba(228,66,88,0.08)",  border: "rgba(228,66,88,0.25)" },
-  warning:  { label: "Warning",   icon: <AlertCircle size={14} />,  color: "#fdab3d", bg: "rgba(253,171,61,0.08)", border: "rgba(253,171,61,0.25)" },
-  info:     { label: "Info",      icon: <Info size={14} />,         color: "#579bfc", bg: "rgba(87,155,252,0.08)", border: "rgba(87,155,252,0.25)" },
-};
-
-const MODEL_LIST: ModelType[] = ["RA", "SkyAir", "VRV", "Package", "HRV", "Chiller"];
-
-const PAGE_SIZE = 20;
+import { ArrowLeft, Terminal, AlertTriangle, ShieldCheck, Power, Search, Info } from "lucide-react";
+import { ERROR_CODES, type ErrorCode } from "@/data/errorCodes";
 
 export default function ErrorCodesClient() {
   const router = useRouter();
-  const [query, setQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState<UnitCategory | "all">("all");
-  const [activeModel, setActiveModel] = useState<ModelType | "all">("all");
-  const [activeSeverity, setActiveSeverity] = useState<ErrorSeverity | "all">("all");
-  const [expandedCode, setExpandedCode] = useState<string | null>(null);
-  const [showGuide, setShowGuide] = useState(false);
-  const [page, setPage] = useState(1);
-  const searchRef = useRef<HTMLInputElement>(null);
+  const [input, setInput] = useState("");
+  const [activeCode, setActiveCode] = useState<ErrorCode | null>(null);
+  const [status, setStatus] = useState<"idle" | "analyzing" | "found" | "not_found">("idle");
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => { searchRef.current?.focus(); }, []);
-  useEffect(() => { setPage(1); }, [query, activeCategory, activeModel, activeSeverity]);
-
-  const filtered = useMemo(() => {
-    let results = ERROR_CODES;
-    if (activeCategory !== "all") results = results.filter(e => e.category === activeCategory);
-    if (activeModel !== "all") results = results.filter(e => e.models.includes(activeModel));
-    if (activeSeverity !== "all") results = results.filter(e => e.severity === activeSeverity);
-    if (query.trim()) {
-      const q = query.trim().toLowerCase();
-      results = results.filter(e =>
-        e.code.toLowerCase().includes(q) ||
-        e.contents.toLowerCase().includes(q) ||
-        e.causes.some(c => c.toLowerCase().includes(q))
-      );
-    }
-    return results;
-  }, [query, activeCategory, activeModel, activeSeverity]);
-
-  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
-  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-
-  const stats = useMemo(() => ({
-    total: ERROR_CODES.length,
-    indoor: ERROR_CODES.filter(e => e.category === "indoor").length,
-    outdoor: ERROR_CODES.filter(e => e.category === "outdoor").length,
-    system: ERROR_CODES.filter(e => e.category === "system").length,
-    others: ERROR_CODES.filter(e => e.category === "others").length,
-    critical: ERROR_CODES.filter(e => e.severity === "critical").length,
-  }), []);
-
-  const handleToggle = useCallback((code: string) => {
-    setExpandedCode(prev => prev === code ? null : code);
+  // Auto-focus
+  useEffect(() => {
+    inputRef.current?.focus();
+    const handleClick = () => {
+      // Re-focus on input if clicked outside text
+      if (document.activeElement?.tagName !== 'INPUT' && window.getSelection()?.toString() === '') {
+        inputRef.current?.focus();
+      }
+    };
+    window.addEventListener('click', handleClick);
+    return () => window.removeEventListener('click', handleClick);
   }, []);
 
+  // Handle typing and auto-search
+  useEffect(() => {
+    const val = input.toUpperCase().trim();
+    if (val.length === 0) {
+      setStatus("idle");
+      setActiveCode(null);
+      return;
+    }
+
+    if (val.length >= 2) {
+      setStatus("analyzing");
+      
+      const timeout = setTimeout(() => {
+        const found = ERROR_CODES.find(e => e.code === val);
+        if (found) {
+          setActiveCode(found);
+          setStatus("found");
+        } else {
+          setActiveCode(null);
+          setStatus("not_found");
+        }
+      }, 800); // Simulate network/decoding delay
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [input]);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") {
+      setInput("");
+      setStatus("idle");
+      setActiveCode(null);
+    }
+  };
+
+  const getSeverityColor = (sev?: string) => {
+    if (sev === "critical") return "#ff3333";
+    if (sev === "warning") return "#ffaa00";
+    if (sev === "info") return "#00ccff";
+    return "#33ff33";
+  };
+
   return (
-    <div className="min-h-screen" style={{ background: "linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%)", fontFamily: "'Inter', -apple-system, sans-serif" }}>
-      {/* ═══ HEADER ═══ */}
-      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-slate-200/60" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
-        <div className="max-w-5xl mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={() => router.push("/tools")} className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 transition-all" title="Back to Tools">
-              <ArrowLeft size={18} className="text-slate-500" />
-            </button>
-            <div className="h-6 w-px bg-slate-200" />
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white" style={{ background: "linear-gradient(135deg, #e44258 0%, #ff6b81 100%)", boxShadow: "0 4px 12px rgba(228,66,88,0.3)" }}>
-                <Stethoscope size={18} />
-              </div>
-              <div>
-                <h1 className="text-sm font-black text-[#323338] tracking-tight leading-none">Error Code Diagnosis</h1>
-                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Self-Diagnosis Tool</p>
-              </div>
-            </div>
-          </div>
-          <button onClick={() => setShowGuide(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-50 text-blue-600 text-xs font-bold hover:bg-blue-100 transition-all">
-            <BookOpen size={14} /> Remote Guide
-          </button>
+    <div className="min-h-screen bg-slate-950 text-emerald-400 font-mono relative overflow-hidden flex flex-col"
+         style={{ backgroundImage: "radial-gradient(circle at center, rgba(16,36,28,0.8) 0%, rgba(2,6,23,1) 100%)" }}>
+      
+      {/* Scanline Effect Overlay */}
+      <div className="pointer-events-none absolute inset-0 z-50 opacity-10"
+           style={{ background: "linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06))", backgroundSize: "100% 4px, 3px 100%" }} />
+
+      {/* Header Bar */}
+      <header className="w-full p-4 md:p-6 flex items-center justify-between z-10 opacity-70">
+        <button onClick={() => router.push("/tools")} className="flex items-center gap-2 hover:text-emerald-300 transition-colors">
+          <ArrowLeft size={16} />
+          <span className="text-xs tracking-widest uppercase">Batal & Kembali</span>
+        </button>
+        <div className="flex items-center gap-2 text-xs opacity-50 tracking-widest uppercase">
+          <Terminal size={14} /> Daikin Diagnostic Terminal v2.1
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-10">
-        {/* ═══ HERO SEARCH ═══ */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-8">
-          <h2 className="text-2xl md:text-4xl font-black text-[#323338] tracking-tight leading-tight mb-2">
-            Daikin Self-<span className="bg-gradient-to-r from-[#e44258] to-[#ff6b81] bg-clip-text text-transparent">Diagnosis</span>
-          </h2>
-          <p className="text-sm text-slate-400 font-medium mb-6">Masukkan kode error atau deskripsi masalah untuk menemukan penyebab &amp; solusinya secara instan.</p>
-
-          <div className="relative">
-            <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+      {/* Main Content Centered */}
+      <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 z-10 w-full max-w-4xl mx-auto">
+        
+        {/* The Input Section */}
+        <motion.div 
+          layout
+          className="w-full flex flex-col items-center"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <div className="text-xs md:text-sm tracking-[0.3em] uppercase text-emerald-500/70 mb-4 animate-pulse">
+            Masukkan Kode Error
+          </div>
+          
+          <div className="relative flex items-center justify-center">
             <input
-              ref={searchRef}
+              ref={inputRef}
               type="text"
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              placeholder='Ketik kode error (cth: "U4", "E5") atau deskripsi (cth: "compressor")...'
-              className="w-full h-14 pl-12 pr-12 bg-white border-2 border-slate-200 rounded-2xl text-base font-medium text-[#323338] placeholder:text-slate-300 focus:border-[#e44258] focus:ring-4 focus:ring-red-500/10 outline-none transition-all"
-              style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.04)" }}
+              value={input}
+              onChange={(e) => setInput(e.target.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 2))}
+              onKeyDown={handleKeyDown}
+              spellCheck={false}
+              autoComplete="off"
+              className="bg-transparent border-none text-center outline-none text-6xl md:text-8xl lg:text-[120px] font-black uppercase text-white tracking-widest w-[300px] md:w-[400px] z-20 placeholder-slate-800"
+              placeholder="--"
+              style={{ textShadow: "0 0 20px rgba(255,255,255,0.3)" }}
             />
-            {query && (
-              <button onClick={() => setQuery("")} className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 rounded-lg hover:bg-slate-100 transition-all">
-                <X size={16} className="text-slate-400" />
-              </button>
+            {/* Blinking cursor effect fake when empty */}
+            {input.length === 0 && (
+              <motion.div 
+                animate={{ opacity: [1, 0, 1] }} 
+                transition={{ repeat: Infinity, duration: 1 }}
+                className="absolute w-12 md:w-20 h-1 md:h-2 bg-emerald-500/50 bottom-2 md:bottom-6"
+              />
             )}
           </div>
         </motion.div>
 
-        {/* ═══ STATS ═══ */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-6">
-          {[
-            { label: "Total Codes", value: stats.total, color: "#323338", bg: "#f1f3f5" },
-            { label: "Indoor", value: stats.indoor, ...CATEGORY_META.indoor },
-            { label: "Outdoor", value: stats.outdoor, ...CATEGORY_META.outdoor },
-            { label: "System", value: stats.system, ...CATEGORY_META.system },
-            { label: "Others", value: stats.others, ...CATEGORY_META.others },
-            { label: "Critical", value: stats.critical, color: "#e44258", bg: "rgba(228,66,88,0.08)" },
-          ].map((s, i) => (
-            <div key={i} className="rounded-xl p-3 text-center" style={{ background: s.bg }}>
-              <p className="text-2xl font-black" style={{ color: s.color }}>{s.value}</p>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{s.label}</p>
-            </div>
-          ))}
-        </motion.div>
-
-        {/* ═══ FILTERS ═══ */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }} className="flex flex-wrap gap-2 mb-4">
-          <div className="flex items-center gap-1 mr-2">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Category</span>
-          </div>
-          {(["all", "indoor", "outdoor", "system", "others"] as const).map(cat => (
-            <button key={cat} onClick={() => setActiveCategory(cat)}
-              className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all"
-              style={{
-                background: activeCategory === cat ? (cat === "all" ? "#323338" : CATEGORY_META[cat].color) : "white",
-                color: activeCategory === cat ? "white" : "#676879",
-                border: `1px solid ${activeCategory === cat ? "transparent" : "#e6e9ef"}`,
-                boxShadow: activeCategory === cat ? `0 2px 8px ${cat === "all" ? "rgba(0,0,0,0.15)" : CATEGORY_META[cat].color + "40"}` : "none"
-              }}>
-              {cat === "all" ? "All" : CATEGORY_META[cat].label}
-            </button>
-          ))}
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="flex flex-wrap gap-2 mb-4">
-          <div className="flex items-center gap-1 mr-2">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Model</span>
-          </div>
-          {(["all", ...MODEL_LIST] as const).map(model => (
-            <button key={model} onClick={() => setActiveModel(model as ModelType | "all")}
-              className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all"
-              style={{
-                background: activeModel === model ? "#0073ea" : "white",
-                color: activeModel === model ? "white" : "#676879",
-                border: `1px solid ${activeModel === model ? "transparent" : "#e6e9ef"}`,
-                boxShadow: activeModel === model ? "0 2px 8px rgba(0,115,234,0.3)" : "none"
-              }}>
-              {model === "all" ? "All Models" : model}
-            </button>
-          ))}
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }} className="flex flex-wrap gap-2 mb-6">
-          <div className="flex items-center gap-1 mr-2">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Severity</span>
-          </div>
-          {(["all", "critical", "warning", "info"] as const).map(sev => (
-            <button key={sev} onClick={() => setActiveSeverity(sev as ErrorSeverity | "all")}
-              className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1"
-              style={{
-                background: activeSeverity === sev ? (sev === "all" ? "#323338" : SEVERITY_META[sev].color) : "white",
-                color: activeSeverity === sev ? "white" : "#676879",
-                border: `1px solid ${activeSeverity === sev ? "transparent" : "#e6e9ef"}`,
-                boxShadow: activeSeverity === sev ? `0 2px 8px ${sev === "all" ? "rgba(0,0,0,0.15)" : SEVERITY_META[sev].color + "40"}` : "none"
-              }}>
-              {sev !== "all" && SEVERITY_META[sev].icon}
-              {sev === "all" ? "All Severity" : SEVERITY_META[sev].label}
-            </button>
-          ))}
-        </motion.div>
-
-        {/* ═══ RESULTS HEADER ═══ */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <div className="px-2.5 py-1 bg-slate-800 text-white rounded-lg text-[10px] font-black uppercase tracking-widest">
-              {filtered.length} Result{filtered.length !== 1 ? "s" : ""}
-            </div>
-            {query && <span className="text-xs text-slate-400 font-medium">for &ldquo;{query}&rdquo;</span>}
-          </div>
-          {totalPages > 1 && (
-            <span className="text-xs text-slate-400 font-medium">Page {page} of {totalPages}</span>
-          )}
-        </div>
-
-        {/* ═══ ERROR CODE CARDS ═══ */}
-        <div className="space-y-3 mb-6">
-          <AnimatePresence mode="popLayout">
-            {paginated.length === 0 ? (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center py-20">
-                <Search size={48} className="mx-auto mb-4 text-slate-200" />
-                <p className="text-lg font-bold text-slate-300 mb-1">Tidak ada error code ditemukan</p>
-                <p className="text-sm text-slate-300">Coba ubah kata kunci pencarian atau filter Anda.</p>
+        {/* Status Indicators & Results */}
+        <div className="mt-12 w-full h-[400px]">
+          <AnimatePresence mode="wait">
+            
+            {/* 1. ANALYZING STATE */}
+            {status === "analyzing" && (
+              <motion.div 
+                key="analyzing"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex flex-col items-center justify-center h-full text-emerald-400 gap-4"
+              >
+                <Search size={32} className="animate-spin opacity-50" />
+                <div className="text-sm tracking-[0.2em] uppercase font-bold animate-pulse">
+                  Menganalisis Kode...
+                </div>
+                <div className="text-xs opacity-50 font-mono">
+                  Mengakses database SM-TS2...
+                </div>
               </motion.div>
-            ) : paginated.map((err, i) => {
-              const catMeta = CATEGORY_META[err.category];
-              const sevMeta = SEVERITY_META[err.severity];
-              const isExpanded = expandedCode === err.code;
+            )}
 
-              return (
-                <motion.div
-                  key={err.code}
-                  layout
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ delay: i * 0.02 }}
-                  onClick={() => handleToggle(err.code)}
-                  className="bg-white rounded-2xl border cursor-pointer transition-all duration-200 hover:shadow-lg group overflow-hidden"
-                  style={{
-                    borderColor: isExpanded ? sevMeta.border : "#e6e9ef",
-                    boxShadow: isExpanded ? `0 8px 30px ${sevMeta.color}15` : "0 1px 3px rgba(0,0,0,0.03)"
-                  }}
-                >
-                  {/* Card Header */}
-                  <div className="px-4 md:px-6 py-4 flex items-center gap-3 md:gap-4">
-                    {/* Code Badge */}
-                    <div className="w-14 h-14 md:w-16 md:h-16 rounded-xl flex items-center justify-center font-black text-lg md:text-xl shrink-0"
-                      style={{ background: sevMeta.bg, color: sevMeta.color, border: `2px solid ${sevMeta.border}` }}>
-                      {err.code}
-                    </div>
+            {/* 2. NOT FOUND STATE */}
+            {status === "not_found" && input.length >= 2 && (
+              <motion.div
+                key="not_found"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="flex flex-col items-center justify-center h-full text-red-500 gap-4"
+              >
+                <AlertTriangle size={48} className="opacity-80" />
+                <div className="text-lg md:text-xl tracking-widest uppercase font-bold">
+                  KODE {input} TIDAK DITEMUKAN
+                </div>
+                <div className="text-sm opacity-70">
+                  Pastikan kode yang Anda masukkan benar.
+                </div>
+              </motion.div>
+            )}
 
-                    {/* Main Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider" style={{ background: catMeta.bg, color: catMeta.color }}>
-                          {catMeta.label}
-                        </span>
-                        <span className="flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider" style={{ background: sevMeta.bg, color: sevMeta.color }}>
-                          {sevMeta.icon} {sevMeta.label}
-                        </span>
-                      </div>
-                      <p className="text-sm md:text-base font-bold text-[#323338] leading-tight truncate group-hover:text-[#0073ea] transition-colors">
-                        {err.contents}
-                      </p>
-                      <div className="flex flex-wrap gap-1 mt-1.5">
-                        {err.models.map(m => (
-                          <span key={m} className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-100 text-slate-500">{m}</span>
-                        ))}
-                      </div>
-                    </div>
+            {/* 3. FOUND STATE (RESULTS) */}
+            {status === "found" && activeCode && (
+              <motion.div
+                key="found"
+                initial={{ opacity: 0, filter: "blur(10px)" }}
+                animate={{ opacity: 1, filter: "blur(0px)" }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                className="w-full max-w-3xl mx-auto border border-emerald-500/30 bg-emerald-950/20 p-6 md:p-8 rounded-xl backdrop-blur-sm relative"
+                style={{ boxShadow: `0 0 30px ${getSeverityColor(activeCode.severity)}20, inset 0 0 20px rgba(16, 185, 129, 0.05)` }}
+              >
+                {/* Decorative corners */}
+                <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-emerald-500/50 -translate-x-0.5 -translate-y-0.5" />
+                <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-emerald-500/50 translate-x-0.5 -translate-y-0.5" />
+                <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-emerald-500/50 -translate-x-0.5 translate-y-0.5" />
+                <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-emerald-500/50 translate-x-0.5 translate-y-0.5" />
 
-                    {/* Expand Indicator */}
-                    <div className="shrink-0">
-                      {isExpanded ? <ChevronUp size={20} className="text-slate-400" /> : <ChevronDown size={20} className="text-slate-300" />}
-                    </div>
-                  </div>
+                <div className="flex items-center gap-3 mb-6 border-b border-emerald-500/30 pb-4">
+                  {activeCode.severity === "critical" ? <AlertTriangle className="text-red-500" size={24} /> : 
+                   activeCode.severity === "warning" ? <AlertTriangle className="text-yellow-500" size={24} /> :
+                   <Info className="text-blue-400" size={24} />}
+                  
+                  <h2 className="text-xl md:text-2xl font-bold tracking-wider text-white">
+                    {activeCode.contents.toUpperCase()}
+                  </h2>
+                </div>
 
-                  {/* Expanded Detail */}
-                  <AnimatePresence>
-                    {isExpanded && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                        className="overflow-hidden"
-                      >
-                        <div className="px-4 md:px-6 pb-5 pt-2 border-t" style={{ borderColor: sevMeta.border + "40" }}>
-                          <div className="grid md:grid-cols-2 gap-4">
-                            {/* Supposed Causes */}
-                            <div>
-                              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                                <AlertTriangle size={12} /> Penyebab yang Mungkin
-                              </h4>
-                              <ul className="space-y-1.5">
-                                {err.causes.map((cause, ci) => (
-                                  <li key={ci} className="flex items-start gap-2">
-                                    <div className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style={{ background: sevMeta.color }} />
-                                    <span className="text-sm text-slate-600 leading-snug">{cause}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-
-                            {/* Quick Action Guide */}
-                            <div className="rounded-xl p-4" style={{ background: sevMeta.bg }}>
-                              <h4 className="text-[10px] font-black uppercase tracking-widest mb-2 flex items-center gap-1.5" style={{ color: sevMeta.color }}>
-                                <Shield size={12} /> Langkah Penanganan
-                              </h4>
-                              <ol className="space-y-1.5 list-decimal list-inside">
-                                {err.severity === "critical" ? (
-                                  <>
-                                    <li className="text-sm text-slate-600">Matikan unit segera dan cabut power supply.</li>
-                                    <li className="text-sm text-slate-600">Periksa koneksi kabel dan connector terkait.</li>
-                                    <li className="text-sm text-slate-600">Hubungi tim service engineer untuk inspeksi mendalam.</li>
-                                    <li className="text-sm text-slate-600">Jangan restart unit sebelum root cause ditemukan.</li>
-                                  </>
-                                ) : err.severity === "warning" ? (
-                                  <>
-                                    <li className="text-sm text-slate-600">Catat kode error dan waktu kejadian.</li>
-                                    <li className="text-sm text-slate-600">Periksa connector dan thermistor terkait.</li>
-                                    <li className="text-sm text-slate-600">Reset unit dan monitor apakah error terulang.</li>
-                                    <li className="text-sm text-slate-600">Jika terulang, laporkan ke tim maintenance.</li>
-                                  </>
-                                ) : (
-                                  <>
-                                    <li className="text-sm text-slate-600">Verifikasi pengaturan dan konfigurasi unit.</li>
-                                    <li className="text-sm text-slate-600">Periksa wiring dan setting remote controller.</li>
-                                    <li className="text-sm text-slate-600">Reset dan konfigurasi ulang jika diperlukan.</li>
-                                  </>
-                                )}
-                              </ol>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-        </div>
-
-        {/* ═══ PAGINATION ═══ */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 pb-10">
-            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-              className="w-10 h-10 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-all disabled:opacity-30">
-              <ArrowLeft size={16} />
-            </button>
-            {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
-              let p: number;
-              if (totalPages <= 7) { p = i + 1; }
-              else if (page <= 4) { p = i + 1; }
-              else if (page >= totalPages - 3) { p = totalPages - 6 + i; }
-              else { p = page - 3 + i; }
-              return (
-                <button key={p} onClick={() => setPage(p)}
-                  className="w-10 h-10 rounded-xl text-sm font-bold transition-all"
-                  style={{
-                    background: page === p ? "#323338" : "white",
-                    color: page === p ? "white" : "#676879",
-                    border: `1px solid ${page === p ? "transparent" : "#e6e9ef"}`,
-                  }}>
-                  {p}
-                </button>
-              );
-            })}
-            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-              className="w-10 h-10 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-all disabled:opacity-30 rotate-180">
-              <ArrowLeft size={16} />
-            </button>
-          </div>
-        )}
-      </main>
-
-      {/* ═══ REMOTE GUIDE MODAL ═══ */}
-      <AnimatePresence>
-        {showGuide && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowGuide(false)} />
-            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
-
-              {/* Modal Header */}
-              <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-[#0a1628] to-[#1a2f4c] text-white shrink-0">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10">
-                    <Wifi size={20} className="text-blue-300" />
-                  </div>
+                <div className="grid md:grid-cols-2 gap-8">
+                  {/* Left Column: Causes */}
                   <div>
-                    <h2 className="text-lg font-bold tracking-tight">Remote Controller Guide</h2>
-                    <p className="text-xs text-blue-200/70 font-medium">Cara Membaca Kode Error via Remote</p>
+                    <div className="text-xs uppercase tracking-[0.2em] text-emerald-500/70 mb-3 flex items-center gap-2">
+                      <Search size={14} /> Analisis Penyebab
+                    </div>
+                    <ul className="space-y-3">
+                      {activeCode.causes.map((cause, i) => (
+                        <motion.li 
+                          key={i}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.2 + (i * 0.1) }}
+                          className="text-sm md:text-base text-slate-300 flex items-start gap-3 leading-relaxed"
+                        >
+                          <span className="text-emerald-500 font-bold mt-0.5">{">"}</span>
+                          {cause}
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Right Column: Resolution */}
+                  <div>
+                    <div className="text-xs uppercase tracking-[0.2em] mb-3 flex items-center gap-2" style={{ color: getSeverityColor(activeCode.severity) }}>
+                      <ShieldCheck size={14} /> Solusi & Tindakan
+                    </div>
+                    <div className="bg-black/40 p-4 rounded-lg border border-emerald-500/20">
+                      <ol className="space-y-3">
+                        {activeCode.resolution.map((res, i) => (
+                          <motion.li 
+                            key={i}
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.5 + (i * 0.1) }}
+                            className="text-sm text-white/90 flex items-start gap-3 leading-relaxed"
+                          >
+                            <span className="text-emerald-500/50 text-xs font-bold mt-1">{(i+1).toString().padStart(2, '0')}</span>
+                            {res}
+                          </motion.li>
+                        ))}
+                      </ol>
+                    </div>
+                    
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 1 }}
+                      className="mt-6 flex items-center gap-4 text-[10px] uppercase tracking-widest text-emerald-500/40"
+                    >
+                      <div className="flex items-center gap-1"><Power size={12}/> Models: {activeCode.models.join(", ")}</div>
+                      <div className="flex items-center gap-1">| Unit: {activeCode.category}</div>
+                    </motion.div>
                   </div>
                 </div>
-                <button onClick={() => setShowGuide(false)} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
-                  <X size={20} />
-                </button>
-              </div>
 
-              {/* Modal Body */}
-              <div className="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-6">
-                {REMOTE_GUIDES.map(guide => (
-                  <div key={guide.id} className="rounded-2xl border border-slate-200 overflow-hidden">
-                    <div className="px-4 py-3 flex items-center gap-2" style={{ background: guide.type === "wireless" ? "rgba(0,200,117,0.06)" : "rgba(0,115,234,0.06)" }}>
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: guide.type === "wireless" ? "rgba(0,200,117,0.15)" : "rgba(0,115,234,0.15)" }}>
-                        {guide.type === "wireless" ? <Wifi size={16} style={{ color: "#00c875" }} /> : <Zap size={16} style={{ color: "#0073ea" }} />}
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-[#323338]">{guide.title}</p>
-                        <p className="text-[10px] text-slate-400 font-medium">{guide.models.join(", ")}</p>
-                      </div>
-                    </div>
-                    <div className="px-4 py-3 space-y-2">
-                      {guide.steps.map((step, si) => (
-                        <div key={si} className="flex items-start gap-2.5">
-                          <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center shrink-0 mt-0.5">
-                            <span className="text-[10px] font-black text-slate-500">{si + 1}</span>
-                          </div>
-                          <p className="text-sm text-slate-600 leading-relaxed">{step}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </main>
+
+      {/* Footer System Status */}
+      <footer className="w-full p-4 flex justify-between items-center z-10 opacity-50 text-[10px] tracking-widest uppercase border-t border-emerald-900/50">
+        <div>System: ONLINE</div>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> DB_CONN: OK</div>
+          <div>MEM: 32MB</div>
+        </div>
+      </footer>
     </div>
   );
 }
