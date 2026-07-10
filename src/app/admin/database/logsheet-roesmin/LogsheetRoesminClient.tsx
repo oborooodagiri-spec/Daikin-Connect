@@ -159,7 +159,7 @@ const FCU_1F_ROOMS = [
   "Security Supervision","Cafetaria","Gan Room","Male Changing Room","Seller IT Room",
   "Training IT Room","Prayer Room","Sparepart Room","IT Administration Office",
   "IT Network Supervision","PPT Room","Tutorial Classroom","Tutorial Classroom 2",
-  "Trainer Office Room 2","Media Classroom","Tutorial Classroom 3","Meeting Room",
+  "Trainer Office Room 2","Trainer Office Room 1","Media Classroom","Tutorial Classroom 3","Meeting Room",
   "Coaching Room","Secretariat Office","General Manager Office","Administrative Manager",
   "Practical Academic 2","Practical Academic 1","Planification Room"
 ];
