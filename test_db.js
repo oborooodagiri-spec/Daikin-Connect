@@ -1,7 +1,10 @@
-const { PrismaClient } = require('./src/generated/client_v3');
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+
 async function run() {
-  const data = await prisma.$queryRawUnsafe('SELECT customer_signature FROM service_activities WHERE id = 7144');
-  console.log("SIGNATURE:", data[0].customer_signature ? data[0].customer_signature.substring(0, 50) : "NULL");
+  const units = await prisma.units.findMany({ where: { project_id: 1n } });
+  console.log(`Total units in Plaza Indonesia: ${units.length}`);
+  console.log(units.slice(0, 3));
 }
-run();
+
+run().finally(() => prisma.$disconnect());

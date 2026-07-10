@@ -194,6 +194,17 @@ export async function createDeal(data: DealData) {
       },
     });
 
+    // Create initial history record
+    await prisma.pipeline_history.create({
+      data: {
+        deal_id: deal.id,
+        changed_by_id: assignedPicId,
+        field_changed: "new_deal",
+        new_value: deal.status,
+        remark: "Deal created",
+      }
+    });
+
     revalidatePath("/dashboard/pipeline");
     return serializePrisma({ success: true, data: deal });
   } catch (error) {
@@ -253,6 +264,48 @@ export async function updateDeal(id: number, data: Partial<DealData>) {
       where: { id },
       data: updateData,
     });
+
+    // Log history for critical fields
+    if (existing.status !== deal.status) {
+      await prisma.pipeline_history.create({
+        data: {
+          deal_id: deal.id,
+          changed_by_id: parseInt(session.userId, 10),
+          field_changed: "status",
+          old_value: existing.status,
+          new_value: deal.status,
+          remark: data.remarks || "Status updated"
+        }
+      });
+    }
+
+    if (existing.quotation !== deal.quotation) {
+      await prisma.pipeline_history.create({
+        data: {
+          deal_id: deal.id,
+          changed_by_id: parseInt(session.userId, 10),
+          field_changed: "quotation",
+          old_value: existing.quotation.toString(),
+          new_value: deal.quotation.toString(),
+          remark: "Budget revised"
+        }
+      });
+    }
+
+    if (
+      existing.est_booking_month?.getTime() !== deal.est_booking_month?.getTime()
+    ) {
+      await prisma.pipeline_history.create({
+        data: {
+          deal_id: deal.id,
+          changed_by_id: parseInt(session.userId, 10),
+          field_changed: "est_booking_month",
+          old_value: existing.est_booking_month?.toISOString(),
+          new_value: deal.est_booking_month?.toISOString(),
+          remark: "Estimated timeline revised"
+        }
+      });
+    }
 
     revalidatePath("/dashboard/pipeline");
     return serializePrisma({ success: true, data: deal });
@@ -658,5 +711,22 @@ export async function getPipelineLeaderboard() {
   } catch (error) {
     console.error("getPipelineLeaderboard error:", error);
     return { error: "Failed to fetch leaderboard." };
+  }
+}
+
+// ============================================
+// GET DEAL HISTORY
+// ============================================
+export async function getDealHistory(dealId: number) {
+  try {
+    const history = await prisma.pipeline_history.findMany({
+      where: { deal_id: dealId },
+      include: { user: { select: { name: true } } },
+      orderBy: { created_at: 'desc' }
+    });
+    return serializePrisma({ success: true, data: history });
+  } catch (error) {
+    console.error('getDealHistory error:', error);
+    return { error: 'Failed to fetch history.' };
   }
 }

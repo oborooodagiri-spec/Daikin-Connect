@@ -442,8 +442,8 @@ export default function LiveDataClient() {
       "N": 0
     };
 
-    const fyStart = new Date(2000 + selectedFY, 4, 1).getTime(); // May 1
-    const fyEnd = new Date(2000 + selectedFY + 1, 3, 30, 23, 59, 59, 999).getTime(); // April 30
+    const fyStart = new Date(2000 + selectedFY, 3, 1).getTime(); // April 1
+    const fyEnd = new Date(2000 + selectedFY + 1, 2, 31, 23, 59, 59, 999).getTime(); // March 31
 
     deals.forEach(d => {
       const cTime = new Date(d.created_at).getTime();
@@ -861,7 +861,7 @@ export default function LiveDataClient() {
                     <td style={{ padding: "12px 16px", maxWidth: 300 }}>
                       <div className="flex items-center gap-2 mb-0.5">
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#323338", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{deal.client_name}</p>
-                        {new Date(deal.created_at).getTime() < new Date(2000 + selectedFY, 4, 1).getTime() && (
+                        {new Date(deal.created_at).getTime() < new Date(2000 + selectedFY, 3, 1).getTime() && (
                           <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-amber-100 text-amber-700 leading-none">BACKLOG</span>
                         )}
                       </div>

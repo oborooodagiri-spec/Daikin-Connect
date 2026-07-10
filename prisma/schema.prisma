@@ -99,22 +99,22 @@ model refresh_tokens {
 }
 
 model work_orders {
-  id               Int           @id @default(autoincrement())
-  wo_number        String        @unique @db.VarChar(100)
-  customer_id      Int?          // Optional link to existing customers
-  project_id       BigInt?       @db.UnsignedBigInt // Link to projects
-  customer_name    String?       @db.VarChar(150)
-  pic_name         String?       @db.VarChar(100)
-  company_address  String?       @db.Text
-  status           String        @default("Draft") @db.VarChar(50) // Draft, Submitted, Quoted, Canceled
-  created_at       DateTime      @default(now()) @db.Timestamp(0)
-  updated_at       DateTime      @updatedAt
-  created_by       Int?
+  id              Int      @id @default(autoincrement())
+  wo_number       String   @unique @db.VarChar(100)
+  customer_id     Int? // Optional link to existing customers
+  project_id      BigInt?  @db.UnsignedBigInt // Link to projects
+  customer_name   String?  @db.VarChar(150)
+  pic_name        String?  @db.VarChar(100)
+  company_address String?  @db.Text
+  status          String   @default("Draft") @db.VarChar(50) // Draft, Submitted, Quoted, Canceled
+  created_at      DateTime @default(now()) @db.Timestamp(0)
+  updated_at      DateTime @updatedAt
+  created_by      Int?
 
-  customers        customers?    @relation(fields: [customer_id], references: [id])
-  projects         projects?     @relation(fields: [project_id], references: [id])
-  users            users?        @relation(fields: [created_by], references: [id])
-  quotations       quotations[]
+  customers  customers?   @relation(fields: [customer_id], references: [id])
+  projects   projects?    @relation(fields: [project_id], references: [id])
+  users      users?       @relation(fields: [created_by], references: [id])
+  quotations quotations[]
 
   @@index([customer_id])
   @@index([project_id])
@@ -308,6 +308,7 @@ model users {
   created_slas              slas[]
   created_boq_projects      boq_projects[]
   pipeline_deals            pipeline_deals[]
+  pipeline_history          pipeline_history[]
 
   @@index([role_id], map: "role_id")
 }
@@ -473,26 +474,26 @@ model contracts {
 }
 
 model corrective {
-  id              Int       @id @default(autoincrement())
-  unit_id         Int
-  service_date    DateTime  @db.Date
-  technician_name String?   @db.VarChar(100)
-  case_complain   String?   @db.Text
-  root_cause      String?   @db.Text
-  temp_action     String?   @db.Text
-  perm_action     String?   @db.Text
-  recommendation  String?   @db.Text
-  photo_url       String?   @db.Text
-  status                  String?   @default("Final Approved") @db.VarChar(50)
-  created_at              DateTime? @default(now()) @db.Timestamp(0)
-  deleted_at              DateTime? @db.DateTime(0)
-  customer_approver_name  String?   @db.VarChar(255)
-  customer_approved_at    DateTime? @db.DateTime(0)
-  customer_signature      String?   @db.LongText
-  customer_signature_ip   String?   @db.VarChar(45)
-  reviewer_signature      String?   @db.LongText
-  reviewer_signature_ip   String?   @db.VarChar(45)
-  units           units     @relation(fields: [unit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "corrective_ibfk_1")
+  id                     Int       @id @default(autoincrement())
+  unit_id                Int
+  service_date           DateTime  @db.Date
+  technician_name        String?   @db.VarChar(100)
+  case_complain          String?   @db.Text
+  root_cause             String?   @db.Text
+  temp_action            String?   @db.Text
+  perm_action            String?   @db.Text
+  recommendation         String?   @db.Text
+  photo_url              String?   @db.Text
+  status                 String?   @default("Final Approved") @db.VarChar(50)
+  created_at             DateTime? @default(now()) @db.Timestamp(0)
+  deleted_at             DateTime? @db.DateTime(0)
+  customer_approver_name String?   @db.VarChar(255)
+  customer_approved_at   DateTime? @db.DateTime(0)
+  customer_signature     String?   @db.LongText
+  customer_signature_ip  String?   @db.VarChar(45)
+  reviewer_signature     String?   @db.LongText
+  reviewer_signature_ip  String?   @db.VarChar(45)
+  units                  units     @relation(fields: [unit_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "corrective_ibfk_1")
 
   @@index([unit_id], map: "unit_id")
 }
@@ -792,55 +793,55 @@ model notifications {
 }
 
 model daily_ops_logs {
-  id               Int       @id @default(autoincrement())
-  unit_id          Int
-  inspector_name   String    @db.VarChar(150)
-  service_date     DateTime  @db.Date
-  created_at       DateTime  @default(now()) @db.Timestamp(0)
-  fan_on           Boolean   @default(true)
-  fan_speed        Decimal?  @db.Decimal(5, 2)
-  fan_curr_r       Decimal?  @db.Decimal(5, 2)
-  fan_curr_s       Decimal?  @db.Decimal(5, 2)
-  fan_curr_t       Decimal?  @db.Decimal(5, 2)
-  fan_volt_r       Int?
-  fan_volt_s       Int?
-  fan_volt_t       Int?
-  heater_on        Boolean   @default(false)
-  heater_curr_r    Decimal?  @db.Decimal(5, 2)
-  heater_curr_s    Decimal?  @db.Decimal(5, 2)
-  heater_curr_t    Decimal?  @db.Decimal(5, 2)
-  heater_volt_r    Int?
-  heater_volt_s    Int?
-  heater_volt_t    Int?
-  valve_opening    Decimal?  @db.Decimal(5, 2)
-  supply_temp      Decimal?  @db.Decimal(5, 2)
-  supply_rh        Decimal?  @db.Decimal(5, 2)
-  return_temp      Decimal?  @db.Decimal(5, 2)
-  return_rh        Decimal?  @db.Decimal(5, 2)
-  fresh_temp       Decimal?  @db.Decimal(5, 2)
-  fresh_rh         Decimal?  @db.Decimal(5, 2)
-  filter_pre       String?   @db.VarChar(20)
-  filter_med       String?   @db.VarChar(20)
-  filter_hepa      String?   @db.VarChar(20)
-  room_temp        Decimal?  @db.Decimal(5, 2)
-  room_diff_press  Decimal?  @db.Decimal(5, 2)
-  temp_s1          Decimal?  @db.Decimal(5, 2)
-  temp_s2          Decimal?  @db.Decimal(5, 2)
-  temp_s3          Decimal?  @db.Decimal(5, 2)
-  temp_s4          Decimal?  @db.Decimal(5, 2)
-  temp_s5          Decimal?  @db.Decimal(5, 2)
-  static_pressure  Decimal?  @db.Decimal(10, 2)
-  vibration_status String?   @db.VarChar(50)
-  drainage_status  String?   @db.VarChar(50)
-  notes                   String?   @db.Text
-  deleted_at              DateTime? @db.DateTime(0)
-  customer_approver_name  String?   @db.VarChar(255)
-  customer_approved_at    DateTime? @db.DateTime(0)
-  customer_signature      String?   @db.LongText
-  customer_signature_ip   String?   @db.VarChar(45)
-  reviewer_signature      String?   @db.LongText
-  reviewer_signature_ip   String?   @db.VarChar(45)
-  units            units     @relation(fields: [unit_id], references: [id], onDelete: Cascade)
+  id                     Int       @id @default(autoincrement())
+  unit_id                Int
+  inspector_name         String    @db.VarChar(150)
+  service_date           DateTime  @db.Date
+  created_at             DateTime  @default(now()) @db.Timestamp(0)
+  fan_on                 Boolean   @default(true)
+  fan_speed              Decimal?  @db.Decimal(5, 2)
+  fan_curr_r             Decimal?  @db.Decimal(5, 2)
+  fan_curr_s             Decimal?  @db.Decimal(5, 2)
+  fan_curr_t             Decimal?  @db.Decimal(5, 2)
+  fan_volt_r             Int?
+  fan_volt_s             Int?
+  fan_volt_t             Int?
+  heater_on              Boolean   @default(false)
+  heater_curr_r          Decimal?  @db.Decimal(5, 2)
+  heater_curr_s          Decimal?  @db.Decimal(5, 2)
+  heater_curr_t          Decimal?  @db.Decimal(5, 2)
+  heater_volt_r          Int?
+  heater_volt_s          Int?
+  heater_volt_t          Int?
+  valve_opening          Decimal?  @db.Decimal(5, 2)
+  supply_temp            Decimal?  @db.Decimal(5, 2)
+  supply_rh              Decimal?  @db.Decimal(5, 2)
+  return_temp            Decimal?  @db.Decimal(5, 2)
+  return_rh              Decimal?  @db.Decimal(5, 2)
+  fresh_temp             Decimal?  @db.Decimal(5, 2)
+  fresh_rh               Decimal?  @db.Decimal(5, 2)
+  filter_pre             String?   @db.VarChar(20)
+  filter_med             String?   @db.VarChar(20)
+  filter_hepa            String?   @db.VarChar(20)
+  room_temp              Decimal?  @db.Decimal(5, 2)
+  room_diff_press        Decimal?  @db.Decimal(5, 2)
+  temp_s1                Decimal?  @db.Decimal(5, 2)
+  temp_s2                Decimal?  @db.Decimal(5, 2)
+  temp_s3                Decimal?  @db.Decimal(5, 2)
+  temp_s4                Decimal?  @db.Decimal(5, 2)
+  temp_s5                Decimal?  @db.Decimal(5, 2)
+  static_pressure        Decimal?  @db.Decimal(10, 2)
+  vibration_status       String?   @db.VarChar(50)
+  drainage_status        String?   @db.VarChar(50)
+  notes                  String?   @db.Text
+  deleted_at             DateTime? @db.DateTime(0)
+  customer_approver_name String?   @db.VarChar(255)
+  customer_approved_at   DateTime? @db.DateTime(0)
+  customer_signature     String?   @db.LongText
+  customer_signature_ip  String?   @db.VarChar(45)
+  reviewer_signature     String?   @db.LongText
+  reviewer_signature_ip  String?   @db.VarChar(45)
+  units                  units     @relation(fields: [unit_id], references: [id], onDelete: Cascade)
 
   @@index([unit_id], map: "idx_daily_ops_unit")
   @@index([service_date], map: "idx_daily_ops_date")
@@ -1101,8 +1102,8 @@ model pricelist_items {
   price         Decimal  @db.Decimal(15, 2)
   created_at    DateTime @default(now()) @db.Timestamp(0)
   updated_at    DateTime @updatedAt
-  
-  boq_items     boq_items[]
+
+  boq_items boq_items[]
 }
 
 // BoQ Projects
@@ -1118,42 +1119,42 @@ model boq_projects {
   folder_color    String?  @default("#0073ea") @db.VarChar(20)
   allowed_users   String?  @db.Text
 
-  items         boq_items[]
-  categories    boq_categories[]
-  users         users    @relation(fields: [created_by], references: [id])
-  
+  items      boq_items[]
+  categories boq_categories[]
+  users      users            @relation(fields: [created_by], references: [id])
+
   @@index([created_by])
 }
 
 // BoQ Categories
 model boq_categories {
-  id            String   @id @default(uuid())
-  boq_id        String
-  name          String   @db.VarChar(255)
-  order_index   Int      @default(0)
-  
-  boq           boq_projects @relation(fields: [boq_id], references: [id], onDelete: Cascade)
-  items         boq_items[]
+  id          String @id @default(uuid())
+  boq_id      String
+  name        String @db.VarChar(255)
+  order_index Int    @default(0)
+
+  boq   boq_projects @relation(fields: [boq_id], references: [id], onDelete: Cascade)
+  items boq_items[]
 
   @@index([boq_id])
 }
 
 // BoQ Line Items
 model boq_items {
-  id              String   @id @default(uuid())
-  boq_id          String
-  category_id     String
-  item_id         String?
-  manual_name     String?  @db.VarChar(255)
-  specification   String?  @db.VarChar(255)
-  unit            String?  @db.VarChar(50)
-  quantity        Float
-  material_price  Decimal  @default(0) @db.Decimal(15, 2)
-  labour_price    Decimal  @default(0) @db.Decimal(15, 2)
-  
-  boq           boq_projects    @relation(fields: [boq_id], references: [id], onDelete: Cascade)
-  category      boq_categories  @relation(fields: [category_id], references: [id], onDelete: Cascade)
-  pricelist     pricelist_items? @relation(fields: [item_id], references: [id])
+  id             String  @id @default(uuid())
+  boq_id         String
+  category_id    String
+  item_id        String?
+  manual_name    String? @db.VarChar(255)
+  specification  String? @db.VarChar(255)
+  unit           String? @db.VarChar(50)
+  quantity       Float
+  material_price Decimal @default(0) @db.Decimal(15, 2)
+  labour_price   Decimal @default(0) @db.Decimal(15, 2)
+
+  boq       boq_projects     @relation(fields: [boq_id], references: [id], onDelete: Cascade)
+  category  boq_categories   @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  pricelist pricelist_items? @relation(fields: [item_id], references: [id])
 
   @@index([boq_id])
   @@index([category_id])
@@ -1164,31 +1165,32 @@ model boq_items {
 // PIPELINE DEALS (Sales Pipeline — EPL + Partnership)
 // ============================================
 model pipeline_deals {
-  id                Int       @id @default(autoincrement())
-  client_name       String    @db.VarChar(255)
-  area              String?   @db.VarChar(100)
-  project_name      String    @db.VarChar(500)
-  bill_material     String?   @db.VarChar(255)
-  type              String?   @db.VarChar(100)
-  region            String?   @db.VarChar(50)
-  sales_planner     String?   @db.VarChar(100)
-  pic               String?   @db.VarChar(100)
+  id                Int                @id @default(autoincrement())
+  client_name       String             @db.VarChar(255)
+  area              String?            @db.VarChar(100)
+  project_name      String             @db.VarChar(500)
+  bill_material     String?            @db.VarChar(255)
+  type              String?            @db.VarChar(100)
+  region            String?            @db.VarChar(50)
+  sales_planner     String?            @db.VarChar(100)
+  pic               String?            @db.VarChar(100)
   pic_id            Int?
-  category          String?   @db.VarChar(50)
-  sector            String?   @db.VarChar(50)
-  quotation         BigInt    @default(0)
-  status            String    @default("E") @db.VarChar(5)
-  est_booking_month DateTime? @db.Date
-  booking_fc        String?   @db.VarChar(50)
-  remarks           String?   @db.Text
-  source            String    @default("EPL") @db.VarChar(20)
-  priority          String?   @db.VarChar(20)
+  category          String?            @db.VarChar(50)
+  sector            String?            @db.VarChar(50)
+  quotation         BigInt             @default(0)
+  status            String             @default("E") @db.VarChar(5)
+  est_booking_month DateTime?          @db.Date
+  booking_fc        String?            @db.VarChar(50)
+  remarks           String?            @db.Text
+  source            String             @default("EPL") @db.VarChar(20)
+  priority          String?            @db.VarChar(20)
   latitude          Float?
   longitude         Float?
-  created_at        DateTime  @default(now()) @db.Timestamp(0)
-  updated_at        DateTime  @updatedAt @db.Timestamp(0)
+  created_at        DateTime           @default(now()) @db.Timestamp(0)
+  updated_at        DateTime           @updatedAt @db.Timestamp(0)
+  history           pipeline_history[]
 
-  users             users?    @relation(fields: [pic_id], references: [id], onDelete: SetNull)
+  users users? @relation(fields: [pic_id], references: [id], onDelete: SetNull)
 
   @@index([status])
   @@index([pic])
@@ -1200,18 +1202,37 @@ model pipeline_deals {
 }
 
 // ============================================
+// PIPELINE HISTORY
+// ============================================
+model pipeline_history {
+  id            Int      @id @default(autoincrement())
+  deal_id       Int
+  changed_by_id Int?
+  field_changed String   @db.VarChar(50) // e.g. "status", "quotation", "est_booking_month", "new_deal"
+  old_value     String?  @db.Text
+  new_value     String?  @db.Text
+  remark        String?  @db.Text
+  created_at    DateTime @default(now()) @db.Timestamp(0)
+
+  deal pipeline_deals @relation(fields: [deal_id], references: [id], onDelete: Cascade)
+  user users?         @relation(fields: [changed_by_id], references: [id], onDelete: SetNull)
+
+  @@index([deal_id])
+}
+
+// ============================================
 // PIPELINE OPS (Operations/Service Pipeline)
 // ============================================
 model pipeline_ops {
-  id                Int       @id @default(autoincrement())
-  status            String    @default("E") @db.VarChar(5)
-  customer          String    @db.VarChar(255)
-  project_name      String    @db.VarChar(500)
-  total_value       BigInt    @default(0)
-  values_by_month   Json?
-  remark            String?   @db.Text
-  created_at        DateTime  @default(now()) @db.Timestamp(0)
-  updated_at        DateTime  @updatedAt @db.Timestamp(0)
+  id              Int      @id @default(autoincrement())
+  status          String   @default("E") @db.VarChar(5)
+  customer        String   @db.VarChar(255)
+  project_name    String   @db.VarChar(500)
+  total_value     BigInt   @default(0)
+  values_by_month Json?
+  remark          String?  @db.Text
+  created_at      DateTime @default(now()) @db.Timestamp(0)
+  updated_at      DateTime @updatedAt @db.Timestamp(0)
 
   @@index([status])
   @@index([customer])

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Save, Trash2, Building2, MapPin, User, FolderArchive, Activity, FileText, LayoutList } from "lucide-react";
-import { createDeal, updateDeal, deleteDeal, getSalesEngineers } from "@/app/actions/pipeline";
+import { createDeal, updateDeal, deleteDeal, getSalesEngineers, getDealHistory } from "@/app/actions/pipeline";
 
 interface DealFormModalProps {
   isOpen: boolean;
@@ -46,6 +46,8 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [salesEngineers, setSalesEngineers] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState("details");
+  const [history, setHistory] = useState<any[]>([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -79,10 +81,20 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           source: "Sales",
           remarks: ""
         });
+        setHistory([]);
       }
       setError("");
+      setActiveTab("details");
     }
   }, [isOpen, deal, sessionName]);
+
+  useEffect(() => {
+    if (deal && deal.id && activeTab === "timeline") {
+      getDealHistory(deal.id).then(res => {
+        if (res?.success) setHistory(res.data);
+      });
+    }
+  }, [deal, activeTab]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -187,84 +199,142 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Building2 size={12}/> Client Name *</label>
-                <input name="client_name" value={formData.client_name} onChange={handleChange} placeholder="e.g. PT Daikin"
-                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
+            {deal && (
+              <div className="flex gap-4 border-b border-gray-100 mb-6">
+                <button 
+                  onClick={() => setActiveTab("details")}
+                  className={`pb-3 text-sm font-bold border-b-2 transition-all ${activeTab === "details" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-400 hover:text-gray-600"}`}
+                >
+                  Project Details
+                </button>
+                <button 
+                  onClick={() => setActiveTab("timeline")}
+                  className={`pb-3 text-sm font-bold border-b-2 transition-all ${activeTab === "timeline" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-400 hover:text-gray-600"}`}
+                >
+                  Activity Timeline
+                </button>
               </div>
+            )}
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><FolderArchive size={12}/> Project Name *</label>
-                <input name="project_name" value={formData.project_name} onChange={handleChange} placeholder="e.g. Installation Tower A"
-                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
-              </div>
+            {activeTab === "details" ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Building2 size={12}/> Client Name *</label>
+                  <input name="client_name" value={formData.client_name} onChange={handleChange} placeholder="e.g. PT Daikin"
+                    className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
+                </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Activity size={12}/> Status</label>
-                <select name="status" value={formData.status} onChange={handleChange}
-                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all cursor-pointer">
-                  {STATUS_OPTIONS.map(o => <option key={o.val} value={o.val}>{o.val} - {o.label}</option>)}
-                </select>
-              </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><FolderArchive size={12}/> Project Name *</label>
+                  <input name="project_name" value={formData.project_name} onChange={handleChange} placeholder="e.g. Installation Tower A"
+                    className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
+                </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><LayoutList size={12}/> Category</label>
-                <select name="category" value={formData.category} onChange={handleChange}
-                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all cursor-pointer">
-                  {CATEGORY_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><MapPin size={12}/> Region / Sector</label>
-                <div className="flex gap-3">
-                  <select name="region" value={formData.region} onChange={handleChange}
-                    className="w-1/2 h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 outline-none cursor-pointer">
-                    <option value="">Select Region</option>
-                    {REGION_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
-                  </select>
-                  <select name="sector" value={formData.sector} onChange={handleChange}
-                    className="w-1/2 h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 outline-none cursor-pointer">
-                    <option value="">Select Sector</option>
-                    {SECTOR_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Activity size={12}/> Status</label>
+                  <select name="status" value={formData.status} onChange={handleChange}
+                    className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all cursor-pointer">
+                    {STATUS_OPTIONS.map(o => <option key={o.val} value={o.val}>{o.val} - {o.label}</option>)}
                   </select>
                 </div>
-              </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><User size={12}/> PIC (Person In Charge)</label>
-                <select name="pic" value={formData.pic} onChange={handleChange}
-                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all cursor-pointer">
-                  <option value={sessionName}>{sessionName} (You)</option>
-                  {salesEngineers.map(se => (
-                    se.name !== sessionName && <option key={se.id} value={se.name}>{se.name}</option>
-                  ))}
-                </select>
-              </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><LayoutList size={12}/> Category</label>
+                  <select name="category" value={formData.category} onChange={handleChange}
+                    className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all cursor-pointer">
+                    {CATEGORY_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">Source / Division</label>
-                <select name="source" value={formData.source} onChange={handleChange}
-                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all cursor-pointer">
-                  <option value="Sales">Sales</option>
-                  <option value="Partnership">Partnership</option>
-                  <option value="Marketing">Marketing</option>
-                </select>
-              </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><MapPin size={12}/> Region / Sector</label>
+                  <div className="flex gap-3">
+                    <select name="region" value={formData.region} onChange={handleChange}
+                      className="w-1/2 h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 outline-none cursor-pointer">
+                      <option value="">Select Region</option>
+                      {REGION_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                    </select>
+                    <select name="sector" value={formData.sector} onChange={handleChange}
+                      className="w-1/2 h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 outline-none cursor-pointer">
+                      <option value="">Select Sector</option>
+                      {SECTOR_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">Quotation Value (Rp)</label>
-                <input name="quotation" type="number" value={formData.quotation} onChange={handleChange} placeholder="e.g. 500000000"
-                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
-              </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><User size={12}/> PIC (Person In Charge)</label>
+                  <select name="pic" value={formData.pic} onChange={handleChange}
+                    className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all cursor-pointer">
+                    <option value={sessionName}>{sessionName} (You)</option>
+                    {salesEngineers.map(se => (
+                      se.name !== sessionName && <option key={se.id} value={se.name}>{se.name}</option>
+                    ))}
+                  </select>
+                </div>
 
-              <div className="md:col-span-2 space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><FileText size={12}/> Remarks</label>
-                <textarea name="remarks" value={formData.remarks} onChange={handleChange} placeholder="Add any notes..." rows={3}
-                  className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all resize-none" />
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">Source / Division</label>
+                  <select name="source" value={formData.source} onChange={handleChange}
+                    className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all cursor-pointer">
+                    <option value="Sales">Sales</option>
+                    <option value="Partnership">Partnership</option>
+                    <option value="Marketing">Marketing</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">Quotation Value (Rp)</label>
+                  <input name="quotation" type="number" value={formData.quotation} onChange={handleChange} placeholder="e.g. 500000000"
+                    className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
+                </div>
+
+                <div className="md:col-span-2 space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><FileText size={12}/> Remarks</label>
+                  <textarea name="remarks" value={formData.remarks} onChange={handleChange} placeholder="Add any notes..." rows={3}
+                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all resize-none" />
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="space-y-4">
+                {history.length === 0 ? (
+                  <div className="text-center py-10 text-gray-400">
+                    <Activity size={40} className="mx-auto mb-2 opacity-20" />
+                    <p className="font-medium text-sm">No timeline history recorded yet.</p>
+                  </div>
+                ) : (
+                  history.map((h, i) => (
+                    <div key={h.id} className="flex gap-4">
+                      <div className="flex flex-col items-center">
+                        <div className="w-3 h-3 rounded-full bg-blue-500 mt-1.5" />
+                        {i !== history.length - 1 && <div className="w-px h-full bg-gray-200 mt-1" />}
+                      </div>
+                      <div className="pb-6">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-sm font-bold text-gray-800">
+                            {h.field_changed === 'new_deal' ? 'Project Created' : h.field_changed === 'status' ? 'Status Changed' : h.field_changed === 'quotation' ? 'Budget Revised' : 'Timeline Revised'}
+                          </span>
+                          <span className="text-xs text-gray-400">
+                            • {new Date(h.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                        {h.old_value && h.new_value && (
+                          <div className="text-xs text-gray-500 mb-2 flex items-center gap-2">
+                            <span className="line-through opacity-70">{h.old_value}</span>
+                            <span>→</span>
+                            <span className="font-semibold text-gray-700">{h.new_value}</span>
+                          </div>
+                        )}
+                        {h.remark && (
+                          <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded-lg border border-gray-100">{h.remark}</p>
+                        )}
+                        <p className="text-xs text-gray-400 mt-1">by {h.user?.name || 'System'}</p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
           </div>
 
           {/* Footer */}
