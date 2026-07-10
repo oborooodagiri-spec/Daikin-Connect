@@ -715,7 +715,7 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
                 <tr key={p.key} style={{ backgroundColor: idx % 2 === 0 ? C.rowEven : C.rowOdd }}>
                   <td style={S.tdLabel}>{p.label}</td>
                   <td style={{ ...S.tdCell, color: C.designText, fontStyle: 'italic' }}>{p.design}</td>
-                  <td style={{ ...S.tdCell, fontWeight: 700 }}>{getVal('power_genset', p.key)}</td>
+                  <td style={{ ...S.tdCell, fontWeight: 700 }}>{getVal('pm_genset', p.key)}</td>
                 </tr>
               ))}
             </tbody>
@@ -743,7 +743,7 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
                 <tr key={p.key} style={{ backgroundColor: idx % 2 === 0 ? C.rowEven : C.rowOdd }}>
                   <td style={S.tdLabel}>{p.label}</td>
                   <td style={{ ...S.tdCell, color: C.designText, fontStyle: 'italic' }}>{p.design}</td>
-                  <td style={{ ...S.tdCell, fontWeight: 700 }}>{getVal('power_pln', p.key)}</td>
+                  <td style={{ ...S.tdCell, fontWeight: 700 }}>{getVal('pm_pln', p.key)}</td>
                 </tr>
               ))}
             </tbody>
@@ -762,30 +762,14 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
   // ═══════════════════════════════════════════════════════════════════════
   // PAGE 5: FCU — Ground Floor
   // ═══════════════════════════════════════════════════════════════════════
-  const fcuGFRooms = [
-    { id: 'fcu_gf_01', label: 'MDF Room' },
-    { id: 'fcu_gf_02', label: 'Electrical Room' },
-    { id: 'fcu_gf_03', label: 'Server IDF Room' },
-    { id: 'fcu_gf_04', label: 'Ship & Packing Room' },
-    { id: 'fcu_gf_05', label: 'Utility Office' },
-    { id: 'fcu_gf_06', label: 'Computer Workshop' },
-    { id: 'fcu_gf_07', label: 'Video Workshop' },
-    { id: 'fcu_gf_08', label: 'Corridor' },
-    { id: 'fcu_gf_09', label: 'Tech Pub Room' },
-    { id: 'fcu_gf_10', label: 'Maintenance Manager Office' },
-    { id: 'fcu_gf_11', label: 'Cafetaria' },
-    { id: 'fcu_gf_12', label: 'Meeting Room' },
-    { id: 'fcu_gf_13', label: 'Building Main Office' },
-    { id: 'fcu_gf_14', label: 'Security Desk' },
-    { id: 'fcu_gf_15', label: 'Instructor Manager' },
-    { id: 'fcu_gf_16', label: 'Briefing Room' },
-    { id: 'fcu_gf_17', label: 'Local Instructor Office' },
-    { id: 'fcu_gf_18', label: 'Simulator Operator' },
-    { id: 'fcu_gf_19', label: 'Simulator Technical' },
-    { id: 'fcu_gf_20', label: "Trainee's Office" },
-    { id: 'fcu_gf_21', label: 'IOS S1' },
-    { id: 'fcu_gf_22', label: 'IOS S2' },
+  const FCU_GF_ROOMS_ARR = [
+    "MDF Room","Electrical Room","Server IDF Room","Ship & Packing Room","Utility Office",
+    "Computer Workshop","Video Workshop","Corridor","Tech Pub Room","Maintenance Manager Office",
+    "Cafetaria","Meeting Room","Building Main Office","Security Desk","Instructor Manager",
+    "Briefing Room","Local Instructor Office","Simulator Operator","Simulator Technical",
+    "Trainee's Office","IOS S1","IOS S2"
   ];
+  const fcuGFRooms = FCU_GF_ROOMS_ARR.map((r, i) => ({ id: `fcu_gf_${i}`, label: r }));
 
   const fcuParams: { key: string; label: string; design?: string; unit?: string }[] = [
     { key: 'room_temp', label: 'Room Temp', unit: '°C' },
@@ -845,32 +829,15 @@ export const getLogsheetRoesminSections = (data: any, lang: Language = 'id') => 
   // ═══════════════════════════════════════════════════════════════════════
   // PAGE 6: FCU — 1st Floor
   // ═══════════════════════════════════════════════════════════════════════
-  const fcu1FRooms = [
-    { id: 'fcu_1f_01', label: 'Security Supervision' },
-    { id: 'fcu_1f_02', label: 'Cafetaria' },
-    { id: 'fcu_1f_03', label: 'Gan Room' },
-    { id: 'fcu_1f_04', label: 'Male Changing Room' },
-    { id: 'fcu_1f_05', label: 'Seller IT Room' },
-    { id: 'fcu_1f_06', label: 'Training IT Room' },
-    { id: 'fcu_1f_07', label: 'Prayer Room' },
-    { id: 'fcu_1f_08', label: 'Sparepart Room' },
-    { id: 'fcu_1f_09', label: 'IT Administration Office' },
-    { id: 'fcu_1f_10', label: 'IT Network Supervision' },
-    { id: 'fcu_1f_11', label: 'PPT Room' },
-    { id: 'fcu_1f_12', label: 'Tutorial Classroom' },
-    { id: 'fcu_1f_13', label: 'Tutorial Classroom 2' },
-    { id: 'fcu_1f_14', label: 'Trainer Office Room 2' },
-    { id: 'fcu_1f_15', label: 'Media Classroom' },
-    { id: 'fcu_1f_16', label: 'Tutorial Classroom 3' },
-    { id: 'fcu_1f_17', label: 'Meeting Room' },
-    { id: 'fcu_1f_18', label: 'Coaching Room' },
-    { id: 'fcu_1f_19', label: 'Secretariat Office' },
-    { id: 'fcu_1f_20', label: 'General Manager Office' },
-    { id: 'fcu_1f_21', label: 'Administrative Manager' },
-    { id: 'fcu_1f_22', label: 'Practical Academic 2' },
-    { id: 'fcu_1f_23', label: 'Practical Academic 1' },
-    { id: 'fcu_1f_24', label: 'Planification Room' },
+  const FCU_1F_ROOMS_ARR = [
+    "Security Supervision","Cafetaria","Gan Room","Male Changing Room","Seller IT Room",
+    "Training IT Room","Prayer Room","Sparepart Room","IT Administration Office",
+    "IT Network Supervision","PPT Room","Tutorial Classroom","Tutorial Classroom 2",
+    "Trainer Office Room 2","Media Classroom","Tutorial Classroom 3","Meeting Room",
+    "Coaching Room","Secretariat Office","General Manager Office","Administrative Manager",
+    "Practical Academic 2","Practical Academic 1","Planification Room"
   ];
+  const fcu1FRooms = FCU_1F_ROOMS_ARR.map((r, i) => ({ id: `fcu_1f_${i}`, label: r }));
 
   pages.push(
     <div key="page-4-fcu-1f" style={S.page}>
