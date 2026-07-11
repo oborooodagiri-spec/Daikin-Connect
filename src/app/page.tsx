@@ -175,15 +175,19 @@ export default function LoginPage() {
                 </>
               ) : (
                 <>
-                  <h2 className="text-4xl lg:text-[42px] font-black tracking-tight text-[#323338] mb-3 leading-tight">
-                    The Digital <span className="text-[#00a1e4]">Revolution</span>
+                  <h2 className="text-4xl lg:text-[48px] font-black tracking-tight text-[#323338] mb-4 leading-tight">
+                    <span className="text-2xl font-bold text-slate-500 block mb-2">Welcome to</span>
+                    The Digital<br />
+                    <span className="text-[#00a1e4]">Revolution</span>
                   </h2>
-                  <p className="text-[13px] font-semibold text-slate-500 mb-8 tracking-wider uppercase">
+                  <p className="text-[13px] font-semibold text-slate-500 mb-10 tracking-wider uppercase">
                     Innovation born from DASI Service Division
                   </p>
-                  <div className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100 shadow-sm w-full max-w-[200px] flex items-center justify-center">
-                    <img src="/dssi_logo.png" alt="DSSI Logo" className="h-12 w-auto object-contain opacity-90 hover:opacity-100 transition-opacity" />
-                  </div>
+                  
+                  {/* Blended Logo */}
+                  <img src="/dssi_logo.png" alt="DSSI Logo" className="h-16 w-auto object-contain opacity-90 hover:opacity-100 transition-opacity mb-8" />
+                  
+                  <h3 className="text-sm font-black text-[#323338] tracking-[0.3em] uppercase mb-2">Login</h3>
                 </>
               )}
             </div>
