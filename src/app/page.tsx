@@ -184,7 +184,7 @@ export default function LoginPage() {
                   </h2>
                   
                   <p className="text-sm font-medium text-slate-500 mb-12">
-                    Latest Breakthrough from DASI - Service Division - EPL
+                    A Breakthrough from DASI - Service Division - EPL
                   </p>
                   
                   <h3 className="text-xs md:text-sm font-black text-[#323338] tracking-[0.3em] uppercase mb-4">
