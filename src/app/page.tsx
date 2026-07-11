@@ -54,17 +54,8 @@ export default function LoginPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [show2fModal, setShow2fModal] = useState(false);
   const [tempEmail, setTempEmail] = useState("");
-  const [greeting, setGreeting] = useState("Selamat Datang");
-
   useEffect(() => {
     setIsMounted(true);
-    
-    // Dynamic Greeting Logic - More precise ranges
-    const hour = new Date().getHours();
-    if (hour >= 5 && hour < 12) setGreeting("Selamat Pagi");
-    else if (hour >= 12 && hour < 15) setGreeting("Selamat Siang");
-    else if (hour >= 15 && hour < 18) setGreeting("Selamat Sore");
-    else setGreeting("Selamat Malam");
 
     if (typeof window !== "undefined") {
       localStorage.removeItem("daikin_last_project");
@@ -172,14 +163,28 @@ export default function LoginPage() {
             animate={{ opacity: 1, y: 0 }}
             className="w-full max-w-md"
           >
-            <div className="mb-10 text-center">
-              <h2 className="text-4xl font-black tracking-tight text-[#323338] mb-2">
-                {isRequestMode ? "Access Request" : greeting}
-              </h2>
-              {isRequestMode && (
-                <p className="text-sm font-bold text-slate-400">
-                  Silakan isi data untuk permintaan akses
-                </p>
+            <div className="mb-12 text-center flex flex-col items-center">
+              {isRequestMode ? (
+                <>
+                  <h2 className="text-4xl font-black tracking-tight text-[#323338] mb-2">
+                    Access Request
+                  </h2>
+                  <p className="text-sm font-bold text-slate-400">
+                    Silakan isi data untuk permintaan akses
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h2 className="text-4xl lg:text-[42px] font-black tracking-tight text-[#323338] mb-3 leading-tight">
+                    The Digital <span className="text-[#00a1e4]">Revolution</span>
+                  </h2>
+                  <p className="text-[13px] font-semibold text-slate-500 mb-8 tracking-wider uppercase">
+                    Innovation born from DASI Service Division
+                  </p>
+                  <div className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100 shadow-sm w-full max-w-[200px] flex items-center justify-center">
+                    <img src="/dssi_logo.png" alt="DSSI Logo" className="h-12 w-auto object-contain opacity-90 hover:opacity-100 transition-opacity" />
+                  </div>
+                </>
               )}
             </div>
 
