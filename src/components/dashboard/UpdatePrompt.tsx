@@ -11,6 +11,13 @@ export default function UpdatePrompt() {
 
   useEffect(() => {
     setIsMounted(true);
+    
+    // Temporarily disable the native PWA install prompt
+    const preventInstallPrompt = (e: Event) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeinstallprompt", preventInstallPrompt);
+
     const isStandalone = (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator as any).standalone;
     if (!isStandalone) return;
 
@@ -35,6 +42,7 @@ export default function UpdatePrompt() {
     return () => {
       clearTimeout(timer);
       clearInterval(interval);
+      window.removeEventListener("beforeinstallprompt", preventInstallPrompt);
     };
   }, []);
 
