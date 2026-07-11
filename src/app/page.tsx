@@ -157,7 +157,7 @@ export default function LoginPage() {
         </div>
 
         {/* Right Side: Login Form */}
-        <div className="flex-1 flex items-center justify-center lg:justify-end py-12 lg:py-0">
+        <div className="flex-1 flex items-center justify-center lg:justify-end pt-12 pb-32 lg:py-0">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -184,7 +184,7 @@ export default function LoginPage() {
                   </h2>
                   
                   <p className="text-sm font-medium text-slate-500 mb-12">
-                    Born from DASI - Service Division
+                    Latest Breakthrough from DASI - Service Division - EPL
                   </p>
                   
                   <h3 className="text-xs md:text-sm font-black text-[#323338] tracking-[0.3em] uppercase mb-4">
