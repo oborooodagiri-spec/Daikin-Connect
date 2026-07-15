@@ -19,8 +19,7 @@ import AnimatedCounter from "@/components/about/AnimatedCounter";
 import ScrollIndicator from "@/components/about/ScrollIndicator";
 import OrgChart from "@/components/about/OrgChart";
 import IndonesiaMap from "@/components/about/IndonesiaMap";
-import ServiceGrid from "@/components/about/ServiceGrid";
-import ChillerDiagram from "@/components/about/ChillerDiagram";
+import ServiceShowcaseCarousel from "@/components/about/ServiceShowcaseCarousel";
 import DSSIShowcase from "@/components/about/DSSIShowcase";
 import DeviceMockup from "@/components/about/DeviceMockup";
 
@@ -474,10 +473,10 @@ export default function LoginPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════ */}
-      {/* SEKSI 4: SERVICE & SOLUTIONS + CHILLER DIAGRAM            */}
+      {/* SEKSI 4: SERVICE & SOLUTIONS                                */}
       {/* ═══════════════════════════════════════════════════════════ */}
       <section id="section-services" className="min-h-screen lg:h-screen lg:snap-start flex flex-col items-center justify-center py-16 lg:py-0 bg-gradient-to-b from-blue-50 to-white">
-        <div className="text-center mb-8 lg:mb-12 px-6">
+        <div className="text-center mb-4 lg:mb-8 px-6">
           <motion.h2
             className="text-2xl lg:text-5xl font-black text-slate-800 mb-3"
             initial={{ opacity: 0, y: 30 }}
@@ -497,14 +496,7 @@ export default function LoginPage() {
           </motion.p>
         </div>
         
-        <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12 px-4">
-          <div className="w-full lg:w-1/2">
-            <ChillerDiagram />
-          </div>
-          <div className="w-full lg:w-1/2">
-            <ServiceGrid />
-          </div>
-        </div>
+        <ServiceShowcaseCarousel />
       </section>
 
       {/* ═══════════════════════════════════════════════════════════ */}
