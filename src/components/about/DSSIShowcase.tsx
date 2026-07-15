@@ -25,7 +25,7 @@ const connectFeatures = [
   { icon: FileText, text: "Digital Report Generation" },
   { icon: Users, text: "Field Attendance System" },
   { icon: Globe, text: "Client Portal Access" },
-  { icon: Brain, text: "Predictive Analytics & AI" },
+  { icon: Brain, text: "Predictive Analytics" },
 ];
 
 export default function DSSIShowcase() {
@@ -39,15 +39,19 @@ export default function DSSIShowcase() {
     >
       {/* DSSI Logo & Description */}
       <motion.div variants={itemVariants} className="text-center mb-10 lg:mb-16">
-        <motion.img
-          src="/dssi_logo.png"
-          alt="DSSI - DASI Service & Solutions Indonesia"
-          className="h-16 lg:h-24 mx-auto mb-6"
+        <motion.div
+          className="inline-block bg-white/95 px-10 py-5 rounded-[2rem] shadow-[0_0_40px_rgba(255,255,255,0.15)] mb-8"
           initial={{ scale: 0.8, opacity: 0 }}
           whileInView={{ scale: 1, opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-        />
+        >
+          <img
+            src="/dssi_logo.png"
+            alt="DSSI - DASI Service & Solutions Indonesia"
+            className="h-12 lg:h-20 mx-auto"
+          />
+        </motion.div>
         <p className="text-xs lg:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
           <span className="font-bold text-white">DASI Service & Solutions Indonesia (DSSI)</span> adalah unit operasional di bawah divisi Service
           Daikin Applied Solutions Indonesia (DASI), dioperasikan oleh tim{" "}
