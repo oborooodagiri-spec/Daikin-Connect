@@ -71,7 +71,21 @@ export default function KnowledgeCenterPage() {
       getAllUsers()
     ]);
 
-    if ('success' in resData && resData.success && 'data' in resData) setResources(resData.data);
+    if ('success' in resData && resData.success && 'data' in resData) {
+      const dbRes = resData.data;
+      const vesPitching = {
+        id: "static-ves-pitching",
+        title: "VES PROGRAM PITCHING PRESENTATION",
+        category: "Presentation",
+        type: "Interactive App",
+        href: "/admin/database/ves-pitching",
+        visibility: "Internal",
+        tags: "ves, pitching, presentation, marketing, sales",
+        created_at: new Date().toISOString(),
+        project_id: null
+      };
+      setResources([vesPitching, ...dbRes]);
+    }
     if (sessData) setSession(sessData);
     if ('success' in projData && projData.success && 'data' in projData) setProjects(projData.data);
     if (usersData && 'success' in usersData && usersData.success && 'data' in usersData) setAllUsers(usersData.data);
