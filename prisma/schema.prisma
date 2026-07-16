@@ -1180,6 +1180,7 @@ model pipeline_deals {
   quotation         BigInt             @default(0)
   status            String             @default("E") @db.VarChar(5)
   est_booking_month DateTime?          @db.Date
+  target_po_date    DateTime?          @db.Date
   booking_fc        String?            @db.VarChar(50)
   remarks           String?            @db.Text
   source            String             @default("EPL") @db.VarChar(20)

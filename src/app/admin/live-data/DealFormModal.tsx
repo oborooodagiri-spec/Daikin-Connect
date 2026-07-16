@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Save, Trash2, Building2, MapPin, User, FolderArchive, Activity, FileText, LayoutList } from "lucide-react";
+import { X, Save, Trash2, Building2, MapPin, User, FolderArchive, Activity, FileText, LayoutList, Calendar } from "lucide-react";
 import { createDeal, updateDeal, deleteDeal, getSalesEngineers, getDealHistory } from "@/app/actions/pipeline";
 
 interface DealFormModalProps {
@@ -41,7 +41,8 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
     quotation: "",
     status: "T",
     source: "Sales",
-    remarks: ""
+    remarks: "",
+    target_po_date: ""
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -66,7 +67,8 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           quotation: deal.quotation ? deal.quotation.toString() : "",
           status: deal.status || "T",
           source: deal.source || "Sales",
-          remarks: deal.remarks || ""
+          remarks: deal.remarks || "",
+          target_po_date: deal.target_po_date ? new Date(deal.target_po_date).toISOString().split('T')[0] : ""
         });
       } else {
         setFormData({
@@ -79,7 +81,8 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           quotation: "",
           status: "T",
           source: "Sales",
-          remarks: ""
+          remarks: "",
+          target_po_date: ""
         });
         setHistory([]);
       }
@@ -281,6 +284,12 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
                     <option value="Partnership">Partnership</option>
                     <option value="Marketing">Marketing</option>
                   </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Calendar size={12}/> Target PO Date</label>
+                  <input name="target_po_date" type="date" value={formData.target_po_date} onChange={handleChange}
+                    className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
                 </div>
 
                 <div className="space-y-1.5">

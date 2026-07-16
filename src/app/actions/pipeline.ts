@@ -40,6 +40,7 @@ interface DealData {
   quotation?: string | number;
   status?: string;
   est_booking_month?: string | null;
+  target_po_date?: string | null;
   booking_fc?: string | null;
   remarks?: string | null;
   source?: string;
@@ -185,6 +186,9 @@ export async function createDeal(data: DealData) {
         est_booking_month: data.est_booking_month
           ? new Date(data.est_booking_month)
           : null,
+        target_po_date: data.target_po_date
+          ? new Date(data.target_po_date)
+          : null,
         booking_fc: data.booking_fc || null,
         remarks: data.remarks || null,
         source: data.source || "EPL",
@@ -252,6 +256,9 @@ export async function updateDeal(id: number, data: Partial<DealData>) {
       updateData.est_booking_month = data.est_booking_month
         ? new Date(data.est_booking_month)
         : null;
+    }
+    if (data.target_po_date !== undefined) {
+      updateData.target_po_date = data.target_po_date ? new Date(data.target_po_date) : null;
     }
     if (data.booking_fc !== undefined) updateData.booking_fc = data.booking_fc;
     if (data.remarks !== undefined) updateData.remarks = data.remarks;

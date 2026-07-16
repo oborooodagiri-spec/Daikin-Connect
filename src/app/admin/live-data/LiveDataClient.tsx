@@ -32,6 +32,7 @@ interface Deal {
   quotation: number;
   status: string;
   est_booking_month?: string;
+  target_po_date?: string;
   booking_fc?: string;
   remarks?: string;
   source: string;
@@ -497,14 +498,26 @@ export default function LiveDataClient() {
       byCategory[cat].value += val;
     });
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let overdueCount = 0;
+
     leaderboardDeals.forEach(d => {
       const val = Number(d.quotation) || 0;
       const pic = d.pic || "Unassigned";
-      if (!byPic[pic]) byPic[pic] = { totalValue: 0, totalCount: 0, wonValue: 0, wonCount: 0, lostValue: 0, lostCount: 0 };
+      if (!byPic[pic]) byPic[pic] = { totalValue: 0, totalCount: 0, wonValue: 0, wonCount: 0, lostValue: 0, lostCount: 0, overdueCount: 0 };
       byPic[pic].totalValue += val;
       byPic[pic].totalCount++;
       if (d.status === "A") { byPic[pic].wonValue += val; byPic[pic].wonCount++; }
       if (d.status === "L") { byPic[pic].lostValue += val; byPic[pic].lostCount++; }
+      
+      if (d.target_po_date) {
+        const targetDate = new Date(d.target_po_date);
+        if (targetDate < today && !["A", "L", "S", "N"].includes(d.status)) {
+          overdueCount++;
+          byPic[pic].overdueCount = (byPic[pic].overdueCount || 0) + 1;
+        }
+      }
     });
 
     const conversionRate = activeCount > 0 ? ((wonCount / activeCount) * 100).toFixed(1) : "0";
@@ -512,7 +525,7 @@ export default function LiveDataClient() {
 
     return {
       total, won, pipeline, lost, wonCount, activeCount, weightedPipeline,
-      conversionRate, conversionRateValue,
+      conversionRate, conversionRateValue, overdueCount,
       backlogValue, backlogCount, newFyValue, newFyCount,
       byStatus, byPic, bySector, byCategory
     };
@@ -569,6 +582,7 @@ export default function LiveDataClient() {
           { label: "Gross Pipeline (Total)", value: formatRp(stats.pipeline), sub: `${deals.length} active projects`, icon: DollarSign, color: "#0073ea", gradient: "linear-gradient(135deg, #0073ea 0%, #66ccff 100%)" },
           { label: "Expected Revenue", value: formatRp(stats.weightedPipeline), sub: `Risk-adjusted projection`, icon: Target, color: "#7b2cbf", gradient: "linear-gradient(135deg, #7b2cbf 0%, #a855f7 100%)" },
           { label: "Total Won", value: formatRp(stats.won), sub: `${stats.wonCount} projects secured`, icon: Trophy, color: "#10b981", gradient: "linear-gradient(135deg, #10b981 0%, #34d399 100%)" },
+          { label: "Overdue Projects", value: stats.overdueCount, sub: `Past Target PO`, icon: AlertTriangle, color: "#ef4444", gradient: "linear-gradient(135deg, #ef4444 0%, #f87171 100%)" },
         ].map((kpi, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
             style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 16, cursor: "default", padding: "20px" }}
@@ -591,7 +605,7 @@ export default function LiveDataClient() {
       </motion.div>
 
       {/* SALES PERFORMANCE MATRIX */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* TOP PERFORMERS (MOST PO) */}
         <div style={{ ...cardStyle, background: "linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
@@ -619,6 +633,35 @@ export default function LiveDataClient() {
                     </div>
                     <div style={{ height: 8, background: "#e2e8f0", borderRadius: 4, overflow: "hidden" }}>
                       <motion.div initial={{ width: 0 }} animate={{ width: `${(data.wonValue / maxVal) * 100}%` }} transition={{ duration: 1 }} style={{ height: "100%", background: "#00c875", borderRadius: 4 }} />
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+
+        {/* OVERDUE PROJECTS LEADERBOARD */}
+        <div style={{ ...cardStyle, background: "linear-gradient(180deg, #ffffff 0%, #fff1f2 100%)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(239, 68, 68, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <AlertTriangle size={16} color="#ef4444" />
+            </div>
+            <h3 style={{ fontSize: 13, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em", color: "#323338" }}>Sales Overdue Leaderboard</h3>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {Object.entries(stats.byPic)
+              .filter(([name, data]) => name !== "Unassigned" && (data as any).overdueCount > 0)
+              .sort(([, a], [, b]) => (b as any).overdueCount - (a as any).overdueCount)
+              .slice(0, 5)
+              .map(([pic, data], idx) => {
+                const overdueCount = (data as any).overdueCount;
+                return (
+                  <div key={pic} style={{ position: "relative" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, alignItems: "flex-end" }}>
+                      <span style={{ fontSize: 12, fontWeight: 800, color: "#323338" }}>{idx + 1}. {pic}</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ fontSize: 10, fontWeight: 800, color: "#ef4444", background: "rgba(239,68,68,0.1)", padding: "2px 6px", borderRadius: 4 }}>{overdueCount} Projects Overdue</span>
+                      </div>
                     </div>
                   </div>
                 );
@@ -853,10 +896,14 @@ export default function LiveDataClient() {
                 </tr>
               </thead>
               <tbody>
-                {paginated.map((deal) => (
-                  <tr key={deal.id} style={{ borderBottom: "1px solid #f0f0f0", transition: "background 0.15s" }}
-                    onMouseEnter={e => (e.currentTarget.style.background = "#f8f9fb")}
-                    onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                {paginated.map((deal) => {
+                  const targetDate = deal.target_po_date ? new Date(deal.target_po_date) : null;
+                  const isOverdue = targetDate && targetDate < new Date() && !["A", "L", "S", "N"].includes(deal.status);
+                  
+                  return (
+                  <tr key={deal.id} className={isOverdue ? "animate-pulse border-red-500 border-l-4" : ""} style={{ borderBottom: "1px solid #f0f0f0", transition: "background 0.15s", backgroundColor: isOverdue ? "rgba(239,68,68,0.05)" : "transparent" }}
+                    onMouseEnter={e => (e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.1)" : "#f8f9fb")}
+                    onMouseLeave={e => (e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.05)" : "transparent")}
                   >
                     <td style={{ padding: "12px 16px", maxWidth: 300 }}>
                       <div className="flex items-center gap-2 mb-0.5">
@@ -888,7 +935,8 @@ export default function LiveDataClient() {
                       </button>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
                 {paginated.length === 0 && (
                   <tr><td colSpan={8} style={{ padding: 60, textAlign: "center", fontSize: 13, fontWeight: 700, color: "#c4c4c4", fontStyle: "italic" }}>No matching records found</td></tr>
                 )}
