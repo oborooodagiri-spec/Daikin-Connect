@@ -13,6 +13,7 @@ import {
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 import DealFormModal from "./DealFormModal";
 import OpsFormModal from "./OpsFormModal";
+import PresentationModal, { PresentationState } from "./PresentationModal";
 
 // ============================================
 // TYPES
@@ -380,6 +381,7 @@ export default function LiveDataClient() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingOps, setEditingOps] = useState<OpsRecord | null>(null);
   const [showOpsModal, setShowOpsModal] = useState(false);
+  const [presentationState, setPresentationState] = useState<PresentationState | null>(null);
   const itemsPerPage = 20;
 
   const currentFY = useMemo(() => {
@@ -716,7 +718,7 @@ export default function LiveDataClient() {
                 const cfg = STATUS_CONFIG[status] || { label: status, color: "#888" };
                 const pct = (data.value / maxVal) * 100;
                 return (
-                  <div key={status} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div key={status} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setPresentationState({ title: `Pipeline Status: ${cfg.label}`, subtitle: "Detailed Project List", color: cfg.color, data: deals.filter(d => d.status === status) })}>
                     <span style={{ width: 80, fontSize: 10, fontWeight: 800, color: cfg.color, textAlign: "right" }}>{cfg.label}</span>
                     <div style={{ flex: 1, height: 32, background: "#f8fafc", borderRadius: 6, display: "flex", alignItems: "center" }}>
                       <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8 }}
@@ -754,7 +756,7 @@ export default function LiveDataClient() {
                 );
               })()}
             </svg>
-            <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer" }} onClick={() => setPresentationState({ title: "Gross Pipeline", subtitle: "All Active Projects", color: "#323338", data: deals.filter(d => !["L", "H"].includes(d.status)) })}>
               <text style={{ fontSize: 10, fontWeight: 800, color: "#676879", letterSpacing: "0.05em" }}>GROSS PIPELINE</text>
               <text style={{ fontSize: 18, fontWeight: 900, color: "#323338", marginTop: 2 }}>{formatRp(stats.pipeline + stats.won + stats.lost)}</text>
             </div>
@@ -789,7 +791,7 @@ export default function LiveDataClient() {
               const entries = Object.entries(stats.bySector).sort(([, a], [, b]) => b.value - a.value).slice(0, 5);
               const maxVal = Math.max(...entries.map(([, v]) => v.value), 1);
               return entries.map(([sector, data], idx) => (
-                <div key={sector} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div key={sector} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setPresentationState({ title: `Sector: ${sector}`, subtitle: "Detailed Project List", color: sectorColors[idx % sectorColors.length], data: deals.filter(d => d.sector === sector) })}>
                   <span style={{ width: 90, fontSize: 10, fontWeight: 800, color: sectorColors[idx % sectorColors.length] }}>{sector}</span>
                   <div style={{ flex: 1, height: 28, background: "#f8fafc", borderRadius: 8, overflow: "hidden", position: "relative" }}>
                     <motion.div initial={{ width: 0 }} animate={{ width: `${(data.value / maxVal) * 100}%` }} transition={{ duration: 0.8 }}
@@ -819,7 +821,7 @@ export default function LiveDataClient() {
               const entries = Object.entries(stats.byCategory).sort(([, a], [, b]) => b.value - a.value).slice(0, 5);
               const maxVal = Math.max(...entries.map(([, v]) => v.value), 1);
               return entries.map(([category, data], idx) => (
-                <div key={category} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div key={category} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setPresentationState({ title: `Category: ${category}`, subtitle: "Detailed Project List", color: catColors[idx % catColors.length], data: deals.filter(d => d.category === category) })}>
                   <span style={{ width: 90, fontSize: 10, fontWeight: 800, color: catColors[idx % catColors.length] }}>{category}</span>
                   <div style={{ flex: 1, height: 28, background: "#f8fafc", borderRadius: 8, overflow: "hidden", position: "relative" }}>
                     <motion.div initial={{ width: 0 }} animate={{ width: `${(data.value / maxVal) * 100}%` }} transition={{ duration: 0.8 }}
