@@ -392,36 +392,50 @@ export default function LiveDataClient() {
     return d.getMonth() >= 4 ? d.getFullYear() - 2000 : d.getFullYear() - 2000 - 1;
   }, []);
   const [selectedFY, setSelectedFY] = useState(currentFY);
-  const [timeFilter, setTimeFilter] = useState<'FY' | 'THIS_MONTH' | 'LAST_MONTH'> ('FY');
+  const [selectedMonth, setSelectedMonth] = useState(0);
   const fyOptions = Array.from({ length: 5 }, (_, i) => currentFY - i);
 
-  const getFilteredDeals = () => {
-    const now = new Date();
-    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-    const thisMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999).getTime();
-    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
-    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999).getTime();
+  const MONTH_OPTIONS = [
+    { value: 0, label: "Full FY" },
+    { value: 1, label: "April" },
+    { value: 2, label: "Mei" },
+    { value: 3, label: "Juni" },
+    { value: 4, label: "Juli" },
+    { value: 5, label: "Agustus" },
+    { value: 6, label: "September" },
+    { value: 7, label: "Oktober" },
+    { value: 8, label: "November" },
+    { value: 9, label: "Desember" },
+    { value: 10, label: "Januari" },
+    { value: 11, label: "Februari" },
+    { value: 12, label: "Maret" },
+  ];
+
+    const getMonthRange = useMemo(() => {
+    if (selectedMonth === 0) return null;
+    const fyYear = 2000 + selectedFY;
+    const calendarMonth = selectedMonth <= 9 ? selectedMonth + 2 : selectedMonth - 10;
+    const calendarYear = selectedMonth <= 9 ? fyYear : fyYear + 1;
+    const start = new Date(calendarYear, calendarMonth, 1).getTime();
+    const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTime();
+    return { start, end };
+  }, [selectedFY, selectedMonth]);
+
+  const activeDeals = useMemo(() => {
     const fyStart = new Date(2000 + selectedFY, 3, 1).getTime();
     const fyEnd = new Date(2000 + selectedFY + 1, 2, 31, 23, 59, 59, 999).getTime();
-
     return deals.filter(d => {
       const cTime = new Date(d.created_at).getTime();
       const uTime = new Date(d.updated_at).getTime();
       if (cTime > fyEnd) return false;
       if (['A', 'L'].includes(d.status) && uTime < fyStart) return false;
-      
-      if (timeFilter === 'THIS_MONTH') {
-        if (cTime > thisMonthEnd) return false;
-        if (['A', 'L'].includes(d.status) && uTime < thisMonthStart) return false;
-      }
-      if (timeFilter === 'LAST_MONTH') {
-        if (cTime > lastMonthEnd) return false;
-        if (['A', 'L'].includes(d.status) && uTime < lastMonthStart) return false;
+      if (getMonthRange) {
+        if (cTime > getMonthRange.end) return false;
+        if (['A', 'L'].includes(d.status) && uTime < getMonthRange.start) return false;
       }
       return true;
     });
-  };
-  const activeDeals = getFilteredDeals();
+  }, [deals, selectedFY, selectedMonth, getMonthRange]);
 
   // Load data
   useEffect(() => {
@@ -460,6 +474,7 @@ export default function LiveDataClient() {
       totalValue: number; totalCount: number; 
       wonValue: number; wonCount: number; 
       lostValue: number; lostCount: number;
+      overdueCount: number;
     }> = {};
     const bySector: Record<string, { count: number; value: number }> = {};
     const byCategory: Record<string, { count: number; value: number }> = {};
@@ -477,14 +492,8 @@ export default function LiveDataClient() {
       "N": 0
     };
 
-    const now = new Date();
-    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-    const thisMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999).getTime();
-    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
-    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999).getTime();
-
-    const fyStart = new Date(2000 + selectedFY, 3, 1).getTime(); // April 1
-    const fyEnd = new Date(2000 + selectedFY + 1, 2, 31, 23, 59, 59, 999).getTime(); // March 31
+    const fyStart = new Date(2000 + selectedFY, 3, 1).getTime();
+    const fyEnd = new Date(2000 + selectedFY + 1, 2, 31, 23, 59, 59, 999).getTime();
 
     deals.forEach(d => {
       const cTime = new Date(d.created_at).getTime();
@@ -494,13 +503,9 @@ export default function LiveDataClient() {
       if (cTime > fyEnd) return; // Created after this FY ended
       if (['A', 'L'].includes(d.status) && uTime < fyStart) return; // Closed before this FY started
 
-      if (timeFilter === 'THIS_MONTH') {
-        if (cTime > thisMonthEnd) return;
-        if (['A', 'L'].includes(d.status) && uTime < thisMonthStart) return;
-      }
-      if (timeFilter === 'LAST_MONTH') {
-        if (cTime > lastMonthEnd) return;
-        if (['A', 'L'].includes(d.status) && uTime < lastMonthStart) return;
+      if (getMonthRange) {
+        if (cTime > getMonthRange.end) return;
+        if (['A', 'L'].includes(d.status) && uTime < getMonthRange.start) return;
       }
       
       const isBacklog = cTime < fyStart;
@@ -578,7 +583,7 @@ export default function LiveDataClient() {
       backlogValue, backlogCount, newFyValue, newFyCount,
       byStatus, byPic, bySector, byCategory
     };
-  }, [deals, leaderboardDeals, selectedFY, timeFilter]);
+  }, [deals, leaderboardDeals, selectedFY, selectedMonth, getMonthRange]);
 
   // Filtered lists
   const filteredDeals = useMemo(() => {
@@ -634,7 +639,19 @@ export default function LiveDataClient() {
           { label: "Overdue Projects", value: stats.overdueCount, sub: `Past Target PO`, icon: AlertTriangle, color: "#ef4444", gradient: "linear-gradient(135deg, #ef4444 0%, #f87171 100%)" },
         ].map((kpi, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-            style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 16, cursor: "default", padding: "20px" }}
+            onClick={() => {
+              let fd = [];
+              if (kpi.label.includes('Pipeline') && kpi.label.includes('FY')) fd = activeDeals.filter(d => !['A','L','H'].includes(d.status) && new Date(d.created_at).getTime() >= new Date(2000 + selectedFY, 3, 1).getTime());
+              else if (kpi.label === 'Backlog Pipeline') fd = activeDeals.filter(d => !['A','L','H'].includes(d.status) && new Date(d.created_at).getTime() < new Date(2000 + selectedFY, 3, 1).getTime());
+              else if (kpi.label.includes('Gross')) fd = activeDeals.filter(d => !['L','H'].includes(d.status));
+              else if (kpi.label.includes('Expected')) fd = activeDeals.filter(d => !['L','H'].includes(d.status));
+              else if (kpi.label.includes('Won')) fd = activeDeals.filter(d => d.status === 'A');
+              else if (kpi.label.includes('Overdue')) fd = activeDeals.filter(d => d.target_po_date && new Date(d.target_po_date) < new Date() && !['A','L','S','N'].includes(d.status));
+              else fd = activeDeals;
+              setPresentationState({ title: kpi.label, subtitle: kpi.sub, color: kpi.color, data: fd });
+            }}
+            style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 16, cursor: "pointer", padding: "20px", transition: "all 0.15s" }}
+            whileHover={{ scale: 1.02, boxShadow: "0 8px 25px rgba(0,0,0,0.08)" }}
           >
             <div style={{ width: 48, height: 48, borderRadius: 14, background: kpi.gradient, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: `0 4px 12px ${kpi.color}40` }}>
               <kpi.icon size={22} color="white" />
@@ -672,7 +689,9 @@ export default function LiveDataClient() {
                 const maxVal = Math.max(...Object.values(stats.byPic).map(v => v.wonValue));
                 const winRate = data.totalValue > 0 ? Math.round((data.wonValue / data.totalValue) * 100) : 0;
                 return (
-                  <div key={pic} style={{ position: "relative" }}>
+                  <div key={pic} style={{ position: "relative", cursor: "pointer" }}
+                    onClick={() => setPresentationState({ title: `Top Performer: ${pic}`, subtitle: `Win Rate: ${winRate}% · Won: ${formatRp(data.wonValue)}`, color: "#00c875", data: leaderboardDeals.filter(d => d.pic === pic) })}
+                  >
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, alignItems: "flex-end" }}>
                       <span style={{ fontSize: 12, fontWeight: 800, color: "#323338" }}>{idx + 1}. {pic}</span>
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -705,7 +724,9 @@ export default function LiveDataClient() {
               .map(([pic, data], idx) => {
                 const overdueCount = (data as any).overdueCount;
                 return (
-                  <div key={pic} style={{ position: "relative" }}>
+                  <div key={pic} style={{ position: "relative", cursor: "pointer" }}
+                    onClick={() => setPresentationState({ title: `Overdue: ${pic}`, subtitle: `${overdueCount} projects melewati target PO`, color: "#ef4444", data: leaderboardDeals.filter(d => d.pic === pic && d.target_po_date && new Date(d.target_po_date) < new Date() && !['A','L','S','N'].includes(d.status)) })}
+                  >
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, alignItems: "flex-end" }}>
                       <span style={{ fontSize: 12, fontWeight: 800, color: "#323338" }}>{idx + 1}. {pic}</span>
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -1178,21 +1199,12 @@ export default function LiveDataClient() {
           </div>
 
             <div className="flex items-center gap-4">
-              <div style={{ display: 'flex', background: '#f1f5f9', padding: 4, borderRadius: 10, gap: 4 }}>
-                  {(['FY', 'THIS_MONTH', 'LAST_MONTH'] as const).map(f => (
-                    <button key={f} onClick={() => setTimeFilter(f)}
-                      style={{
-                        padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 700,
-                        background: timeFilter === f ? 'white' : 'transparent',
-                        color: timeFilter === f ? '#0f172a' : '#64748b',
-                        boxShadow: timeFilter === f ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-                        border: 'none', cursor: 'pointer', transition: 'all 0.2s'
-                      }}
-                    >
-                      {f === 'FY' ? 'Full FY' : f === 'THIS_MONTH' ? 'Bulan Ini' : 'Bulan Lalu'}
-                    </button>
-                  ))}
-                </div>
+              <select value={selectedMonth} onChange={e => setSelectedMonth(Number(e.target.value))}
+                className="px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
+                {MONTH_OPTIONS.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
                 <select value={selectedFY} onChange={e => setSelectedFY(Number(e.target.value))}
                 className="px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
                 {fyOptions.map(fy => (
@@ -1252,6 +1264,7 @@ export default function LiveDataClient() {
 
       <DealFormModal isOpen={showAddModal} onClose={() => setShowAddModal(false)} onSuccess={loadData} deal={editingDeal} sessionName="" />
       <OpsFormModal isOpen={showOpsModal} onClose={() => setShowOpsModal(false)} onSuccess={loadData} opsRecord={editingOps} />
+      <PresentationModal state={presentationState} onClose={() => setPresentationState(null)} formatRp={formatRp} STATUS_CONFIG={STATUS_CONFIG} />
     </div>
   );
 }
