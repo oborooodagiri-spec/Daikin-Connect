@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Search, Building2, Calendar, TrendingUp, BarChart3, ChevronDown, ChevronUp } from "lucide-react";
+import { X, Search, Building2, Calendar, ChevronDown, ChevronUp } from "lucide-react";
 
 export interface PresentationState {
   title: string;
@@ -28,21 +28,25 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
   const [search, setSearch] = useState("");
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
-  if (!state) return null;
+  // ALL hooks MUST be called before any conditional return
+  const data = state?.data || [];
 
-  const filteredData = state.data.filter(d => {
-    if (!search) return true;
-    const s = search.toLowerCase();
-    return d.client_name?.toLowerCase().includes(s) ||
-           d.project_name?.toLowerCase().includes(s) ||
-           d.pic?.toLowerCase().includes(s) ||
-           d.sector?.toLowerCase().includes(s) ||
-           d.category?.toLowerCase().includes(s);
-  });
+  const filteredData = useMemo(() => {
+    return data.filter((d: any) => {
+      if (!search) return true;
+      const s = search.toLowerCase();
+      return d.client_name?.toLowerCase().includes(s) ||
+             d.project_name?.toLowerCase().includes(s) ||
+             d.pic?.toLowerCase().includes(s) ||
+             d.sector?.toLowerCase().includes(s) ||
+             d.category?.toLowerCase().includes(s);
+    });
+  }, [data, search]);
 
-  const totalQuotation = filteredData.reduce((acc: number, curr: any) => acc + (Number(curr.quotation) || 0), 0);
+  const totalQuotation = useMemo(() => {
+    return filteredData.reduce((acc: number, curr: any) => acc + (Number(curr.quotation) || 0), 0);
+  }, [filteredData]);
 
-  // Group by status for summary
   const statusSummary = useMemo(() => {
     const map: Record<string, { count: number; value: number }> = {};
     filteredData.forEach((d: any) => {
@@ -54,28 +58,21 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
     return Object.entries(map).sort(([, a], [, b]) => b.value - a.value);
   }, [filteredData]);
 
-  // Group by month for time-based view
   const monthlyGroups = useMemo(() => {
-    const groups: Record<string, { deals: any[]; totalValue: number }> = {};
+    const groups: Record<string, { deals: any[]; totalValue: number; label: string }> = {};
     filteredData.forEach((d: any) => {
       const date = new Date(d.created_at);
       const key = `${date.getFullYear()}-${String(date.getMonth()).padStart(2, "0")}`;
       const label = `${MONTH_NAMES[date.getMonth()]} ${date.getFullYear()}`;
-      if (!groups[key]) groups[key] = { deals: [], totalValue: 0 };
-      groups[key].deals.push({ ...d, _monthLabel: label });
+      if (!groups[key]) groups[key] = { deals: [], totalValue: 0, label };
+      groups[key].deals.push(d);
       groups[key].totalValue += (Number(d.quotation) || 0);
     });
     return Object.entries(groups)
       .sort(([a], [b]) => b.localeCompare(a))
-      .map(([key, val]) => ({
-        key,
-        label: val.deals[0]?._monthLabel || key,
-        deals: val.deals,
-        totalValue: val.totalValue,
-      }));
+      .map(([key, val]) => ({ key, label: val.label, deals: val.deals, totalValue: val.totalValue }));
   }, [filteredData]);
 
-  // Group by PIC
   const picSummary = useMemo(() => {
     const map: Record<string, { count: number; value: number }> = {};
     filteredData.forEach((d: any) => {
@@ -87,9 +84,14 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
     return Object.entries(map).sort(([, a], [, b]) => b.value - a.value);
   }, [filteredData]);
 
-  const overdueCount = filteredData.filter((d: any) =>
-    d.target_po_date && new Date(d.target_po_date) < new Date() && !["A", "L", "S", "N"].includes(d.status)
-  ).length;
+  const overdueCount = useMemo(() => {
+    return filteredData.filter((d: any) =>
+      d.target_po_date && new Date(d.target_po_date) < new Date() && !["A", "L", "S", "N"].includes(d.status)
+    ).length;
+  }, [filteredData]);
+
+  // NOW we can do the conditional return
+  if (!state) return null;
 
   const toggleGroup = (key: string) => {
     setExpandedGroups(prev => ({ ...prev, [key]: !prev[key] }));
@@ -112,7 +114,7 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
           overflow: "hidden"
         }}
       >
-        {/* ═══ HEADER ═══ */}
+        {/* HEADER */}
         <motion.div
           initial={{ y: -40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -126,7 +128,7 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
           }}
         >
           <div>
-            <h1 style={{ fontSize: 28, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.04em", margin: 0, color: "white" }}>
+            <h1 style={{ fontSize: 28, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.04em", margin: 0 }}>
               <span style={{ color: state.color }}>●</span>&nbsp; {state.title}
             </h1>
             {state.subtitle && <p style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", margin: "4px 0 0 0" }}>{state.subtitle}</p>}
@@ -136,14 +138,14 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
             width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center",
             cursor: "pointer", color: "white", transition: "all 0.2s"
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.15)"; e.currentTarget.style.transform = "scale(1.05)"; }}
-          onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.transform = "scale(1)"; }}
+          onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.15)"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
           >
             <X size={20} />
           </button>
         </motion.div>
 
-        {/* ═══ SUMMARY STRIP ═══ */}
+        {/* SUMMARY STRIP */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -173,24 +175,24 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
           ))}
         </motion.div>
 
-        {/* ═══ STATUS BREAKDOWN BAR ═══ */}
+        {/* STATUS BREAKDOWN BAR */}
         <motion.div
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ delay: 0.4, duration: 0.6 }}
           style={{ padding: "0 48px 16px", display: "flex", gap: 6, flexShrink: 0, transformOrigin: "left" }}
         >
-          {statusSummary.map(([status, data]) => {
+          {statusSummary.map(([status, sdata]) => {
             const cfg = STATUS_CONFIG[status] || { label: status, color: "#888" };
-            const pct = totalQuotation > 0 ? (data.value / totalQuotation * 100) : 0;
+            const pct = totalQuotation > 0 ? (sdata.value / totalQuotation * 100) : 0;
             return (
-              <div key={status} title={`${cfg.label}: ${formatRp(data.value)} (${data.count} projects)`}
+              <div key={status} title={`${cfg.label}: ${formatRp(sdata.value)} (${sdata.count} projects)`}
                 style={{ flex: pct, height: 6, background: cfg.color, borderRadius: 3, minWidth: pct > 0 ? 4 : 0, transition: "all 0.5s" }} />
             );
           })}
         </motion.div>
 
-        {/* ═══ SEARCH + STATUS TAGS ═══ */}
+        {/* SEARCH + STATUS TAGS */}
         <div style={{ padding: "0 48px 16px", display: "flex", gap: 16, alignItems: "center", flexShrink: 0, flexWrap: "wrap" }}>
           <div style={{ position: "relative", flex: 1, minWidth: 240 }}>
             <Search size={16} color="rgba(255,255,255,0.4)" style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)" }} />
@@ -207,21 +209,21 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
             />
           </div>
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-            {statusSummary.slice(0, 6).map(([status, data]) => {
+            {statusSummary.slice(0, 6).map(([status, sdata]) => {
               const cfg = STATUS_CONFIG[status] || { label: status, color: "#888" };
               return (
                 <span key={status} style={{
                   padding: "5px 10px", borderRadius: 6, fontSize: 10, fontWeight: 800,
                   background: `${cfg.color}20`, color: cfg.color, whiteSpace: "nowrap"
                 }}>
-                  {cfg.label}: {data.count} ({formatRp(data.value)})
+                  {cfg.label}: {sdata.count} ({formatRp(sdata.value)})
                 </span>
               );
             })}
           </div>
         </div>
 
-        {/* ═══ MONTHLY GROUPS ═══ */}
+        {/* MONTHLY GROUPS */}
         <div style={{ flex: 1, padding: "0 48px 32px", overflow: "auto" }} className="scrollbar-hide">
           {monthlyGroups.length === 0 && (
             <div style={{ padding: 80, textAlign: "center", color: "rgba(255,255,255,0.3)", fontSize: 16, fontWeight: 700 }}>
@@ -229,7 +231,7 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
             </div>
           )}
           {monthlyGroups.map((group, gi) => {
-            const isExpanded = expandedGroups[group.key] !== false; // default expanded
+            const isExpanded = expandedGroups[group.key] !== false;
             return (
               <motion.div
                 key={group.key}
@@ -267,120 +269,100 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
                 </div>
 
                 {/* Month Content */}
-                <AnimatePresence>
-                  {isExpanded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      style={{ overflow: "hidden", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderTop: "none", borderRadius: "0 0 14px 14px" }}
-                    >
-                      <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
-                        <thead>
-                          <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                            {["Project & Client", "Sector & Category", "Status", "PIC", "Target PO", "Value"].map(th => (
-                              <th key={th} style={{ padding: "12px 20px", fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: "rgba(255,255,255,0.35)" }}>{th}</th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {group.deals.map((d: any, i: number) => {
-                            const cfg = STATUS_CONFIG[d.status] || { label: d.status, color: "#888" };
-                            const isOverdue = d.target_po_date && new Date(d.target_po_date) < new Date() && !["A", "L", "S", "N"].includes(d.status);
-                            return (
-                              <motion.tr
-                                key={d.id || i}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: i * 0.015, duration: 0.2 }}
-                                style={{
-                                  borderBottom: "1px solid rgba(255,255,255,0.04)",
-                                  background: isOverdue ? "rgba(239,68,68,0.08)" : "transparent",
-                                  transition: "background 0.15s"
-                                }}
-                                onMouseEnter={(e: React.MouseEvent<HTMLTableRowElement>) => e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.14)" : "rgba(255,255,255,0.03)"}
-                                onMouseLeave={(e: React.MouseEvent<HTMLTableRowElement>) => e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.08)" : "transparent"}
-                              >
-                                <td style={{ padding: "16px 20px", maxWidth: 300 }}>
-                                  <p style={{ fontSize: 14, fontWeight: 800, color: "white", margin: "0 0 3px 0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.project_name}</p>
-                                  <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", margin: 0, display: "flex", alignItems: "center", gap: 5 }}>
-                                    <Building2 size={11} /> {d.client_name} {d.area ? `– ${d.area}` : ""}
-                                  </p>
-                                </td>
-                                <td style={{ padding: "16px 20px" }}>
-                                  <p style={{ fontSize: 13, fontWeight: 700, color: "white", margin: "0 0 2px 0" }}>{d.sector || "-"}</p>
-                                  <p style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", margin: 0 }}>{d.category || "-"}</p>
-                                </td>
-                                <td style={{ padding: "16px 20px" }}>
-                                  <span style={{ display: "inline-block", padding: "5px 10px", borderRadius: 7, fontSize: 11, fontWeight: 800, background: `${cfg.color}20`, color: cfg.color }}>
-                                    {cfg.label}
+                {isExpanded && (
+                  <div style={{ overflow: "hidden", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderTop: "none", borderRadius: "0 0 14px 14px" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+                      <thead>
+                        <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                          {["Project & Client", "Sector & Category", "Status", "PIC", "Target PO", "Value"].map(th => (
+                            <th key={th} style={{ padding: "12px 20px", fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: "rgba(255,255,255,0.35)" }}>{th}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {group.deals.map((d: any, i: number) => {
+                          const cfg = STATUS_CONFIG[d.status] || { label: d.status, color: "#888" };
+                          const isOverdue = d.target_po_date && new Date(d.target_po_date) < new Date() && !["A", "L", "S", "N"].includes(d.status);
+                          return (
+                            <tr
+                              key={d.id || i}
+                              style={{
+                                borderBottom: "1px solid rgba(255,255,255,0.04)",
+                                background: isOverdue ? "rgba(239,68,68,0.08)" : "transparent",
+                                transition: "background 0.15s"
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.14)" : "rgba(255,255,255,0.03)"}
+                              onMouseLeave={(e) => e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.08)" : "transparent"}
+                            >
+                              <td style={{ padding: "16px 20px", maxWidth: 300 }}>
+                                <p style={{ fontSize: 14, fontWeight: 800, color: "white", margin: "0 0 3px 0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.project_name}</p>
+                                <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", margin: 0, display: "flex", alignItems: "center", gap: 5 }}>
+                                  <Building2 size={11} /> {d.client_name} {d.area ? `– ${d.area}` : ""}
+                                </p>
+                              </td>
+                              <td style={{ padding: "16px 20px" }}>
+                                <p style={{ fontSize: 13, fontWeight: 700, color: "white", margin: "0 0 2px 0" }}>{d.sector || "-"}</p>
+                                <p style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", margin: 0 }}>{d.category || "-"}</p>
+                              </td>
+                              <td style={{ padding: "16px 20px" }}>
+                                <span style={{ display: "inline-block", padding: "5px 10px", borderRadius: 7, fontSize: 11, fontWeight: 800, background: `${cfg.color}20`, color: cfg.color }}>
+                                  {cfg.label}
+                                </span>
+                              </td>
+                              <td style={{ padding: "16px 20px", fontSize: 13, fontWeight: 700, color: "white" }}>
+                                {d.pic || "-"}
+                              </td>
+                              <td style={{ padding: "16px 20px" }}>
+                                {d.target_po_date ? (
+                                  <span style={{ fontSize: 12, fontWeight: 700, color: isOverdue ? "#ef4444" : "rgba(255,255,255,0.8)", display: "flex", alignItems: "center", gap: 5 }}>
+                                    <Calendar size={12} />
+                                    {new Date(d.target_po_date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                                    {isOverdue && <span style={{ fontSize: 9, background: "#ef4444", color: "white", padding: "2px 5px", borderRadius: 3, marginLeft: 3, fontWeight: 900 }}>OVERDUE</span>}
                                   </span>
-                                </td>
-                                <td style={{ padding: "16px 20px", fontSize: 13, fontWeight: 700, color: "white" }}>
-                                  {d.pic || "-"}
-                                </td>
-                                <td style={{ padding: "16px 20px" }}>
-                                  {d.target_po_date ? (
-                                    <span style={{ fontSize: 12, fontWeight: 700, color: isOverdue ? "#ef4444" : "rgba(255,255,255,0.8)", display: "flex", alignItems: "center", gap: 5 }}>
-                                      <Calendar size={12} />
-                                      {new Date(d.target_po_date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
-                                      {isOverdue && <span style={{ fontSize: 9, background: "#ef4444", color: "white", padding: "2px 5px", borderRadius: 3, marginLeft: 3, fontWeight: 900 }}>OVERDUE</span>}
-                                    </span>
-                                  ) : <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 12 }}>–</span>}
-                                </td>
-                                <td style={{ padding: "16px 20px", fontSize: 15, fontWeight: 900, color: "white", fontVariantNumeric: "tabular-nums" }}>
-                                  {formatRp(Number(d.quotation) || 0)}
-                                </td>
-                              </motion.tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                                ) : <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 12 }}>–</span>}
+                              </td>
+                              <td style={{ padding: "16px 20px", fontSize: 15, fontWeight: 900, color: "white", fontVariantNumeric: "tabular-nums" }}>
+                                {formatRp(Number(d.quotation) || 0)}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </motion.div>
             );
           })}
 
-          {/* ═══ PIC SUMMARY TABLE ═══ */}
+          {/* PIC SUMMARY */}
           {picSummary.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.4 }}
-              style={{
-                marginTop: 8, padding: 24,
-                background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: 14
-              }}
-            >
+            <div style={{
+              marginTop: 8, padding: 24,
+              background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: 14
+            }}>
               <h3 style={{ fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.5)", margin: "0 0 16px 0" }}>
                 Kontribusi per PIC
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {picSummary.map(([pic, data], idx) => {
+                {picSummary.map(([pic, pdata], idx) => {
                   const maxVal = Math.max(...picSummary.map(([, d]) => d.value), 1);
+                  const pct = (pdata.value / maxVal) * 100;
                   return (
                     <div key={pic} style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       <span style={{ width: 100, fontSize: 12, fontWeight: 800, color: "rgba(255,255,255,0.8)", textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pic}</span>
                       <div style={{ flex: 1, height: 24, background: "rgba(255,255,255,0.06)", borderRadius: 6, overflow: "hidden", position: "relative" }}>
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${(data.value / maxVal) * 100}%` }}
-                          transition={{ duration: 0.8, delay: idx * 0.05 }}
-                          style={{ height: "100%", background: state.color, borderRadius: 6, opacity: 0.7 }}
-                        />
+                        <div style={{ height: "100%", width: `${pct}%`, background: state.color, borderRadius: 6, opacity: 0.7, transition: "width 0.8s ease" }} />
                         <span style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", fontSize: 10, fontWeight: 800, color: "rgba(255,255,255,0.7)" }}>
-                          {data.count} projects · {formatRp(data.value)}
+                          {pdata.count} projects · {formatRp(pdata.value)}
                         </span>
                       </div>
                     </div>
                   );
                 })}
               </div>
-            </motion.div>
+            </div>
           )}
         </div>
       </motion.div>
