@@ -383,6 +383,18 @@ export default function LiveDataClient() {
   const [showOpsModal, setShowOpsModal] = useState(false);
   const [presentationState, setPresentationState] = useState<PresentationState | null>(null);
 
+
+  
+  const itemsPerPage = 20;
+
+  const currentFY = useMemo(() => {
+    const d = new Date();
+    return d.getMonth() >= 4 ? d.getFullYear() - 2000 : d.getFullYear() - 2000 - 1;
+  }, []);
+  const [selectedFY, setSelectedFY] = useState(currentFY);
+  const [timeFilter, setTimeFilter] = useState<'FY' | 'THIS_MONTH' | 'LAST_MONTH'> ('FY');
+  const fyOptions = Array.from({ length: 5 }, (_, i) => currentFY - i);
+
   const getFilteredDeals = () => {
     const now = new Date();
     const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
@@ -410,16 +422,6 @@ export default function LiveDataClient() {
     });
   };
   const activeDeals = getFilteredDeals();
-  
-  const itemsPerPage = 20;
-
-  const currentFY = useMemo(() => {
-    const d = new Date();
-    return d.getMonth() >= 4 ? d.getFullYear() - 2000 : d.getFullYear() - 2000 - 1;
-  }, []);
-  const [selectedFY, setSelectedFY] = useState(currentFY);
-  const [timeFilter, setTimeFilter] = useState<'FY' | 'THIS_MONTH' | 'LAST_MONTH'> ('FY');
-  const fyOptions = Array.from({ length: 5 }, (_, i) => currentFY - i);
 
   // Load data
   useEffect(() => {
