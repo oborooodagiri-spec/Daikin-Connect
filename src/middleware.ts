@@ -146,7 +146,7 @@ export default async function middleware(request: NextRequest) {
   }
 
   // 5. Protected Routes: Require Session
-  if ((pathname.startsWith("/w/") || pathname.startsWith("/dashboard") || pathname.startsWith("/home")) && !session) {
+  if ((pathname.startsWith("/w/") || pathname.startsWith("/dashboard") || pathname.startsWith("/home") || pathname.startsWith("/admin")) && !session) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
@@ -175,5 +175,6 @@ export const config = {
     "/w/:path*",
     "/dashboard/:path*",
     "/client/:path*",
+    "/admin/:path*",
   ],
 };
