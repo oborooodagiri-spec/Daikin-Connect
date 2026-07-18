@@ -24,6 +24,28 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
 
   const totalQuotation = state.data.reduce((acc, curr) => acc + (Number(curr.quotation) || 0), 0);
   
+  
+  const now = new Date();
+  const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
+  const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999).getTime();
+
+  const getCategory = (d: any) => {
+    const dTime = new Date(d.updated_at || d.created_at).getTime();
+    if (dTime >= thisMonthStart) return "Bulan Ini";
+    if (dTime >= lastMonthStart && dTime <= lastMonthEnd) return "Bulan Lalu";
+    return "Bulan Lainnya (FY Berjalan)";
+  };
+
+  const groupedData = filteredData.reduce((acc, d) => {
+    const cat = getCategory(d);
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(d);
+    return acc;
+  }, {} as Record<string, any[]>);
+  
+  const categoryOrder = ["Bulan Ini", "Bulan Lalu", "Bulan Lainnya (FY Berjalan)"];
+
   const filteredData = state.data.filter(d => {
     if (!search) return true;
     const s = search.toLowerCase();
@@ -115,52 +137,65 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredData.map((d, i) => {
-                    const cfg = STATUS_CONFIG[d.status] || { label: d.status, color: "#888" };
-                    const isOverdue = d.target_po_date && new Date(d.target_po_date) < new Date() && !["A", "L", "S", "N"].includes(d.status);
-                    return (
-                      <motion.tr 
-                        key={d.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.02, duration: 0.2 }}
-                        style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", background: isOverdue ? "rgba(239,68,68,0.1)" : "transparent" }}
-                        onMouseEnter={e => e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.15)" : "rgba(255,255,255,0.02)"}
-                        onMouseLeave={e => e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.1)" : "transparent"}
-                      >
-                        <td style={{ padding: "20px 24px" }}>
-                          <p style={{ fontSize: 16, fontWeight: 800, color: "white", margin: "0 0 4px 0" }}>{d.project_name}</p>
-                          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", margin: 0, display: "flex", alignItems: "center", gap: 6 }}>
-                            <Building2 size={12} /> {d.client_name} {d.area ? `- ${d.area}` : ""}
-                          </p>
-                        </td>
-                        <td style={{ padding: "20px 24px" }}>
-                          <p style={{ fontSize: 14, fontWeight: 700, color: "white", margin: "0 0 4px 0" }}>{d.sector}</p>
-                          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", margin: 0 }}>{d.category}</p>
-                        </td>
-                        <td style={{ padding: "20px 24px" }}>
-                          <span style={{ display: "inline-block", padding: "6px 12px", borderRadius: 8, fontSize: 12, fontWeight: 800, background: `${cfg.color}20`, color: cfg.color }}>
-                            {cfg.label}
-                          </span>
-                        </td>
-                        <td style={{ padding: "20px 24px", fontSize: 14, fontWeight: 700, color: "white" }}>
-                          {d.pic || "-"}
-                        </td>
-                        <td style={{ padding: "20px 24px" }}>
-                          {d.target_po_date ? (
-                            <span style={{ fontSize: 14, fontWeight: 700, color: isOverdue ? "#ef4444" : "white", display: "flex", alignItems: "center", gap: 6 }}>
-                              <Calendar size={14} /> 
-                              {new Date(d.target_po_date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
-                              {isOverdue && <span style={{ fontSize: 10, background: "#ef4444", color: "white", padding: "2px 6px", borderRadius: 4, marginLeft: 4 }}>OVERDUE</span>}
-                            </span>
-                          ) : <span style={{ color: "rgba(255,255,255,0.3)" }}>-</span>}
-                        </td>
-                        <td style={{ padding: "20px 24px", fontSize: 16, fontWeight: 900, color: "white" }}>
-                          {formatRp(Number(d.quotation) || 0)}
-                        </td>
-                      </motion.tr>
-                    );
-                  })}
+                  {categoryOrder.map(cat => {
+    const items = groupedData[cat];
+    if (!items || items.length === 0) return null;
+    return (
+      <React.Fragment key={cat}>
+        <tr>
+          <td colSpan={6} style={{ padding: "12px 24px", background: "rgba(255,255,255,0.05)", color: "white", fontSize: 13, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            {cat} ({items.length} Projects)
+          </td>
+        </tr>
+        {items.map((d, i) => {
+          const cfg = STATUS_CONFIG[d.status] || { label: d.status, color: "#888" };
+          const isOverdue = d.target_po_date && new Date(d.target_po_date) < new Date() && !["A", "L", "S", "N"].includes(d.status);
+          return (
+            <motion.tr 
+              key={d.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.02, duration: 0.2 }}
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", background: isOverdue ? "rgba(239,68,68,0.1)" : "transparent" }}
+              onMouseEnter={e => e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.15)" : "rgba(255,255,255,0.02)"}
+              onMouseLeave={e => e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.1)" : "transparent"}
+            >
+              <td style={{ padding: "20px 24px" }}>
+                <p style={{ fontSize: 16, fontWeight: 800, color: "white", margin: "0 0 4px 0" }}>{d.project_name}</p>
+                <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", margin: 0, display: "flex", alignItems: "center", gap: 6 }}>
+                  <Building2 size={12} /> {d.client_name} {d.area ? `- ${d.area}` : ""}
+                </p>
+              </td>
+              <td style={{ padding: "20px 24px" }}>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "white", margin: "0 0 4px 0" }}>{d.sector}</p>
+                <p style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", margin: 0 }}>{d.category}</p>
+              </td>
+              <td style={{ padding: "20px 24px" }}>
+                <span style={{ display: "inline-block", padding: "6px 12px", borderRadius: 8, fontSize: 12, fontWeight: 800, background: `${cfg.color}20`, color: cfg.color }}>
+                  {cfg.label}
+                </span>
+              </td>
+              <td style={{ padding: "20px 24px", fontSize: 14, fontWeight: 700, color: "white" }}>
+                {d.pic || "-"}
+              </td>
+              <td style={{ padding: "20px 24px" }}>
+                {d.target_po_date ? (
+                  <span style={{ fontSize: 14, fontWeight: 700, color: isOverdue ? "#ef4444" : "white", display: "flex", alignItems: "center", gap: 6 }}>
+                    <Calendar size={14} /> 
+                    {new Date(d.target_po_date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                    {isOverdue && <span style={{ fontSize: 10, background: "#ef4444", color: "white", padding: "2px 6px", borderRadius: 4, marginLeft: 4 }}>OVERDUE</span>}
+                  </span>
+                ) : <span style={{ color: "rgba(255,255,255,0.3)" }}>-</span>}
+              </td>
+              <td style={{ padding: "20px 24px", fontSize: 16, fontWeight: 900, color: "white" }}>
+                {formatRp(Number(d.quotation) || 0)}
+              </td>
+            </motion.tr>
+          );
+        })}
+      </React.Fragment>
+    );
+  })}
                   {filteredData.length === 0 && (
                     <tr>
                       <td colSpan={6} style={{ padding: 60, textAlign: "center", color: "rgba(255,255,255,0.4)" }}>No matching records found</td>
