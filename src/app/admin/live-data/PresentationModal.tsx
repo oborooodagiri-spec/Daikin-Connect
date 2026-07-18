@@ -106,11 +106,11 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
         transition={{ duration: 0.3 }}
         style={{
           position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: "rgba(10, 22, 40, 0.97)",
+          backgroundColor: "rgba(245, 246, 248, 0.98)",
           backdropFilter: "blur(16px)",
           zIndex: 9999,
           display: "flex", flexDirection: "column",
-          color: "white",
+          color: "#323338",
           overflow: "hidden"
         }}
       >
@@ -122,7 +122,7 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
           style={{
             padding: "28px 48px",
             display: "flex", justifyContent: "space-between", alignItems: "center",
-            borderBottom: "1px solid rgba(255,255,255,0.08)",
+            borderBottom: "1px solid #e8e8e8",
             background: `linear-gradient(90deg, ${state.color}18 0%, transparent 60%)`,
             flexShrink: 0
           }}
@@ -131,15 +131,15 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
             <h1 style={{ fontSize: 28, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.04em", margin: 0 }}>
               <span style={{ color: state.color }}>●</span>&nbsp; {state.title}
             </h1>
-            {state.subtitle && <p style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", margin: "4px 0 0 0" }}>{state.subtitle}</p>}
+            {state.subtitle && <p style={{ fontSize: 14, color: "#676879", margin: "4px 0 0 0" }}>{state.subtitle}</p>}
           </div>
           <button onClick={onClose} style={{
-            background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12,
+            background: "white", border: "1px solid #e8e8e8", borderRadius: 12,
             width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center",
-            cursor: "pointer", color: "white", transition: "all 0.2s"
+            cursor: "pointer", color: "#323338", transition: "all 0.2s"
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.15)"; }}
-          onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
+          onMouseEnter={e => { e.currentTarget.style.background = "#f1f5f9"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "white"; }}
           >
             <X size={20} />
           </button>
@@ -165,11 +165,11 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.25 + i * 0.06, duration: 0.3 }}
               style={{
-                background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                background: "white", border: "1px solid #e8e8e8",
                 padding: "16px 24px", borderRadius: 14, flex: 1, minWidth: 140
               }}
             >
-              <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: "rgba(255,255,255,0.4)", margin: "0 0 6px 0" }}>{card.label}</p>
+              <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: "#676879", margin: "0 0 6px 0" }}>{card.label}</p>
               <p style={{ fontSize: 22, fontWeight: 900, color: card.accent, margin: 0 }}>{card.value}</p>
             </motion.div>
           ))}
@@ -195,7 +195,7 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
         {/* SEARCH + STATUS TAGS */}
         <div style={{ padding: "0 48px 16px", display: "flex", gap: 16, alignItems: "center", flexShrink: 0, flexWrap: "wrap" }}>
           <div style={{ position: "relative", flex: 1, minWidth: 240 }}>
-            <Search size={16} color="rgba(255,255,255,0.4)" style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)" }} />
+            <Search size={16} color="#676879" style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)" }} />
             <input
               type="text"
               placeholder="Cari project, client, PIC, sector..."
@@ -203,8 +203,8 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
               onChange={e => setSearch(e.target.value)}
               style={{
                 width: "100%", height: 42, paddingLeft: 40, paddingRight: 16,
-                background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
-                borderRadius: 10, color: "white", fontSize: 13, fontWeight: 600, outline: "none"
+                background: "white", border: "1px solid #e8e8e8",
+                borderRadius: 10, color: "#323338", fontSize: 13, fontWeight: 600, outline: "none"
               }}
             />
           </div>
@@ -226,7 +226,7 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
         {/* MONTHLY GROUPS */}
         <div style={{ flex: 1, padding: "0 48px 32px", overflow: "auto" }} className="scrollbar-hide">
           {monthlyGroups.length === 0 && (
-            <div style={{ padding: 80, textAlign: "center", color: "rgba(255,255,255,0.3)", fontSize: 16, fontWeight: 700 }}>
+            <div style={{ padding: 80, textAlign: "center", color: "#676879", fontSize: 16, fontWeight: 700 }}>
               Tidak ada data ditemukan
             </div>
           )}
@@ -246,8 +246,8 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
                   style={{
                     display: "flex", alignItems: "center", justifyContent: "space-between",
                     padding: "14px 24px", cursor: "pointer", userSelect: "none",
-                    background: "rgba(255,255,255,0.04)", borderRadius: isExpanded ? "14px 14px 0 0" : 14,
-                    border: "1px solid rgba(255,255,255,0.08)",
+                    background: "white", borderRadius: isExpanded ? "14px 14px 0 0" : 14,
+                    border: "1px solid #e8e8e8",
                     transition: "all 0.2s"
                   }}
                 >
@@ -256,26 +256,26 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
                       <Calendar size={18} color={state.color} />
                     </div>
                     <div>
-                      <p style={{ fontSize: 15, fontWeight: 900, color: "white", margin: 0, textTransform: "uppercase", letterSpacing: "0.03em" }}>{group.label}</p>
-                      <p style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", margin: "2px 0 0 0" }}>
+                      <p style={{ fontSize: 15, fontWeight: 900, color: "#323338", margin: 0, textTransform: "uppercase", letterSpacing: "0.03em" }}>{group.label}</p>
+                      <p style={{ fontSize: 11, color: "#676879", margin: "2px 0 0 0" }}>
                         {group.deals.length} projects
                       </p>
                     </div>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                     <span style={{ fontSize: 18, fontWeight: 900, color: state.color }}>{formatRp(group.totalValue)}</span>
-                    {isExpanded ? <ChevronUp size={18} color="rgba(255,255,255,0.5)" /> : <ChevronDown size={18} color="rgba(255,255,255,0.5)" />}
+                    {isExpanded ? <ChevronUp size={18} color="#676879" /> : <ChevronDown size={18} color="#676879" />}
                   </div>
                 </div>
 
                 {/* Month Content */}
                 {isExpanded && (
-                  <div style={{ overflow: "hidden", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderTop: "none", borderRadius: "0 0 14px 14px" }}>
+                  <div style={{ overflow: "hidden", background: "white", border: "1px solid #e8e8e8", borderTop: "none", borderRadius: "0 0 14px 14px" }}>
                     <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
                       <thead>
-                        <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                        <tr style={{ borderBottom: "1px solid #e8e8e8" }}>
                           {["Project & Client", "Sector & Category", "Status", "PIC", "Target PO", "Value"].map(th => (
-                            <th key={th} style={{ padding: "12px 20px", fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: "rgba(255,255,255,0.35)" }}>{th}</th>
+                            <th key={th} style={{ padding: "12px 20px", fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: "#676879" }}>{th}</th>
                           ))}
                         </tr>
                       </thead>
@@ -287,29 +287,29 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
                             <tr
                               key={d.id || i}
                               style={{
-                                borderBottom: "1px solid rgba(255,255,255,0.04)",
+                                borderBottom: "1px solid #e8e8e8",
                                 background: isOverdue ? "rgba(239,68,68,0.08)" : "transparent",
                                 transition: "background 0.15s"
                               }}
-                              onMouseEnter={(e) => e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.14)" : "rgba(255,255,255,0.03)"}
+                              onMouseEnter={(e) => e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.14)" : "#f8fafc"}
                               onMouseLeave={(e) => e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.08)" : "transparent"}
                             >
                               <td style={{ padding: "16px 20px", maxWidth: 300 }}>
-                                <p style={{ fontSize: 14, fontWeight: 800, color: "white", margin: "0 0 3px 0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.project_name}</p>
-                                <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", margin: 0, display: "flex", alignItems: "center", gap: 5 }}>
+                                <p style={{ fontSize: 14, fontWeight: 800, color: "#323338", margin: "0 0 3px 0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.project_name}</p>
+                                <p style={{ fontSize: 12, color: "#676879", margin: 0, display: "flex", alignItems: "center", gap: 5 }}>
                                   <Building2 size={11} /> {d.client_name} {d.area ? `– ${d.area}` : ""}
                                 </p>
                               </td>
                               <td style={{ padding: "16px 20px" }}>
-                                <p style={{ fontSize: 13, fontWeight: 700, color: "white", margin: "0 0 2px 0" }}>{d.sector || "-"}</p>
-                                <p style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", margin: 0 }}>{d.category || "-"}</p>
+                                <p style={{ fontSize: 13, fontWeight: 700, color: "#323338", margin: "0 0 2px 0" }}>{d.sector || "-"}</p>
+                                <p style={{ fontSize: 11, color: "#676879", margin: 0 }}>{d.category || "-"}</p>
                               </td>
                               <td style={{ padding: "16px 20px" }}>
                                 <span style={{ display: "inline-block", padding: "5px 10px", borderRadius: 7, fontSize: 11, fontWeight: 800, background: `${cfg.color}20`, color: cfg.color }}>
                                   {cfg.label}
                                 </span>
                               </td>
-                              <td style={{ padding: "16px 20px", fontSize: 13, fontWeight: 700, color: "white" }}>
+                              <td style={{ padding: "16px 20px", fontSize: 13, fontWeight: 700, color: "#323338" }}>
                                 {d.pic || "-"}
                               </td>
                               <td style={{ padding: "16px 20px" }}>
@@ -317,11 +317,11 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
                                   <span style={{ fontSize: 12, fontWeight: 700, color: isOverdue ? "#ef4444" : "rgba(255,255,255,0.8)", display: "flex", alignItems: "center", gap: 5 }}>
                                     <Calendar size={12} />
                                     {new Date(d.target_po_date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
-                                    {isOverdue && <span style={{ fontSize: 9, background: "#ef4444", color: "white", padding: "2px 5px", borderRadius: 3, marginLeft: 3, fontWeight: 900 }}>OVERDUE</span>}
+                                    {isOverdue && <span style={{ fontSize: 9, background: "#ef4444", color: "#323338", padding: "2px 5px", borderRadius: 3, marginLeft: 3, fontWeight: 900 }}>OVERDUE</span>}
                                   </span>
-                                ) : <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 12 }}>–</span>}
+                                ) : <span style={{ color: "#94a3b8", fontSize: 12 }}>–</span>}
                               </td>
-                              <td style={{ padding: "16px 20px", fontSize: 15, fontWeight: 900, color: "white", fontVariantNumeric: "tabular-nums" }}>
+                              <td style={{ padding: "16px 20px", fontSize: 15, fontWeight: 900, color: "#323338", fontVariantNumeric: "tabular-nums" }}>
                                 {formatRp(Number(d.quotation) || 0)}
                               </td>
                             </tr>
@@ -339,10 +339,10 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
           {picSummary.length > 0 && (
             <div style={{
               marginTop: 8, padding: 24,
-              background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+              background: "white", border: "1px solid #e8e8e8",
               borderRadius: 14
             }}>
-              <h3 style={{ fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.5)", margin: "0 0 16px 0" }}>
+              <h3 style={{ fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.1em", color: "#676879", margin: "0 0 16px 0" }}>
                 Kontribusi per PIC
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -351,10 +351,10 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
                   const pct = (pdata.value / maxVal) * 100;
                   return (
                     <div key={pic} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      <span style={{ width: 100, fontSize: 12, fontWeight: 800, color: "rgba(255,255,255,0.8)", textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pic}</span>
-                      <div style={{ flex: 1, height: 24, background: "rgba(255,255,255,0.06)", borderRadius: 6, overflow: "hidden", position: "relative" }}>
+                      <span style={{ width: 100, fontSize: 12, fontWeight: 800, color: "#323338", textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pic}</span>
+                      <div style={{ flex: 1, height: 24, background: "white", borderRadius: 6, overflow: "hidden", position: "relative" }}>
                         <div style={{ height: "100%", width: `${pct}%`, background: state.color, borderRadius: 6, opacity: 0.7, transition: "width 0.8s ease" }} />
-                        <span style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", fontSize: 10, fontWeight: 800, color: "rgba(255,255,255,0.7)" }}>
+                        <span style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", fontSize: 10, fontWeight: 800, color: "#676879" }}>
                           {pdata.count} projects · {formatRp(pdata.value)}
                         </span>
                       </div>
