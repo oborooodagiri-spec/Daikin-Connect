@@ -667,7 +667,7 @@ export default function LiveDataClient() {
 
       {/* INDONESIA MAP */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-        <IndonesiaMap deals={deals} />
+        <IndonesiaMap deals={activeDeals} />
       </motion.div>
 
       {/* SALES PERFORMANCE MATRIX */}
