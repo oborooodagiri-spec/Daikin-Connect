@@ -1,8 +1,31 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const cron = require('node-cron');
+const fs = require('fs');
+const path = require('path');
 const { PrismaClient } = require('../src/generated/client_v3');
 require('dotenv').config();
+
+const statusFilePath = path.join(__dirname, '../public/wa-status.json');
+
+const updateStatus = (status, qrString = "", command = "") => {
+  try {
+    const dir = path.dirname(statusFilePath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    
+    fs.writeFileSync(statusFilePath, JSON.stringify({
+      status,
+      qr_string: qrString,
+      command,
+      timestamp: new Date().toISOString()
+    }));
+  } catch (err) {
+    console.error("Failed to write wa-status.json", err);
+  }
+};
+
+// Initialize with DISCONNECTED status
+updateStatus("DISCONNECTED");
 
 const prisma = new PrismaClient();
 
@@ -17,10 +40,12 @@ const client = new Client({
 client.on('qr', (qr) => {
   console.log('SCAN THE QR CODE BELOW TO CONNECT WHATSAPP:');
   qrcode.generate(qr, { small: true });
+  updateStatus("QR", qr);
 });
 
 client.on('ready', () => {
   console.log('WhatsApp Bot is READY!');
+  updateStatus("READY");
   
   // Setup Cron Jobs
   setupCronJobs();
@@ -32,9 +57,34 @@ client.on('authenticated', () => {
 
 client.on('auth_failure', msg => {
   console.error('WhatsApp Authentication Failure', msg);
+  updateStatus("DISCONNECTED");
+});
+
+client.on('disconnected', (reason) => {
+  console.log('WhatsApp Disconnected:', reason);
+  updateStatus("DISCONNECTED");
 });
 
 client.initialize();
+
+// Poll for LOGOUT command
+setInterval(async () => {
+  try {
+    if (fs.existsSync(statusFilePath)) {
+      const data = JSON.parse(fs.readFileSync(statusFilePath, 'utf8'));
+      if (data.command === "LOGOUT") {
+        console.log("Received LOGOUT command from UI. Logging out...");
+        updateStatus("DISCONNECTED");
+        await client.logout();
+        fs.rmSync(path.join(__dirname, '../.wwebjs_auth'), { recursive: true, force: true });
+        console.log("Session cleared. Restarting process...");
+        process.exit(1); // Exit so PM2 can restart it and generate fresh QR
+      }
+    }
+  } catch (err) {
+    // ignore polling errors
+  }
+}, 3000);
 
 // Helper to format date
 const formatDate = (date) => {

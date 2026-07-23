@@ -4,6 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
 import { revalidatePath } from "next/cache";
 
+import fs from 'fs';
+import path from 'path';
+
 export async function getOutstandingCases(projectId: string | number | bigint) {
   try {
     const cases = await prisma.outstanding_cases.findMany({
@@ -116,6 +119,38 @@ export async function updateProjectWaTargets(projectId: string | number | bigint
     return { success: true };
   } catch (error: any) {
     console.error("updateProjectWaTargets error:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function getWaBotStatus() {
+  try {
+    const statusFilePath = path.join(process.cwd(), 'public', 'wa-status.json');
+    if (!fs.existsSync(statusFilePath)) {
+      return { success: true, data: { status: "DISCONNECTED", qr_string: "", command: "" } };
+    }
+    const data = JSON.parse(fs.readFileSync(statusFilePath, 'utf8'));
+    return { success: true, data };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function logoutWaBot() {
+  try {
+    const session = await getSession();
+    if (!session?.isInternal) {
+      return { success: false, error: "Unauthorized." };
+    }
+
+    const statusFilePath = path.join(process.cwd(), 'public', 'wa-status.json');
+    if (fs.existsSync(statusFilePath)) {
+      const data = JSON.parse(fs.readFileSync(statusFilePath, 'utf8'));
+      data.command = "LOGOUT";
+      fs.writeFileSync(statusFilePath, JSON.stringify(data));
+    }
+    return { success: true };
+  } catch (error: any) {
     return { success: false, error: error.message };
   }
 }

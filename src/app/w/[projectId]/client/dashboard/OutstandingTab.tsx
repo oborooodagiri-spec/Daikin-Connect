@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Plus, CheckCircle2, AlertCircle, Clock, Settings } from "lucide-react";
-import { getOutstandingCases, addOutstandingCase, resolveOutstandingCase, getProjectWaTargets, updateProjectWaTargets } from "@/app/actions/outstanding";
+import { Plus, CheckCircle2, AlertCircle, Clock, Settings, RefreshCw, QrCode } from "lucide-react";
+import { getOutstandingCases, addOutstandingCase, resolveOutstandingCase, getProjectWaTargets, updateProjectWaTargets, getWaBotStatus, logoutWaBot } from "@/app/actions/outstanding";
+import QRCode from "react-qr-code";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 
@@ -26,6 +27,11 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
   });
   const [savingSettings, setSavingSettings] = useState(false);
   
+  // Bot Connection State
+  const [botStatus, setBotStatus] = useState("DISCONNECTED");
+  const [botQr, setBotQr] = useState("");
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
   // Temp inputs for arrays
   const [newNumber, setNewNumber] = useState("");
   const [newGroup, setNewGroup] = useState("");
@@ -37,6 +43,32 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
       loadSettings();
     }
   }, [projectId, isAdmin]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (showSettings && isAdmin) {
+      checkBotStatus();
+      interval = setInterval(checkBotStatus, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [showSettings, isAdmin]);
+
+  const checkBotStatus = async () => {
+    const res = await getWaBotStatus();
+    if (res.success && res.data) {
+      setBotStatus(res.data.status);
+      setBotQr(res.data.qr_string || "");
+      if (res.data.status !== "DISCONNECTED") {
+        setIsLoggingOut(false);
+      }
+    }
+  };
+
+  const handleLogoutBot = async () => {
+    if (!confirm("Yakin ingin memutuskan koneksi Bot WhatsApp ini? Bapak harus melakukan scan QR Code ulang setelahnya.")) return;
+    setIsLoggingOut(true);
+    await logoutWaBot();
+  };
 
   const loadSettings = async () => {
     const res = await getProjectWaTargets(projectId);
@@ -142,6 +174,56 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
           <h3 className="text-xs font-black uppercase tracking-widest text-[#0073ea] mb-6 flex items-center gap-2">
             <Settings size={14} /> Advanced WA Notification Settings
           </h3>
+
+          {/* BOT CONNECTION STATUS */}
+          <div className="mb-8 p-4 bg-slate-50 rounded-2xl border border-slate-200">
+            <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-4 flex items-center gap-2">
+              <QrCode size={14} /> Bot Connection Status
+            </h4>
+            
+            <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl border border-slate-100 shadow-sm">
+              {botStatus === "READY" && (
+                <div className="text-center space-y-4 w-full">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full text-xs font-bold">
+                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                    Bot Terhubung & Siap Mengirim Pesan
+                  </div>
+                  <div className="block">
+                    <button 
+                      onClick={handleLogoutBot}
+                      disabled={isLoggingOut}
+                      className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-xs font-bold transition-all disabled:opacity-50"
+                    >
+                      {isLoggingOut ? "Memutuskan Koneksi..." : "Ganti Nomor Pengirim (Logout)"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {botStatus === "QR" && botQr && (
+                <div className="text-center space-y-4">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-100 text-orange-700 rounded-full text-xs font-bold mb-2">
+                    <AlertCircle size={14} />
+                    Menunggu Scan Barcode
+                  </div>
+                  <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm inline-block">
+                    <QRCode value={botQr} size={200} />
+                  </div>
+                  <p className="text-xs text-slate-500 font-bold max-w-xs mx-auto">
+                    Silakan buka WhatsApp di HP Bot, pilih **Linked Devices**, lalu scan barcode di atas.
+                  </p>
+                </div>
+              )}
+
+              {botStatus === "DISCONNECTED" && (
+                <div className="text-center space-y-3 py-6">
+                  <RefreshCw size={24} className="mx-auto text-slate-400 animate-spin" />
+                  <p className="text-xs font-bold text-slate-500">Memulai ulang server robot...</p>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="space-y-6">
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
