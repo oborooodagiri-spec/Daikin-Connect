@@ -46,19 +46,21 @@ const formatDate = (date) => {
 };
 
 const sendChecklist = async () => {
-  console.log(`[${new Date().toISOString()}] Running WA Checklist Job...`);
+  const now = new Date();
+  const currentHour = now.getHours().toString().padStart(2, '0');
+  const currentMinute = now.getMinutes().toString().padStart(2, '0');
+  const currentTime = `${currentHour}:${currentMinute}`;
+  
   try {
     const projectsWithWA = await prisma.projects.findMany({
       where: {
-        wa_target_numbers: {
-          not: null,
-          not: ""
+        wa_settings: {
+          not: null
         }
       }
     });
 
     if (projectsWithWA.length === 0) {
-      console.log("No projects configured for WA targets. Skipping.");
       return;
     }
 
@@ -66,6 +68,20 @@ const sendChecklist = async () => {
     const isMorning = now.getHours() < 12;
 
     for (const project of projectsWithWA) {
+      let waSettings: any = {};
+      if (typeof project.wa_settings === 'string') {
+        try { waSettings = JSON.parse(project.wa_settings); } catch (e) {}
+      } else {
+        waSettings = project.wa_settings;
+      }
+      
+      const schedules = waSettings?.schedules || [];
+      if (!schedules.includes(currentTime)) {
+        continue;
+      }
+      
+      console.log(`[${new Date().toISOString()}] Running WA Checklist for ${project.name} at ${currentTime}`);
+
       const outstandingCases = await prisma.outstanding_cases.findMany({
         where: {
           project_id: project.id,
@@ -76,26 +92,18 @@ const sendChecklist = async () => {
         }
       });
 
+      let pendingList = "";
       if (outstandingCases.length === 0) {
-        console.log(`No outstanding cases for project ${project.name}. Skipping message.`);
-        continue;
+        pendingList = "Tidak ada kasus pending.";
+      } else {
+        outstandingCases.slice(0, 15).forEach((c, idx) => {
+          const unitName = c.unit_name ? `[${c.unit_name}] ` : "";
+          pendingList += `${idx + 1}. ${unitName}${c.title}\n`;
+        });
+        if (outstandingCases.length > 15) {
+          pendingList += `... dan ${outstandingCases.length - 15} kasus lainnya\n`;
+        }
       }
-
-      let message = `*OUTSTANDING CASE REPORT*\n`;
-      message += `Proyek: ${project.name}\n`;
-      message += `Tanggal: ${formatDate(now)} (${isMorning ? 'Pagi' : 'Sore'})\n\n`;
-
-      message += `*DAFTAR OUTSTANDING PENDING*:\n`;
-      outstandingCases.slice(0, 15).forEach((c, idx) => {
-        const unitName = c.unit_name ? `[${c.unit_name}] ` : "";
-        message += `${idx + 1}. ${unitName}${c.title}\n`;
-      });
-
-      if (outstandingCases.length > 15) {
-        message += `... dan ${outstandingCases.length - 15} kasus lainnya\n`;
-      }
-      
-      message += `\n`;
 
       const startOfDay = new Date();
       startOfDay.setHours(0,0,0,0);
@@ -113,31 +121,41 @@ const sendChecklist = async () => {
         }
       });
 
-      if (completedToday.length > 0) {
-        message += `*DISELESAIKAN HARI INI*:\n`;
+      let completedList = "";
+      if (completedToday.length === 0) {
+        completedList = "-";
+      } else {
         completedToday.slice(0, 15).forEach((c, idx) => {
           const unitName = c.unit_name ? `[${c.unit_name}] ` : "";
-          message += `${idx + 1}. ${unitName}${c.title}\n`;
+          completedList += `${idx + 1}. ${unitName}${c.title}\n`;
         });
         if (completedToday.length > 15) {
-          message += `... dan ${completedToday.length - 15} kasus lainnya\n`;
+          completedList += `... dan ${completedToday.length - 15} kasus lainnya\n`;
         }
-        message += `\n`;
       }
 
-      message += `Mohon kerja samanya untuk segera menyelesaikan case yang masih pending.\n`;
-      message += `Pesan ini dikirim secara otomatis oleh Robot Daikin Connect.`;
+      let template = waSettings?.template || "*OUTSTANDING CASE REPORT*\nProyek: {{ProjectName}}\nTanggal: {{Date}}\n\n*DAFTAR OUTSTANDING PENDING*:\n{{PendingList}}\n\n*DISELESAIKAN HARI INI*:\n{{CompletedList}}\nMohon kerja samanya untuk segera menyelesaikan case yang masih pending.\nPesan ini dikirim secara otomatis oleh Robot Daikin Connect.";
+      
+      const isMorning = now.getHours() < 12;
+      const dateStr = `${formatDate(now)} (${isMorning ? 'Pagi' : 'Sore'})`;
+      
+      let message = template
+        .replace(/\{\{ProjectName\}\}/g, project.name)
+        .replace(/\{\{Date\}\}/g, dateStr)
+        .replace(/\{\{PendingList\}\}/g, pendingList)
+        .replace(/\{\{CompletedList\}\}/g, completedList);
 
-      // Split comma separated numbers
-      const targets = project.wa_target_numbers.split(",").map(t => t.trim()).filter(t => t.length > 0);
+      const targets = [
+        ...(waSettings?.numbers || []).map((t: string) => (t.includes('@') ? t : `${t}@c.us`)),
+        ...(waSettings?.groups || []).map((t: string) => (t.includes('@') ? t : `${t}@g.us`))
+      ];
       
       for (const target of targets) {
-        const formattedNumber = target.includes('@') ? target : `${target}@c.us`;
         try {
-          await client.sendMessage(formattedNumber, message);
-          console.log(`Sent to ${formattedNumber} for project ${project.name}`);
+          await client.sendMessage(target, message);
+          console.log(`Sent to ${target} for project ${project.name}`);
         } catch (sendErr) {
-          console.error(`Failed to send to ${formattedNumber}:`, sendErr);
+          console.error(`Failed to send to ${target}:`, sendErr);
         }
       }
     }
@@ -150,17 +168,10 @@ const sendChecklist = async () => {
 };
 
 const setupCronJobs = () => {
-  // 06:00 AM
-  cron.schedule('0 6 * * *', () => {
-    console.log('Running 06:00 WA Checklist');
-    sendChecklist();
-  });
-
-  // 18:00 PM
-  cron.schedule('0 18 * * *', () => {
-    console.log('Running 18:00 WA Checklist');
+  // Check every minute
+  cron.schedule('* * * * *', () => {
     sendChecklist();
   });
   
-  console.log("Cron jobs scheduled for 06:00 and 18:00.");
+  console.log("Dynamic Cron master scheduled to check every minute.");
 };

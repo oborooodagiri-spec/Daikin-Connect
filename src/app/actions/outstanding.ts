@@ -81,16 +81,24 @@ export async function getProjectWaTargets(projectId: string | number | bigint) {
   try {
     const project = await prisma.projects.findUnique({
       where: { id: BigInt(projectId) },
-      select: { wa_target_numbers: true }
+      select: { wa_settings: true }
     });
-    return { success: true, data: project?.wa_target_numbers || "" };
+    
+    const defaultSettings = {
+      numbers: [],
+      groups: [],
+      schedules: ["06:00", "18:00"],
+      template: "*OUTSTANDING CASE REPORT*\nProyek: {{ProjectName}}\nTanggal: {{Date}}\n\n*DAFTAR OUTSTANDING PENDING*:\n{{PendingList}}\n\n*DISELESAIKAN HARI INI*:\n{{CompletedList}}\nMohon kerja samanya untuk segera menyelesaikan case yang masih pending.\nPesan ini dikirim secara otomatis oleh Robot Daikin Connect."
+    };
+
+    return { success: true, data: project?.wa_settings || defaultSettings };
   } catch (error: any) {
     console.error("getProjectWaTargets error:", error);
     return { success: false, error: error.message };
   }
 }
 
-export async function updateProjectWaTargets(projectId: string | number | bigint, targets: string) {
+export async function updateProjectWaTargets(projectId: string | number | bigint, settings: any) {
   try {
     const session = await getSession();
     if (!session?.isInternal) {
@@ -99,7 +107,7 @@ export async function updateProjectWaTargets(projectId: string | number | bigint
 
     await prisma.projects.update({
       where: { id: BigInt(projectId) },
-      data: { wa_target_numbers: targets }
+      data: { wa_settings: settings }
     });
 
     revalidatePath(`/w/${projectId}/client/dashboard`);

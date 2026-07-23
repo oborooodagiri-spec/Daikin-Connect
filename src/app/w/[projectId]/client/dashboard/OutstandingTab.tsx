@@ -18,8 +18,18 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
 
   // Settings State
   const [showSettings, setShowSettings] = useState(false);
-  const [waTargets, setWaTargets] = useState("");
+  const [waSettings, setWaSettings] = useState({
+    numbers: [] as string[],
+    groups: [] as string[],
+    schedules: ["06:00", "18:00"],
+    template: ""
+  });
   const [savingSettings, setSavingSettings] = useState(false);
+  
+  // Temp inputs for arrays
+  const [newNumber, setNewNumber] = useState("");
+  const [newGroup, setNewGroup] = useState("");
+  const [newSchedule, setNewSchedule] = useState("");
 
   useEffect(() => {
     loadCases();
@@ -30,9 +40,22 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
 
   const loadSettings = async () => {
     const res = await getProjectWaTargets(projectId);
-    if (res.success) {
-      setWaTargets(res.data || "");
+    if (res.success && res.data) {
+      setWaSettings(res.data);
     }
+  };
+
+  const addArrayItem = (field: "numbers" | "groups" | "schedules", val: string, setter: any) => {
+    if (!val) return;
+    setWaSettings(prev => ({ ...prev, [field]: [...prev[field], val] }));
+    setter("");
+  };
+
+  const removeArrayItem = (field: "numbers" | "groups" | "schedules", idx: number) => {
+    setWaSettings(prev => ({ 
+      ...prev, 
+      [field]: prev[field].filter((_, i) => i !== idx) 
+    }));
   };
 
   const loadCases = async () => {
@@ -70,7 +93,7 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     setSavingSettings(true);
-    const res = await updateProjectWaTargets(projectId, waTargets);
+    const res = await updateProjectWaTargets(projectId, waSettings);
     if (res.success) {
       alert("Pengaturan WA berhasil disimpan.");
       setShowSettings(false);
@@ -116,23 +139,80 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
 
       {showSettings && (
         <div className="bg-white rounded-2xl border border-[#0073ea] p-6 shadow-sm">
-          <h3 className="text-xs font-black uppercase tracking-widest text-[#0073ea] mb-4 flex items-center gap-2">
-            <Settings size={14} /> WhatsApp Notification Settings
+          <h3 className="text-xs font-black uppercase tracking-widest text-[#0073ea] mb-6 flex items-center gap-2">
+            <Settings size={14} /> Advanced WA Notification Settings
           </h3>
-          <form onSubmit={handleSaveSettings} className="space-y-4">
+          <div className="space-y-6">
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Numbers */}
+              <div>
+                <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Personal Numbers</label>
+                <div className="flex gap-2 mb-2">
+                  <input type="text" value={newNumber} onChange={e => setNewNumber(e.target.value)} placeholder="Ex: 6281234567890" className="flex-1 px-3 py-2 rounded-xl border border-[#e6e9ef] text-sm focus:border-[#0073ea] focus:outline-none"/>
+                  <button type="button" onClick={() => addArrayItem("numbers", newNumber, setNewNumber)} className="px-3 py-2 bg-slate-100 rounded-xl text-xs font-bold hover:bg-slate-200">Add</button>
+                </div>
+                <div className="space-y-1">
+                  {waSettings.numbers.map((num, i) => (
+                    <div key={i} className="flex justify-between items-center bg-slate-50 px-3 py-2 rounded-lg text-sm font-bold text-slate-700">
+                      {num}
+                      <button onClick={() => removeArrayItem("numbers", i)} className="text-red-500 hover:text-red-700">&times;</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Groups */}
+              <div>
+                <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Group IDs</label>
+                <div className="flex gap-2 mb-2">
+                  <input type="text" value={newGroup} onChange={e => setNewGroup(e.target.value)} placeholder="Ex: 120363123@g.us" className="flex-1 px-3 py-2 rounded-xl border border-[#e6e9ef] text-sm focus:border-[#0073ea] focus:outline-none"/>
+                  <button type="button" onClick={() => addArrayItem("groups", newGroup, setNewGroup)} className="px-3 py-2 bg-slate-100 rounded-xl text-xs font-bold hover:bg-slate-200">Add</button>
+                </div>
+                <div className="space-y-1">
+                  {waSettings.groups.map((grp, i) => (
+                    <div key={i} className="flex justify-between items-center bg-slate-50 px-3 py-2 rounded-lg text-sm font-bold text-slate-700">
+                      {grp}
+                      <button onClick={() => removeArrayItem("groups", i)} className="text-red-500 hover:text-red-700">&times;</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Schedules */}
             <div>
-              <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Target WA Numbers / Group IDs</label>
+              <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Schedules (HH:mm)</label>
+              <div className="flex gap-2 mb-2">
+                <input type="time" value={newSchedule} onChange={e => setNewSchedule(e.target.value)} className="px-3 py-2 rounded-xl border border-[#e6e9ef] text-sm focus:border-[#0073ea] focus:outline-none"/>
+                <button type="button" onClick={() => addArrayItem("schedules", newSchedule, setNewSchedule)} className="px-3 py-2 bg-slate-100 rounded-xl text-xs font-bold hover:bg-slate-200">Add Time</button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {waSettings.schedules.map((sch, i) => (
+                  <div key={i} className="flex items-center gap-2 bg-[#0073ea]/10 text-[#0073ea] px-3 py-1.5 rounded-lg text-sm font-bold">
+                    <Clock size={14} /> {sch}
+                    <button onClick={() => removeArrayItem("schedules", i)} className="ml-1 hover:text-red-500">&times;</button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Template */}
+            <div>
+              <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Message Template</label>
               <textarea 
-                value={waTargets} 
-                onChange={e => setWaTargets(e.target.value)} 
-                rows={3}
-                className="w-full px-4 py-3 rounded-xl border border-[#e6e9ef] focus:outline-none focus:border-[#0073ea] focus:ring-1 focus:ring-[#0073ea] text-sm font-bold text-[#323338]"
-                placeholder="Ex: 6281234567890, 1203631234567890@g.us"
+                value={waSettings.template} 
+                onChange={e => setWaSettings(prev => ({ ...prev, template: e.target.value }))} 
+                rows={6}
+                className="w-full px-4 py-3 rounded-xl border border-[#e6e9ef] focus:outline-none focus:border-[#0073ea] focus:ring-1 focus:ring-[#0073ea] text-sm text-[#323338]"
+                placeholder="Template text here..."
               />
-              <p className="text-[10px] font-bold text-slate-400 mt-2">Gunakan tanda koma (,) jika lebih dari satu target. Robot WA otomatis mendeteksi project yang diatur target WA-nya.</p>
+              <p className="text-[10px] font-bold text-slate-400 mt-2">
+                Available variables: <code className="bg-slate-100 px-1 py-0.5 rounded">{{ProjectName}}</code>, <code className="bg-slate-100 px-1 py-0.5 rounded">{{Date}}</code>, <code className="bg-slate-100 px-1 py-0.5 rounded">{{PendingList}}</code>, <code className="bg-slate-100 px-1 py-0.5 rounded">{{CompletedList}}</code>
+              </p>
             </div>
             
-            <div className="flex justify-end gap-3 pt-2">
+            <div className="flex justify-end gap-3 pt-4 border-t border-[#e6e9ef]">
               <button 
                 type="button" 
                 onClick={() => setShowSettings(false)}
@@ -141,14 +221,15 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
                 Close
               </button>
               <button 
-                type="submit" 
+                type="button" 
+                onClick={handleSaveSettings}
                 disabled={savingSettings}
                 className="px-6 py-3 bg-[#0073ea] text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#005bb5] transition-all disabled:opacity-50"
               >
                 {savingSettings ? "Saving..." : "Save Settings"}
               </button>
             </div>
-          </form>
+          </div>
         </div>
       )}
 
