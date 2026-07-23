@@ -126,6 +126,7 @@ const sendChecklist = async () => {
       }
       
       const schedules = waSettings?.schedules || [];
+      console.log(`Checking project ${project.name}: Current time is ${currentTime}, schedules are ${JSON.stringify(schedules)}`);
       if (!schedules.includes(currentTime)) {
         continue;
       }
@@ -196,7 +197,13 @@ const sendChecklist = async () => {
         .replace(/\{\{CompletedList\}\}/g, completedList);
 
       const targets = [
-        ...(waSettings?.numbers || []).map(t => (t.includes('@') ? t : `${t}@c.us`)),
+        ...(waSettings?.numbers || []).map(t => {
+          let num = t.trim();
+          if (num.startsWith('0')) {
+            num = '62' + num.substring(1);
+          }
+          return num.includes('@') ? num : `${num}@c.us`;
+        }),
         ...(waSettings?.groups || []).map(t => (t.includes('@') ? t : `${t}@g.us`))
       ];
       
