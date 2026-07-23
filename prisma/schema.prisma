@@ -39,6 +39,7 @@ model projects {
   status               projects_status       @default(active)
   created_at           DateTime              @default(now()) @db.Timestamp(0)
   enabled_forms        String?               @db.Text
+  wa_target_numbers    String?               @db.Text
   latitude             Decimal?              @db.Decimal(10, 8)
   longitude            Decimal?              @db.Decimal(11, 8)
   radius_meters        Int                   @default(100)

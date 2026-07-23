@@ -76,3 +76,38 @@ export async function resolveOutstandingCase(id: string | number | bigint, proje
     return { success: false, error: error.message };
   }
 }
+
+export async function getProjectWaTargets(projectId: string | number | bigint) {
+  try {
+    const project = await prisma.projects.findUnique({
+      where: { id: BigInt(projectId) },
+      select: { wa_target_numbers: true }
+    });
+    return { success: true, data: project?.wa_target_numbers || "" };
+  } catch (error: any) {
+    console.error("getProjectWaTargets error:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateProjectWaTargets(projectId: string | number | bigint, targets: string) {
+  try {
+    const session = await getSession();
+    if (!session?.isInternal) {
+      return { success: false, error: "Unauthorized." };
+    }
+
+    await prisma.projects.update({
+      where: { id: BigInt(projectId) },
+      data: { wa_target_numbers: targets }
+    });
+
+    revalidatePath(`/w/${projectId}/client/dashboard`);
+    revalidatePath(`/w/${projectId}/dashboard`);
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("updateProjectWaTargets error:", error);
+    return { success: false, error: error.message };
+  }
+}

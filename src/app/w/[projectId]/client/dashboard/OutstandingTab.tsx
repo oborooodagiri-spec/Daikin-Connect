@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Plus, CheckCircle2, AlertCircle, Clock } from "lucide-react";
-import { getOutstandingCases, addOutstandingCase, resolveOutstandingCase } from "@/app/actions/outstanding";
+import { Plus, CheckCircle2, AlertCircle, Clock, Settings } from "lucide-react";
+import { getOutstandingCases, addOutstandingCase, resolveOutstandingCase, getProjectWaTargets, updateProjectWaTargets } from "@/app/actions/outstanding";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 
@@ -16,9 +16,24 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
   const [unitName, setUnitName] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  // Settings State
+  const [showSettings, setShowSettings] = useState(false);
+  const [waTargets, setWaTargets] = useState("");
+  const [savingSettings, setSavingSettings] = useState(false);
+
   useEffect(() => {
     loadCases();
-  }, [projectId]);
+    if (isAdmin) {
+      loadSettings();
+    }
+  }, [projectId, isAdmin]);
+
+  const loadSettings = async () => {
+    const res = await getProjectWaTargets(projectId);
+    if (res.success) {
+      setWaTargets(res.data || "");
+    }
+  };
 
   const loadCases = async () => {
     setLoading(true);
@@ -52,6 +67,19 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
     await loadCases();
   };
 
+  const handleSaveSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingSettings(true);
+    const res = await updateProjectWaTargets(projectId, waTargets);
+    if (res.success) {
+      alert("Pengaturan WA berhasil disimpan.");
+      setShowSettings(false);
+    } else {
+      alert("Error: " + res.error);
+    }
+    setSavingSettings(false);
+  };
+
   if (loading) {
     return <div className="animate-pulse bg-white rounded-2xl h-96 border border-[#e6e9ef]"></div>;
   }
@@ -68,14 +96,61 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
         </div>
         
         {isAdmin && !showForm && (
-          <button 
-            onClick={() => setShowForm(true)}
-            className="px-6 py-3 bg-[#0073ea] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 hover:bg-[#005bb5] transition-all flex items-center gap-2"
-          >
-            <Plus size={16} /> Add Case
-          </button>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setShowSettings(true)}
+              className="p-3 bg-white border border-[#e6e9ef] text-slate-500 rounded-2xl hover:border-[#0073ea] hover:text-[#0073ea] transition-all"
+              title="WA Notification Settings"
+            >
+              <Settings size={16} />
+            </button>
+            <button 
+              onClick={() => setShowForm(true)}
+              className="px-6 py-3 bg-[#0073ea] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 hover:bg-[#005bb5] transition-all flex items-center gap-2"
+            >
+              <Plus size={16} /> Add Case
+            </button>
+          </div>
         )}
       </div>
+
+      {showSettings && (
+        <div className="bg-white rounded-2xl border border-[#0073ea] p-6 shadow-sm">
+          <h3 className="text-xs font-black uppercase tracking-widest text-[#0073ea] mb-4 flex items-center gap-2">
+            <Settings size={14} /> WhatsApp Notification Settings
+          </h3>
+          <form onSubmit={handleSaveSettings} className="space-y-4">
+            <div>
+              <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Target WA Numbers / Group IDs</label>
+              <textarea 
+                value={waTargets} 
+                onChange={e => setWaTargets(e.target.value)} 
+                rows={3}
+                className="w-full px-4 py-3 rounded-xl border border-[#e6e9ef] focus:outline-none focus:border-[#0073ea] focus:ring-1 focus:ring-[#0073ea] text-sm font-bold text-[#323338]"
+                placeholder="Ex: 6281234567890, 1203631234567890@g.us"
+              />
+              <p className="text-[10px] font-bold text-slate-400 mt-2">Gunakan tanda koma (,) jika lebih dari satu target. Robot WA otomatis mendeteksi project yang diatur target WA-nya.</p>
+            </div>
+            
+            <div className="flex justify-end gap-3 pt-2">
+              <button 
+                type="button" 
+                onClick={() => setShowSettings(false)}
+                className="px-6 py-3 bg-slate-100 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
+              >
+                Close
+              </button>
+              <button 
+                type="submit" 
+                disabled={savingSettings}
+                className="px-6 py-3 bg-[#0073ea] text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#005bb5] transition-all disabled:opacity-50"
+              >
+                {savingSettings ? "Saving..." : "Save Settings"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {showForm && (
         <div className="bg-white rounded-2xl border border-[#0073ea] p-6 shadow-sm">
