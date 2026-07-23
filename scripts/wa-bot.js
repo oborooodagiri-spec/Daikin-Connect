@@ -68,7 +68,7 @@ const sendChecklist = async () => {
     const isMorning = now.getHours() < 12;
 
     for (const project of projectsWithWA) {
-      let waSettings: any = {};
+      let waSettings = {};
       if (typeof project.wa_settings === 'string') {
         try { waSettings = JSON.parse(project.wa_settings); } catch (e) {}
       } else {
