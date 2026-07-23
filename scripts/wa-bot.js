@@ -97,9 +97,7 @@ const formatDate = (date) => {
 
 const sendChecklist = async () => {
   const now = new Date();
-  const currentHour = now.getHours().toString().padStart(2, '0');
-  const currentMinute = now.getMinutes().toString().padStart(2, '0');
-  const currentTime = `${currentHour}:${currentMinute}`;
+  const currentTime = now.toLocaleTimeString('en-GB', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', hour12: false });
   
   try {
     const projectsWithWA = await prisma.projects.findMany({
@@ -113,9 +111,6 @@ const sendChecklist = async () => {
     if (projectsWithWA.length === 0) {
       return;
     }
-
-    const now = new Date();
-    const isMorning = now.getHours() < 12;
 
     for (const project of projectsWithWA) {
       let waSettings = {};
@@ -187,7 +182,8 @@ const sendChecklist = async () => {
 
       let template = waSettings?.template || "*OUTSTANDING CASE REPORT*\nProyek: {{ProjectName}}\nTanggal: {{Date}}\n\n*DAFTAR OUTSTANDING PENDING*:\n{{PendingList}}\n\n*DISELESAIKAN HARI INI*:\n{{CompletedList}}\nMohon kerja samanya untuk segera menyelesaikan case yang masih pending.\nPesan ini dikirim secara otomatis oleh Robot Daikin Connect.";
       
-      const isMorning = now.getHours() < 12;
+      const jakartaHour = parseInt(now.toLocaleTimeString('en-GB', { timeZone: 'Asia/Jakarta', hour: '2-digit', hour12: false }), 10);
+      const isMorning = jakartaHour < 12;
       const dateStr = `${formatDate(now)} (${isMorning ? 'Pagi' : 'Sore'})`;
       
       let message = template
