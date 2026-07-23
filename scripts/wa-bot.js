@@ -1,7 +1,7 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const cron = require('node-cron');
-const { PrismaClient } = require('./src/generated/client_v3');
+const { PrismaClient } = require('../src/generated/client_v3');
 require('dotenv').config();
 
 const prisma = new PrismaClient();
