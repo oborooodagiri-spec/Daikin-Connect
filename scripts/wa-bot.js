@@ -196,8 +196,8 @@ const sendChecklist = async () => {
         .replace(/\{\{CompletedList\}\}/g, completedList);
 
       const targets = [
-        ...(waSettings?.numbers || []).map((t: string) => (t.includes('@') ? t : `${t}@c.us`)),
-        ...(waSettings?.groups || []).map((t: string) => (t.includes('@') ? t : `${t}@g.us`))
+        ...(waSettings?.numbers || []).map(t => (t.includes('@') ? t : `${t}@c.us`)),
+        ...(waSettings?.groups || []).map(t => (t.includes('@') ? t : `${t}@g.us`))
       ];
       
       for (const target of targets) {
