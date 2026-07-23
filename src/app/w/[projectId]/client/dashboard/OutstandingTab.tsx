@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { Plus, CheckCircle2, AlertCircle, Clock, Settings, RefreshCw, QrCode } from "lucide-react";
 import { getOutstandingCases, addOutstandingCase, resolveOutstandingCase, getProjectWaTargets, updateProjectWaTargets, getWaBotStatus, logoutWaBot } from "@/app/actions/outstanding";
-import QRCode from "react-qr-code";
+import dynamic from "next/dynamic";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
+
+const QRCode = dynamic(() => import("react-qr-code"), { ssr: false, loading: () => <div className="w-[200px] h-[200px] bg-slate-100 animate-pulse rounded-xl" /> });
 
 export default function OutstandingTab({ projectId, isAdmin }: { projectId: any, isAdmin: boolean }) {
   const [cases, setCases] = useState<any[]>([]);
