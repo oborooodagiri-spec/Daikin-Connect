@@ -73,7 +73,16 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
   const loadSettings = async () => {
     const res = await getProjectWaTargets(projectId);
     if (res.success && res.data) {
-      setWaSettings(res.data);
+      let data = res.data;
+      if (typeof data === 'string') {
+        try { data = JSON.parse(data); } catch (e) {}
+      }
+      setWaSettings({
+        numbers: data?.numbers || [],
+        groups: data?.groups || [],
+        schedules: data?.schedules || ["06:00", "18:00"],
+        template: data?.template || "*OUTSTANDING CASE REPORT*\nProyek: {{ProjectName}}\nTanggal: {{Date}}\n\n*DAFTAR OUTSTANDING PENDING*:\n{{PendingList}}\n\n*DISELESAIKAN HARI INI*:\n{{CompletedList}}\nMohon kerja samanya untuk segera menyelesaikan case yang masih pending.\nPesan ini dikirim secara otomatis oleh Robot Daikin Connect."
+      });
     }
   };
 
@@ -235,7 +244,7 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
                   <button type="button" onClick={() => addArrayItem("numbers", newNumber, setNewNumber)} className="px-3 py-2 bg-slate-100 rounded-xl text-xs font-bold hover:bg-slate-200">Add</button>
                 </div>
                 <div className="space-y-1">
-                  {waSettings.numbers.map((num, i) => (
+                  {(waSettings?.numbers || []).map((num, i) => (
                     <div key={i} className="flex justify-between items-center bg-slate-50 px-3 py-2 rounded-lg text-sm font-bold text-slate-700">
                       {num}
                       <button onClick={() => removeArrayItem("numbers", i)} className="text-red-500 hover:text-red-700">&times;</button>
@@ -252,7 +261,7 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
                   <button type="button" onClick={() => addArrayItem("groups", newGroup, setNewGroup)} className="px-3 py-2 bg-slate-100 rounded-xl text-xs font-bold hover:bg-slate-200">Add</button>
                 </div>
                 <div className="space-y-1">
-                  {waSettings.groups.map((grp, i) => (
+                  {(waSettings?.groups || []).map((grp, i) => (
                     <div key={i} className="flex justify-between items-center bg-slate-50 px-3 py-2 rounded-lg text-sm font-bold text-slate-700">
                       {grp}
                       <button onClick={() => removeArrayItem("groups", i)} className="text-red-500 hover:text-red-700">&times;</button>
@@ -270,7 +279,7 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
                 <button type="button" onClick={() => addArrayItem("schedules", newSchedule, setNewSchedule)} className="px-3 py-2 bg-slate-100 rounded-xl text-xs font-bold hover:bg-slate-200">Add Time</button>
               </div>
               <div className="flex flex-wrap gap-2">
-                {waSettings.schedules.map((sch, i) => (
+                {(waSettings?.schedules || []).map((sch, i) => (
                   <div key={i} className="flex items-center gap-2 bg-[#0073ea]/10 text-[#0073ea] px-3 py-1.5 rounded-lg text-sm font-bold">
                     <Clock size={14} /> {sch}
                     <button onClick={() => removeArrayItem("schedules", i)} className="ml-1 hover:text-red-500">&times;</button>
@@ -283,7 +292,7 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
             <div>
               <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Message Template</label>
               <textarea 
-                value={waSettings.template} 
+                value={waSettings?.template || ""} 
                 onChange={e => setWaSettings(prev => ({ ...prev, template: e.target.value }))} 
                 rows={6}
                 className="w-full px-4 py-3 rounded-xl border border-[#e6e9ef] focus:outline-none focus:border-[#0073ea] focus:ring-1 focus:ring-[#0073ea] text-sm text-[#323338]"
