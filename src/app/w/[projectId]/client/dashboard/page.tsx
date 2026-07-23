@@ -16,6 +16,7 @@ import { Language, t } from "@/lib/i18n";
 import { getClientDashboardData, requestClientVisit } from "@/app/actions/client_dashboard";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import ScheduleCalendarWidget from "@/components/dashboard/ScheduleCalendarWidget";
+import OutstandingTab from "./OutstandingTab";
 
 export default function ClientDashboardPage() {
   const params = useParams();
@@ -92,6 +93,7 @@ export default function ClientDashboardPage() {
     { id: "overview", label: "Overview", icon: BarChart3 },
     { id: "timeline", label: "Timeline", icon: Clock },
     { id: "inventory", label: "Assets", icon: LayoutGrid },
+    { id: "outstanding", label: "Outstanding Case", icon: AlertTriangle },
   ];
 
   return (
@@ -287,6 +289,13 @@ export default function ClientDashboardPage() {
            <div className="bg-white rounded-2xl p-4 md:p-8 border border-[#e6e9ef] shadow-sm">
               <ClientAssetList projectId={projectId} />
            </div>
+        </motion.div>
+      )}
+
+      {/* TAB: OUTSTANDING */}
+      {activeTab === "outstanding" && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-2">
+           <OutstandingTab projectId={projectId} isAdmin={false} />
         </motion.div>
       )}
     </div>

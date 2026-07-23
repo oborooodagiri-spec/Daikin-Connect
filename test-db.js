@@ -1,0 +1,1 @@
+const { PrismaClient } = require('./src/generated/client_v3'); const { serializePrisma } = require('./src/lib/serialize'); const prisma = new PrismaClient(); prisma.pipeline_deals.findMany().then(d => { try { serializePrisma(d); console.log('success'); } catch (e) { console.error('Serialize Error', e); } }).finally(() => prisma.$disconnect());

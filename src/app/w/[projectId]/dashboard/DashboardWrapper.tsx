@@ -20,6 +20,9 @@ import SummaryCards from "@/components/dashboard/SummaryCards";
 import SummaryDetailModal from "@/components/dashboard/SummaryDetailModal";
 import TrendChart from "@/components/dashboard/TrendChart";
 import ProjectSpotlight from "@/components/dashboard/ProjectSpotlight";
+import StatusList from "@/components/StatusList";
+import OutstandingCaseWidget from "@/components/OutstandingCaseWidget";
+import OutstandingTab from "../client/dashboard/OutstandingTab";
 import UnitStatusChart from "@/components/dashboard/UnitStatusChart";
 import ActivityFeed from "@/components/dashboard/ActivityFeed";
 import ExportOptionsModal from "@/components/dashboard/ExportOptionsModal";
@@ -27,7 +30,7 @@ import ScheduleCalendarWidget from "@/components/dashboard/ScheduleCalendarWidge
 import AssetManager from "@/components/dashboard/AssetManager";
 import UnitFormModal from "@/components/dashboard/UnitFormModal";
 import QuickInputModal from "@/components/dashboard/QuickInputModal";
-import { Clock, BarChart3, Activity, Zap, AlertTriangle, Hammer, ArrowRight, LayoutGrid, Search, LayoutDashboard, Package } from "lucide-react";
+import { Clock, BarChart3, Activity, Zap, AlertTriangle, Hammer, ArrowRight, LayoutGrid, Search, LayoutDashboard, Package, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function DashboardWrapper() {
@@ -229,8 +232,9 @@ export default function DashboardWrapper() {
 
   const TABS = [
     { id: "summary", label: "Overview", icon: BarChart3 },
-    { id: "timeline", label: "Timeline", icon: Clock },
+    { id: "timeline", label: "Timeline", icon: Calendar },
     { id: "inventory", label: "Assets", icon: LayoutGrid },
+    { id: "outstanding", label: "Outstanding Case", icon: AlertTriangle },
   ];
 
   return (
@@ -331,27 +335,43 @@ export default function DashboardWrapper() {
               
               {/* Sidebar Alerts Column */}
               <div className="xl:col-span-4 space-y-6">
-                <StatusList  
-                  title={`Active Issues`} 
-                  sub="ATTENTION REQUIRED" 
-                  items={problemUnits} 
-                  color="rose" 
-                  icon={<AlertTriangle size={20} className="text-white" />}
-                  onItemClick={(e: any, unit: any) => handleUnitClick(e, unit)}
-                />
-                
-                <StatusList 
-                  title="Work In Progress" 
-                  sub="ONGOING" 
-                  items={onProgressUnits} 
-                  color="amber" 
-                  icon={<Hammer size={16} className="text-white" />}
-                  onItemClick={(e: any, unit: any) => handleUnitClick(e, unit)}
-                />
+                {filters.projectId === "1" ? (
+                  <OutstandingCaseWidget projectId={filters.projectId} isAdmin={true} />
+                ) : (
+                  <>
+                    <StatusList  
+                      title={`Active Issues`} 
+                      sub="ATTENTION REQUIRED" 
+                      items={problemUnits} 
+                      color="rose" 
+                      icon={<AlertTriangle size={20} className="text-white" />}
+                      onItemClick={(e: any, unit: any) => handleUnitClick(e, unit)}
+                    />
+                    
+                    <StatusList 
+                      title="Work In Progress" 
+                      sub="ONGOING" 
+                      items={onProgressUnits} 
+                      color="amber" 
+                      icon={<Hammer size={16} className="text-white" />}
+                      onItemClick={(e: any, unit: any) => handleUnitClick(e, unit)}
+                    />
 
-                <ComplaintWidget items={recentComplaints} onItemClick={(e: React.MouseEvent, unitId: string) => handleActivityClick(e, unitId)} />
+                    <ComplaintWidget items={recentComplaints} onItemClick={(e: React.MouseEvent, unitId: string) => handleActivityClick(e, unitId)} />
+                  </>
+                )}
               </div>
             </div>
+          </motion.div>
+        )}
+
+        {activeTab === "outstanding" && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-2"
+          >
+            <OutstandingTab projectId={filters.projectId} isAdmin={true} />
           </motion.div>
         )}
 

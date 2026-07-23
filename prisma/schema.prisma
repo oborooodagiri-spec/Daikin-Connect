@@ -58,7 +58,7 @@ model projects {
   knowledge_resources  knowledge_resources[]
   notifications        notifications[]
   work_orders          work_orders[]
-
+  outstanding_cases    outstanding_cases[]
   @@unique([customer_id, name], map: "uq_project_per_customer")
   @@index([customer_id], map: "idx_projects_customer")
 }
@@ -80,7 +80,22 @@ model knowledge_resources {
   created_at    DateTime @default(now()) @db.Timestamp(0)
   updated_at    DateTime @updatedAt
 
-  projects projects? @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  projects   projects? @relation(fields: [project_id], references: [id], onDelete: Cascade)
+
+  @@index([project_id])
+}
+
+model outstanding_cases {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  project_id  BigInt    @db.UnsignedBigInt
+  title       String    @db.VarChar(255)
+  unit_name   String?   @db.VarChar(150)
+  target_date DateTime? @db.Date
+  status      String    @default("Pending")
+  created_at  DateTime  @default(now()) @db.Timestamp(0)
+  updated_at  DateTime  @updatedAt
+  
+  projects    projects  @relation(fields: [project_id], references: [id], onDelete: Cascade)
 
   @@index([project_id])
 }
