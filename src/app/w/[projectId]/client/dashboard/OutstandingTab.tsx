@@ -301,7 +301,7 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
                 placeholder="Template text here..."
               />
               <p className="text-[10px] font-bold text-slate-400 mt-2">
-                Available variables: <code className="bg-slate-100 px-1 py-0.5 rounded">{{ProjectName}}</code>, <code className="bg-slate-100 px-1 py-0.5 rounded">{{Date}}</code>, <code className="bg-slate-100 px-1 py-0.5 rounded">{{PendingList}}</code>, <code className="bg-slate-100 px-1 py-0.5 rounded">{{CompletedList}}</code>
+                Available variables: <code className="bg-slate-100 px-1 py-0.5 rounded">{"{{ProjectName}}"}</code>, <code className="bg-slate-100 px-1 py-0.5 rounded">{"{{Date}}"}</code>, <code className="bg-slate-100 px-1 py-0.5 rounded">{"{{PendingList}}"}</code>, <code className="bg-slate-100 px-1 py-0.5 rounded">{"{{CompletedList}}"}</code>
               </p>
             </div>
             
