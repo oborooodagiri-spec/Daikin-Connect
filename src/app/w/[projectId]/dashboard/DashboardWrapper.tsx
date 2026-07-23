@@ -20,7 +20,6 @@ import SummaryCards from "@/components/dashboard/SummaryCards";
 import SummaryDetailModal from "@/components/dashboard/SummaryDetailModal";
 import TrendChart from "@/components/dashboard/TrendChart";
 import ProjectSpotlight from "@/components/dashboard/ProjectSpotlight";
-import StatusList from "@/components/StatusList";
 import OutstandingCaseWidget from "@/components/OutstandingCaseWidget";
 import OutstandingTab from "../client/dashboard/OutstandingTab";
 import UnitStatusChart from "@/components/dashboard/UnitStatusChart";
