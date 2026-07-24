@@ -8,12 +8,13 @@ import {
   Download, Upload, Edit2, Trash2, ChevronRight, ChevronLeft,
   Filter, DollarSign, Target, Users, Building2, ArrowUpRight,
   ArrowDownRight, Activity, Globe2, Layers, RefreshCw, X,
-  CheckCircle2, Clock, AlertTriangle, Briefcase, ArrowLeft, Trophy
+  CheckCircle2, Clock, AlertTriangle, Briefcase, ArrowLeft, Trophy, Table2
 } from "lucide-react";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 import DealFormModal from "./DealFormModal";
 import OpsFormModal from "./OpsFormModal";
 import PresentationModal, { PresentationState } from "./PresentationModal";
+import ProjectByStatusModal from "./ProjectByStatusModal";
 
 // ============================================
 // TYPES
@@ -378,6 +379,8 @@ export default function LiveDataClient() {
   const [editingDeal, setEditingDeal] = useState<Deal | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingOps, setEditingOps] = useState<OpsRecord | null>(null);
+  
+  const [showProjectByStatusModal, setShowProjectByStatusModal] = useState(false);
   const [showOpsModal, setShowOpsModal] = useState(false);
   const [presentationState, setPresentationState] = useState<PresentationState | null>(null);
 
@@ -768,6 +771,47 @@ export default function LiveDataClient() {
                 );
               })}
           </div>
+        </div>
+      </div>
+
+      {/* PROJECT BY STATUS (CLICK TO OPEN MATRIX) */}
+      <div 
+        style={{ ...cardStyle, cursor: "pointer", transition: "all 0.2s", background: "linear-gradient(to right, #ffffff, #f8fafc)" }}
+        onClick={() => setShowProjectByStatusModal(true)}
+        onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 12px 30px rgba(0,0,0,0.08)"; }}
+        onMouseOut={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 15px rgba(0,0,0,0.03)"; }}
+      >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(0, 115, 234, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Table2 size={20} color="#0073ea" />
+            </div>
+            <div>
+              <h3 style={{ fontSize: 14, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em", color: "#323338" }}>Project By Status Overview</h3>
+              <p style={{ fontSize: 11, color: "#676879", fontWeight: 600 }}>Click to open full Pivot Matrix & Forecast Chart</p>
+            </div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#0073ea", fontSize: 12, fontWeight: 800 }}>
+            View Full Matrix <ArrowUpRight size={16} />
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {["A", "B", "C", "D", "E"].map(status => {
+            const stData = stats.byStatus[status] || { count: 0, value: 0 };
+            const cfg = STATUS_CONFIG[status];
+            if (!cfg) return null;
+            return (
+              <div key={status} style={{ padding: "16px", background: "#ffffff", borderRadius: 12, border: "1px solid #f0f0f0", display: "flex", flexDirection: "column", gap: 8 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: cfg.color }} />
+                  <span style={{ fontSize: 11, fontWeight: 800, color: "#676879" }}>{cfg.label.split(' ')[0]}</span>
+                </div>
+                <div style={{ fontSize: 18, fontWeight: 900, color: "#323338" }}>{stData.count} <span style={{ fontSize: 10, color: "#a1a1aa", fontWeight: 700 }}>Proj</span></div>
+                <div style={{ fontSize: 12, fontWeight: 800, color: cfg.color }}>{formatRp(stData.value)}</div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -1260,8 +1304,9 @@ export default function LiveDataClient() {
         )}
       </div>
 
-      <DealFormModal isOpen={showAddModal} onClose={() => setShowAddModal(false)} onSuccess={loadData} deal={editingDeal} sessionName="" />
+      <DealFormModal isOpen={showAddModal} onClose={() => setShowAddModal(false)} onSuccess={loadData} deal={editingDeal} />
       <OpsFormModal isOpen={showOpsModal} onClose={() => setShowOpsModal(false)} onSuccess={loadData} opsRecord={editingOps} />
+      <ProjectByStatusModal isOpen={showProjectByStatusModal} onClose={() => setShowProjectByStatusModal(false)} deals={activeDeals} />
       <PresentationModal state={presentationState} onClose={() => setPresentationState(null)} formatRp={formatRp} STATUS_CONFIG={STATUS_CONFIG} />
     </div>
   );
