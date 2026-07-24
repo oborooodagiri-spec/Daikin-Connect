@@ -12,6 +12,7 @@ interface Deal {
   quotation: number | bigint;
   status: string;
   target_po_date?: string | null;
+  est_booking_month?: string | Date | null;
   sector?: string;
   [key: string]: any;
 }
@@ -61,9 +62,9 @@ export default function SectorPipelineModal({
 
     deals.forEach(d => {
       if (['L', 'H'].includes(d.status)) return; // Exclude lost/hold usually
-      if (!d.target_po_date) return;
+      if (!d.est_booking_month) return;
       
-      const dt = new Date(d.target_po_date);
+      const dt = new Date(d.est_booking_month);
       if (isNaN(dt.getTime())) return;
 
       const mYear = dt.getFullYear();
