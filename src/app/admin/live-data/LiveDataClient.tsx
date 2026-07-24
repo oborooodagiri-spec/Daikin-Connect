@@ -641,7 +641,7 @@ export default function LiveDataClient() {
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
         {/* KPI CARDS */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {[
             { label: `FY${selectedFY} Pipeline`, value: formatRp(stats.newFyValue), sub: `${stats.newFyCount} projects created this year`, icon: Briefcase, color: "#00c875", gradient: "linear-gradient(135deg, #00c875 0%, #34d399 100%)" },
             { label: "Backlog Pipeline", value: formatRp(stats.backlogValue), sub: `${stats.backlogCount} projects carried over`, icon: Clock, color: "#f59e0b", gradient: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)" },
@@ -677,8 +677,15 @@ export default function LiveDataClient() {
           ))}
         </div>
 
+
+
+        {/* INDONESIA MAP */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          <IndonesiaMap deals={activeDeals} />
+        </motion.div>
+
         {/* Widgets Area */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24, marginBottom: 32 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 24, marginBottom: 32 }}>
             {/* Project By Status Widget */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -695,7 +702,8 @@ export default function LiveDataClient() {
                 display: "flex",
                 flexDirection: "column",
                 position: "relative",
-                overflow: "hidden"
+                overflow: "hidden",
+                width: "100%"
               }}
             >
               <div style={{ position: "absolute", top: 0, right: 0, padding: 16, opacity: 0.1 }}>
@@ -742,7 +750,8 @@ export default function LiveDataClient() {
                 display: "flex",
                 flexDirection: "column",
                 position: "relative",
-                overflow: "hidden"
+                overflow: "hidden",
+                width: "100%"
               }}
             >
               <div style={{ position: "absolute", top: 0, right: 0, padding: 16, opacity: 0.1 }}>
@@ -769,11 +778,6 @@ export default function LiveDataClient() {
               </div>
             </motion.div>
           </div>
-
-        {/* INDONESIA MAP */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <IndonesiaMap deals={activeDeals} />
-        </motion.div>
 
         {/* SALES PERFORMANCE MATRIX */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
