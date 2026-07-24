@@ -17,6 +17,7 @@ import PresentationModal, { PresentationState } from "./PresentationModal";
 import ProjectByStatusModal from "./ProjectByStatusModal";
 import BookingForecastModal from "./BookingForecastModal";
 import SectorPipelineModal from "./SectorPipelineModal";
+import TopSalesModal from "./TopSalesModal";
 
 // ============================================
 // TYPES
@@ -385,6 +386,7 @@ export default function LiveDataClient() {
   const [showProjectByStatusModal, setShowProjectByStatusModal] = useState(false);
   const [showBookingForecastModal, setShowBookingForecastModal] = useState(false);
   const [sectorModalState, setSectorModalState] = useState<{ isOpen: boolean; sectorName: string; color: string; deals: any[] } | null>(null);
+  const [showTopSalesModal, setShowTopSalesModal] = useState(false);
   const [showOpsModal, setShowOpsModal] = useState(false);
   const [presentationState, setPresentationState] = useState<PresentationState | null>(null);
 
@@ -776,7 +778,12 @@ export default function LiveDataClient() {
         {/* SALES PERFORMANCE MATRIX */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* TOP PERFORMERS (MOST PO) */}
-          <div style={{ ...cardStyle, background: "linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)" }}>
+          <div 
+            style={{ ...cardStyle, background: "linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)", cursor: "pointer", transition: "transform 0.2s" }}
+            onClick={() => setShowTopSalesModal(true)}
+            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+          >
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
               <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(0, 200, 117, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <Trophy size={16} color="#00c875" />
@@ -793,7 +800,10 @@ export default function LiveDataClient() {
                   const winRate = data.totalValue > 0 ? Math.round((data.wonValue / data.totalValue) * 100) : 0;
                   return (
                     <div key={pic} style={{ position: "relative", cursor: "pointer" }}
-                      onClick={() => setPresentationState({ title: `Top Performer: ${pic}`, subtitle: `Win Rate: ${winRate}% · Won: ${formatRp(data.wonValue)}`, color: "#00c875", data: leaderboardDeals.filter(d => d.pic === pic) })}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPresentationState({ title: `Top Performer: ${pic}`, subtitle: `Win Rate: ${winRate}% · Won: ${formatRp(data.wonValue)}`, color: "#00c875", data: leaderboardDeals.filter(d => d.pic === pic) });
+                      }}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, alignItems: "flex-end" }}>
                         <span style={{ fontSize: 12, fontWeight: 800, color: "#323338" }}>{idx + 1}. {pic}</span>
@@ -1378,6 +1388,7 @@ export default function LiveDataClient() {
         sectorName={sectorModalState?.sectorName || ""} 
         color={sectorModalState?.color} 
       />
+      <TopSalesModal isOpen={showTopSalesModal} onClose={() => setShowTopSalesModal(false)} deals={activeDeals} initialFY={selectedFY} />
       <PresentationModal state={presentationState} onClose={() => setPresentationState(null)} formatRp={formatRp} STATUS_CONFIG={STATUS_CONFIG} />
     </div>
   );
