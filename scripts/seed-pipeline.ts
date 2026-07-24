@@ -10,9 +10,13 @@ function excelDateToJSDate(excelDate: number): Date | null {
 }
 
 async function main() {
+  console.log("Emptying old pipeline data...");
+  await prisma.pipeline_deals.deleteMany({});
+  await prisma.pipeline_ops.deleteMany({});
+
   console.log("Importing Pipeline Data from Excel...");
   
-  const filePath = "C:\\Users\\D22AGRI-EPL\\OneDrive - DAIKIN\\EPL-CONNECT\\Form\\live data\\2026Pipeline DASI Service.xlsx";
+  const filePath = "C:\\Users\\D22AGRI-EPL\\Desktop\\daikin-connect-clean\\Data Project\\live data\\2\\2026Pipeline DASI Service.xlsx";
   const wb = xlsx.readFile(filePath);
 
   // ========================================
@@ -65,124 +69,7 @@ async function main() {
   }
   console.log(`EPL: Imported ${eplCount} deals`);
 
-  // ========================================
-  // 2. IMPORT EPL PARTNERSHIP SHEET
-  // ========================================
-  console.log("\n--- Importing EPL PARTNERSHIP Sheet ---");
-  const partSheet = wb.Sheets["EPL PARTNERSHIP"];
-  const partRows = xlsx.utils.sheet_to_json(partSheet, { header: 1 }) as any[][];
-  let partCount = 0;
 
-  // Headers: [0]null, [1]Klien Name, [2]Project, [3]Sector, [4]Quotation, [5]Status, [6]Column1, [7]Sales
-  for (let r = 1; r < partRows.length; r++) {
-    const row = partRows[r];
-    if (!row || !row[1]) continue;
-
-    const clientName = String(row[1] || "").trim();
-    if (!clientName) continue;
-
-    const quotation = parseInt(row[4]) || 0;
-
-    // Extract PIC from client name (usually "Name - David" format)
-    let pic = row[7] ? String(row[7]).trim() : null;
-    if (!pic) {
-      const match = clientName.match(/-\s*(\w+)\s*$/);
-      if (match) pic = match[1];
-    }
-
-    try {
-      await (prisma.pipeline_deals as any).create({
-        data: {
-          client_name: clientName.substring(0, 255),
-          project_name: String(row[2] || clientName).trim().substring(0, 500),
-          sector: row[3] ? String(row[3]).trim().substring(0, 50) : null,
-          quotation: BigInt(quotation),
-          status: row[5] ? String(row[5]).trim().substring(0, 5) : "E",
-          remarks: row[6] ? String(row[6]).trim() : null,
-          pic: pic?.substring(0, 100) || null,
-          source: "Partnership",
-          category: "EPL"
-        }
-      });
-      partCount++;
-    } catch (e: any) {
-      console.error(`Partnership row ${r} error:`, e.message?.substring(0, 100));
-    }
-  }
-  console.log(`Partnership: Imported ${partCount} deals`);
-
-  // ========================================
-  // 3. IMPORT PIPELINE OPS (2) SHEET
-  // ========================================
-  console.log("\n--- Importing Pipeline OPS (2) Sheet ---");
-  const opsSheet = wb.Sheets["Pipeline OPS (2)"];
-  const opsRows = xlsx.utils.sheet_to_json(opsSheet, { header: 1 }) as any[][];
-  let opsCount = 0;
-
-  // Row 0 = totals, Row 1 = headers
-  // Headers: [0]NO, [1]STATUS, [2]CUSTOMER, [3]PROJECT NAME, [4..31]=months, [32-35]=more months/remark
-  // The month columns contain Excel serial dates in row 1
-  const headerRow = opsRows[1];
-  const monthCols: { col: number; date: string }[] = [];
-  
-  if (headerRow) {
-    for (let c = 4; c < headerRow.length; c++) {
-      const val = headerRow[c];
-      if (typeof val === "number" && val > 40000 && val < 50000) {
-        const dt = excelDateToJSDate(val);
-        if (dt) {
-          const key = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}`;
-          monthCols.push({ col: c, date: key });
-        }
-      }
-    }
-  }
-
-  for (let r = 2; r < opsRows.length; r++) {
-    const row = opsRows[r];
-    if (!row || row[0] === null || row[0] === undefined) continue;
-
-    const customer = String(row[2] || "").trim();
-    const projectName = String(row[3] || "").trim();
-    if (!customer && !projectName) continue;
-
-    // Build monthly values
-    const valuesByMonth: Record<string, number> = {};
-    let totalValue = 0;
-    for (const mc of monthCols) {
-      const val = parseFloat(row[mc.col]);
-      if (!isNaN(val) && val > 0) {
-        valuesByMonth[mc.date] = val;
-        totalValue += val;
-      }
-    }
-
-    // Find remark - usually last column with text
-    let remark = "";
-    for (let c = row.length - 1; c >= 4; c--) {
-      if (typeof row[c] === "string" && row[c].trim().length > 0) {
-        remark = row[c].trim();
-        break;
-      }
-    }
-
-    try {
-      await (prisma.pipeline_ops as any).create({
-        data: {
-          status: row[1] ? String(row[1]).trim().substring(0, 5) : "E",
-          customer: customer.substring(0, 255) || "Unknown",
-          project_name: projectName.substring(0, 500) || "Unknown",
-          total_value: BigInt(Math.round(totalValue)),
-          values_by_month: Object.keys(valuesByMonth).length > 0 ? valuesByMonth : undefined,
-          remark: remark || null
-        }
-      });
-      opsCount++;
-    } catch (e: any) {
-      console.error(`OPS row ${r} error:`, e.message?.substring(0, 100));
-    }
-  }
-  console.log(`OPS: Imported ${opsCount} records`);
 
   // ========================================
   // 4. SEED PIPELINE SETTINGS
@@ -269,9 +156,7 @@ async function main() {
   console.log("\n========================================");
   console.log(`IMPORT COMPLETE`);
   console.log(`EPL Deals: ${eplCount}`);
-  console.log(`Partnership Deals: ${partCount}`);
-  console.log(`OPS Records: ${opsCount}`);
-  console.log(`Total: ${eplCount + partCount + opsCount}`);
+  console.log(`Total: ${eplCount}`);
   console.log("========================================");
 }
 

@@ -78,8 +78,6 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }
 const TABS = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3 },
   { id: "pipeline", label: "Sales Pipeline", icon: TrendingUp },
-  { id: "ops", label: "Operations", icon: Activity },
-  { id: "partnership", label: "Partnership", icon: Briefcase },
   { id: "settings", label: "Settings", icon: Settings },
 ];
 
