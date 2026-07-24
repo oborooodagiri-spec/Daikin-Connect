@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, BarChart3, Table2 } from "lucide-react";
 import { 
@@ -18,6 +18,7 @@ interface ProjectByStatusModalProps {
   isOpen: boolean;
   onClose: () => void;
   deals: Deal[];
+  initialFY?: number;
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
@@ -33,11 +34,30 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   N: { label: "No Response (N)", color: "#c4c4c4" },
 };
 
-export default function ProjectByStatusModal({ isOpen, onClose, deals }: ProjectByStatusModalProps) {
+export default function ProjectByStatusModal({ isOpen, onClose, deals, initialFY = 26 }: ProjectByStatusModalProps) {
   
+  const [selectedFY, setSelectedFY] = useState(initialFY);
+  useEffect(() => {
+    if (isOpen) setSelectedFY(initialFY);
+  }, [isOpen, initialFY]);
+
   const { columns, rows, totals, chartData } = useMemo(() => {
     const monthMap: Record<string, Record<string, number>> = {};
+    
+    // Generate exactly 12 columns for the selected FY
+    // Example: FY 26 = April 2026 to March 2027
+    const year = 2000 + selectedFY;
+    const columns: { key: string; label: string }[] = [];
     const colSet = new Set<string>();
+    
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(year, 3 + i, 1);
+      const mYear = d.getFullYear();
+      const mStr = d.toLocaleString('default', { month: 'short' });
+      const key = `${mYear}-${String(d.getMonth() + 1).padStart(2, '0')} ${mStr} ${mYear}`;
+      columns.push({ key, label: `${mStr} ${mYear}` });
+      colSet.add(key);
+    }
 
     deals.forEach(d => {
       if (!d.est_booking_month) return;
@@ -46,19 +66,15 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
       const dt = new Date(d.est_booking_month);
       if (isNaN(dt.getTime())) return;
 
-      const year = dt.getFullYear();
-      const month = dt.toLocaleString('default', { month: 'short' });
-      const monthKey = `${month} ${year}`;
+      const mYear = dt.getFullYear();
+      const mStr = dt.toLocaleString('default', { month: 'short' });
+      const sortKey = `${mYear}-${String(dt.getMonth() + 1).padStart(2, '0')} ${mStr} ${mYear}`;
       
-      const sortKey = `${year}-${String(dt.getMonth() + 1).padStart(2, '0')} ${monthKey}`;
-      colSet.add(sortKey);
+      if (!colSet.has(sortKey)) return; // Filter to selected FY only
       
       if (!monthMap[d.status]) monthMap[d.status] = {};
       monthMap[d.status][sortKey] = (monthMap[d.status][sortKey] || 0) + Number(d.quotation || 0);
     });
-
-    const sortedCols = Array.from(colSet).sort();
-    const columns = sortedCols.map(c => ({ key: c, label: c.substring(8) }));
     
     const relevantStatuses = ["A", "B", "C", "D", "E"];
     const rows = relevantStatuses.map(status => {
@@ -89,7 +105,7 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
     });
 
     return { columns, rows, totals, grandTotal, chartData };
-  }, [deals]);
+  }, [deals, selectedFY]);
 
   const formatRp = (value: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -158,9 +174,22 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
                 <BarChart3 size={24} color="#0073ea" />
                 Project By Status Analytics
               </h2>
-              <p style={{ fontSize: 13, color: "#676879", marginTop: 4, fontWeight: 500 }}>
-                Monthly pipeline projection based on estimated booking dates
-              </p>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
+                <p style={{ fontSize: 13, color: "#676879", fontWeight: 500 }}>
+                  Monthly pipeline projection for
+                </p>
+                <select 
+                  value={selectedFY} 
+                  onChange={e => setSelectedFY(Number(e.target.value))}
+                  style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid #e5e7eb", fontSize: 13, fontWeight: 700, color: "#323338", outline: "none", cursor: "pointer", background: "#f8fafc" }}
+                >
+                  <option value={24}>FY 24</option>
+                  <option value={25}>FY 25</option>
+                  <option value={26}>FY 26</option>
+                  <option value={27}>FY 27</option>
+                  <option value={28}>FY 28</option>
+                </select>
+              </div>
             </div>
             <button
               onClick={onClose}
