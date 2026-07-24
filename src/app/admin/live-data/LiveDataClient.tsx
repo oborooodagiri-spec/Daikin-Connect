@@ -677,15 +677,13 @@ export default function LiveDataClient() {
           ))}
         </div>
 
-
-
         {/* INDONESIA MAP */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <IndonesiaMap deals={activeDeals} />
         </motion.div>
 
         {/* Widgets Area */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 24, marginBottom: 32 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 24, marginBottom: 32, marginTop: 16 }}>
             {/* Project By Status Widget */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -702,8 +700,7 @@ export default function LiveDataClient() {
                 display: "flex",
                 flexDirection: "column",
                 position: "relative",
-                overflow: "hidden",
-                width: "100%"
+                overflow: "hidden"
               }}
             >
               <div style={{ position: "absolute", top: 0, right: 0, padding: 16, opacity: 0.1 }}>
@@ -750,8 +747,7 @@ export default function LiveDataClient() {
                 display: "flex",
                 flexDirection: "column",
                 position: "relative",
-                overflow: "hidden",
-                width: "100%"
+                overflow: "hidden"
               }}
             >
               <div style={{ position: "absolute", top: 0, right: 0, padding: 16, opacity: 0.1 }}>
