@@ -16,6 +16,7 @@ import OpsFormModal from "./OpsFormModal";
 import PresentationModal, { PresentationState } from "./PresentationModal";
 import ProjectByStatusModal from "./ProjectByStatusModal";
 import BookingForecastModal from "./BookingForecastModal";
+import SectorPipelineModal from "./SectorPipelineModal";
 
 // ============================================
 // TYPES
@@ -383,6 +384,7 @@ export default function LiveDataClient() {
   
   const [showProjectByStatusModal, setShowProjectByStatusModal] = useState(false);
   const [showBookingForecastModal, setShowBookingForecastModal] = useState(false);
+  const [sectorModalState, setSectorModalState] = useState<{ isOpen: boolean; sectorName: string; color: string; deals: any[] } | null>(null);
   const [showOpsModal, setShowOpsModal] = useState(false);
   const [presentationState, setPresentationState] = useState<PresentationState | null>(null);
 
@@ -960,7 +962,7 @@ export default function LiveDataClient() {
                 const entries = Object.entries(stats.bySector).sort(([, a], [, b]) => b.value - a.value).slice(0, 5);
                 const maxVal = Math.max(...entries.map(([, v]) => v.value), 1);
                 return entries.map(([sector, data], idx) => (
-                  <div key={sector} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setPresentationState({ title: `Sector: ${sector}`, subtitle: "Detailed Project List", color: sectorColors[idx % sectorColors.length], data: activeDeals.filter(d => d.sector === sector) })}>
+                  <div key={sector} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setSectorModalState({ isOpen: true, sectorName: sector, color: sectorColors[idx % sectorColors.length], deals: activeDeals.filter(d => d.sector === sector) })}>
                     <span style={{ width: 90, fontSize: 10, fontWeight: 800, color: sectorColors[idx % sectorColors.length] }}>{sector}</span>
                     <div style={{ flex: 1, height: 28, background: "#f8fafc", borderRadius: 8, overflow: "hidden", position: "relative" }}>
                       <motion.div initial={{ width: 0 }} animate={{ width: `${(data.value / maxVal) * 100}%` }} transition={{ duration: 0.8 }}
@@ -1368,6 +1370,14 @@ export default function LiveDataClient() {
       <OpsFormModal isOpen={showOpsModal} onClose={() => setShowOpsModal(false)} onSuccess={loadData} opsRecord={editingOps} />
       <ProjectByStatusModal isOpen={showProjectByStatusModal} onClose={() => setShowProjectByStatusModal(false)} deals={activeDeals} initialFY={selectedFY} />
       <BookingForecastModal isOpen={showBookingForecastModal} onClose={() => setShowBookingForecastModal(false)} deals={activeDeals} initialFY={selectedFY} />
+      <SectorPipelineModal 
+        isOpen={sectorModalState?.isOpen || false} 
+        onClose={() => setSectorModalState(null)} 
+        deals={sectorModalState?.deals || []} 
+        initialFY={selectedFY} 
+        sectorName={sectorModalState?.sectorName || ""} 
+        color={sectorModalState?.color} 
+      />
       <PresentationModal state={presentationState} onClose={() => setPresentationState(null)} formatRp={formatRp} STATUS_CONFIG={STATUS_CONFIG} />
     </div>
   );
