@@ -117,7 +117,8 @@ export default function CategoryPipelineModal({
     'RC': '#7b2cbf',
     'IAQ': '#00c875',
     'Control': '#0073ea',
-    'VES': '#ff9f43'
+    'VES': '#e44258',
+    'Others': '#94a3b8'
   };
 
   if (!isOpen) return null;
@@ -217,7 +218,7 @@ export default function CategoryPipelineModal({
                     />
                     <Legend iconType="circle" wrapperStyle={{ paddingTop: 20, fontSize: 12, fontWeight: 600 }} />
                     {rows.map(r => (
-                      <Bar key={r.status} dataKey={r.status} stackId="a" fill={CAT_COLORS[r.status] || color} radius={[4, 4, 0, 0]} />
+                      <Bar key={r.status} dataKey={r.status} stackId="a" fill={CAT_COLORS[r.status] || '#94a3b8'} radius={[4, 4, 0, 0]} />
                     ))}
                   </BarChart>
                 </ResponsiveContainer>
@@ -247,7 +248,7 @@ export default function CategoryPipelineModal({
                     {rows.map((row, idx) => (
                       <tr key={row.status} style={{ borderBottom: "1px solid #e2e8f0", background: "white", transition: "background 0.2s" }} onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={e => e.currentTarget.style.background = 'white'}>
                         <td style={{ padding: "16px 24px", fontSize: 14, fontWeight: 700, color: "#334155", position: "sticky", left: 0, background: "inherit", zIndex: 5, borderRight: "1px solid #f1f5f9", display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ display: "inline-block", width: 12, height: 12, borderRadius: "50%", background: CAT_COLORS[row.status] || color }} />
+                          <span style={{ display: "inline-block", width: 12, height: 12, borderRadius: "50%", background: CAT_COLORS[row.status] || '#94a3b8' }} />
                           {row.status}
                         </td>
                         {columns.map(col => (

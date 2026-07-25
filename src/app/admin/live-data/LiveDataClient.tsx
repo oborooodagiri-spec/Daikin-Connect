@@ -76,7 +76,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }
   E: { label: "Submitted", color: "#66ccff", bg: "rgba(102,204,255,0.12)" },
   H: { label: "Hold", color: "#676879", bg: "rgba(103,104,121,0.12)" },
   L: { label: "Lost", color: "#e44258", bg: "rgba(228,66,88,0.12)" },
-  T: { label: "Tender", color: "#ff9f43", bg: "rgba(255,159,67,0.12)" },
+  T: { label: "Tender", color: "#e44258", bg: "rgba(228,66,88,0.12)" },
   S: { label: "Done", color: "#00c875", bg: "rgba(0,200,117,0.12)" },
   N: { label: "No Response", color: "#c4c4c4", bg: "rgba(196,196,196,0.12)" },
 };
@@ -1005,22 +1005,32 @@ export default function LiveDataClient() {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {(() => {
-                const catColors = ["#fdab3d", "#7b2cbf", "#00c875", "#0073ea", "#ff9f43"];
+                const CAT_COLORS: Record<string, string> = {
+                  'EPL': '#fdab3d',
+                  'RC': '#7b2cbf',
+                  'IAQ': '#00c875',
+                  'Control': '#0073ea',
+                  'VES': '#e44258',
+                  'Others': '#94a3b8'
+                };
                 const entries = Object.entries(stats.byCategory).sort(([, a], [, b]) => b.value - a.value).slice(0, 5);
                 const maxVal = Math.max(...entries.map(([, v]) => v.value), 1);
-                return entries.map(([category, data], idx) => (
-                  <div key={category} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setCategoryModalState({ isOpen: true, categoryName: "Overview", color: catColors[idx % catColors.length], deals: activeDeals })}>
-                    <span style={{ width: 90, fontSize: 10, fontWeight: 800, color: catColors[idx % catColors.length] }}>{category}</span>
+                return entries.map(([category, data], idx) => {
+                  const color = CAT_COLORS[category] || '#94a3b8';
+                  return (
+                  <div key={category} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setCategoryModalState({ isOpen: true, categoryName: "Overview", color, deals: activeDeals })}>
+                    <span style={{ width: 90, fontSize: 10, fontWeight: 800, color }}>{category}</span>
                     <div style={{ flex: 1, height: 28, background: "#f8fafc", borderRadius: 8, overflow: "hidden", position: "relative" }}>
                       <motion.div initial={{ width: 0 }} animate={{ width: `${(data.value / maxVal) * 100}%` }} transition={{ duration: 0.8 }}
-                        style={{ height: "100%", background: catColors[idx % catColors.length], borderRadius: 8, opacity: 0.8 }}
+                        style={{ height: "100%", background: color, borderRadius: 8, opacity: 0.8 }}
                       />
                       <span style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", fontSize: 10, fontWeight: 800, color: "#323338" }}>
                         {formatRp(data.value)}
                       </span>
                     </div>
                   </div>
-                ));
+                );
+                });
               })()}
             </div>
           </div>

@@ -128,7 +128,7 @@ export default function StatusPipelineModal({
     'Contracted': '#7b2cbf',
     'Planning': '#fdab3d',
     'Submitted': '#66ccff',
-    'Tender': '#ff9f43',
+    'Tender': '#e44258',
   };
 
   if (!isOpen) return null;
