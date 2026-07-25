@@ -73,11 +73,15 @@ export default function StatusPipelineModal({
       if (!colSet.has(key)) return; 
       
       const val = Number(d.quotation || 0);
-      const sector = d.sector_group || "Unknown";
+      let st = d.status || "Unknown";
+      const statusMap: Record<string, string> = {
+        "A": "Won", "B": "Budgeted", "C": "Contracted", "D": "Planning", "E": "Submitted", "T": "Tender"
+      };
+      const label = statusMap[st] || st;
 
-      if (!rowMap[sector]) rowMap[sector] = {};
-      rowMap[sector][key] = (rowMap[sector][key] || 0) + val;
-      rowMap[sector]["total"] = (rowMap[sector]["total"] || 0) + val;
+      if (!rowMap[label]) rowMap[label] = {};
+      rowMap[label][key] = (rowMap[label][key] || 0) + val;
+      rowMap[label]["total"] = (rowMap[label]["total"] || 0) + val;
       
       totals[key] = (totals[key] || 0) + val;
       grandTotal += val;
@@ -112,11 +116,12 @@ export default function StatusPipelineModal({
   };
 
   const STATUS_COLORS: Record<string, string> = {
-    'A': '#10b981',
-    'B': '#3b82f6',
-    'C': '#8b5cf6',
-    'D': '#f59e0b',
-    'E': '#ef4444',
+    'Won': '#00c875',
+    'Budgeted': '#0073ea',
+    'Contracted': '#7b2cbf',
+    'Planning': '#fdab3d',
+    'Submitted': '#66ccff',
+    'Tender': '#ff9f43',
   };
 
   if (!isOpen) return null;
@@ -156,8 +161,8 @@ export default function StatusPipelineModal({
                 <PieChart size={24} color="white" />
               </div>
               <div>
-                <h2 style={{ fontSize: 24, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>Pipeline By Status: {statusName}</h2>
-                <p style={{ fontSize: 14, color: "#64748b", fontWeight: 500, marginTop: 2 }}>Distribution of quotation values by sector over time</p>
+                <h2 style={{ fontSize: 24, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>Pipeline By Status{statusName && statusName !== "Overview" ? `: ${statusName}` : ""}</h2>
+                <p style={{ fontSize: 14, color: "#64748b", fontWeight: 500, marginTop: 2 }}>Distribution of quotation values by status over time</p>
               </div>
             </div>
             
@@ -262,7 +267,7 @@ export default function StatusPipelineModal({
                     {rows.length === 0 && (
                       <tr>
                         <td colSpan={columns.length + 2} style={{ padding: "32px", textAlign: "center", color: "#64748b", fontSize: 14 }}>
-                          No project data available for {sectorName} in FY{selectedFY}
+                          No project data available for {statusName} in FY{selectedFY}
                         </td>
                       </tr>
                     )}

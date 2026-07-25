@@ -73,11 +73,11 @@ export default function CategoryPipelineModal({
       if (!colSet.has(key)) return; 
       
       const val = Number(d.quotation || 0);
-      const status = d.status || "Unknown";
+      const category = d.category || "Others";
 
-      if (!rowMap[status]) rowMap[status] = {};
-      rowMap[status][key] = (rowMap[status][key] || 0) + val;
-      rowMap[status]["total"] = (rowMap[status]["total"] || 0) + val;
+      if (!rowMap[category]) rowMap[category] = {};
+      rowMap[category][key] = (rowMap[category][key] || 0) + val;
+      rowMap[category]["total"] = (rowMap[category]["total"] || 0) + val;
       
       totals[key] = (totals[key] || 0) + val;
       grandTotal += val;
@@ -111,12 +111,12 @@ export default function CategoryPipelineModal({
     }).format(val);
   };
 
-  const STATUS_COLORS: Record<string, string> = {
-    'A': '#10b981',
-    'B': '#3b82f6',
-    'C': '#8b5cf6',
-    'D': '#f59e0b',
-    'E': '#ef4444',
+  const CAT_COLORS: Record<string, string> = {
+    'EPL': '#fdab3d',
+    'RC': '#7b2cbf',
+    'IAQ': '#00c875',
+    'Control': '#0073ea',
+    'VES': '#ff9f43'
   };
 
   if (!isOpen) return null;
@@ -156,8 +156,8 @@ export default function CategoryPipelineModal({
                 <PieChart size={24} color="white" />
               </div>
               <div>
-                <h2 style={{ fontSize: 24, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>Pipeline By Category: {categoryName}</h2>
-                <p style={{ fontSize: 14, color: "#64748b", fontWeight: 500, marginTop: 2 }}>Distribution of quotation values by status over time</p>
+                <h2 style={{ fontSize: 24, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>Pipeline By Category{categoryName && categoryName !== "Overview" ? `: ${categoryName}` : ""}</h2>
+                <p style={{ fontSize: 14, color: "#64748b", fontWeight: 500, marginTop: 2 }}>Distribution of quotation values by category over time</p>
               </div>
             </div>
             
@@ -216,7 +216,7 @@ export default function CategoryPipelineModal({
                     />
                     <Legend iconType="circle" wrapperStyle={{ paddingTop: 20, fontSize: 12, fontWeight: 600 }} />
                     {rows.map(r => (
-                      <Bar key={r.status} dataKey={r.status} stackId="a" fill={STATUS_COLORS[r.status] || color} radius={[4, 4, 0, 0]} />
+                      <Bar key={r.status} dataKey={r.status} stackId="a" fill={CAT_COLORS[r.status] || color} radius={[4, 4, 0, 0]} />
                     ))}
                   </BarChart>
                 </ResponsiveContainer>
@@ -230,7 +230,7 @@ export default function CategoryPipelineModal({
                   <thead>
                     <tr>
                       <th style={{ padding: "16px 24px", background: "#f8fafc", borderBottom: "2px solid #e2e8f0", textAlign: "left", fontSize: 13, fontWeight: 800, color: "#475569", textTransform: "uppercase", letterSpacing: "0.05em", position: "sticky", left: 0, zIndex: 10 }}>
-                        Status
+                        Category
                       </th>
                       {columns.map(col => (
                         <th key={col.key} style={{ padding: "16px 12px", background: "#f8fafc", borderBottom: "2px solid #e2e8f0", textAlign: "right", fontSize: 13, fontWeight: 800, color: "#475569", textTransform: "uppercase", letterSpacing: "0.05em", minWidth: 120 }}>
@@ -246,7 +246,7 @@ export default function CategoryPipelineModal({
                     {rows.map((row, idx) => (
                       <tr key={row.status} style={{ borderBottom: "1px solid #e2e8f0", background: "white", transition: "background 0.2s" }} onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={e => e.currentTarget.style.background = 'white'}>
                         <td style={{ padding: "16px 24px", fontSize: 14, fontWeight: 700, color: "#334155", position: "sticky", left: 0, background: "inherit", zIndex: 5, borderRight: "1px solid #f1f5f9", display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ display: "inline-block", width: 12, height: 12, borderRadius: "50%", background: STATUS_COLORS[row.status] || color }} />
+                          <span style={{ display: "inline-block", width: 12, height: 12, borderRadius: "50%", background: CAT_COLORS[row.status] || color }} />
                           {row.status}
                         </td>
                         {columns.map(col => (
@@ -262,7 +262,7 @@ export default function CategoryPipelineModal({
                     {rows.length === 0 && (
                       <tr>
                         <td colSpan={columns.length + 2} style={{ padding: "32px", textAlign: "center", color: "#64748b", fontSize: 14 }}>
-                          No project data available for {sectorName} in FY{selectedFY}
+                          No project data available for {categoryName} in FY{selectedFY}
                         </td>
                       </tr>
                     )}

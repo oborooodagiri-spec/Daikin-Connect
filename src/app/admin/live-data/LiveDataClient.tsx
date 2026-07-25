@@ -893,7 +893,9 @@ export default function LiveDataClient() {
         {/* PIPELINE FUNNEL & COMPARATIVE ANALYTICS */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div style={cardStyle}>
-            <h3 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#676879", marginBottom: 20 }}>Pipeline Status Funnel</h3>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, cursor: "pointer" }} onClick={() => setStatusModalState({ isOpen: true, statusName: "Overview", color: "#10b981", deals: activeDeals })}>
+              <h3 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#676879" }}>Pipeline Status Funnel</h3>
+            </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {["T", "E", "D", "C", "B", "A"]
                 .map((status) => {
@@ -903,7 +905,7 @@ export default function LiveDataClient() {
                   const cfg = STATUS_CONFIG[status] || { label: status, color: "#888" };
                   const pct = (data.value / maxVal) * 100;
                   return (
-                    <div key={status} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setStatusModalState({ isOpen: true, statusName: cfg.label, color: cfg.color, deals: activeDeals.filter(d => d.status === status) })}>
+                    <div key={status} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setStatusModalState({ isOpen: true, statusName: "Overview", color: cfg.color, deals: activeDeals })}>
                       <span style={{ width: 80, fontSize: 10, fontWeight: 800, color: cfg.color, textAlign: "right" }}>{cfg.label}</span>
                       <div style={{ flex: 1, height: 32, background: "#f8fafc", borderRadius: 6, display: "flex", alignItems: "center" }}>
                         <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8 }}
@@ -994,7 +996,7 @@ export default function LiveDataClient() {
 
           {/* Pipeline by Category */}
           <div style={cardStyle}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, cursor: "pointer" }} onClick={() => setCategoryModalState({ isOpen: true, categoryName: "Overview", color: "#fdab3d", deals: activeDeals })}>
               <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(253, 171, 61, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <Layers size={16} color="#fdab3d" />
               </div>
@@ -1006,7 +1008,7 @@ export default function LiveDataClient() {
                 const entries = Object.entries(stats.byCategory).sort(([, a], [, b]) => b.value - a.value).slice(0, 5);
                 const maxVal = Math.max(...entries.map(([, v]) => v.value), 1);
                 return entries.map(([category, data], idx) => (
-                  <div key={category} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setCategoryModalState({ isOpen: true, categoryName: category, color: catColors[idx % catColors.length], deals: activeDeals.filter(d => d.category === category) })}>
+                  <div key={category} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setCategoryModalState({ isOpen: true, categoryName: "Overview", color: catColors[idx % catColors.length], deals: activeDeals })}>
                     <span style={{ width: 90, fontSize: 10, fontWeight: 800, color: catColors[idx % catColors.length] }}>{category}</span>
                     <div style={{ flex: 1, height: 28, background: "#f8fafc", borderRadius: 8, overflow: "hidden", position: "relative" }}>
                       <motion.div initial={{ width: 0 }} animate={{ width: `${(data.value / maxVal) * 100}%` }} transition={{ duration: 0.8 }}
