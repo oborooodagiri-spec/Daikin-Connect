@@ -87,11 +87,18 @@ export default function StatusPipelineModal({
       grandTotal += val;
     });
 
-    const rows = Object.keys(rowMap).sort().map(sector => ({
-      status: sector, // Keep key as status for easy reuse of rest of code
-      values: rowMap[sector],
-      total: rowMap[sector]["total"]
-    }));
+    const funnelOrder = ["Tender", "Submitted", "Planning", "Contracted", "Budgeted", "Won"];
+    const rows = Object.keys(rowMap).map(status => ({
+      status,
+      values: rowMap[status],
+      total: rowMap[status]["total"]
+    })).sort((a, b) => {
+      let ia = funnelOrder.indexOf(a.status);
+      let ib = funnelOrder.indexOf(b.status);
+      if (ia === -1) ia = 99;
+      if (ib === -1) ib = 99;
+      return ia - ib;
+    });
 
     // Prepare chart data (Stacked Bar Chart)
     const chartData = columns.map(col => {

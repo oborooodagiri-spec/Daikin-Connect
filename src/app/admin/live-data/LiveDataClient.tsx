@@ -557,7 +557,8 @@ export default function LiveDataClient() {
       bySector[sec].value += val;
 
       // By Category
-      const cat = d.category || "Other";
+      let rawCat = d.category || "Other";
+      const cat = rawCat.toLowerCase().startsWith("cont") ? "Control" : rawCat;
       if (!byCategory[cat]) byCategory[cat] = { count: 0, value: 0 };
       byCategory[cat].count++;
       byCategory[cat].value += val;

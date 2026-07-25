@@ -73,7 +73,8 @@ export default function CategoryPipelineModal({
       if (!colSet.has(key)) return; 
       
       const val = Number(d.quotation || 0);
-      const category = d.category || "Others";
+      let category = d.category || "Others";
+      if (category.toLowerCase().startsWith("cont")) category = "Control";
 
       if (!rowMap[category]) rowMap[category] = {};
       rowMap[category][key] = (rowMap[category][key] || 0) + val;
@@ -83,11 +84,11 @@ export default function CategoryPipelineModal({
       grandTotal += val;
     });
 
-    const rows = Object.keys(rowMap).sort().map(status => ({
+    const rows = Object.keys(rowMap).map(status => ({
       status,
       values: rowMap[status],
       total: rowMap[status]["total"]
-    }));
+    })).sort((a, b) => b.total - a.total);
 
     // Prepare chart data (Stacked Bar Chart)
     const chartData = columns.map(col => {
