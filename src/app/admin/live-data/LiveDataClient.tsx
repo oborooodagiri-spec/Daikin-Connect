@@ -17,6 +17,8 @@ import PresentationModal, { PresentationState } from "./PresentationModal";
 import ProjectByStatusModal from "./ProjectByStatusModal";
 import BookingForecastModal from "./BookingForecastModal";
 import SectorPipelineModal from "./SectorPipelineModal";
+import CategoryPipelineModal from "./CategoryPipelineModal";
+import StatusPipelineModal from "./StatusPipelineModal";
 import TopSalesModal from "./TopSalesModal";
 
 // ============================================
@@ -386,6 +388,8 @@ export default function LiveDataClient() {
   const [showProjectByStatusModal, setShowProjectByStatusModal] = useState(false);
   const [showBookingForecastModal, setShowBookingForecastModal] = useState(false);
   const [sectorModalState, setSectorModalState] = useState<{ isOpen: boolean; sectorName: string; color: string; deals: any[] } | null>(null);
+  const [categoryModalState, setCategoryModalState] = useState<{ isOpen: boolean; categoryName: string; color: string; deals: any[] } | null>(null);
+  const [statusModalState, setStatusModalState] = useState<{ isOpen: boolean; statusName: string; color: string; deals: any[] } | null>(null);
   const [showTopSalesModal, setShowTopSalesModal] = useState(false);
   const [showOpsModal, setShowOpsModal] = useState(false);
   const [presentationState, setPresentationState] = useState<PresentationState | null>(null);
@@ -683,7 +687,7 @@ export default function LiveDataClient() {
         </motion.div>
 
         {/* Widgets Area */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 24, marginBottom: 32, marginTop: 16 }}>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" style={{ marginBottom: 32, marginTop: 16 }}>
             {/* Project By Status Widget */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -899,7 +903,7 @@ export default function LiveDataClient() {
                   const cfg = STATUS_CONFIG[status] || { label: status, color: "#888" };
                   const pct = (data.value / maxVal) * 100;
                   return (
-                    <div key={status} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setPresentationState({ title: `Pipeline Status: ${cfg.label}`, subtitle: "Detailed Project List", color: cfg.color, data: activeDeals.filter(d => d.status === status) })}>
+                    <div key={status} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setStatusModalState({ isOpen: true, statusName: cfg.label, color: cfg.color, deals: activeDeals.filter(d => d.status === status) })}>
                       <span style={{ width: 80, fontSize: 10, fontWeight: 800, color: cfg.color, textAlign: "right" }}>{cfg.label}</span>
                       <div style={{ flex: 1, height: 32, background: "#f8fafc", borderRadius: 6, display: "flex", alignItems: "center" }}>
                         <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8 }}
@@ -1002,7 +1006,7 @@ export default function LiveDataClient() {
                 const entries = Object.entries(stats.byCategory).sort(([, a], [, b]) => b.value - a.value).slice(0, 5);
                 const maxVal = Math.max(...entries.map(([, v]) => v.value), 1);
                 return entries.map(([category, data], idx) => (
-                  <div key={category} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setPresentationState({ title: `Category: ${category}`, subtitle: "Detailed Project List", color: catColors[idx % catColors.length], data: activeDeals.filter(d => d.category === category) })}>
+                  <div key={category} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setCategoryModalState({ isOpen: true, categoryName: category, color: catColors[idx % catColors.length], deals: activeDeals.filter(d => d.category === category) })}>
                     <span style={{ width: 90, fontSize: 10, fontWeight: 800, color: catColors[idx % catColors.length] }}>{category}</span>
                     <div style={{ flex: 1, height: 28, background: "#f8fafc", borderRadius: 8, overflow: "hidden", position: "relative" }}>
                       <motion.div initial={{ width: 0 }} animate={{ width: `${(data.value / maxVal) * 100}%` }} transition={{ duration: 0.8 }}
@@ -1384,10 +1388,29 @@ export default function LiveDataClient() {
         isOpen={sectorModalState?.isOpen || false} 
         onClose={() => setSectorModalState(null)} 
         deals={sectorModalState?.deals || []} 
-        initialFY={selectedFY} 
+        initialFY={selectedFY}
         sectorName={sectorModalState?.sectorName || ""} 
         color={sectorModalState?.color} 
       />
+
+      <CategoryPipelineModal 
+        isOpen={categoryModalState?.isOpen || false} 
+        onClose={() => setCategoryModalState(null)} 
+        deals={categoryModalState?.deals || []} 
+        initialFY={selectedFY}
+        categoryName={categoryModalState?.categoryName || ""} 
+        color={categoryModalState?.color} 
+      />
+
+      <StatusPipelineModal 
+        isOpen={statusModalState?.isOpen || false} 
+        onClose={() => setStatusModalState(null)} 
+        deals={statusModalState?.deals || []} 
+        initialFY={selectedFY}
+        statusName={statusModalState?.statusName || ""} 
+        color={statusModalState?.color} 
+      />
+
       <TopSalesModal isOpen={showTopSalesModal} onClose={() => setShowTopSalesModal(false)} deals={activeDeals} initialFY={selectedFY} />
       <PresentationModal state={presentationState} onClose={() => setPresentationState(null)} formatRp={formatRp} STATUS_CONFIG={STATUS_CONFIG} />
     </div>
