@@ -80,7 +80,7 @@ const containerVariants = {
 
 const pinVariants = {
   hidden: { scale: 0, opacity: 0 },
-  visible: { scale: 1, opacity: 1, transition: { type: "spring", stiffness: 300, damping: 20 } },
+  visible: { scale: 1, opacity: 1, transition: { type: "spring" as any, stiffness: 300, damping: 20 } },
 };
 
 export default function IndonesiaMap() {

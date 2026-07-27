@@ -324,8 +324,8 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
                             {row.pic}
                           </td>
                           {ALL_STATUSES.map(s => (
-                            <td key={s} style={{ padding: "14px 20px", fontSize: 13, color: row[s] > 0 ? "#334155" : "#94a3b8", textAlign: "right", borderBottom: "1px solid #e2e8f0" }}>
-                              {row[s] > 0 ? formatRp(row[s]) : "-"}
+                            <td key={s} style={{ padding: "14px 20px", fontSize: 13, color: (row as any)[s] > 0 ? "#334155" : "#94a3b8", textAlign: "right", borderBottom: "1px solid #e2e8f0" }}>
+                              {(row as any)[s] > 0 ? formatRp((row as any)[s]) : "-"}
                             </td>
                           ))}
                           <td style={{ padding: "14px 20px", fontSize: 13, fontWeight: 700, color: "#0f172a", textAlign: "right", borderBottom: "1px solid #e2e8f0", backgroundColor: "rgba(226, 232, 240, 0.2)" }}>

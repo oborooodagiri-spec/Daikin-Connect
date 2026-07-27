@@ -75,7 +75,7 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
   const loadSettings = async () => {
     const res = await getProjectWaTargets(projectId);
     if (res.success && res.data) {
-      let data = res.data;
+      let data: any = res.data;
       if (typeof data === 'string') {
         try { data = JSON.parse(data); } catch (e) {}
       }

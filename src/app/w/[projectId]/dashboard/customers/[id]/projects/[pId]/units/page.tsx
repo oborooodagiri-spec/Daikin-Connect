@@ -21,7 +21,7 @@ import UnitDetailModal from "@/components/UnitDetailModal";
 import RoomDetailModal from "@/components/RoomDetailModal";
 import QuickInputModal from "@/components/dashboard/QuickInputModal";
 import Portal from "@/components/Portal";
-
+import UnitFormModal from "@/components/dashboard/UnitFormModal";
 export default function UnitsPage() {
   const params = useParams();
   const router = useRouter();

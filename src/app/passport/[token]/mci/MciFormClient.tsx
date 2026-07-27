@@ -171,7 +171,7 @@ export default function MciFormClient({ unit, initialData, onSuccess }: { unit: 
 
         if (!navigator.onLine) {
           await savePendingSubmission({
-            type: 'MCI',
+            type: 'MCI' as any,
             data: payload,
             photos: mediaItems.map(m => m.file).filter(Boolean)
           });
