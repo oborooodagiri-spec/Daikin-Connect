@@ -42,7 +42,8 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
     status: "T",
     source: "Sales",
     remarks: "",
-    target_po_date: ""
+    target_po_date: "",
+    booking_fc: ""
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -68,7 +69,8 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           status: deal.status || "T",
           source: deal.source || "Sales",
           remarks: deal.remarks || "",
-          target_po_date: deal.target_po_date ? new Date(deal.target_po_date).toISOString().split('T')[0] : ""
+          target_po_date: deal.target_po_date ? new Date(deal.target_po_date).toISOString().slice(0, 7) : "",
+          booking_fc: deal.booking_fc || ""
         });
       } else {
         setFormData({
@@ -82,7 +84,8 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           status: "T",
           source: "Sales",
           remarks: "",
-          target_po_date: ""
+          target_po_date: "",
+          booking_fc: ""
         });
         setHistory([]);
       }
@@ -115,7 +118,9 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
     try {
       const dataToSave = {
         ...formData,
-        quotation: formData.quotation ? parseFloat(formData.quotation.replace(/[^0-9.-]+/g,"")) : 0
+        quotation: formData.quotation ? parseFloat(formData.quotation.replace(/[^0-9.-]+/g,"")) : 0,
+        booking_fc: ["B", "C", "D", "E"].includes(formData.status) ? (formData.booking_fc || null) : null,
+        target_po_date: formData.target_po_date ? `${formData.target_po_date}-01` : null
       };
 
       let res;
@@ -288,7 +293,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
 
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Calendar size={12}/> Target PO Date</label>
-                  <input name="target_po_date" type="date" value={formData.target_po_date} onChange={handleChange}
+                  <input name="target_po_date" type="month" value={formData.target_po_date} onChange={handleChange}
                     className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
                 </div>
 
@@ -303,6 +308,23 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
                   <textarea name="remarks" value={formData.remarks} onChange={handleChange} placeholder="Add any notes..." rows={3}
                     className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all resize-none" />
                 </div>
+
+                {["B", "C", "D", "E"].includes(formData.status) && (
+                  <div className="md:col-span-2 space-y-1.5 bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                    <label className="text-[10px] font-black text-blue-500 uppercase tracking-widest flex items-center gap-1.5"><Activity size={12}/> Booking Forecast</label>
+                    <p className="text-xs text-slate-500 mb-3">Include this project in the upcoming booking forecast projection.</p>
+                    <button 
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, booking_fc: prev.booking_fc === "OK" ? "" : "OK" }))}
+                      className={`h-10 px-5 rounded-lg text-sm font-bold transition-all border flex items-center gap-3 ${formData.booking_fc === "OK" ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/20" : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300"}`}
+                    >
+                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${formData.booking_fc === "OK" ? "border-white bg-blue-600" : "border-slate-300"}`}>
+                        {formData.booking_fc === "OK" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                      </div>
+                      {formData.booking_fc === "OK" ? "Included in Forecast" : "Add to Forecast"}
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="space-y-4">

@@ -648,25 +648,63 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
         {/* KPI CARDS */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {[
-            { label: `FY${selectedFY} Pipeline`, value: formatRp(stats.newFyValue), sub: `${stats.newFyCount} projects created this year`, icon: Briefcase, color: "#00c875", gradient: "linear-gradient(135deg, #00c875 0%, #34d399 100%)" },
-            { label: "Backlog Pipeline", value: formatRp(stats.backlogValue), sub: `${stats.backlogCount} projects carried over`, icon: Clock, color: "#f59e0b", gradient: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)" },
-            { label: "Gross Pipeline (Total)", value: formatRp(stats.pipeline), sub: `${deals.length} active projects`, icon: DollarSign, color: "#0073ea", gradient: "linear-gradient(135deg, #0073ea 0%, #66ccff 100%)" },
-            { label: "Expected Revenue", value: formatRp(stats.weightedPipeline), sub: `Risk-adjusted projection`, icon: Target, color: "#7b2cbf", gradient: "linear-gradient(135deg, #7b2cbf 0%, #a855f7 100%)" },
-            { label: "Total Won", value: formatRp(stats.won), sub: `${stats.wonCount} projects secured`, icon: Trophy, color: "#10b981", gradient: "linear-gradient(135deg, #10b981 0%, #34d399 100%)" },
-            { label: "Overdue Projects", value: stats.overdueCount, sub: `Past Target PO`, icon: AlertTriangle, color: "#ef4444", gradient: "linear-gradient(135deg, #ef4444 0%, #f87171 100%)" },
+            { 
+              label: `FY${selectedFY} Total Amount`, 
+              value: formatRp(stats.newFyValue), 
+              sub: `${stats.newFyCount} projects this FY`, 
+              icon: Briefcase, 
+              color: "#00c875", 
+              gradient: "linear-gradient(135deg, #00c875 0%, #34d399 100%)",
+              onClick: () => setPresentationState({ title: `FY${selectedFY} Pipeline`, subtitle: "Total Value of projects this FY", color: "#00c875", data: activeDeals.filter(d => !['A','L','H'].includes(d.status) && new Date(d.created_at).getTime() >= new Date(2000 + selectedFY, 3, 1).getTime()) })
+            },
+            { 
+              label: "Project By Status", 
+              value: activeDeals.length, 
+              sub: "Total active projects", 
+              icon: BarChart3, 
+              color: "#0073ea", 
+              gradient: "linear-gradient(135deg, #0073ea 0%, #66ccff 100%)",
+              onClick: () => setShowProjectByStatusModal(true)
+            },
+            { 
+              label: "Booking Forecast", 
+              value: formatRp(bookingFcTotal), 
+              sub: `${bookingFcDeals.length} deals forecasted`, 
+              icon: TrendingUp, 
+              color: "#0ea5e9", 
+              gradient: "linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)",
+              onClick: () => setShowBookingForecastModal(true)
+            },
+            { 
+              label: "Pipeline", 
+              value: formatRp(stats.pipeline), 
+              sub: "Gross Pipeline Value", 
+              icon: DollarSign, 
+              color: "#f59e0b", 
+              gradient: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)",
+              onClick: () => setCategoryModalState({ isOpen: true, categoryName: "Overview", color: "#f59e0b", deals: activeDeals })
+            },
+            { 
+              label: "Industry", 
+              value: formatRp(activeDeals.filter(d=>d.sector==="INDUSTRI").reduce((s,d)=>s+Number(d.quotation||0),0)), 
+              sub: `${activeDeals.filter(d=>d.sector==="INDUSTRI").length} projects`, 
+              icon: Building2, 
+              color: "#7b2cbf", 
+              gradient: "linear-gradient(135deg, #7b2cbf 0%, #a855f7 100%)",
+              onClick: () => setSectorModalState({ isOpen: true, sectorName: "INDUSTRI", color: "#7b2cbf", deals: activeDeals.filter(d => d.sector === "INDUSTRI") })
+            },
+            { 
+              label: "Commercial", 
+              value: formatRp(activeDeals.filter(d=>d.sector==="KOMERSIAL").reduce((s,d)=>s+Number(d.quotation||0),0)), 
+              sub: `${activeDeals.filter(d=>d.sector==="KOMERSIAL").length} projects`, 
+              icon: Map, 
+              color: "#ef4444", 
+              gradient: "linear-gradient(135deg, #ef4444 0%, #f87171 100%)",
+              onClick: () => setSectorModalState({ isOpen: true, sectorName: "KOMERSIAL", color: "#ef4444", deals: activeDeals.filter(d => d.sector === "KOMERSIAL") })
+            },
           ].map((kpi, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-              onClick={() => {
-                let fd = [];
-                if (kpi.label.includes('Pipeline') && kpi.label.includes('FY')) fd = activeDeals.filter(d => !['A','L','H'].includes(d.status) && new Date(d.created_at).getTime() >= new Date(2000 + selectedFY, 3, 1).getTime());
-                else if (kpi.label === 'Backlog Pipeline') fd = activeDeals.filter(d => !['A','L','H'].includes(d.status) && new Date(d.created_at).getTime() < new Date(2000 + selectedFY, 3, 1).getTime());
-                else if (kpi.label.includes('Gross')) fd = activeDeals.filter(d => !['L','H'].includes(d.status));
-                else if (kpi.label.includes('Expected')) fd = activeDeals.filter(d => !['L','H'].includes(d.status));
-                else if (kpi.label.includes('Won')) fd = activeDeals.filter(d => d.status === 'A');
-                else if (kpi.label.includes('Overdue')) fd = activeDeals.filter(d => d.target_po_date && new Date(d.target_po_date) < new Date() && !['A','L','S','N'].includes(d.status));
-                else fd = activeDeals;
-                setPresentationState({ title: kpi.label, subtitle: kpi.sub, color: kpi.color, data: fd });
-              }}
+              onClick={kpi.onClick}
               style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 16, cursor: "pointer", padding: "20px", transition: "all 0.15s" }}
               whileHover={{ scale: 1.02, boxShadow: "0 8px 25px rgba(0,0,0,0.08)" }}
             >
