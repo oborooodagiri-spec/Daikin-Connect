@@ -9,12 +9,24 @@ export async function GET(req: NextRequest) {
 
   if (type === "stats") {
     const result = await getPipelineStats();
-    return NextResponse.json(result);
+    return NextResponse.json(result, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      },
+    });
   }
 
   if (type === "leaderboard") {
     const result = await getPipelineLeaderboard();
-    return NextResponse.json(result);
+    return NextResponse.json(result, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      },
+    });
   }
 
   if (type === "ops") {
@@ -23,7 +35,13 @@ export async function GET(req: NextRequest) {
     if (searchParams.get("search")) filters.search = searchParams.get("search");
     if (searchParams.get("customer")) filters.customer = searchParams.get("customer");
     const result = await getOpsPipeline(filters);
-    return NextResponse.json(result);
+    return NextResponse.json(result, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      },
+    });
   }
 
   // Default: deals
@@ -37,5 +55,11 @@ export async function GET(req: NextRequest) {
   if (searchParams.get("search")) filters.search = searchParams.get("search");
   
   const result = await getDealsPipeline(filters);
-  return NextResponse.json(result);
+  return NextResponse.json(result, {
+    headers: {
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+    },
+  });
 }

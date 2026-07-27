@@ -9,6 +9,27 @@ function excelDateToJSDate(excelDate: number): Date | null {
   return isNaN(d.getTime()) ? null : d;
 }
 
+function parseDateAny(val: any): Date | null {
+  if (!val) return null;
+  if (typeof val === "number") return excelDateToJSDate(val);
+  if (typeof val === "string") {
+    const str = val.trim();
+    const parts = str.split('-');
+    if (parts.length === 2) {
+      const monthNames = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+      const mIdx = monthNames.findIndex(m => parts[0].toLowerCase().startsWith(m));
+      if (mIdx >= 0) {
+        let y = parseInt(parts[1], 10);
+        if (y < 100) y += 2000;
+        return new Date(y, mIdx, 1);
+      }
+    }
+    const d = new Date(str);
+    if (!isNaN(d.getTime())) return d;
+  }
+  return null;
+}
+
 async function main() {
   console.log("Emptying old pipeline data...");
   await prisma.pipeline_deals.deleteMany({});
@@ -38,7 +59,7 @@ async function main() {
     if (!clientName) continue;
 
     const quotation = parseInt(row[9]) || 0;
-    const targetPoDate = typeof row[11] === "number" ? excelDateToJSDate(row[11]) : null;
+    const targetPoDate = parseDateAny(row[11]);
 
     let isClosed = false;
     let estBooking = null;
@@ -47,10 +68,13 @@ async function main() {
     if (row[12]) {
       if (typeof row[12] === "string" && row[12].trim().toUpperCase() === "OK") {
         isClosed = true;
-      } else if (typeof row[12] === "number") {
-        estBooking = excelDateToJSDate(row[12]);
       } else {
-        bookingFcStr = String(row[12]).trim().substring(0, 50);
+        const parsed = parseDateAny(row[12]);
+        if (parsed) {
+          estBooking = parsed;
+        } else {
+          bookingFcStr = String(row[12]).trim().substring(0, 50);
+        }
       }
     }
 
