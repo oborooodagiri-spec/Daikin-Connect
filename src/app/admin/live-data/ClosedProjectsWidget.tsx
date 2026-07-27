@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Archive, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
+import LostAndClosedAnalyticsModal from './LostAndClosedAnalyticsModal';
 
 export default function ClosedProjectsWidget({ 
   deals, 
@@ -12,6 +13,7 @@ export default function ClosedProjectsWidget({
   fyOptions,
   MONTH_OPTIONS
 }: any) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const getMonthRange = useMemo(() => {
     if (selectedMonth === 0) return null;
@@ -25,7 +27,7 @@ export default function ClosedProjectsWidget({
 
   const closedDeals = useMemo(() => {
     return deals.filter((d: any) => {
-      if (!d.is_closed) return false;
+      if (!d.is_closed && d.status !== 'L') return false;
       
       const targetTime = d.target_po_date ? new Date(d.target_po_date).getTime() : null;
       if (targetTime) {
@@ -66,7 +68,7 @@ export default function ClosedProjectsWidget({
             <Archive size={20} color="#6366f1" />
           </div>
           <div>
-            <h2 style={{ fontSize: 20, fontWeight: 900, color: "#323338" }}>Closed Projects</h2>
+            <h2 style={{ fontSize: 20, fontWeight: 900, color: "#323338" }}>Lost & Closed Projects</h2>
             <p style={{ fontSize: 12, color: "#676879", fontWeight: 600 }}>Archived and finalized deals for FY{selectedFY}</p>
           </div>
         </div>
@@ -86,8 +88,9 @@ export default function ClosedProjectsWidget({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6" onClick={() => setIsModalOpen(true)} style={{ cursor: "pointer" }}>
         <motion.div 
+          whileHover={{ scale: 1.02 }}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           style={{ 
@@ -104,7 +107,7 @@ export default function ClosedProjectsWidget({
         >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div>
-              <h3 style={{ fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.8)" }}>Total Value Closed</h3>
+              <h3 style={{ fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.8)" }}>Total Value (Lost & Closed)</h3>
               <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", marginTop: 2 }}>FY{selectedFY} {selectedMonth > 0 ? MONTH_OPTIONS.find((m:any) => m.value === selectedMonth)?.label : ""}</p>
             </div>
             <div style={{ width: 48, height: 48, borderRadius: 16, background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(10px)" }}>
@@ -113,12 +116,12 @@ export default function ClosedProjectsWidget({
           </div>
           <div style={{ marginTop: 20 }}>
             <div style={{ fontSize: 36, fontWeight: 900, letterSpacing: "-0.02em" }}>{formatRp(totalValue)}</div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.8)", marginTop: 4 }}>{closedDeals.length} projects successfully closed</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.8)", marginTop: 4 }}>{closedDeals.length} projects in archive</div>
           </div>
         </motion.div>
 
-        <div style={{ background: "white", borderRadius: 20, border: "1px solid #e2e8f0", padding: 20, maxHeight: 300, overflowY: "auto" }}>
-          <h3 style={{ fontSize: 13, fontWeight: 800, color: "#475569", marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.05em" }}>Recent Closed Projects</h3>
+        <motion.div whileHover={{ scale: 1.02 }} style={{ background: "white", borderRadius: 20, border: "1px solid #e2e8f0", padding: 20, maxHeight: 300, overflowY: "auto" }}>
+          <h3 style={{ fontSize: 13, fontWeight: 800, color: "#475569", marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.05em" }}>Recent Lost & Closed Projects</h3>
           {closedDeals.length > 0 ? (
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {closedDeals.sort((a: any, b: any) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()).slice(0, 10).map((deal: any) => (
@@ -136,11 +139,17 @@ export default function ClosedProjectsWidget({
             </div>
           ) : (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 120, color: "#94a3b8", fontSize: 13, fontWeight: 600 }}>
-              No closed projects found for the selected period.
+              No lost or closed projects found for the selected period.
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
+
+      <LostAndClosedAnalyticsModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        deals={closedDeals} 
+      />
     </div>
   );
 }

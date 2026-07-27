@@ -438,9 +438,9 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
     return { start, end };
   }, [selectedFY, selectedMonth]);
 
-  // activeDeals = ALL active deals, no FY restriction. Excludes closed.
+  // activeDeals = ALL active deals, no FY restriction. Excludes closed and Lost.
   const activeDeals = useMemo(() => {
-    return deals.filter(d => !d.is_closed && !['L', 'H'].includes(d.status));
+    return deals.filter(d => !d.is_closed && d.status !== 'L');
   }, [deals]);
 
   // Sector groupings matching Excel definitions
@@ -506,7 +506,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
     const fyEnd = new Date(2000 + selectedFY + 1, 2, 31, 23, 59, 59, 999).getTime();
 
     deals.forEach(d => {
-      if (d.is_closed || ['L', 'H'].includes(d.status)) return;
+      if (d.is_closed || d.status === 'L') return;
       
       const cTime = new Date(d.created_at).getTime();
       const isBacklog = cTime < fyStart;
@@ -556,7 +556,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
     let overdueCount = 0;
 
     leaderboardDeals.forEach(d => {
-      if (d.is_closed || ['L', 'H'].includes(d.status)) return;
+      if (d.is_closed || d.status === 'L') return;
 
       const val = Number(d.quotation) || 0;
       const pic = d.pic || "Unassigned";
