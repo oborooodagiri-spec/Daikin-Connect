@@ -437,11 +437,26 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
     return { start, end };
   }, [selectedFY, selectedMonth]);
 
-  // activeDeals = ALL deals, no FY restriction.
-  // Each card/modal applies its own filtering logic.
+  // activeDeals = A, B, C, D, E filtered by FY and Month based on target_po_date
   const activeDeals = useMemo(() => {
-    return deals.filter(d => !['L', 'H'].includes(d.status));
-  }, [deals]);
+    return deals.filter(d => {
+      // Include A (Won) as part of active/total deals for the year
+      if (!['A', 'B', 'C', 'D', 'E'].includes(d.status)) return false;
+      
+      const targetTime = d.target_po_date ? new Date(d.target_po_date).getTime() : null;
+      if (targetTime) {
+        const fyStart = new Date(2000 + selectedFY, 3, 1).getTime();
+        const fyEnd = new Date(2000 + selectedFY + 1, 2, 31, 23, 59, 59, 999).getTime();
+        
+        if (targetTime < fyStart || targetTime > fyEnd) return false;
+        
+        if (getMonthRange) {
+          if (targetTime < getMonthRange.start || targetTime > getMonthRange.end) return false;
+        }
+      }
+      return true;
+    });
+  }, [deals, selectedFY, getMonthRange]);
 
   // Sector groupings matching Excel definitions
   const INDUSTRY_SECTORS = ["Industri", "Heavy Industri"];
@@ -506,18 +521,17 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
     const fyEnd = new Date(2000 + selectedFY + 1, 2, 31, 23, 59, 59, 999).getTime();
 
     deals.forEach(d => {
-      const cTime = new Date(d.created_at).getTime();
-      const uTime = new Date(d.updated_at).getTime();
+      const targetTime = d.target_po_date ? new Date(d.target_po_date).getTime() : null;
 
-      // FY FILTERING LOGIC
-      if (cTime > fyEnd) return; // Created after this FY ended
-      if (['A', 'L'].includes(d.status) && uTime < fyStart) return; // Closed before this FY started
-
-      if (getMonthRange) {
-        if (cTime > getMonthRange.end) return;
-        if (['A', 'L'].includes(d.status) && uTime < getMonthRange.start) return;
+      // FY FILTERING LOGIC using target_po_date
+      if (targetTime) {
+        if (targetTime < fyStart || targetTime > fyEnd) return;
+        if (getMonthRange) {
+          if (targetTime < getMonthRange.start || targetTime > getMonthRange.end) return;
+        }
       }
       
+      const cTime = new Date(d.created_at).getTime();
       const isBacklog = cTime < fyStart;
       const val = Number(d.quotation) || 0;
       
@@ -533,9 +547,9 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
       // Funnel & Totals
       if (d.status === "A") { won += val; wonCount++; }
       else if (d.status === "L") { lost += val; }
-      else { pipeline += val; }
+      else if (['B', 'C', 'D', 'E'].includes(d.status)) { pipeline += val; }
       
-      if (!["L", "H"].includes(d.status)) activeCount++;
+      if (['B', 'C', 'D', 'E'].includes(d.status)) activeCount++;
 
       // Weighted expected revenue
       const prob = PROBABILITIES[d.status] !== undefined ? PROBABILITIES[d.status] : 0;
@@ -545,9 +559,6 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
       if (!byStatus[d.status]) byStatus[d.status] = { count: 0, value: 0 };
       byStatus[d.status].count++;
       byStatus[d.status].value += val;
-
-      // By PIC (Advanced) - Now handled via leaderboardDeals separately
-      // Removed from this deals.forEach loop to avoid duplicate/missing global PIC stats
 
       // By Sector
       const sec = d.sector || "Other";
@@ -568,6 +579,16 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
     let overdueCount = 0;
 
     leaderboardDeals.forEach(d => {
+      const targetTime = d.target_po_date ? new Date(d.target_po_date).getTime() : null;
+
+      // FY FILTERING LOGIC using target_po_date
+      if (targetTime) {
+        if (targetTime < fyStart || targetTime > fyEnd) return;
+        if (getMonthRange) {
+          if (targetTime < getMonthRange.start || targetTime > getMonthRange.end) return;
+        }
+      }
+
       const val = Number(d.quotation) || 0;
       const pic = d.pic || "Unassigned";
       if (!byPic[pic]) byPic[pic] = { totalValue: 0, totalCount: 0, wonValue: 0, wonCount: 0, lostValue: 0, lostCount: 0, overdueCount: 0 };
@@ -578,7 +599,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
       
       if (d.target_po_date) {
         const targetDate = new Date(d.target_po_date);
-        if (targetDate < today && !["A", "L", "S", "N"].includes(d.status)) {
+        if (targetDate < today && ['B', 'C', 'D', 'E'].includes(d.status)) {
           overdueCount++;
           byPic[pic].overdueCount = (byPic[pic].overdueCount || 0) + 1;
         }
