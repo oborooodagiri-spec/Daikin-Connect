@@ -1,7 +1,19 @@
+import { getSession } from "@/app/actions/auth";
+import { redirect } from "next/navigation";
 import LiveDataClient from "./LiveDataClient";
 
 export const dynamic = "force-dynamic";
 
-export default function LiveDataPage() {
-  return <LiveDataClient />;
+export default async function LiveDataPage() {
+  const session = await getSession();
+
+  if (!session) {
+    redirect("/");
+  }
+
+  const isAdmin = session?.roles?.some((r: string) => 
+    ["admin", "super admin", "administrator"].some(keyword => r.toLowerCase().includes(keyword))
+  );
+
+  return <LiveDataClient isAdmin={isAdmin} />;
 }

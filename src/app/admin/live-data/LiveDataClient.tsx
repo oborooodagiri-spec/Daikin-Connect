@@ -367,7 +367,7 @@ function StatusBadge({ status }: { status: string }) {
 // ============================================
 // MAIN COMPONENT
 // ============================================
-export default function LiveDataClient() {
+export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [deals, setDeals] = useState<Deal[]>([]);
@@ -1352,7 +1352,7 @@ export default function LiveDataClient() {
       {/* TAB NAV */}
       <div className="px-4 md:px-8" style={{ background: "white", borderBottom: "1px solid #e8e8e8" }}>
         <div className="overflow-x-auto whitespace-nowrap scrollbar-hide" style={{ display: "flex", gap: 0, maxWidth: 1400, margin: "0 auto" }}>
-          {TABS.map(tab => {
+          {TABS.filter(t => t.id !== "settings" || isAdmin).map(tab => {
             const isActive = activeTab === tab.id;
             return (
               <button key={tab.id} onClick={() => { setActiveTab(tab.id); setCurrentPage(1); setSearchTerm(""); setStatusFilter("All"); setCategoryFilter("All"); setSectorFilter("All"); setPicFilter("All"); }}
