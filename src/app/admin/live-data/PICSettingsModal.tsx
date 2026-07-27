@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { X, Plus, Trash2, Save } from "lucide-react";
-import { getPICAreas, updatePICAreas } from "@/app/actions/pipeline";
+import { getPICAreas, updatePICAreas, getSalesEngineers } from "@/app/actions/pipeline";
+
+const REGION_OPTIONS = ["West", "East", "Bali", "National", "Other"];
 
 interface PICSettingsModalProps {
   isOpen: boolean;
@@ -13,6 +15,7 @@ export default function PICSettingsModal({ isOpen, onClose }: PICSettingsModalPr
   const [saving, setSaving] = useState(false);
   const [newPic, setNewPic] = useState("");
   const [newArea, setNewArea] = useState("");
+  const [salesEngineers, setSalesEngineers] = useState<any[]>([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -22,8 +25,14 @@ export default function PICSettingsModal({ isOpen, onClose }: PICSettingsModalPr
 
   const loadMappings = async () => {
     setLoading(true);
-    const data = await getPICAreas();
-    setMappings(data || {});
+    const [areasRes, seRes] = await Promise.all([
+      getPICAreas(),
+      getSalesEngineers()
+    ]);
+    setMappings(areasRes || {});
+    if (seRes.success) {
+      setSalesEngineers(seRes.data || []);
+    }
     setLoading(false);
   };
 
@@ -78,11 +87,21 @@ export default function PICSettingsModal({ isOpen, onClose }: PICSettingsModalPr
             <div style={{ display: "flex", gap: 12, alignItems: "flex-end", background: "#f8f9fb", padding: 16, borderRadius: 12, border: "1px solid #e8e8e8" }}>
               <div style={{ flex: 1 }}>
                 <label style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: "#676879", marginBottom: 6, display: "block" }}>PIC Name</label>
-                <input value={newPic} onChange={e => setNewPic(e.target.value)} placeholder="e.g. Aris Prasetyo" style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid #e8e8e8", fontSize: 13, outline: "none" }} />
+                <select value={newPic} onChange={e => setNewPic(e.target.value)} style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid #e8e8e8", fontSize: 13, outline: "none", background: "white", cursor: "pointer" }}>
+                  <option value="">Select PIC</option>
+                  {salesEngineers.map(se => (
+                    <option key={se.id} value={se.name}>{se.name}</option>
+                  ))}
+                </select>
               </div>
               <div style={{ flex: 1 }}>
                 <label style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: "#676879", marginBottom: 6, display: "block" }}>Area / Region</label>
-                <input value={newArea} onChange={e => setNewArea(e.target.value)} placeholder="e.g. West" style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid #e8e8e8", fontSize: 13, outline: "none" }} />
+                <select value={newArea} onChange={e => setNewArea(e.target.value)} style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid #e8e8e8", fontSize: 13, outline: "none", background: "white", cursor: "pointer" }}>
+                  <option value="">Select Area</option>
+                  {REGION_OPTIONS.map(r => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
               </div>
               <button onClick={addMapping} style={{ padding: "10px 16px", borderRadius: 10, border: "none", background: "#0073ea", color: "white", fontSize: 13, fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, height: 40 }}>
                 <Plus size={16} /> Add
