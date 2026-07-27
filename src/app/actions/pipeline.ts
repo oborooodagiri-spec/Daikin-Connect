@@ -26,27 +26,29 @@ interface OpsFilters {
   search?: string;
 }
 
-interface DealData {
+export interface DealData {
+  id?: number;
   client_name: string;
-  area?: string | null;
+  area?: string;
   project_name: string;
-  bill_material?: string | null;
-  type?: string | null;
-  region?: string | null;
-  sales_planner?: string | null;
-  pic?: string | null;
-  category?: string | null;
-  sector?: string | null;
-  quotation?: string | number;
+  bill_material?: string;
+  type?: string;
+  region?: string;
+  sales_planner?: string;
+  pic?: string;
+  category?: string;
+  sector?: string;
+  quotation?: number;
   status?: string;
   est_booking_month?: string | null;
   target_po_date?: string | null;
   booking_fc?: string | null;
-  remarks?: string | null;
+  remarks?: string;
   source?: string;
-  priority?: string | null;
-  latitude?: number | null;
-  longitude?: number | null;
+  priority?: string;
+  latitude?: number;
+  longitude?: number;
+  is_closed?: boolean;
 }
 
 interface OpsData {
@@ -168,6 +170,10 @@ export async function createDeal(data: DealData) {
        if (userMatch) assignedPicId = userMatch.id;
     }
 
+    const picName = data.pic || session.name;
+    const picAreas = await getPICAreas();
+    const autoRegion = picAreas[picName] || data.region || null;
+
     const deal = await prisma.pipeline_deals.create({
       data: {
         client_name: data.client_name,
@@ -175,7 +181,7 @@ export async function createDeal(data: DealData) {
         project_name: data.project_name,
         bill_material: data.bill_material || null,
         type: data.type || null,
-        region: data.region || null,
+        region: autoRegion,
         sales_planner: data.sales_planner || null,
         pic: data.pic || session.name,
         pic_id: assignedPicId,
@@ -195,6 +201,7 @@ export async function createDeal(data: DealData) {
         priority: data.priority || null,
         latitude: data.latitude ?? null,
         longitude: data.longitude ?? null,
+        is_closed: data.is_closed ?? false,
       },
     });
 
@@ -243,9 +250,16 @@ export async function updateDeal(id: number, data: Partial<DealData>) {
     if (data.project_name !== undefined) updateData.project_name = data.project_name;
     if (data.bill_material !== undefined) updateData.bill_material = data.bill_material;
     if (data.type !== undefined) updateData.type = data.type;
-    if (data.region !== undefined) updateData.region = data.region;
     if (data.sales_planner !== undefined) updateData.sales_planner = data.sales_planner;
-    if (data.pic !== undefined) updateData.pic = data.pic;
+    if (data.pic !== undefined) {
+      updateData.pic = data.pic;
+      const picAreas = await getPICAreas();
+      if (picAreas[data.pic]) {
+        updateData.region = picAreas[data.pic];
+      }
+    } else if (data.region !== undefined) {
+      updateData.region = data.region;
+    }
     if (data.category !== undefined) updateData.category = data.category;
     if (data.sector !== undefined) updateData.sector = data.sector;
     if (data.quotation !== undefined) {
@@ -266,6 +280,7 @@ export async function updateDeal(id: number, data: Partial<DealData>) {
     if (data.priority !== undefined) updateData.priority = data.priority;
     if (data.latitude !== undefined) updateData.latitude = data.latitude;
     if (data.longitude !== undefined) updateData.longitude = data.longitude;
+    if (data.is_closed !== undefined) updateData.is_closed = data.is_closed;
 
     const deal = await prisma.pipeline_deals.update({
       where: { id },
@@ -489,7 +504,45 @@ export async function deleteOpsRecord(id: number) {
     return { success: true };
   } catch (error) {
     console.error("deleteOpsRecord error:", error);
-    return { error: "Failed to delete ops record." };
+    return { error: "Failed to delete operational record." };
+  }
+}
+
+// ============================================
+// PIPELINE SETTINGS FOR PIC AREAS
+// ============================================
+export async function getPICAreas() {
+  noStore();
+  try {
+    const record = await prisma.pipeline_settings.findUnique({
+      where: { key: "PIC_AREAS" }
+    });
+    return record?.value ? (record.value as Record<string, string>) : {};
+  } catch (error) {
+    console.error("getPICAreas error:", error);
+    return {};
+  }
+}
+
+export async function updatePICAreas(mapping: Record<string, string>) {
+  try {
+    const session = await getSession();
+    if (!session) return { error: "Unauthorized" };
+
+    const isAdminOrMgmt = session.roles?.some((r: string) => 
+      ["admin", "super", "management", "director"].some(kw => r.toLowerCase().includes(kw))
+    );
+    if (!isAdminOrMgmt) return { error: "Only admins can update PIC settings." };
+
+    await prisma.pipeline_settings.upsert({
+      where: { key: "PIC_AREAS" },
+      update: { value: mapping as any },
+      create: { key: "PIC_AREAS", value: mapping as any, description: "Mapping of PIC name to Region/Area" }
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("updatePICAreas error:", error);
+    return { error: "Failed to update PIC settings." };
   }
 }
 

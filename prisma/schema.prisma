@@ -1198,6 +1198,7 @@ model pipeline_deals {
   est_booking_month DateTime?          @db.Date
   target_po_date    DateTime?          @db.Date
   booking_fc        String?            @db.VarChar(50)
+  is_closed         Boolean            @default(false)
   remarks           String?            @db.Text
   source            String             @default("EPL") @db.VarChar(20)
   priority          String?            @db.VarChar(20)

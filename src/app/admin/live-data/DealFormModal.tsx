@@ -27,7 +27,6 @@ const STATUS_OPTIONS = [
 ];
 
 const CATEGORY_OPTIONS = ["CONT DEVICE", "CONT INST", "CONT OTHERS", "EPL", "IAQ", "RC", "VES"];
-const REGION_OPTIONS = ["West", "East", "Bali", "National", "Other"];
 const SECTOR_OPTIONS = ["GOVERNMENT", "HEAVY INDUSTRI", "HOSPITAL", "INDUSTRI", "KOMERSIAL", "OTHER"];
 
 export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessionName }: DealFormModalProps) {
@@ -37,7 +36,6 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
     pic: "",
     category: "",
     sector: "",
-    region: "",
     quotation: "",
     status: "T",
     source: "Sales",
@@ -64,7 +62,6 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           pic: deal.pic || sessionName,
           category: deal.category || "EPL",
           sector: deal.sector || "",
-          region: deal.region || "West",
           quotation: deal.quotation ? deal.quotation.toString() : "",
           status: deal.status || "T",
           source: deal.source || "Sales",
@@ -79,7 +76,6 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           pic: sessionName,
           category: "EPL",
           sector: "",
-          region: "West",
           quotation: "",
           status: "T",
           source: "Sales",
@@ -255,19 +251,12 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><MapPin size={12}/> Region / Sector</label>
-                  <div className="flex gap-3">
-                    <select name="region" value={formData.region} onChange={handleChange}
-                      className="w-1/2 h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 outline-none cursor-pointer">
-                      <option value="">Select Region</option>
-                      {REGION_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
-                    </select>
-                    <select name="sector" value={formData.sector} onChange={handleChange}
-                      className="w-1/2 h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 outline-none cursor-pointer">
-                      <option value="">Select Sector</option>
-                      {SECTOR_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
-                    </select>
-                  </div>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><MapPin size={12}/> Sector</label>
+                  <select name="sector" value={formData.sector} onChange={handleChange}
+                    className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 outline-none cursor-pointer">
+                    <option value="">Select Sector</option>
+                    {SECTOR_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
                 </div>
 
                 <div className="space-y-1.5">

@@ -20,6 +20,8 @@ import SectorPipelineModal from "./SectorPipelineModal";
 import CategoryPipelineModal from "./CategoryPipelineModal";
 import StatusPipelineModal from "./StatusPipelineModal";
 import TopSalesModal from "./TopSalesModal";
+import PICSettingsModal from "./PICSettingsModal";
+import { updateDeal, getPICAreas, updatePICAreas } from "@/app/actions/pipeline";
 
 // ============================================
 // TYPES
@@ -46,6 +48,7 @@ interface Deal {
   priority?: string;
   created_at: string;
   updated_at: string;
+  is_closed: boolean;
 }
 
 interface OpsRecord {
@@ -380,6 +383,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
   const [sectorFilter, setSectorFilter] = useState("All");
   const [picFilter, setPicFilter] = useState("All");
   const [sourceFilter, setSourceFilter] = useState("All");
+  const [closedFilter, setClosedFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [editingDeal, setEditingDeal] = useState<Deal | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -391,6 +395,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
   const [categoryModalState, setCategoryModalState] = useState<{ isOpen: boolean; categoryName: string; color: string; deals: any[] } | null>(null);
   const [statusModalState, setStatusModalState] = useState<{ isOpen: boolean; statusName: string; color: string; deals: any[] } | null>(null);
   const [showTopSalesModal, setShowTopSalesModal] = useState(false);
+  const [showPICSettingsModal, setShowPICSettingsModal] = useState(false);
   const [showOpsModal, setShowOpsModal] = useState(false);
   const [presentationState, setPresentationState] = useState<PresentationState | null>(null);
 
@@ -433,18 +438,24 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
   }, [selectedFY, selectedMonth]);
 
   const activeDeals = useMemo(() => {
-    const fyStart = new Date(2000 + selectedFY, 3, 1).getTime();
-    const fyEnd = new Date(2000 + selectedFY + 1, 2, 31, 23, 59, 59, 999).getTime();
-    return deals.filter(d => {
-      const cTime = new Date(d.created_at).getTime();
-      const uTime = new Date(d.updated_at).getTime();
-      if (cTime > fyEnd) return false;
-      if (['A', 'L'].includes(d.status) && uTime < fyStart) return false;
-      if (getMonthRange) {
-        if (cTime > getMonthRange.end) return false;
-        if (['A', 'L'].includes(d.status) && uTime < getMonthRange.start) return false;
+    const oldestCarryForward = deals.reduce((oldest, d) => {
+      if (d.status === 'A' && !d.is_closed) {
+        const dTime = new Date(d.created_at).getTime();
+        return oldest === null || dTime < oldest ? dTime : oldest;
       }
-      return true;
+      return oldest;
+    }, null as number | null);
+
+    return deals.filter(d => {
+      if (d.is_closed) return false;
+      const cTime = new Date(d.created_at).getTime();
+      
+      if (oldestCarryForward && cTime >= oldestCarryForward) {
+        return true;
+      }
+      
+      const fyStart = new Date(2000 + selectedFY, 3, 1).getTime();
+      return cTime >= fyStart;
     });
   }, [deals, selectedFY, selectedMonth, getMonthRange]);
 
@@ -607,9 +618,11 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
       const matchSector = sectorFilter === "All" || d.sector === sectorFilter;
       const matchPic = picFilter === "All" || d.pic === picFilter;
       const matchSource = sourceFilter === "All" || d.source === sourceFilter;
-      return matchSearch && matchStatus && matchCategory && matchSector && matchPic && matchSource;
+      const matchClosed = closedFilter === "All" || (closedFilter === "Closed" ? d.is_closed : !d.is_closed);
+
+      return matchSearch && matchStatus && matchCategory && matchSector && matchPic && matchSource && matchClosed;
     });
-  }, [deals, searchTerm, statusFilter, categoryFilter, sectorFilter, picFilter, sourceFilter]);
+  }, [deals, searchTerm, statusFilter, categoryFilter, sectorFilter, picFilter, sourceFilter, closedFilter]);
 
   const filteredOps = useMemo(() => {
     return opsRecords.filter(o => {
@@ -626,6 +639,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
   const uniquePics = useMemo(() => [...new Set(deals.map(d => d.pic).filter(Boolean))].sort(), [deals]);
   const uniqueCategories = useMemo(() => [...new Set(deals.map(d => d.category).filter(Boolean))].sort(), [deals]);
   const uniqueSectors = useMemo(() => [...new Set(deals.map(d => d.sector).filter(Boolean))].sort(), [deals]);
+  const uniqueStatuses = useMemo(() => Object.keys(STATUS_CONFIG), []);
 
   // ============================================
   // STYLES
@@ -1099,7 +1113,8 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
           </div>
           
           {[
-            { label: "Status", val: statusFilter, set: setStatusFilter, opts: Object.keys(STATUS_CONFIG) },
+            { label: "Closed Status", val: closedFilter, set: setClosedFilter, opts: ["Open / On Progress", "Closed"] },
+            { label: "Status", val: statusFilter, set: setStatusFilter, opts: uniqueStatuses as string[] },
             { label: "Category", val: categoryFilter, set: setCategoryFilter, opts: uniqueCategories as string[] },
             { label: "Sector", val: sectorFilter, set: setSectorFilter, opts: uniqueSectors as string[] },
             { label: "PIC", val: picFilter, set: setPicFilter, opts: uniquePics as string[] },
@@ -1129,7 +1144,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
             <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1000 }}>
               <thead>
                 <tr style={{ background: "#f8f9fb", borderBottom: "1px solid #e8e8e8" }}>
-                  {["Client / Project", "Category", "Sector", "PIC", "Quotation", "Status", "Remarks"].map(h => (
+                  {["Close", "Client / Project", "Category", "Sector", "PIC", "Quotation", "Status", "Remarks"].map(h => (
                     <th key={h} style={{ padding: "14px 16px", textAlign: "left", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em", color: "#676879" }}>{h}</th>
                   ))}
                 </tr>
@@ -1137,14 +1152,28 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
               <tbody>
                 {paginated.map((deal) => {
                   const targetDate = deal.target_po_date ? new Date(deal.target_po_date) : null;
-                  const isOverdue = targetDate && targetDate < new Date() && !["A", "L", "S", "N"].includes(deal.status);
+                  const isOverdue = targetDate && targetDate < new Date() && !["A", "L", "S", "N"].includes(deal.status) && !deal.is_closed;
+                  const isClosed = deal.is_closed;
                   
                   return (
-                  <tr key={deal.id} className={isOverdue ? "animate-pulse border-red-500 border-l-4" : ""} style={{ borderBottom: "1px solid #f0f0f0", transition: "background 0.15s", backgroundColor: isOverdue ? "rgba(239,68,68,0.05)" : "transparent", cursor: "pointer" }}
+                  <tr key={deal.id} className={isOverdue ? "animate-pulse border-red-500 border-l-4" : ""} style={{ borderBottom: "1px solid #f0f0f0", transition: "background 0.15s", backgroundColor: isOverdue ? "rgba(239,68,68,0.05)" : (isClosed ? "#f0f7ff" : "transparent"), cursor: "pointer" }}
                     onClick={() => { setEditingDeal(deal); setShowAddModal(true); }}
-                    onMouseEnter={e => (e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.1)" : "#f8f9fb")}
-                    onMouseLeave={e => (e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.05)" : "transparent")}
+                    onMouseEnter={e => (e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.1)" : (isClosed ? "#e0f0ff" : "#f8f9fb"))}
+                    onMouseLeave={e => (e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.05)" : (isClosed ? "#f0f7ff" : "transparent"))}
                   >
+                    <td style={{ padding: "12px 16px", width: 60 }} onClick={e => e.stopPropagation()}>
+                        <label style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+                          <input type="checkbox" checked={isClosed} onChange={async (e) => {
+                            const newState = e.target.checked;
+                            setDeals(prev => prev.map(d => d.id === deal.id ? { ...d, is_closed: newState } : d));
+                            const res = await updateDeal(deal.id, { is_closed: newState });
+                            if (res.error) {
+                              setDeals(prev => prev.map(d => d.id === deal.id ? { ...d, is_closed: !newState } : d));
+                              alert("Failed to update close status: " + res.error);
+                            }
+                          }} style={{ width: 16, height: 16, cursor: "pointer" }} />
+                        </label>
+                      </td>
                     <td style={{ padding: "12px 16px", maxWidth: 300 }}>
                       <div className="flex items-center gap-2 mb-0.5">
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#323338", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{deal.client_name}</p>
@@ -1172,7 +1201,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
                   );
                 })}
                 {paginated.length === 0 && (
-                  <tr><td colSpan={7} style={{ padding: 60, textAlign: "center", fontSize: 13, fontWeight: 700, color: "#c4c4c4", fontStyle: "italic" }}>No matching records found</td></tr>
+                  <tr><td colSpan={8} style={{ padding: 60, textAlign: "center", fontSize: 13, fontWeight: 700, color: "#c4c4c4", fontStyle: "italic" }}>No matching records found</td></tr>
                 )}
               </tbody>
             </table>
@@ -1296,11 +1325,12 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
             { title: "Status Codes", desc: "A (Won), B (Budgeted), C (Contracted)...", count: 10, icon: "🏷️" },
             { title: "Categories", desc: "RC, EPL, IAQ, VES, Cont...", count: 8, icon: "📦" },
             { title: "Sectors", desc: "Hospital, Komersial, Government...", count: 5, icon: "🏢" },
-            { title: "Sales PIC", desc: "Dea, Iik, Zaqi, Fian...", count: 13, icon: "👥" },
+            { title: "Sales PIC", desc: "Map Sales Engineers to Areas", count: uniquePics.length, icon: "👥" },
             { title: "Regions", desc: "West, East, Bali", count: 3, icon: "🌍" },
             { title: "RC Legends", desc: "WC CSD, WC VSD, AS CSD...", count: 16, icon: "❄️" },
           ].map((item, i) => (
             <div key={i} style={{ padding: 20, background: "#f8f9fb", borderRadius: 16, border: "1px solid #e8e8e8", cursor: "pointer", transition: "all 0.15s" }}
+              onClick={() => { if (item.title === "Sales PIC") setShowPICSettingsModal(true); }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = "#0073ea"; e.currentTarget.style.background = "#f0f7ff"; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = "#e8e8e8"; e.currentTarget.style.background = "#f8f9fb"; }}
             >
@@ -1453,6 +1483,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
       />
 
       <TopSalesModal isOpen={showTopSalesModal} onClose={() => setShowTopSalesModal(false)} deals={activeDeals} initialFY={selectedFY} />
+      <PICSettingsModal isOpen={showPICSettingsModal} onClose={() => setShowPICSettingsModal(false)} />
       <PresentationModal state={presentationState} onClose={() => setPresentationState(null)} formatRp={formatRp} STATUS_CONFIG={STATUS_CONFIG} />
     </div>
   );
