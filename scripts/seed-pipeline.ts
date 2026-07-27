@@ -38,7 +38,21 @@ async function main() {
     if (!clientName) continue;
 
     const quotation = parseInt(row[9]) || 0;
-    const estBooking = typeof row[11] === "number" ? excelDateToJSDate(row[11]) : null;
+    const targetPoDate = typeof row[11] === "number" ? excelDateToJSDate(row[11]) : null;
+
+    let isClosed = false;
+    let estBooking = null;
+    let bookingFcStr = null;
+
+    if (row[12]) {
+      if (typeof row[12] === "string" && row[12].trim().toUpperCase() === "OK") {
+        isClosed = true;
+      } else if (typeof row[12] === "number") {
+        estBooking = excelDateToJSDate(row[12]);
+      } else {
+        bookingFcStr = String(row[12]).trim().substring(0, 50);
+      }
+    }
 
     try {
       await (prisma.pipeline_deals as any).create({
@@ -55,8 +69,10 @@ async function main() {
           sector: row[8] ? String(row[8]).trim().substring(0, 50) : null,
           quotation: BigInt(quotation),
           status: row[10] ? String(row[10]).trim().substring(0, 5) : "E",
+          target_po_date: targetPoDate,
           est_booking_month: estBooking,
-          booking_fc: row[12] ? String(row[12]).trim().substring(0, 50) : null,
+          booking_fc: bookingFcStr,
+          is_closed: isClosed,
           remarks: row[13] ? String(row[13]).trim() : null,
           source: "EPL",
           priority: null
