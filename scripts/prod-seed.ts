@@ -47,7 +47,7 @@ async function main() {
       });
       eplCount++;
     } catch (e: any) {
-      console.error(`EPL row ${r} error:`, e.message?.substring(0, 100));
+      console.error(`EPL row ${r} error:`, e.message);
     }
   }
   console.log(`EPL: Imported ${eplCount} deals`);
@@ -89,12 +89,24 @@ async function main() {
   ];
 
   for (const s of settings) {
-    await prisma.app_settings.upsert({
+    await prisma.pipeline_settings.upsert({
       where: { key: s.key },
       update: { value: s.value, description: s.description },
       create: { key: s.key, value: s.value, description: s.description }
     });
   }
+
+  // Update sync timestamp
+  console.log("\n--- Seeding Pipeline Settings ---");
+  await prisma.pipeline_settings.upsert({
+    where: { key: "last_sync" },
+    update: { value: new Date().toISOString() },
+    create: {
+      key: "last_sync",
+      value: new Date().toISOString(),
+      description: "Timestamp of last Excel data sync",
+    },
+  });
 
   console.log("Settings seeded.");
 
