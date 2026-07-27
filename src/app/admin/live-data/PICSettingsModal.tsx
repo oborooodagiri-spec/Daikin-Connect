@@ -30,8 +30,8 @@ export default function PICSettingsModal({ isOpen, onClose }: PICSettingsModalPr
       getSalesEngineers()
     ]);
     setMappings(areasRes || {});
-    if (seRes.success) {
-      setSalesEngineers(seRes.data || []);
+    if ((seRes as any).success) {
+      setSalesEngineers((seRes as any).data || []);
     }
     setLoading(false);
   };
@@ -40,8 +40,8 @@ export default function PICSettingsModal({ isOpen, onClose }: PICSettingsModalPr
     setSaving(true);
     const res = await updatePICAreas(mappings);
     setSaving(false);
-    if (res.error) {
-      alert("Failed to save: " + res.error);
+    if ((res as any).error) {
+      alert("Failed to save: " + (res as any).error);
     } else {
       onClose();
     }

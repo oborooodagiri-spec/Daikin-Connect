@@ -214,8 +214,8 @@ export default function CategoryPipelineModal({
                       dx={-10}
                     />
                     <Tooltip 
-                      formatter={(value: number) => formatRp(value)}
-                      contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 10px 25px rgba(0,0,0,0.1)", fontWeight: 600 }}
+                      formatter={formatRp as any} 
+                      contentStyle={{ fontSize: 12, borderRadius: 8, border: "none", boxShadow: "0 10px 25px rgba(0,0,0,0.1)", fontWeight: 600 }}
                     />
                     <Legend iconType="circle" wrapperStyle={{ paddingTop: 20, fontSize: 12, fontWeight: 600 }} />
                     {rows.map(r => (

@@ -24,7 +24,7 @@ interface TopSalesModalProps {
   isOpen: boolean;
   onClose: () => void;
   deals: Deal[];
-  initialFY: string;
+  initialFY: number;
 }
 
 // Helper to format currency

@@ -1191,9 +1191,9 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
                             const newState = e.target.checked;
                             setDeals(prev => prev.map(d => d.id === deal.id ? { ...d, is_closed: newState } : d));
                             const res = await updateDeal(deal.id, { is_closed: newState });
-                            if (res.error) {
+                            if ((res as any).error) {
                               setDeals(prev => prev.map(d => d.id === deal.id ? { ...d, is_closed: !newState } : d));
-                              alert("Failed to update close status: " + res.error);
+                              alert("Failed to update close status: " + (res as any).error);
                             }
                           }} style={{ width: 16, height: 16, cursor: "pointer" }} />
                         </label>
@@ -1475,7 +1475,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
         )}
       </div>
 
-      <DealFormModal isOpen={showAddModal} onClose={() => setShowAddModal(false)} onSuccess={loadData} deal={editingDeal} />
+      <DealFormModal sessionName="User" isOpen={showAddModal} onClose={() => setShowAddModal(false)} onSuccess={loadData} deal={editingDeal} />
       <OpsFormModal isOpen={showOpsModal} onClose={() => setShowOpsModal(false)} onSuccess={loadData} opsRecord={editingOps} />
       <ProjectByStatusModal isOpen={showProjectByStatusModal} onClose={() => setShowProjectByStatusModal(false)} deals={activeDeals} initialFY={selectedFY} />
       <BookingForecastModal isOpen={showBookingForecastModal} onClose={() => setShowBookingForecastModal(false)} deals={activeDeals} initialFY={selectedFY} />

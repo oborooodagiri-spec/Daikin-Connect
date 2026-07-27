@@ -52,7 +52,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
   useEffect(() => {
     if (isOpen) {
       getSalesEngineers().then(res => {
-        if (res?.success) setSalesEngineers(res.data);
+        if ((res as any)?.success) setSalesEngineers((res as any).data);
       });
       
       if (deal) {
@@ -93,7 +93,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
   useEffect(() => {
     if (deal && deal.id && activeTab === "timeline") {
       getDealHistory(deal.id).then(res => {
-        if (res?.success) setHistory(res.data);
+        if ((res as any)?.success) setHistory((res as any).data);
       });
     }
   }, [deal, activeTab]);
@@ -126,8 +126,8 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
         res = await createDeal(dataToSave);
       }
 
-      if (res?.error) {
-        setError(res.error);
+      if ((res as any)?.error) {
+        setError((res as any).error);
       } else {
         onSuccess();
         onClose();

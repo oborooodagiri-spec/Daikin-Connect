@@ -223,10 +223,7 @@ export default function StatusPipelineModal({
                       tickFormatter={(value) => `Rp ${(value / 1000000000).toFixed(0)}B`}
                       dx={-10}
                     />
-                    <Tooltip 
-                      formatter={(value: number) => formatRp(value)}
-                      contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 10px 25px rgba(0,0,0,0.1)", fontWeight: 600 }}
-                    />
+                    <Tooltip formatter={formatRp as any} contentStyle={{ fontSize: 12, borderRadius: 8, border: "none", boxShadow: "0 10px 25px rgba(0,0,0,0.1)", fontWeight: 600 }} />
                     <Legend iconType="circle" wrapperStyle={{ paddingTop: 20, fontSize: 12, fontWeight: 600 }} />
                     {rows.map(r => (
                       <Bar key={r.status} dataKey={r.status} stackId="a" fill={STATUS_COLORS[r.status] || color} radius={[4, 4, 0, 0]} />

@@ -9,9 +9,14 @@ import {
 
 interface Deal {
   id: number;
-  quotation: number | bigint;
+  project_name: string;
+  client_name: string;
+  category: string | null;
+  pic: string | null;
   status: string;
-  est_booking_month?: string;
+  quotation: number | string | null;
+  target_po_date?: string | Date | null;
+  created_at?: string | Date;
 }
 
 interface ProjectByStatusModalProps {

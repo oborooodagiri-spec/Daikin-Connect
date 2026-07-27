@@ -85,8 +85,8 @@ export default function OpsFormModal({ isOpen, onClose, onSuccess, opsRecord }: 
         res = await createOpsRecord(dataToSave);
       }
 
-      if (res?.error) {
-        setError(res.error);
+      if ((res as any)?.error) {
+        setError((res as any).error);
       } else {
         onSuccess();
         onClose();
@@ -105,8 +105,8 @@ export default function OpsFormModal({ isOpen, onClose, onSuccess, opsRecord }: 
     setLoading(true);
     try {
       const res = await deleteOpsRecord(opsRecord.id);
-      if (res?.error) {
-        setError(res.error);
+      if ((res as any)?.error) {
+        setError((res as any).error);
       } else {
         onSuccess();
         onClose();
