@@ -63,17 +63,19 @@ async function main() {
 
     let isClosed = false;
     let estBooking = null;
-    let bookingFcStr = null;
+    let bookingFcVal: string | null = null;
 
     if (row[12]) {
       if (typeof row[12] === "string" && row[12].trim().toUpperCase() === "OK") {
-        isClosed = true;
+        // booking_fc = "OK" means this deal is confirmed for booking forecast
+        // It does NOT mean the project is closed - that's a separate action by sales
+        bookingFcVal = "OK";
       } else {
         const parsed = parseDateAny(row[12]);
         if (parsed) {
           estBooking = parsed;
         } else {
-          bookingFcStr = String(row[12]).trim().substring(0, 50);
+          bookingFcVal = String(row[12]).trim().substring(0, 50);
         }
       }
     }
@@ -95,8 +97,8 @@ async function main() {
           status: row[10] ? String(row[10]).trim().substring(0, 5) : "E",
           target_po_date: targetPoDate,
           est_booking_month: estBooking,
-          booking_fc: bookingFcStr,
-          is_closed: isClosed,
+          booking_fc: bookingFcVal,
+          is_closed: false,
           remarks: row[13] ? String(row[13]).trim() : null,
           source: "EPL",
           priority: null

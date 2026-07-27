@@ -62,9 +62,10 @@ export default function StatusPipelineModal({
 
     deals.forEach(d => {
       if (['L', 'H'].includes(d.status)) return; // Exclude lost/hold usually
-      if (!d.est_booking_month) return;
       
-      const dt = new Date(d.est_booking_month);
+      const rawDate = d.target_po_date || d.est_booking_month;
+      if (!rawDate) return;
+      const dt = new Date(rawDate);
       if (isNaN(dt.getTime())) return;
 
       const mYear = dt.getFullYear();

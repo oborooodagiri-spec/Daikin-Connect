@@ -55,8 +55,9 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
   const availableFYs = useMemo(() => {
     const set = new Set<string>();
     deals.forEach(d => {
-      if (d.est_booking_month) {
-        const dt = new Date(d.est_booking_month);
+      const rawDate = d.target_po_date || d.est_booking_month;
+      if (rawDate) {
+        const dt = new Date(rawDate);
         if (!isNaN(dt.getTime())) {
           const m = dt.getMonth() + 1;
           const y = dt.getFullYear();

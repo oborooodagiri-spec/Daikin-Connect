@@ -437,27 +437,15 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
     return { start, end };
   }, [selectedFY, selectedMonth]);
 
+  // activeDeals = ALL deals, no FY restriction.
+  // Each card/modal applies its own filtering logic.
   const activeDeals = useMemo(() => {
-    const oldestCarryForward = deals.reduce((oldest, d) => {
-      if (d.status === 'A' && !d.is_closed) {
-        const dTime = new Date(d.created_at).getTime();
-        return oldest === null || dTime < oldest ? dTime : oldest;
-      }
-      return oldest;
-    }, null as number | null);
+    return deals.filter(d => !['L', 'H'].includes(d.status));
+  }, [deals]);
 
-    return deals.filter(d => {
-      if (d.is_closed) return false;
-      const cTime = new Date(d.created_at).getTime();
-      
-      if (oldestCarryForward && cTime >= oldestCarryForward) {
-        return true;
-      }
-      
-      const fyStart = new Date(2000 + selectedFY, 3, 1).getTime();
-      return cTime >= fyStart;
-    });
-  }, [deals, selectedFY, selectedMonth, getMonthRange]);
+  // Sector groupings matching Excel definitions
+  const INDUSTRY_SECTORS = ["Industri", "Heavy Industri"];
+  const COMMERCIAL_SECTORS = ["Government", "Hospital", "Komersial"];
 
   // Load data
   useEffect(() => {
@@ -653,9 +641,24 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
   // RENDER: DASHBOARD TAB
   // ============================================
   const renderDashboard = () => {
-    // Booking Forecast stat
+    // Booking Forecast: deals where booking_fc = "OK"
     const bookingFcDeals = activeDeals.filter(d => d.booking_fc?.toUpperCase() === 'OK');
     const bookingFcTotal = bookingFcDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
+
+    // Total Amount: ALL statuses (A+B+C+D+E), activeDeals already excludes L/H
+    const totalAmountValue = activeDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
+
+    // Pipeline: status B/C/D/E only (not yet won)
+    const pipelineDeals = activeDeals.filter(d => ['B', 'C', 'D', 'E'].includes(d.status));
+    const pipelineTotal = pipelineDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
+
+    // Industry: sectors Industri + Heavy Industri
+    const industryDeals = activeDeals.filter(d => INDUSTRY_SECTORS.includes(d.sector || ''));
+    const industryTotal = industryDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
+
+    // Commercial: sectors Government + Hospital + Komersial
+    const commercialDeals = activeDeals.filter(d => COMMERCIAL_SECTORS.includes(d.sector || ''));
+    const commercialTotal = commercialDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
 
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
@@ -663,13 +666,13 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {[
             { 
-              label: `FY${selectedFY} Total Amount`, 
-              value: formatRp(stats.newFyValue), 
-              sub: `${stats.newFyCount} projects this FY`, 
+              label: "Total Amount", 
+              value: formatRp(totalAmountValue), 
+              sub: `${activeDeals.length} projects`, 
               icon: Briefcase, 
               color: "#00c875", 
               gradient: "linear-gradient(135deg, #00c875 0%, #34d399 100%)",
-              onClick: () => setPresentationState({ title: `FY${selectedFY} Pipeline`, subtitle: "Total Value of projects this FY", color: "#00c875", data: activeDeals.filter(d => !['A','L','H'].includes(d.status) && new Date(d.created_at).getTime() >= new Date(2000 + selectedFY, 3, 1).getTime()) })
+              onClick: () => setPresentationState({ title: "Total Amount", subtitle: "All active projects (all statuses)", color: "#00c875", data: activeDeals })
             },
             { 
               label: "Project By Status", 
@@ -691,30 +694,30 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
             },
             { 
               label: "Pipeline", 
-              value: formatRp(stats.pipeline), 
-              sub: "Gross Pipeline Value", 
+              value: formatRp(pipelineTotal), 
+              sub: `${pipelineDeals.length} projects`, 
               icon: DollarSign, 
               color: "#f59e0b", 
               gradient: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)",
-              onClick: () => setCategoryModalState({ isOpen: true, categoryName: "Overview", color: "#f59e0b", deals: activeDeals })
+              onClick: () => setCategoryModalState({ isOpen: true, categoryName: "Pipeline", color: "#f59e0b", deals: pipelineDeals })
             },
             { 
               label: "Industry", 
-              value: formatRp(activeDeals.filter(d=>d.sector==="INDUSTRI").reduce((s,d)=>s+Number(d.quotation||0),0)), 
-              sub: `${activeDeals.filter(d=>d.sector==="INDUSTRI").length} projects`, 
+              value: formatRp(industryTotal), 
+              sub: `${industryDeals.length} projects`, 
               icon: Building2, 
               color: "#7b2cbf", 
               gradient: "linear-gradient(135deg, #7b2cbf 0%, #a855f7 100%)",
-              onClick: () => setSectorModalState({ isOpen: true, sectorName: "INDUSTRI", color: "#7b2cbf", deals: activeDeals.filter(d => d.sector === "INDUSTRI") })
+              onClick: () => setSectorModalState({ isOpen: true, sectorName: "Industry", color: "#7b2cbf", deals: industryDeals })
             },
             { 
               label: "Commercial", 
-              value: formatRp(activeDeals.filter(d=>d.sector==="KOMERSIAL").reduce((s,d)=>s+Number(d.quotation||0),0)), 
-              sub: `${activeDeals.filter(d=>d.sector==="KOMERSIAL").length} projects`, 
+              value: formatRp(commercialTotal), 
+              sub: `${commercialDeals.length} projects`, 
               icon: Map, 
               color: "#ef4444", 
               gradient: "linear-gradient(135deg, #ef4444 0%, #f87171 100%)",
-              onClick: () => setSectorModalState({ isOpen: true, sectorName: "KOMERSIAL", color: "#ef4444", deals: activeDeals.filter(d => d.sector === "KOMERSIAL") })
+              onClick: () => setSectorModalState({ isOpen: true, sectorName: "Commercial", color: "#ef4444", deals: commercialDeals })
             },
           ].map((kpi, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}

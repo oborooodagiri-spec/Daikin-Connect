@@ -12,10 +12,12 @@ interface Deal {
   quotation: number | bigint;
   status: string;
   est_booking_month?: string;
+  target_po_date?: string;
   booking_fc?: string;
   region?: string;
   pic?: string;
   source: string;
+  category?: string;
   project_name: string;
   bill_material?: string;
 }
@@ -83,10 +85,12 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
     deals.forEach(d => {
       // Filter Booking FC == OK
       if (!d.booking_fc || d.booking_fc.toUpperCase() !== 'OK') return;
-      if (!d.est_booking_month) return;
       if (['L', 'H'].includes(d.status)) return;
       
-      const dt = new Date(d.est_booking_month);
+      // Use target_po_date (Est Booking Month from Excel) for date bucketing
+      const rawDate = d.target_po_date || d.est_booking_month;
+      if (!rawDate) return;
+      const dt = new Date(rawDate);
       if (isNaN(dt.getTime())) return;
 
       const mYear = dt.getFullYear();
@@ -97,11 +101,11 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
       
       const val = Number(d.quotation || 0);
 
-      // Hierarchy: Region > PIC > Source > Project Name > Bill Material
+      // Hierarchy: Region > PIC > Category > Project Name > Bill Material
       const path = [
         d.region || "Uncategorized Region",
         d.pic || "Unassigned PIC",
-        d.source || "Unknown Source",
+        d.category || "Unknown Category",
         d.project_name || "Unknown Project",
         d.bill_material || "No Material Detail"
       ];
