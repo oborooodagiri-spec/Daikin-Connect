@@ -1091,7 +1091,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
             <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1000 }}>
               <thead>
                 <tr style={{ background: "#f8f9fb", borderBottom: "1px solid #e8e8e8" }}>
-                  {["Client / Project", "Category", "Sector", "PIC", "Quotation", "Status", "Remarks", "Actions"].map(h => (
+                  {["Client / Project", "Category", "Sector", "PIC", "Quotation", "Status", "Remarks"].map(h => (
                     <th key={h} style={{ padding: "14px 16px", textAlign: "left", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em", color: "#676879" }}>{h}</th>
                   ))}
                 </tr>
@@ -1102,7 +1102,8 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
                   const isOverdue = targetDate && targetDate < new Date() && !["A", "L", "S", "N"].includes(deal.status);
                   
                   return (
-                  <tr key={deal.id} className={isOverdue ? "animate-pulse border-red-500 border-l-4" : ""} style={{ borderBottom: "1px solid #f0f0f0", transition: "background 0.15s", backgroundColor: isOverdue ? "rgba(239,68,68,0.05)" : "transparent" }}
+                  <tr key={deal.id} className={isOverdue ? "animate-pulse border-red-500 border-l-4" : ""} style={{ borderBottom: "1px solid #f0f0f0", transition: "background 0.15s", backgroundColor: isOverdue ? "rgba(239,68,68,0.05)" : "transparent", cursor: "pointer" }}
+                    onClick={() => { setEditingDeal(deal); setShowAddModal(true); }}
                     onMouseEnter={e => (e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.1)" : "#f8f9fb")}
                     onMouseLeave={e => (e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.05)" : "transparent")}
                   >
@@ -1129,17 +1130,11 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
                     <td style={{ padding: "12px 16px", fontSize: 11, fontWeight: 600, color: "#676879", maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {deal.remarks || "-"}
                     </td>
-                    <td style={{ padding: "12px 16px", textAlign: "right" }}>
-                      <button onClick={(e) => { e.stopPropagation(); setEditingDeal(deal); setShowAddModal(true); }}
-                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors inline-flex">
-                        <Edit2 size={16} />
-                      </button>
-                    </td>
                   </tr>
                   );
                 })}
                 {paginated.length === 0 && (
-                  <tr><td colSpan={8} style={{ padding: 60, textAlign: "center", fontSize: 13, fontWeight: 700, color: "#c4c4c4", fontStyle: "italic" }}>No matching records found</td></tr>
+                  <tr><td colSpan={7} style={{ padding: 60, textAlign: "center", fontSize: 13, fontWeight: 700, color: "#c4c4c4", fontStyle: "italic" }}>No matching records found</td></tr>
                 )}
               </tbody>
             </table>
@@ -1203,14 +1198,15 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
             <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 800 }}>
               <thead>
                 <tr style={{ background: "#f8f9fb", borderBottom: "1px solid #e8e8e8" }}>
-                  {["#", "Customer", "Project", "Total Value", "Status", "Remark", "Actions"].map(h => (
+                  {["#", "Customer", "Project", "Total Value", "Status", "Remark"].map(h => (
                     <th key={h} style={{ padding: "14px 16px", textAlign: "left", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em", color: "#676879" }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {paginated.map((ops, idx) => (
-                  <tr key={ops.id} style={{ borderBottom: "1px solid #f0f0f0" }}
+                  <tr key={ops.id} style={{ borderBottom: "1px solid #f0f0f0", cursor: "pointer" }}
+                    onClick={() => { setEditingOps(ops); setShowOpsModal(true); }}
                     onMouseEnter={e => (e.currentTarget.style.background = "#f8f9fb")}
                     onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                   >
@@ -1220,16 +1216,10 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
                     <td style={{ padding: "12px 16px", fontSize: 13, fontWeight: 800, color: "#323338", fontVariantNumeric: "tabular-nums" }}>{formatRp(Number(ops.total_value))}</td>
                     <td style={{ padding: "12px 16px" }}><StatusBadge status={ops.status} /></td>
                     <td style={{ padding: "12px 16px", fontSize: 11, fontWeight: 600, color: "#676879", maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{ops.remark || "-"}</td>
-                    <td style={{ padding: "12px 16px", textAlign: "right" }}>
-                      <button onClick={(e) => { e.stopPropagation(); setEditingOps(ops); setShowOpsModal(true); }}
-                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors inline-flex">
-                        <Edit2 size={16} />
-                      </button>
-                    </td>
                   </tr>
                 ))}
                 {paginated.length === 0 && (
-                  <tr><td colSpan={7} style={{ padding: 60, textAlign: "center", fontSize: 13, fontWeight: 700, color: "#c4c4c4", fontStyle: "italic" }}>No matching records found</td></tr>
+                  <tr><td colSpan={6} style={{ padding: 60, textAlign: "center", fontSize: 13, fontWeight: 700, color: "#c4c4c4", fontStyle: "italic" }}>No matching records found</td></tr>
                 )}
               </tbody>
             </table>
