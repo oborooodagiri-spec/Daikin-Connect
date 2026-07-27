@@ -11,8 +11,8 @@ interface Deal {
   id: number;
   project_name: string;
   client_name: string;
-  category: string | null;
-  pic: string | null;
+  category?: string | null;
+  pic?: string | null;
   status: string;
   quotation: number | string | null;
   target_po_date?: string | Date | null;

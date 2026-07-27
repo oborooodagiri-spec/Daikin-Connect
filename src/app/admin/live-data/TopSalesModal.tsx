@@ -49,7 +49,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: TopSalesModalProps) {
-  const [selectedFY, setSelectedFY] = useState(initialFY);
+  const [selectedFY, setSelectedFY] = useState(`FY${initialFY}`);
 
   // Derive available FYs from deals to allow switching
   const availableFYs = useMemo(() => {
@@ -67,7 +67,8 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
       }
     });
     const arr = Array.from(set).sort();
-    if (!arr.includes(initialFY)) arr.push(initialFY);
+    const initialFYStr = `FY${initialFY}`;
+    if (!arr.includes(initialFYStr)) arr.push(initialFYStr);
     return arr.sort();
   }, [deals, initialFY]);
 

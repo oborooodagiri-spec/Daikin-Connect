@@ -641,7 +641,7 @@ export async function getPipelineStats() {
       .sort((a, b) => {
         // Sort descending by total value
         const diff = BigInt(b.total) - BigInt(a.total);
-        return diff > 0n ? 1 : diff < 0n ? -1 : 0;
+        return diff > BigInt(0) ? 1 : diff < BigInt(0) ? -1 : 0;
       });
 
     // --- Sum by region ---
