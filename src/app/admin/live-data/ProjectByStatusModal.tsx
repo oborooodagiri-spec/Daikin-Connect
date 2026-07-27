@@ -34,29 +34,46 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   N: { label: "No Response (N)", color: "#c4c4c4" },
 };
 
-export default function ProjectByStatusModal({ isOpen, onClose, deals, initialFY = 26 }: ProjectByStatusModalProps) {
+export default function ProjectByStatusModal({ isOpen, onClose, deals }: ProjectByStatusModalProps) {
   
-  const [selectedFY, setSelectedFY] = useState(initialFY);
-  useEffect(() => {
-    if (isOpen) setSelectedFY(initialFY);
-  }, [isOpen, initialFY]);
-
   const { columns, rows, totals, chartData } = useMemo(() => {
     const monthMap: Record<string, Record<string, number>> = {};
     
-    // Generate exactly 12 columns for the selected FY
-    // Example: FY 26 = April 2026 to March 2027
-    const year = 2000 + selectedFY;
+    // Find min and max dates
+    let minTime = Infinity;
+    let maxTime = -Infinity;
+
+    deals.forEach(d => {
+      if (['L', 'H'].includes(d.status)) return;
+      const dt = d.est_booking_month ? new Date(d.est_booking_month) : null;
+      if (!dt || isNaN(dt.getTime())) return;
+      
+      const t = dt.getTime();
+      if (t < minTime) minTime = t;
+      if (t > maxTime) maxTime = t;
+    });
+
+    if (minTime === Infinity) {
+      minTime = new Date().getTime();
+      maxTime = new Date().getTime();
+    }
+
     const columns: { key: string; label: string }[] = [];
-    const colSet = new Set<string>();
-    
-    for (let i = 0; i < 12; i++) {
-      const d = new Date(year, 3 + i, 1);
-      const mYear = d.getFullYear();
-      const mStr = d.toLocaleString('default', { month: 'short' });
-      const key = `${mYear}-${String(d.getMonth() + 1).padStart(2, '0')} ${mStr} ${mYear}`;
+    const minDate = new Date(minTime);
+    const maxDate = new Date(maxTime);
+
+    let current = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
+    const end = new Date(maxDate.getFullYear(), maxDate.getMonth(), 1);
+
+    // Limit to max 36 months to prevent infinite loop or huge charts if data is weird
+    let safetyCounter = 0;
+    while (current <= end && safetyCounter < 36) {
+      const mYear = current.getFullYear();
+      const mStr = current.toLocaleString('default', { month: 'short' });
+      const key = `${mYear}-${String(current.getMonth() + 1).padStart(2, '0')} ${mStr} ${mYear}`;
       columns.push({ key, label: `${mStr} ${mYear}` });
-      colSet.add(key);
+      current.setMonth(current.getMonth() + 1);
+      safetyCounter++;
     }
 
     deals.forEach(d => {
@@ -69,8 +86,6 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals, initialFY
       const mYear = dt.getFullYear();
       const mStr = dt.toLocaleString('default', { month: 'short' });
       const sortKey = `${mYear}-${String(dt.getMonth() + 1).padStart(2, '0')} ${mStr} ${mYear}`;
-      
-      if (!colSet.has(sortKey)) return; // Filter to selected FY only
       
       if (!monthMap[d.status]) monthMap[d.status] = {};
       monthMap[d.status][sortKey] = (monthMap[d.status][sortKey] || 0) + Number(d.quotation || 0);
@@ -105,7 +120,7 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals, initialFY
     });
 
     return { columns, rows, totals, grandTotal, chartData };
-  }, [deals, selectedFY]);
+  }, [deals]);
 
   const formatRp = (value: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -169,28 +184,17 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals, initialFY
         >
           {/* Header */}
           <div style={{ padding: "24px 32px", borderBottom: "1px solid #f0f0f0", display: "flex", alignItems: "center", justifyContent: "space-between", background: "linear-gradient(to right, #ffffff, #f8fafc)" }}>
-            <div>
-              <h2 style={{ fontSize: 20, fontWeight: 900, color: "#323338", display: "flex", alignItems: "center", gap: 12 }}>
-                <BarChart3 size={24} color="#0073ea" />
-                Project By Status Analytics
-              </h2>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
-                <p style={{ fontSize: 13, color: "#676879", fontWeight: 500 }}>
-                  Monthly pipeline projection for
-                </p>
-                <select 
-                  value={selectedFY} 
-                  onChange={e => setSelectedFY(Number(e.target.value))}
-                  style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid #e5e7eb", fontSize: 13, fontWeight: 700, color: "#323338", outline: "none", cursor: "pointer", background: "#f8fafc" }}
-                >
-                  <option value={24}>FY 24</option>
-                  <option value={25}>FY 25</option>
-                  <option value={26}>FY 26</option>
-                  <option value={27}>FY 27</option>
-                  <option value={28}>FY 28</option>
-                </select>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <BarChart3 size={24} color="#0073ea" />
+                  <h2 style={{ fontSize: 20, fontWeight: 900, color: "#323338" }}>Project By Status Analytics</h2>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
+                  <p style={{ fontSize: 13, color: "#676879", fontWeight: 500 }}>
+                    Monthly pipeline projection (All active unclosed projects)
+                  </p>
+                </div>
               </div>
-            </div>
             <button
               onClick={onClose}
               style={{ width: 36, height: 36, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "#f4f4f4", border: "none", cursor: "pointer", transition: "all 0.2s" }}
