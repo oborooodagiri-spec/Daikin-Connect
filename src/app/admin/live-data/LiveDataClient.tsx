@@ -11,6 +11,7 @@ import {
   CheckCircle2, Clock, AlertTriangle, Briefcase, ArrowLeft, Trophy, Table2
 } from "lucide-react";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
+import ClosedProjectsWidget from './ClosedProjectsWidget';
 import DealFormModal from "./DealFormModal";
 import OpsFormModal from "./OpsFormModal";
 import PresentationModal, { PresentationState } from "./PresentationModal";
@@ -437,26 +438,10 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
     return { start, end };
   }, [selectedFY, selectedMonth]);
 
-  // activeDeals = A, B, C, D, E filtered by FY and Month based on target_po_date
+  // activeDeals = ALL active deals, no FY restriction. Excludes closed.
   const activeDeals = useMemo(() => {
-    return deals.filter(d => {
-      // Include A (Won) as part of active/total deals for the year
-      if (!['A', 'B', 'C', 'D', 'E'].includes(d.status)) return false;
-      
-      const targetTime = d.target_po_date ? new Date(d.target_po_date).getTime() : null;
-      if (targetTime) {
-        const fyStart = new Date(2000 + selectedFY, 3, 1).getTime();
-        const fyEnd = new Date(2000 + selectedFY + 1, 2, 31, 23, 59, 59, 999).getTime();
-        
-        if (targetTime < fyStart || targetTime > fyEnd) return false;
-        
-        if (getMonthRange) {
-          if (targetTime < getMonthRange.start || targetTime > getMonthRange.end) return false;
-        }
-      }
-      return true;
-    });
-  }, [deals, selectedFY, getMonthRange]);
+    return deals.filter(d => !d.is_closed && !['L', 'H'].includes(d.status));
+  }, [deals]);
 
   // Sector groupings matching Excel definitions
   const INDUSTRY_SECTORS = ["Industri", "Heavy Industri"];
@@ -521,15 +506,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
     const fyEnd = new Date(2000 + selectedFY + 1, 2, 31, 23, 59, 59, 999).getTime();
 
     deals.forEach(d => {
-      const targetTime = d.target_po_date ? new Date(d.target_po_date).getTime() : null;
-
-      // FY FILTERING LOGIC using target_po_date
-      if (targetTime) {
-        if (targetTime < fyStart || targetTime > fyEnd) return;
-        if (getMonthRange) {
-          if (targetTime < getMonthRange.start || targetTime > getMonthRange.end) return;
-        }
-      }
+      if (d.is_closed || ['L', 'H'].includes(d.status)) return;
       
       const cTime = new Date(d.created_at).getTime();
       const isBacklog = cTime < fyStart;
@@ -579,15 +556,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
     let overdueCount = 0;
 
     leaderboardDeals.forEach(d => {
-      const targetTime = d.target_po_date ? new Date(d.target_po_date).getTime() : null;
-
-      // FY FILTERING LOGIC using target_po_date
-      if (targetTime) {
-        if (targetTime < fyStart || targetTime > fyEnd) return;
-        if (getMonthRange) {
-          if (targetTime < getMonthRange.start || targetTime > getMonthRange.end) return;
-        }
-      }
+      if (d.is_closed || ['L', 'H'].includes(d.status)) return;
 
       const val = Number(d.quotation) || 0;
       const pic = d.pic || "Unassigned";
@@ -763,7 +732,19 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
           <IndonesiaMap deals={activeDeals} />
         </motion.div>
 
-        {/* Widgets Area */}
+        {/* CLOSED PROJECTS WIDGET */}
+        <ClosedProjectsWidget 
+          deals={deals} 
+          currentFY={currentFY} 
+          selectedFY={selectedFY} 
+          setSelectedFY={setSelectedFY} 
+          selectedMonth={selectedMonth} 
+          setSelectedMonth={setSelectedMonth} 
+          fyOptions={fyOptions} 
+          MONTH_OPTIONS={MONTH_OPTIONS} 
+        />
+
+        {/* MIDDLE METRICS */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" style={{ marginBottom: 32, marginTop: 16 }}>
             {/* Project By Status Widget */}
             <motion.div
@@ -1412,18 +1393,6 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
           </div>
 
             <div className="flex items-center gap-4">
-              <select value={selectedMonth} onChange={e => setSelectedMonth(Number(e.target.value))}
-                className="px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
-                {MONTH_OPTIONS.map(opt => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-                <select value={selectedFY} onChange={e => setSelectedFY(Number(e.target.value))}
-                className="px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
-                {fyOptions.map(fy => (
-                  <option key={fy} value={fy}>FY{fy} {fy === currentFY ? "(Current)" : ""}</option>
-                ))}
-              </select>
               <button onClick={loadData} style={{ padding: "10px 20px", borderRadius: 12, border: "1px solid #e8e8e8", background: "white", fontSize: 11, fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, color: "#676879" }}>
                 <RefreshCw size={14} /> Refresh
               </button>
