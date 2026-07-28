@@ -33,6 +33,18 @@ const formatRp = (val: number | bigint) => {
 
 export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: TopSalesModalProps) {
   const [selectedFY, setSelectedFY] = useState(`FY${initialFY}`);
+  const [avatarMap, setAvatarMap] = useState<Record<string, string>>({});
+
+  React.useEffect(() => {
+    if (isOpen) {
+      import("@/app/actions/users").then(m => m.getUsersAvatarMap()).then(res => {
+        if (res.success && res.data) {
+          setAvatarMap(res.data);
+        }
+      });
+    }
+  }, [isOpen]);
+
 
   const availableFYs = useMemo(() => {
     const set = new Set<string>();
@@ -99,6 +111,7 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
   const rest = leaderboard.slice(3);
 
   const getAvatarUrl = (name: string, rank: number) => {
+    if (avatarMap[name]) return avatarMap[name];
     let bg = '0ea5e9';
     let color = 'fff';
     if (rank === 1) bg = 'fbbf24'; // Gold

@@ -230,3 +230,19 @@ export async function toggleUserAttendance(userId: number, currentStatus: boolea
   }
 }
 
+export async function getUsersAvatarMap() {
+  try {
+    const users = await prisma.users.findMany({
+      select: { name: true, avatar_url: true }
+    });
+    const map = users.reduce((acc: any, user: any) => {
+      if (user.avatar_url) {
+        acc[user.name] = user.avatar_url;
+      }
+      return acc;
+    }, {});
+    return { success: true, data: map };
+  } catch (e: any) {
+    return { error: e.message };
+  }
+}
