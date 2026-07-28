@@ -33,17 +33,18 @@ const formatRp = (val: number | bigint) => {
 
 export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: TopSalesModalProps) {
   const [selectedFY, setSelectedFY] = useState(`FY${initialFY}`);
-  const [avatarMap, setAvatarMap] = useState<Record<string, string>>({});
+  const [userInfoMap, setUserInfoMap] = useState<Record<string, { avatar_url?: string | null, isSales: boolean }>>({});
 
   React.useEffect(() => {
     if (isOpen) {
       import("@/app/actions/users").then(m => m.getUsersAvatarMap()).then(res => {
         if (res.success && res.data) {
-          setAvatarMap(res.data);
+          setUserInfoMap(res.data);
         }
       });
     }
   }, [isOpen]);
+
 
 
   const availableFYs = useMemo(() => {
@@ -68,6 +69,13 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
 
   const { leaderboard } = useMemo(() => {
     const picDataMap: Record<string, { wonValue: number, totalDeals: number }> = {};
+    
+    // Pre-fill with all known Sales Engineers so they always appear in the list
+    Object.keys(userInfoMap).forEach(name => {
+      if (userInfoMap[name]?.isSales) {
+        picDataMap[name] = { wonValue: 0, totalDeals: 0 };
+      }
+    });
 
     deals.forEach(d => {
       if (d.est_booking_month || d.target_po_date) {
@@ -101,17 +109,17 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
         wonValue: picDataMap[pic].wonValue,
         totalDeals: picDataMap[pic].totalDeals
       }))
-      .filter(item => item.wonValue > 0 || item.totalDeals > 0)
-      .sort((a, b) => b.wonValue - a.wonValue);
+      .sort((a, b) => b.wonValue - a.wonValue); // Sort strictly by wonValue, allowing 0s
 
     return { leaderboard: arr };
-  }, [deals, selectedFY]);
+  }, [deals, selectedFY, userInfoMap]);
 
   const top3 = leaderboard.slice(0, 3);
   const rest = leaderboard.slice(3);
 
   const getAvatarUrl = (name: string, rank: number) => {
-    if (avatarMap[name]) return avatarMap[name];
+    const avatar = userInfoMap[name]?.avatar_url;
+    if (avatar) return avatar;
     let bg = '0ea5e9';
     let color = 'fff';
     if (rank === 1) bg = 'fbbf24'; // Gold
