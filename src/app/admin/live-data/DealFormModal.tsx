@@ -288,18 +288,18 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
                   </select>
                 </div>
 
-                {formData.source === "Partnership" && (
-                  <div className="space-y-1.5 animate-in fade-in zoom-in duration-200">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><User size={12}/> Partnership PIC</label>
-                    <select name="pic" value={formData.pic} onChange={handleChange}
-                      className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all cursor-pointer">
-                      <option value={sessionName}>{sessionName} (You)</option>
-                      {salesEngineers.map(se => (
-                        se.name !== sessionName && <option key={se.id} value={se.name}>{se.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                    <User size={12}/> {formData.source === "Partnership" ? "Partner PIC" : "PIC (Person In Charge)"}
+                  </label>
+                  <select name="pic" value={formData.pic} onChange={handleChange}
+                    className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all cursor-pointer">
+                    <option value={sessionName}>{sessionName} (You)</option>
+                    {salesEngineers.map(se => (
+                      se.name !== sessionName && <option key={se.id} value={se.name}>{se.name}</option>
+                    ))}
+                  </select>
+                </div>
 
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Calendar size={12}/> Target PO</label>
