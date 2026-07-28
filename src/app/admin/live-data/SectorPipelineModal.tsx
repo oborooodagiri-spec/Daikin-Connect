@@ -36,9 +36,13 @@ export default function SectorPipelineModal({
 }: SectorPipelineModalProps) {
   
   const [selectedFY, setSelectedFY] = useState(initialFY);
+  const [includeTH, setIncludeTH] = useState(false);
 
   useEffect(() => {
-    if (isOpen) setSelectedFY(initialFY);
+    if (isOpen) {
+      setSelectedFY(initialFY);
+      setIncludeTH(false);
+    }
   }, [isOpen, initialFY]);
 
   const { columns, rows, totals, grandTotal, chartData } = useMemo(() => {
@@ -61,7 +65,8 @@ export default function SectorPipelineModal({
     let grandTotal = 0;
 
     deals.forEach(d => {
-      if (['L', 'H'].includes(d.status)) return; // Exclude lost/hold usually
+      if (d.status === 'L') return; // Always exclude lost
+      if (!includeTH && ['T', 'H'].includes(d.status)) return; // Toggle T and H
       
       const rawDate = d.target_po_date || d.est_booking_month;
       if (!rawDate) return;
@@ -100,7 +105,7 @@ export default function SectorPipelineModal({
     });
 
     return { columns, rows, totals, grandTotal, chartData };
-  }, [deals, selectedFY]);
+  }, [deals, selectedFY, includeTH]);
 
   const formatRp = (val: number) => {
     if (val === 0 || !val) return "-";
@@ -118,6 +123,8 @@ export default function SectorPipelineModal({
     'C': '#8b5cf6',
     'D': '#f59e0b',
     'E': '#ef4444',
+    'T': '#f97316',
+    'H': '#64748b',
   };
 
   if (!isOpen) return null;
@@ -163,6 +170,14 @@ export default function SectorPipelineModal({
             </div>
             
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", background: "white", padding: "8px 16px", borderRadius: 12, border: "1px solid #e2e8f0", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" }}>
+                <div style={{ position: "relative", width: 36, height: 20, background: includeTH ? color : "#cbd5e1", borderRadius: 20, transition: "0.3s" }}>
+                  <div style={{ position: "absolute", top: 2, left: includeTH ? 18 : 2, width: 16, height: 16, background: "white", borderRadius: "50%", transition: "0.3s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
+                </div>
+                <input type="checkbox" checked={includeTH} onChange={(e) => setIncludeTH(e.target.checked)} style={{ display: "none" }} />
+                <span style={{ fontSize: 13, fontWeight: 600, color: "#475569" }}>Include Tender & Hold</span>
+              </label>
+
               <select
                 value={selectedFY}
                 onChange={(e) => setSelectedFY(Number(e.target.value))}
