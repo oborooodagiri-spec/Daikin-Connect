@@ -210,7 +210,7 @@ export default function CategoryPipelineModal({
                       axisLine={false} 
                       tickLine={false} 
                       tick={{ fontSize: 12, fill: "#64748b", fontWeight: 500 }}
-                      tickFormatter={(value) => `Rp ${(value / 1000000000).toFixed(0)}M.`}
+                      tickFormatter={(value) => `Rp ${(value / 1000000000).toFixed(0)}M`}
                       dx={-10}
                     />
                     <Tooltip 
