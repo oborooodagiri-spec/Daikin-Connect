@@ -62,7 +62,8 @@ export default function SectorPipelineModal({
       colSet.add(key);
     }
 
-    const rowMap: Record<string, Record<string, number>> = {};
+    type CategoryData = { values: Record<string, number>, total: number };
+    const rowMap: Record<string, { values: Record<string, number>, total: number, categories: Record<string, CategoryData> }> = {};
     const totals: Record<string, number> = {};
     let grandTotal = 0;
 
@@ -83,10 +84,20 @@ export default function SectorPipelineModal({
       
       const val = Number(d.quotation || 0);
       const status = d.status || "Unknown";
+      const category = d.category || "Unknown";
 
-      if (!rowMap[status]) rowMap[status] = {};
-      rowMap[status][key] = (rowMap[status][key] || 0) + val;
-      rowMap[status]["total"] = (rowMap[status]["total"] || 0) + val;
+      if (!rowMap[status]) {
+        rowMap[status] = { values: {}, total: 0, categories: {} };
+      }
+      
+      rowMap[status].values[key] = (rowMap[status].values[key] || 0) + val;
+      rowMap[status].total += val;
+
+      if (!rowMap[status].categories[category]) {
+        rowMap[status].categories[category] = { values: {}, total: 0 };
+      }
+      rowMap[status].categories[category].values[key] = (rowMap[status].categories[category].values[key] || 0) + val;
+      rowMap[status].categories[category].total += val;
       
       totals[key] = (totals[key] || 0) + val;
       grandTotal += val;
@@ -94,8 +105,9 @@ export default function SectorPipelineModal({
 
     const rows = Object.keys(rowMap).sort().map(status => ({
       status,
-      values: rowMap[status],
-      total: rowMap[status]["total"]
+      values: rowMap[status].values,
+      total: rowMap[status].total,
+      categories: rowMap[status].categories
     }));
 
     // Prepare chart data (Stacked Bar Chart)
@@ -129,6 +141,8 @@ export default function SectorPipelineModal({
     'T': '#f97316',
     'H': '#64748b',
   };
+
+  const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -272,20 +286,57 @@ export default function SectorPipelineModal({
                   </thead>
                   <tbody>
                     {rows.map((row, idx) => (
-                      <tr key={row.status} style={{ borderBottom: "1px solid #e2e8f0", background: "white", transition: "background 0.2s" }} onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={e => e.currentTarget.style.background = 'white'}>
-                        <td style={{ padding: "16px 24px", fontSize: 14, fontWeight: 700, color: "#334155", position: "sticky", left: 0, background: "inherit", zIndex: 5, borderRight: "1px solid #f1f5f9", display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ display: "inline-block", width: 12, height: 12, borderRadius: "50%", background: STATUS_COLORS[row.status] || color }} />
-                          {row.status}
-                        </td>
-                        {columns.map(col => (
-                          <td key={col.key} style={{ padding: "16px 12px", textAlign: "right", fontSize: 13, color: "#64748b", fontWeight: 500, borderRight: "1px dashed #f1f5f9" }}>
-                            {formatRp(row.values[col.key] || 0)}
+                      <React.Fragment key={row.status}>
+                        <tr 
+                          onClick={() => setExpandedRow(expandedRow === row.status ? null : row.status)}
+                          style={{ 
+                            borderBottom: "1px solid #e2e8f0", 
+                            background: "white", 
+                            transition: "background 0.2s",
+                            cursor: "pointer" 
+                          }} 
+                          onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'} 
+                          onMouseLeave={e => e.currentTarget.style.background = 'white'}
+                        >
+                          <td style={{ padding: "16px 24px", fontSize: 14, fontWeight: 700, color: "#334155", position: "sticky", left: 0, background: "inherit", zIndex: 5, borderRight: "1px solid #f1f5f9", display: "flex", alignItems: "center", gap: 8 }}>
+                            <span style={{ display: "inline-block", width: 12, height: 12, borderRadius: "50%", background: STATUS_COLORS[row.status] || color }} />
+                            Status {row.status}
                           </td>
-                        ))}
-                        <td style={{ padding: "16px 24px", textAlign: "right", fontSize: 14, fontWeight: 800, color: "#0f172a", background: "#f8fafc" }}>
-                          {formatRp(row.total)}
-                        </td>
-                      </tr>
+                          {columns.map(col => (
+                            <td key={col.key} style={{ padding: "16px 12px", textAlign: "right", fontSize: 13, color: "#64748b", fontWeight: 500, borderRight: "1px dashed #f1f5f9" }}>
+                              {formatRp(row.values[col.key] || 0)}
+                            </td>
+                          ))}
+                          <td style={{ padding: "16px 24px", textAlign: "right", fontSize: 14, fontWeight: 800, color: "#0f172a", background: "#f8fafc" }}>
+                            {formatRp(row.total)}
+                          </td>
+                        </tr>
+                        
+                        <AnimatePresence>
+                          {expandedRow === row.status && Object.entries(row.categories).sort(([a], [b]) => a.localeCompare(b)).map(([category, catData]) => (
+                            <motion.tr 
+                              key={`${row.status}-${category}`}
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: "auto" }}
+                              exit={{ opacity: 0, height: 0 }}
+                              style={{ background: "#f1f5f9", borderBottom: "1px dashed #e2e8f0" }}
+                            >
+                              <td style={{ padding: "12px 24px 12px 48px", fontSize: 13, fontWeight: 600, color: "#475569", position: "sticky", left: 0, background: "#f1f5f9", zIndex: 5, borderRight: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 8 }}>
+                                <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#94a3b8" }} />
+                                {category}
+                              </td>
+                              {columns.map(col => (
+                                <td key={col.key} style={{ padding: "12px 12px", textAlign: "right", fontSize: 12, color: "#64748b", fontWeight: 500, borderRight: "1px dashed #e2e8f0" }}>
+                                  {formatRp(catData.values[col.key] || 0)}
+                                </td>
+                              ))}
+                              <td style={{ padding: "12px 24px", textAlign: "right", fontSize: 13, fontWeight: 700, color: "#334155", background: "#e2e8f0" }}>
+                                {formatRp(catData.total)}
+                              </td>
+                            </motion.tr>
+                          ))}
+                        </AnimatePresence>
+                      </React.Fragment>
                     ))}
                     {rows.length === 0 && (
                       <tr>
