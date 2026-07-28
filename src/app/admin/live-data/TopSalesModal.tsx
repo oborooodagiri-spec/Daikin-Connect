@@ -1,22 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, TrendingUp } from 'lucide-react';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer 
-} from 'recharts';
+import { X, Trophy, Medal } from 'lucide-react';
 
 interface Deal {
   id: number;
   quotation: number | bigint;
   status: string;
   pic?: string | null;
+  target_po_date?: string | null;
+  est_booking_month?: string | null;
   [key: string]: any;
 }
 
@@ -27,8 +19,10 @@ interface TopSalesModalProps {
   initialFY: number;
 }
 
-// Helper to format currency
 const formatRp = (val: number | bigint) => {
+  if (val >= 1e12) return `Rp ${(Number(val) / 1e12).toFixed(1)}T`;
+  if (val >= 1e9) return `Rp ${(Number(val) / 1e9).toFixed(1)}M`;
+  if (val >= 1e6) return `Rp ${(Number(val) / 1e6).toFixed(0)}Jt`;
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
@@ -37,21 +31,9 @@ const formatRp = (val: number | bigint) => {
   }).format(Number(val));
 };
 
-const STATUSES = ['B', 'C', 'D', 'E']; // Typically A is omitted or included based on exact requirement. Let's include A as well since the PIC sheet has no header A but usually A is included. Let's just use what's found.
-// Actually, let's include 'A' too, just in case. Or dynamic based on deals. Let's use ['A', 'B', 'C', 'D', 'E'].
-const ALL_STATUSES = ['A', 'B', 'C', 'D', 'E'];
-const STATUS_COLORS: Record<string, string> = {
-  A: '#3b82f6', // Blue
-  B: '#8b5cf6', // Purple
-  C: '#10b981', // Green
-  D: '#f59e0b', // Amber
-  E: '#ef4444', // Red
-};
-
 export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: TopSalesModalProps) {
   const [selectedFY, setSelectedFY] = useState(`FY${initialFY}`);
 
-  // Derive available FYs from deals to allow switching
   const availableFYs = useMemo(() => {
     const set = new Set<string>();
     deals.forEach(d => {
@@ -72,90 +54,61 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
     return arr.sort();
   }, [deals, initialFY]);
 
-  // Pivot data calculation
-  const { pivotData, grandTotal, totalsByStatus } = useMemo(() => {
-    const picMap: Record<string, Record<string, number>> = {};
-    const totals: Record<string, number> = {};
-    let gTotal = 0;
-
-    ALL_STATUSES.forEach(s => totals[s] = 0);
+  const { leaderboard } = useMemo(() => {
+    const picDataMap: Record<string, { wonValue: number, totalDeals: number }> = {};
 
     deals.forEach(d => {
-      // Filter by FY
-      if (d.est_booking_month) {
-        const dt = new Date(d.est_booking_month);
+      if (d.est_booking_month || d.target_po_date) {
+        const dt = new Date(d.target_po_date || d.est_booking_month!);
         if (!isNaN(dt.getTime())) {
           const m = dt.getMonth() + 1;
           const y = dt.getFullYear();
           const fy = m >= 4 ? `FY${String(y).slice(-2)}` : `FY${String(y - 1).slice(-2)}`;
           if (fy !== selectedFY) return;
-        } else {
-          return;
-        }
-      } else {
-        return;
-      }
+        } else return;
+      } else return;
 
       if (['L', 'H'].includes(d.status)) return;
-      const status = d.status;
-      if (!ALL_STATUSES.includes(status)) return;
       
-      const picName = d.pic?.trim() || '(blank)';
-      const val = Number(d.quotation) || 0;
-
-      if (!picMap[picName]) {
-        picMap[picName] = {};
-        ALL_STATUSES.forEach(s => picMap[picName][s] = 0);
+      const picName = d.pic?.trim() || '(Unassigned)';
+      if (!picDataMap[picName]) {
+        picDataMap[picName] = { wonValue: 0, totalDeals: 0 };
       }
       
-      picMap[picName][status] += val;
-      totals[status] += val;
-      gTotal += val;
+      picDataMap[picName].totalDeals += 1;
+      
+      if (d.status === 'A') { // PO / Won
+        const val = Number(d.quotation) || 0;
+        picDataMap[picName].wonValue += val;
+      }
     });
 
-    // Convert picMap to array for table and chart
-    const data = Object.keys(picMap).map(pic => {
-      const row = picMap[pic];
-      const rowTotal = ALL_STATUSES.reduce((sum, s) => sum + row[s], 0);
-      return {
+    const arr = Object.keys(picDataMap)
+      .map(pic => ({
         pic,
-        ...row,
-        total: rowTotal
-      };
-    }).sort((a, b) => b.total - a.total); // Sort by highest total
+        wonValue: picDataMap[pic].wonValue,
+        totalDeals: picDataMap[pic].totalDeals
+      }))
+      .filter(item => item.wonValue > 0 || item.totalDeals > 0)
+      .sort((a, b) => b.wonValue - a.wonValue);
 
-    return { pivotData: data, grandTotal: gTotal, totalsByStatus: totals };
+    return { leaderboard: arr };
   }, [deals, selectedFY]);
 
-  // Chart data
-  const chartData = pivotData.slice(0, 15); // Show top 15 in chart
+  const top3 = leaderboard.slice(0, 3);
+  const rest = leaderboard.slice(3);
 
-  // Calculate percentages for tooltip
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      const total = payload.reduce((sum: number, entry: any) => sum + entry.value, 0);
-      return (
-        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-          <p style={{ fontWeight: 600, marginBottom: '8px', color: '#1e293b' }}>{label}</p>
-          {payload.map((entry: any, index: number) => {
-            if (entry.value === 0) return null;
-            const pct = total > 0 ? ((entry.value / total) * 100).toFixed(1) : '0.0';
-            return (
-              <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                <div style={{ width: 12, height: 12, backgroundColor: entry.color, borderRadius: 2 }} />
-                <span style={{ fontSize: 12, color: '#64748b' }}>Status {entry.name}:</span>
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#0f172a' }}>{formatRp(entry.value)} ({pct}%)</span>
-              </div>
-            );
-          })}
-          <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700 }}>
-            <span>Total:</span>
-            <span>{formatRp(total)}</span>
-          </div>
-        </div>
-      );
+  const getAvatarUrl = (name: string, rank: number) => {
+    let bg = '0ea5e9';
+    let color = 'fff';
+    if (rank === 1) bg = 'fbbf24'; // Gold
+    if (rank === 2) bg = '94a3b8'; // Silver
+    if (rank === 3) bg = 'b45309'; // Bronze
+    if (rank > 3) {
+      bg = 'f1f5f9';
+      color = '334155';
     }
-    return null;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${bg}&color=${color}&size=128&bold=true`;
   };
 
   if (!isOpen) return null;
@@ -183,7 +136,7 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
           style={{
             backgroundColor: "#ffffff",
-            width: "100%", maxWidth: 1200,
+            width: "100%", maxWidth: 1000,
             maxHeight: "90vh",
             borderRadius: 24,
             boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
@@ -202,19 +155,19 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
               <div style={{
                 width: 48, height: 48, borderRadius: 16,
-                background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+                background: "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 color: "white", fontSize: 24,
-                boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)"
+                boxShadow: "0 4px 12px rgba(14, 165, 233, 0.3)"
               }}>
-                <TrendingUp size={24} />
+                <Trophy size={24} />
               </div>
               <div>
-                <h2 style={{ fontSize: 24, fontWeight: 800, color: "#0f172a", margin: 0, letterSpacing: "-0.5px" }}>
-                  Top Sales Performance (PIC)
+                <h2 style={{ fontSize: 24, fontWeight: 900, color: "#0f172a", margin: 0, letterSpacing: "-0.5px" }}>
+                  Top Sales Showdown
                 </h2>
-                <p style={{ fontSize: 14, color: "#64748b", margin: "4px 0 0 0" }}>
-                  Pipeline matrix grouped by Sales PIC and Status
+                <p style={{ fontSize: 14, color: "#64748b", margin: "4px 0 0 0", fontWeight: 500 }}>
+                  Peringkat berdasarkan nominal project (PO)
                 </p>
               </div>
             </div>
@@ -225,7 +178,7 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
                 onChange={(e) => setSelectedFY(e.target.value)}
                 style={{
                   padding: "8px 16px", borderRadius: 12, border: "1px solid #cbd5e1",
-                  backgroundColor: "#f8fafc", fontSize: 14, fontWeight: 600, color: "#334155",
+                  backgroundColor: "#ffffff", fontSize: 14, fontWeight: 700, color: "#0f172a",
                   outline: "none", cursor: "pointer", boxShadow: "0 2px 4px rgba(0,0,0,0.05)"
                 }}
               >
@@ -250,118 +203,91 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
           </div>
 
           {/* Content */}
-          <div style={{ padding: "32px", overflowY: "auto", flex: 1, backgroundColor: "#f8fafc" }}>
+          <div style={{ padding: "40px", overflowY: "auto", flex: 1, backgroundColor: "#f8fafc", display: "flex", flexDirection: "column", alignItems: "center" }}>
             
-            {/* Infographic Section */}
-            <div style={{ 
-              backgroundColor: "white", padding: 24, borderRadius: 20, 
-              boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05)",
-              marginBottom: 32
-            }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", margin: "0 0 20px 0" }}>
-                PIC Performance Distribution (Top 15)
-              </h3>
-              <div style={{ height: 350, width: "100%" }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                    <XAxis 
-                      dataKey="pic" 
-                      axisLine={false} 
-                      tickLine={false} 
-                      tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }} 
-                      dy={10}
-                    />
-                    <YAxis 
-                      tickFormatter={(val) => `Rp ${(val / 1e9).toFixed(1)}B`}
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: '#64748b', fontSize: 12 }}
-                      dx={-10}
-                    />
-                    <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(241, 245, 249, 0.5)' }} />
-                    <Legend wrapperStyle={{ paddingTop: 20 }} iconType="circle" />
-                    
-                    {ALL_STATUSES.map((status) => (
-                      <Bar 
-                        key={status}
-                        dataKey={status} 
-                        name={`Status ${status}`} 
-                        stackId="a" 
-                        fill={STATUS_COLORS[status]}
-                        radius={[0, 0, 0, 0]}
-                      />
-                    ))}
-                  </BarChart>
-                </ResponsiveContainer>
+            {leaderboard.length === 0 ? (
+              <div style={{ padding: 60, textAlign: 'center', color: '#64748b', fontSize: 16, fontWeight: 600 }}>
+                Belum ada data project untuk tahun buku ini.
               </div>
-            </div>
-
-            {/* Matrix Table Section */}
-            <div style={{ 
-              backgroundColor: "white", borderRadius: 20, overflow: "hidden",
-              boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05)"
-            }}>
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 800 }}>
-                  <thead>
-                    <tr>
-                      <th style={{ padding: "16px 20px", backgroundColor: "#f1f5f9", textAlign: "left", fontSize: 13, fontWeight: 700, color: "#475569", borderBottom: "2px solid #e2e8f0" }}>Row Labels</th>
-                      {ALL_STATUSES.map(s => (
-                        <th key={s} style={{ padding: "16px 20px", backgroundColor: "#f1f5f9", textAlign: "right", fontSize: 13, fontWeight: 700, color: "#475569", borderBottom: "2px solid #e2e8f0" }}>
-                          {s}
-                        </th>
-                      ))}
-                      <th style={{ padding: "16px 20px", backgroundColor: "#e2e8f0", textAlign: "right", fontSize: 13, fontWeight: 800, color: "#0f172a", borderBottom: "2px solid #cbd5e1" }}>
-                        Grand Total
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pivotData.length > 0 ? (
-                      pivotData.map((row, idx) => (
-                        <tr key={row.pic} style={{ backgroundColor: idx % 2 === 0 ? "#ffffff" : "#f8fafc", transition: "background-color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'} onMouseOut={(e) => e.currentTarget.style.backgroundColor = idx % 2 === 0 ? "#ffffff" : "#f8fafc"}>
-                          <td style={{ padding: "14px 20px", fontSize: 13, fontWeight: 600, color: "#1e293b", borderBottom: "1px solid #e2e8f0" }}>
-                            {row.pic}
-                          </td>
-                          {ALL_STATUSES.map(s => (
-                            <td key={s} style={{ padding: "14px 20px", fontSize: 13, color: (row as any)[s] > 0 ? "#334155" : "#94a3b8", textAlign: "right", borderBottom: "1px solid #e2e8f0" }}>
-                              {(row as any)[s] > 0 ? formatRp((row as any)[s]) : "-"}
-                            </td>
-                          ))}
-                          <td style={{ padding: "14px 20px", fontSize: 13, fontWeight: 700, color: "#0f172a", textAlign: "right", borderBottom: "1px solid #e2e8f0", backgroundColor: "rgba(226, 232, 240, 0.2)" }}>
-                            {formatRp(row.total)}
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={ALL_STATUSES.length + 2} style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>
-                          No data available for {selectedFY}
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                  {pivotData.length > 0 && (
-                    <tfoot>
-                      <tr style={{ backgroundColor: "#1e293b" }}>
-                        <td style={{ padding: "16px 20px", fontSize: 14, fontWeight: 700, color: "#ffffff", borderTop: "none" }}>
-                          Grand Total
-                        </td>
-                        {ALL_STATUSES.map(s => (
-                          <td key={s} style={{ padding: "16px 20px", fontSize: 13, fontWeight: 600, color: "#ffffff", textAlign: "right", borderTop: "none" }}>
-                            {totalsByStatus[s] > 0 ? formatRp(totalsByStatus[s]) : "-"}
-                          </td>
-                        ))}
-                        <td style={{ padding: "16px 20px", fontSize: 14, fontWeight: 800, color: "#38bdf8", textAlign: "right", borderTop: "none" }}>
-                          {formatRp(grandTotal)}
-                        </td>
-                      </tr>
-                    </tfoot>
+            ) : (
+              <>
+                {/* Podium Showdown */}
+                <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 16, marginBottom: 48, height: 350, marginTop: 40 }}>
+                  
+                  {/* Rank 2 (Silver) */}
+                  {top3[1] && (
+                    <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1, width: 140 }}>
+                      <img src={getAvatarUrl(top3[1].pic, 2)} alt={top3[1].pic} style={{ width: 80, height: 80, borderRadius: '50%', border: '4px solid #cbd5e1', marginBottom: -20, zIndex: 2, backgroundColor: 'white', objectFit: 'cover' }} />
+                      <div style={{ width: '100%', height: 200, background: 'linear-gradient(to top, #94a3b8, #e2e8f0)', borderRadius: '16px 16px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 24, color: '#334155', boxShadow: '0 10px 25px -5px rgba(148,163,184,0.4)' }}>
+                        <span style={{ fontSize: 48, fontWeight: 900, color: 'rgba(255,255,255,0.9)', lineHeight: 1 }}>2</span>
+                        <span style={{ fontSize: 14, fontWeight: 800, textAlign: 'center', padding: '0 8px', marginTop: 'auto', marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%', color: '#1e293b' }}>{top3[1].pic}</span>
+                        <span style={{ fontSize: 13, fontWeight: 900, backgroundColor: 'rgba(255,255,255,0.6)', padding: '4px 10px', borderRadius: 12, marginBottom: 4, color: '#0f172a' }}>{formatRp(top3[1].wonValue)}</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 16 }}>{top3[1].totalDeals} Projects</span>
+                      </div>
+                    </motion.div>
                   )}
-                </table>
-              </div>
-            </div>
+
+                  {/* Rank 1 (Gold) */}
+                  {top3[0] && (
+                    <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2, width: 160 }}>
+                      <div style={{ position: 'relative' }}>
+                        <img src={getAvatarUrl(top3[0].pic, 1)} alt={top3[0].pic} style={{ width: 110, height: 110, borderRadius: '50%', border: '6px solid #fbbf24', marginBottom: -30, zIndex: 2, backgroundColor: 'white', position: 'relative', objectFit: 'cover' }} />
+                        <div style={{ position: 'absolute', top: -20, left: '50%', transform: 'translateX(-50%)', zIndex: 3, filter: 'drop-shadow(0 4px 6px rgba(251,191,36,0.5))' }}>
+                          <Medal size={40} color="#fbbf24" fill="#fef3c7" strokeWidth={1.5} />
+                        </div>
+                      </div>
+                      <div style={{ width: '100%', height: 260, background: 'linear-gradient(to top, #0284c7, #38bdf8)', borderRadius: '16px 16px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 36, color: 'white', boxShadow: '0 20px 30px -5px rgba(2,132,199,0.5)' }}>
+                        <span style={{ fontSize: 72, fontWeight: 900, color: 'rgba(255,255,255,0.95)', lineHeight: 1, textShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>1</span>
+                        <span style={{ fontSize: 16, fontWeight: 900, textAlign: 'center', padding: '0 8px', marginTop: 'auto', marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{top3[0].pic}</span>
+                        <span style={{ fontSize: 15, fontWeight: 900, backgroundColor: 'rgba(255,255,255,0.2)', padding: '6px 14px', borderRadius: 12, marginBottom: 6, backdropFilter: 'blur(4px)' }}>{formatRp(top3[0].wonValue)}</span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: 20 }}>{top3[0].totalDeals} Projects</span>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Rank 3 (Bronze) */}
+                  {top3[2] && (
+                    <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1, width: 140 }}>
+                      <img src={getAvatarUrl(top3[2].pic, 3)} alt={top3[2].pic} style={{ width: 80, height: 80, borderRadius: '50%', border: '4px solid #b45309', marginBottom: -20, zIndex: 2, backgroundColor: 'white', objectFit: 'cover' }} />
+                      <div style={{ width: '100%', height: 160, background: 'linear-gradient(to top, #b45309, #f59e0b)', borderRadius: '16px 16px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 24, color: 'white', boxShadow: '0 10px 25px -5px rgba(180,83,9,0.4)' }}>
+                        <span style={{ fontSize: 48, fontWeight: 900, color: 'rgba(255,255,255,0.9)', lineHeight: 1 }}>3</span>
+                        <span style={{ fontSize: 14, fontWeight: 800, textAlign: 'center', padding: '0 8px', marginTop: 'auto', marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{top3[2].pic}</span>
+                        <span style={{ fontSize: 13, fontWeight: 900, backgroundColor: 'rgba(255,255,255,0.25)', padding: '4px 10px', borderRadius: 12, marginBottom: 4 }}>{formatRp(top3[2].wonValue)}</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: 16 }}>{top3[2].totalDeals} Projects</span>
+                      </div>
+                    </motion.div>
+                  )}
+
+                </div>
+
+                {/* Rest of the leaderboard */}
+                {rest.length > 0 && (
+                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} style={{ width: '100%', maxWidth: 700, backgroundColor: 'white', borderRadius: 20, boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                      <tbody>
+                        {rest.map((item, idx) => (
+                          <tr key={item.pic} style={{ borderBottom: idx === rest.length - 1 ? 'none' : '1px solid #f1f5f9', transition: 'background-color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'} onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                            <td style={{ padding: '16px 24px', width: 60, textAlign: 'center', fontSize: 16, fontWeight: 900, color: '#94a3b8' }}>{idx + 4}</td>
+                            <td style={{ padding: '16px 12px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                                <img src={getAvatarUrl(item.pic, idx + 4)} alt={item.pic} style={{ width: 44, height: 44, borderRadius: '50%', border: '2px solid #e2e8f0' }} />
+                                <span style={{ fontSize: 15, fontWeight: 800, color: '#1e293b' }}>{item.pic}</span>
+                              </div>
+                            </td>
+                            <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                <span style={{ fontSize: 16, fontWeight: 900, color: '#0ea5e9' }}>{formatRp(item.wonValue)}</span>
+                                <span style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>{item.totalDeals} Projects</span>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </motion.div>
+                )}
+              </>
+            )}
 
           </div>
         </motion.div>
