@@ -339,7 +339,7 @@ export async function updateDeal(id: number, data: Partial<DealData>) {
           field_changed: "target_po_date",
           old_value: existing.target_po_date?.toISOString(),
           new_value: deal.target_po_date?.toISOString(),
-          remark: "Target PO Date revised"
+          remark: (data as any).target_po_reason || "Target PO revised"
         }
       });
     }

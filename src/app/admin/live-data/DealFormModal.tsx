@@ -67,7 +67,8 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           source: deal.source || "Sales",
           remarks: deal.remarks || "",
           target_po_date: deal.target_po_date ? new Date(deal.target_po_date).toISOString().slice(0, 7) : "",
-          booking_fc: deal.booking_fc || ""
+          booking_fc: deal.booking_fc || "",
+          target_po_reason: ""
         });
       } else {
         setFormData({
@@ -81,7 +82,8 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           source: "Sales",
           remarks: "",
           target_po_date: "",
-          booking_fc: ""
+          booking_fc: "",
+          target_po_reason: ""
         });
         setHistory([]);
       }
@@ -109,6 +111,12 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
       return;
     }
     
+    const isTargetDateChanged = deal && deal.target_po_date && new Date(deal.target_po_date).toISOString().slice(0, 7) !== formData.target_po_date;
+    if (isTargetDateChanged && !formData.target_po_reason?.trim()) {
+      setError("Please provide a reason for changing the Target PO.");
+      return;
+    }
+    
     setLoading(true);
     setError("");
     try {
@@ -116,7 +124,8 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
         ...formData,
         quotation: formData.quotation ? parseFloat(formData.quotation.replace(/[^0-9.-]+/g,"")) : 0,
         booking_fc: ["B", "C", "D", "E"].includes(formData.status) ? (formData.booking_fc || null) : null,
-        target_po_date: formData.target_po_date ? `${formData.target_po_date}-01` : null
+        target_po_date: formData.target_po_date ? `${formData.target_po_date}-01` : null,
+        target_po_reason: formData.target_po_reason || null
       };
 
       let res;
@@ -281,10 +290,20 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Calendar size={12}/> Target PO Date</label>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Calendar size={12}/> Target PO</label>
                   <input name="target_po_date" type="month" value={formData.target_po_date} onChange={handleChange}
                     className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
                 </div>
+
+                {deal && deal.target_po_date && new Date(deal.target_po_date).toISOString().slice(0, 7) !== formData.target_po_date && (
+                  <div className="space-y-1.5 animate-in fade-in zoom-in duration-200 bg-orange-50/50 p-4 rounded-xl border border-orange-100 md:col-span-2">
+                    <label className="text-[10px] font-black text-orange-600 uppercase tracking-widest flex items-center gap-1.5">
+                      Reason for Target PO Revision *
+                    </label>
+                    <textarea name="target_po_reason" value={formData.target_po_reason} onChange={handleChange} placeholder="Please explain why the Target PO date is being revised..." rows={2}
+                      className="w-full p-3 bg-white border border-orange-200 rounded-lg text-sm font-medium focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 outline-none transition-all resize-none" />
+                  </div>
+                )}
 
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">Quotation Value (Rp)</label>
