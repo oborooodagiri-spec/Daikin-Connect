@@ -63,7 +63,13 @@ export default function SectorPipelineModal({
     }
 
     type CategoryData = { values: Record<string, number>, total: number };
-    const rowMap: Record<string, { values: Record<string, number>, total: number, categories: Record<string, CategoryData> }> = {};
+    const rowMap: Record<string, { values: Record<string, number>, total: number, categories: Record<string, CategoryData> }> = {
+      "A": { values: {}, total: 0, categories: {} },
+      "B": { values: {}, total: 0, categories: {} },
+      "C": { values: {}, total: 0, categories: {} },
+      "D": { values: {}, total: 0, categories: {} },
+      "E": { values: {}, total: 0, categories: {} }
+    };
     const totals: Record<string, number> = {};
     let grandTotal = 0;
 
