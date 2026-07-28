@@ -35,6 +35,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
     client_name: "",
     project_name: "",
     pic: "",
+    sales_planner: "",
     category: "",
     sector: "",
     quotation: "",
@@ -42,7 +43,8 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
     source: "Sales",
     remarks: "",
     target_po_date: "",
-    booking_fc: ""
+    booking_fc: "",
+    target_po_reason: ""
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -61,6 +63,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           client_name: deal.client_name || "",
           project_name: deal.project_name || "",
           pic: deal.pic || sessionName,
+          sales_planner: deal.sales_planner || "",
           category: deal.category || "EPL",
           sector: deal.sector || "",
           quotation: deal.quotation ? Number(deal.quotation).toLocaleString("id-ID") : "",
@@ -76,6 +79,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           client_name: "",
           project_name: "",
           pic: sessionName,
+          sales_planner: "",
           category: "EPL",
           sector: "",
           quotation: "",
@@ -137,7 +141,8 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
         quotation: formData.quotation ? parseFloat(formData.quotation.replace(/[^0-9.-]+/g,"")) : 0,
         booking_fc: ["B", "C", "D", "E"].includes(formData.status) ? (formData.booking_fc || null) : null,
         target_po_date: formData.target_po_date ? `${formData.target_po_date}-01` : null,
-        target_po_reason: formData.target_po_reason || null
+        target_po_reason: formData.target_po_reason || null,
+        sales_planner: formData.source === "Partnership" ? (formData.sales_planner || null) : null
       };
 
       let res;
@@ -289,13 +294,29 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
                   </select>
                 </div>
 
-                { (isAdmin || formData.source === "Partnership") && (
+                { isAdmin && (
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                      <User size={12}/> {formData.source === "Partnership" ? "Partner PIC" : "PIC (Person In Charge)"}
+                      <User size={12}/> PIC (Person In Charge)
                     </label>
                     <select name="pic" value={formData.pic} onChange={handleChange}
                       className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all cursor-pointer">
+                      <option value={sessionName}>{sessionName} (You)</option>
+                      {salesEngineers.map(se => (
+                        se.name !== sessionName && <option key={se.id} value={se.name}>{se.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                { formData.source === "Partnership" && (
+                  <div className="space-y-1.5 animate-in fade-in zoom-in duration-200">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                      <User size={12}/> Partnership PIC
+                    </label>
+                    <select name="sales_planner" value={formData.sales_planner} onChange={handleChange}
+                      className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all cursor-pointer">
+                      <option value="">Select Partner</option>
                       <option value={sessionName}>{sessionName} (You)</option>
                       {salesEngineers.map(se => (
                         se.name !== sessionName && <option key={se.id} value={se.name}>{se.name}</option>
