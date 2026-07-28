@@ -252,7 +252,7 @@ export default function SectorPipelineModal({
                       axisLine={false} 
                       tickLine={false} 
                       tick={{ fontSize: 12, fill: "#64748b", fontWeight: 500 }}
-                      tickFormatter={(value) => `Rp ${(value / 1000000000).toFixed(0)}B`}
+                      tickFormatter={(value) => `Rp ${(value / 1000000000).toFixed(0)}M.`}
                       dx={-10}
                     />
                     <Tooltip formatter={formatRp as any} contentStyle={{ fontSize: 12, borderRadius: 8, border: "none", boxShadow: "0 10px 25px rgba(0,0,0,0.1)", fontWeight: 600 }} />

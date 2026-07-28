@@ -62,7 +62,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           pic: deal.pic || sessionName,
           category: deal.category || "EPL",
           sector: deal.sector || "",
-          quotation: deal.quotation ? deal.quotation.toString() : "",
+          quotation: deal.quotation ? Number(deal.quotation).toLocaleString("id-ID") : "",
           status: deal.status || "T",
           source: deal.source || "Sales",
           remarks: deal.remarks || "",
@@ -102,6 +102,17 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    
+    if (name === "quotation") {
+      const rawValue = value.replace(/[^0-9]/g, "");
+      if (rawValue) {
+        setFormData(prev => ({ ...prev, [name]: Number(rawValue).toLocaleString("id-ID") }));
+      } else {
+        setFormData(prev => ({ ...prev, [name]: "" }));
+      }
+      return;
+    }
+
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
@@ -308,7 +319,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
 
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">Quotation Value (Rp)</label>
-                  <input name="quotation" type="number" value={formData.quotation} onChange={handleChange} placeholder="e.g. 500000000"
+                  <input name="quotation" type="text" value={formData.quotation} onChange={handleChange} placeholder="e.g. 50.000.000"
                     className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
                 </div>
 

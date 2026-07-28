@@ -295,7 +295,7 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
                       axisLine={false} 
                       tickLine={false} 
                       tick={{ fontSize: 12, fontWeight: 600, fill: "#64748b" }}
-                      tickFormatter={(value) => `${(value / 1000000000).toFixed(1)}B`}
+                      tickFormatter={(value) => `${(value / 1000000000).toFixed(1)}M.`}
                     />
                     <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#94a3b8', strokeWidth: 1, strokeDasharray: "4 4" }} />
                     <Area type="monotone" dataKey="Forecast Value" stroke="#0ea5e9" strokeWidth={3} fillOpacity={1} fill="url(#colorForecast)" activeDot={{ r: 6, fill: "#0284c7" }} />
