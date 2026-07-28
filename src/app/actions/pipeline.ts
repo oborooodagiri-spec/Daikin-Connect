@@ -329,6 +329,45 @@ export async function updateDeal(id: number, data: Partial<DealData>) {
       });
     }
 
+    if (
+      existing.target_po_date?.getTime() !== deal.target_po_date?.getTime()
+    ) {
+      await prisma.pipeline_history.create({
+        data: {
+          deal_id: deal.id,
+          changed_by_id: parseInt(session.userId, 10),
+          field_changed: "target_po_date",
+          old_value: existing.target_po_date?.toISOString(),
+          new_value: deal.target_po_date?.toISOString(),
+          remark: "Target PO Date revised"
+        }
+      });
+    }
+
+    const fieldsToTrack = [
+      { key: 'client_name', label: 'Client Name' },
+      { key: 'project_name', label: 'Project Name' },
+      { key: 'category', label: 'Category' },
+      { key: 'sector', label: 'Sector' },
+      { key: 'pic', label: 'PIC' },
+      { key: 'source', label: 'Source' }
+    ];
+
+    for (const field of fieldsToTrack) {
+      if ((existing as any)[field.key] !== (deal as any)[field.key]) {
+        await prisma.pipeline_history.create({
+          data: {
+            deal_id: deal.id,
+            changed_by_id: parseInt(session.userId, 10),
+            field_changed: field.key,
+            old_value: String((existing as any)[field.key] || ''),
+            new_value: String((deal as any)[field.key] || ''),
+            remark: `${field.label} updated`
+          }
+        });
+      }
+    }
+
     revalidatePath("/dashboard/pipeline");
     return serializePrisma({ success: true, data: deal });
   } catch (error) {

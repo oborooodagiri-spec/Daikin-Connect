@@ -332,7 +332,11 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
                       <div className="pb-6">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-sm font-bold text-gray-800">
-                            {h.field_changed === 'new_deal' ? 'Project Created' : h.field_changed === 'status' ? 'Status Changed' : h.field_changed === 'quotation' ? 'Budget Revised' : 'Timeline Revised'}
+                            {h.field_changed === 'new_deal' ? 'Project Created' : 
+                             h.field_changed === 'status' ? 'Status Changed' : 
+                             h.field_changed === 'quotation' ? 'Budget Revised' : 
+                             h.field_changed === 'est_booking_month' || h.field_changed === 'target_po_date' ? 'Timeline Revised' : 
+                             'Details Updated'}
                           </span>
                           <span className="text-xs text-gray-400">
                             • {new Date(h.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
