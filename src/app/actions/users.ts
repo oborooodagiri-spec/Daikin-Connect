@@ -242,7 +242,7 @@ export async function getUsersAvatarMap() {
       }
     });
     const map = users.reduce((acc: any, user: any) => {
-      const isSales = user.user_roles?.some((ur: any) => ur.roles?.role_name?.toLowerCase().includes('sales engineer'));
+      const isSales = user.user_roles?.some((ur: any) => ur.roles?.role_name?.toLowerCase().includes('sales'));
       acc[user.name] = { 
         avatar_url: user.avatar_url,
         isSales: isSales

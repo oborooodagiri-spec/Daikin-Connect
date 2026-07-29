@@ -562,17 +562,29 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
       const pic = d.pic || "Unassigned";
       if (!byPic[pic]) byPic[pic] = { totalValue: 0, totalCount: 0, wonValue: 0, wonCount: 0, lostValue: 0, lostCount: 0, overdueCount: 0 };
       
+      let isCurrentFY = false;
+      const rawDate = d.target_po_date || d.est_booking_month;
+      if (rawDate) {
+        const dt = new Date(rawDate);
+        if (!isNaN(dt.getTime())) {
+          const m = dt.getMonth() + 1;
+          const y = dt.getFullYear();
+          const fy = m >= 4 ? y - 2000 : y - 1 - 2000;
+          if (fy === selectedFY) isCurrentFY = true;
+        }
+      }
+      
       if (d.status !== "L") {
         byPic[pic].totalValue += val;
         byPic[pic].totalCount++;
       }
       
-      if (d.status === "A") { byPic[pic].wonValue += val; byPic[pic].wonCount++; }
-      if (d.status === "L") { byPic[pic].lostValue += val; byPic[pic].lostCount++; }
+      if (d.status === "A" && isCurrentFY) { byPic[pic].wonValue += val; byPic[pic].wonCount++; }
+      if (d.status === "L" && isCurrentFY) { byPic[pic].lostValue += val; byPic[pic].lostCount++; }
       
       if (d.target_po_date) {
         const targetDate = new Date(d.target_po_date);
-        if (targetDate < today && ['B', 'C', 'D', 'E'].includes(d.status)) {
+        if (targetDate < today && ['B', 'C', 'D', 'E'].includes(d.status) && isCurrentFY) {
           overdueCount++;
           byPic[pic].overdueCount = (byPic[pic].overdueCount || 0) + 1;
         }
