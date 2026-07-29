@@ -386,8 +386,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
   const [sectorFilter, setSectorFilter] = useState("All");
   const [picFilter, setPicFilter] = useState("All");
   const [sourceFilter, setSourceFilter] = useState("All");
-  const [closedFilter, setClosedFilter] = useState("All");
-  const [forecastFilter, setForecastFilter] = useState("All");
+  const [projectStateFilter, setProjectStateFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [editingDeal, setEditingDeal] = useState<Deal | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -627,10 +626,13 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
       const matchSector = sectorFilter === "All" || d.sector === sectorFilter;
       const matchPic = picFilter === "All" || d.pic === picFilter;
       const matchSource = sourceFilter === "All" || d.source === sourceFilter;
-      const matchClosed = closedFilter === "All" || (closedFilter === "Closed" ? d.is_closed : !d.is_closed);
-      const matchForecast = forecastFilter === "All" || (forecastFilter === "Forecasted" ? d.booking_fc?.toUpperCase() === 'OK' : d.booking_fc?.toUpperCase() !== 'OK');
+      const matchProjectState = 
+        projectStateFilter === "All" ||
+        (projectStateFilter === "Closed" && d.is_closed) ||
+        (projectStateFilter === "Open / On Progress" && !d.is_closed) ||
+        (projectStateFilter === "Forecasted" && d.booking_fc?.toUpperCase() === 'OK');
 
-      return matchSearch && matchStatus && matchCategory && matchSector && matchPic && matchSource && matchClosed && matchForecast;
+      return matchSearch && matchStatus && matchCategory && matchSector && matchPic && matchSource && matchProjectState;
     }).sort((a, b) => {
       const aOverdue = isOverdue(a);
       const bOverdue = isOverdue(b);
@@ -638,7 +640,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
       if (!aOverdue && bOverdue) return 1;
       return 0;
     });
-  }, [deals, searchTerm, statusFilter, categoryFilter, sectorFilter, picFilter, sourceFilter, closedFilter]);
+  }, [deals, searchTerm, statusFilter, categoryFilter, sectorFilter, picFilter, sourceFilter, projectStateFilter]);
 
   const filteredOps = useMemo(() => {
     return opsRecords.filter(o => {
@@ -1065,8 +1067,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
           </div>
           
           {[
-            { label: "Forecast", val: forecastFilter, set: setForecastFilter, opts: ["Forecasted", "Not Forecasted"] },
-            { label: "Closed Status", val: closedFilter, set: setClosedFilter, opts: ["Open / On Progress", "Closed"] },
+            { label: "Project State", val: projectStateFilter, set: setProjectStateFilter, opts: ["Open / On Progress", "Closed", "Forecasted"] },
             { label: "Status", val: statusFilter, set: setStatusFilter, opts: uniqueStatuses as string[] },
             { label: "Category", val: categoryFilter, set: setCategoryFilter, opts: uniqueCategories as string[] },
             { label: "Sector", val: sectorFilter, set: setSectorFilter, opts: uniqueSectors as string[] },
