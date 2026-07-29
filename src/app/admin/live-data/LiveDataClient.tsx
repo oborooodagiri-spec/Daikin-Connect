@@ -153,7 +153,7 @@ function guessCoords(deal: Deal): { coords: [number, number] } | null {
   return PROVINCE_COORDS.jakarta;
 }
 
-function IndonesiaMap({ deals }: { deals: Deal[] }) {
+function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canClickWidgets?: boolean }) {
   const [hoveredCluster, setHoveredCluster] = useState<string | null>(null);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; data: any } | null>(null);
 
@@ -747,7 +747,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
 
         {/* INDONESIA MAP */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <IndonesiaMap deals={activeDeals} />
+          <IndonesiaMap deals={activeDeals} canClickWidgets={canClickWidgets} />
         </motion.div>
 
         {/* CLOSED PROJECTS WIDGET */}
