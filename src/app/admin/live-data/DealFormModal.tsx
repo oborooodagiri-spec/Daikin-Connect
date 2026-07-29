@@ -59,7 +59,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
       });
       
       if (deal) {
-        setFormData({
+          setFormData({
           client_name: deal.client_name || "",
           project_name: deal.project_name || "",
           pic: deal.pic || sessionName,
@@ -72,7 +72,9 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           remarks: deal.remarks || "",
           target_po_date: deal.target_po_date ? new Date(deal.target_po_date).toISOString().slice(0, 7) : "",
           booking_fc: deal.booking_fc || "",
-          target_po_reason: ""
+          target_po_reason: "",
+          latitude: deal.latitude ? deal.latitude.toString() : "",
+          longitude: deal.longitude ? deal.longitude.toString() : "",
         });
       } else {
         setFormData({
@@ -88,6 +90,8 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           remarks: "",
           target_po_date: "",
           booking_fc: "",
+          latitude: "",
+          longitude: "",
           target_po_reason: ""
         });
         setHistory([]);
@@ -142,7 +146,9 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
         booking_fc: ["B", "C", "D", "E"].includes(formData.status) ? (formData.booking_fc || null) : null,
         target_po_date: formData.target_po_date ? `${formData.target_po_date}-01` : null,
         target_po_reason: formData.target_po_reason || null,
-        sales_planner: formData.source === "Partnership" ? (formData.sales_planner || null) : null
+        sales_planner: formData.source === "Partnership" ? (formData.sales_planner || null) : null,
+        latitude: formData.latitude ? parseFloat(formData.latitude) : null,
+        longitude: formData.longitude ? parseFloat(formData.longitude) : null
       };
 
       let res;
@@ -211,7 +217,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
                 <FolderArchive size={20} className="text-blue-300" />
               </div>
               <div>
-                <h2 className="text-lg font-bold tracking-tight">{deal ? "Edit Project" : "Add New Project"}</h2>
+                <h2 className="text-lg font-bold tracking-tight text-white">{deal ? "Edit Project" : "Add New Project"}</h2>
                 <p className="text-xs text-blue-200/70 font-medium">Pipeline Management System</p>
               </div>
             </div>
@@ -344,6 +350,18 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">Quotation Value (Rp)</label>
                   <input name="quotation" type="text" value={formData.quotation} onChange={handleChange} placeholder="e.g. 50.000.000"
+                    className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><MapPin size={12}/> Latitude</label>
+                  <input name="latitude" type="text" value={formData.latitude} onChange={handleChange} placeholder="e.g. -6.200000"
+                    className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><MapPin size={12}/> Longitude</label>
+                  <input name="longitude" type="text" value={formData.longitude} onChange={handleChange} placeholder="e.g. 106.816666"
                     className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
                 </div>
 
