@@ -78,8 +78,8 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }
   C: { label: "Contracted", color: "#7b2cbf", bg: "rgba(123,44,191,0.12)" },
   D: { label: "Planning", color: "#fdab3d", bg: "rgba(253,171,61,0.12)" },
   E: { label: "Submitted", color: "#66ccff", bg: "rgba(102,204,255,0.12)" },
-  H: { label: "Hold", color: "#676879", bg: "rgba(103,104,121,0.12)" },
-  L: { label: "Lost", color: "#e44258", bg: "rgba(228,66,88,0.12)" },
+  H: { label: "Hold", color: "#8d949e", bg: "rgba(141,148,158,0.12)" },
+  L: { label: "Lost", color: "#1f2937", bg: "rgba(31,41,55,0.12)" },
   T: { label: "Tender", color: "#e44258", bg: "rgba(228,66,88,0.12)" },
   S: { label: "Done", color: "#00c875", bg: "rgba(0,200,117,0.12)" },
   N: { label: "No Response", color: "#c4c4c4", bg: "rgba(196,196,196,0.12)" },
@@ -847,7 +847,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
           <div style={{ ...cardStyle, background: "linear-gradient(180deg, #ffffff 0%, #fff1f2 100%)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
               <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(228, 66, 88, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <AlertTriangle size={16} color="#e44258" />
+                <AlertTriangle size={16} color="#1f2937" />
               </div>
               <h3 style={{ fontSize: 13, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em", color: "#323338" }}>Critical Loss (Lost Value)</h3>
             </div>
@@ -863,12 +863,12 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, alignItems: "flex-end" }}>
                         <span style={{ fontSize: 12, fontWeight: 800, color: "#323338" }}>{idx + 1}. {pic}</span>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ fontSize: 10, fontWeight: 800, color: "#e44258", background: "rgba(228,66,88,0.1)", padding: "2px 6px", borderRadius: 4 }}>{data.lostCount} projects</span>
-                          <span style={{ fontSize: 12, fontWeight: 900, color: "#e44258" }}>{formatRp(data.lostValue)}</span>
+                          <span style={{ fontSize: 10, fontWeight: 800, color: "#1f2937", background: "rgba(31,41,55,0.1)", padding: "2px 6px", borderRadius: 4 }}>{data.lostCount} projects</span>
+                          <span style={{ fontSize: 12, fontWeight: 900, color: "#1f2937" }}>{formatRp(data.lostValue)}</span>
                         </div>
                       </div>
                       <div style={{ height: 8, background: "#fee2e2", borderRadius: 4, overflow: "hidden" }}>
-                        <motion.div initial={{ width: 0 }} animate={{ width: `${(data.lostValue / maxVal) * 100}%` }} transition={{ duration: 1 }} style={{ height: "100%", background: "#e44258", borderRadius: 4 }} />
+                        <motion.div initial={{ width: 0 }} animate={{ width: `${(data.lostValue / maxVal) * 100}%` }} transition={{ duration: 1 }} style={{ height: "100%", background: "#1f2937", borderRadius: 4 }} />
                       </div>
                     </div>
                   );
@@ -925,7 +925,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
                   return (
                     <>
                       <circle cx="100" cy="100" r="80" fill="none" stroke="#00c875" strokeWidth="20" strokeDasharray={`${wonStroke} ${circumference}`} />
-                      <circle cx="100" cy="100" r="80" fill="none" stroke="#e44258" strokeWidth="20" strokeDasharray={`${lostStroke} ${circumference}`} strokeDashoffset={-wonStroke} />
+                      <circle cx="100" cy="100" r="80" fill="none" stroke="#1f2937" strokeWidth="20" strokeDasharray={`${lostStroke} ${circumference}`} strokeDashoffset={-wonStroke} />
                     </>
                   );
                 })()}
@@ -941,7 +941,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
                   <p style={{ fontSize: 13, fontWeight: 900, color: "#323338" }}>{formatRp(stats.won)}</p>
                 </div>
                 <div style={{ textAlign: "center" }}>
-                  <p style={{ fontSize: 10, fontWeight: 800, color: "#e44258", textTransform: "uppercase" }}>Lost Value</p>
+                  <p style={{ fontSize: 10, fontWeight: 800, color: "#1f2937", textTransform: "uppercase" }}>Lost Value</p>
                   <p style={{ fontSize: 13, fontWeight: 900, color: "#323338" }}>{formatRp(stats.lost)}</p>
                 </div>
               </div>
