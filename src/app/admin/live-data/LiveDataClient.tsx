@@ -1086,7 +1086,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
               <tbody>
                 {paginated.map((deal) => {
                   const targetDate = deal.target_po_date ? new Date(deal.target_po_date) : null;
-                  const isOverdue = targetDate && targetDate < new Date() && !["A", "L", "S", "N", "H"].includes(deal.status) && !deal.is_closed;
+                  const isOverdue = targetDate && targetDate < new Date() && !["A", "L", "S", "N"].includes(deal.status) && !deal.is_closed;
                   const isClosed = deal.is_closed;
                   const isWonNotClosed = deal.status === "A" && !deal.is_closed;
                   
