@@ -371,7 +371,7 @@ function StatusBadge({ status }: { status: string }) {
 // ============================================
 // MAIN COMPONENT
 // ============================================
-export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean }) {
+export default function LiveDataClient({ isAdmin = false, canClickWidgets = true }: { isAdmin?: boolean, canClickWidgets?: boolean }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [deals, setDeals] = useState<Deal[]>([]);
