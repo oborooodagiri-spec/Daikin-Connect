@@ -22,6 +22,7 @@ import CategoryPipelineModal from "./CategoryPipelineModal";
 import StatusPipelineModal from "./StatusPipelineModal";
 import TopSalesModal from "./TopSalesModal";
 import PICSettingsModal from "./PICSettingsModal";
+import TargetSettingsModal from "./TargetSettingsModal";
 import { updateDeal, getPICAreas, updatePICAreas } from "@/app/actions/pipeline";
 
 // ============================================
@@ -397,6 +398,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
   const [statusModalState, setStatusModalState] = useState<{ isOpen: boolean; statusName: string; color: string; deals: any[] } | null>(null);
   const [showTopSalesModal, setShowTopSalesModal] = useState(false);
   const [showPICSettingsModal, setShowPICSettingsModal] = useState(false);
+  const [showTargetSettingsModal, setShowTargetSettingsModal] = useState(false);
   const [showOpsModal, setShowOpsModal] = useState(false);
   const [presentationState, setPresentationState] = useState<PresentationState | null>(null);
 
@@ -1301,9 +1303,13 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
             { title: "Sales PIC", desc: "Map Sales Engineers to Areas", count: uniquePics.length, icon: "👥" },
             { title: "Regions", desc: "West, East, Bali", count: 3, icon: "🌍" },
             { title: "RC Legends", desc: "WC CSD, WC VSD, AS CSD...", count: 16, icon: "❄️" },
+            { title: "Sales Targets", desc: "Total & PIC specific targets", count: uniquePics.length, icon: "🎯" },
           ].map((item, i) => (
             <div key={i} style={{ padding: 20, background: "#f8f9fb", borderRadius: 16, border: "1px solid #e8e8e8", cursor: canClickWidgets ? "pointer" : "default", transition: "all 0.15s" }}
-              onClick={() => { if (item.title === "Sales PIC") setShowPICSettingsModal(true); }}
+              onClick={() => { 
+                if (item.title === "Sales PIC") setShowPICSettingsModal(true); 
+                if (item.title === "Sales Targets") setShowTargetSettingsModal(true); 
+              }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = "#0073ea"; e.currentTarget.style.background = "#f0f7ff"; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = "#e8e8e8"; e.currentTarget.style.background = "#f8f9fb"; }}
             >
@@ -1445,6 +1451,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
 
       <TopSalesModal isOpen={showTopSalesModal} onClose={() => setShowTopSalesModal(false)} deals={activeDeals} initialFY={selectedFY} />
       <PICSettingsModal isOpen={showPICSettingsModal} onClose={() => setShowPICSettingsModal(false)} />
+      <TargetSettingsModal isOpen={showTargetSettingsModal} onClose={() => setShowTargetSettingsModal(false)} />
       <PresentationModal state={presentationState} onClose={() => setPresentationState(null)} formatRp={formatRp} STATUS_CONFIG={STATUS_CONFIG} />
     </div>
   );

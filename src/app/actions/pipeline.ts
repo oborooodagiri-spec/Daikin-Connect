@@ -836,3 +836,41 @@ export async function getDealHistory(dealId: number) {
     return { error: 'Failed to fetch history.' };
   }
 }
+
+// ============================================
+// TARGET SETTINGS (Total & PIC Targets)
+// ============================================
+export async function getTargetSettings() {
+  noStore();
+  try {
+    const record = await prisma.pipeline_settings.findUnique({
+      where: { key: "TARGETS" }
+    });
+    return record?.value ? (record.value as any) : { total: 0, byPic: {} };
+  } catch (error) {
+    console.error("getTargetSettings error:", error);
+    return { total: 0, byPic: {} };
+  }
+}
+
+export async function updateTargetSettings(data: any) {
+  try {
+    const session = await getSession();
+    if (!session) return { error: "Unauthorized" };
+
+    const isAdminOrMgmt = session.roles?.some((r: string) => 
+      ["admin", "super", "management", "director"].some(kw => r.toLowerCase().includes(kw))
+    );
+    if (!isAdminOrMgmt) return { error: "Only admins can update target settings." };
+
+    await prisma.pipeline_settings.upsert({
+      where: { key: "TARGETS" },
+      update: { value: data },
+      create: { key: "TARGETS", value: data, description: "Sales target settings (Total & per PIC)" }
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("updateTargetSettings error:", error);
+    return { error: "Failed to update target settings." };
+  }
+}
