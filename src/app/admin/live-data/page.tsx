@@ -15,5 +15,7 @@ export default async function LiveDataPage() {
     ["admin", "super admin", "administrator"].some(keyword => r.toLowerCase().includes(keyword))
   );
 
-  return <LiveDataClient isAdmin={isAdmin} />;
+  const isManagement = session?.roles?.some((r: string) => r.toLowerCase().includes("management"));
+  const canClickWidgets = isAdmin || isManagement;
+  return <LiveDataClient isAdmin={isAdmin} canClickWidgets={canClickWidgets} />;
 }

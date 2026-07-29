@@ -27,16 +27,16 @@ interface ProjectByStatusModalProps {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  A: { label: "Won (A)", color: "#00c875" },
-  B: { label: "Budgeted (B)", color: "#0073ea" },
-  C: { label: "Contracted (C)", color: "#7b2cbf" },
-  D: { label: "Planning (D)", color: "#fdab3d" },
-  E: { label: "Submitted (E)", color: "#66ccff" },
-  H: { label: "Hold (H)", color: "#676879" },
-  L: { label: "Lost (L)", color: "#e44258" },
-  T: { label: "Tender (T)", color: "#ff9f43" },
-  S: { label: "Done (S)", color: "#00c875" },
-  N: { label: "No Response (N)", color: "#c4c4c4" },
+  A: { label: "A", color: "#00c875" },
+  B: { label: "B", color: "#0073ea" },
+  C: { label: "C", color: "#7b2cbf" },
+  D: { label: "D", color: "#fdab3d" },
+  E: { label: "E", color: "#66ccff" },
+  H: { label: "H", color: "#676879" },
+  L: { label: "L", color: "#e44258" },
+  T: { label: "T", color: "#ff9f43" },
+  S: { label: "S", color: "#00c875" },
+  N: { label: "N", color: "#c4c4c4" },
 };
 
 export default function ProjectByStatusModal({ isOpen, onClose, deals }: ProjectByStatusModalProps) {
@@ -196,11 +196,6 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
                   <BarChart3 size={24} color="#0073ea" />
                   <h2 style={{ fontSize: 20, fontWeight: 900, color: "#323338" }}>Project By Status Analytics</h2>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
-                  <p style={{ fontSize: 13, color: "#676879", fontWeight: 500 }}>
-                    Monthly pipeline projection (All active unclosed projects)
-                  </p>
-                </div>
               </div>
             <button
               onClick={onClose}
@@ -250,7 +245,7 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
                 <div style={{ width: 8, height: 24, background: "#7b2cbf", borderRadius: 4 }} />
-                <h3 style={{ fontSize: 16, fontWeight: 800, color: "#323338" }}>Pivot Table Matrix</h3>
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: "#323338" }}>Table Matrix</h3>
               </div>
               
               <div style={{ overflowX: "auto", borderRadius: 12, border: "1px solid #e5e7eb", boxShadow: "0 4px 15px rgba(0,0,0,0.03)" }}>

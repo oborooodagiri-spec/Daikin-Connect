@@ -227,7 +227,7 @@ function IndonesiaMap({ deals }: { deals: Deal[] }) {
                 strokeWidth={0.5}
                 style={{
                   default: { outline: "none" },
-                  hover: { fillOpacity: 0.25, outline: "none", cursor: "pointer" },
+                  hover: { fillOpacity: 0.25, outline: "none", cursor: canClickWidgets ? "pointer" : "default" },
                   pressed: { outline: "none" },
                 }}
               />
@@ -258,7 +258,7 @@ function IndonesiaMap({ deals }: { deals: Deal[] }) {
                   cx={0} cy={0} r={radius}
                   fill={color} fillOpacity={isHovered ? 0.5 : 0.25}
                   stroke={color} strokeWidth={isHovered ? 2 : 1}
-                  style={{ cursor: "pointer", transition: "all 0.2s" }}
+                  style={{ cursor: canClickWidgets ? "pointer" : "default", transition: "all 0.2s" }}
                   onMouseEnter={(e) => {
                     setHoveredCluster(cluster.key);
                     const rect = (e.target as SVGElement).closest("svg")?.getBoundingClientRect();
@@ -729,8 +729,8 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
             },
           ].map((kpi, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-              onClick={kpi.onClick}
-              style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 16, cursor: "pointer", padding: "20px", transition: "all 0.15s" }}
+              onClick={canClickWidgets ? kpi.onClick : undefined}
+              style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
               whileHover={{ scale: 1.02, boxShadow: "0 8px 25px rgba(0,0,0,0.08)" }}
             >
               <div style={{ width: 48, height: 48, borderRadius: 14, background: kpi.gradient, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: `0 4px 12px ${kpi.color}40` }}>
@@ -768,8 +768,8 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* TOP PERFORMERS (MOST PO) */}
           <div 
-            style={{ ...cardStyle, background: "linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)", cursor: "pointer", transition: "transform 0.2s" }}
-            onClick={() => setShowTopSalesModal(true)}
+            style={{ ...cardStyle, background: "linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)", cursor: canClickWidgets ? "pointer" : "default", transition: "transform 0.2s" }}
+            onClick={() => canClickWidgets && setShowTopSalesModal(true)}
             onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
             onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
           >
@@ -788,10 +788,10 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
                   const maxVal = Math.max(...Object.values(stats.byPic).map(v => v.wonValue));
                   const winRate = data.totalValue > 0 ? Math.round((data.wonValue / data.totalValue) * 100) : 0;
                   return (
-                    <div key={pic} style={{ position: "relative", cursor: "pointer" }}
+                    <div key={pic} style={{ position: "relative", cursor: canClickWidgets ? "pointer" : "default" }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        setPresentationState({ title: `Top Performer: ${pic}`, subtitle: `Win Rate: ${winRate}% · Won: ${formatRp(data.wonValue)}`, color: "#00c875", data: leaderboardDeals.filter(d => d.pic === pic) });
+                        if (canClickWidgets) setPresentationState({ title: `Top Performer: ${pic}`, subtitle: `Win Rate: ${winRate}% · Won: ${formatRp(data.wonValue)}`, color: "#00c875", data: leaderboardDeals.filter(d => d.pic === pic) });
                       }}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, alignItems: "flex-end" }}>
@@ -826,8 +826,8 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
                 .map(([pic, data], idx) => {
                   const overdueCount = (data as any).overdueCount;
                   return (
-                    <div key={pic} style={{ position: "relative", cursor: "pointer" }}
-                      onClick={() => setPresentationState({ title: `Overdue: ${pic}`, subtitle: `${overdueCount} projects melewati target PO`, color: "#ef4444", data: leaderboardDeals.filter(d => d.pic === pic && d.target_po_date && new Date(d.target_po_date) < new Date() && !['A','L','S','N'].includes(d.status)) })}
+                    <div key={pic} style={{ position: "relative", cursor: canClickWidgets ? "pointer" : "default" }}
+                      onClick={() => canClickWidgets && setPresentationState({ title: `Overdue: ${pic}`, subtitle: `${overdueCount} projects melewati target PO`, color: "#ef4444", data: leaderboardDeals.filter(d => d.pic === pic && d.target_po_date && new Date(d.target_po_date) < new Date() && !['A','L','S','N'].includes(d.status)) })}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, alignItems: "flex-end" }}>
                         <span style={{ fontSize: 12, fontWeight: 800, color: "#323338" }}>{idx + 1}. {pic}</span>
@@ -878,7 +878,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
         {/* PIPELINE FUNNEL & COMPARATIVE ANALYTICS */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div style={cardStyle}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, cursor: "pointer" }} onClick={() => setStatusModalState({ isOpen: true, statusName: "Overview", color: "#10b981", deals: activeDeals })}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, cursor: canClickWidgets ? "pointer" : "default" }} onClick={() => canClickWidgets && setStatusModalState({ isOpen: true, statusName: "Overview", color: "#10b981", deals: activeDeals })}>
               <h3 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#676879" }}>Pipeline Status Funnel</h3>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -890,7 +890,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
                   const cfg = STATUS_CONFIG[status] || { label: status, color: "#888" };
                   const pct = (data.value / maxVal) * 100;
                   return (
-                    <div key={status} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setStatusModalState({ isOpen: true, statusName: "Overview", color: cfg.color, deals: activeDeals })}>
+                    <div key={status} style={{ display: "flex", alignItems: "center", gap: 12, cursor: canClickWidgets ? "pointer" : "default" }} onClick={() => canClickWidgets && setStatusModalState({ isOpen: true, statusName: "Overview", color: cfg.color, deals: activeDeals })}>
                       <span style={{ width: 80, fontSize: 10, fontWeight: 800, color: cfg.color, textAlign: "right" }}>{cfg.label}</span>
                       <div style={{ flex: 1, height: 32, background: "#f8fafc", borderRadius: 6, display: "flex", alignItems: "center" }}>
                         <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8 }}
@@ -928,7 +928,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
                   );
                 })()}
               </svg>
-              <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer" }} onClick={() => setPresentationState({ title: "Gross Pipeline", subtitle: "All Active Projects", color: "#323338", data: activeDeals.filter(d => !["L", "H"].includes(d.status)) })}>
+              <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: canClickWidgets ? "pointer" : "default" }} onClick={() => canClickWidgets && setPresentationState({ title: "Gross Pipeline", subtitle: "All Active Projects", color: "#323338", data: activeDeals.filter(d => !["L", "H"].includes(d.status)) })}>
                 <text style={{ fontSize: 10, fontWeight: 800, color: "#676879", letterSpacing: "0.05em" }}>GROSS PIPELINE</text>
                 <text style={{ fontSize: 18, fontWeight: 900, color: "#323338", marginTop: 2 }}>{formatRp(stats.pipeline + stats.won + stats.lost)}</text>
               </div>
@@ -963,7 +963,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
                 const entries = Object.entries(stats.bySector).sort(([, a], [, b]) => b.value - a.value).slice(0, 5);
                 const maxVal = Math.max(...entries.map(([, v]) => v.value), 1);
                 return entries.map(([sector, data], idx) => (
-                  <div key={sector} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setSectorModalState({ isOpen: true, sectorName: sector, color: sectorColors[idx % sectorColors.length], deals: activeDeals.filter(d => d.sector === sector) })}>
+                  <div key={sector} style={{ display: "flex", alignItems: "center", gap: 12, cursor: canClickWidgets ? "pointer" : "default" }} onClick={() => canClickWidgets && setSectorModalState({ isOpen: true, sectorName: sector, color: sectorColors[idx % sectorColors.length], deals: activeDeals.filter(d => d.sector === sector) })}>
                     <span style={{ width: 90, fontSize: 10, fontWeight: 800, color: sectorColors[idx % sectorColors.length] }}>{sector}</span>
                     <div style={{ flex: 1, height: 28, background: "#f8fafc", borderRadius: 8, overflow: "hidden", position: "relative" }}>
                       <motion.div initial={{ width: 0 }} animate={{ width: `${(data.value / maxVal) * 100}%` }} transition={{ duration: 0.8 }}
@@ -981,7 +981,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
 
           {/* Pipeline by Category */}
           <div style={cardStyle}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, cursor: "pointer" }} onClick={() => setCategoryModalState({ isOpen: true, categoryName: "Overview", color: "#fdab3d", deals: activeDeals })}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, cursor: canClickWidgets ? "pointer" : "default" }} onClick={() => canClickWidgets && setCategoryModalState({ isOpen: true, categoryName: "Overview", color: "#fdab3d", deals: activeDeals })}>
               <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(253, 171, 61, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <Layers size={16} color="#fdab3d" />
               </div>
@@ -1002,7 +1002,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
                 return entries.map(([category, data], idx) => {
                   const color = CAT_COLORS[category] || '#94a3b8';
                   return (
-                  <div key={category} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => setCategoryModalState({ isOpen: true, categoryName: "Overview", color, deals: activeDeals })}>
+                  <div key={category} style={{ display: "flex", alignItems: "center", gap: 12, cursor: canClickWidgets ? "pointer" : "default" }} onClick={() => canClickWidgets && setCategoryModalState({ isOpen: true, categoryName: "Overview", color, deals: activeDeals })}>
                     <span style={{ width: 90, fontSize: 10, fontWeight: 800, color }}>{category}</span>
                     <div style={{ flex: 1, height: 28, background: "#f8fafc", borderRadius: 8, overflow: "hidden", position: "relative" }}>
                       <motion.div initial={{ width: 0 }} animate={{ width: `${(data.value / maxVal) * 100}%` }} transition={{ duration: 0.8 }}
@@ -1052,7 +1052,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
             { label: "PIC", val: picFilter, set: setPicFilter, opts: uniquePics as string[] },
           ].map(f => (
             <select key={f.label} value={f.val} onChange={e => { f.set(e.target.value); setCurrentPage(1); }}
-              style={{ padding: "10px 14px", background: "#f5f6f8", border: "1px solid #e8e8e8", borderRadius: 12, fontSize: 11, fontWeight: 800, color: "#323338", textTransform: "uppercase", cursor: "pointer" }}
+              style={{ padding: "10px 14px", background: "#f5f6f8", border: "1px solid #e8e8e8", borderRadius: 12, fontSize: 11, fontWeight: 800, color: "#323338", textTransform: "uppercase", cursor: canClickWidgets ? "pointer" : "default" }}
             >
               <option value="All">All {f.label}s</option>
               {f.opts.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1086,15 +1086,34 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
                   const targetDate = deal.target_po_date ? new Date(deal.target_po_date) : null;
                   const isOverdue = targetDate && targetDate < new Date() && !["A", "L", "S", "N"].includes(deal.status) && !deal.is_closed;
                   const isClosed = deal.is_closed;
+                  const isWonNotClosed = deal.status === "A" && !deal.is_closed;
+                  
+                  let rowClass = "";
+                  let bgColor = "transparent";
+                  let bgHover = "#f8f9fb";
+                  
+                  if (isOverdue) {
+                     rowClass = "animate-pulse border-red-500 border-l-4";
+                     bgColor = "rgba(239,68,68,0.05)";
+                     bgHover = "rgba(239,68,68,0.1)";
+                  } else if (isWonNotClosed) {
+                     rowClass = "border-green-500 border-l-4";
+                     bgColor = "rgba(34,197,94,0.05)";
+                     bgHover = "rgba(34,197,94,0.1)";
+                  } else if (isClosed) {
+                     rowClass = "border-blue-500 border-l-4";
+                     bgColor = "#f0f7ff";
+                     bgHover = "#e0f0ff";
+                  }
                   
                   return (
-                  <tr key={deal.id} className={isOverdue ? "animate-pulse border-red-500 border-l-4" : ""} style={{ borderBottom: "1px solid #f0f0f0", transition: "background 0.15s", backgroundColor: isOverdue ? "rgba(239,68,68,0.05)" : (isClosed ? "#f0f7ff" : "transparent"), cursor: "pointer" }}
+                  <tr key={deal.id} className={rowClass} style={{ borderBottom: "1px solid #f0f0f0", transition: "background 0.15s", backgroundColor: bgColor, cursor: canClickWidgets ? "pointer" : "default" }}
                     onClick={() => { setEditingDeal(deal); setShowAddModal(true); }}
-                    onMouseEnter={e => (e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.1)" : (isClosed ? "#e0f0ff" : "#f8f9fb"))}
-                    onMouseLeave={e => (e.currentTarget.style.background = isOverdue ? "rgba(239,68,68,0.05)" : (isClosed ? "#f0f7ff" : "transparent"))}
+                    onMouseEnter={e => (e.currentTarget.style.background = bgHover)}
+                    onMouseLeave={e => (e.currentTarget.style.background = bgColor)}
                   >
                     <td style={{ padding: "12px 16px", width: 60 }} onClick={e => e.stopPropagation()}>
-                        <label style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+                        <label style={{ display: "flex", alignItems: "center", cursor: canClickWidgets ? "pointer" : "default" }}>
                           <input type="checkbox" checked={isClosed} onChange={async (e) => {
                             const newState = e.target.checked;
                             setDeals(prev => prev.map(d => d.id === deal.id ? { ...d, is_closed: newState } : d));
@@ -1103,7 +1122,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
                               setDeals(prev => prev.map(d => d.id === deal.id ? { ...d, is_closed: !newState } : d));
                               alert("Failed to update close status: " + (res as any).error);
                             }
-                          }} style={{ width: 16, height: 16, cursor: "pointer" }} />
+                          }} style={{ width: 16, height: 16, cursor: canClickWidgets ? "pointer" : "default" }} />
                         </label>
                       </td>
                     <td style={{ padding: "12px 16px", maxWidth: 300 }}>
@@ -1143,12 +1162,12 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
           {pages > 1 && (
             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 8, padding: 16, borderTop: "1px solid #f0f0f0" }}>
               <button onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1}
-                style={{ width: 36, height: 36, borderRadius: 10, border: "1px solid #e8e8e8", background: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", opacity: currentPage === 1 ? 0.3 : 1 }}>
+                style={{ width: 36, height: 36, borderRadius: 10, border: "1px solid #e8e8e8", background: "white", cursor: canClickWidgets ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", opacity: currentPage === 1 ? 0.3 : 1 }}>
                 <ChevronLeft size={16} />
               </button>
               <span style={{ fontSize: 12, fontWeight: 800, color: "#676879" }}>{currentPage} / {pages}</span>
               <button onClick={() => setCurrentPage(Math.min(pages, currentPage + 1))} disabled={currentPage === pages}
-                style={{ width: 36, height: 36, borderRadius: 10, border: "1px solid #e8e8e8", background: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", opacity: currentPage === pages ? 0.3 : 1 }}>
+                style={{ width: 36, height: 36, borderRadius: 10, border: "1px solid #e8e8e8", background: "white", cursor: canClickWidgets ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", opacity: currentPage === pages ? 0.3 : 1 }}>
                 <ChevronRight size={16} />
               </button>
             </div>
@@ -1176,7 +1195,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
             />
           </div>
           <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setCurrentPage(1); }}
-            style={{ padding: "10px 14px", background: "#f5f6f8", border: "1px solid #e8e8e8", borderRadius: 12, fontSize: 11, fontWeight: 800, textTransform: "uppercase", cursor: "pointer" }}
+            style={{ padding: "10px 14px", background: "#f5f6f8", border: "1px solid #e8e8e8", borderRadius: 12, fontSize: 11, fontWeight: 800, textTransform: "uppercase", cursor: canClickWidgets ? "pointer" : "default" }}
           >
             <option value="All">All Status</option>
             {["S", "A", "B", "C", "D", "E", "N", "H", "L"].map(s => <option key={s} value={s}>{s} - {STATUS_CONFIG[s]?.label || s}</option>)}
@@ -1204,7 +1223,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
               </thead>
               <tbody>
                 {paginated.map((ops, idx) => (
-                  <tr key={ops.id} style={{ borderBottom: "1px solid #f0f0f0", cursor: "pointer" }}
+                  <tr key={ops.id} style={{ borderBottom: "1px solid #f0f0f0", cursor: canClickWidgets ? "pointer" : "default" }}
                     onClick={() => { setEditingOps(ops); setShowOpsModal(true); }}
                     onMouseEnter={e => (e.currentTarget.style.background = "#f8f9fb")}
                     onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
@@ -1226,12 +1245,12 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
           {pages > 1 && (
             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 8, padding: 16, borderTop: "1px solid #f0f0f0" }}>
               <button onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1}
-                style={{ width: 36, height: 36, borderRadius: 10, border: "1px solid #e8e8e8", background: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", opacity: currentPage === 1 ? 0.3 : 1 }}>
+                style={{ width: 36, height: 36, borderRadius: 10, border: "1px solid #e8e8e8", background: "white", cursor: canClickWidgets ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", opacity: currentPage === 1 ? 0.3 : 1 }}>
                 <ChevronLeft size={16} />
               </button>
               <span style={{ fontSize: 12, fontWeight: 800, color: "#676879" }}>{currentPage} / {pages}</span>
               <button onClick={() => setCurrentPage(Math.min(pages, currentPage + 1))} disabled={currentPage === pages}
-                style={{ width: 36, height: 36, borderRadius: 10, border: "1px solid #e8e8e8", background: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", opacity: currentPage === pages ? 0.3 : 1 }}>
+                style={{ width: 36, height: 36, borderRadius: 10, border: "1px solid #e8e8e8", background: "white", cursor: canClickWidgets ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", opacity: currentPage === pages ? 0.3 : 1 }}>
                 <ChevronRight size={16} />
               </button>
             </div>
@@ -1261,7 +1280,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
             { title: "Regions", desc: "West, East, Bali", count: 3, icon: "🌍" },
             { title: "RC Legends", desc: "WC CSD, WC VSD, AS CSD...", count: 16, icon: "❄️" },
           ].map((item, i) => (
-            <div key={i} style={{ padding: 20, background: "#f8f9fb", borderRadius: 16, border: "1px solid #e8e8e8", cursor: "pointer", transition: "all 0.15s" }}
+            <div key={i} style={{ padding: 20, background: "#f8f9fb", borderRadius: 16, border: "1px solid #e8e8e8", cursor: canClickWidgets ? "pointer" : "default", transition: "all 0.15s" }}
               onClick={() => { if (item.title === "Sales PIC") setShowPICSettingsModal(true); }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = "#0073ea"; e.currentTarget.style.background = "#f0f7ff"; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = "#e8e8e8"; e.currentTarget.style.background = "#f8f9fb"; }}
@@ -1283,10 +1302,10 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
       <div style={cardStyle}>
         <h3 style={{ fontSize: 14, fontWeight: 800, color: "#323338", marginBottom: 16 }}>Data Import / Export</h3>
         <div style={{ display: "flex", gap: 12 }}>
-          <button style={{ padding: "12px 24px", background: "#323338", color: "white", borderRadius: 14, border: "none", fontSize: 12, fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
+          <button style={{ padding: "12px 24px", background: "#323338", color: "white", borderRadius: 14, border: "none", fontSize: 12, fontWeight: 800, cursor: canClickWidgets ? "pointer" : "default", display: "flex", alignItems: "center", gap: 8 }}>
             <Upload size={16} /> Import from Excel
           </button>
-          <button style={{ padding: "12px 24px", background: "white", color: "#323338", borderRadius: 14, border: "1px solid #e8e8e8", fontSize: 12, fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
+          <button style={{ padding: "12px 24px", background: "white", color: "#323338", borderRadius: 14, border: "1px solid #e8e8e8", fontSize: 12, fontWeight: 800, cursor: canClickWidgets ? "pointer" : "default", display: "flex", alignItems: "center", gap: 8 }}>
             <Download size={16} /> Export to Excel
           </button>
         </div>
@@ -1303,7 +1322,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
       <div className="px-4 md:px-8 py-4" style={{ background: "white", borderBottom: "1px solid #e8e8e8", position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", maxWidth: 1400, margin: "0 auto" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <button onClick={() => router.push("/home")} style={{ width: 40, height: 40, borderRadius: 12, border: "1px solid #e8e8e8", background: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <button onClick={() => router.push("/home")} style={{ width: 40, height: 40, borderRadius: 12, border: "1px solid #e8e8e8", background: "white", cursor: canClickWidgets ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <ArrowLeft size={18} color="#676879" />
             </button>
             <div>
@@ -1320,7 +1339,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
           </div>
 
             <div className="flex items-center gap-4">
-              <button onClick={loadData} style={{ padding: "10px 20px", borderRadius: 12, border: "1px solid #e8e8e8", background: "white", fontSize: 11, fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, color: "#676879" }}>
+              <button onClick={loadData} style={{ padding: "10px 20px", borderRadius: 12, border: "1px solid #e8e8e8", background: "white", fontSize: 11, fontWeight: 800, cursor: canClickWidgets ? "pointer" : "default", display: "flex", alignItems: "center", gap: 6, color: "#676879" }}>
                 <RefreshCw size={14} /> Refresh
               </button>
             </div>
@@ -1335,7 +1354,7 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
             return (
               <button key={tab.id} onClick={() => { setActiveTab(tab.id); setCurrentPage(1); setSearchTerm(""); setStatusFilter("All"); setCategoryFilter("All"); setSectorFilter("All"); setPicFilter("All"); }}
                 style={{
-                  padding: "14px 24px", border: "none", background: "transparent", cursor: "pointer",
+                  padding: "14px 24px", border: "none", background: "transparent", cursor: canClickWidgets ? "pointer" : "default",
                   fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em",
                   color: isActive ? "#0073ea" : "#676879",
                   borderBottom: isActive ? "3px solid #0073ea" : "3px solid transparent",
