@@ -138,7 +138,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
     try {
       const dataToSave = {
         ...formData,
-        quotation: formData.quotation ? parseFloat(formData.quotation.replace(/[^0-9.-]+/g,"")) : 0,
+        quotation: formData.quotation ? parseFloat(formData.quotation.replace(/[^0-9]/g,"")) : 0,
         booking_fc: ["B", "C", "D", "E"].includes(formData.status) ? (formData.booking_fc || null) : null,
         target_po_date: formData.target_po_date ? `${formData.target_po_date}-01` : null,
         target_po_reason: formData.target_po_reason || null,
