@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { X, Target, Trophy, TrendingUp, TrendingDown } from "lucide-react";
 import { getTargetSettings } from "@/app/actions/pipeline";
 
@@ -6,10 +6,10 @@ interface TargetProgressModalProps {
   isOpen: boolean;
   onClose: () => void;
   formatRp: (val: number) => string;
-  stats: any;
+  deals: any[];
 }
 
-export default function TargetProgressModal({ isOpen, onClose, formatRp, stats }: TargetProgressModalProps) {
+export default function TargetProgressModal({ isOpen, onClose, formatRp, deals }: TargetProgressModalProps) {
   const [totalTarget, setTotalTarget] = useState<number>(0);
   const [picTargets, setPicTargets] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
@@ -41,21 +41,37 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, stats }
     return "#e2445c";
   };
 
+  const { totalAchievement, picAchievements } = useMemo(() => {
+    let total = 0;
+    const byPic: Record<string, number> = {};
+
+    deals.forEach(d => {
+      if (d.is_closed) {
+        const val = Number(d.quotation) || 0;
+        total += val;
+        
+        const pic = d.pic || "Unassigned";
+        byPic[pic] = (byPic[pic] || 0) + val;
+      }
+    });
+
+    return { totalAchievement: total, picAchievements: byPic };
+  }, [deals]);
+
   if (!isOpen) return null;
 
-  const totalAchievement = stats.total || 0;
   const totalProgress = calculateProgress(totalAchievement, totalTarget);
   const totalColor = getProgressColor(totalProgress);
 
   // Combine PIC targets and PIC achievements
   const allPics = Array.from(new Set([
     ...Object.keys(picTargets),
-    ...Object.keys(stats.byPic || {})
+    ...Object.keys(picAchievements)
   ])).sort((a, b) => a.localeCompare(b));
 
   const picProgressData = allPics.map(pic => {
     const target = picTargets[pic] || 0;
-    const achievement = stats.byPic?.[pic]?.value || 0;
+    const achievement = picAchievements[pic] || 0;
     const progress = calculateProgress(achievement, target);
     return { pic, target, achievement, progress };
   }).sort((a, b) => b.progress - a.progress); // Sort by progress descending
@@ -70,7 +86,7 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, stats }
             <h2 style={{ fontSize: 24, fontWeight: 900, color: "#323338", display: "flex", alignItems: "center", gap: 10 }}>
               <Target size={28} color="#0073ea" /> Target Achievement
             </h2>
-            <p style={{ fontSize: 13, color: "#676879", marginTop: 4 }}>Track overall and individual sales performance against targets.</p>
+            <p style={{ fontSize: 13, color: "#676879", marginTop: 4 }}>Track individual sales performance based on closed projects.</p>
           </div>
           <button onClick={onClose} style={{ width: 36, height: 36, borderRadius: "50%", border: "none", background: "#f5f6f8", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <X size={18} color="#676879" />
@@ -86,7 +102,7 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, stats }
             <div style={{ background: "linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%)", borderRadius: 16, padding: 24, border: "1px solid #e0efff", display: "flex", flexDirection: "column", gap: 16 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
                 <div>
-                  <h3 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: "#0073ea", marginBottom: 8 }}>Overall Performance</h3>
+                  <h3 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: "#0073ea", marginBottom: 8 }}>Overall Performance (Closed)</h3>
                   <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
                     <span style={{ fontSize: 32, fontWeight: 900, color: "#323338" }}>{formatRp(totalAchievement)}</span>
                     <span style={{ fontSize: 14, fontWeight: 600, color: "#676879" }}>/ {formatRp(totalTarget)}</span>
@@ -130,7 +146,7 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, stats }
                         </div>
                         
                         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, fontWeight: 600, color: "#676879" }}>
-                          <span>Achieved: <span style={{ color: "#323338" }}>{formatRp(data.achievement)}</span></span>
+                          <span>Closed Achieved: <span style={{ color: "#323338" }}>{formatRp(data.achievement)}</span></span>
                           <span>Target: {formatRp(data.target)}</span>
                         </div>
                       </div>
