@@ -376,9 +376,9 @@ export async function updateDeal(id: number, data: Partial<DealData>) {
 
     revalidatePath("/dashboard/pipeline");
     return serializePrisma({ success: true, data: deal });
-  } catch (error) {
+  } catch (error: any) {
     console.error("updateDeal error:", error);
-    return { error: "Failed to update deal." };
+    return { error: `Failed to update deal: ${error.message || error}` };
   }
 }
 
@@ -584,6 +584,17 @@ export async function updatePICAreas(mapping: Record<string, string>) {
       update: { value: mapping as any },
       create: { key: "PIC_AREAS", value: mapping as any, description: "Mapping of PIC name to Region/Area" }
     });
+
+    // Retroactively update existing deals to match the new mapping
+    for (const [picName, region] of Object.entries(mapping)) {
+      if (picName && region) {
+        await prisma.pipeline_deals.updateMany({
+          where: { pic: picName },
+          data: { region: region }
+        });
+      }
+    }
+
     return { success: true };
   } catch (error) {
     console.error("updatePICAreas error:", error);
@@ -601,16 +612,9 @@ export async function getPipelineStats() {
     const session = await getSession();
     if (!session) return { error: "Unauthorized" };
 
-    // Base where clause: scope by PIC for non-internal users
-    const baseWhere: any = {};
-    if (!session.isInternal) {
-      baseWhere.pic = session.name;
-    }
-
     // Fetch all relevant deals in one query to compute aggregations in JS
-    // This avoids MySQL limitations with groupBy + BigInt sum
+    // This allows everyone (including Sales Engineers) to see the overall company stats on the dashboard
     const deals = await prisma.pipeline_deals.findMany({
-      where: baseWhere,
       select: {
         quotation: true,
         status: true,
