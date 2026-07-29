@@ -89,7 +89,10 @@ export default function PICSettingsModal({ isOpen, onClose }: PICSettingsModalPr
                 <label style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: "#676879", marginBottom: 6, display: "block" }}>PIC Name</label>
                 <select value={newPic} onChange={e => setNewPic(e.target.value)} style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid #e8e8e8", fontSize: 13, outline: "none", background: "white", cursor: "pointer" }}>
                   <option value="">Select PIC</option>
-                  {salesEngineers.map(se => (
+                  {salesEngineers
+                    .filter(se => !mappings[se.name])
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map(se => (
                     <option key={se.id} value={se.name}>{se.name}</option>
                   ))}
                 </select>
@@ -118,7 +121,9 @@ export default function PICSettingsModal({ isOpen, onClose }: PICSettingsModalPr
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.entries(mappings).map(([pic, area]) => (
+                  {Object.entries(mappings)
+                    .sort((a, b) => a[0].localeCompare(b[0]))
+                    .map(([pic, area]) => (
                     <tr key={pic} style={{ borderBottom: "1px solid #f0f0f0" }}>
                       <td style={{ padding: "12px 16px", fontSize: 13, fontWeight: 700, color: "#323338" }}>{pic}</td>
                       <td style={{ padding: "12px 16px", fontSize: 13, color: "#676879" }}>{area}</td>
