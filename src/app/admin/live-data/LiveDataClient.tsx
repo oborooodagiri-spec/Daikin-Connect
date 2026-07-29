@@ -506,49 +506,51 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
     const fyEnd = new Date(2000 + selectedFY + 1, 2, 31, 23, 59, 59, 999).getTime();
 
     deals.forEach(d => {
-      if (d.is_closed || d.status === 'L') return;
+      if (d.is_closed) return;
       
       const cTime = new Date(d.created_at).getTime();
       const isBacklog = cTime < fyStart;
       const val = Number(d.quotation) || 0;
-      
-      total += val;
-      if (isBacklog) {
-        backlogValue += val;
-        backlogCount++;
-      } else {
-        newFyValue += val;
-        newFyCount++;
-      }
       
       // Funnel & Totals
       if (d.status === "A") { won += val; wonCount++; }
       else if (d.status === "L") { lost += val; }
       else if (['B', 'C', 'D', 'E'].includes(d.status)) { pipeline += val; }
       
-      if (['B', 'C', 'D', 'E'].includes(d.status)) activeCount++;
+      if (d.status !== 'L') {
+        total += val;
+        if (isBacklog) {
+          backlogValue += val;
+          backlogCount++;
+        } else {
+          newFyValue += val;
+          newFyCount++;
+        }
+        
+        if (['B', 'C', 'D', 'E'].includes(d.status)) activeCount++;
 
-      // Weighted expected revenue
-      const prob = PROBABILITIES[d.status] !== undefined ? PROBABILITIES[d.status] : 0;
-      weightedPipeline += (val * prob);
+        // Weighted expected revenue
+        const prob = PROBABILITIES[d.status] !== undefined ? PROBABILITIES[d.status] : 0;
+        weightedPipeline += (val * prob);
 
-      // By Status
-      if (!byStatus[d.status]) byStatus[d.status] = { count: 0, value: 0 };
-      byStatus[d.status].count++;
-      byStatus[d.status].value += val;
+        // By Status
+        if (!byStatus[d.status]) byStatus[d.status] = { count: 0, value: 0 };
+        byStatus[d.status].count++;
+        byStatus[d.status].value += val;
 
-      // By Sector
-      const sec = d.sector || "Other";
-      if (!bySector[sec]) bySector[sec] = { count: 0, value: 0 };
-      bySector[sec].count++;
-      bySector[sec].value += val;
+        // By Sector
+        const sec = d.sector || "Other";
+        if (!bySector[sec]) bySector[sec] = { count: 0, value: 0 };
+        bySector[sec].count++;
+        bySector[sec].value += val;
 
-      // By Category
-      let rawCat = d.category || "Other";
-      const cat = rawCat.toLowerCase().startsWith("cont") ? "Control" : rawCat;
-      if (!byCategory[cat]) byCategory[cat] = { count: 0, value: 0 };
-      byCategory[cat].count++;
-      byCategory[cat].value += val;
+        // By Category
+        let rawCat = d.category || "Other";
+        const cat = rawCat.toLowerCase().startsWith("cont") ? "Control" : rawCat;
+        if (!byCategory[cat]) byCategory[cat] = { count: 0, value: 0 };
+        byCategory[cat].count++;
+        byCategory[cat].value += val;
+      }
     });
 
     const today = new Date();
