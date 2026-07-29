@@ -608,6 +608,12 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
 
   // Filtered lists
   const filteredDeals = useMemo(() => {
+    const now = new Date();
+    const isOverdue = (deal: any) => {
+      const targetDate = deal.target_po_date ? new Date(deal.target_po_date) : null;
+      return targetDate && targetDate < now && !["A", "L", "S", "N"].includes(deal.status) && !deal.is_closed;
+    };
+
     return deals.filter(d => {
       const s = searchTerm.toLowerCase();
       const matchSearch = !s || d.client_name?.toLowerCase().includes(s) || d.project_name?.toLowerCase().includes(s) || d.pic?.toLowerCase().includes(s) || d.remarks?.toLowerCase().includes(s);
@@ -619,6 +625,12 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
       const matchClosed = closedFilter === "All" || (closedFilter === "Closed" ? d.is_closed : !d.is_closed);
 
       return matchSearch && matchStatus && matchCategory && matchSector && matchPic && matchSource && matchClosed;
+    }).sort((a, b) => {
+      const aOverdue = isOverdue(a);
+      const bOverdue = isOverdue(b);
+      if (aOverdue && !bOverdue) return -1;
+      if (!aOverdue && bOverdue) return 1;
+      return 0;
     });
   }, [deals, searchTerm, statusFilter, categoryFilter, sectorFilter, picFilter, sourceFilter, closedFilter]);
 
