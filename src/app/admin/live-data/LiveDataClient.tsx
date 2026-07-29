@@ -23,6 +23,7 @@ import StatusPipelineModal from "./StatusPipelineModal";
 import TopSalesModal from "./TopSalesModal";
 import PICSettingsModal from "./PICSettingsModal";
 import TargetSettingsModal from "./TargetSettingsModal";
+import TargetProgressModal from "./TargetProgressModal";
 import { updateDeal, getPICAreas, updatePICAreas } from "@/app/actions/pipeline";
 
 // ============================================
@@ -399,6 +400,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
   const [showTopSalesModal, setShowTopSalesModal] = useState(false);
   const [showPICSettingsModal, setShowPICSettingsModal] = useState(false);
   const [showTargetSettingsModal, setShowTargetSettingsModal] = useState(false);
+  const [showTargetProgressModal, setShowTargetProgressModal] = useState(false);
   const [showOpsModal, setShowOpsModal] = useState(false);
   const [presentationState, setPresentationState] = useState<PresentationState | null>(null);
 
@@ -696,7 +698,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
               icon: Briefcase, 
               color: "#00c875", 
               gradient: "linear-gradient(135deg, #00c875 0%, #34d399 100%)",
-              onClick: () => setPresentationState({ title: "Total Amount", subtitle: "All active projects (all statuses)", color: "#00c875", data: activeDeals })
+              onClick: () => setShowTargetProgressModal(true)
             },
             { 
               label: "Project By Status", 
@@ -1452,6 +1454,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
       <TopSalesModal isOpen={showTopSalesModal} onClose={() => setShowTopSalesModal(false)} deals={activeDeals} initialFY={selectedFY} />
       <PICSettingsModal isOpen={showPICSettingsModal} onClose={() => setShowPICSettingsModal(false)} />
       <TargetSettingsModal isOpen={showTargetSettingsModal} onClose={() => setShowTargetSettingsModal(false)} />
+      <TargetProgressModal isOpen={showTargetProgressModal} onClose={() => setShowTargetProgressModal(false)} formatRp={formatRp} stats={stats} />
       <PresentationModal state={presentationState} onClose={() => setPresentationState(null)} formatRp={formatRp} STATUS_CONFIG={STATUS_CONFIG} />
     </div>
   );
