@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import indonesianCities from "@/lib/indonesia-cities.json";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Save, Trash2, Building2, MapPin, User, FolderArchive, Activity, FileText, LayoutList, Calendar } from "lucide-react";
 import { createDeal, updateDeal, deleteDeal, getSalesEngineers, getDealHistory } from "@/app/actions/pipeline";
@@ -52,6 +53,25 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
   const [activeTab, setActiveTab] = useState("details");
   const [history, setHistory] = useState<any[]>([]);
 
+  const [searchArea, setSearchArea] = useState("");
+  const [showAreaDropdown, setShowAreaDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowAreaDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filteredCities = useMemo(() => {
+    if (!searchArea) return indonesianCities.slice(0, 50);
+    return indonesianCities.filter(c => c.name.toLowerCase().includes(searchArea.toLowerCase())).slice(0, 50);
+  }, [searchArea]);
+
   useEffect(() => {
     if (isOpen) {
       getSalesEngineers().then(res => {
@@ -75,7 +95,9 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           target_po_reason: "",
           latitude: deal.latitude ? deal.latitude.toString() : "",
           longitude: deal.longitude ? deal.longitude.toString() : "",
+          area: deal.area || "",
         });
+        setSearchArea(deal.area || "");
       } else {
         setFormData({
           client_name: "",
@@ -92,8 +114,10 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           booking_fc: "",
           latitude: "",
           longitude: "",
-          target_po_reason: ""
+          target_po_reason: "",
+          area: ""
         });
+        setSearchArea("");
         setHistory([]);
       }
       setError("");
@@ -148,7 +172,8 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
         target_po_reason: formData.target_po_reason || null,
         sales_planner: formData.source === "Partnership" ? (formData.sales_planner || null) : null,
         latitude: formData.latitude ? parseFloat(formData.latitude) : null,
-        longitude: formData.longitude ? parseFloat(formData.longitude) : null
+        longitude: formData.longitude ? parseFloat(formData.longitude) : null,
+        area: formData.area || null
       };
 
       let res;
@@ -353,16 +378,53 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
                     className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><MapPin size={12}/> Latitude</label>
-                  <input name="latitude" type="text" value={formData.latitude} onChange={handleChange} placeholder="e.g. -6.200000"
-                    className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><MapPin size={12}/> Longitude</label>
-                  <input name="longitude" type="text" value={formData.longitude} onChange={handleChange} placeholder="e.g. 106.816666"
-                    className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
+                <div className="md:col-span-2 space-y-1.5" ref={dropdownRef}>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><MapPin size={12}/> Project Area / Location</label>
+                  <div className="relative">
+                    <input 
+                      type="text" 
+                      value={searchArea} 
+                      onChange={(e) => {
+                        setSearchArea(e.target.value);
+                        setShowAreaDropdown(true);
+                      }}
+                      onFocus={() => setShowAreaDropdown(true)}
+                      placeholder="Search Regency or City (e.g. Jakarta Selatan)..."
+                      className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" 
+                    />
+                    
+                    {/* Auto-complete dropdown */}
+                    <AnimatePresence>
+                      {showAreaDropdown && filteredCities.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 5 }}
+                          className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg shadow-slate-200/50 max-h-60 overflow-y-auto custom-scrollbar overflow-x-hidden"
+                        >
+                          {filteredCities.map((city, idx) => (
+                            <div 
+                              key={idx}
+                              className="px-4 py-2.5 hover:bg-slate-50 cursor-pointer border-b border-slate-50 last:border-0 transition-colors flex flex-col"
+                              onClick={() => {
+                                setSearchArea(city.name);
+                                setFormData(prev => ({
+                                  ...prev,
+                                  area: city.name,
+                                  latitude: city.lat.toString(),
+                                  longitude: city.lng.toString()
+                                }));
+                                setShowAreaDropdown(false);
+                              }}
+                            >
+                              <span className="text-sm font-semibold text-slate-700">{city.name}</span>
+                              <span className="text-[10px] text-slate-400">Lat: {city.lat}, Lng: {city.lng}</span>
+                            </div>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </div>
 
                 <div className="md:col-span-2 space-y-1.5">
