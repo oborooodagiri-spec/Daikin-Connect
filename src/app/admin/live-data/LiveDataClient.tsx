@@ -1086,7 +1086,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
               <tbody>
                 {paginated.map((deal) => {
                   const targetDate = deal.target_po_date ? new Date(deal.target_po_date) : null;
-                  const isOverdue = targetDate && targetDate < new Date() && !["A", "L", "S", "N"].includes(deal.status) && !deal.is_closed;
+                  const isOverdue = targetDate && targetDate < new Date() && !["A", "L", "S", "N", "H"].includes(deal.status) && !deal.is_closed;
                   const isClosed = deal.is_closed;
                   const isWonNotClosed = deal.status === "A" && !deal.is_closed;
                   
@@ -1102,6 +1102,14 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
                      rowClass = "border-green-500 border-l-4";
                      bgColor = "rgba(34,197,94,0.05)";
                      bgHover = "rgba(34,197,94,0.1)";
+                  } else if (deal.status === 'L') {
+                      rowClass = "border-gray-800 border-l-4";
+                      bgColor = "rgba(31,41,55,0.05)";
+                      bgHover = "rgba(31,41,55,0.1)";
+                  } else if (deal.status === 'H') {
+                      rowClass = "border-gray-400 border-l-4";
+                      bgColor = "rgba(141,148,158,0.05)";
+                      bgHover = "rgba(141,148,158,0.1)";
                   } else if (isClosed) {
                      rowClass = "border-blue-500 border-l-4";
                      bgColor = "#f0f7ff";
