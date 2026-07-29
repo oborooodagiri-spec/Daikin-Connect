@@ -253,6 +253,12 @@ export async function updateDeal(id: number, data: Partial<DealData>) {
     if (data.sales_planner !== undefined) updateData.sales_planner = data.sales_planner;
     if (data.pic !== undefined) {
       updateData.pic = data.pic;
+      
+      const userMatch = await prisma.users.findFirst({ where: { name: data.pic } });
+      if (userMatch) {
+        updateData.pic_id = userMatch.id;
+      }
+
       const picAreas = await getPICAreas();
       if (picAreas[data.pic]) {
         updateData.region = picAreas[data.pic];
