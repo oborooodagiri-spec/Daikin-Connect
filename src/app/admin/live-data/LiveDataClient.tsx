@@ -387,6 +387,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
   const [picFilter, setPicFilter] = useState("All");
   const [sourceFilter, setSourceFilter] = useState("All");
   const [closedFilter, setClosedFilter] = useState("All");
+  const [forecastFilter, setForecastFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [editingDeal, setEditingDeal] = useState<Deal | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -627,8 +628,9 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
       const matchPic = picFilter === "All" || d.pic === picFilter;
       const matchSource = sourceFilter === "All" || d.source === sourceFilter;
       const matchClosed = closedFilter === "All" || (closedFilter === "Closed" ? d.is_closed : !d.is_closed);
+      const matchForecast = forecastFilter === "All" || (forecastFilter === "Forecasted" ? d.booking_fc?.toUpperCase() === 'OK' : d.booking_fc?.toUpperCase() !== 'OK');
 
-      return matchSearch && matchStatus && matchCategory && matchSector && matchPic && matchSource && matchClosed;
+      return matchSearch && matchStatus && matchCategory && matchSector && matchPic && matchSource && matchClosed && matchForecast;
     }).sort((a, b) => {
       const aOverdue = isOverdue(a);
       const bOverdue = isOverdue(b);
@@ -1063,6 +1065,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
           </div>
           
           {[
+            { label: "Forecast", val: forecastFilter, set: setForecastFilter, opts: ["Forecasted", "Not Forecasted"] },
             { label: "Closed Status", val: closedFilter, set: setClosedFilter, opts: ["Open / On Progress", "Closed"] },
             { label: "Status", val: statusFilter, set: setStatusFilter, opts: uniqueStatuses as string[] },
             { label: "Category", val: categoryFilter, set: setCategoryFilter, opts: uniqueCategories as string[] },
