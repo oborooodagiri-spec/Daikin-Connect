@@ -556,13 +556,17 @@ export default function LiveDataClient({ isAdmin = false }: { isAdmin?: boolean 
     let overdueCount = 0;
 
     leaderboardDeals.forEach(d => {
-      if (d.is_closed || d.status === 'L') return;
+      if (d.is_closed) return;
 
       const val = Number(d.quotation) || 0;
       const pic = d.pic || "Unassigned";
       if (!byPic[pic]) byPic[pic] = { totalValue: 0, totalCount: 0, wonValue: 0, wonCount: 0, lostValue: 0, lostCount: 0, overdueCount: 0 };
-      byPic[pic].totalValue += val;
-      byPic[pic].totalCount++;
+      
+      if (d.status !== "L") {
+        byPic[pic].totalValue += val;
+        byPic[pic].totalCount++;
+      }
+      
       if (d.status === "A") { byPic[pic].wonValue += val; byPic[pic].wonCount++; }
       if (d.status === "L") { byPic[pic].lostValue += val; byPic[pic].lostCount++; }
       

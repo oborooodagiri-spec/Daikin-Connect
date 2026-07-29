@@ -811,9 +811,18 @@ export async function getPipelineLeaderboard() {
     const session = await getSession();
     if (!session) return { error: "Unauthorized" };
 
-    // We only expose aggregated numbers (quotation, status, pic) for leaderboard, NOT project details.
+    // Expose necessary fields for leaderboard stats, overdue calculation, and modal presentation
     const deals = await prisma.pipeline_deals.findMany({
-      select: { pic: true, status: true, quotation: true }
+      select: { 
+        id: true,
+        pic: true, 
+        status: true, 
+        quotation: true, 
+        target_po_date: true,
+        is_closed: true,
+        client_name: true,
+        project_name: true
+      }
     });
 
     return serializePrisma({ success: true, data: deals });
