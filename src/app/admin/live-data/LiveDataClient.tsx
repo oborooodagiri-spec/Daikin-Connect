@@ -473,7 +473,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
   // COMPUTED VALUES
   // ============================================
   const stats = useMemo(() => {
-    let total = 0, won = 0, pipeline = 0, lost = 0;
+    let total = 0, won = 0, pipeline = 0, lost = 0, grossPipeline = 0;
     let wonCount = 0, activeCount = 0;
     let weightedPipeline = 0;
     let backlogValue = 0, backlogCount = 0;
@@ -517,6 +517,8 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
       else if (d.status === "L") { lost += val; }
       else if (['B', 'C', 'D', 'E'].includes(d.status)) { pipeline += val; }
       
+      grossPipeline += val;
+
       if (d.status !== 'L') {
         total += val;
         if (isBacklog) {
@@ -597,7 +599,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
     const conversionRateValue = (pipeline + won) > 0 ? ((won / (pipeline + won)) * 100).toFixed(1) : "0";
 
     return {
-      total, won, pipeline, lost, wonCount, activeCount, weightedPipeline,
+      total, won, pipeline, lost, grossPipeline, wonCount, activeCount, weightedPipeline,
       conversionRate, conversionRateValue, overdueCount,
       backlogValue, backlogCount, newFyValue, newFyCount,
       byStatus, byPic, bySector, byCategory
@@ -913,7 +915,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
               <svg width="200" height="200" viewBox="0 0 200 200" style={{ transform: "rotate(-90deg)" }}>
                 <circle cx="100" cy="100" r="80" fill="none" stroke="#f1f5f9" strokeWidth="20" />
                 {(() => {
-                  const total = stats.pipeline + stats.won + stats.lost;
+                  const total = stats.grossPipeline;
                   if (total === 0) return null;
                   const wonPct = stats.won / total;
                   const lostPct = stats.lost / total;
@@ -930,7 +932,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
               </svg>
               <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: canClickWidgets ? "pointer" : "default" }} onClick={() => canClickWidgets && setPresentationState({ title: "Gross Pipeline", subtitle: "All Active Projects", color: "#323338", data: activeDeals.filter(d => !["L", "H"].includes(d.status)) })}>
                 <text style={{ fontSize: 10, fontWeight: 800, color: "#676879", letterSpacing: "0.05em" }}>GROSS PIPELINE</text>
-                <text style={{ fontSize: 18, fontWeight: 900, color: "#323338", marginTop: 2 }}>{formatRp(stats.pipeline + stats.won + stats.lost)}</text>
+                <text style={{ fontSize: 18, fontWeight: 900, color: "#323338", marginTop: 2 }}>{formatRp(stats.grossPipeline)}</text>
               </div>
               
               <div style={{ position: "absolute", bottom: -20, left: 0, right: 0, display: "flex", justifyContent: "space-between", padding: "0 10px" }}>

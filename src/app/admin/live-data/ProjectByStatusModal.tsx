@@ -271,7 +271,7 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
                         <td style={{ padding: "14px 16px", fontSize: 13, fontWeight: 800, color: "#323338", borderBottom: "1px solid #f0f0f0" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                             <div style={{ width: 12, height: 12, borderRadius: "50%", background: STATUS_CONFIG[row.status]?.color || "#ccc" }} />
-                            {row.status} - {STATUS_CONFIG[row.status]?.label?.split(' ')[0]}
+                            {row.status}
                           </div>
                         </td>
                         {columns.map(col => (
