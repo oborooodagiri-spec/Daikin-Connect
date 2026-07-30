@@ -86,7 +86,7 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
 
   const overdueCount = useMemo(() => {
     return filteredData.filter((d: any) =>
-      d.target_po_date && new Date(d.target_po_date) < new Date() && !["A", "L", "S", "N"].includes(d.status)
+      d.target_po_date && new Date(d.target_po_date) < new Date() && !["A", "L"].includes(d.status)
     ).length;
   }, [filteredData]);
 
@@ -282,7 +282,7 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
                       <tbody>
                         {group.deals.map((d: any, i: number) => {
                           const cfg = STATUS_CONFIG[d.status] || { label: d.status, color: "#888" };
-                          const isOverdue = d.target_po_date && new Date(d.target_po_date) < new Date() && !["A", "L", "S", "N"].includes(d.status);
+                          const isOverdue = d.target_po_date && new Date(d.target_po_date) < new Date() && !["A", "L"].includes(d.status);
                           return (
                             <tr
                               key={d.id || i}

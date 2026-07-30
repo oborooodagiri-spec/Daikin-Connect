@@ -23,9 +23,7 @@ const STATUS_OPTIONS = [
   { val: "E", label: "Submitted" },
   { val: "H", label: "Hold" },
   { val: "L", label: "Lost" },
-  { val: "T", label: "Tender" },
-  { val: "S", label: "Menyusul" },
-  { val: "N", label: "Menyusul" }
+  { val: "T", label: "Tender" }
 ];
 
 const CATEGORY_OPTIONS = ["CONT DEVICE", "CONT INST", "CONT OTHERS", "EPL", "IAQ", "RC", "VES"];

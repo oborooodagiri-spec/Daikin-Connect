@@ -82,9 +82,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }
   E: { label: "Submitted", color: "#66ccff", bg: "rgba(102,204,255,0.12)" },
   H: { label: "Hold", color: "#8d949e", bg: "rgba(141,148,158,0.12)" },
   L: { label: "Lost", color: "#1f2937", bg: "rgba(31,41,55,0.12)" },
-  T: { label: "Tender", color: "#e44258", bg: "rgba(228,66,88,0.12)" },
-  S: { label: "Done", color: "#00c875", bg: "rgba(0,200,117,0.12)" },
-  N: { label: "No Response", color: "#c4c4c4", bg: "rgba(196,196,196,0.12)" },
+  T: { label: "Tender", color: "#e44258", bg: "rgba(228,66,88,0.12)" }
 };
 
 const TABS = [
@@ -504,9 +502,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
       "E": 0.2,   // Estimated: 20%
       "T": 0.1,   // Targeted: 10%
       "L": 0,     // Lost: 0%
-      "H": 0,     // Hold: 0%
-      "S": 0,
-      "N": 0
+      "H": 0      // Hold: 0%
     };
 
     const fyStart = new Date(2000 + selectedFY, 3, 1).getTime();
@@ -1273,7 +1269,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
             style={{ padding: "10px 14px", background: "#f5f6f8", border: "1px solid #e8e8e8", borderRadius: 12, fontSize: 11, fontWeight: 800, textTransform: "uppercase", cursor: canClickWidgets ? "pointer" : "default" }}
           >
             <option value="All">All Status</option>
-            {["S", "A", "B", "C", "D", "E", "N", "H", "L"].map(s => <option key={s} value={s}>{s} - {STATUS_CONFIG[s]?.label || s}</option>)}
+            {["A", "B", "C", "D", "E", "H", "L", "T"].map(s => <option key={s} value={s}>{s} - {STATUS_CONFIG[s]?.label || s}</option>)}
           </select>
           <div style={{ marginLeft: "auto", display: "flex", gap: 12, alignItems: "center" }}>
             <span style={{ fontSize: 11, fontWeight: 800, color: "#676879" }}>
@@ -1594,7 +1590,7 @@ function AnimatedProjectByStatusCard({
       const totalValue = dealsInStatus.reduce((sum: number, d: any) => sum + (Number(d.quotation) || 0), 0);
       return {
         value: formatRp(totalValue),
-        sub: `Status ${s.code} - ${s.name} (${dealsInStatus.length})`
+        sub: s.name
       };
     });
   }, [activeDeals, formatRp]);
