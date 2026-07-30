@@ -85,9 +85,12 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
   }, [filteredData]);
 
   const overdueCount = useMemo(() => {
-    return filteredData.filter((d: any) =>
-      d.target_po_date && new Date(d.target_po_date) < new Date() && !["A", "L"].includes(d.status)
-    ).length;
+    return filteredData.filter((d: any) => {
+      if (!d.target_po_date || !['B', 'C', 'D', 'E'].includes(d.status)) return false;
+      const td = new Date(d.target_po_date);
+      const ty = new Date();
+      return td.getFullYear() < ty.getFullYear() || (td.getFullYear() === ty.getFullYear() && td.getMonth() <= ty.getMonth());
+    }).length;
   }, [filteredData]);
 
   // NOW we can do the conditional return

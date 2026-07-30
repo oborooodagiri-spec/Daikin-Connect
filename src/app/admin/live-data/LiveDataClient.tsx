@@ -596,7 +596,9 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
       
       if (d.target_po_date) {
         const targetDate = new Date(d.target_po_date);
-        if (targetDate < today && ['B', 'C', 'D', 'E'].includes(d.status) && isCurrentFY) {
+        const isOverdueTime = targetDate.getFullYear() < today.getFullYear() || 
+                              (targetDate.getFullYear() === today.getFullYear() && targetDate.getMonth() <= today.getMonth());
+        if (isOverdueTime && ['B', 'C', 'D', 'E'].includes(d.status) && isCurrentFY) {
           overdueCount++;
           byPic[pic].overdueCount = (byPic[pic].overdueCount || 0) + 1;
         }
@@ -1027,7 +1029,12 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                   const overdueCount = (data as any).overdueCount;
                   return (
                     <div key={pic} style={{ position: "relative", cursor: canClickWidgets ? "pointer" : "default" }}
-                      onClick={() => canClickWidgets && setPresentationState({ title: `Overdue: ${pic}`, subtitle: `${overdueCount} projects melewati target PO`, color: "#ef4444", data: leaderboardDeals.filter(d => d.pic === pic && d.target_po_date && new Date(d.target_po_date) < new Date() && !['A','L','S','N'].includes(d.status)) })}
+                      onClick={() => canClickWidgets && setPresentationState({ title: `Overdue: ${pic}`, subtitle: `${overdueCount} projects melewati target PO`, color: "#ef4444", data: leaderboardDeals.filter(d => {
+                        if (d.pic !== pic || !d.target_po_date || !['B', 'C', 'D', 'E'].includes(d.status)) return false;
+                        const td = new Date(d.target_po_date);
+                        const ty = new Date();
+                        return td.getFullYear() < ty.getFullYear() || (td.getFullYear() === ty.getFullYear() && td.getMonth() <= ty.getMonth());
+                      }) })}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, alignItems: "flex-end" }}>
                         <span style={{ fontSize: 12, fontWeight: 800, color: "#323338" }}>{idx + 1}. {pic}</span>
