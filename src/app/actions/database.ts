@@ -54,11 +54,11 @@ export async function getResources() {
 
     const isInternal = session.isInternal;
     const userId = parseInt(session.userId);
+    const isAdmin = session?.roles?.some((r: string) => ["Admin", "Super Admin", "Management"].includes(r));
 
     let resources: any[];
 
-    if (isInternal) {
-      // Internal staff see all EXCEPT videos
+    if (isAdmin) {
       resources = await prisma.$queryRawUnsafe(`
         SELECT kr.*, p.name as project_name 
         FROM knowledge_resources kr
@@ -67,14 +67,11 @@ export async function getResources() {
         ORDER BY kr.created_at DESC
       `);
     } else {
-      // External users
       const projectAccess = await prisma.user_project_access.findMany({
         where: { user_id: userId },
         select: { project_id: true }
       });
       const accessibleProjectIds = projectAccess.map(pa => pa.project_id);
-      
-      // Handle the case where accessibleProjectIds is empty
       const projectIdsStr = accessibleProjectIds.length > 0 ? accessibleProjectIds.join(",") : "0";
 
       resources = await prisma.$queryRawUnsafe(`
@@ -83,11 +80,13 @@ export async function getResources() {
         LEFT JOIN projects p ON kr.project_id = p.id
         WHERE kr.type != 'VIDEO'
           AND (
-            (kr.allowed_users IS NOT NULL AND FIND_IN_SET(?, kr.allowed_users))
-            OR (kr.allowed_users IS NULL AND (kr.visibility = 'Public' OR kr.project_id IN (${projectIdsStr})))
+            kr.uploaded_by = ?
+            OR (kr.allowed_users IS NOT NULL AND FIND_IN_SET(?, kr.allowed_users))
+            OR kr.visibility = 'Public'
+            OR kr.project_id IN (${projectIdsStr})
           )
         ORDER BY kr.created_at DESC
-      `, userId.toString());
+      `, userId, userId.toString());
     }
 
     // Map project_name to expected structure for UI
@@ -104,7 +103,7 @@ export async function getResources() {
 }
 
 /**
- * CREATE RESOURCE (Admin Only)
+ * CREATE RESOURCE
  */
 export async function createResource(formData: {
   title: string;
@@ -120,21 +119,21 @@ export async function createResource(formData: {
   project_id?: string | null;
 }) {
   const session = await getSession();
-  const isAdmin = session?.roles?.some((r: string) => ["Admin", "Super Admin"].includes(r));
+  if (!session) return { error: "Unauthorized" };
   
-  if (!isAdmin) return { error: "Unauthorized: Admin access required" };
+  const userId = parseInt(session.userId);
 
   try {
     const id = crypto.randomUUID();
     const projectIdVal = formData.project_id ? BigInt(formData.project_id) : null;
 
     await prisma.$executeRawUnsafe(`
-      INSERT INTO knowledge_resources (id, title, category, type, file_url, href, thumbnail, size, tags, visibility, allowed_users, project_id, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+      INSERT INTO knowledge_resources (id, title, category, type, file_url, href, thumbnail, size, tags, visibility, allowed_users, project_id, uploaded_by, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
     `, 
       id, formData.title, formData.category, formData.type, formData.file_url, 
       formData.href, formData.thumbnail, formData.size, formData.tags, 
-      formData.visibility, formData.allowed_users, projectIdVal
+      formData.visibility, formData.allowed_users, projectIdVal, userId
     );
 
     revalidatePath("/admin/database");
@@ -146,7 +145,7 @@ export async function createResource(formData: {
 }
 
 /**
- * UPDATE RESOURCE (Admin Only)
+ * UPDATE RESOURCE
  */
 export async function updateResource(id: string, formData: {
   title: string;
@@ -162,11 +161,20 @@ export async function updateResource(id: string, formData: {
   project_id?: string | null;
 }) {
   const session = await getSession();
-  const isAdmin = session?.roles?.some((r: string) => ["Admin", "Super Admin"].includes(r));
+  if (!session) return { error: "Unauthorized" };
   
-  if (!isAdmin) return { error: "Unauthorized" };
+  const userId = parseInt(session.userId);
+  const isAdmin = session?.roles?.some((r: string) => ["Admin", "Super Admin", "Management"].includes(r));
 
   try {
+    // Check permission
+    const existing: any[] = await prisma.$queryRawUnsafe(`SELECT uploaded_by FROM knowledge_resources WHERE id = ?`, id);
+    if (existing.length === 0) return { error: "Not found" };
+    
+    if (!isAdmin && existing[0].uploaded_by !== userId) {
+      return { error: "Unauthorized to edit this resource" };
+    }
+
     const projectIdVal = formData.project_id ? BigInt(formData.project_id) : null;
 
     await prisma.$executeRawUnsafe(`
@@ -190,15 +198,24 @@ export async function updateResource(id: string, formData: {
 }
 
 /**
- * DELETE RESOURCE (Admin Only)
+ * DELETE RESOURCE
  */
 export async function deleteResource(id: string) {
   const session = await getSession();
-  const isAdmin = session?.roles?.some((r: string) => ["Admin", "Super Admin"].includes(r));
+  if (!session) return { error: "Unauthorized" };
   
-  if (!isAdmin) return { error: "Unauthorized" };
+  const userId = parseInt(session.userId);
+  const isAdmin = session?.roles?.some((r: string) => ["Admin", "Super Admin", "Management"].includes(r));
 
   try {
+    // Check permission
+    const existing: any[] = await prisma.$queryRawUnsafe(`SELECT uploaded_by FROM knowledge_resources WHERE id = ?`, id);
+    if (existing.length === 0) return { error: "Not found" };
+    
+    if (!isAdmin && existing[0].uploaded_by !== userId) {
+      return { error: "Unauthorized to delete this resource" };
+    }
+
     if (id === "internal-rate-card") {
       // Mark as deleted so it won't auto-seed again
       await prisma.$executeRawUnsafe(`

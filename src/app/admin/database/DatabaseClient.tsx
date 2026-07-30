@@ -49,6 +49,8 @@ export default function KnowledgeCenterPage() {
   // View mode is always list
   const [session, setSession] = useState<any>(null);
   
+  const [viewingResource, setViewingResource] = useState<any>(null);
+  
   // Admin Specific
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
@@ -57,7 +59,7 @@ export default function KnowledgeCenterPage() {
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [userSearch, setUserSearch] = useState("");
   const [formData, setFormData] = useState({
-    title: "", category: "Technical", type: "PDF",
+    title: "", category: "Presentation", type: "PPTX",
     file_url: "", href: "", thumbnail: "", size: "",
     tags: "", visibility: "Internal", allowed_users: "", project_id: ""
   });
@@ -134,7 +136,7 @@ export default function KnowledgeCenterPage() {
       setIsModalOpen(false);
       setEditId(null);
       setFormData({
-        title: "", category: "Technical", type: "PDF",
+        title: "", category: "Presentation", type: "PPTX",
         file_url: "", href: "", thumbnail: "", size: "",
         tags: "", visibility: "Internal", allowed_users: "", project_id: ""
       });
@@ -152,6 +154,34 @@ export default function KnowledgeCenterPage() {
     else alert(res.error);
   };
 
+  const handleResourceClick = (res: any) => {
+    if (res.type === "PPTX" || res.type === "PDF" || res.category === "Presentation") {
+      setViewingResource(res);
+    } else {
+      if (res.type === "DATABASE") {
+        router.push(res.href || res.file_url || "#");
+      } else {
+        window.open(res.href || res.file_url || "#", "_blank");
+      }
+    }
+  };
+
+  const getEmbedUrl = (url: string) => {
+    if (!url) return "";
+    if (url.includes("1drv.ms") || url.includes("sharepoint.com") || url.includes("onedrive.live.com")) {
+      if (url.includes("action=embedview")) return url;
+      const separator = url.includes("?") ? "&" : "?";
+      return `${url}${separator}action=embedview&wdbipreview=true`;
+    }
+    if (url.includes("drive.google.com")) {
+      return url.replace("/view", "/preview");
+    }
+    if (url.toLowerCase().endsWith(".pdf")) {
+      return url; 
+    }
+    return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
+  };
+
   return (
     <div className="min-h-screen bg-white text-[#323338] p-6 md:p-12 selection:bg-blue-100">
       <div className="max-w-7xl mx-auto relative z-10">
@@ -165,14 +195,12 @@ export default function KnowledgeCenterPage() {
           </div>
 
           <div className="flex items-center gap-3">
-             {isAdmin && (
                <button 
                  onClick={() => setIsModalOpen(true)}
                  className="flex items-center gap-2 px-8 py-4 bg-[#323338] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-slate-200"
                >
                  <Plus size={18} /> Add Resource
                </button>
-             )}
           </div>
         </header>
 
@@ -233,67 +261,66 @@ export default function KnowledgeCenterPage() {
             </motion.div>
           ) : (
             <motion.div 
-              key="list"
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 10 }}
-              className="space-y-3"
+              key="grid"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6"
             >
               {filteredResources.map((res, i) => (
                 <motion.div
                   key={res.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="flex items-center gap-6 bg-white border border-[#e6e9ef] p-4 rounded-2xl hover:border-[#0073ea]/30 transition-all group"
+                  className="flex flex-col bg-white border border-[#e6e9ef] p-4 rounded-[1.5rem] hover:border-[#0073ea] hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer relative"
+                  onClick={() => handleResourceClick(res)}
                 >
-                  <div className="w-14 h-14 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 shrink-0">
-                    {res.id === "internal-rate-card" ? <Briefcase className="w-5 h-5 text-[#0073ea]" /> :
-                     res.category === "Interactive App" ? <Sparkles className="w-5 h-5 text-[#0073ea]" /> :
-                     res.category === "Presentation" ? <Presentation className="w-5 h-5 text-[#0073ea]" /> : 
-                     res.category === "Catalog" ? <BookOpen className="w-5 h-5 text-[#0073ea]" /> : 
-                     <FileText className="w-5 h-5 text-[#0073ea]" />}
+                  {(isAdmin || res.uploaded_by === parseInt(session?.userId || "0")) && (
+                    <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all z-10">
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); handleOpenEdit(res); }}
+                        className="p-1.5 bg-indigo-50 text-indigo-500 rounded-lg hover:bg-indigo-500 hover:text-white"
+                      >
+                        <SettingsIcon size={14} />
+                      </button>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); handleDelete(res.id); }}
+                        className="p-1.5 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="w-full aspect-[4/3] rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 shrink-0 mb-4 overflow-hidden relative">
+                    {res.thumbnail ? (
+                      <img src={res.thumbnail} alt={res.title} className="w-full h-full object-cover" />
+                    ) : (
+                       res.id === "internal-rate-card" ? <Briefcase className="w-12 h-12 text-[#0073ea]" strokeWidth={1} /> :
+                       res.category === "Interactive App" ? <Sparkles className="w-12 h-12 text-emerald-500" strokeWidth={1} /> :
+                       (res.type === "PPTX" || res.category === "Presentation") ? <Presentation className="w-12 h-12 text-orange-500" strokeWidth={1} /> : 
+                       res.category === "Catalog" ? <BookOpen className="w-12 h-12 text-indigo-500" strokeWidth={1} /> : 
+                       <FileText className="w-12 h-12 text-slate-400" strokeWidth={1} />
+                    )}
+                    
+                    <div className="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-md shadow-sm border border-slate-200">
+                      <span className="text-[8px] font-black uppercase text-slate-500">{res.type}</span>
+                    </div>
                   </div>
                   
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                       <h3 className="text-md font-bold text-[#323338] truncate group-hover:text-[#0073ea] transition-colors uppercase">{res.title}</h3>
-                       <span className="text-[8px] font-black text-[#0073ea] bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 shrink-0">{res.projects?.name || "OFFICIAL"}</span>
-                    </div>
-                    <div className="flex items-center gap-4 mt-0.5">
-                       <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">{res.category} &bull; {res.type} &bull; {res.size || "Live"}</span>
-                       <div className="h-2 w-px bg-slate-100" />
-                       <span className={`text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 ${res.visibility === 'Internal' ? 'text-indigo-500' : 'text-emerald-500'}`}>
-                          {res.visibility === 'Internal' ? <Shield size={10} /> : <Globe size={10} />}
+                  <div className="flex-1 min-w-0 flex flex-col justify-between">
+                    <h3 className="text-sm font-bold text-[#323338] line-clamp-2 leading-tight group-hover:text-[#0073ea] transition-colors mb-2 text-center">{res.title}</h3>
+                    
+                    <div className="flex flex-wrap items-center justify-center gap-2 mt-auto">
+                       {res.projects?.name && (
+                         <span className="text-[8px] font-black text-[#0073ea] bg-blue-50 px-1.5 py-0.5 rounded-md border border-blue-100 shrink-0 truncate max-w-[80px]">{res.projects.name}</span>
+                       )}
+                       <span className={`text-[8px] font-black uppercase tracking-widest flex items-center gap-1 ${res.visibility === 'Internal' ? 'text-indigo-500' : 'text-emerald-500'}`}>
+                          {res.visibility === 'Internal' ? <Shield size={8} /> : <Globe size={8} />}
                           {res.visibility}
                        </span>
                     </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 pr-2">
-                     {isAdmin && (
-                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                          <button 
-                            onClick={() => handleOpenEdit(res)}
-                            className="p-2.5 bg-indigo-50 text-indigo-500 rounded-lg hover:bg-indigo-500 hover:text-white"
-                          >
-                            <SettingsIcon size={16} />
-                          </button>
-                          <button 
-                            onClick={() => handleDelete(res.id)}
-                            className="p-2.5 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                     )}
-                     <Link 
-                       href={res.href || res.file_url || "#"} 
-                       target={res.type === "DATABASE" ? "_self" : "_blank"}
-                       className="px-5 py-2.5 bg-[#0073ea] hover:bg-[#0060c5] rounded-lg transition-all flex items-center gap-2"
-                     >
-                        <span className="text-[9px] font-black uppercase tracking-widest text-white">Buka</span>
-                     </Link>
                   </div>
                 </motion.div>
               ))}
@@ -464,13 +491,19 @@ export default function KnowledgeCenterPage() {
                    </div>
 
                    <div className="space-y-1.5">
-                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Asset URL (File or Link)</label>
+                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex justify-between">
+                       <span>Asset URL (OneDrive Share Link, Google Drive, or Direct Link)</span>
+                       <span className="text-[#0073ea]">TIPS: OneDrive & Google Drive supported!</span>
+                     </label>
                      <input 
                        type="text" value={formData.file_url} 
                        onChange={e => setFormData({...formData, file_url: e.target.value, href: e.target.value})} 
-                       placeholder="https://..."
+                       placeholder="https://company-my.sharepoint.com/... or https://1drv.ms/..."
                        className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-[#0073ea] transition-all" 
                      />
+                     <p className="text-[9px] text-slate-400 ml-1 mt-1 font-bold">
+                       Untuk presentasi (PPT), cukup *paste* link Share dari OneDrive (Anyone with the link can view). Sistem akan otomatis membuat <i>live presentation viewer</i> di dalam website.
+                     </p>
                    </div>
 
                    <div className="grid grid-cols-2 gap-6">
@@ -598,6 +631,55 @@ export default function KnowledgeCenterPage() {
                 </form>
              </motion.div>
           </div>
+        )}
+      </AnimatePresence>
+
+      {/* Presentation Viewer Modal */}
+      <AnimatePresence>
+        {viewingResource && (
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            exit={{ opacity: 0, y: 50 }} 
+            className="fixed inset-0 z-[300] flex flex-col bg-[#1e1f22] text-white"
+          >
+            <div className="h-16 px-6 flex items-center justify-between border-b border-white/10 bg-[#2b2d31]">
+              <div className="flex items-center gap-4">
+                 <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+                   <Presentation size={20} />
+                 </div>
+                 <div className="min-w-0 pr-4">
+                   <h2 className="text-sm font-bold truncate max-w-[200px] md:max-w-md">{viewingResource.title}</h2>
+                   <p className="text-[10px] text-slate-400 uppercase tracking-widest truncate">{viewingResource.category} • {viewingResource.visibility}</p>
+                 </div>
+              </div>
+              
+              <div className="flex items-center gap-3 shrink-0">
+                 <a href={viewingResource.file_url || viewingResource.href} target="_blank" className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold transition-all">
+                   <ExternalLink size={14} /> Buka di Tab Baru
+                 </a>
+                 <button onClick={() => setViewingResource(null)} className="w-10 h-10 rounded-lg bg-rose-500 hover:bg-rose-600 flex items-center justify-center transition-all">
+                   <CloseIcon size={18} />
+                 </button>
+              </div>
+            </div>
+            <div className="flex-1 w-full bg-[#1e1f22] relative">
+              {!getEmbedUrl(viewingResource.file_url || viewingResource.href) ? (
+                 <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center text-slate-400">
+                    <ShieldAlert size={48} className="mb-4 opacity-50" />
+                    <h3 className="text-xl font-bold text-white mb-2">Preview Tidak Tersedia</h3>
+                    <p className="text-sm max-w-md">URL file ini tidak mendukung *live preview*. Silakan buka menggunakan tombol di kanan atas.</p>
+                 </div>
+              ) : (
+                <iframe 
+                   src={getEmbedUrl(viewingResource.file_url || viewingResource.href)}
+                   className="w-full h-full border-none bg-white"
+                   title={viewingResource.title}
+                   allowFullScreen
+                />
+              )}
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

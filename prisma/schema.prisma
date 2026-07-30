@@ -78,12 +78,15 @@ model knowledge_resources {
   visibility    String   @default("Internal") // Internal, Public
   allowed_users String?  @db.Text // Store as comma-separated user IDs or names
   project_id    BigInt?  @db.UnsignedBigInt // Null means General (Umum)
+  uploaded_by   Int?
   created_at    DateTime @default(now()) @db.Timestamp(0)
   updated_at    DateTime @updatedAt
 
   projects   projects? @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  uploader   users?    @relation("Uploader", fields: [uploaded_by], references: [id], onDelete: SetNull)
 
   @@index([project_id])
+  @@index([uploaded_by])
 }
 
 model outstanding_cases {
@@ -325,6 +328,7 @@ model users {
   created_boq_projects      boq_projects[]
   pipeline_deals            pipeline_deals[]
   pipeline_history          pipeline_history[]
+  uploaded_resources        knowledge_resources[] @relation("Uploader")
 
   @@index([role_id], map: "role_id")
 }
