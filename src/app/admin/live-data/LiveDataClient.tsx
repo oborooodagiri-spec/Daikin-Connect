@@ -24,7 +24,7 @@ import TopSalesModal from "./TopSalesModal";
 import PICSettingsModal from "./PICSettingsModal";
 import TargetSettingsModal from "./TargetSettingsModal";
 import TargetProgressModal from "./TargetProgressModal";
-import { updateDeal, getPICAreas, updatePICAreas } from "@/app/actions/pipeline";
+import { updateDeal, getPICAreas, updatePICAreas, getTargetSettings } from "@/app/actions/pipeline";
 
 // ============================================
 // TYPES
@@ -401,6 +401,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
   const [showPICSettingsModal, setShowPICSettingsModal] = useState(false);
   const [showTargetSettingsModal, setShowTargetSettingsModal] = useState(false);
   const [showTargetProgressModal, setShowTargetProgressModal] = useState(false);
+  const [totalTarget, setTotalTarget] = useState(0);
   const [showOpsModal, setShowOpsModal] = useState(false);
   const [presentationState, setPresentationState] = useState<PresentationState | null>(null);
 
@@ -459,14 +460,16 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
   const loadData = async () => {
     setLoading(true);
     try {
-      const [dealsRes, opsRes, leaderboardRes] = await Promise.all([
+      const [dealsRes, opsRes, leaderboardRes, targetRes] = await Promise.all([
         fetch("/api/v1/pipeline/deals").then(r => r.json()),
         fetch("/api/v1/pipeline/ops").then(r => r.json()),
         fetch("/api/v1/pipeline/deals?type=leaderboard").then(r => r.json()),
+        getTargetSettings()
       ]);
       if (dealsRes.success) setDeals(dealsRes.data || []);
       if (opsRes.success) setOpsRecords(opsRes.data || []);
       if (leaderboardRes.success) setLeaderboardDeals(leaderboardRes.data || []);
+      setTotalTarget(targetRes?.total || 0);
     } catch (e) {
       console.error("Load error:", e);
     }
@@ -712,7 +715,8 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
               icon: Trophy, 
               color: "#00c875", 
               gradient: "linear-gradient(135deg, #00c875 0%, #34d399 100%)",
-              onClick: () => setShowTargetProgressModal(true)
+              onClick: () => setShowTargetProgressModal(true),
+              isAnimated: true
             },
             { 
               label: "Project By Status", 
@@ -759,7 +763,23 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
               gradient: "linear-gradient(135deg, #ef4444 0%, #f87171 100%)",
               onClick: () => setSectorModalState({ isOpen: true, sectorName: "Commercial", color: "#ef4444", deals: commercialDeals })
             },
-          ].map((kpi, i) => (
+          ].map((kpi: any, i) => {
+            if (kpi.isAnimated) {
+              return (
+                <AnimatedAchievementCard
+                  key={i}
+                  kpi={kpi}
+                  closedFYValue={closedFYValue}
+                  closedFYDealsCount={closedFYDeals.length}
+                  currentFY={currentFY}
+                  totalTarget={totalTarget}
+                  formatRp={formatRp}
+                  canClickWidgets={canClickWidgets}
+                  cardStyle={cardStyle}
+                />
+              );
+            }
+            return (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
               onClick={canClickWidgets ? kpi.onClick : undefined}
               style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
@@ -774,7 +794,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
                 <p style={{ fontSize: 10, fontWeight: 700, color: kpi.color, marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{kpi.sub}</p>
               </div>
             </motion.div>
-          ))}
+          )})}
         </div>
 
         {/* INDONESIA MAP */}
@@ -1473,5 +1493,65 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
       <TargetProgressModal isOpen={showTargetProgressModal} onClose={() => setShowTargetProgressModal(false)} formatRp={formatRp} deals={deals} currentFY={currentFY} fyOptions={fyOptions} />
       <PresentationModal state={presentationState} onClose={() => setPresentationState(null)} formatRp={formatRp} STATUS_CONFIG={STATUS_CONFIG} />
     </div>
+  );
+}
+
+function AnimatedAchievementCard({ 
+  kpi, 
+  closedFYValue, 
+  closedFYDealsCount, 
+  currentFY, 
+  totalTarget, 
+  formatRp, 
+  canClickWidgets,
+  cardStyle
+}: any) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % 3);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const progressPct = totalTarget > 0 ? (closedFYValue / totalTarget) * 100 : 0;
+  const progressStr = Math.min(Math.round(progressPct * 10) / 10, 100) + "%";
+
+  const contents = [
+    { value: formatRp(closedFYValue), sub: `${closedFYDealsCount} projects · FY${currentFY}` },
+    { value: progressStr, sub: `Closed vs Target · FY${currentFY}` },
+    { value: `${closedFYDealsCount} projects`, sub: `Total Closed · FY${currentFY}` }
+  ];
+
+  const currentContent = contents[currentIndex];
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }}
+      onClick={canClickWidgets ? kpi.onClick : undefined}
+      style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
+      whileHover={{ scale: 1.02, boxShadow: "0 8px 25px rgba(0,0,0,0.08)" }}
+    >
+      <div style={{ width: 48, height: 48, borderRadius: 14, background: kpi.gradient, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: `0 4px 12px ${kpi.color}40` }}>
+        <kpi.icon size={22} color="white" />
+      </div>
+      <div style={{ minWidth: 0, position: "relative", height: 48, flex: 1, overflow: "hidden" }}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}
+          >
+            <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#676879", marginBottom: 4 }}>{kpi.label}</p>
+            <p style={{ fontSize: 20, fontWeight: 900, color: "#323338", letterSpacing: "-0.02em" }}>{currentContent.value}</p>
+            <p style={{ fontSize: 10, fontWeight: 700, color: kpi.color, marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.sub}</p>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </motion.div>
   );
 }
