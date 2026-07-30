@@ -677,8 +677,16 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
     const bookingFcDeals = activeDeals.filter(d => d.booking_fc?.toUpperCase() === 'OK');
     const bookingFcTotal = bookingFcDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
 
-    // Total Amount: ALL statuses (A+B+C+D+E), activeDeals already excludes L/H
-    const totalAmountValue = activeDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
+    // Achievement: closed deals in current FY
+    const fyStartYear = 2000 + currentFY;
+    const fyStartTime = new Date(fyStartYear, 3, 1).getTime();
+    const fyEndTime = new Date(fyStartYear + 1, 2, 31, 23, 59, 59, 999).getTime();
+    const closedFYDeals = deals.filter(d => {
+      if (!d.is_closed) return false;
+      const ut = new Date(d.updated_at).getTime();
+      return ut >= fyStartTime && ut <= fyEndTime;
+    });
+    const closedFYValue = closedFYDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
 
     // Pipeline: status B/C/D/E only (not yet won)
     const pipelineDeals = activeDeals.filter(d => ['B', 'C', 'D', 'E'].includes(d.status));
@@ -698,10 +706,10 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {[
             { 
-              label: "Total Amount", 
-              value: formatRp(totalAmountValue), 
-              sub: `${activeDeals.length} projects`, 
-              icon: Briefcase, 
+              label: "Achievement", 
+              value: formatRp(closedFYValue), 
+              sub: `${closedFYDeals.length} closed · FY${currentFY}`, 
+              icon: Trophy, 
               color: "#00c875", 
               gradient: "linear-gradient(135deg, #00c875 0%, #34d399 100%)",
               onClick: () => setShowTargetProgressModal(true)
@@ -1462,7 +1470,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
       <TopSalesModal isOpen={showTopSalesModal} onClose={() => setShowTopSalesModal(false)} deals={activeDeals} initialFY={selectedFY} />
       <PICSettingsModal isOpen={showPICSettingsModal} onClose={() => setShowPICSettingsModal(false)} />
       <TargetSettingsModal isOpen={showTargetSettingsModal} onClose={() => setShowTargetSettingsModal(false)} />
-      <TargetProgressModal isOpen={showTargetProgressModal} onClose={() => setShowTargetProgressModal(false)} formatRp={formatRp} deals={deals} />
+      <TargetProgressModal isOpen={showTargetProgressModal} onClose={() => setShowTargetProgressModal(false)} formatRp={formatRp} deals={deals} currentFY={currentFY} fyOptions={fyOptions} />
       <PresentationModal state={presentationState} onClose={() => setPresentationState(null)} formatRp={formatRp} STATUS_CONFIG={STATUS_CONFIG} />
     </div>
   );
