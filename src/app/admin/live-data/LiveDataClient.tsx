@@ -783,6 +783,201 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                   kpi={kpi}
                   activeDeals={activeDeals}
                   formatRp={formatRp}
+      
+      if (d.target_po_date) {
+        const targetDate = new Date(d.target_po_date);
+        if (targetDate < today && ['B', 'C', 'D', 'E'].includes(d.status) && isCurrentFY) {
+          overdueCount++;
+          byPic[pic].overdueCount = (byPic[pic].overdueCount || 0) + 1;
+        }
+      }
+    });
+
+    const conversionRate = activeCount > 0 ? ((wonCount / activeCount) * 100).toFixed(1) : "0";
+    const conversionRateValue = (pipeline + won) > 0 ? ((won / (pipeline + won)) * 100).toFixed(1) : "0";
+
+    return {
+      total, won, pipeline, lost, grossPipeline, wonCount, activeCount, weightedPipeline,
+      conversionRate, conversionRateValue, overdueCount,
+      backlogValue, backlogCount, newFyValue, newFyCount,
+      byStatus, byPic, bySector, byCategory
+    };
+  }, [deals, leaderboardDeals, selectedFY, selectedMonth, getMonthRange]);
+
+  // Filtered lists
+  const filteredDeals = useMemo(() => {
+    const now = new Date();
+    const isOverdue = (deal: any) => {
+      const targetDate = deal.target_po_date ? new Date(deal.target_po_date) : null;
+      return targetDate && targetDate < now && !["A", "L", "S", "N"].includes(deal.status) && !deal.is_closed;
+    };
+
+    return deals.filter(d => {
+      if (!canClickWidgets && d.pic !== sessionName) return false;
+
+      const s = searchTerm.toLowerCase();
+      const matchSearch = !s || d.client_name?.toLowerCase().includes(s) || d.project_name?.toLowerCase().includes(s) || d.pic?.toLowerCase().includes(s) || d.remarks?.toLowerCase().includes(s);
+      const matchStatus = statusFilter === "All" || d.status === statusFilter;
+      const matchCategory = categoryFilter === "All" || d.category === categoryFilter;
+      const matchSector = sectorFilter === "All" || d.sector === sectorFilter;
+      const matchPic = picFilter === "All" || d.pic === picFilter;
+      const matchSource = sourceFilter === "All" || d.source === sourceFilter;
+      const matchProjectState = 
+        projectStateFilter === "All" ||
+        (projectStateFilter === "Closed" && d.is_closed) ||
+        (projectStateFilter === "Open / On Progress" && !d.is_closed) ||
+        (projectStateFilter === "Forecasted" && d.booking_fc?.toUpperCase() === 'OK');
+
+      return matchSearch && matchStatus && matchCategory && matchSector && matchPic && matchSource && matchProjectState;
+    }).sort((a, b) => {
+      const aOverdue = isOverdue(a);
+      const bOverdue = isOverdue(b);
+      if (aOverdue && !bOverdue) return -1;
+      if (!aOverdue && bOverdue) return 1;
+      return 0;
+    });
+  }, [deals, searchTerm, statusFilter, categoryFilter, sectorFilter, picFilter, sourceFilter, projectStateFilter, canClickWidgets, sessionName]);
+
+  const filteredOps = useMemo(() => {
+    return opsRecords.filter(o => {
+      const s = searchTerm.toLowerCase();
+      const matchSearch = !s || o.customer?.toLowerCase().includes(s) || o.project_name?.toLowerCase().includes(s) || o.remark?.toLowerCase().includes(s);
+      const matchStatus = statusFilter === "All" || o.status === statusFilter;
+      return matchSearch && matchStatus;
+    });
+  }, [opsRecords, searchTerm, statusFilter]);
+
+  const paginatedDeals = filteredDeals.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const totalPages = Math.ceil(filteredDeals.length / itemsPerPage);
+
+  const uniquePics = useMemo(() => [...new Set(deals.map(d => d.pic).filter(Boolean))].sort(), [deals]);
+  const uniqueCategories = useMemo(() => [...new Set(deals.map(d => d.category).filter(Boolean))].sort(), [deals]);
+  const uniqueSectors = useMemo(() => [...new Set(deals.map(d => d.sector).filter(Boolean))].sort(), [deals]);
+  const uniqueStatuses = useMemo(() => Object.keys(STATUS_CONFIG), []);
+
+  // ============================================
+  // STYLES
+  // ============================================
+  const cardStyle: React.CSSProperties = {
+    background: "white", borderRadius: 24, border: "1px solid #e8e8e8",
+    padding: 24, boxShadow: "0 1px 3px rgba(0,0,0,0.04)"
+  };
+
+  // ============================================
+  // RENDER: DASHBOARD TAB
+  // ============================================
+  const renderDashboard = () => {
+    // Booking Forecast: deals where booking_fc = "OK"
+    const bookingFcDeals = activeDeals.filter(d => d.booking_fc?.toUpperCase() === 'OK');
+    const bookingFcTotal = bookingFcDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
+
+    // Achievement: closed deals in current FY
+    const fyStartYear = 2000 + currentFY;
+    const fyStartTime = new Date(fyStartYear, 3, 1).getTime();
+    const fyEndTime = new Date(fyStartYear + 1, 2, 31, 23, 59, 59, 999).getTime();
+    const closedFYDeals = deals.filter(d => {
+      if (!d.is_closed) return false;
+      const ut = new Date(d.updated_at).getTime();
+      return ut >= fyStartTime && ut <= fyEndTime;
+    });
+    const closedFYValue = closedFYDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
+
+    // Pipeline: status B/C/D/E only (not yet won)
+    const pipelineDeals = activeDeals.filter(d => ['B', 'C', 'D', 'E'].includes(d.status));
+    const pipelineTotal = pipelineDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
+
+    // Industry: sectors Industri + Heavy Industri
+    const industryDeals = activeDeals.filter(d => INDUSTRY_SECTORS.includes(d.sector || ''));
+    const industryTotal = industryDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
+
+    // Commercial: sectors Government + Hospital + Komersial
+    const commercialDeals = activeDeals.filter(d => COMMERCIAL_SECTORS.includes(d.sector || ''));
+    const commercialTotal = commercialDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
+
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+        {/* KPI CARDS */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {[
+            { 
+              label: "Achievement", 
+              value: formatRp(closedFYValue), 
+              sub: `${closedFYDeals.length} closed · FY${currentFY}`, 
+              icon: Trophy, 
+              color: "#00c875", 
+              gradient: "linear-gradient(135deg, #00c875 0%, #34d399 100%)",
+              onClick: () => setShowTargetProgressModal(true),
+              isAnimated: true
+            },
+            { 
+              label: "Project By Status", 
+              value: activeDeals.length, 
+              sub: "Total active projects", 
+              icon: BarChart3, 
+              color: "#0073ea", 
+              gradient: "linear-gradient(135deg, #0073ea 0%, #66ccff 100%)",
+              onClick: () => setShowProjectByStatusModal(true),
+              isAnimatedStatus: true
+            },
+            { 
+              label: "Booking Forecast", 
+              value: formatRp(bookingFcTotal), 
+              sub: `${bookingFcDeals.length} deals forecasted`, 
+              icon: TrendingUp, 
+              color: "#0ea5e9", 
+              gradient: "linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)",
+              onClick: () => setShowBookingForecastModal(true)
+            },
+            { 
+              label: "Pipeline", 
+              value: formatRp(pipelineTotal), 
+              sub: `${pipelineDeals.length} projects`, 
+              icon: DollarSign, 
+              color: "#f59e0b", 
+              gradient: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)",
+              onClick: () => setCategoryModalState({ isOpen: true, categoryName: "Pipeline", color: "#f59e0b", deals: pipelineDeals })
+            },
+            { 
+              label: "Industry", 
+              value: formatRp(industryTotal), 
+              sub: `${industryDeals.length} projects`, 
+              icon: Building2, 
+              color: "#7b2cbf", 
+              gradient: "linear-gradient(135deg, #7b2cbf 0%, #a855f7 100%)",
+              onClick: () => setSectorModalState({ isOpen: true, sectorName: "Industry", color: "#7b2cbf", deals: industryDeals })
+            },
+            { 
+              label: "Commercial", 
+              value: formatRp(commercialTotal), 
+              sub: `${commercialDeals.length} projects`, 
+              icon: Map, 
+              color: "#ef4444", 
+              gradient: "linear-gradient(135deg, #ef4444 0%, #f87171 100%)",
+              onClick: () => setSectorModalState({ isOpen: true, sectorName: "Commercial", color: "#ef4444", deals: commercialDeals })
+            },
+          ].map((kpi: any, i) => {
+            if (kpi.isAnimated) {
+              return (
+                <AnimatedAchievementCard
+                  key={i}
+                  kpi={kpi}
+                  closedFYValue={closedFYValue}
+                  closedFYDealsCount={closedFYDeals.length}
+                  currentFY={currentFY}
+                  totalTarget={totalTarget}
+                  formatRp={formatRp}
+                  canClickWidgets={canClickWidgets}
+                  cardStyle={cardStyle}
+                />
+              );
+            }
+            if (kpi.isAnimatedStatus) {
+              return (
+                <AnimatedProjectByStatusCard
+                  key={i}
+                  kpi={kpi}
+                  activeDeals={activeDeals}
+                  formatRp={formatRp}
                   canClickWidgets={canClickWidgets}
                   cardStyle={cardStyle}
                 />
@@ -791,16 +986,13 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
             return (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
               onClick={canClickWidgets ? kpi.onClick : undefined}
-              style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
-              whileHover={{ scale: 1.02, boxShadow: "0 8px 25px rgba(0,0,0,0.08)" }}
+              style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
+              whileHover={{ scale: 1.02, boxShadow: `0 8px 25px ${kpi.color}40` }}
             >
-              <div style={{ width: 48, height: 48, borderRadius: 14, background: kpi.gradient, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: `0 4px 12px ${kpi.color}40` }}>
-                <kpi.icon size={22} color="white" />
-              </div>
               <div style={{ minWidth: 0 }}>
-                <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#676879", marginBottom: 4 }}>{kpi.label}</p>
-                <p style={{ fontSize: 20, fontWeight: 900, color: "#323338", letterSpacing: "-0.02em" }}>{kpi.value}</p>
-                <p style={{ fontSize: 10, fontWeight: 700, color: kpi.color, marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{kpi.sub}</p>
+                <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.8)", marginBottom: 4 }}>{kpi.label}</p>
+                <p style={{ fontSize: 20, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em" }}>{kpi.value}</p>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{kpi.sub}</p>
               </div>
             </motion.div>
           )})}
@@ -1606,14 +1798,11 @@ function AnimatedProjectByStatusCard({
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
+      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }}
       onClick={canClickWidgets ? kpi.onClick : undefined}
-      style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
-      whileHover={{ scale: 1.02, boxShadow: "0 8px 25px rgba(0,0,0,0.08)" }}
+      style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
+      whileHover={{ scale: 1.02, boxShadow: `0 8px 25px ${kpi.color}40` }}
     >
-      <div style={{ width: 48, height: 48, borderRadius: 14, background: kpi.gradient, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: `0 4px 12px ${kpi.color}40` }}>
-        <kpi.icon size={22} color="white" />
-      </div>
       <div style={{ minWidth: 0, position: "relative", height: 48, flex: 1, overflow: "hidden" }}>
         <AnimatePresence mode="wait">
           <motion.div
@@ -1624,9 +1813,9 @@ function AnimatedProjectByStatusCard({
             transition={{ duration: 0.3 }}
             style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}
           >
-            <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#676879", marginBottom: 4 }}>{kpi.label}</p>
-            <p style={{ fontSize: 20, fontWeight: 900, color: "#323338", letterSpacing: "-0.02em" }}>{currentContent.value}</p>
-            <p style={{ fontSize: 10, fontWeight: 700, color: kpi.color, marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.sub}</p>
+            <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.8)", marginBottom: 4 }}>{kpi.label}</p>
+            <p style={{ fontSize: 20, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em" }}>{currentContent.value}</p>
+            <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.sub}</p>
           </motion.div>
         </AnimatePresence>
       </div>
