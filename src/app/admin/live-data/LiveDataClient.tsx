@@ -1583,7 +1583,7 @@ function AnimatedProjectByStatusCard({
       const dealsInStatus = activeDeals.filter((d: any) => d.status === s.code);
       const totalValue = dealsInStatus.reduce((sum: number, d: any) => sum + (Number(d.quotation) || 0), 0);
       return {
-        value: formatRp(totalValue),
+        value: `${s.code} : ${formatRp(totalValue)}`,
         sub: s.name
       };
     });
