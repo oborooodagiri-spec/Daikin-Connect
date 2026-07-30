@@ -638,7 +638,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
         projectStateFilter === "All" ||
         (projectStateFilter === "Closed" && d.is_closed) ||
         (projectStateFilter === "Open / On Progress" && !d.is_closed) ||
-        (projectStateFilter === "Forecasted" && (d.status === 'A' || d.booking_fc?.toUpperCase() === 'OK'));
+        (projectStateFilter === "Forecasted" && d.status === 'B');
 
       return matchSearch && matchStatus && matchCategory && matchSector && matchPic && matchSource && matchProjectState;
     }).sort((a, b) => {
@@ -683,11 +683,9 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
     const fyStartTime = new Date(fyStartYear, 3, 1).getTime();
     const fyEndTime = new Date(fyStartYear + 1, 2, 31, 23, 59, 59, 999).getTime();
 
-    // Booking Forecast: deals where status = 'A' OR booking_fc = "OK", in current FY
+    // Booking Forecast: deals where status = 'B', in current FY
     const bookingFcDeals = activeDeals.filter(d => {
-      const isA = d.status === 'A';
-      const isFcOK = d.booking_fc?.toUpperCase() === 'OK';
-      if (!isA && !isFcOK) return false;
+      if (d.status !== 'B') return false;
 
       const rawDate = d.target_po_date || d.est_booking_month;
       if (!rawDate) return false; // Exclude if no target date set
@@ -707,17 +705,16 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
     });
     const closedFYValue = closedFYDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
 
-    // Pipeline: status B/C/D/E only (not yet won) and NOT in Booking Forecast, in current FY
+    // Pipeline: status C/D/E only (not yet won, not forecasted), in current FY
     const pipelineDeals = activeDeals.filter(d => {
-      if (!['B', 'C', 'D', 'E'].includes(d.status)) return false;
-      if (d.booking_fc?.toUpperCase() === 'OK') return false;
+      if (!['C', 'D', 'E'].includes(d.status)) return false;
       const rawDate = d.target_po_date || d.est_booking_month;
       if (!rawDate) return false;
       const dt = new Date(rawDate).getTime();
       return dt >= fyStartTime && dt <= fyEndTime;
     });
 
-    const pipelineModalDeals = activeDeals.filter(d => d.booking_fc?.toUpperCase() !== 'OK');
+    const pipelineModalDeals = activeDeals.filter(d => d.status !== 'B');
 
     const pipelineTotal = pipelineDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
     const getCategoryTotal = (catName: string) => pipelineDeals.filter(d => {
@@ -828,7 +825,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
             { 
               label: "Commercial", 
               value: formatRp(commercialTotal), 
-              sub: `${commercialDeals.length} projects`, 
+              sub: `${commercialFYDeals.length} projects · FY${currentFY}`, 
               icon: Map, 
               color: "#ef4444", 
               gradient: "linear-gradient(135deg, #ef4444 0%, #f87171 100%)",
@@ -907,7 +904,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                 <AnimatedCommercialCard
                   key={i}
                   kpi={kpi}
-                  commercialDeals={commercialDeals}
+                  commercialDeals={commercialFYDeals}
                   commercialTotal={commercialTotal}
                   commercialA={commercialA}
                   commercialB={commercialB}
