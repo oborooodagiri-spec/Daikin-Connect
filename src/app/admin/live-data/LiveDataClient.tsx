@@ -50,8 +50,9 @@ interface Deal {
   source: string;
   priority?: string;
   created_at: string;
-  updated_at: string;
   is_closed: boolean;
+  latitude?: number;
+  longitude?: number;
 }
 
 interface OpsRecord {
@@ -127,8 +128,12 @@ const PROVINCE_COORDS: Record<string, { coords: [number, number]; name: string }
   "pekanbaru": { coords: [101.4498, 0.5116], name: "Pekanbaru" },
 };
 
-// Map region keywords to rough geographic coordinates
+// Map region keywords or actual coordinates to rough geographic coordinates
 function guessCoords(deal: Deal): { coords: [number, number] } | null {
+  if (deal.latitude != null && deal.longitude != null) {
+    return { coords: [deal.longitude, deal.latitude] };
+  }
+
   const text = `${deal.client_name} ${deal.project_name} ${deal.area || ""} ${deal.remarks || ""}`.toLowerCase();
   
   if (text.includes("medan")) return PROVINCE_COORDS.medan;
