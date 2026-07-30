@@ -746,7 +746,22 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
 
     // Commercial: sectors Government + Hospital + Komersial
     const commercialDeals = activeDeals.filter(d => COMMERCIAL_SECTORS.includes(d.sector || ''));
-    const commercialTotal = commercialDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
+    const commercialFYDeals = commercialDeals.filter(d => {
+      if (!['A', 'B', 'C', 'D', 'E', 'T', 'H'].includes(d.status)) return false;
+      const rawDate = d.target_po_date || d.est_booking_month;
+      if (!rawDate) return false;
+      const dt = new Date(rawDate).getTime();
+      return dt >= fyStartTime && dt <= fyEndTime;
+    });
+
+    const commercialTotal = commercialFYDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
+    const getCommercialStatusTotal = (st: string) => commercialFYDeals.filter(d => d.status === st).reduce((sum, d) => sum + Number(d.quotation || 0), 0);
+
+    const commercialA = getCommercialStatusTotal('A');
+    const commercialB = getCommercialStatusTotal('B');
+    const commercialC = getCommercialStatusTotal('C');
+    const commercialD = getCommercialStatusTotal('D');
+    const commercialE = getCommercialStatusTotal('E');
 
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
@@ -810,7 +825,8 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
               icon: Map, 
               color: "#ef4444", 
               gradient: "linear-gradient(135deg, #ef4444 0%, #f87171 100%)",
-              onClick: () => setSectorModalState({ isOpen: true, sectorName: "Commercial", color: "#ef4444", deals: commercialDeals })
+              onClick: () => setSectorModalState({ isOpen: true, sectorName: "Commercial", color: "#ef4444", deals: commercialDeals }),
+              isAnimatedCommercial: true
             },
           ].map((kpi: any, i) => {
             if (kpi.isAnimated) {
@@ -873,6 +889,24 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                   industryC={industryC}
                   industryD={industryD}
                   industryE={industryE}
+                  formatRp={formatRp}
+                  canClickWidgets={canClickWidgets}
+                  cardStyle={cardStyle}
+                />
+              );
+            }
+            if (kpi.isAnimatedCommercial) {
+              return (
+                <AnimatedCommercialCard
+                  key={i}
+                  kpi={kpi}
+                  commercialDeals={commercialDeals}
+                  commercialTotal={commercialTotal}
+                  commercialA={commercialA}
+                  commercialB={commercialB}
+                  commercialC={commercialC}
+                  commercialD={commercialD}
+                  commercialE={commercialE}
                   formatRp={formatRp}
                   canClickWidgets={canClickWidgets}
                   cardStyle={cardStyle}
@@ -1878,6 +1912,66 @@ function AnimatedIndustryCard({
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+      onClick={canClickWidgets ? kpi.onClick : undefined}
+      style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
+      whileHover={{ scale: 1.02, boxShadow: `0 8px 25px ${kpi.color}40` }}
+    >
+      <div style={{ minWidth: 0, position: "relative", height: 48, flex: 1, overflow: "hidden" }}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}
+          >
+            <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.8)", marginBottom: 4 }}>{kpi.label}</p>
+            <p style={{ fontSize: 20, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em" }}>{currentContent.value}</p>
+            <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.sub}</p>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+}
+
+function AnimatedCommercialCard({ 
+  kpi, 
+  commercialDeals,
+  commercialTotal,
+  commercialA,
+  commercialB,
+  commercialC,
+  commercialD,
+  commercialE,
+  formatRp, 
+  canClickWidgets,
+  cardStyle
+}: any) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const contents = [
+    { value: formatRp(commercialTotal), sub: `Total · ${commercialDeals.length} projects` },
+    { value: `A : ${formatRp(commercialA)}`, sub: `Status A` },
+    { value: `B : ${formatRp(commercialB)}`, sub: `Status B` },
+    { value: `C : ${formatRp(commercialC)}`, sub: `Status C` },
+    { value: `D : ${formatRp(commercialD)}`, sub: `Status D` },
+    { value: `E : ${formatRp(commercialE)}`, sub: `Status E` }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % contents.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [contents.length]);
+
+  const currentContent = contents[currentIndex] || { value: 0, sub: '' };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
       onClick={canClickWidgets ? kpi.onClick : undefined}
       style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
       whileHover={{ scale: 1.02, boxShadow: `0 8px 25px ${kpi.color}40` }}
