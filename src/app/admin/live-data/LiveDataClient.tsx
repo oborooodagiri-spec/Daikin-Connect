@@ -373,7 +373,7 @@ function StatusBadge({ status }: { status: string }) {
 // ============================================
 // MAIN COMPONENT
 // ============================================
-export default function LiveDataClient({ isAdmin = false, canClickWidgets = true }: { isAdmin?: boolean, canClickWidgets?: boolean }) {
+export default function LiveDataClient({ isAdmin = false, canClickWidgets = true, sessionName = "User" }: { isAdmin?: boolean, canClickWidgets?: boolean, sessionName?: string }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [deals, setDeals] = useState<Deal[]>([]);
@@ -1424,7 +1424,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
         )}
       </div>
 
-      <DealFormModal sessionName="User" isAdmin={isAdmin} isOpen={showAddModal} onClose={() => setShowAddModal(false)} onSuccess={loadData} deal={editingDeal} />
+      <DealFormModal sessionName={sessionName} isAdmin={isAdmin} isOpen={showAddModal} onClose={() => setShowAddModal(false)} onSuccess={loadData} deal={editingDeal} />
       <OpsFormModal isOpen={showOpsModal} onClose={() => setShowOpsModal(false)} onSuccess={loadData} opsRecord={editingOps} />
       <ProjectByStatusModal isOpen={showProjectByStatusModal} onClose={() => setShowProjectByStatusModal(false)} deals={activeDeals} initialFY={selectedFY} />
       <BookingForecastModal isOpen={showBookingForecastModal} onClose={() => setShowBookingForecastModal(false)} deals={activeDeals} initialFY={selectedFY} />
