@@ -83,8 +83,10 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
     };
 
     deals.forEach(d => {
-      // Filter Booking FC == OK
-      if (!d.booking_fc || d.booking_fc.toUpperCase() !== 'OK') return;
+      // Include Status A OR Booking FC == OK
+      const isA = d.status === 'A';
+      const isFcOK = d.booking_fc && d.booking_fc.toUpperCase() === 'OK';
+      if (!isA && !isFcOK) return;
       if (['L', 'H'].includes(d.status)) return;
       
       // Use target_po_date (Est Booking Month from Excel) for date bucketing

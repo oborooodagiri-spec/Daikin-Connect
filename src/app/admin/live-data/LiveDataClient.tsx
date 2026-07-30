@@ -631,7 +631,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
         projectStateFilter === "All" ||
         (projectStateFilter === "Closed" && d.is_closed) ||
         (projectStateFilter === "Open / On Progress" && !d.is_closed) ||
-        (projectStateFilter === "Forecasted" && d.booking_fc?.toUpperCase() === 'OK');
+        (projectStateFilter === "Forecasted" && (d.status === 'A' || d.booking_fc?.toUpperCase() === 'OK'));
 
       return matchSearch && matchStatus && matchCategory && matchSector && matchPic && matchSource && matchProjectState;
     }).sort((a, b) => {
@@ -672,9 +672,11 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
   // RENDER: DASHBOARD TAB
   // ============================================
   const renderDashboard = () => {
-    // Booking Forecast: deals where booking_fc = "OK"
-    const bookingFcDeals = activeDeals.filter(d => d.booking_fc?.toUpperCase() === 'OK');
+    // Booking Forecast: deals where status = 'A' OR booking_fc = "OK"
+    const bookingFcDeals = activeDeals.filter(d => d.status === 'A' || d.booking_fc?.toUpperCase() === 'OK');
     const bookingFcTotal = bookingFcDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
+    const bookingFcEastValue = bookingFcDeals.filter(d => d.region === 'East').reduce((sum, d) => sum + Number(d.quotation || 0), 0);
+    const bookingFcWestValue = bookingFcDeals.filter(d => d.region === 'West').reduce((sum, d) => sum + Number(d.quotation || 0), 0);
 
     // Achievement: closed deals in current FY
     const fyStartYear = 2000 + currentFY;
@@ -724,14 +726,15 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
               onClick: () => setShowProjectByStatusModal(true),
               isAnimatedStatus: true
             },
-            { 
+            {
               label: "Booking Forecast", 
               value: formatRp(bookingFcTotal), 
               sub: `${bookingFcDeals.length} deals forecasted`, 
               icon: TrendingUp, 
               color: "#0ea5e9", 
               gradient: "linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)",
-              onClick: () => setShowBookingForecastModal(true)
+              onClick: () => setShowBookingForecastModal(true),
+              isAnimatedBooking: true
             },
             { 
               label: "Pipeline", 
@@ -770,6 +773,21 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                   closedFYDealsCount={closedFYDeals.length}
                   currentFY={currentFY}
                   totalTarget={totalTarget}
+                  formatRp={formatRp}
+                  canClickWidgets={canClickWidgets}
+                  cardStyle={cardStyle}
+                />
+              );
+            }
+            if (kpi.isAnimatedBooking) {
+              return (
+                <AnimatedBookingForecastCard
+                  key={i}
+                  kpi={kpi}
+                  bookingFcDeals={bookingFcDeals}
+                  bookingFcEastValue={bookingFcEastValue}
+                  bookingFcWestValue={bookingFcWestValue}
+                  bookingFcTotalValue={bookingFcTotal}
                   formatRp={formatRp}
                   canClickWidgets={canClickWidgets}
                   cardStyle={cardStyle}
@@ -1601,6 +1619,60 @@ function AnimatedProjectByStatusCard({
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
+      onClick={canClickWidgets ? kpi.onClick : undefined}
+      style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
+      whileHover={{ scale: 1.02, boxShadow: `0 8px 25px ${kpi.color}40` }}
+    >
+      <div style={{ minWidth: 0, position: "relative", height: 48, flex: 1, overflow: "hidden" }}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}
+          >
+            <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.8)", marginBottom: 4 }}>{kpi.label}</p>
+            <p style={{ fontSize: 20, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em" }}>{currentContent.value}</p>
+            <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.sub}</p>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+}
+
+function AnimatedBookingForecastCard({ 
+  kpi, 
+  bookingFcDeals,
+  bookingFcEastValue,
+  bookingFcWestValue,
+  bookingFcTotalValue,
+  formatRp, 
+  canClickWidgets,
+  cardStyle
+}: any) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const contents = [
+    { value: formatRp(bookingFcTotalValue), sub: `Total · ${bookingFcDeals.length} projects` },
+    { value: `East : ${formatRp(bookingFcEastValue)}`, sub: `East Region` },
+    { value: `West : ${formatRp(bookingFcWestValue)}`, sub: `West Region` }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % contents.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [contents.length]);
+
+  const currentContent = contents[currentIndex] || { value: 0, sub: '' };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
       onClick={canClickWidgets ? kpi.onClick : undefined}
       style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
       whileHover={{ scale: 1.02, boxShadow: `0 8px 25px ${kpi.color}40` }}
