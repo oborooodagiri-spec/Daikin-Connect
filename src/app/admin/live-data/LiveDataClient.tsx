@@ -439,13 +439,13 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
     const calendarMonth = selectedMonth <= 9 ? selectedMonth + 2 : selectedMonth - 10;
     const calendarYear = selectedMonth <= 9 ? fyYear : fyYear + 1;
     const start = new Date(calendarYear, calendarMonth, 1).getTime();
-    const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTime();
+const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTime();
     return { start, end };
   }, [selectedFY, selectedMonth]);
 
   // activeDeals = ALL active deals, no FY restriction. Excludes closed and Lost.
   const activeDeals = useMemo(() => {
-    return deals.filter(d => !d.is_closed && d.status !== 'L');
+    return deals.filter(d => !d.is_closed && !['L', 'S', 'N'].includes(d.status));
   }, [deals]);
 
   // Sector groupings matching Excel definitions
@@ -725,7 +725,8 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
               icon: BarChart3, 
               color: "#0073ea", 
               gradient: "linear-gradient(135deg, #0073ea 0%, #66ccff 100%)",
-              onClick: () => setShowProjectByStatusModal(true)
+              onClick: () => setShowProjectByStatusModal(true),
+              isAnimatedStatus: true
             },
             { 
               label: "Booking Forecast", 
@@ -773,6 +774,18 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
                   closedFYDealsCount={closedFYDeals.length}
                   currentFY={currentFY}
                   totalTarget={totalTarget}
+                  formatRp={formatRp}
+                  canClickWidgets={canClickWidgets}
+                  cardStyle={cardStyle}
+                />
+              );
+            }
+            if (kpi.isAnimatedStatus) {
+              return (
+                <AnimatedProjectByStatusCard
+                  key={i}
+                  kpi={kpi}
+                  activeDeals={activeDeals}
                   formatRp={formatRp}
                   canClickWidgets={canClickWidgets}
                   cardStyle={cardStyle}
@@ -1529,6 +1542,75 @@ function AnimatedAchievementCard({
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }}
+      onClick={canClickWidgets ? kpi.onClick : undefined}
+      style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
+      whileHover={{ scale: 1.02, boxShadow: "0 8px 25px rgba(0,0,0,0.08)" }}
+    >
+      <div style={{ width: 48, height: 48, borderRadius: 14, background: kpi.gradient, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: `0 4px 12px ${kpi.color}40` }}>
+        <kpi.icon size={22} color="white" />
+      </div>
+      <div style={{ minWidth: 0, position: "relative", height: 48, flex: 1, overflow: "hidden" }}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}
+          >
+            <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#676879", marginBottom: 4 }}>{kpi.label}</p>
+            <p style={{ fontSize: 20, fontWeight: 900, color: "#323338", letterSpacing: "-0.02em" }}>{currentContent.value}</p>
+            <p style={{ fontSize: 10, fontWeight: 700, color: kpi.color, marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.sub}</p>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+}
+
+function AnimatedProjectByStatusCard({ 
+  kpi, 
+  activeDeals,
+  formatRp, 
+  canClickWidgets,
+  cardStyle
+}: any) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const statuses = [
+    { code: 'A', name: 'Won' },
+    { code: 'B', name: 'Budgeted' },
+    { code: 'C', name: 'Contracted' },
+    { code: 'D', name: 'Planning' },
+    { code: 'E', name: 'Estimated' },
+    { code: 'T', name: 'Targeted' },
+    { code: 'H', name: 'Hold' }
+  ];
+
+  const contents = useMemo(() => {
+    return statuses.map(s => {
+      const dealsInStatus = activeDeals.filter((d: any) => d.status === s.code);
+      const totalValue = dealsInStatus.reduce((sum: number, d: any) => sum + (Number(d.quotation) || 0), 0);
+      return {
+        value: formatRp(totalValue),
+        sub: `Status ${s.code} - ${s.name} (${dealsInStatus.length})`
+      };
+    });
+  }, [activeDeals, formatRp]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % contents.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [contents.length]);
+
+  const currentContent = contents[currentIndex] || { value: 0, sub: '' };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
       onClick={canClickWidgets ? kpi.onClick : undefined}
       style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
       whileHover={{ scale: 1.02, boxShadow: "0 8px 25px rgba(0,0,0,0.08)" }}
