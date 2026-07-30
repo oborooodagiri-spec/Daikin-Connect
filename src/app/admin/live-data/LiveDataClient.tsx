@@ -76,14 +76,14 @@ interface StatusDef {
 // CONSTANTS
 // ============================================
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  A: { label: "Won", color: "#00c875", bg: "rgba(0,200,117,0.12)" },
-  B: { label: "Budgeted", color: "#0073ea", bg: "rgba(0,115,234,0.12)" },
-  C: { label: "Contracted", color: "#7b2cbf", bg: "rgba(123,44,191,0.12)" },
-  D: { label: "Planning", color: "#fdab3d", bg: "rgba(253,171,61,0.12)" },
-  E: { label: "Submitted", color: "#66ccff", bg: "rgba(102,204,255,0.12)" },
+  A: { label: "Won / Already PO", color: "#00c875", bg: "rgba(0,200,117,0.12)" },
+  B: { label: "Booking Forecast", color: "#0073ea", bg: "rgba(0,115,234,0.12)" },
+  C: { label: "Proses Tender", color: "#7b2cbf", bg: "rgba(123,44,191,0.12)" },
+  D: { label: "Aanwijzing", color: "#fdab3d", bg: "rgba(253,171,61,0.12)" },
+  E: { label: "Budgeting (Quoting)", color: "#66ccff", bg: "rgba(102,204,255,0.12)" },
   H: { label: "Hold", color: "#8d949e", bg: "rgba(141,148,158,0.12)" },
   L: { label: "Lost", color: "#1f2937", bg: "rgba(31,41,55,0.12)" },
-  T: { label: "Tender", color: "#e44258", bg: "rgba(228,66,88,0.12)" }
+  T: { label: "Engineering Review", color: "#e44258", bg: "rgba(228,66,88,0.12)" }
 };
 
 const TABS = [

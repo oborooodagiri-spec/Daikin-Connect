@@ -16,14 +16,14 @@ interface DealFormModalProps {
 }
 
 const STATUS_OPTIONS = [
-  { val: "A", label: "Won" },
-  { val: "B", label: "Budgeted" },
-  { val: "C", label: "Contracted" },
-  { val: "D", label: "Planning" },
-  { val: "E", label: "Submitted" },
+  { val: "A", label: "Won / Already PO" },
+  { val: "B", label: "Booking Forecast" },
+  { val: "C", label: "Proses Tender" },
+  { val: "D", label: "Aanwijzing" },
+  { val: "E", label: "Budgeting (Quoting)" },
   { val: "H", label: "Hold" },
   { val: "L", label: "Lost" },
-  { val: "T", label: "Tender" }
+  { val: "T", label: "Engineering Review" }
 ];
 
 const CATEGORY_OPTIONS = ["CONT DEVICE", "CONT INST", "CONT OTHERS", "EPL", "IAQ", "RC", "VES"];
