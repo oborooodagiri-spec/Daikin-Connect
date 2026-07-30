@@ -188,7 +188,6 @@ export default function SectorPipelineModal({
               </div>
               <div>
                 <h2 style={{ fontSize: 24, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>Pipeline By Sector: {sectorName}</h2>
-                <p style={{ fontSize: 14, color: "#64748b", fontWeight: 500, marginTop: 2 }}>Distribution of quotation values by status over time</p>
               </div>
             </div>
             
@@ -306,7 +305,7 @@ export default function SectorPipelineModal({
                         >
                           <td style={{ padding: "16px 24px", fontSize: 14, fontWeight: 700, color: "#334155", position: "sticky", left: 0, background: "inherit", zIndex: 5, borderRight: "1px solid #f1f5f9", display: "flex", alignItems: "center", gap: 8 }}>
                             <span style={{ display: "inline-block", width: 12, height: 12, borderRadius: "50%", background: STATUS_COLORS[row.status] || color }} />
-                            Status {row.status}
+                            {row.status}
                           </td>
                           {columns.map(col => (
                             <td key={col.key} style={{ padding: "16px 12px", textAlign: "right", fontSize: 13, color: "#64748b", fontWeight: 500, borderRight: "1px dashed #f1f5f9" }}>
