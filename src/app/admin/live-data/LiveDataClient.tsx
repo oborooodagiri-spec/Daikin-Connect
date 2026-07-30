@@ -672,16 +672,27 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
   // RENDER: DASHBOARD TAB
   // ============================================
   const renderDashboard = () => {
-    // Booking Forecast: deals where status = 'A' OR booking_fc = "OK"
-    const bookingFcDeals = activeDeals.filter(d => d.status === 'A' || d.booking_fc?.toUpperCase() === 'OK');
+    const fyStartYear = 2000 + currentFY;
+    const fyStartTime = new Date(fyStartYear, 3, 1).getTime();
+    const fyEndTime = new Date(fyStartYear + 1, 2, 31, 23, 59, 59, 999).getTime();
+
+    // Booking Forecast: deals where status = 'A' OR booking_fc = "OK", in current FY
+    const bookingFcDeals = activeDeals.filter(d => {
+      const isA = d.status === 'A';
+      const isFcOK = d.booking_fc?.toUpperCase() === 'OK';
+      if (!isA && !isFcOK) return false;
+
+      const rawDate = d.target_po_date || d.est_booking_month;
+      if (!rawDate) return false; // Exclude if no target date set
+      const dt = new Date(rawDate).getTime();
+      return dt >= fyStartTime && dt <= fyEndTime;
+    });
+
     const bookingFcTotal = bookingFcDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
     const bookingFcEastValue = bookingFcDeals.filter(d => d.region === 'East').reduce((sum, d) => sum + Number(d.quotation || 0), 0);
     const bookingFcWestValue = bookingFcDeals.filter(d => d.region === 'West').reduce((sum, d) => sum + Number(d.quotation || 0), 0);
 
     // Achievement: closed deals in current FY
-    const fyStartYear = 2000 + currentFY;
-    const fyStartTime = new Date(fyStartYear, 3, 1).getTime();
-    const fyEndTime = new Date(fyStartYear + 1, 2, 31, 23, 59, 59, 999).getTime();
     const closedFYDeals = deals.filter(d => {
       if (!d.is_closed) return false;
       const ut = new Date(d.updated_at).getTime();
