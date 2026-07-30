@@ -642,7 +642,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
       if (!aOverdue && bOverdue) return 1;
       return 0;
     });
-  }, [deals, searchTerm, statusFilter, categoryFilter, sectorFilter, picFilter, sourceFilter, projectStateFilter]);
+  }, [deals, searchTerm, statusFilter, categoryFilter, sectorFilter, picFilter, sourceFilter, projectStateFilter, canClickWidgets, sessionName]);
 
   const filteredOps = useMemo(() => {
     return opsRecords.filter(o => {

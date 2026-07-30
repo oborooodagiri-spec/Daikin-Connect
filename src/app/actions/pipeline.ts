@@ -100,13 +100,8 @@ export async function getDealsPipeline(filters?: DealFilters) {
 
     const whereConditions: any[] = [];
     
-    const isAdminOrMgmt = session.roles?.some((r: string) => 
-      ["admin", "super", "management", "director"].some(kw => r.toLowerCase().includes(kw))
-    );
-
-    if (!isAdminOrMgmt) {
-      whereConditions.push({ pic: session.name });
-    }
+    // Removed role-based filtering so all roles can see the global pipeline in the dashboard.
+    // If strict RBAC is needed for the table, it should be done on the client or via a different API.
     // Apply optional filters
     if (filters?.status) whereConditions.push({ status: filters.status });
     if (filters?.pic) whereConditions.push({ pic: filters.pic });
