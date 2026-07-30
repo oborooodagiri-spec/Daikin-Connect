@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { updateDeal } from '@/app/actions/pipeline';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
