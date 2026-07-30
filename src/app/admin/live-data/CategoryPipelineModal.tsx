@@ -36,9 +36,15 @@ export default function CategoryPipelineModal({
 }: CategoryPipelineModalProps) {
   
   const [selectedFY, setSelectedFY] = useState(initialFY);
+  const [showTender, setShowTender] = useState(false);
+  const [showHold, setShowHold] = useState(false);
 
   useEffect(() => {
-    if (isOpen) setSelectedFY(initialFY);
+    if (isOpen) {
+      setSelectedFY(initialFY);
+      setShowTender(false);
+      setShowHold(false);
+    }
   }, [isOpen, initialFY]);
 
   const { columns, rows, totals, grandTotal, chartData } = useMemo(() => {
@@ -61,7 +67,11 @@ export default function CategoryPipelineModal({
     let grandTotal = 0;
 
     deals.forEach(d => {
-      if (['L', 'H'].includes(d.status)) return; // Exclude lost/hold usually
+      if (['L', 'H', 'T', 'A'].includes(d.status)) {
+        if (d.status === 'T' && !showTender) return;
+        if (d.status === 'H' && !showHold) return;
+        if (d.status === 'A' || d.status === 'L') return;
+      }
       
       const rawDate = d.target_po_date || d.est_booking_month;
       if (!rawDate) return;
@@ -101,7 +111,7 @@ export default function CategoryPipelineModal({
     });
 
     return { columns, rows, totals, grandTotal, chartData };
-  }, [deals, selectedFY]);
+  }, [deals, selectedFY, showTender, showHold]);
 
   const formatRp = (val: number) => {
     if (val === 0 || !val) return "-";
@@ -165,6 +175,26 @@ export default function CategoryPipelineModal({
             </div>
             
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, background: "white", padding: "6px 12px", borderRadius: 12, border: "1px solid #e2e8f0", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                  <div style={{ position: "relative", width: 32, height: 18, background: showTender ? "#f97316" : "#cbd5e1", borderRadius: 20, transition: "0.3s" }}>
+                    <div style={{ position: "absolute", top: 2, left: showTender ? 16 : 2, width: 14, height: 14, background: "white", borderRadius: "50%", transition: "0.3s", boxShadow: "0 1px 2px rgba(0,0,0,0.2)" }} />
+                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: showTender ? "#f97316" : "#64748b" }}>+ Tender</span>
+                  <input type="checkbox" checked={showTender} onChange={e => setShowTender(e.target.checked)} style={{ display: "none" }} />
+                </label>
+                
+                <div style={{ width: 1, height: 16, background: "#e2e8f0" }} />
+                
+                <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                  <div style={{ position: "relative", width: 32, height: 18, background: showHold ? "#64748b" : "#cbd5e1", borderRadius: 20, transition: "0.3s" }}>
+                    <div style={{ position: "absolute", top: 2, left: showHold ? 16 : 2, width: 14, height: 14, background: "white", borderRadius: "50%", transition: "0.3s", boxShadow: "0 1px 2px rgba(0,0,0,0.2)" }} />
+                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: showHold ? "#64748b" : "#94a3b8" }}>+ Hold</span>
+                  <input type="checkbox" checked={showHold} onChange={e => setShowHold(e.target.checked)} style={{ display: "none" }} />
+                </label>
+              </div>
+
               <select
                 value={selectedFY}
                 onChange={(e) => setSelectedFY(Number(e.target.value))}

@@ -700,9 +700,30 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
     });
     const closedFYValue = closedFYDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
 
-    // Pipeline: status B/C/D/E only (not yet won)
-    const pipelineDeals = activeDeals.filter(d => ['B', 'C', 'D', 'E'].includes(d.status));
+    // Pipeline: status B/C/D/E only (not yet won) and NOT in Booking Forecast, in current FY
+    const pipelineDeals = activeDeals.filter(d => {
+      if (!['B', 'C', 'D', 'E'].includes(d.status)) return false;
+      if (d.booking_fc?.toUpperCase() === 'OK') return false;
+      const rawDate = d.target_po_date || d.est_booking_month;
+      if (!rawDate) return false;
+      const dt = new Date(rawDate).getTime();
+      return dt >= fyStartTime && dt <= fyEndTime;
+    });
+
+    const pipelineModalDeals = activeDeals.filter(d => d.booking_fc?.toUpperCase() !== 'OK');
+
     const pipelineTotal = pipelineDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
+    const getCategoryTotal = (catName: string) => pipelineDeals.filter(d => {
+      let c = d.category || "Others";
+      if (c.toLowerCase().startsWith("cont")) c = "Control";
+      return c.toLowerCase() === catName.toLowerCase();
+    }).reduce((sum, d) => sum + Number(d.quotation || 0), 0);
+
+    const pipelineRC = getCategoryTotal("RC");
+    const pipelineEPL = getCategoryTotal("EPL");
+    const pipelineControl = getCategoryTotal("Control");
+    const pipelineIAQ = getCategoryTotal("IAQ");
+    const pipelineVES = getCategoryTotal("VES");
 
     // Industry: sectors Industri + Heavy Industri
     const industryDeals = activeDeals.filter(d => INDUSTRY_SECTORS.includes(d.sector || ''));
@@ -747,14 +768,15 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
               onClick: () => setShowBookingForecastModal(true),
               isAnimatedBooking: true
             },
-            { 
+            {
               label: "Pipeline", 
               value: formatRp(pipelineTotal), 
               sub: `${pipelineDeals.length} projects`, 
               icon: DollarSign, 
               color: "#f59e0b", 
               gradient: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)",
-              onClick: () => setCategoryModalState({ isOpen: true, categoryName: "Pipeline", color: "#f59e0b", deals: pipelineDeals })
+              onClick: () => setCategoryModalState({ isOpen: true, categoryName: "Pipeline", color: "#f59e0b", deals: pipelineModalDeals }),
+              isAnimatedPipeline: true
             },
             { 
               label: "Industry", 
@@ -799,6 +821,24 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                   bookingFcEastValue={bookingFcEastValue}
                   bookingFcWestValue={bookingFcWestValue}
                   bookingFcTotalValue={bookingFcTotal}
+                  formatRp={formatRp}
+                  canClickWidgets={canClickWidgets}
+                  cardStyle={cardStyle}
+                />
+              );
+            }
+            if (kpi.isAnimatedPipeline) {
+              return (
+                <AnimatedPipelineCard
+                  key={i}
+                  kpi={kpi}
+                  pipelineDeals={pipelineDeals}
+                  pipelineTotal={pipelineTotal}
+                  pipelineRC={pipelineRC}
+                  pipelineEPL={pipelineEPL}
+                  pipelineControl={pipelineControl}
+                  pipelineIAQ={pipelineIAQ}
+                  pipelineVES={pipelineVES}
                   formatRp={formatRp}
                   canClickWidgets={canClickWidgets}
                   cardStyle={cardStyle}
@@ -1684,6 +1724,66 @@ function AnimatedBookingForecastCard({
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+      onClick={canClickWidgets ? kpi.onClick : undefined}
+      style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
+      whileHover={{ scale: 1.02, boxShadow: `0 8px 25px ${kpi.color}40` }}
+    >
+      <div style={{ minWidth: 0, position: "relative", height: 48, flex: 1, overflow: "hidden" }}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}
+          >
+            <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.8)", marginBottom: 4 }}>{kpi.label}</p>
+            <p style={{ fontSize: 20, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em" }}>{currentContent.value}</p>
+            <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.sub}</p>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+}
+
+function AnimatedPipelineCard({ 
+  kpi, 
+  pipelineDeals,
+  pipelineTotal,
+  pipelineRC,
+  pipelineEPL,
+  pipelineControl,
+  pipelineIAQ,
+  pipelineVES,
+  formatRp, 
+  canClickWidgets,
+  cardStyle
+}: any) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const contents = [
+    { value: formatRp(pipelineTotal), sub: `Total · ${pipelineDeals.length} projects` },
+    { value: `RC : ${formatRp(pipelineRC)}`, sub: `RC Category` },
+    { value: `EPL : ${formatRp(pipelineEPL)}`, sub: `EPL Category` },
+    { value: `Control : ${formatRp(pipelineControl)}`, sub: `Control Category` },
+    { value: `IAQ : ${formatRp(pipelineIAQ)}`, sub: `IAQ Category` },
+    { value: `VES : ${formatRp(pipelineVES)}`, sub: `VES Category` }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % contents.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [contents.length]);
+
+  const currentContent = contents[currentIndex] || { value: 0, sub: '' };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
       onClick={canClickWidgets ? kpi.onClick : undefined}
       style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
       whileHover={{ scale: 1.02, boxShadow: `0 8px 25px ${kpi.color}40` }}
