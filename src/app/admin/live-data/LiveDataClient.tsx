@@ -619,6 +619,8 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
     };
 
     return deals.filter(d => {
+      if (!canClickWidgets && d.pic !== sessionName) return false;
+
       const s = searchTerm.toLowerCase();
       const matchSearch = !s || d.client_name?.toLowerCase().includes(s) || d.project_name?.toLowerCase().includes(s) || d.pic?.toLowerCase().includes(s) || d.remarks?.toLowerCase().includes(s);
       const matchStatus = statusFilter === "All" || d.status === statusFilter;
@@ -1049,7 +1051,9 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
   // RENDER: PIPELINE TABLE (Sales + Partnership)
   // ============================================
   const renderPipelineTable = (source?: string) => {
-    const data = source ? filteredDeals.filter(d => d.source === source) : filteredDeals;
+    const data = source 
+      ? filteredDeals.filter(d => source === "EPL" ? (d.source === "EPL" || d.source === "Sales") : d.source === source) 
+      : filteredDeals;
     const paginated = data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
     const pages = Math.ceil(data.length / itemsPerPage);
 
