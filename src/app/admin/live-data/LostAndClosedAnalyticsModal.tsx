@@ -11,8 +11,8 @@ export default function LostAndClosedAnalyticsModal({ isOpen, onClose, deals }: 
     let lostCount = 0, closedCount = 0;
     let lostValue = 0, closedValue = 0;
     const byPic: Record<string, { lost: number, closed: number, lostVal: number, closedVal: number }> = {};
-    const byArea: Record<string, { count: number, value: number }> = {};
-    const byCategory: Record<string, { count: number, value: number }> = {};
+    const byArea: Record<string, { lost: number, closed: number, lostVal: number, closedVal: number }> = {};
+    const byCategory: Record<string, { lost: number, closed: number, lostVal: number, closedVal: number }> = {};
     
     // For timeline (by month of updated_at)
     const timelineData: Record<string, { lostValue: number, closedValue: number }> = {};
@@ -39,15 +39,15 @@ export default function LostAndClosedAnalyticsModal({ isOpen, onClose, deals }: 
 
       // Area
       const area = d.area || "Unassigned";
-      if (!byArea[area]) byArea[area] = { count: 0, value: 0 };
-      byArea[area].count++;
-      byArea[area].value += val;
+      if (!byArea[area]) byArea[area] = { lost: 0, closed: 0, lostVal: 0, closedVal: 0 };
+      if (isLost) { byArea[area].lost++; byArea[area].lostVal += val; }
+      if (isClosed) { byArea[area].closed++; byArea[area].closedVal += val; }
 
       // Category
       const cat = d.category || "Unassigned";
-      if (!byCategory[cat]) byCategory[cat] = { count: 0, value: 0 };
-      byCategory[cat].count++;
-      byCategory[cat].value += val;
+      if (!byCategory[cat]) byCategory[cat] = { lost: 0, closed: 0, lostVal: 0, closedVal: 0 };
+      if (isLost) { byCategory[cat].lost++; byCategory[cat].lostVal += val; }
+      if (isClosed) { byCategory[cat].closed++; byCategory[cat].closedVal += val; }
 
       // Timeline (Updated At Month)
       const uDate = new Date(d.updated_at);
@@ -66,12 +66,15 @@ export default function LostAndClosedAnalyticsModal({ isOpen, onClose, deals }: 
 
     const areaData = Object.keys(byArea).map(key => ({
       name: key,
-      value: byArea[key].value
-    })).sort((a, b) => b.value - a.value).slice(0, 10);
+      Lost: byArea[key].lostVal,
+      Closed: byArea[key].closedVal
+    })).sort((a, b) => (b.Lost + b.Closed) - (a.Lost + a.Closed)).slice(0, 10);
 
     const categoryData = Object.keys(byCategory).map(key => ({
       name: key,
-      value: byCategory[key].value
+      value: byCategory[key].lostVal + byCategory[key].closedVal,
+      Lost: byCategory[key].lostVal,
+      Closed: byCategory[key].closedVal
     })).sort((a, b) => b.value - a.value);
 
     const timelineArray = Object.keys(timelineData).sort().map(key => ({
@@ -200,12 +203,10 @@ export default function LostAndClosedAnalyticsModal({ isOpen, onClose, deals }: 
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                     <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
                     <YAxis tickFormatter={(val) => formatRp(val)} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} width={80} />
-                    <RechartsTooltip formatter={(val: any) => formatRp(Number(val) || 0)} contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
-                    <Bar dataKey="value" fill="#6366f1" radius={[4, 4, 0, 0]}>
-                      {stats.areaData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Bar>
+                    <RechartsTooltip formatter={(val: any) => formatRp(Number(val) || 0)} cursor={{ fill: '#f1f5f9' }} contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
+                    <Legend iconType="circle" wrapperStyle={{ fontSize: 12, fontWeight: 600 }} />
+                    <Bar dataKey="Closed" stackId="a" fill="#10b981" radius={[0, 0, 0, 0]} />
+                    <Bar dataKey="Lost" stackId="a" fill="#f43f5e" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>

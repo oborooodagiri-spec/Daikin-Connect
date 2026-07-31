@@ -29,24 +29,14 @@ export default function ClosedProjectsWidget({
     return deals.filter((d: any) => {
       if (!d.is_closed && d.status !== 'L') return false;
       
-      const targetTime = d.target_po_date ? new Date(d.target_po_date).getTime() : null;
-      if (targetTime) {
-        const fyStart = new Date(2000 + selectedFY, 3, 1).getTime();
-        const fyEnd = new Date(2000 + selectedFY + 1, 2, 31, 23, 59, 59, 999).getTime();
-        
-        if (targetTime < fyStart || targetTime > fyEnd) return false;
-        
-        if (getMonthRange) {
-          if (targetTime < getMonthRange.start || targetTime > getMonthRange.end) return false;
-        }
-      } else {
-         const uTime = new Date(d.updated_at).getTime();
-         const fyStart = new Date(2000 + selectedFY, 3, 1).getTime();
-         const fyEnd = new Date(2000 + selectedFY + 1, 2, 31, 23, 59, 59, 999).getTime();
-         if (uTime < fyStart || uTime > fyEnd) return false;
-         if (getMonthRange) {
-           if (uTime < getMonthRange.start || uTime > getMonthRange.end) return false;
-         }
+      const uTime = new Date(d.updated_at).getTime();
+      const fyStart = new Date(2000 + selectedFY, 3, 1).getTime();
+      const fyEnd = new Date(2000 + selectedFY + 1, 2, 31, 23, 59, 59, 999).getTime();
+      
+      if (uTime < fyStart || uTime > fyEnd) return false;
+      
+      if (getMonthRange) {
+        if (uTime < getMonthRange.start || uTime > getMonthRange.end) return false;
       }
       return true;
     });
