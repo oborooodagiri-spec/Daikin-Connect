@@ -357,7 +357,10 @@ export async function updateDeal(id: number, data: Partial<DealData>) {
       { key: 'category', label: 'Category' },
       { key: 'sector', label: 'Sector' },
       { key: 'pic', label: 'PIC' },
-      { key: 'source', label: 'Source' }
+      { key: 'source', label: 'Source' },
+      { key: 'sales_planner', label: 'Sales Planner' },
+      { key: 'area', label: 'Project Area' },
+      { key: 'remarks', label: 'Remarks' }
     ];
 
     for (const field of fieldsToTrack) {
