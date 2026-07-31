@@ -69,7 +69,6 @@ export default function ClosedProjectsWidget({
           </div>
           <div>
             <h2 style={{ fontSize: 20, fontWeight: 900, color: "#323338" }}>Lost & Closed Projects</h2>
-            <p style={{ fontSize: 12, color: "#676879", fontWeight: 600 }}>Archived and finalized deals for FY{selectedFY}</p>
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
