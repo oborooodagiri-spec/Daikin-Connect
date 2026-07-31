@@ -385,17 +385,45 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
   }, [clusters]);
 
   return (
-    <div style={{ position: "relative", width: "100%", background: "linear-gradient(135deg, #0a1628 0%, #0d2137 50%, #0a1628 100%)", borderRadius: 24, overflow: "hidden" }}>
+    <div style={{ position: "relative", width: "100%", background: "linear-gradient(145deg, #060e1a 0%, #0b1a2e 30%, #0d2240 55%, #0b1a2e 80%, #060e1a 100%)", borderRadius: 24, overflow: "hidden" }}>
       
-      {/* Grid overlay */}
-      <svg width="100%" viewBox="0 0 700 450" style={{ opacity: 0.04, position: "absolute", top: 0, left: 0, pointerEvents: "none" }}>
-        {Array.from({ length: 35 }).map((_, i) => (
-          <line key={`v${i}`} x1={i * 20} y1={0} x2={i * 20} y2={450} stroke="#66ccff" strokeWidth={0.5} />
-        ))}
-        {Array.from({ length: 23 }).map((_, i) => (
-          <line key={`h${i}`} x1={0} y1={i * 20} x2={700} y2={i * 20} stroke="#66ccff" strokeWidth={0.5} />
-        ))}
+      {/* Ambient radial glow effects */}
+      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+        {/* Center glow - warm accent behind Java */}
+        <div style={{
+          position: "absolute", left: "30%", top: "55%", width: 400, height: 400,
+          background: "radial-gradient(circle, rgba(0,200,117,0.08) 0%, rgba(0,200,117,0.03) 40%, transparent 70%)",
+          transform: "translate(-50%,-50%)", borderRadius: "50%"
+        }} />
+        {/* Top-left corner glow */}
+        <div style={{
+          position: "absolute", left: -60, top: -60, width: 300, height: 300,
+          background: "radial-gradient(circle, rgba(102,204,255,0.06) 0%, transparent 70%)",
+          borderRadius: "50%"
+        }} />
+        {/* Right edge subtle glow for panel */}
+        <div style={{
+          position: "absolute", right: 0, top: "40%", width: 200, height: 300,
+          background: "radial-gradient(ellipse at right, rgba(102,204,255,0.04) 0%, transparent 70%)",
+          transform: "translateY(-50%)"
+        }} />
+      </div>
+
+      {/* Dot-matrix grid overlay */}
+      <svg width="100%" height="100%" style={{ opacity: 0.035, position: "absolute", top: 0, left: 0, pointerEvents: "none" }}>
+        <defs>
+          <pattern id="mapDotGrid" width="24" height="24" patternUnits="userSpaceOnUse">
+            <circle cx="1" cy="1" r="0.6" fill="#66ccff" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#mapDotGrid)" />
       </svg>
+
+      {/* Subtle top border glow line */}
+      <div style={{
+        position: "absolute", top: 0, left: "10%", right: "10%", height: 1,
+        background: "linear-gradient(90deg, transparent, rgba(102,204,255,0.3), transparent)"
+      }} />
 
       {/* Title & Controls Bar */}
       <div style={{ position: "relative", zIndex: 10, padding: "20px 24px 0" }}>
@@ -420,10 +448,11 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
               style={{
                 padding: "6px 14px", borderRadius: 10, border: "1px solid",
                 borderColor: selectedRegion === key ? "#66ccff" : "rgba(102,204,255,0.15)",
-                background: selectedRegion === key ? "rgba(102,204,255,0.2)" : "rgba(255,255,255,0.03)",
+                background: selectedRegion === key ? "rgba(102,204,255,0.15)" : "rgba(255,255,255,0.02)",
                 color: selectedRegion === key ? "#66ccff" : "rgba(255,255,255,0.5)",
                 fontSize: 10, fontWeight: 700, cursor: "pointer", transition: "all 0.2s",
-                letterSpacing: "0.02em"
+                letterSpacing: "0.02em",
+                boxShadow: selectedRegion === key ? "0 0 12px rgba(102,204,255,0.15), inset 0 0 12px rgba(102,204,255,0.05)" : "none"
               }}
             >{rv.label}</button>
           ))}
@@ -436,9 +465,10 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
             style={{
               padding: "4px 10px", borderRadius: 8, border: "1px solid",
               borderColor: !statusLayerFilter ? "#66ccff" : "rgba(102,204,255,0.15)",
-              background: !statusLayerFilter ? "rgba(102,204,255,0.2)" : "transparent",
+              background: !statusLayerFilter ? "rgba(102,204,255,0.15)" : "transparent",
               color: !statusLayerFilter ? "#66ccff" : "rgba(255,255,255,0.4)",
-              fontSize: 10, fontWeight: 700, cursor: "pointer"
+              fontSize: 10, fontWeight: 700, cursor: "pointer",
+              boxShadow: !statusLayerFilter ? "0 0 8px rgba(102,204,255,0.1)" : "none"
             }}
           >All</button>
           {["A", "B", "C", "D", "E"].map(s => {
@@ -449,9 +479,10 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
                 style={{
                   padding: "4px 10px", borderRadius: 8, border: "1px solid",
                   borderColor: isActive ? cfg.color : "rgba(102,204,255,0.15)",
-                  background: isActive ? `${cfg.color}33` : "transparent",
+                  background: isActive ? `${cfg.color}22` : "transparent",
                   color: isActive ? cfg.color : "rgba(255,255,255,0.4)",
-                  fontSize: 10, fontWeight: 700, cursor: "pointer"
+                  fontSize: 10, fontWeight: 700, cursor: "pointer",
+                  boxShadow: isActive ? `0 0 10px ${cfg.color}33` : "none"
                 }}
               >{s}</button>
             );
@@ -463,9 +494,10 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
             style={{
               padding: "4px 10px", borderRadius: 8, border: "1px solid",
               borderColor: showPICLines ? "#fdab3d" : "rgba(102,204,255,0.15)",
-              background: showPICLines ? "rgba(253,171,61,0.2)" : "transparent",
+              background: showPICLines ? "rgba(253,171,61,0.15)" : "transparent",
               color: showPICLines ? "#fdab3d" : "rgba(255,255,255,0.4)",
-              fontSize: 10, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 4
+              fontSize: 10, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
+              boxShadow: showPICLines ? "0 0 10px rgba(253,171,61,0.15)" : "none"
             }}
           >
             <Activity size={10} />
@@ -488,19 +520,57 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
             height={450}
             style={{ width: "100%", height: "auto" }}
           >
+            {/* SVG Definitions for premium effects */}
+            <defs>
+              {/* Province gradient fill */}
+              <linearGradient id="provinceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#1a4a6e" stopOpacity={0.5} />
+                <stop offset="50%" stopColor="#1a3a5c" stopOpacity={0.35} />
+                <stop offset="100%" stopColor="#132d4a" stopOpacity={0.45} />
+              </linearGradient>
+              {/* Province hover gradient */}
+              <linearGradient id="provinceGradHover" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#2a6a9e" stopOpacity={0.6} />
+                <stop offset="100%" stopColor="#1a5a8e" stopOpacity={0.5} />
+              </linearGradient>
+              {/* Neon glow filter for borders */}
+              <filter id="borderGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur" />
+                <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.4  0 0 0 0 0.8  0 0 0 0 1  0 0 0 0.6 0" result="glow" />
+                <feMerge>
+                  <feMergeNode in="glow" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              {/* Bubble glow filter */}
+              <filter id="bubbleGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+                <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.4  0 0 0 0 0.8  0 0 0 0 1  0 0 0 0.5 0" result="glow" />
+                <feMerge>
+                  <feMergeNode in="glow" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              {/* Radial gradient for bubble center glow */}
+              <radialGradient id="bubbleInner">
+                <stop offset="0%" stopColor="white" stopOpacity={0.15} />
+                <stop offset="100%" stopColor="white" stopOpacity={0} />
+              </radialGradient>
+            </defs>
+
             <Geographies geography="/maps/indonesia.json">
               {({ geographies }) =>
                 geographies.map((geo) => (
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
-                    fill="#66ccff"
-                    fillOpacity={0.12}
-                    stroke="#66ccff"
-                    strokeWidth={0.5}
+                    fill="url(#provinceGrad)"
+                    stroke="#4aa8d8"
+                    strokeWidth={0.6}
+                    filter="url(#borderGlow)"
                     style={{
                       default: { outline: "none" },
-                      hover: { fillOpacity: 0.25, outline: "none", cursor: canClickWidgets ? "pointer" : "default" },
+                      hover: { fill: "url(#provinceGradHover)", stroke: "#66ccff", strokeWidth: 0.8, outline: "none", cursor: canClickWidgets ? "pointer" : "default" },
                       pressed: { outline: "none" },
                     }}
                   />
@@ -535,19 +605,30 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
               
               return (
                 <Marker key={cluster.key} coordinates={cluster.coords}>
-                  <g>
-                    {/* Pulse animation */}
-                    <circle cx={0} cy={0} r={radius + 8} fill="none" stroke={color} strokeWidth={1} opacity={0.3}>
-                      <animate attributeName="r" from={radius} to={radius + 20} dur="2s" repeatCount="indefinite" />
-                      <animate attributeName="opacity" from="0.4" to="0" dur="2s" repeatCount="indefinite" />
+                  <g filter="url(#bubbleGlow)">
+                    {/* Outer pulse ring */}
+                    <circle cx={0} cy={0} r={radius + 8} fill="none" stroke={color} strokeWidth={0.8} opacity={0.3}>
+                      <animate attributeName="r" from={radius + 2} to={radius + 22} dur="2.5s" repeatCount="indefinite" />
+                      <animate attributeName="opacity" from="0.35" to="0" dur="2.5s" repeatCount="indefinite" />
+                    </circle>
+                    {/* Second pulse ring (offset timing) */}
+                    <circle cx={0} cy={0} r={radius + 4} fill="none" stroke={color} strokeWidth={0.5} opacity={0.2}>
+                      <animate attributeName="r" from={radius} to={radius + 18} dur="2.5s" begin="1.25s" repeatCount="indefinite" />
+                      <animate attributeName="opacity" from="0.25" to="0" dur="2.5s" begin="1.25s" repeatCount="indefinite" />
                     </circle>
                     
-                    {/* Main dot */}
+                    {/* Outer ring (static) */}
+                    <circle cx={0} cy={0} r={radius + 3} fill="none" stroke={color} strokeWidth={0.5} opacity={isHovered ? 0.6 : 0.3}
+                      style={{ transition: "all 0.3s" }}
+                    />
+                    
+                    {/* Main bubble with gradient */}
                     <circle
                       cx={0} cy={0} r={radius}
-                      fill={color} fillOpacity={isHovered ? 0.5 : 0.25}
-                      stroke={color} strokeWidth={isHovered ? 2.5 : 1}
-                      style={{ cursor: canClickWidgets ? "pointer" : "default", transition: "all 0.2s" }}
+                      fill={color} fillOpacity={isHovered ? 0.4 : 0.2}
+                      stroke={color} strokeWidth={isHovered ? 2 : 1.2}
+                      strokeOpacity={isHovered ? 1 : 0.7}
+                      style={{ cursor: canClickWidgets ? "pointer" : "default", transition: "all 0.3s" }}
                       onMouseEnter={(e) => {
                         setHoveredCluster(cluster.key);
                         const rect = (e.target as SVGElement).closest("svg")?.getBoundingClientRect();
@@ -563,9 +644,12 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
                       onClick={() => canClickWidgets && setDrillDownCluster(cluster)}
                     />
                     
-                    {/* Count label */}
-                    <text x={0} y={4} textAnchor="middle" fill="white" fontSize={radius > 15 ? 11 : 9} fontWeight="800"
-                      style={{ pointerEvents: "none" }}
+                    {/* Inner glass highlight */}
+                    <circle cx={0} cy={-radius * 0.2} r={radius * 0.55} fill="url(#bubbleInner)" style={{ pointerEvents: "none" }} />
+                    
+                    {/* Count label with shadow */}
+                    <text x={0} y={4} textAnchor="middle" fill="white" fontSize={radius > 15 ? 12 : 9} fontWeight="900"
+                      style={{ pointerEvents: "none", textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}
                     >
                       {totalDeals}
                     </text>
@@ -582,14 +666,15 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
               left: tooltip.x,
               top: tooltip.y,
               transform: "translate(-50%, -100%)",
-              background: "rgba(10,22,40,0.95)",
-              border: "1px solid rgba(102,204,255,0.3)",
-              borderRadius: 12,
-              padding: "12px 16px",
+              background: "linear-gradient(135deg, rgba(10,22,40,0.95), rgba(15,30,55,0.95))",
+              border: "1px solid rgba(102,204,255,0.25)",
+              borderRadius: 14,
+              padding: "14px 18px",
               minWidth: 220,
               zIndex: 100,
-              backdropFilter: "blur(10px)",
-              pointerEvents: "none"
+              backdropFilter: "blur(12px)",
+              pointerEvents: "none",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(102,204,255,0.08), inset 0 1px 0 rgba(102,204,255,0.1)"
             }}>
               <p style={{ color: "#66ccff", fontSize: 11, fontWeight: 800, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.1em" }}>
                 {tooltip.data.name}
@@ -635,10 +720,11 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
                 onClick={() => setSelectedRegion(isSelected ? "All" : rs.name)}
                 style={{
                   cursor: "pointer", padding: "8px 10px", borderRadius: 10,
-                  background: isSelected ? "rgba(102,204,255,0.12)" : "rgba(255,255,255,0.03)",
+                  background: isSelected ? "rgba(102,204,255,0.1)" : "rgba(255,255,255,0.02)",
                   border: "1px solid",
-                  borderColor: isSelected ? "rgba(102,204,255,0.3)" : "transparent",
-                  transition: "all 0.2s"
+                  borderColor: isSelected ? "rgba(102,204,255,0.25)" : "rgba(255,255,255,0.04)",
+                  transition: "all 0.2s",
+                  boxShadow: isSelected ? "0 0 12px rgba(102,204,255,0.08)" : "none"
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
@@ -652,7 +738,7 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
                     initial={{ width: 0 }}
                     animate={{ width: `${pct}%` }}
                     transition={{ duration: 0.6, delay: idx * 0.05 }}
-                    style={{ height: "100%", background: "linear-gradient(90deg, #66ccff, #00c875)", borderRadius: 2 }}
+                    style={{ height: "100%", background: "linear-gradient(90deg, #3a8fd4, #00c875)", borderRadius: 2, boxShadow: "0 0 6px rgba(0,200,117,0.3)" }}
                   />
                 </div>
                 <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 9, fontWeight: 700, marginTop: 3 }}>
@@ -667,12 +753,18 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
       {/* Legend */}
       <div style={{ position: "relative", padding: "0 24px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", gap: 12, fontSize: 10, fontWeight: 700 }}>
-          <span style={{ color: "#00c875" }}>● Won {">"}50%</span>
+          <span style={{ color: "#00c875" }}>● Won {">"} 50%</span>
           <span style={{ color: "#fdab3d" }}>● Mixed</span>
           <span style={{ color: "#66ccff" }}>● Pipeline</span>
           {showPICLines && <span style={{ color: "#fdab3d" }}>--- PIC Coverage</span>}
         </div>
       </div>
+
+      {/* Bottom border glow line */}
+      <div style={{
+        position: "absolute", bottom: 0, left: "10%", right: "10%", height: 1,
+        background: "linear-gradient(90deg, transparent, rgba(102,204,255,0.2), transparent)"
+      }} />
 
       {/* Drill-down Modal */}
       {drillDownCluster && (
