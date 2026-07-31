@@ -523,7 +523,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
       // Funnel & Totals
       if (d.status === "A") { won += val; wonCount++; }
       else if (d.status === "L") { lost += val; }
-      else if (['B', 'C', 'D', 'E'].includes(d.status)) { pipeline += val; }
+      else if (['C', 'D', 'E'].includes(d.status)) { pipeline += val; }
       
       grossPipeline += val;
 
