@@ -1087,7 +1087,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
               <h3 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#676879" }}>Pipeline Status Funnel</h3>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {["T", "E", "D", "C", "B", "A"]
+              {["E", "D", "C", "B", "A"]
                 .map((status) => {
                   const data = stats.byStatus[status];
                   if (!data) return null;
@@ -1096,7 +1096,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                   const pct = (data.value / maxVal) * 100;
                   return (
                     <div key={status} style={{ display: "flex", alignItems: "center", gap: 12, cursor: canClickWidgets ? "pointer" : "default" }} onClick={() => canClickWidgets && setStatusModalState({ isOpen: true, statusName: "Overview", color: cfg.color, deals: activeDeals })}>
-                      <span style={{ width: 130, fontSize: 10, fontWeight: 800, color: cfg.color, textAlign: "right" }}>Status {status} - {cfg.label}</span>
+                      <span style={{ width: 20, fontSize: 14, fontWeight: 900, color: cfg.color, textAlign: "right" }}>{status}</span>
                       <div style={{ flex: 1, height: 32, background: "#f8fafc", borderRadius: 6, display: "flex", alignItems: "center" }}>
                         <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8 }}
                           style={{ height: "100%", background: cfg.color, borderRadius: 6, display: "flex", alignItems: "center", paddingLeft: 12, minWidth: 20 }}
