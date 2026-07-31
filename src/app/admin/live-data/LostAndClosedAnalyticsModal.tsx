@@ -91,10 +91,16 @@ export default function LostAndClosedAnalyticsModal({ isOpen, onClose, deals }: 
 
   if (!isOpen) return null;
 
-  const formatRp = (value: number) => {
-    if (value >= 1e9) return `Rp ${(value / 1e9).toFixed(1)}B`;
-    if (value >= 1e6) return `Rp ${(value / 1e6).toFixed(1)}M`;
-    return `Rp ${value.toLocaleString("id-ID")}`;
+  const formatRp = (val: number | bigint) => {
+    if (val >= 1e12) return `Rp ${(Number(val) / 1e12).toFixed(1)}T`;
+    if (val >= 1e9) return `Rp ${(Number(val) / 1e9).toFixed(1)}M`;
+    if (val >= 1e6) return `Rp ${(Number(val) / 1e6).toFixed(0)}Jt`;
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(Number(val));
   };
 
   const COLORS = ['#10b981', '#f43f5e', '#3b82f6', '#f59e0b', '#8b5cf6', '#06b6d4', '#6366f1'];
@@ -114,7 +120,6 @@ export default function LostAndClosedAnalyticsModal({ isOpen, onClose, deals }: 
             </div>
             <div>
               <h2 className="text-xl font-bold text-slate-800">Closed & Lost Projects Analytics</h2>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Historical Performance Overview</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
