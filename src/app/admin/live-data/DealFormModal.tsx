@@ -454,6 +454,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
                              h.field_changed === 'status' ? 'Status Changed' : 
                              h.field_changed === 'quotation' ? 'Budget Revised' : 
                              h.field_changed === 'est_booking_month' || h.field_changed === 'target_po_date' ? 'Timeline Revised' : 
+                             h.field_changed === 'is_closed' ? 'Closure Status Updated' :
                              'Details Updated'}
                           </span>
                           <span className="text-xs text-gray-400">

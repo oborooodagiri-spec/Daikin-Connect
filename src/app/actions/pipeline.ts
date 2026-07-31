@@ -338,6 +338,19 @@ export async function updateDeal(id: number, data: Partial<DealData>) {
       });
     }
 
+    if (existing.is_closed !== deal.is_closed) {
+      await prisma.pipeline_history.create({
+        data: {
+          deal_id: deal.id,
+          changed_by_id: parseInt(session.userId, 10),
+          field_changed: "is_closed",
+          old_value: existing.is_closed ? "Closed" : "Open",
+          new_value: deal.is_closed ? "Closed" : "Open",
+          remark: deal.is_closed ? "Project marked as closed/won" : "Project re-opened"
+        }
+      });
+    }
+
     const fieldsToTrack = [
       { key: 'client_name', label: 'Client Name' },
       { key: 'project_name', label: 'Project Name' },
