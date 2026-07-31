@@ -187,9 +187,6 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
                 <h2 style={{ fontSize: 24, fontWeight: 900, color: "#0f172a", margin: 0, letterSpacing: "-0.5px" }}>
                   Top Sales Showdown
                 </h2>
-                <p style={{ fontSize: 14, color: "#64748b", margin: "4px 0 0 0", fontWeight: 500 }}>
-                  Peringkat berdasarkan nominal project (PO)
-                </p>
               </div>
             </div>
 
@@ -224,16 +221,16 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
           </div>
 
           {/* Content */}
-          <div style={{ padding: "40px", overflowY: "auto", flex: 1, backgroundColor: "#f8fafc", display: "flex", flexDirection: "column", alignItems: "center" }}>
-            
-            {leaderboard.length === 0 ? (
-              <div style={{ padding: 60, textAlign: 'center', color: '#64748b', fontSize: 16, fontWeight: 600 }}>
-                Belum ada data project untuk tahun buku ini.
-              </div>
-            ) : (
-              <>
-                {/* Podium Showdown */}
-                <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 16, marginBottom: 48, height: 350, marginTop: 40 }}>
+          <div style={{ padding: "40px", overflowY: "auto", flex: 1, backgroundColor: "#f8fafc" }}>
+            <div style={{ maxWidth: 800, margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center" }}>
+              {leaderboard.length === 0 ? (
+                <div style={{ padding: 60, textAlign: 'center', color: '#64748b', fontSize: 16, fontWeight: 600 }}>
+                  Belum ada data project untuk tahun buku ini.
+                </div>
+              ) : (
+                <>
+                  {/* Podium Showdown */}
+                  <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 16, marginBottom: 48, height: 350, marginTop: 40 }}>
                   
                   {/* Rank 2 (Silver) */}
                   {top3[1] && (
@@ -309,7 +306,7 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
                 )}
               </>
             )}
-
+            </div>
           </div>
         </motion.div>
       </motion.div>
