@@ -95,113 +95,300 @@ const TABS = [
 // ============================================
 // INDONESIA MAP COMPONENT
 // ============================================
-const PROVINCE_COORDS: Record<string, { coords: [number, number]; name: string }> = {
-  "jakarta": { coords: [106.8456, -6.2088], name: "DKI Jakarta" },
-  "west_java": { coords: [107.6191, -6.9175], name: "Jawa Barat" },
-  "central_java": { coords: [110.4225, -6.9697], name: "Jawa Tengah" },
-  "east_java": { coords: [112.7521, -7.2504], name: "Jawa Timur" },
-  "banten": { coords: [106.1503, -6.1200], name: "Banten" },
-  "bali": { coords: [115.2167, -8.6500], name: "Bali" },
-  "north_sumatra": { coords: [99.0689, 2.1154], name: "Sumatera Utara" },
-  "west_sumatra": { coords: [100.4651, -0.9471], name: "Sumatera Barat" },
-  "south_sumatra": { coords: [104.7458, -2.9909], name: "Sumatera Selatan" },
-  "riau": { coords: [101.4498, 0.5116], name: "Riau" },
-  "lampung": { coords: [105.2667, -5.4500], name: "Lampung" },
-  "west_kalimantan": { coords: [109.3333, -0.0227], name: "Kalimantan Barat" },
-  "east_kalimantan": { coords: [117.1536, -0.4705], name: "Kalimantan Timur" },
-  "south_kalimantan": { coords: [114.5901, -3.3194], name: "Kalimantan Selatan" },
-  "north_sulawesi": { coords: [124.8455, 1.4931], name: "Sulawesi Utara" },
-  "south_sulawesi": { coords: [119.4327, -5.1476], name: "Sulawesi Selatan" },
-  "ntb": { coords: [116.1167, -8.5833], name: "NTB" },
-  "ntt": { coords: [123.5833, -10.1667], name: "NTT" },
-  "papua": { coords: [140.7060, -2.5337], name: "Papua" },
-  "maluku": { coords: [128.1814, -3.6954], name: "Maluku" },
-  "batam": { coords: [104.0305, 1.1301], name: "Batam" },
-  "medan": { coords: [98.6722, 3.5952], name: "Medan" },
-  "bandung": { coords: [107.6191, -6.9175], name: "Bandung" },
-  "surabaya": { coords: [112.7521, -7.2504], name: "Surabaya" },
-  "yogyakarta": { coords: [110.3695, -7.7956], name: "Yogyakarta" },
-  "semarang": { coords: [110.4225, -6.9697], name: "Semarang" },
-  "makassar": { coords: [119.4327, -5.1476], name: "Makassar" },
-  "manado": { coords: [124.8455, 1.4931], name: "Manado" },
-  "palembang": { coords: [104.7458, -2.9909], name: "Palembang" },
-  "pekanbaru": { coords: [101.4498, 0.5116], name: "Pekanbaru" },
+const PROVINCE_COORDS: Record<string, { coords: [number, number]; name: string; region: string }> = {
+  "jakarta": { coords: [106.8456, -6.2088], name: "DKI Jakarta", region: "Jawa" },
+  "west_java": { coords: [107.6191, -6.9175], name: "Jawa Barat", region: "Jawa" },
+  "central_java": { coords: [110.4225, -6.9697], name: "Jawa Tengah", region: "Jawa" },
+  "east_java": { coords: [112.7521, -7.2504], name: "Jawa Timur", region: "Jawa" },
+  "banten": { coords: [106.1503, -6.1200], name: "Banten", region: "Jawa" },
+  "bali": { coords: [115.2167, -8.6500], name: "Bali", region: "Bali & Nusa Tenggara" },
+  "north_sumatra": { coords: [99.0689, 2.1154], name: "Sumatera Utara", region: "Sumatera" },
+  "west_sumatra": { coords: [100.4651, -0.9471], name: "Sumatera Barat", region: "Sumatera" },
+  "south_sumatra": { coords: [104.7458, -2.9909], name: "Sumatera Selatan", region: "Sumatera" },
+  "riau": { coords: [101.4498, 0.5116], name: "Riau", region: "Sumatera" },
+  "lampung": { coords: [105.2667, -5.4500], name: "Lampung", region: "Sumatera" },
+  "west_kalimantan": { coords: [109.3333, -0.0227], name: "Kalimantan Barat", region: "Kalimantan" },
+  "east_kalimantan": { coords: [117.1536, -0.4705], name: "Kalimantan Timur", region: "Kalimantan" },
+  "south_kalimantan": { coords: [114.5901, -3.3194], name: "Kalimantan Selatan", region: "Kalimantan" },
+  "north_sulawesi": { coords: [124.8455, 1.4931], name: "Sulawesi Utara", region: "Sulawesi" },
+  "south_sulawesi": { coords: [119.4327, -5.1476], name: "Sulawesi Selatan", region: "Sulawesi" },
+  "ntb": { coords: [116.1167, -8.5833], name: "NTB", region: "Bali & Nusa Tenggara" },
+  "ntt": { coords: [123.5833, -10.1667], name: "NTT", region: "Bali & Nusa Tenggara" },
+  "papua": { coords: [140.7060, -2.5337], name: "Papua", region: "Papua & Maluku" },
+  "maluku": { coords: [128.1814, -3.6954], name: "Maluku", region: "Papua & Maluku" },
+  "batam": { coords: [104.0305, 1.1301], name: "Batam", region: "Sumatera" },
+  "medan": { coords: [98.6722, 3.5952], name: "Medan", region: "Sumatera" },
+  "bandung": { coords: [107.6191, -6.9175], name: "Bandung", region: "Jawa" },
+  "surabaya": { coords: [112.7521, -7.2504], name: "Surabaya", region: "Jawa" },
+  "yogyakarta": { coords: [110.3695, -7.7956], name: "Yogyakarta", region: "Jawa" },
+  "semarang": { coords: [110.4225, -6.9697], name: "Semarang", region: "Jawa" },
+  "makassar": { coords: [119.4327, -5.1476], name: "Makassar", region: "Sulawesi" },
+  "manado": { coords: [124.8455, 1.4931], name: "Manado", region: "Sulawesi" },
+  "palembang": { coords: [104.7458, -2.9909], name: "Palembang", region: "Sumatera" },
+  "pekanbaru": { coords: [101.4498, 0.5116], name: "Pekanbaru", region: "Sumatera" },
+};
+
+// Region zoom configurations
+const REGION_VIEWS: Record<string, { center: [number, number]; scale: number; label: string }> = {
+  "All": { center: [118.5, -2], scale: 750, label: "Nasional" },
+  "Jawa": { center: [110.0, -7.2], scale: 3200, label: "Jawa" },
+  "Sumatera": { center: [102.5, -0.5], scale: 1500, label: "Sumatera" },
+  "Kalimantan": { center: [114.5, -1.0], scale: 1800, label: "Kalimantan" },
+  "Sulawesi": { center: [121.5, -2.0], scale: 2000, label: "Sulawesi" },
+  "Bali & Nusa Tenggara": { center: [118.0, -9.0], scale: 3000, label: "Bali & NT" },
+  "Papua & Maluku": { center: [134.0, -3.5], scale: 1500, label: "Papua & Maluku" },
 };
 
 // Map region keywords or actual coordinates to rough geographic coordinates
-function guessCoords(deal: Deal): { coords: [number, number] } | null {
+function guessCoords(deal: Deal): { coords: [number, number]; regionName: string } | null {
   if (deal.latitude != null && deal.longitude != null) {
-    return { coords: [deal.longitude, deal.latitude] };
+    return { coords: [deal.longitude, deal.latitude], regionName: "Other" };
   }
 
-  // Prioritize mapping based on explicit area field
   const area = (deal.area || "").toLowerCase();
   
-  if (area.includes("medan")) return PROVINCE_COORDS.medan;
-  if (area.includes("batam") || area.includes("hang nadim")) return PROVINCE_COORDS.batam;
-  if (area.includes("pekanbaru") || area.includes("lanud")) return PROVINCE_COORDS.pekanbaru;
-  if (area.includes("palembang") || area.includes("gula putih")) return PROVINCE_COORDS.palembang;
-  if (area.includes("bandung") || area.includes("sanbe")) return PROVINCE_COORDS.bandung;
-  if (area.includes("surabaya") || area.includes("galaxy")) return PROVINCE_COORDS.surabaya;
-  if (area.includes("jogja") || area.includes("yogya") || area.includes("malyabhara")) return PROVINCE_COORDS.yogyakarta;
-  if (area.includes("semarang")) return PROVINCE_COORDS.semarang;
-  if (area.includes("bali") || area.includes("denpasar")) return PROVINCE_COORDS.bali;
-  if (area.includes("makassar") || area.includes("sulawesi")) return PROVINCE_COORDS.makassar;
-  if (area.includes("manado")) return PROVINCE_COORDS.manado;
-  if (area.includes("lombok")) return PROVINCE_COORDS.ntb;
-  if (area.includes("papua")) return PROVINCE_COORDS.papua;
+  if (area.includes("medan")) return { ...PROVINCE_COORDS.medan, regionName: PROVINCE_COORDS.medan.region };
+  if (area.includes("batam") || area.includes("hang nadim")) return { ...PROVINCE_COORDS.batam, regionName: PROVINCE_COORDS.batam.region };
+  if (area.includes("pekanbaru") || area.includes("lanud")) return { ...PROVINCE_COORDS.pekanbaru, regionName: PROVINCE_COORDS.pekanbaru.region };
+  if (area.includes("palembang") || area.includes("gula putih")) return { ...PROVINCE_COORDS.palembang, regionName: PROVINCE_COORDS.palembang.region };
+  if (area.includes("bandung") || area.includes("sanbe")) return { ...PROVINCE_COORDS.bandung, regionName: PROVINCE_COORDS.bandung.region };
+  if (area.includes("surabaya") || area.includes("galaxy")) return { ...PROVINCE_COORDS.surabaya, regionName: PROVINCE_COORDS.surabaya.region };
+  if (area.includes("jogja") || area.includes("yogya") || area.includes("malyabhara")) return { ...PROVINCE_COORDS.yogyakarta, regionName: PROVINCE_COORDS.yogyakarta.region };
+  if (area.includes("semarang")) return { ...PROVINCE_COORDS.semarang, regionName: PROVINCE_COORDS.semarang.region };
+  if (area.includes("bali") || area.includes("denpasar")) return { ...PROVINCE_COORDS.bali, regionName: PROVINCE_COORDS.bali.region };
+  if (area.includes("makassar") || area.includes("sulawesi")) return { ...PROVINCE_COORDS.makassar, regionName: PROVINCE_COORDS.makassar.region };
+  if (area.includes("manado")) return { ...PROVINCE_COORDS.manado, regionName: PROVINCE_COORDS.manado.region };
+  if (area.includes("lombok")) return { ...PROVINCE_COORDS.ntb, regionName: PROVINCE_COORDS.ntb.region };
+  if (area.includes("papua")) return { ...PROVINCE_COORDS.papua, regionName: PROVINCE_COORDS.papua.region };
   
-  // Default: Region based
-  if (deal.region === "East") return { coords: [112.7521, -7.2504] }; // East defaults to Surabaya roughly
-  if (deal.region === "Bali") return PROVINCE_COORDS.bali;
+  if (deal.region === "East") return { coords: [112.7521, -7.2504], regionName: "Jawa" };
+  if (deal.region === "Bali") return { ...PROVINCE_COORDS.bali, regionName: "Bali & Nusa Tenggara" };
   
-  // Default West = Jakarta area
-  return PROVINCE_COORDS.jakarta;
+  return { ...PROVINCE_COORDS.jakarta, regionName: "Jawa" };
+}
+
+// Drill-down modal for clicked cluster
+function MapDrillDownModal({ cluster, onClose, formatRp }: { cluster: any; onClose: () => void; formatRp: (v: number) => string }) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState<"value" | "status" | "name">("value");
+
+  const filteredDeals = useMemo(() => {
+    let result = [...(cluster?.deals || [])];
+    if (searchTerm) {
+      const q = searchTerm.toLowerCase();
+      result = result.filter((d: Deal) => 
+        d.client_name.toLowerCase().includes(q) || 
+        d.project_name.toLowerCase().includes(q) ||
+        (d.pic || "").toLowerCase().includes(q)
+      );
+    }
+    if (sortBy === "value") result.sort((a: Deal, b: Deal) => (Number(b.quotation) || 0) - (Number(a.quotation) || 0));
+    if (sortBy === "status") result.sort((a: Deal, b: Deal) => a.status.localeCompare(b.status));
+    if (sortBy === "name") result.sort((a: Deal, b: Deal) => a.client_name.localeCompare(b.client_name));
+    return result;
+  }, [cluster, searchTerm, sortBy]);
+
+  if (!cluster) return null;
+
+  const statusBreakdown = cluster.deals.reduce((acc: Record<string, { count: number; value: number }>, d: Deal) => {
+    if (!acc[d.status]) acc[d.status] = { count: 0, value: 0 };
+    acc[d.status].count++;
+    acc[d.status].value += Number(d.quotation) || 0;
+    return acc;
+  }, {});
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }}
+          style={{ background: "#fff", borderRadius: 24, width: "100%", maxWidth: 800, maxHeight: "85vh", overflow: "hidden", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)" }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div style={{ background: "linear-gradient(135deg, #0a1628, #0d2137)", padding: "24px 28px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div>
+              <p style={{ color: "rgba(102,204,255,0.7)", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em" }}>Region Detail</p>
+              <h3 style={{ color: "white", fontSize: 22, fontWeight: 900, marginTop: 4 }}>{cluster.name}</h3>
+              <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, fontWeight: 600, marginTop: 4 }}>
+                {cluster.deals.length} Projects • {formatRp(cluster.totalValue)}
+              </p>
+            </div>
+            <button onClick={onClose} style={{ background: "rgba(255,255,255,0.1)", border: "none", borderRadius: 12, padding: 10, cursor: "pointer", color: "white" }}>
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Status breakdown cards */}
+          <div style={{ padding: "16px 28px 0", display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {Object.entries(statusBreakdown).sort(([a], [b]) => a.localeCompare(b)).map(([status, data]: [string, any]) => {
+              const cfg = STATUS_CONFIG[status] || { label: status, color: "#888", bg: "rgba(136,136,136,0.1)" };
+              return (
+                <div key={status} style={{ background: cfg.bg, borderRadius: 12, padding: "8px 14px", display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: "50%", background: cfg.color }} />
+                  <span style={{ fontSize: 11, fontWeight: 800, color: cfg.color }}>{status}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b" }}>{data.count} • {formatRp(data.value)}</span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Search & Sort */}
+          <div style={{ padding: "16px 28px", display: "flex", gap: 12, alignItems: "center" }}>
+            <div style={{ flex: 1, position: "relative" }}>
+              <Search size={14} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }} />
+              <input
+                value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Cari client, project, PIC..."
+                style={{ width: "100%", padding: "10px 12px 10px 34px", borderRadius: 12, border: "1px solid #e2e8f0", fontSize: 13, fontWeight: 500, outline: "none", background: "#f8fafc" }}
+              />
+            </div>
+            <div style={{ display: "flex", gap: 4 }}>
+              {(["value", "status", "name"] as const).map(s => (
+                <button key={s} onClick={() => setSortBy(s)}
+                  style={{ padding: "8px 12px", borderRadius: 10, border: "none", fontSize: 11, fontWeight: 700, cursor: "pointer", background: sortBy === s ? "#0d2137" : "#f1f5f9", color: sortBy === s ? "#fff" : "#64748b", textTransform: "capitalize" }}
+                >{s === "value" ? "Value" : s === "status" ? "Status" : "Nama"}</button>
+              ))}
+            </div>
+          </div>
+
+          {/* Deal list */}
+          <div style={{ padding: "0 28px 24px", maxHeight: 380, overflowY: "auto" }}>
+            {filteredDeals.length === 0 ? (
+              <p style={{ textAlign: "center", color: "#94a3b8", fontSize: 13, padding: 40 }}>Tidak ada project ditemukan</p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {filteredDeals.map((deal: Deal) => {
+                  const cfg = STATUS_CONFIG[deal.status] || { label: deal.status, color: "#888", bg: "rgba(136,136,136,0.1)" };
+                  return (
+                    <div key={deal.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", background: "#f8fafc", borderRadius: 14, border: "1px solid #f1f5f9" }}>
+                      <span style={{ width: 32, height: 32, borderRadius: 10, background: cfg.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 900, color: cfg.color, flexShrink: 0 }}>{deal.status}</span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1e293b", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{deal.client_name}</p>
+                        <p style={{ fontSize: 11, fontWeight: 500, color: "#94a3b8", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{deal.project_name}</p>
+                      </div>
+                      <div style={{ textAlign: "right", flexShrink: 0 }}>
+                        <p style={{ fontSize: 13, fontWeight: 800, color: "#1e293b" }}>{formatRp(Number(deal.quotation) || 0)}</p>
+                        <p style={{ fontSize: 10, fontWeight: 600, color: "#94a3b8", marginTop: 2 }}>{deal.pic || "-"}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
 }
 
 function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canClickWidgets?: boolean }) {
   const [hoveredCluster, setHoveredCluster] = useState<string | null>(null);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; data: any } | null>(null);
+  const [selectedRegion, setSelectedRegion] = useState("All");
+  const [statusLayerFilter, setStatusLayerFilter] = useState<string | null>(null);
+  const [drillDownCluster, setDrillDownCluster] = useState<any>(null);
+  const [showPICLines, setShowPICLines] = useState(false);
+
+  const regionView = REGION_VIEWS[selectedRegion] || REGION_VIEWS["All"];
 
   // Cluster deals by approximate geographic location
   const clusters = useMemo(() => {
-    const clusterMap: Record<string, { coords: [number, number]; deals: Deal[]; totalValue: number; name: string }> = {};
+    const clusterMap: Record<string, { coords: [number, number]; deals: Deal[]; totalValue: number; name: string; regionName: string }> = {};
     
     deals.forEach(deal => {
-      if (deal.status === "L") return; // Skip lost deals
+      if (deal.status === "L") return;
+      if (statusLayerFilter && deal.status !== statusLayerFilter) return;
+      
       const geo = guessCoords(deal);
       if (!geo) return;
+
+      // Filter by selected region
+      if (selectedRegion !== "All" && geo.regionName !== selectedRegion) return;
       
-      // Cluster by roughly grouping coordinates (round to 1 decimal place = ~11km)
       const key = `${geo.coords[0].toFixed(1)}-${geo.coords[1].toFixed(1)}`;
       
       if (!clusterMap[key]) {
-        // Find nearest named location
         let nearestName = "Other";
         let nearestDist = Infinity;
         for (const [, prov] of Object.entries(PROVINCE_COORDS)) {
-          // simple euclidean dist for finding nearest named point (good enough for labeling)
           const dist = Math.sqrt((geo.coords[0] - prov.coords[0]) ** 2 + (geo.coords[1] - prov.coords[1]) ** 2);
           if (dist < nearestDist) {
             nearestDist = dist;
             nearestName = prov.name;
           }
         }
-        clusterMap[key] = { coords: geo.coords, deals: [], totalValue: 0, name: nearestName };
+        clusterMap[key] = { coords: geo.coords, deals: [], totalValue: 0, name: nearestName, regionName: geo.regionName };
       }
       clusterMap[key].deals.push(deal);
       clusterMap[key].totalValue += Number(deal.quotation) || 0;
     });
     
     return Object.entries(clusterMap).map(([key, v]) => ({ key, ...v }));
-  }, [deals]);
+  }, [deals, selectedRegion, statusLayerFilter]);
 
   const maxValue = useMemo(() => Math.max(...clusters.map(c => c.totalValue), 1), [clusters]);
 
+  // Regional stats (ranking)
+  const regionalStats = useMemo(() => {
+    const regionMap: Record<string, { value: number; count: number; won: number }> = {};
+    deals.forEach(deal => {
+      if (deal.status === "L") return;
+      const geo = guessCoords(deal);
+      if (!geo) return;
+      const rn = geo.regionName || "Other";
+      if (!regionMap[rn]) regionMap[rn] = { value: 0, count: 0, won: 0 };
+      regionMap[rn].value += Number(deal.quotation) || 0;
+      regionMap[rn].count++;
+      if (deal.status === "A") regionMap[rn].won++;
+    });
+    return Object.entries(regionMap)
+      .map(([name, data]) => ({ name, ...data }))
+      .sort((a, b) => b.value - a.value);
+  }, [deals]);
+
+  // PIC connection lines
+  const picLines = useMemo(() => {
+    if (!showPICLines) return [];
+    const picLocations: Record<string, [number, number][]> = {};
+    deals.forEach(deal => {
+      if (deal.status === "L" || !deal.pic) return;
+      const geo = guessCoords(deal);
+      if (!geo) return;
+      if (!picLocations[deal.pic]) picLocations[deal.pic] = [];
+      const key = `${geo.coords[0].toFixed(1)}-${geo.coords[1].toFixed(1)}`;
+      const exists = picLocations[deal.pic].some(c => `${c[0].toFixed(1)}-${c[1].toFixed(1)}` === key);
+      if (!exists) picLocations[deal.pic].push(geo.coords);
+    });
+    
+    const lines: { from: [number, number]; to: [number, number]; pic: string }[] = [];
+    Object.entries(picLocations).forEach(([pic, coords]) => {
+      if (coords.length < 2) return;
+      for (let i = 0; i < coords.length - 1; i++) {
+        for (let j = i + 1; j < coords.length; j++) {
+          lines.push({ from: coords[i], to: coords[j], pic });
+        }
+      }
+    });
+    return lines;
+  }, [deals, showPICLines]);
+
+  // Total stats for header
+  const totalStats = useMemo(() => {
+    const displayed = clusters.reduce((acc, c) => ({ count: acc.count + c.deals.length, value: acc.value + c.totalValue }), { count: 0, value: 0 });
+    return displayed;
+  }, [clusters]);
+
   return (
-    <div style={{ position: "relative", width: "100%", background: "linear-gradient(135deg, #0a1628 0%, #0d2137 50%, #0a1628 100%)", borderRadius: 24, overflow: "hidden", padding: "20px 0" }}>
+    <div style={{ position: "relative", width: "100%", background: "linear-gradient(135deg, #0a1628 0%, #0d2137 50%, #0a1628 100%)", borderRadius: 24, overflow: "hidden" }}>
+      
       {/* Grid overlay */}
-      <svg width="100%" viewBox="0 0 700 450" style={{ opacity: 0.06, position: "absolute", top: 0, left: 0, pointerEvents: "none" }}>
+      <svg width="100%" viewBox="0 0 700 450" style={{ opacity: 0.04, position: "absolute", top: 0, left: 0, pointerEvents: "none" }}>
         {Array.from({ length: 35 }).map((_, i) => (
           <line key={`v${i}`} x1={i * 20} y1={0} x2={i * 20} y2={450} stroke="#66ccff" strokeWidth={0.5} />
         ))}
@@ -210,142 +397,291 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
         ))}
       </svg>
 
-      {/* Main Geographic Map */}
-      <ComposableMap
-        projection="geoMercator"
-        projectionConfig={{
-          scale: 750,
-          center: [118.5, -2]
-        }}
-        width={700}
-        height={450}
-        style={{ width: "100%", height: "auto" }}
-      >
-        <Geographies geography="/maps/indonesia.json">
-          {({ geographies }) =>
-            geographies.map((geo) => (
-              <Geography
-                key={geo.rsmKey}
-                geography={geo}
-                fill="#66ccff"
-                fillOpacity={0.12}
-                stroke="#66ccff"
-                strokeWidth={0.5}
-                style={{
-                  default: { outline: "none" },
-                  hover: { fillOpacity: 0.25, outline: "none", cursor: canClickWidgets ? "pointer" : "default" },
-                  pressed: { outline: "none" },
-                }}
-              />
-            ))
-          }
-        </Geographies>
-
-        {/* Animated Markers for clusters */}
-        {clusters.map((cluster) => {
-          const radius = Math.max(8, Math.min(35, (cluster.totalValue / maxValue) * 35));
-          const isHovered = hoveredCluster === cluster.key;
-          const wonDeals = cluster.deals.filter(d => d.status === "A").length;
-          const totalDeals = cluster.deals.length;
-          const wonRatio = wonDeals / totalDeals;
-          const color = wonRatio > 0.5 ? "#00c875" : wonRatio > 0.2 ? "#fdab3d" : "#66ccff";
-          
-          return (
-            <Marker key={cluster.key} coordinates={cluster.coords}>
-              <g>
-                {/* Pulse animation */}
-                <circle cx={0} cy={0} r={radius + 8} fill="none" stroke={color} strokeWidth={1} opacity={0.3}>
-                  <animate attributeName="r" from={radius} to={radius + 20} dur="2s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" from="0.4" to="0" dur="2s" repeatCount="indefinite" />
-                </circle>
-                
-                {/* Main dot */}
-                <circle
-                  cx={0} cy={0} r={radius}
-                  fill={color} fillOpacity={isHovered ? 0.5 : 0.25}
-                  stroke={color} strokeWidth={isHovered ? 2 : 1}
-                  style={{ cursor: canClickWidgets ? "pointer" : "default", transition: "all 0.2s" }}
-                  onMouseEnter={(e) => {
-                    setHoveredCluster(cluster.key);
-                    const rect = (e.target as SVGElement).closest("svg")?.getBoundingClientRect();
-                    if (rect) {
-                      setTooltip({
-                        x: e.clientX - rect.left,
-                        y: e.clientY - rect.top - 10,
-                        data: cluster
-                      });
-                    }
-                  }}
-                  onMouseLeave={() => { setHoveredCluster(null); setTooltip(null); }}
-                />
-                
-                {/* Count label */}
-                <text x={0} y={4} textAnchor="middle" fill="white" fontSize={radius > 15 ? 11 : 9} fontWeight="800">
-                  {totalDeals}
-                </text>
-              </g>
-            </Marker>
-          );
-        })}
-      </ComposableMap>
-
-      {/* Tooltip */}
-      {tooltip && (
-        <div style={{
-          position: "absolute",
-          left: tooltip.x,
-          top: tooltip.y,
-          transform: "translate(-50%, -100%)",
-          background: "rgba(10,22,40,0.95)",
-          border: "1px solid rgba(102,204,255,0.3)",
-          borderRadius: 12,
-          padding: "12px 16px",
-          minWidth: 200,
-          zIndex: 100,
-          backdropFilter: "blur(10px)"
-        }}>
-          <p style={{ color: "#66ccff", fontSize: 11, fontWeight: 800, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-            {tooltip.data.name}
-          </p>
-          <p style={{ color: "white", fontSize: 18, fontWeight: 900 }}>
-            {tooltip.data.deals.length} Projects
-          </p>
-          <p style={{ color: "#00c875", fontSize: 13, fontWeight: 700 }}>
-            Rp {(tooltip.data.totalValue / 1e9).toFixed(1)}B
-          </p>
-          <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
-            {Object.entries(
-              tooltip.data.deals.reduce((acc: Record<string, number>, d: Deal) => {
-                acc[d.status] = (acc[d.status] || 0) + 1;
-                return acc;
-              }, {})
-            ).map(([status, count]) => (
-              <span key={status} style={{
-                padding: "2px 8px", borderRadius: 6, fontSize: 10, fontWeight: 800,
-                background: STATUS_CONFIG[status]?.bg || "rgba(255,255,255,0.1)",
-                color: STATUS_CONFIG[status]?.color || "#fff"
-              }}>
-                {status}: {count as number}
-              </span>
-            ))}
+      {/* Title & Controls Bar */}
+      <div style={{ position: "relative", zIndex: 10, padding: "20px 24px 0" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
+          <div>
+            <p style={{ color: "rgba(102,204,255,0.6)", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em" }}>Project Distribution</p>
+            <h3 style={{ color: "white", fontSize: 20, fontWeight: 900, marginTop: 4 }}>
+              {selectedRegion === "All" ? "Expanded Product Line - National" : `Region: ${REGION_VIEWS[selectedRegion]?.label || selectedRegion}`}
+            </h3>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ color: "rgba(102,204,255,0.5)", fontSize: 10, fontWeight: 700 }}>{totalStats.count} projects</span>
+            <span style={{ color: "rgba(255,255,255,0.3)" }}>•</span>
+            <span style={{ color: "#00c875", fontSize: 10, fontWeight: 800 }}>{formatRp(totalStats.value)}</span>
           </div>
         </div>
-      )}
+
+        {/* Region Filter Buttons */}
+        <div style={{ display: "flex", gap: 6, marginTop: 14, flexWrap: "wrap" }}>
+          {Object.entries(REGION_VIEWS).map(([key, rv]) => (
+            <button key={key} onClick={() => setSelectedRegion(key)}
+              style={{
+                padding: "6px 14px", borderRadius: 10, border: "1px solid",
+                borderColor: selectedRegion === key ? "#66ccff" : "rgba(102,204,255,0.15)",
+                background: selectedRegion === key ? "rgba(102,204,255,0.2)" : "rgba(255,255,255,0.03)",
+                color: selectedRegion === key ? "#66ccff" : "rgba(255,255,255,0.5)",
+                fontSize: 10, fontWeight: 700, cursor: "pointer", transition: "all 0.2s",
+                letterSpacing: "0.02em"
+              }}
+            >{rv.label}</button>
+          ))}
+        </div>
+
+        {/* Status Layer Toggle + PIC Lines Toggle */}
+        <div style={{ display: "flex", gap: 6, marginTop: 10, alignItems: "center", flexWrap: "wrap" }}>
+          <span style={{ color: "rgba(102,204,255,0.4)", fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginRight: 4 }}>Filter Status:</span>
+          <button onClick={() => setStatusLayerFilter(null)}
+            style={{
+              padding: "4px 10px", borderRadius: 8, border: "1px solid",
+              borderColor: !statusLayerFilter ? "#66ccff" : "rgba(102,204,255,0.15)",
+              background: !statusLayerFilter ? "rgba(102,204,255,0.2)" : "transparent",
+              color: !statusLayerFilter ? "#66ccff" : "rgba(255,255,255,0.4)",
+              fontSize: 10, fontWeight: 700, cursor: "pointer"
+            }}
+          >All</button>
+          {["A", "B", "C", "D", "E"].map(s => {
+            const cfg = STATUS_CONFIG[s];
+            const isActive = statusLayerFilter === s;
+            return (
+              <button key={s} onClick={() => setStatusLayerFilter(isActive ? null : s)}
+                style={{
+                  padding: "4px 10px", borderRadius: 8, border: "1px solid",
+                  borderColor: isActive ? cfg.color : "rgba(102,204,255,0.15)",
+                  background: isActive ? `${cfg.color}33` : "transparent",
+                  color: isActive ? cfg.color : "rgba(255,255,255,0.4)",
+                  fontSize: 10, fontWeight: 700, cursor: "pointer"
+                }}
+              >{s}</button>
+            );
+          })}
+          
+          <div style={{ width: 1, height: 16, background: "rgba(102,204,255,0.15)", margin: "0 4px" }} />
+          
+          <button onClick={() => setShowPICLines(!showPICLines)}
+            style={{
+              padding: "4px 10px", borderRadius: 8, border: "1px solid",
+              borderColor: showPICLines ? "#fdab3d" : "rgba(102,204,255,0.15)",
+              background: showPICLines ? "rgba(253,171,61,0.2)" : "transparent",
+              color: showPICLines ? "#fdab3d" : "rgba(255,255,255,0.4)",
+              fontSize: 10, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 4
+            }}
+          >
+            <Activity size={10} />
+            PIC Coverage
+          </button>
+        </div>
+      </div>
+
+      {/* Map + Side Panel Container */}
+      <div style={{ display: "flex", position: "relative" }}>
+        {/* Main Geographic Map */}
+        <div style={{ flex: 1, position: "relative" }}>
+          <ComposableMap
+            projection="geoMercator"
+            projectionConfig={{
+              scale: regionView.scale,
+              center: regionView.center
+            }}
+            width={700}
+            height={450}
+            style={{ width: "100%", height: "auto" }}
+          >
+            <Geographies geography="/maps/indonesia.json">
+              {({ geographies }) =>
+                geographies.map((geo) => (
+                  <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    fill="#66ccff"
+                    fillOpacity={0.12}
+                    stroke="#66ccff"
+                    strokeWidth={0.5}
+                    style={{
+                      default: { outline: "none" },
+                      hover: { fillOpacity: 0.25, outline: "none", cursor: canClickWidgets ? "pointer" : "default" },
+                      pressed: { outline: "none" },
+                    }}
+                  />
+                ))
+              }
+            </Geographies>
+
+            {/* PIC Connection Lines */}
+            {picLines.map((line, idx) => (
+              <Marker key={`line-${idx}`} coordinates={line.from}>
+                <line
+                  x1={0} y1={0}
+                  x2={(line.to[0] - line.from[0]) * (regionView.scale / 100)}
+                  y2={(line.to[1] - line.from[1]) * (regionView.scale / 100)}
+                  stroke="#fdab3d" strokeWidth={0.8} strokeDasharray="4 3" opacity={0.4}
+                >
+                  <animate attributeName="stroke-dashoffset" from="0" to="14" dur="2s" repeatCount="indefinite" />
+                </line>
+              </Marker>
+            ))}
+
+            {/* Animated Markers for clusters */}
+            {clusters.map((cluster) => {
+              const radius = Math.max(8, Math.min(35, (cluster.totalValue / maxValue) * 35));
+              const isHovered = hoveredCluster === cluster.key;
+              const wonDeals = cluster.deals.filter(d => d.status === "A").length;
+              const totalDeals = cluster.deals.length;
+              const wonRatio = wonDeals / totalDeals;
+              const color = statusLayerFilter 
+                ? (STATUS_CONFIG[statusLayerFilter]?.color || "#66ccff")
+                : wonRatio > 0.5 ? "#00c875" : wonRatio > 0.2 ? "#fdab3d" : "#66ccff";
+              
+              return (
+                <Marker key={cluster.key} coordinates={cluster.coords}>
+                  <g>
+                    {/* Pulse animation */}
+                    <circle cx={0} cy={0} r={radius + 8} fill="none" stroke={color} strokeWidth={1} opacity={0.3}>
+                      <animate attributeName="r" from={radius} to={radius + 20} dur="2s" repeatCount="indefinite" />
+                      <animate attributeName="opacity" from="0.4" to="0" dur="2s" repeatCount="indefinite" />
+                    </circle>
+                    
+                    {/* Main dot */}
+                    <circle
+                      cx={0} cy={0} r={radius}
+                      fill={color} fillOpacity={isHovered ? 0.5 : 0.25}
+                      stroke={color} strokeWidth={isHovered ? 2.5 : 1}
+                      style={{ cursor: canClickWidgets ? "pointer" : "default", transition: "all 0.2s" }}
+                      onMouseEnter={(e) => {
+                        setHoveredCluster(cluster.key);
+                        const rect = (e.target as SVGElement).closest("svg")?.getBoundingClientRect();
+                        if (rect) {
+                          setTooltip({
+                            x: e.clientX - rect.left,
+                            y: e.clientY - rect.top - 10,
+                            data: cluster
+                          });
+                        }
+                      }}
+                      onMouseLeave={() => { setHoveredCluster(null); setTooltip(null); }}
+                      onClick={() => canClickWidgets && setDrillDownCluster(cluster)}
+                    />
+                    
+                    {/* Count label */}
+                    <text x={0} y={4} textAnchor="middle" fill="white" fontSize={radius > 15 ? 11 : 9} fontWeight="800"
+                      style={{ pointerEvents: "none" }}
+                    >
+                      {totalDeals}
+                    </text>
+                  </g>
+                </Marker>
+              );
+            })}
+          </ComposableMap>
+
+          {/* Tooltip */}
+          {tooltip && (
+            <div style={{
+              position: "absolute",
+              left: tooltip.x,
+              top: tooltip.y,
+              transform: "translate(-50%, -100%)",
+              background: "rgba(10,22,40,0.95)",
+              border: "1px solid rgba(102,204,255,0.3)",
+              borderRadius: 12,
+              padding: "12px 16px",
+              minWidth: 220,
+              zIndex: 100,
+              backdropFilter: "blur(10px)",
+              pointerEvents: "none"
+            }}>
+              <p style={{ color: "#66ccff", fontSize: 11, fontWeight: 800, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                {tooltip.data.name}
+              </p>
+              <p style={{ color: "white", fontSize: 18, fontWeight: 900 }}>
+                {tooltip.data.deals.length} Projects
+              </p>
+              <p style={{ color: "#00c875", fontSize: 13, fontWeight: 700 }}>
+                {formatRp(tooltip.data.totalValue)}
+              </p>
+              <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
+                {Object.entries(
+                  tooltip.data.deals.reduce((acc: Record<string, number>, d: Deal) => {
+                    acc[d.status] = (acc[d.status] || 0) + 1;
+                    return acc;
+                  }, {})
+                ).map(([status, count]) => (
+                  <span key={status} style={{
+                    padding: "2px 8px", borderRadius: 6, fontSize: 10, fontWeight: 800,
+                    background: STATUS_CONFIG[status]?.bg || "rgba(255,255,255,0.1)",
+                    color: STATUS_CONFIG[status]?.color || "#fff"
+                  }}>
+                    {status}: {count as number}
+                  </span>
+                ))}
+              </div>
+              <p style={{ color: "rgba(102,204,255,0.4)", fontSize: 9, fontWeight: 600, marginTop: 8, textAlign: "center" }}>Klik untuk detail</p>
+            </div>
+          )}
+        </div>
+
+        {/* Regional Stats Side Panel */}
+        <div style={{ width: 180, padding: "10px 16px 16px 0", display: "flex", flexDirection: "column", justifyContent: "center", gap: 6, flexShrink: 0 }}>
+          <p style={{ color: "rgba(102,204,255,0.5)", fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 4 }}>
+            Ranking Wilayah
+          </p>
+          {regionalStats.map((rs, idx) => {
+            const maxRegVal = regionalStats[0]?.value || 1;
+            const pct = (rs.value / maxRegVal) * 100;
+            const isSelected = selectedRegion === rs.name;
+            return (
+              <div key={rs.name}
+                onClick={() => setSelectedRegion(isSelected ? "All" : rs.name)}
+                style={{
+                  cursor: "pointer", padding: "8px 10px", borderRadius: 10,
+                  background: isSelected ? "rgba(102,204,255,0.12)" : "rgba(255,255,255,0.03)",
+                  border: "1px solid",
+                  borderColor: isSelected ? "rgba(102,204,255,0.3)" : "transparent",
+                  transition: "all 0.2s"
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                  <span style={{ color: isSelected ? "#66ccff" : "rgba(255,255,255,0.7)", fontSize: 10, fontWeight: 800 }}>
+                    {idx + 1}. {rs.name}
+                  </span>
+                  <span style={{ color: "#00c875", fontSize: 9, fontWeight: 700 }}>{rs.count}</span>
+                </div>
+                <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${pct}%` }}
+                    transition={{ duration: 0.6, delay: idx * 0.05 }}
+                    style={{ height: "100%", background: "linear-gradient(90deg, #66ccff, #00c875)", borderRadius: 2 }}
+                  />
+                </div>
+                <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 9, fontWeight: 700, marginTop: 3 }}>
+                  {formatRp(rs.value)}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Legend */}
-      <div style={{ position: "absolute", bottom: 16, right: 16, display: "flex", gap: 12, fontSize: 10, fontWeight: 700 }}>
-        <span style={{ color: "#00c875" }}>● Won {">"}50%</span>
-        <span style={{ color: "#fdab3d" }}>● Mixed</span>
-        <span style={{ color: "#66ccff" }}>● Pipeline</span>
+      <div style={{ position: "relative", padding: "0 24px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 12, fontSize: 10, fontWeight: 700 }}>
+          <span style={{ color: "#00c875" }}>● Won {">"}50%</span>
+          <span style={{ color: "#fdab3d" }}>● Mixed</span>
+          <span style={{ color: "#66ccff" }}>● Pipeline</span>
+          {showPICLines && <span style={{ color: "#fdab3d" }}>--- PIC Coverage</span>}
+        </div>
       </div>
 
-      {/* Title */}
-      <div style={{ position: "absolute", top: 20, left: 24 }}>
-        <p style={{ color: "rgba(102,204,255,0.6)", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em" }}>Project Distribution</p>
-        <h3 style={{ color: "white", fontSize: 20, fontWeight: 900, marginTop: 4 }}>
-          Expanded Product Line - National
-        </h3>
-      </div>
+      {/* Drill-down Modal */}
+      {drillDownCluster && (
+        <MapDrillDownModal
+          cluster={drillDownCluster}
+          onClose={() => setDrillDownCluster(null)}
+          formatRp={formatRp}
+        />
+      )}
     </div>
   );
 }
