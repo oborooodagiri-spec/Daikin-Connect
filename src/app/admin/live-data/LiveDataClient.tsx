@@ -134,21 +134,22 @@ function guessCoords(deal: Deal): { coords: [number, number] } | null {
     return { coords: [deal.longitude, deal.latitude] };
   }
 
-  const text = `${deal.client_name} ${deal.project_name} ${deal.area || ""} ${deal.remarks || ""}`.toLowerCase();
+  // Prioritize mapping based on explicit area field
+  const area = (deal.area || "").toLowerCase();
   
-  if (text.includes("medan")) return PROVINCE_COORDS.medan;
-  if (text.includes("batam") || text.includes("hang nadim")) return PROVINCE_COORDS.batam;
-  if (text.includes("pekanbaru") || text.includes("lanud")) return PROVINCE_COORDS.pekanbaru;
-  if (text.includes("palembang") || text.includes("gula putih")) return PROVINCE_COORDS.palembang;
-  if (text.includes("bandung") || text.includes("sanbe")) return PROVINCE_COORDS.bandung;
-  if (text.includes("surabaya") || text.includes("galaxy")) return PROVINCE_COORDS.surabaya;
-  if (text.includes("jogja") || text.includes("yogya") || text.includes("malyabhara")) return PROVINCE_COORDS.yogyakarta;
-  if (text.includes("semarang")) return PROVINCE_COORDS.semarang;
-  if (text.includes("bali") || text.includes("denpasar")) return PROVINCE_COORDS.bali;
-  if (text.includes("makassar") || text.includes("sulawesi")) return PROVINCE_COORDS.makassar;
-  if (text.includes("manado")) return PROVINCE_COORDS.manado;
-  if (text.includes("lombok")) return PROVINCE_COORDS.ntb;
-  if (text.includes("papua")) return PROVINCE_COORDS.papua;
+  if (area.includes("medan")) return PROVINCE_COORDS.medan;
+  if (area.includes("batam") || area.includes("hang nadim")) return PROVINCE_COORDS.batam;
+  if (area.includes("pekanbaru") || area.includes("lanud")) return PROVINCE_COORDS.pekanbaru;
+  if (area.includes("palembang") || area.includes("gula putih")) return PROVINCE_COORDS.palembang;
+  if (area.includes("bandung") || area.includes("sanbe")) return PROVINCE_COORDS.bandung;
+  if (area.includes("surabaya") || area.includes("galaxy")) return PROVINCE_COORDS.surabaya;
+  if (area.includes("jogja") || area.includes("yogya") || area.includes("malyabhara")) return PROVINCE_COORDS.yogyakarta;
+  if (area.includes("semarang")) return PROVINCE_COORDS.semarang;
+  if (area.includes("bali") || area.includes("denpasar")) return PROVINCE_COORDS.bali;
+  if (area.includes("makassar") || area.includes("sulawesi")) return PROVINCE_COORDS.makassar;
+  if (area.includes("manado")) return PROVINCE_COORDS.manado;
+  if (area.includes("lombok")) return PROVINCE_COORDS.ntb;
+  if (area.includes("papua")) return PROVINCE_COORDS.papua;
   
   // Default: Region based
   if (deal.region === "East") return { coords: [112.7521, -7.2504] }; // East defaults to Surabaya roughly
