@@ -83,8 +83,6 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
     };
 
     deals.forEach(d => {
-      // Include Status B
-      if (d.status !== 'B') return;
       
       // Use target_po_date (Est Booking Month from Excel) for date bucketing
       const rawDate = d.target_po_date || d.est_booking_month;
@@ -152,6 +150,13 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(value);
+  };
+
+  const formatYAxis = (val: number) => {
+    if (val >= 1e12) return `${(val / 1e12).toFixed(1)}T`;
+    if (val >= 1e9) return `${(val / 1e9).toFixed(1)}M`;
+    if (val >= 1e6) return `${(val / 1e6).toFixed(0)}Jt`;
+    return val.toString();
   };
 
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -294,7 +299,7 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
                       axisLine={false} 
                       tickLine={false} 
                       tick={{ fontSize: 12, fontWeight: 600, fill: "#64748b" }}
-                      tickFormatter={(value) => `${(value / 1000000000).toFixed(1)}M`}
+                      tickFormatter={formatYAxis}
                     />
                     <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#94a3b8', strokeWidth: 1, strokeDasharray: "4 4" }} />
                     <Area type="monotone" dataKey="Forecast Value" stroke="#0ea5e9" strokeWidth={3} fillOpacity={1} fill="url(#colorForecast)" activeDot={{ r: 6, fill: "#0284c7" }} />
