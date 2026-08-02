@@ -40,8 +40,13 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
 };
 
 export default function ProjectByStatusModal({ isOpen, onClose, deals }: ProjectByStatusModalProps) {
-  
-  const { columns, rows, totals, chartData } = useMemo(() => {
+  const [expandedStatus, setExpandedStatus] = useState<string | null>(null);
+
+  const toggleRow = (status: string) => {
+    setExpandedStatus(prev => prev === status ? null : status);
+  };
+
+  const { columns, rows, totals, grandTotal, chartData } = useMemo(() => {
     const monthMap: Record<string, Record<string, number>> = {};
     
     // Find min and max dates
@@ -108,7 +113,17 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
         values[col.key] = val;
         rowTotal += val;
       });
-      return { status, values, rowTotal };
+      // Group deals for this row
+      const statusDeals = deals.filter(d => {
+        if (d.status !== status) return false;
+        const rawDate = d.target_po_date || d.created_at;
+        if (!rawDate) return false;
+        const dt = new Date(rawDate);
+        if (isNaN(dt.getTime())) return false;
+        return true;
+      }).sort((a, b) => Number(b.quotation || 0) - Number(a.quotation || 0));
+
+      return { status, values, rowTotal, deals: statusDeals };
     }).filter(r => r.rowTotal > 0);
 
     const totals: Record<string, number> = {};
@@ -272,22 +287,67 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
                   </thead>
                   <tbody>
                     {rows.map((row, idx) => (
-                      <tr key={row.status} style={{ background: idx % 2 === 0 ? "#ffffff" : "#fafafa", transition: "background 0.2s" }}>
-                        <td style={{ padding: "14px 16px", fontSize: 13, fontWeight: 800, color: "#323338", borderBottom: "1px solid #f0f0f0" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <div style={{ width: 12, height: 12, borderRadius: "50%", background: STATUS_CONFIG[row.status]?.color || "#ccc" }} />
-                            {row.status}
-                          </div>
-                        </td>
-                        {columns.map(col => (
-                          <td key={col.key} style={{ padding: "14px 16px", fontSize: 13, fontWeight: 500, color: row.values[col.key] > 0 ? "#334155" : "#cbd5e1", textAlign: "right", borderBottom: "1px solid #f0f0f0", fontVariantNumeric: "tabular-nums" }}>
-                            {row.values[col.key] > 0 ? formatRp(row.values[col.key]) : "-"}
+                      <React.Fragment key={row.status}>
+                        <tr 
+                          onClick={() => toggleRow(row.status)}
+                          style={{ cursor: "pointer", background: idx % 2 === 0 ? "#ffffff" : "#fafafa", transition: "background 0.2s" }}
+                          onMouseEnter={(e) => e.currentTarget.style.background = "#f1f5f9"}
+                          onMouseLeave={(e) => e.currentTarget.style.background = idx % 2 === 0 ? "#ffffff" : "#fafafa"}
+                        >
+                          <td style={{ padding: "14px 16px", fontSize: 13, fontWeight: 800, color: "#323338", borderBottom: "1px solid #f0f0f0" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                              <div style={{ width: 12, height: 12, borderRadius: "50%", background: STATUS_CONFIG[row.status]?.color || "#ccc" }} />
+                              {row.status}
+                            </div>
                           </td>
-                        ))}
-                        <td style={{ padding: "14px 16px", fontSize: 13, fontWeight: 800, color: "#0f172a", textAlign: "right", borderBottom: "1px solid #f0f0f0", background: "#f8fafc", fontVariantNumeric: "tabular-nums" }}>
-                          {formatRp(row.rowTotal)}
-                        </td>
-                      </tr>
+                          {columns.map(col => (
+                            <td key={col.key} style={{ padding: "14px 16px", fontSize: 13, fontWeight: 500, color: row.values[col.key] > 0 ? "#334155" : "#cbd5e1", textAlign: "right", borderBottom: "1px solid #f0f0f0", fontVariantNumeric: "tabular-nums" }}>
+                              {row.values[col.key] > 0 ? formatRp(row.values[col.key]) : "-"}
+                            </td>
+                          ))}
+                          <td style={{ padding: "14px 16px", fontSize: 13, fontWeight: 800, color: "#0f172a", textAlign: "right", borderBottom: "1px solid #f0f0f0", background: "#f8fafc", fontVariantNumeric: "tabular-nums" }}>
+                            {formatRp(row.rowTotal)}
+                          </td>
+                        </tr>
+                        {expandedStatus === row.status && (
+                          <tr>
+                            <td colSpan={columns.length + 2} style={{ padding: 0, borderBottom: "1px solid #f0f0f0" }}>
+                              <div style={{ padding: "20px 32px", background: "#f8fafc", borderLeft: `4px solid ${STATUS_CONFIG[row.status]?.color || "#ccc"}` }}>
+                                <h4 style={{ fontSize: 12, fontWeight: 800, color: "#475569", marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.05em" }}>Projects in Status {row.status} ({row.deals.length})</h4>
+                                {row.deals.length > 0 ? (
+                                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 16 }}>
+                                    {row.deals.map((deal: any) => (
+                                      <div key={deal.id} style={{ padding: "16px", background: "white", borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 2px 4px rgba(0,0,0,0.02)", display: "flex", flexDirection: "column", gap: 12 }}>
+                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
+                                          <div style={{ fontSize: 14, fontWeight: 800, color: "#1e293b", lineHeight: 1.4 }}>{deal.project_name || "Unknown Project"}</div>
+                                          <div style={{ fontSize: 13, fontWeight: 800, color: STATUS_CONFIG[row.status]?.color || "#0ea5e9", whiteSpace: "nowrap" }}>
+                                            {formatRp(Number(deal.quotation || 0))}
+                                          </div>
+                                        </div>
+                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px dashed #e2e8f0", paddingTop: 12 }}>
+                                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                            <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#f1f5f9", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: "#64748b" }}>
+                                              {deal.pic?.substring(0, 2).toUpperCase() || "??"}
+                                            </div>
+                                            <span style={{ fontSize: 12, fontWeight: 600, color: "#475569" }}>{deal.pic || "Unassigned"}</span>
+                                          </div>
+                                          {deal.client_name && (
+                                            <div style={{ fontSize: 11, fontWeight: 600, color: "#94a3b8", background: "#f8fafc", padding: "4px 8px", borderRadius: "6px" }}>
+                                              {deal.client_name}
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <div style={{ padding: "24px", textAlign: "center", color: "#94a3b8", fontSize: 13, fontWeight: 500, background: "white", borderRadius: 12, border: "1px dashed #cbd5e1" }}>No projects found for this status.</div>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
                     ))}
                     {/* Grand Total Row */}
                     <tr style={{ background: "#e2e8f0" }}>
