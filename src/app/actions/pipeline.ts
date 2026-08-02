@@ -699,54 +699,7 @@ export async function deleteOpsRecord(id: number) {
   }
 }
 
-// ============================================
-// PIPELINE SETTINGS FOR PIC AREAS
-// ============================================
-export async function getPICAreas() {
-  noStore();
-  try {
-    const record = await prisma.pipeline_settings.findUnique({
-      where: { key: "PIC_AREAS" }
-    });
-    return record?.value ? (record.value as Record<string, string>) : {};
-  } catch (error) {
-    console.error("getPICAreas error:", error);
-    return {};
-  }
-}
 
-export async function updatePICAreas(mapping: Record<string, string>) {
-  try {
-    const session = await getSession();
-    if (!session) return { error: "Unauthorized" };
-
-    const isAdminOrMgmt = session.roles?.some((r: string) => 
-      ["admin", "super", "management", "director"].some(kw => r.toLowerCase().includes(kw))
-    );
-    if (!isAdminOrMgmt) return { error: "Only admins can update PIC settings." };
-
-    await prisma.pipeline_settings.upsert({
-      where: { key: "PIC_AREAS" },
-      update: { value: mapping as any },
-      create: { key: "PIC_AREAS", value: mapping as any, description: "Mapping of PIC name to Region/Area" }
-    });
-
-    // Retroactively update existing deals to match the new mapping
-    for (const [picName, region] of Object.entries(mapping)) {
-      if (picName && region) {
-        await prisma.pipeline_deals.updateMany({
-          where: { pic: picName },
-          data: { region: region }
-        });
-      }
-    }
-
-    return { success: true };
-  } catch (error) {
-    console.error("updatePICAreas error:", error);
-    return { error: "Failed to update PIC settings." };
-  }
-}
 
 // ============================================
 // 9. GET PIPELINE STATS (Aggregated)
