@@ -179,7 +179,7 @@ export default function CategoryPipelineModal({
                   <div style={{ position: "relative", width: 32, height: 18, background: showTender ? "#f97316" : "#cbd5e1", borderRadius: 20, transition: "0.3s" }}>
                     <div style={{ position: "absolute", top: 2, left: showTender ? 16 : 2, width: 14, height: 14, background: "white", borderRadius: "50%", transition: "0.3s", boxShadow: "0 1px 2px rgba(0,0,0,0.2)" }} />
                   </div>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: showTender ? "#f97316" : "#64748b" }}>+ Tender</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: showTender ? "#f97316" : "#64748b" }}>Engineering Review</span>
                   <input type="checkbox" checked={showTender} onChange={e => setShowTender(e.target.checked)} style={{ display: "none" }} />
                 </label>
                 
@@ -189,7 +189,7 @@ export default function CategoryPipelineModal({
                   <div style={{ position: "relative", width: 32, height: 18, background: showHold ? "#64748b" : "#cbd5e1", borderRadius: 20, transition: "0.3s" }}>
                     <div style={{ position: "absolute", top: 2, left: showHold ? 16 : 2, width: 14, height: 14, background: "white", borderRadius: "50%", transition: "0.3s", boxShadow: "0 1px 2px rgba(0,0,0,0.2)" }} />
                   </div>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: showHold ? "#64748b" : "#94a3b8" }}>+ Hold</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: showHold ? "#e44258" : "#64748b" }}>Hold</span>
                   <input type="checkbox" checked={showHold} onChange={e => setShowHold(e.target.checked)} style={{ display: "none" }} />
                 </label>
               </div>

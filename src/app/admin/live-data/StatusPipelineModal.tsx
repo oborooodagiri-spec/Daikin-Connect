@@ -76,7 +76,7 @@ export default function StatusPipelineModal({
       const val = Number(d.quotation || 0);
       let st = d.status || "Unknown";
       const statusMap: Record<string, string> = {
-        "A": "Won", "B": "Budgeted", "C": "Contracted", "D": "Planning", "E": "Submitted", "T": "Tender"
+        "A": "Won", "B": "Budgeted", "C": "Contracted", "D": "Planning", "E": "Submitted", "T": "Engineering Review"
       };
       const label = statusMap[st] || st;
 
@@ -88,7 +88,7 @@ export default function StatusPipelineModal({
       grandTotal += val;
     });
 
-    const funnelOrder = ["Tender", "Submitted", "Planning", "Contracted", "Budgeted", "Won"];
+    const funnelOrder = ["Engineering Review", "Submitted", "Planning", "Contracted", "Budgeted", "Won"];
     const rows = Object.keys(rowMap).map(status => ({
       status,
       values: rowMap[status],
@@ -129,7 +129,7 @@ export default function StatusPipelineModal({
     'Contracted': '#7b2cbf',
     'Planning': '#fdab3d',
     'Submitted': '#66ccff',
-    'Tender': '#e44258',
+    'Engineering Review': '#e44258',
   };
 
   if (!isOpen) return null;

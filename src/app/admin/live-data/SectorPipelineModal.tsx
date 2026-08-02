@@ -198,7 +198,7 @@ export default function SectorPipelineModal({
                     <div style={{ position: "absolute", top: 2, left: showTender ? 16 : 2, width: 14, height: 14, background: "white", borderRadius: "50%", transition: "0.3s", boxShadow: "0 1px 2px rgba(0,0,0,0.2)" }} />
                   </div>
                   <input type="checkbox" checked={showTender} onChange={(e) => setShowTender(e.target.checked)} style={{ display: "none" }} />
-                  <span style={{ fontSize: 12, fontWeight: 600, color: "#475569" }}>Tender</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#475569" }}>Engineering Review</span>
                 </label>
                 
                 <div style={{ width: 1, height: 16, background: "#e2e8f0" }} />
