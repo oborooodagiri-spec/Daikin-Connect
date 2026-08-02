@@ -333,7 +333,7 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
                 </div>
               )}
 
-              {(profile.isAdmin || profile.roles.some((r: string) => r.toLowerCase().includes("management") || r.toLowerCase().includes("sales"))) && (
+              {(profile.isAdmin || profile.roles.some((r: string) => r.toLowerCase().includes("management") || r.toLowerCase().includes("sales") || r.toLowerCase().includes("engineer") || r.toLowerCase().includes("pic"))) && (
                 <div 
                   className="app-item"
                   onClick={() => router.push("/admin/live-data")}
