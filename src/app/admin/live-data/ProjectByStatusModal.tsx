@@ -189,8 +189,6 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
       });
     });
 
-    return { columns, rows, totals, grandTotal, chartData, tree: root };
-
     const totals: Record<string, number> = {};
     let grandTotal = 0;
     columns.forEach(col => {
