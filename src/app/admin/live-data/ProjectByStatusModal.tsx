@@ -237,7 +237,7 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
 
   const renderTree = (nodes: Record<string, TreeNode>) => {
     return Object.values(nodes)
-      .sort((a, b) => b.total - a.total)
+      .sort((a, b) => a.name.localeCompare(b.name))
       .map(node => {
         const hasChildren = Object.keys(node.children).length > 0;
         const isExpanded = !!expandedNodes[node.id];
