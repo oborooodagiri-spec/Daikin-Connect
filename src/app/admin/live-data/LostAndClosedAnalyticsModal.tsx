@@ -171,7 +171,12 @@ export default function LostAndClosedAnalyticsModal({ isOpen, onClose, deals }: 
                   <LineChart data={stats.timelineArray}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                     <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                    <YAxis tickFormatter={(val) => formatRp(val)} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} width={80} />
+                    <YAxis tickFormatter={(val) => {
+                      if (val >= 1e12) return `Rp ${(val / 1e12).toFixed(1)}T`;
+                      if (val >= 1e9) return `Rp ${(val / 1e9).toFixed(1)}M`;
+                      if (val >= 1e6) return `Rp ${(val / 1e6).toFixed(1)}Jt`;
+                      return `Rp ${val}`;
+                    }} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} width={80} />
                     <RechartsTooltip formatter={(val: any) => formatRp(Number(val) || 0)} contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
                     <Legend iconType="circle" wrapperStyle={{ fontSize: 12, fontWeight: 600, paddingTop: 20 }} />
                     <Line type="monotone" dataKey="Closed" stroke="#10b981" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
@@ -188,7 +193,12 @@ export default function LostAndClosedAnalyticsModal({ isOpen, onClose, deals }: 
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={stats.picData} layout="vertical" margin={{ left: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
-                    <XAxis type="number" tickFormatter={(val) => formatRp(val)} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
+                    <XAxis type="number" tickFormatter={(val) => {
+                      if (val >= 1e12) return `Rp ${(val / 1e12).toFixed(1)}T`;
+                      if (val >= 1e9) return `Rp ${(val / 1e9).toFixed(1)}M`;
+                      if (val >= 1e6) return `Rp ${(val / 1e6).toFixed(1)}Jt`;
+                      return `Rp ${val}`;
+                    }} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
                     <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b', fontWeight: 600 }} width={80} />
                     <RechartsTooltip formatter={(val: any) => formatRp(Number(val) || 0)} cursor={{ fill: '#f1f5f9' }} contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
                     <Legend iconType="circle" wrapperStyle={{ fontSize: 12, fontWeight: 600 }} />
@@ -207,7 +217,12 @@ export default function LostAndClosedAnalyticsModal({ isOpen, onClose, deals }: 
                   <BarChart data={stats.areaData}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                     <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                    <YAxis tickFormatter={(val) => formatRp(val)} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} width={80} />
+                    <YAxis tickFormatter={(val) => {
+                      if (val >= 1e12) return `Rp ${(val / 1e12).toFixed(1)}T`;
+                      if (val >= 1e9) return `Rp ${(val / 1e9).toFixed(1)}M`;
+                      if (val >= 1e6) return `Rp ${(val / 1e6).toFixed(1)}Jt`;
+                      return `Rp ${val}`;
+                    }} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} width={80} />
                     <RechartsTooltip formatter={(val: any) => formatRp(Number(val) || 0)} cursor={{ fill: '#f1f5f9' }} contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
                     <Legend iconType="circle" wrapperStyle={{ fontSize: 12, fontWeight: 600 }} />
                     <Bar dataKey="Closed" stackId="a" fill="#10b981" radius={[0, 0, 0, 0]} />

@@ -222,7 +222,12 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
                       axisLine={false} 
                       tickLine={false} 
                       tick={{ fontSize: 12, fontWeight: 600, fill: "#676879" }}
-                      tickFormatter={(value) => `${(value / 1000000000).toFixed(1)}M`}
+                      tickFormatter={(value) => {
+                        if (value >= 1e12) return `${(value / 1e12).toFixed(1)}T`;
+                        if (value >= 1e9) return `${(value / 1e9).toFixed(1)}M`;
+                        if (value >= 1e6) return `${(value / 1e6).toFixed(1)}Jt`;
+                        return `${value}`;
+                      }}
                     />
                     <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(0,115,234,0.05)' }} />
                     <Legend wrapperStyle={{ paddingTop: 20 }} iconType="circle" />
