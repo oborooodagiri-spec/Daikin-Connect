@@ -89,6 +89,59 @@ export async function getSalesEngineers() {
 }
 
 // ============================================
+// GET ALL INTERNAL USERS (FOR PARTNERSHIP CONFIG)
+// ============================================
+export async function getInternalUsers() {
+  noStore();
+  try {
+    const users = await prisma.users.findMany({
+      where: {
+        is_active: true,
+        user_roles: {
+          some: {
+            roles: {
+              role_name: {
+                in: ["Super Administrator", "Administrator", "Management", "Director", "Sales Engineer", "Sales Supervisor"]
+              }
+            }
+          }
+        }
+      },
+      select: { name: true, id: true },
+      orderBy: { name: 'asc' }
+    });
+    
+    // Fallback: If no users found by strict role_name, just get users with any role containing 'admin', 'manage', 'direct', 'sales'
+    if (users.length === 0) {
+      const fallbackUsers = await prisma.users.findMany({
+        where: {
+          is_active: true,
+          user_roles: {
+            some: {
+              roles: {
+                OR: [
+                  { role_name: { contains: "admin" } },
+                  { role_name: { contains: "manage" } },
+                  { role_name: { contains: "direct" } },
+                  { role_name: { contains: "sales" } }
+                ]
+              }
+            }
+          }
+        },
+        select: { name: true, id: true },
+        orderBy: { name: 'asc' }
+      });
+      return serializePrisma({ success: true, data: fallbackUsers });
+    }
+
+    return serializePrisma({ success: true, data: users });
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+// ============================================
 // 1. GET DEALS PIPELINE
 // ============================================
 export async function getDealsPipeline(filters?: DealFilters) {
@@ -414,6 +467,95 @@ export async function deleteDeal(id: number) {
   } catch (error) {
     console.error("deleteDeal error:", error);
     return { error: "Failed to delete deal." };
+  }
+}
+
+// ============================================
+// PIPELINE SETTINGS FOR PIC AREAS
+// ============================================
+export async function getPICAreas() {
+  noStore();
+  try {
+    const record = await prisma.pipeline_settings.findUnique({
+      where: { key: "PIC_AREAS" }
+    });
+    return record?.value ? (record.value as Record<string, string>) : {};
+  } catch (error) {
+    console.error("getPICAreas error:", error);
+    return {};
+  }
+}
+
+export async function updatePICAreas(mapping: Record<string, string>) {
+  try {
+    const session = await getSession();
+    if (!session) return { error: "Unauthorized" };
+
+    const isAdminOrMgmt = session.roles?.some((r: string) => 
+      ["admin", "super", "management", "director"].some(kw => r.toLowerCase().includes(kw))
+    );
+    if (!isAdminOrMgmt) return { error: "Only admins can update PIC settings." };
+
+    await prisma.pipeline_settings.upsert({
+      where: { key: "PIC_AREAS" },
+      update: { value: mapping as any },
+      create: { key: "PIC_AREAS", value: mapping as any, description: "Mapping of PIC name to Region/Area" }
+    });
+
+    // Retroactively update existing deals to match the new mapping
+    for (const [picName, region] of Object.entries(mapping)) {
+      if (picName && region) {
+        await prisma.pipeline_deals.updateMany({
+          where: { pic: picName },
+          data: { region: region }
+        });
+      }
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("updatePICAreas error:", error);
+    return { error: "Failed to update PIC settings." };
+  }
+}
+
+// ============================================
+// PIPELINE SETTINGS FOR PARTNERSHIP PICS
+// ============================================
+export async function getPartnershipPICs() {
+  noStore();
+  try {
+    const record = await prisma.pipeline_settings.findUnique({
+      where: { key: "PARTNERSHIP_PICS" }
+    });
+    return record?.value ? (record.value as string[]) : [];
+  } catch (error) {
+    console.error("getPartnershipPICs error:", error);
+    return [];
+  }
+}
+
+export async function updatePartnershipPICs(names: string[]) {
+  try {
+    const session = await getSession();
+    if (!session) return { error: "Unauthorized" };
+
+    const isAdminOrMgmt = session.roles?.some((r: string) => 
+      ["admin", "super", "management", "director"].some(kw => r.toLowerCase().includes(kw))
+    );
+    if (!isAdminOrMgmt) return { error: "Only admins can update Partnership PIC settings." };
+
+    await prisma.pipeline_settings.upsert({
+      where: { key: "PARTNERSHIP_PICS" },
+      update: { value: names as any },
+      create: { key: "PARTNERSHIP_PICS", value: names as any, description: "List of users designated as Partnership PICs" }
+    });
+
+    revalidatePath("/admin/live-data");
+    return { success: true };
+  } catch (error: any) {
+    console.error("updatePartnershipPICs error:", error);
+    return { error: error.message };
   }
 }
 

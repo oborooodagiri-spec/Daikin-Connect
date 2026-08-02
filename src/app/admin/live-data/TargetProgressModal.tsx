@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { X, Target, Trophy, TrendingUp, ChevronDown } from "lucide-react";
-import { getTargetSettings, getSalesEngineers } from "@/app/actions/pipeline";
+import { X, Target, Trophy, TrendingUp, ChevronDown, Handshake } from "lucide-react";
+import { getTargetSettings, getSalesEngineers, getPartnershipPICs } from "@/app/actions/pipeline";
 
 interface TargetProgressModalProps {
   isOpen: boolean;
@@ -16,7 +16,9 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
   const [picTargets, setPicTargets] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [salesEngineers, setSalesEngineers] = useState<string[]>([]);
+  const [partnershipPICs, setPartnershipPICs] = useState<string[]>([]);
   const [modalFY, setModalFY] = useState(currentFY);
+  const [activeTab, setActiveTab] = useState<"sales" | "partner">("sales");
 
   useEffect(() => {
     if (isOpen) {
@@ -27,15 +29,17 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
 
   const loadTargets = async () => {
     setLoading(true);
-    const [targetRes, seRes] = await Promise.all([
+    const [targetRes, seRes, picRes] = await Promise.all([
       getTargetSettings(),
-      getSalesEngineers()
+      getSalesEngineers(),
+      getPartnershipPICs()
     ]);
     setTotalTarget(targetRes?.total || 0);
     setPicTargets(targetRes?.byPic || {});
     if (seRes?.success) {
       setSalesEngineers((seRes.data || []).map((u: any) => u.name));
     }
+    if (picRes) setPartnershipPICs(picRes);
     setLoading(false);
   };
 
@@ -53,10 +57,11 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
   };
 
   // Filter closed deals by selected FY
-  const { totalAchievement, totalClosedCount, picAchievements } = useMemo(() => {
+  const { totalAchievement, totalClosedCount, picAchievements, partnerAchievements } = useMemo(() => {
     let total = 0;
     let closedCount = 0;
     const byPic: Record<string, { value: number; count: number }> = {};
+    const byPartner: Record<string, { value: number; count: number }> = {};
 
     // FY date range: April 1 of FY year to March 31 of FY+1 year
     const fyStartYear = 2000 + modalFY;
@@ -75,11 +80,18 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
           if (!byPic[pic]) byPic[pic] = { value: 0, count: 0 };
           byPic[pic].value += val;
           byPic[pic].count++;
+
+          if (d.source === "Partnership" && d.sales_planner) {
+            const partner = d.sales_planner;
+            if (!byPartner[partner]) byPartner[partner] = { value: 0, count: 0 };
+            byPartner[partner].value += val;
+            byPartner[partner].count++;
+          }
         }
       }
     });
 
-    return { totalAchievement: total, totalClosedCount: closedCount, picAchievements: byPic };
+    return { totalAchievement: total, totalClosedCount: closedCount, picAchievements: byPic, partnerAchievements: byPartner };
   }, [deals, modalFY]);
 
   if (!isOpen) return null;
@@ -92,7 +104,9 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
     ...salesEngineers,
     ...Object.keys(picTargets),
     ...Object.keys(picAchievements)
-  ])).sort((a, b) => a.localeCompare(b));
+  ]))
+  .filter(pic => !partnershipPICs.includes(pic))
+  .sort((a, b) => a.localeCompare(b));
 
   const picProgressData = allPics.map(pic => {
     const target = picTargets[pic] || 0;
@@ -101,6 +115,15 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
     const progress = calculateProgress(achievement, target);
     return { pic, target, achievement, count, progress };
   }).sort((a, b) => b.progress - a.progress);
+
+  const partnerProgressData = Array.from(new Set([
+    ...partnershipPICs,
+    ...Object.keys(partnerAchievements)
+  ])).map(partner => {
+    const achievement = partnerAchievements[partner]?.value || 0;
+    const count = partnerAchievements[partner]?.count || 0;
+    return { partner, achievement, count };
+  }).sort((a, b) => b.achievement - a.achievement);
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -156,49 +179,107 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
               </div>
             </div>
 
-            {/* PIC TARGETS */}
-            <div>
-              <h3 style={{ fontSize: 14, fontWeight: 800, color: "#323338", marginBottom: 16 }}>Sales Leaderboard</h3>
-              
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {picProgressData.map((data, index) => {
-                  const color = getProgressColor(data.progress);
-                  const isTop = index === 0 && data.progress > 0;
-                  
-                  return (
-                    <div key={data.pic} style={{ background: "#f8f9fb", borderRadius: 12, padding: 16, border: "1px solid #e8e8e8", display: "flex", alignItems: "center", gap: 20 }}>
-                      
-                      <div style={{ width: 40, height: 40, borderRadius: "50%", background: isTop ? "#fff9e6" : "#f0f0f0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        {isTop ? <Trophy size={20} color="#ffcb00" /> : <span style={{ fontSize: 14, fontWeight: 800, color: "#999" }}>{index + 1}</span>}
-                      </div>
-
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                          <span style={{ fontSize: 14, fontWeight: 800, color: "#323338" }}>{data.pic}</span>
-                          <span style={{ fontSize: 16, fontWeight: 900, color: color }}>{data.progress}%</span>
-                        </div>
-                        
-                        <div style={{ width: "100%", height: 8, background: "#e8e8e8", borderRadius: 4, overflow: "hidden", marginBottom: 6 }}>
-                          <div style={{ width: `${Math.min(data.progress, 100)}%`, height: "100%", background: color, borderRadius: 4 }} />
-                        </div>
-                        
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, fontWeight: 600, color: "#676879" }}>
-                          <span>Closed: <span style={{ color: "#323338" }}>{formatRp(data.achievement)}</span> ({data.count} projects)</span>
-                          <span>Target: {formatRp(data.target)}</span>
-                        </div>
-                      </div>
-
-                    </div>
-                  );
-                })}
-
-                {picProgressData.length === 0 && (
-                  <div style={{ padding: 40, textAlign: "center", fontSize: 13, color: "#999", fontStyle: "italic", background: "#f8f9fb", borderRadius: 12, border: "1px solid #e8e8e8" }}>
-                    No sales data available.
-                  </div>
-                )}
-              </div>
+            {/* TABS */}
+            <div style={{ display: "flex", gap: 12, marginBottom: 8 }}>
+              <button 
+                onClick={() => setActiveTab("sales")}
+                style={{ flex: 1, padding: "12px", borderRadius: 12, fontSize: 13, fontWeight: 800, cursor: "pointer", border: "none", background: activeTab === "sales" ? "#323338" : "#f5f6f8", color: activeTab === "sales" ? "white" : "#676879", transition: "all 0.2s" }}
+              >
+                Sales Leaderboard
+              </button>
+              <button 
+                onClick={() => setActiveTab("partner")}
+                style={{ flex: 1, padding: "12px", borderRadius: 12, fontSize: 13, fontWeight: 800, cursor: "pointer", border: "none", background: activeTab === "partner" ? "#0073ea" : "#f5f6f8", color: activeTab === "partner" ? "white" : "#676879", transition: "all 0.2s" }}
+              >
+                Partner Relation
+              </button>
             </div>
+
+            {/* SALES LEADERBOARD */}
+            {activeTab === "sales" && (
+              <div>
+                <h3 style={{ fontSize: 14, fontWeight: 800, color: "#323338", marginBottom: 16 }}>Sales Leaderboard</h3>
+                
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {picProgressData.map((data, index) => {
+                    const color = getProgressColor(data.progress);
+                    const isTop = index === 0 && data.progress > 0;
+                    
+                    return (
+                      <div key={data.pic} style={{ background: "#f8f9fb", borderRadius: 12, padding: 16, border: "1px solid #e8e8e8", display: "flex", alignItems: "center", gap: 20 }}>
+                        
+                        <div style={{ width: 40, height: 40, borderRadius: "50%", background: isTop ? "#fff9e6" : "#f0f0f0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          {isTop ? <Trophy size={20} color="#ffcb00" /> : <span style={{ fontSize: 14, fontWeight: 800, color: "#999" }}>{index + 1}</span>}
+                        </div>
+
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                            <span style={{ fontSize: 14, fontWeight: 800, color: "#323338" }}>{data.pic}</span>
+                            <span style={{ fontSize: 16, fontWeight: 900, color: color }}>{data.progress}%</span>
+                          </div>
+                          
+                          <div style={{ width: "100%", height: 8, background: "#e8e8e8", borderRadius: 4, overflow: "hidden", marginBottom: 6 }}>
+                            <div style={{ width: `${Math.min(data.progress, 100)}%`, height: "100%", background: color, borderRadius: 4 }} />
+                          </div>
+                          
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, fontWeight: 600, color: "#676879" }}>
+                            <span>Closed: <span style={{ color: "#323338" }}>{formatRp(data.achievement)}</span> ({data.count} projects)</span>
+                            <span>Target: {formatRp(data.target)}</span>
+                          </div>
+                        </div>
+
+                      </div>
+                    );
+                  })}
+
+                  {picProgressData.length === 0 && (
+                    <div style={{ padding: 40, textAlign: "center", fontSize: 13, color: "#999", fontStyle: "italic", background: "#f8f9fb", borderRadius: 12, border: "1px solid #e8e8e8" }}>
+                      No sales data available.
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* PARTNER RELATION */}
+            {activeTab === "partner" && (
+              <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                <h3 style={{ fontSize: 14, fontWeight: 800, color: "#0073ea", marginBottom: 16 }}>Partnership Contribution</h3>
+                
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {partnerProgressData.map((data, index) => {
+                    const isTop = index === 0 && data.achievement > 0;
+                    
+                    return (
+                      <div key={data.partner} style={{ background: "#f0f7ff", borderRadius: 12, padding: 16, border: "1px solid #d0e3ff", display: "flex", alignItems: "center", gap: 20 }}>
+                        
+                        <div style={{ width: 40, height: 40, borderRadius: "50%", background: isTop ? "#0073ea" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: isTop ? "none" : "1px solid #d0e3ff" }}>
+                          {isTop ? <Handshake size={20} color="#fff" /> : <Handshake size={20} color="#0073ea" />}
+                        </div>
+
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <span style={{ fontSize: 14, fontWeight: 800, color: "#0073ea" }}>{data.partner}</span>
+                          </div>
+                          
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: "#676879" }}>Projects assisted: <span style={{ color: "#323338", fontWeight: 800 }}>{data.count}</span></span>
+                            <span style={{ fontSize: 16, fontWeight: 900, color: "#323338" }}>{formatRp(data.achievement)}</span>
+                          </div>
+                        </div>
+
+                      </div>
+                    );
+                  })}
+
+                  {partnerProgressData.length === 0 && (
+                    <div style={{ padding: 40, textAlign: "center", fontSize: 13, color: "#999", fontStyle: "italic", background: "#f8f9fb", borderRadius: 12, border: "1px solid #e8e8e8" }}>
+                      No partnership contribution data available.
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
 

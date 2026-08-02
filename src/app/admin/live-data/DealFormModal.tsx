@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import indonesianCities from "@/lib/indonesia-cities.json";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Save, Trash2, Building2, MapPin, User, FolderArchive, Activity, FileText, LayoutList, Calendar } from "lucide-react";
-import { createDeal, updateDeal, deleteDeal, getSalesEngineers, getDealHistory } from "@/app/actions/pipeline";
+import { createDeal, updateDeal, deleteDeal, getSalesEngineers, getDealHistory, getPartnershipPICs } from "@/app/actions/pipeline";
 
 interface DealFormModalProps {
   isOpen: boolean;
@@ -48,6 +48,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [salesEngineers, setSalesEngineers] = useState<any[]>([]);
+  const [partnershipPICs, setPartnershipPICs] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("details");
   const [history, setHistory] = useState<any[]>([]);
 
@@ -74,6 +75,9 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
     if (isOpen) {
       getSalesEngineers().then(res => {
         if ((res as any)?.success) setSalesEngineers((res as any).data);
+      });
+      getPartnershipPICs().then(res => {
+        if (res) setPartnershipPICs(res);
       });
       
       if (deal) {
@@ -346,9 +350,11 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
                     <select name="sales_planner" value={formData.sales_planner} onChange={handleChange}
                       className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all cursor-pointer">
                       <option value="">Select Partner</option>
-                      <option value={sessionName}>{sessionName} (You)</option>
-                      {salesEngineers.map(se => (
-                        se.name !== sessionName && <option key={se.id} value={se.name}>{se.name}</option>
+                      {partnershipPICs.includes(sessionName) && (
+                        <option value={sessionName}>{sessionName} (You)</option>
+                      )}
+                      {partnershipPICs.map(name => (
+                        name !== sessionName && <option key={name} value={name}>{name}</option>
                       ))}
                     </select>
                   </div>

@@ -24,6 +24,7 @@ import TopSalesModal from "./TopSalesModal";
 import PICSettingsModal from "./PICSettingsModal";
 import TargetSettingsModal from "./TargetSettingsModal";
 import TargetProgressModal from "./TargetProgressModal";
+import PartnershipSettingsModal from "./PartnershipSettingsModal";
 import { updateDeal, getPICAreas, updatePICAreas, getTargetSettings } from "@/app/actions/pipeline";
 
 // ============================================
@@ -832,6 +833,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
   const [showTopSalesModal, setShowTopSalesModal] = useState(false);
   const [showPICSettingsModal, setShowPICSettingsModal] = useState(false);
   const [showTargetSettingsModal, setShowTargetSettingsModal] = useState(false);
+  const [showPartnershipSettingsModal, setShowPartnershipSettingsModal] = useState(false);
   const [showTargetProgressModal, setShowTargetProgressModal] = useState(false);
   const [totalTarget, setTotalTarget] = useState(0);
   const [showOpsModal, setShowOpsModal] = useState(false);
@@ -1923,11 +1925,13 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
             { title: "Regions", desc: "West, East, Bali", count: 3, icon: "🌍" },
             { title: "RC Legends", desc: "WC CSD, WC VSD, AS CSD...", count: 16, icon: "❄️" },
             { title: "Sales Targets", desc: "Total & PIC specific targets", count: uniquePics.length, icon: "🎯" },
+            { title: "Partnership Config", desc: "Manage Sales Relation PICs", count: 1, icon: "🤝" },
           ].map((item, i) => (
             <div key={i} style={{ padding: 20, background: "#f8f9fb", borderRadius: 16, border: "1px solid #e8e8e8", cursor: canClickWidgets ? "pointer" : "default", transition: "all 0.15s" }}
               onClick={() => { 
                 if (item.title === "Sales PIC") setShowPICSettingsModal(true); 
                 if (item.title === "Sales Targets") setShowTargetSettingsModal(true); 
+                if (item.title === "Partnership Config") setShowPartnershipSettingsModal(true);
               }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = "#0073ea"; e.currentTarget.style.background = "#f0f7ff"; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = "#e8e8e8"; e.currentTarget.style.background = "#f8f9fb"; }}
@@ -2071,6 +2075,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
       <TopSalesModal isOpen={showTopSalesModal} onClose={() => setShowTopSalesModal(false)} deals={activeDeals} initialFY={selectedFY} />
       <PICSettingsModal isOpen={showPICSettingsModal} onClose={() => setShowPICSettingsModal(false)} />
       <TargetSettingsModal isOpen={showTargetSettingsModal} onClose={() => setShowTargetSettingsModal(false)} />
+      <PartnershipSettingsModal isOpen={showPartnershipSettingsModal} onClose={() => setShowPartnershipSettingsModal(false)} />
       <TargetProgressModal isOpen={showTargetProgressModal} onClose={() => setShowTargetProgressModal(false)} formatRp={formatRp} deals={deals} currentFY={currentFY} fyOptions={fyOptions} />
       <PresentationModal state={presentationState} onClose={() => setPresentationState(null)} formatRp={formatRp} STATUS_CONFIG={STATUS_CONFIG} />
     </div>
