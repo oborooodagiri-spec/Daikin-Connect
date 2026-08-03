@@ -2047,7 +2047,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
           <AnimatePresence mode="wait">
             <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
               {activeTab === "dashboard" && renderDashboard()}
-              {activeTab === "pipeline" && renderPipelineTable("EPL")}
+              {activeTab === "pipeline" && renderPipelineTable()}
               {activeTab === "ops" && renderOpsTable()}
               {activeTab === "partnership" && renderPipelineTable("Partnership")}
               {activeTab === "settings" && renderSettings()}
