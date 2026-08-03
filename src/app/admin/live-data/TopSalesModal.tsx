@@ -68,12 +68,12 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
   }, [deals, initialFY]);
 
   const { leaderboard } = useMemo(() => {
-    const picDataMap: Record<string, { wonValue: number, totalDeals: number }> = {};
+    const picDataMap: Record<string, { salesValue: number, bookingValue: number, totalDeals: number }> = {};
     
     // Pre-fill with all known Sales Engineers so they always appear in the list
     Object.keys(userInfoMap).forEach(name => {
       if (userInfoMap[name]?.isSales) {
-        picDataMap[name] = { wonValue: 0, totalDeals: 0 };
+        picDataMap[name] = { salesValue: 0, bookingValue: 0, totalDeals: 0 };
       }
     });
 
@@ -239,12 +239,12 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
                   {top3[1] && (
                     <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1, width: 140 }}>
                       <img src={getAvatarUrl(top3[1].pic, 2)} alt={top3[1].pic} style={{ width: 80, height: 80, borderRadius: '50%', border: '4px solid #cbd5e1', marginBottom: -20, zIndex: 2, backgroundColor: 'white', objectFit: 'cover' }} />
-                      <div style={{ width: '100%', height: 215, background: 'linear-gradient(to top, #94a3b8, #e2e8f0)', borderRadius: '16px 16px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 24, color: '#334155', boxShadow: '0 10px 25px -5px rgba(148,163,184,0.4)' }}>
+                      <div style={{ width: '100%', height: 230, background: 'linear-gradient(to top, #94a3b8, #e2e8f0)', borderRadius: '16px 16px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 24, color: '#334155', boxShadow: '0 10px 25px -5px rgba(148,163,184,0.4)' }}>
                         <span style={{ fontSize: 48, fontWeight: 900, color: 'rgba(255,255,255,0.9)', lineHeight: 1 }}>2</span>
-                        <span style={{ fontSize: 14, fontWeight: 800, textAlign: 'center', padding: '0 8px', marginTop: 'auto', marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%', color: '#1e293b' }}>{top3[1].pic}</span>
+                        <span style={{ fontSize: 13, fontWeight: 800, textAlign: 'center', padding: '0 8px', marginTop: 'auto', marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%', color: '#1e293b' }}>{top3[1].pic}</span>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, marginBottom: 6 }}>
-                          <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.7)', padding: '3px 8px', borderRadius: 10, color: '#0ea5e9' }}>Booking Rp {formatRp(top3[1].bookingValue)}</span>
-                          <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.7)', padding: '3px 8px', borderRadius: 10, color: '#10b981' }}>Sales Rp {formatRp(top3[1].salesValue)}</span>
+                          <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.7)', padding: '4px 8px', borderRadius: 10, color: '#0ea5e9' }}>Booking {formatRp(top3[1].bookingValue)}</span>
+                          <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.7)', padding: '4px 8px', borderRadius: 10, color: '#10b981' }}>Sales {formatRp(top3[1].salesValue)}</span>
                         </div>
                         <span style={{ fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 16 }}>{top3[1].totalDeals} Projects</span>
                       </div>
@@ -260,12 +260,12 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
                           <Medal size={40} color="#fbbf24" fill="#fef3c7" strokeWidth={1.5} />
                         </div>
                       </div>
-                      <div style={{ width: '100%', height: 275, background: 'linear-gradient(to top, #0284c7, #38bdf8)', borderRadius: '16px 16px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 36, color: 'white', boxShadow: '0 20px 30px -5px rgba(2,132,199,0.5)' }}>
+                      <div style={{ width: '100%', height: 290, background: 'linear-gradient(to top, #0284c7, #38bdf8)', borderRadius: '16px 16px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 36, color: 'white', boxShadow: '0 20px 30px -5px rgba(2,132,199,0.5)' }}>
                         <span style={{ fontSize: 72, fontWeight: 900, color: 'rgba(255,255,255,0.95)', lineHeight: 1, textShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>1</span>
-                        <span style={{ fontSize: 16, fontWeight: 900, textAlign: 'center', padding: '0 8px', marginTop: 'auto', marginBottom: 8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{top3[0].pic}</span>
+                        <span style={{ fontSize: 15, fontWeight: 900, textAlign: 'center', padding: '0 8px', marginTop: 'auto', marginBottom: 8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{top3[0].pic}</span>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, marginBottom: 8 }}>
-                          <span style={{ fontSize: 13, fontWeight: 900, backgroundColor: 'rgba(255,255,255,0.9)', padding: '4px 12px', borderRadius: 12, color: '#0284c7', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Booking Rp {formatRp(top3[0].bookingValue)}</span>
-                          <span style={{ fontSize: 13, fontWeight: 900, backgroundColor: 'rgba(255,255,255,0.9)', padding: '4px 12px', borderRadius: 12, color: '#059669', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Sales Rp {formatRp(top3[0].salesValue)}</span>
+                          <span style={{ fontSize: 12, fontWeight: 900, backgroundColor: 'rgba(255,255,255,0.9)', padding: '5px 12px', borderRadius: 12, color: '#0284c7', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Booking {formatRp(top3[0].bookingValue)}</span>
+                          <span style={{ fontSize: 12, fontWeight: 900, backgroundColor: 'rgba(255,255,255,0.9)', padding: '5px 12px', borderRadius: 12, color: '#059669', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Sales {formatRp(top3[0].salesValue)}</span>
                         </div>
                         <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: 20 }}>{top3[0].totalDeals} Projects</span>
                       </div>
@@ -276,12 +276,12 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
                   {top3[2] && (
                     <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1, width: 140 }}>
                       <img src={getAvatarUrl(top3[2].pic, 3)} alt={top3[2].pic} style={{ width: 80, height: 80, borderRadius: '50%', border: '4px solid #b45309', marginBottom: -20, zIndex: 2, backgroundColor: 'white', objectFit: 'cover' }} />
-                      <div style={{ width: '100%', height: 175, background: 'linear-gradient(to top, #b45309, #f59e0b)', borderRadius: '16px 16px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 24, color: 'white', boxShadow: '0 10px 25px -5px rgba(180,83,9,0.4)' }}>
+                      <div style={{ width: '100%', height: 200, background: 'linear-gradient(to top, #b45309, #f59e0b)', borderRadius: '16px 16px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 24, color: 'white', boxShadow: '0 10px 25px -5px rgba(180,83,9,0.4)' }}>
                         <span style={{ fontSize: 48, fontWeight: 900, color: 'rgba(255,255,255,0.9)', lineHeight: 1 }}>3</span>
-                        <span style={{ fontSize: 14, fontWeight: 800, textAlign: 'center', padding: '0 8px', marginTop: 'auto', marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{top3[2].pic}</span>
+                        <span style={{ fontSize: 13, fontWeight: 800, textAlign: 'center', padding: '0 8px', marginTop: 'auto', marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{top3[2].pic}</span>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, marginBottom: 6 }}>
-                          <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.85)', padding: '3px 8px', borderRadius: 10, color: '#d97706' }}>Booking Rp {formatRp(top3[2].bookingValue)}</span>
-                          <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.85)', padding: '3px 8px', borderRadius: 10, color: '#059669' }}>Sales Rp {formatRp(top3[2].salesValue)}</span>
+                          <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.85)', padding: '4px 8px', borderRadius: 10, color: '#d97706' }}>Booking {formatRp(top3[2].bookingValue)}</span>
+                          <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.85)', padding: '4px 8px', borderRadius: 10, color: '#059669' }}>Sales {formatRp(top3[2].salesValue)}</span>
                         </div>
                         <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: 16 }}>{top3[2].totalDeals} Projects</span>
                       </div>
@@ -308,11 +308,11 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-end' }}>
                                   <span style={{ fontSize: 14, fontWeight: 900, color: '#0ea5e9', display: 'flex', alignItems: 'center', gap: 8 }}>
                                     <span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Booking</span> 
-                                    Rp {formatRp(item.bookingValue)}
+                                    {formatRp(item.bookingValue)}
                                   </span>
                                   <span style={{ fontSize: 14, fontWeight: 900, color: '#10b981', display: 'flex', alignItems: 'center', gap: 8 }}>
                                     <span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Sales</span> 
-                                    Rp {formatRp(item.salesValue)}
+                                    {formatRp(item.salesValue)}
                                   </span>
                                   <span style={{ fontSize: 11, fontWeight: 700, color: '#64748b', marginTop: 2 }}>{item.totalDeals} Projects</span>
                                 </div>
