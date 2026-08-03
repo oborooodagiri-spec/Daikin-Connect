@@ -280,7 +280,7 @@ export async function updateDeal(id: number, data: Partial<DealData>) {
     if (!existing) return { error: "Deal not found." };
 
     // Non-internal users can only update their own deals
-    if (!session.isInternal && existing.pic !== session.name) {
+    if (!session.isInternal && existing.pic !== session.name && existing.sales_planner !== session.name) {
       return { error: "You can only update your own deals." };
     }
 
@@ -454,7 +454,7 @@ export async function deleteDeal(id: number) {
     if (!existing) return { error: "Deal not found." };
 
     // Non-internal users can only delete their own deals
-    if (!session.isInternal && existing.pic !== session.name) {
+    if (!session.isInternal && existing.pic !== session.name && existing.sales_planner !== session.name) {
       return { error: "You can only delete your own deals." };
     }
 
