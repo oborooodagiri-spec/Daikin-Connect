@@ -163,6 +163,11 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
       return;
     }
     
+    if (["A", "B"].includes(formData.status) && (!formData.latitude || !formData.longitude)) {
+      setError("Lokasi proyek (koordinat map) wajib diisi sebelum mengubah status menjadi A atau B.");
+      return;
+    }
+    
     setLoading(true);
     setError("");
     try {
