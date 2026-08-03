@@ -1801,8 +1801,16 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                         <label style={{ display: "flex", alignItems: "center", cursor: canClickWidgets ? "pointer" : "default" }}>
                           <input type="checkbox" checked={isClosed} onChange={async (e) => {
                             const newState = e.target.checked;
-                            if (newState && (deal.latitude == null || deal.longitude == null)) {
+                            const isMissingLocation = !deal.latitude || 
+                                                      !deal.longitude || 
+                                                      deal.latitude === 0 || 
+                                                      deal.longitude === 0 || 
+                                                      String(deal.latitude) === "null" || 
+                                                      String(deal.longitude) === "null";
+
+                            if (newState && isMissingLocation) {
                               alert("Lokasi proyek (koordinat map) wajib diisi sebelum menutup proyek.");
+                              e.preventDefault();
                               return;
                             }
                             setDeals(prev => prev.map(d => d.id === deal.id ? { ...d, is_closed: newState } : d));

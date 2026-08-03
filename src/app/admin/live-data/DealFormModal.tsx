@@ -163,7 +163,14 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
       return;
     }
     
-    if (["A", "B"].includes(formData.status) && (!formData.latitude || !formData.longitude)) {
+    const isMissingLocation = !formData.latitude || 
+                              !formData.longitude || 
+                              formData.latitude === "null" || 
+                              formData.longitude === "null" ||
+                              formData.latitude === "0" ||
+                              formData.longitude === "0";
+
+    if (["A", "B"].includes(formData.status) && isMissingLocation) {
       setError("Lokasi proyek (koordinat map) wajib diisi sebelum mengubah status menjadi A atau B.");
       return;
     }
