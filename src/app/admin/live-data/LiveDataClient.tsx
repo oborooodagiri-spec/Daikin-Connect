@@ -882,6 +882,12 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
     return deals.filter(d => !d.is_closed && !['L', 'S', 'N'].includes(d.status));
   }, [deals]);
 
+  // Specific deals scope for Project By Status and Pipeline Status Funnel widgets
+  const projectByStatusDeals = useMemo(() => {
+    return deals.filter(d => !d.is_closed && ['A', 'B', 'C', 'D', 'E'].includes(d.status));
+  }, [deals]);
+
+
   // Sector groupings matching Excel definitions
   const INDUSTRY_SECTORS = ["Industri", "Heavy Industri"];
   const COMMERCIAL_SECTORS = ["Government", "Hospital", "Komersial"];
@@ -1215,7 +1221,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
             },
             { 
               label: "Project By Status", 
-              value: activeDeals.length, 
+              value: projectByStatusDeals.length, 
               sub: "Total active projects", 
               icon: BarChart3, 
               color: "#0073ea", 
@@ -1353,7 +1359,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                 <AnimatedProjectByStatusCard
                   key={i}
                   kpi={kpi}
-                  activeDeals={activeDeals}
+                  activeDeals={projectByStatusDeals}
                   formatRp={formatRp}
                   canClickWidgets={canClickWidgets}
                   cardStyle={cardStyle}
@@ -1513,7 +1519,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
         {/* PIPELINE FUNNEL & COMPARATIVE ANALYTICS */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div style={cardStyle}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, cursor: canClickWidgets ? "pointer" : "default" }} onClick={() => canClickWidgets && setStatusModalState({ isOpen: true, statusName: "Overview", color: "#10b981", deals: activeDeals })}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, cursor: canClickWidgets ? "pointer" : "default" }} onClick={() => canClickWidgets && setStatusModalState({ isOpen: true, statusName: "Overview", color: "#10b981", deals: projectByStatusDeals })}>
               <h3 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#676879" }}>Pipeline Status Funnel</h3>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -1525,7 +1531,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                   const cfg = STATUS_CONFIG[status] || { label: status, color: "#888" };
                   const pct = (data.value / maxVal) * 100;
                   return (
-                    <div key={status} style={{ display: "flex", alignItems: "center", gap: 12, cursor: canClickWidgets ? "pointer" : "default" }} onClick={() => canClickWidgets && setStatusModalState({ isOpen: true, statusName: "Overview", color: cfg.color, deals: activeDeals })}>
+                    <div key={status} style={{ display: "flex", alignItems: "center", gap: 12, cursor: canClickWidgets ? "pointer" : "default" }} onClick={() => canClickWidgets && setStatusModalState({ isOpen: true, statusName: "Overview", color: cfg.color, deals: projectByStatusDeals })}>
                       <span style={{ width: 20, fontSize: 14, fontWeight: 900, color: cfg.color, textAlign: "right" }}>{status}</span>
                       <div style={{ flex: 1, height: 32, background: "#f8fafc", borderRadius: 6, display: "flex", alignItems: "center" }}>
                         <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8 }}
@@ -2043,7 +2049,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
 
       <DealFormModal sessionName={sessionName} isAdmin={isAdmin} isOpen={showAddModal} onClose={() => setShowAddModal(false)} onSuccess={loadData} deal={editingDeal} />
       <OpsFormModal isOpen={showOpsModal} onClose={() => setShowOpsModal(false)} onSuccess={loadData} opsRecord={editingOps} />
-      <ProjectByStatusModal isOpen={showProjectByStatusModal} onClose={() => setShowProjectByStatusModal(false)} deals={deals.filter(d => ['A', 'B', 'C', 'D', 'E'].includes(d.status))} initialFY={selectedFY} />
+      <ProjectByStatusModal isOpen={showProjectByStatusModal} onClose={() => setShowProjectByStatusModal(false)} deals={projectByStatusDeals} initialFY={selectedFY} />
       <BookingForecastModal isOpen={showBookingForecastModal} onClose={() => setShowBookingForecastModal(false)} deals={activeDeals} initialFY={selectedFY} />
       <SectorPipelineModal 
         isOpen={sectorModalState?.isOpen || false} 
