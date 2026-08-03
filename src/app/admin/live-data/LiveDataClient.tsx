@@ -907,16 +907,13 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
         getTargetSettings()
       ]);
       if (dealsRes.success) {
-        const allDeals = dealsRes.data || [];
-        setDeals(isAdmin ? allDeals : allDeals.filter((d: any) => d.pic === sessionName));
+        setDeals(dealsRes.data || []);
       }
       if (opsRes.success) {
-        const ops = opsRes.data || [];
-        setOpsRecords(isAdmin ? ops : ops.filter((o: any) => o.pic === sessionName));
+        setOpsRecords(opsRes.data || []);
       }
       if (leaderboardRes.success) {
-        const lbDeals = leaderboardRes.data || [];
-        setLeaderboardDeals(isAdmin ? lbDeals : lbDeals.filter((d: any) => d.pic === sessionName));
+        setLeaderboardDeals(leaderboardRes.data || []);
       }
       setTotalTarget(targetRes?.total || 0);
     } catch (e) {
@@ -1099,6 +1096,8 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
 
   const filteredOps = useMemo(() => {
     return opsRecords.filter(o => {
+      if (!isAdmin && o.pic !== sessionName) return false;
+
       const s = searchTerm.toLowerCase();
       const matchSearch = !s || o.customer?.toLowerCase().includes(s) || o.project_name?.toLowerCase().includes(s) || o.remark?.toLowerCase().includes(s);
       const matchStatus = statusFilter === "All" || o.status === statusFilter;

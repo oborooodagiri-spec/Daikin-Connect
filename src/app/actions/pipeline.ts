@@ -153,21 +153,11 @@ export async function getDealsPipeline(filters?: DealFilters) {
 
     const whereConditions: any[] = [];
     
-    // Restore role-based filtering: only Admins/Management can see all projects.
-    // Regular sales users can only see projects assigned to them.
-    const isAdminOrMgmt = session.roles?.some((r: string) => 
-      ["admin", "super", "management", "director"].some(kw => r.toLowerCase().includes(kw))
-    );
-
-    if (!isAdminOrMgmt) {
-      whereConditions.push({ pic: session.name });
-    } else if (filters?.pic) {
-      // Only allow filtering by another PIC if the user is an admin/manager
-      whereConditions.push({ pic: filters.pic });
-    }
-
+    // Removed role-based filtering so all roles can see the global pipeline in the dashboard.
+    // Strict RBAC for the Sales Pipeline table is handled on the client (LiveDataClient.tsx -> filteredDeals).
     // Apply optional filters
     if (filters?.status) whereConditions.push({ status: filters.status });
+    if (filters?.pic) whereConditions.push({ pic: filters.pic });
     if (filters?.category) whereConditions.push({ category: filters.category });
     if (filters?.sector) whereConditions.push({ sector: filters.sector });
     if (filters?.region) whereConditions.push({ region: filters.region });
