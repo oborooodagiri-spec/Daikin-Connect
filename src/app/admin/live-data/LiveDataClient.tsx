@@ -1816,6 +1816,9 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                         {new Date(deal.created_at).getTime() < new Date(2000 + selectedFY, 3, 1).getTime() && (
                           <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-amber-100 text-amber-700 leading-none">BACKLOG</span>
                         )}
+                        {(deal.latitude == null || deal.longitude == null) && (
+                          <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-red-100 text-red-600 leading-none animate-pulse border border-red-200 uppercase whitespace-nowrap">Input Location</span>
+                        )}
                       </div>
                       <p style={{ fontSize: 11, fontWeight: 600, color: "#676879", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{deal.project_name}</p>
                     </td>
