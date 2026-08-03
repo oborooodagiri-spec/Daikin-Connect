@@ -181,13 +181,20 @@ function guessCoords(deal: Deal): { coords: [number, number]; regionName: string
   if (deal.latitude != null && deal.longitude != null) {
     let r = match.regionName;
     let p = match.name;
-    if (r === "Jawa" && area === "" && deal.region !== "East") {
-       if (deal.longitude > 118.5 && deal.longitude < 125.5 && deal.latitude > -6.5 && deal.latitude < 2) { r = "Sulawesi"; p = "Sulawesi"; }
-       else if (deal.longitude > 108.5 && deal.longitude < 119 && deal.latitude > -4.5 && deal.latitude < 4.5) { r = "Kalimantan"; p = "Kalimantan"; }
-       else if (deal.longitude > 95 && deal.longitude < 108.5 && deal.latitude > -6.5 && deal.latitude < 6) { r = "Sumatera"; p = "Sumatera"; }
-       else if (deal.longitude > 125.5) { r = "Papua & Maluku"; p = "Papua & Maluku"; }
-       else if (deal.longitude > 114.5 && deal.longitude < 125.5 && deal.latitude > -11 && deal.latitude < -7) { r = "Bali & Nusa Tenggara"; p = "Bali & Nusa Tenggara"; }
+    
+    // If it fell back to Jakarta default but area wasn't explicitly jakarta, use actual coords to find nearest province
+    if (p === "DKI Jakarta" && !area.includes("jakarta")) {
+      let nearestDist = Infinity;
+      for (const [, prov] of Object.entries(PROVINCE_COORDS)) {
+        const dist = Math.sqrt((deal.longitude - prov.coords[0]) ** 2 + (deal.latitude - prov.coords[1]) ** 2);
+        if (dist < nearestDist) {
+          nearestDist = dist;
+          p = prov.name;
+          r = prov.region;
+        }
+      }
     }
+    
     return { coords: [deal.longitude, deal.latitude], regionName: r, provinceName: p };
   }
 
@@ -744,7 +751,16 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
         </div>
 
         {/* Regional Stats Side Panel */}
-        <div style={{ width: 180, padding: "10px 16px 16px 0", display: "flex", flexDirection: "column", justifyContent: "center", gap: 6, flexShrink: 0 }}>
+        <div style={{ 
+          width: 180, 
+          padding: "10px 16px 16px 0", 
+          display: "flex", 
+          flexDirection: "column", 
+          gap: 6, 
+          flexShrink: 0,
+          maxHeight: 450,
+          overflowY: "auto"
+        }}>
           <p style={{ color: "rgba(102,204,255,0.5)", fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 4 }}>
             Ranking Wilayah
           </p>
