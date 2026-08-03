@@ -191,12 +191,11 @@ export async function getDealsPipeline(filters?: DealFilters) {
 // ============================================
 // 2. CREATE DEAL
 // ============================================
-export async function createDeal(data: DealData) {
+export async function createDeal(data: Partial<DealData>) {
   try {
     const session = await getSession();
     if (!session) return { error: "Unauthorized" };
 
-    // Role-based RBAC
     const isAdminOrMgmt = session.roles?.some((r: string) => 
       ["admin", "super", "management", "director"].some(kw => r.toLowerCase().includes(kw))
     );
@@ -204,6 +203,20 @@ export async function createDeal(data: DealData) {
     if (!isAdminOrMgmt && data.pic && data.pic !== session.name) {
       return { error: "You can only create deals assigned to yourself." };
     }
+
+    // --- SERVER SIDE LOCATION VALIDATION ---
+    const isMissingLocation = !data.latitude || !data.longitude || 
+                              data.latitude === 0 || data.longitude === 0 || 
+                              String(data.latitude) === "null" || String(data.longitude) === "null";
+
+    if (data.status && ["A", "B"].includes(data.status) && isMissingLocation) {
+      return { error: "Lokasi proyek (koordinat map) wajib diisi sebelum mengatur status menjadi A atau B." };
+    }
+    
+    if (data.is_closed && isMissingLocation) {
+      return { error: "Lokasi proyek (koordinat map) wajib diisi sebelum menutup proyek." };
+    }
+    // ---------------------------------------
 
     let assignedPicId = parseInt(session.userId, 10);
     if (isAdminOrMgmt && data.pic && data.pic !== session.name) {
@@ -217,9 +230,9 @@ export async function createDeal(data: DealData) {
 
     const deal = await prisma.pipeline_deals.create({
       data: {
-        client_name: data.client_name,
+        client_name: data.client_name!,
         area: data.area || null,
-        project_name: data.project_name,
+        project_name: data.project_name!,
         bill_material: data.bill_material || null,
         type: data.type || null,
         region: autoRegion,
@@ -278,6 +291,26 @@ export async function updateDeal(id: number, data: Partial<DealData>) {
       where: { id },
     });
     if (!existing) return { error: "Deal not found." };
+
+    // --- SERVER SIDE LOCATION VALIDATION ---
+    const newStatus = data.status !== undefined ? data.status : existing.status;
+    const newIsClosed = data.is_closed !== undefined ? data.is_closed : existing.is_closed;
+    const newLat = data.latitude !== undefined ? data.latitude : existing.latitude;
+    const newLng = data.longitude !== undefined ? data.longitude : existing.longitude;
+
+    const isMissingLocation = !newLat || !newLng || newLat === 0 || newLng === 0 || 
+                              String(newLat) === "null" || String(newLng) === "null";
+
+    // Validate Location Requirement for A/B status
+    if (newStatus && ["A", "B"].includes(newStatus) && isMissingLocation) {
+      return { error: "Lokasi proyek (koordinat map) wajib diisi sebelum mengubah status menjadi A atau B." };
+    }
+
+    // Validate Location Requirement for is_closed
+    if (newIsClosed && isMissingLocation) {
+      return { error: "Lokasi proyek (koordinat map) wajib diisi sebelum menutup proyek." };
+    }
+    // ---------------------------------------
 
     // Non-internal users can only update their own deals
     if (!session.isInternal && existing.pic !== session.name && existing.sales_planner !== session.name) {
