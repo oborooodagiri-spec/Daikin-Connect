@@ -61,9 +61,10 @@ export default function StatusPipelineModal({
     let grandTotal = 0;
 
     deals.forEach(d => {
-      if (['L', 'H'].includes(d.status)) return; // Exclude lost/hold usually
+      if (['L', 'H', 'T'].includes(d.status)) return; // Exclude lost/hold/engineering review
+      if (d.is_closed) return;
       
-      const rawDate = d.target_po_date || d.est_booking_month;
+      const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
       if (!rawDate) return;
       const dt = new Date(rawDate);
       if (isNaN(dt.getTime())) return;
@@ -76,7 +77,7 @@ export default function StatusPipelineModal({
       const val = Number(d.quotation || 0);
       let st = d.status || "Unknown";
       const statusMap: Record<string, string> = {
-        "A": "Won", "B": "Budgeted", "C": "Contracted", "D": "Planning", "E": "Submitted", "T": "Engineering Review"
+        "A": "Won", "B": "Budgeted", "C": "Contracted", "D": "Planning", "E": "Submitted"
       };
       const label = statusMap[st] || st;
 
@@ -88,7 +89,7 @@ export default function StatusPipelineModal({
       grandTotal += val;
     });
 
-    const funnelOrder = ["Engineering Review", "Submitted", "Planning", "Contracted", "Budgeted", "Won"];
+    const funnelOrder = ["Submitted", "Planning", "Contracted", "Budgeted", "Won"];
     const rows = Object.keys(rowMap).map(status => ({
       status,
       values: rowMap[status],

@@ -141,10 +141,10 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
     }).filter(r => r.rowTotal > 0);
 
     deals.forEach(d => {
-      if (['L', 'H'].includes(d.status)) return;
+      if (['L', 'H', 'T'].includes(d.status)) return;
       if (!relevantStatuses.includes(d.status)) return;
       
-      const rawDate = d.target_po_date || d.created_at;
+      const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
       if (!rawDate) return;
       const dt = new Date(rawDate);
       if (isNaN(dt.getTime())) return;

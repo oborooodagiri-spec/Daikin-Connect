@@ -906,9 +906,18 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
         fetch("/api/v1/pipeline/deals?type=leaderboard").then(r => r.json()),
         getTargetSettings()
       ]);
-      if (dealsRes.success) setDeals(dealsRes.data || []);
-      if (opsRes.success) setOpsRecords(opsRes.data || []);
-      if (leaderboardRes.success) setLeaderboardDeals(leaderboardRes.data || []);
+      if (dealsRes.success) {
+        const allDeals = dealsRes.data || [];
+        setDeals(isAdmin ? allDeals : allDeals.filter((d: any) => d.pic === sessionName));
+      }
+      if (opsRes.success) {
+        const ops = opsRes.data || [];
+        setOpsRecords(isAdmin ? ops : ops.filter((o: any) => o.pic === sessionName));
+      }
+      if (leaderboardRes.success) {
+        const lbDeals = leaderboardRes.data || [];
+        setLeaderboardDeals(isAdmin ? lbDeals : lbDeals.filter((d: any) => d.pic === sessionName));
+      }
       setTotalTarget(targetRes?.total || 0);
     } catch (e) {
       console.error("Load error:", e);
@@ -1062,7 +1071,8 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
     };
 
     return deals.filter(d => {
-      if (!canClickWidgets && d.pic !== sessionName) return false;
+      // deals is already filtered for non-admins at loadData, but we keep this as an extra safety measure
+      if (!isAdmin && d.pic !== sessionName) return false;
 
       const s = searchTerm.toLowerCase();
       const matchSearch = !s || d.client_name?.toLowerCase().includes(s) || d.project_name?.toLowerCase().includes(s) || d.pic?.toLowerCase().includes(s) || d.remarks?.toLowerCase().includes(s);
@@ -1427,7 +1437,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                     <div key={pic} style={{ position: "relative", cursor: canClickWidgets ? "pointer" : "default" }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (canClickWidgets) setPresentationState({ title: `Top Performer: ${pic}`, subtitle: `Win Rate: ${winRate}% · Won: ${formatRp(data.wonValue)}`, color: "#00c875", data: leaderboardDeals.filter(d => d.pic === pic) });
+                        if (canClickWidgets && (isAdmin || pic === sessionName)) setPresentationState({ title: `Top Performer: ${pic}`, subtitle: `Win Rate: ${winRate}% · Won: ${formatRp(data.wonValue)}`, color: "#00c875", data: leaderboardDeals.filter(d => d.pic === pic) });
                       }}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, alignItems: "flex-end" }}>
