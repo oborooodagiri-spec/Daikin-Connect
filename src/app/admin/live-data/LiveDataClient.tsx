@@ -140,7 +140,7 @@ const REGION_VIEWS: Record<string, { center: [number, number]; scale: number; la
   "Papua & Maluku": { center: [134.0, -3.5], scale: 1500, label: "Papua & Maluku" },
 };
 
-function guessCoords(deal: Deal): { coords: [number, number]; regionName: string } | null {
+function guessCoords(deal: Deal): { coords: [number, number]; regionName: string; provinceName?: string } | null {
   const area = (deal.area || "").toLowerCase();
   
   let match = { ...PROVINCE_COORDS.jakarta, regionName: "Jawa" };
@@ -175,22 +175,23 @@ function guessCoords(deal: Deal): { coords: [number, number]; regionName: string
   else if (area.includes("papua") || area.includes("jayapura") || area.includes("timika") || area.includes("sorong")) match = { ...PROVINCE_COORDS.papua, regionName: PROVINCE_COORDS.papua.region };
   else if (area.includes("maluku") || area.includes("ambon") || area.includes("ternate")) match = { ...PROVINCE_COORDS.maluku, regionName: PROVINCE_COORDS.maluku.region };
   
-  else if (deal.region === "East") match = { coords: [112.7521, -7.2504], regionName: "Jawa" };
+  else if (deal.region === "East") match = { coords: [112.7521, -7.2504], name: "Jawa Timur", regionName: "Jawa" };
   else if (deal.region === "Bali") match = { ...PROVINCE_COORDS.bali, regionName: "Bali & Nusa Tenggara" };
 
   if (deal.latitude != null && deal.longitude != null) {
     let r = match.regionName;
+    let p = match.name;
     if (r === "Jawa" && area === "" && deal.region !== "East") {
-       if (deal.longitude > 118.5 && deal.longitude < 125.5 && deal.latitude > -6.5 && deal.latitude < 2) r = "Sulawesi";
-       else if (deal.longitude > 108.5 && deal.longitude < 119 && deal.latitude > -4.5 && deal.latitude < 4.5) r = "Kalimantan";
-       else if (deal.longitude > 95 && deal.longitude < 108.5 && deal.latitude > -6.5 && deal.latitude < 6) r = "Sumatera";
-       else if (deal.longitude > 125.5) r = "Papua & Maluku";
-       else if (deal.longitude > 114.5 && deal.longitude < 125.5 && deal.latitude > -11 && deal.latitude < -7) r = "Bali & Nusa Tenggara";
+       if (deal.longitude > 118.5 && deal.longitude < 125.5 && deal.latitude > -6.5 && deal.latitude < 2) { r = "Sulawesi"; p = "Sulawesi"; }
+       else if (deal.longitude > 108.5 && deal.longitude < 119 && deal.latitude > -4.5 && deal.latitude < 4.5) { r = "Kalimantan"; p = "Kalimantan"; }
+       else if (deal.longitude > 95 && deal.longitude < 108.5 && deal.latitude > -6.5 && deal.latitude < 6) { r = "Sumatera"; p = "Sumatera"; }
+       else if (deal.longitude > 125.5) { r = "Papua & Maluku"; p = "Papua & Maluku"; }
+       else if (deal.longitude > 114.5 && deal.longitude < 125.5 && deal.latitude > -11 && deal.latitude < -7) { r = "Bali & Nusa Tenggara"; p = "Bali & Nusa Tenggara"; }
     }
-    return { coords: [deal.longitude, deal.latitude], regionName: r };
+    return { coords: [deal.longitude, deal.latitude], regionName: r, provinceName: p };
   }
 
-  return match;
+  return { ...match, provinceName: match.name };
 }
 
 // Drill-down modal for clicked cluster
@@ -367,7 +368,7 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
       if (deal.status === "L") return;
       const geo = guessCoords(deal);
       if (!geo) return;
-      const rn = geo.regionName || "Other";
+      const rn = geo.provinceName || geo.regionName || "Lainnya";
       if (!regionMap[rn]) regionMap[rn] = { value: 0, count: 0, won: 0 };
       regionMap[rn].value += Number(deal.quotation) || 0;
       regionMap[rn].count++;
