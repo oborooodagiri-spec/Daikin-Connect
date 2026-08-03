@@ -322,7 +322,17 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
   const [drillDownCluster, setDrillDownCluster] = useState<any>(null);
   const [showPICLines, setShowPICLines] = useState(false);
 
-  const regionView = REGION_VIEWS[selectedRegion] || REGION_VIEWS["All"];
+  const regionView = useMemo(() => {
+    if (REGION_VIEWS[selectedRegion]) return REGION_VIEWS[selectedRegion];
+    
+    // Check if selected region is a province
+    const prov = Object.values(PROVINCE_COORDS).find(p => p.name === selectedRegion);
+    if (prov) {
+      return { center: prov.coords, scale: 5000, label: prov.name };
+    }
+    
+    return REGION_VIEWS["All"];
+  }, [selectedRegion]);
 
   // Cluster deals by approximate geographic location
   const clusters = useMemo(() => {
@@ -335,8 +345,8 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
       const geo = guessCoords(deal);
       if (!geo) return;
 
-      // Filter by selected region
-      if (selectedRegion !== "All" && geo.regionName !== selectedRegion) return;
+      // Filter by selected region or province
+      if (selectedRegion !== "All" && geo.regionName !== selectedRegion && geo.provinceName !== selectedRegion) return;
       
       const key = `${geo.coords[0].toFixed(1)}-${geo.coords[1].toFixed(1)}`;
       
@@ -458,7 +468,7 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
           <div>
             <p style={{ color: "rgba(102,204,255,0.6)", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em" }}>Project Distribution</p>
             <h3 style={{ color: "white", fontSize: 20, fontWeight: 900, marginTop: 4 }}>
-              {selectedRegion === "All" ? "Expanded Product Line - National" : `Region: ${REGION_VIEWS[selectedRegion]?.label || selectedRegion}`}
+              {selectedRegion === "All" ? "Expanded Product Line - National" : `Region: ${regionView.label}`}
             </h3>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
