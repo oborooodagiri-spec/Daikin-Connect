@@ -140,32 +140,57 @@ const REGION_VIEWS: Record<string, { center: [number, number]; scale: number; la
   "Papua & Maluku": { center: [134.0, -3.5], scale: 1500, label: "Papua & Maluku" },
 };
 
-// Map region keywords or actual coordinates to rough geographic coordinates
 function guessCoords(deal: Deal): { coords: [number, number]; regionName: string } | null {
-  if (deal.latitude != null && deal.longitude != null) {
-    return { coords: [deal.longitude, deal.latitude], regionName: "Other" };
-  }
-
   const area = (deal.area || "").toLowerCase();
   
-  if (area.includes("medan")) return { ...PROVINCE_COORDS.medan, regionName: PROVINCE_COORDS.medan.region };
-  if (area.includes("batam") || area.includes("hang nadim")) return { ...PROVINCE_COORDS.batam, regionName: PROVINCE_COORDS.batam.region };
-  if (area.includes("pekanbaru") || area.includes("lanud")) return { ...PROVINCE_COORDS.pekanbaru, regionName: PROVINCE_COORDS.pekanbaru.region };
-  if (area.includes("palembang") || area.includes("gula putih")) return { ...PROVINCE_COORDS.palembang, regionName: PROVINCE_COORDS.palembang.region };
-  if (area.includes("bandung") || area.includes("sanbe")) return { ...PROVINCE_COORDS.bandung, regionName: PROVINCE_COORDS.bandung.region };
-  if (area.includes("surabaya") || area.includes("galaxy")) return { ...PROVINCE_COORDS.surabaya, regionName: PROVINCE_COORDS.surabaya.region };
-  if (area.includes("jogja") || area.includes("yogya") || area.includes("malyabhara")) return { ...PROVINCE_COORDS.yogyakarta, regionName: PROVINCE_COORDS.yogyakarta.region };
-  if (area.includes("semarang")) return { ...PROVINCE_COORDS.semarang, regionName: PROVINCE_COORDS.semarang.region };
-  if (area.includes("bali") || area.includes("denpasar")) return { ...PROVINCE_COORDS.bali, regionName: PROVINCE_COORDS.bali.region };
-  if (area.includes("makassar") || area.includes("sulawesi")) return { ...PROVINCE_COORDS.makassar, regionName: PROVINCE_COORDS.makassar.region };
-  if (area.includes("manado")) return { ...PROVINCE_COORDS.manado, regionName: PROVINCE_COORDS.manado.region };
-  if (area.includes("lombok")) return { ...PROVINCE_COORDS.ntb, regionName: PROVINCE_COORDS.ntb.region };
-  if (area.includes("papua")) return { ...PROVINCE_COORDS.papua, regionName: PROVINCE_COORDS.papua.region };
+  let match = { ...PROVINCE_COORDS.jakarta, regionName: "Jawa" };
   
-  if (deal.region === "East") return { coords: [112.7521, -7.2504], regionName: "Jawa" };
-  if (deal.region === "Bali") return { ...PROVINCE_COORDS.bali, regionName: "Bali & Nusa Tenggara" };
+  if (area.includes("medan") || area.includes("sumatera utara")) match = { ...PROVINCE_COORDS.medan, regionName: PROVINCE_COORDS.medan.region };
+  else if (area.includes("batam") || area.includes("hang nadim")) match = { ...PROVINCE_COORDS.batam, regionName: PROVINCE_COORDS.batam.region };
+  else if (area.includes("pekanbaru") || area.includes("riau") || area.includes("lanud")) match = { ...PROVINCE_COORDS.pekanbaru, regionName: PROVINCE_COORDS.pekanbaru.region };
+  else if (area.includes("palembang") || area.includes("sumatera selatan") || area.includes("gula putih")) match = { ...PROVINCE_COORDS.palembang, regionName: PROVINCE_COORDS.palembang.region };
+  else if (area.includes("lampung")) match = { ...PROVINCE_COORDS.lampung, regionName: PROVINCE_COORDS.lampung.region };
+  else if (area.includes("padang") || area.includes("sumatera barat")) match = { ...PROVINCE_COORDS.west_sumatra, regionName: PROVINCE_COORDS.west_sumatra.region };
+  else if (area.includes("sumatera") || area.includes("sumatra")) match = { ...PROVINCE_COORDS.medan, regionName: "Sumatera" };
   
-  return { ...PROVINCE_COORDS.jakarta, regionName: "Jawa" };
+  else if (area.includes("bandung") || area.includes("jawa barat") || area.includes("sanbe")) match = { ...PROVINCE_COORDS.bandung, regionName: PROVINCE_COORDS.bandung.region };
+  else if (area.includes("surabaya") || area.includes("jawa timur") || area.includes("galaxy")) match = { ...PROVINCE_COORDS.surabaya, regionName: PROVINCE_COORDS.surabaya.region };
+  else if (area.includes("jogja") || area.includes("yogya") || area.includes("malyabhara")) match = { ...PROVINCE_COORDS.yogyakarta, regionName: PROVINCE_COORDS.yogyakarta.region };
+  else if (area.includes("semarang") || area.includes("jawa tengah")) match = { ...PROVINCE_COORDS.semarang, regionName: PROVINCE_COORDS.semarang.region };
+  else if (area.includes("banten") || area.includes("tangerang")) match = { ...PROVINCE_COORDS.banten, regionName: PROVINCE_COORDS.banten.region };
+  
+  else if (area.includes("bali") || area.includes("denpasar")) match = { ...PROVINCE_COORDS.bali, regionName: PROVINCE_COORDS.bali.region };
+  else if (area.includes("lombok") || area.includes("ntb")) match = { ...PROVINCE_COORDS.ntb, regionName: PROVINCE_COORDS.ntb.region };
+  else if (area.includes("kupang") || area.includes("ntt")) match = { ...PROVINCE_COORDS.ntt, regionName: PROVINCE_COORDS.ntt.region };
+  
+  else if (area.includes("makassar") || area.includes("sulawesi selatan")) match = { ...PROVINCE_COORDS.makassar, regionName: PROVINCE_COORDS.makassar.region };
+  else if (area.includes("manado") || area.includes("sulawesi utara")) match = { ...PROVINCE_COORDS.manado, regionName: PROVINCE_COORDS.manado.region };
+  else if (area.includes("palu") || area.includes("kendari") || area.includes("sulawesi")) match = { ...PROVINCE_COORDS.makassar, regionName: "Sulawesi" };
+  
+  else if (area.includes("balikpapan") || area.includes("samarinda") || area.includes("kalimantan timur")) match = { ...PROVINCE_COORDS.east_kalimantan, regionName: PROVINCE_COORDS.east_kalimantan.region };
+  else if (area.includes("banjarmasin") || area.includes("kalimantan selatan")) match = { ...PROVINCE_COORDS.south_kalimantan, regionName: PROVINCE_COORDS.south_kalimantan.region };
+  else if (area.includes("pontianak") || area.includes("kalimantan barat")) match = { ...PROVINCE_COORDS.west_kalimantan, regionName: PROVINCE_COORDS.west_kalimantan.region };
+  else if (area.includes("kalimantan") || area.includes("borneo")) match = { ...PROVINCE_COORDS.east_kalimantan, regionName: "Kalimantan" };
+  
+  else if (area.includes("papua") || area.includes("jayapura") || area.includes("timika") || area.includes("sorong")) match = { ...PROVINCE_COORDS.papua, regionName: PROVINCE_COORDS.papua.region };
+  else if (area.includes("maluku") || area.includes("ambon") || area.includes("ternate")) match = { ...PROVINCE_COORDS.maluku, regionName: PROVINCE_COORDS.maluku.region };
+  
+  else if (deal.region === "East") match = { coords: [112.7521, -7.2504], regionName: "Jawa" };
+  else if (deal.region === "Bali") match = { ...PROVINCE_COORDS.bali, regionName: "Bali & Nusa Tenggara" };
+
+  if (deal.latitude != null && deal.longitude != null) {
+    let r = match.regionName;
+    if (r === "Jawa" && area === "" && deal.region !== "East") {
+       if (deal.longitude > 118.5 && deal.longitude < 125.5 && deal.latitude > -6.5 && deal.latitude < 2) r = "Sulawesi";
+       else if (deal.longitude > 108.5 && deal.longitude < 119 && deal.latitude > -4.5 && deal.latitude < 4.5) r = "Kalimantan";
+       else if (deal.longitude > 95 && deal.longitude < 108.5 && deal.latitude > -6.5 && deal.latitude < 6) r = "Sumatera";
+       else if (deal.longitude > 125.5) r = "Papua & Maluku";
+       else if (deal.longitude > 114.5 && deal.longitude < 125.5 && deal.latitude > -11 && deal.latitude < -7) r = "Bali & Nusa Tenggara";
+    }
+    return { coords: [deal.longitude, deal.latitude], regionName: r };
+  }
+
+  return match;
 }
 
 // Drill-down modal for clicked cluster
