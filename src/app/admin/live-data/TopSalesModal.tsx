@@ -77,18 +77,32 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
       }
     });
 
-    deals.forEach(d => {
-      if (d.est_booking_month || d.target_po_date) {
-        const dt = new Date(d.target_po_date || d.est_booking_month!);
-        if (!isNaN(dt.getTime())) {
-          const m = dt.getMonth() + 1;
-          const y = dt.getFullYear();
-          const fy = m >= 4 ? `FY${String(y).slice(-2)}` : `FY${String(y - 1).slice(-2)}`;
-          if (fy !== selectedFY) return;
-        } else return;
-      } else return;
+    const fyYearStr = selectedFY.replace('FY', '');
+    const fyYear = 2000 + parseInt(fyYearStr, 10);
+    const fyStartTime = new Date(fyYear, 3, 1).getTime();
+    const fyEndTime = new Date(fyYear + 1, 2, 31, 23, 59, 59, 999).getTime();
 
+    deals.forEach(d => {
       if (['L', 'H'].includes(d.status)) return;
+
+      let isIncluded = false;
+      
+      if (d.is_closed) {
+        const ut = new Date(d.updated_at).getTime();
+        if (ut >= fyStartTime && ut <= fyEndTime) {
+          isIncluded = true;
+        }
+      } else {
+        const rawDate = d.target_po_date || d.est_booking_month;
+        if (rawDate) {
+          const dt = new Date(rawDate).getTime();
+          if (!isNaN(dt) && dt <= fyEndTime) {
+            isIncluded = true;
+          }
+        }
+      }
+
+      if (!isIncluded) return;
       
       const picName = d.pic?.trim() || '(Unassigned)';
       if (!picDataMap[picName]) {

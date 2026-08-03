@@ -2138,7 +2138,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
         color={statusModalState?.color} 
       />
 
-      <TopSalesModal isOpen={showTopSalesModal} onClose={() => setShowTopSalesModal(false)} deals={activeDeals} initialFY={selectedFY} />
+      <TopSalesModal isOpen={showTopSalesModal} onClose={() => setShowTopSalesModal(false)} deals={deals} initialFY={selectedFY} />
       <PICSettingsModal isOpen={showPICSettingsModal} onClose={() => setShowPICSettingsModal(false)} />
       <TargetSettingsModal isOpen={showTargetSettingsModal} onClose={() => setShowTargetSettingsModal(false)} />
       <PartnershipSettingsModal isOpen={showPartnershipSettingsModal} onClose={() => setShowPartnershipSettingsModal(false)} />
