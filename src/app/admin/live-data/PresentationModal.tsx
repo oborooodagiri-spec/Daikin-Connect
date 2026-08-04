@@ -99,15 +99,9 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
       if (isNaN(targetDate.getTime())) return false;
       
       const today = new Date();
-      const thresholdDate = new Date();
-      thresholdDate.setDate(20);
-      thresholdDate.setHours(23, 59, 59, 999);
+      const thresholdDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), 20, 23, 59, 59, 999);
       
-      const isOverdueTime = today.getTime() > thresholdDate.getTime();
-      return isOverdueTime && (
-        targetDate.getFullYear() < today.getFullYear() || 
-        (targetDate.getFullYear() === today.getFullYear() && targetDate.getMonth() <= today.getMonth())
-      );
+      return today.getTime() > thresholdDate.getTime();
     }).length;
   }, [filteredData]);
 
@@ -308,15 +302,9 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
                             const targetDate = new Date(d.target_po_date);
                             if (!isNaN(targetDate.getTime())) {
                               const today = new Date();
-                              const thresholdDate = new Date();
-                              thresholdDate.setDate(20);
-                              thresholdDate.setHours(23, 59, 59, 999);
+                              const thresholdDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), 20, 23, 59, 59, 999);
                               
-                              const isOverdueTime = today.getTime() > thresholdDate.getTime();
-                              isOverdue = isOverdueTime && (
-                                targetDate.getFullYear() < today.getFullYear() || 
-                                (targetDate.getFullYear() === today.getFullYear() && targetDate.getMonth() <= today.getMonth())
-                              );
+                              isOverdue = today.getTime() > thresholdDate.getTime();
                             }
                           }
                           return (

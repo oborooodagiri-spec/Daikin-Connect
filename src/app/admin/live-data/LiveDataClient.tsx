@@ -1586,9 +1586,11 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                     <div key={pic} style={{ position: "relative", cursor: canClickWidgets ? "pointer" : "default" }}
                       onClick={() => canClickWidgets && setPresentationState({ title: `Overdue: ${pic}`, subtitle: `${overdueCount} projects melewati target PO`, color: "#ef4444", data: leaderboardDeals.filter(d => {
                         if (d.pic !== pic || !d.target_po_date || !['B', 'C', 'D', 'E'].includes(d.status)) return false;
-                        const td = new Date(d.target_po_date);
-                        const ty = new Date();
-                        return td.getFullYear() < ty.getFullYear() || (td.getFullYear() === ty.getFullYear() && td.getMonth() <= ty.getMonth());
+                        const targetDate = new Date(d.target_po_date);
+                        if (isNaN(targetDate.getTime())) return false;
+                        const today = new Date();
+                        const thresholdDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), 20, 23, 59, 59, 999);
+                        return today.getTime() > thresholdDate.getTime();
                       }) })}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, alignItems: "flex-end" }}>
