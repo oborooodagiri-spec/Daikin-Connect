@@ -116,6 +116,7 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
       }
       
       if (picName === '(Unassigned)' || picName === '') return;
+      if (activeRoleTab === 'Sales Engineer' && partnershipPICs.includes(picName)) return;
 
       if (!picDataMap[picName]) {
         picDataMap[picName] = { salesValue: 0, bookingValue: 0, totalDeals: 0 };
@@ -139,7 +140,7 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
       });
     } else if (activeRoleTab === 'Sales Engineer') {
       Object.keys(userInfoMap).forEach(pic => {
-        if (userInfoMap[pic].isSales) {
+        if (userInfoMap[pic].isSales && !partnershipPICs.includes(pic)) {
           if (!picDataMap[pic]) {
             picDataMap[pic] = { salesValue: 0, bookingValue: 0, totalDeals: 0 };
           }
