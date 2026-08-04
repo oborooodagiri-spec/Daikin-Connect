@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Trophy, Medal } from 'lucide-react';
+import { getUsersAvatarMap } from '@/app/actions/users';
+import { getPartnershipPICs } from '@/app/actions/pipeline';
 
 interface Deal {
   id: number;
@@ -40,14 +42,15 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
 
   React.useEffect(() => {
     if (isOpen) {
-      import("@/app/actions/users").then(m => m.getUsersAvatarMap()).then(res => {
+      getUsersAvatarMap().then(res => {
         if (res.success && res.data) {
           setUserInfoMap(res.data);
         }
-      });
-      import("@/app/actions/pipeline").then(m => m.getPartnershipPICs()).then(res => {
+      }).catch(err => console.error("Error fetching users:", err));
+      
+      getPartnershipPICs().then(res => {
         if (res) setPartnershipPICs(res);
-      });
+      }).catch(err => console.error("Error fetching partnership PICs:", err));
     }
   }, [isOpen]);
 
@@ -108,13 +111,13 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
         picName = d.pic?.trim() || '(Unassigned)';
         
         const info = userInfoMap[picName];
-        if (!info?.isSalesEngineer) return;
+        if (!info?.isSales) return;
       } else {
         if (!d.sales_planner || d.sales_planner.trim() === '') return;
         picName = d.sales_planner.trim();
         
         const info = userInfoMap[picName];
-        if (!info?.isSalesEngineer) return;
+        if (!info?.isSales) return;
         if (!partnershipPICs.includes(picName)) return;
       }
       
