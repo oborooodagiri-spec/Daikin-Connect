@@ -289,8 +289,7 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
                 <div style={{ padding: 60, textAlign: 'center', color: '#64748b', fontSize: 16, fontWeight: 600 }}>
                   Belum ada data project untuk tahun buku ini.
                 </div>
-              ) : (
-                {activeRoleTab === 'Sales Partnership' ? (
+              ) : activeRoleTab === 'Sales Partnership' ? (
                   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} style={{ width: '100%', maxWidth: 700, backgroundColor: 'white', borderRadius: 20, boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)', overflow: 'hidden', border: '1px solid #e2e8f0', marginTop: 20 }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                       <tbody>
@@ -415,7 +414,6 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
                   )}
                 </>
               )}
-            )}
             </div>
           </div>
         </motion.div>
