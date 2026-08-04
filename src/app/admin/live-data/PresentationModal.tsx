@@ -61,9 +61,17 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
   const monthlyGroups = useMemo(() => {
     const groups: Record<string, { deals: any[]; totalValue: number; label: string }> = {};
     filteredData.forEach((d: any) => {
-      const date = new Date(d.created_at);
-      const key = `${date.getFullYear()}-${String(date.getMonth()).padStart(2, "0")}`;
-      const label = `${MONTH_NAMES[date.getMonth()]} ${date.getFullYear()}`;
+      const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
+      const date = rawDate ? new Date(rawDate) : new Date();
+      
+      let key = "Unknown";
+      let label = "Unknown Date";
+      
+      if (!isNaN(date.getTime())) {
+        key = `${date.getFullYear()}-${String(date.getMonth()).padStart(2, "0")}`;
+        label = `${MONTH_NAMES[date.getMonth()]} ${date.getFullYear()}`;
+      }
+
       if (!groups[key]) groups[key] = { deals: [], totalValue: 0, label };
       groups[key].deals.push(d);
       groups[key].totalValue += (Number(d.quotation) || 0);
@@ -87,9 +95,19 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
   const overdueCount = useMemo(() => {
     return filteredData.filter((d: any) => {
       if (!d.target_po_date || !['B', 'C', 'D', 'E'].includes(d.status)) return false;
-      const td = new Date(d.target_po_date);
-      const ty = new Date();
-      return td.getFullYear() < ty.getFullYear() || (td.getFullYear() === ty.getFullYear() && td.getMonth() <= ty.getMonth());
+      const targetDate = new Date(d.target_po_date);
+      if (isNaN(targetDate.getTime())) return false;
+      
+      const today = new Date();
+      const thresholdDate = new Date();
+      thresholdDate.setDate(20);
+      thresholdDate.setHours(23, 59, 59, 999);
+      
+      const isOverdueTime = today.getTime() > thresholdDate.getTime();
+      return isOverdueTime && (
+        targetDate.getFullYear() < today.getFullYear() || 
+        (targetDate.getFullYear() === today.getFullYear() && targetDate.getMonth() <= today.getMonth())
+      );
     }).length;
   }, [filteredData]);
 
@@ -285,7 +303,22 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
                       <tbody>
                         {group.deals.map((d: any, i: number) => {
                           const cfg = STATUS_CONFIG[d.status] || { label: d.status, color: "#888" };
-                          const isOverdue = d.target_po_date && new Date(d.target_po_date) < new Date() && !["A", "L"].includes(d.status);
+                          let isOverdue = false;
+                          if (d.target_po_date && ['B', 'C', 'D', 'E'].includes(d.status)) {
+                            const targetDate = new Date(d.target_po_date);
+                            if (!isNaN(targetDate.getTime())) {
+                              const today = new Date();
+                              const thresholdDate = new Date();
+                              thresholdDate.setDate(20);
+                              thresholdDate.setHours(23, 59, 59, 999);
+                              
+                              const isOverdueTime = today.getTime() > thresholdDate.getTime();
+                              isOverdue = isOverdueTime && (
+                                targetDate.getFullYear() < today.getFullYear() || 
+                                (targetDate.getFullYear() === today.getFullYear() && targetDate.getMonth() <= today.getMonth())
+                              );
+                            }
+                          }
                           return (
                             <tr
                               key={d.id || i}
