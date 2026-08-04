@@ -108,8 +108,8 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
         { key: d.pic || "Unassigned PIC", name: d.pic || "Unassigned PIC" },
         { 
           key: d.id.toString(), 
-          name: d.project_name || "Unknown Project", 
-          subtitle: d.client_name || "" 
+          name: d.client_name || "Unknown Client", 
+          subtitle: d.project_name || "" 
         }
       ];
 

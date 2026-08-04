@@ -388,7 +388,7 @@ export const exportHierarchyTree = async (deals: any[], title: string, filename:
       picDeals.forEach(d => {
         const dRow = worksheet.addRow([
           '', 
-          `${d.project_name || '-'} \n(${d.client_name || '-'})`, 
+          `${d.client_name || '-'} \n(${d.project_name || '-'})`, 
           isAchievement ? (d.target_po_date || '-') : (d.est_booking_month || '-'), 
           Number(d.quotation || 0)
         ]);
