@@ -26,6 +26,7 @@ import TargetSettingsModal from "./TargetSettingsModal";
 import TargetProgressModal from "./TargetProgressModal";
 import PartnershipSettingsModal from "./PartnershipSettingsModal";
 import { updateDeal, getPICAreas, updatePICAreas, getTargetSettings } from "@/app/actions/pipeline";
+import { exportToExcel } from "@/lib/excelExport";
 
 // ============================================
 // TYPES
@@ -1266,6 +1267,149 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
     const commercialC = getCommercialStatusTotal('C');
     const commercialD = getCommercialStatusTotal('D');
     const commercialE = getCommercialStatusTotal('E');
+    const handleDownloadAchievement = () => {
+      exportToExcel(
+        `Achievement Report - FY${currentFY}`,
+        closedFYDeals.map(d => ({
+          region: d.region || '-',
+          pic: d.pic || '-',
+          client_name: d.client_name || '-',
+          project_name: d.project_name || '-',
+          po_date: d.target_po_date || d.est_booking_month || '-',
+          quotation: Number(d.quotation) || 0
+        })),
+        [
+          { header: 'Region', key: 'region', width: 15 },
+          { header: 'PIC', key: 'pic', width: 20 },
+          { header: 'Client Name', key: 'client_name', width: 30 },
+          { header: 'Project Name', key: 'project_name', width: 40 },
+          { header: 'PO Date', key: 'po_date', width: 15 },
+          { header: 'Quotation', key: 'quotation', width: 20, isCurrency: true }
+        ],
+        `Achievement_Report_FY${currentFY}.xlsx`
+      );
+    };
+
+    const handleDownloadProjectByStatus = () => {
+      exportToExcel(
+        `Active Projects By Status - FY${currentFY}`,
+        projectByStatusDeals.map(d => ({
+          status: d.status,
+          region: d.region || '-',
+          pic: d.pic || '-',
+          client_name: d.client_name || '-',
+          project_name: d.project_name || '-',
+          po_date: d.target_po_date || d.est_booking_month || '-',
+          quotation: Number(d.quotation) || 0
+        })).sort((a, b) => a.status.localeCompare(b.status)),
+        [
+          { header: 'Status', key: 'status', width: 10 },
+          { header: 'Region', key: 'region', width: 15 },
+          { header: 'PIC', key: 'pic', width: 20 },
+          { header: 'Client Name', key: 'client_name', width: 30 },
+          { header: 'Project Name', key: 'project_name', width: 40 },
+          { header: 'Target PO', key: 'po_date', width: 15 },
+          { header: 'Quotation', key: 'quotation', width: 20, isCurrency: true }
+        ],
+        `ProjectByStatus_Report_FY${currentFY}.xlsx`
+      );
+    };
+
+    const handleDownloadBookingForecast = () => {
+      exportToExcel(
+        `Booking Forecast (Status B) - FY${currentFY}`,
+        bookingFcDeals.map(d => ({
+          po_date: d.target_po_date || d.est_booking_month || '-',
+          pic: d.pic || '-',
+          client_name: d.client_name || '-',
+          project_name: d.project_name || '-',
+          category: d.category || '-',
+          quotation: Number(d.quotation) || 0
+        })),
+        [
+          { header: 'Target Month', key: 'po_date', width: 15 },
+          { header: 'PIC', key: 'pic', width: 20 },
+          { header: 'Client Name', key: 'client_name', width: 30 },
+          { header: 'Project Name', key: 'project_name', width: 40 },
+          { header: 'Category', key: 'category', width: 15 },
+          { header: 'Quotation', key: 'quotation', width: 20, isCurrency: true }
+        ],
+        `BookingForecast_Report_FY${currentFY}.xlsx`
+      );
+    };
+
+    const handleDownloadPipeline = () => {
+      exportToExcel(
+        `Full Pipeline - FY${currentFY}`,
+        pipelineDeals.map(d => ({
+          status: d.status,
+          region: d.region || '-',
+          pic: d.pic || '-',
+          sector: d.sector || '-',
+          category: d.category || '-',
+          client_name: d.client_name || '-',
+          project_name: d.project_name || '-',
+          quotation: Number(d.quotation) || 0
+        })),
+        [
+          { header: 'Status', key: 'status', width: 10 },
+          { header: 'Region', key: 'region', width: 15 },
+          { header: 'PIC', key: 'pic', width: 20 },
+          { header: 'Sector', key: 'sector', width: 15 },
+          { header: 'Category', key: 'category', width: 15 },
+          { header: 'Client Name', key: 'client_name', width: 30 },
+          { header: 'Project Name', key: 'project_name', width: 40 },
+          { header: 'Quotation', key: 'quotation', width: 20, isCurrency: true }
+        ],
+        `Pipeline_Report_FY${currentFY}.xlsx`
+      );
+    };
+
+    const handleDownloadIndustry = () => {
+      exportToExcel(
+        `Industry Sector Pipeline - FY${currentFY}`,
+        industryDeals.map(d => ({
+          status: d.status,
+          pic: d.pic || '-',
+          sector: d.sector || '-',
+          client_name: d.client_name || '-',
+          project_name: d.project_name || '-',
+          quotation: Number(d.quotation) || 0
+        })),
+        [
+          { header: 'Status', key: 'status', width: 10 },
+          { header: 'PIC', key: 'pic', width: 20 },
+          { header: 'Sector', key: 'sector', width: 15 },
+          { header: 'Client Name', key: 'client_name', width: 30 },
+          { header: 'Project Name', key: 'project_name', width: 40 },
+          { header: 'Quotation', key: 'quotation', width: 20, isCurrency: true }
+        ],
+        `Industry_Report_FY${currentFY}.xlsx`
+      );
+    };
+
+    const handleDownloadCommercial = () => {
+      exportToExcel(
+        `Commercial Sector Pipeline - FY${currentFY}`,
+        commercialFYDeals.map(d => ({
+          status: d.status,
+          pic: d.pic || '-',
+          sector: d.sector || '-',
+          client_name: d.client_name || '-',
+          project_name: d.project_name || '-',
+          quotation: Number(d.quotation) || 0
+        })),
+        [
+          { header: 'Status', key: 'status', width: 10 },
+          { header: 'PIC', key: 'pic', width: 20 },
+          { header: 'Sector', key: 'sector', width: 15 },
+          { header: 'Client Name', key: 'client_name', width: 30 },
+          { header: 'Project Name', key: 'project_name', width: 40 },
+          { header: 'Quotation', key: 'quotation', width: 20, isCurrency: true }
+        ],
+        `Commercial_Report_FY${currentFY}.xlsx`
+      );
+    };
 
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
@@ -1280,6 +1424,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
               color: "#00c875", 
               gradient: "linear-gradient(135deg, #00c875 0%, #34d399 100%)",
               onClick: () => setShowTargetProgressModal(true),
+              onDownload: handleDownloadAchievement,
               isAnimated: true
             },
             { 
@@ -1290,6 +1435,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
               color: "#0073ea", 
               gradient: "linear-gradient(135deg, #0073ea 0%, #66ccff 100%)",
               onClick: () => setShowProjectByStatusModal(true),
+              onDownload: handleDownloadProjectByStatus,
               isAnimatedStatus: true
             },
             {
@@ -1300,6 +1446,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
               color: "#0ea5e9", 
               gradient: "linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)",
               onClick: () => setShowBookingForecastModal(true),
+              onDownload: handleDownloadBookingForecast,
               isAnimatedBooking: true
             },
             {
@@ -1310,6 +1457,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
               color: "#f59e0b", 
               gradient: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)",
               onClick: () => setCategoryModalState({ isOpen: true, categoryName: "Pipeline", color: "#f59e0b", deals: pipelineModalDeals }),
+              onDownload: handleDownloadPipeline,
               isAnimatedPipeline: true
             },
             { 
@@ -1320,6 +1468,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
               color: "#7b2cbf", 
               gradient: "linear-gradient(135deg, #7b2cbf 0%, #a855f7 100%)",
               onClick: () => setSectorModalState({ isOpen: true, sectorName: "Industry", color: "#7b2cbf", deals: industryDeals }),
+              onDownload: handleDownloadIndustry,
               isAnimatedIndustry: true
             },
             { 
@@ -1330,6 +1479,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
               color: "#ef4444", 
               gradient: "linear-gradient(135deg, #ef4444 0%, #f87171 100%)",
               onClick: () => setSectorModalState({ isOpen: true, sectorName: "Commercial", color: "#ef4444", deals: commercialDeals }),
+              onDownload: handleDownloadCommercial,
               isAnimatedCommercial: true
             },
           ].map((kpi: any, i) => {
@@ -2167,6 +2317,40 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
   );
 }
 
+function DownloadButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      title="Download Report"
+      style={{
+        position: "absolute",
+        top: 8,
+        right: 8,
+        width: 24,
+        height: 24,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "rgba(255,255,255,0.2)",
+        borderRadius: "50%",
+        color: "#fff",
+        border: "none",
+        cursor: "pointer",
+        backdropFilter: "blur(4px)",
+        zIndex: 10,
+        transition: "background 0.2s"
+      }}
+      onMouseOver={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.4)"}
+      onMouseOut={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.2)"}
+    >
+      <Download size={14} />
+    </button>
+  );
+}
+
 function AnimatedAchievementCard({ 
   kpi, 
   closedFYValue, 
@@ -2220,6 +2404,7 @@ function AnimatedAchievementCard({
           </motion.div>
         </AnimatePresence>
       </div>
+      {kpi.onDownload && <DownloadButton onClick={kpi.onDownload} />}
     </motion.div>
   );
 }
@@ -2286,6 +2471,7 @@ function AnimatedProjectByStatusCard({
           </motion.div>
         </AnimatePresence>
       </div>
+      {kpi.onDownload && <DownloadButton onClick={kpi.onDownload} />}
     </motion.div>
   );
 }
@@ -2340,6 +2526,7 @@ function AnimatedBookingForecastCard({
           </motion.div>
         </AnimatePresence>
       </div>
+      {kpi.onDownload && <DownloadButton onClick={kpi.onDownload} />}
     </motion.div>
   );
 }
@@ -2400,6 +2587,7 @@ function AnimatedPipelineCard({
           </motion.div>
         </AnimatePresence>
       </div>
+      {kpi.onDownload && <DownloadButton onClick={kpi.onDownload} />}
     </motion.div>
   );
 }
@@ -2460,6 +2648,7 @@ function AnimatedIndustryCard({
           </motion.div>
         </AnimatePresence>
       </div>
+      {kpi.onDownload && <DownloadButton onClick={kpi.onDownload} />}
     </motion.div>
   );
 }
@@ -2520,6 +2709,7 @@ function AnimatedCommercialCard({
           </motion.div>
         </AnimatePresence>
       </div>
+      {kpi.onDownload && <DownloadButton onClick={kpi.onDownload} />}
     </motion.div>
   );
 }
