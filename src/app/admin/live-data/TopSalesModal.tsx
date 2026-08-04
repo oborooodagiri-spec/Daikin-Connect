@@ -70,16 +70,6 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
 
   const { leaderboard } = useMemo(() => {
     const picDataMap: Record<string, { salesValue: number, bookingValue: number, totalDeals: number }> = {};
-    
-    // Pre-fill with all known Sales based on active tab so they always appear in the list
-    Object.keys(userInfoMap).forEach(name => {
-      const info = userInfoMap[name];
-      if (activeRoleTab === 'Sales Engineer' && info?.isSalesEngineer) {
-        picDataMap[name] = { salesValue: 0, bookingValue: 0, totalDeals: 0 };
-      } else if (activeRoleTab === 'Sales Partnership' && info?.isSalesPartnership) {
-        picDataMap[name] = { salesValue: 0, bookingValue: 0, totalDeals: 0 };
-      }
-    });
 
     const fyYearStr = selectedFY.replace('FY', '');
     const fyYear = 2000 + parseInt(fyYearStr, 10);
@@ -108,11 +98,15 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
 
       if (!isIncluded) return;
       
-      const picName = d.pic?.trim() || '(Unassigned)';
+      let picName = '';
+      if (activeRoleTab === 'Sales Engineer') {
+        picName = d.pic?.trim() || '(Unassigned)';
+      } else {
+        if (!d.sales_planner || d.sales_planner.trim() === '') return;
+        picName = d.sales_planner.trim();
+      }
       
-      const info = userInfoMap[picName];
-      if (activeRoleTab === 'Sales Engineer' && !info?.isSalesEngineer) return;
-      if (activeRoleTab === 'Sales Partnership' && !info?.isSalesPartnership) return;
+      if (picName === '(Unassigned)' || picName === '') return;
 
       if (!picDataMap[picName]) {
         picDataMap[picName] = { salesValue: 0, bookingValue: 0, totalDeals: 0 };
