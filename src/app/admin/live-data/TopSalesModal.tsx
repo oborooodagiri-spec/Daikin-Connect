@@ -90,14 +90,15 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
       let isIncluded = false;
       
       if (d.is_closed) {
-        const ut = new Date(d.updated_at).getTime();
+        const ut = new Date(d.updated_at || d.created_at || Date.now()).getTime();
         if (ut >= fyStartTime && ut <= fyEndTime) {
           isIncluded = true;
         }
       } else {
-        const rawDate = d.target_po_date || d.est_booking_month;
+        const rawDate = d.target_po_date || d.est_booking_month || d.updated_at || d.created_at || Date.now();
         if (rawDate) {
           const dt = new Date(rawDate).getTime();
+          // Include active deals that fall within or before the end of this FY
           if (!isNaN(dt) && dt <= fyEndTime) {
             isIncluded = true;
           }
@@ -109,16 +110,9 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
       let picName = '';
       if (activeRoleTab === 'Sales Engineer') {
         picName = d.pic?.trim() || '(Unassigned)';
-        
-        const info = userInfoMap[picName];
-        if (!info?.isSales) return;
       } else {
         if (!d.sales_planner || d.sales_planner.trim() === '') return;
         picName = d.sales_planner.trim();
-        
-        const info = userInfoMap[picName];
-        if (!info?.isSales) return;
-        if (!partnershipPICs.includes(picName)) return;
       }
       
       if (picName === '(Unassigned)' || picName === '') return;
@@ -136,6 +130,22 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
         picDataMap[picName].bookingValue += val;
       }
     });
+
+    if (activeRoleTab === 'Sales Partnership') {
+      partnershipPICs.forEach(pic => {
+        if (!picDataMap[pic]) {
+          picDataMap[pic] = { salesValue: 0, bookingValue: 0, totalDeals: 0 };
+        }
+      });
+    } else if (activeRoleTab === 'Sales Engineer') {
+      Object.keys(userInfoMap).forEach(pic => {
+        if (userInfoMap[pic].isSales) {
+          if (!picDataMap[pic]) {
+            picDataMap[pic] = { salesValue: 0, bookingValue: 0, totalDeals: 0 };
+          }
+        }
+      });
+    }
 
     const arr = Object.keys(picDataMap)
       .map(pic => ({

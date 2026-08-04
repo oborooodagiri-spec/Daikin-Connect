@@ -242,10 +242,17 @@ export async function getUsersAvatarMap() {
       }
     });
     const map = users.reduce((acc: any, user: any) => {
-      const isSales = user.user_roles?.some((ur: any) => ur.roles?.role_name?.toLowerCase().includes('sales'));
+      const roles = user.user_roles?.map((ur: any) => ur.roles?.role_name?.toLowerCase()) || [];
+      const isSales = roles.some((r: string) => r.includes('sales'));
+      const isSalesEngineer = roles.some((r: string) => r.includes('sales engineer'));
+      const isSalesPartnership = roles.some((r: string) => r.includes('sales partnership') || r.includes('partnership'));
+      
       acc[user.name] = { 
         avatar_url: user.avatar_url,
-        isSales: isSales
+        isSales: isSales,
+        isSalesEngineer: isSalesEngineer,
+        isSalesPartnership: isSalesPartnership,
+        roles: roles
       };
       return acc;
     }, {});

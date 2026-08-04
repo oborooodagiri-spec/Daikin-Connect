@@ -39,15 +39,18 @@ model projects {
   status               projects_status       @default(active)
   created_at           DateTime              @default(now()) @db.Timestamp(0)
   enabled_forms        String?               @db.Text
-  wa_settings          Json?
   latitude             Decimal?              @db.Decimal(10, 8)
   longitude            Decimal?              @db.Decimal(11, 8)
   radius_meters        Int                   @default(100)
   enabled_unit_types   String                @default("Chiller") @db.Text
   monitoring_focus     String                @default("UNIT") @db.VarChar(50)
-  shift_start_time     String?               @default("08:00") @db.VarChar(5)
   shift_end_time       String?               @default("17:00") @db.VarChar(5)
+  shift_start_time     String?               @default("08:00") @db.VarChar(5)
+  wa_settings          String?               @db.LongText
+  knowledge_resources  knowledge_resources[]
   logsheet_templates   logsheet_templates[]
+  notifications        notifications[]
+  outstanding_cases    outstanding_cases[]
   project_intelligence project_intelligence?
   project_issues       project_issues[]
   customers            customers             @relation(fields: [customer_id], references: [id], onUpdate: Restrict, map: "fk_projects_customer")
@@ -56,34 +59,31 @@ model projects {
   units                units[]
   user_project_access  user_project_access[]
   vendor_attendance    vendor_attendance[]
-  knowledge_resources  knowledge_resources[]
-  notifications        notifications[]
   work_orders          work_orders[]
-  outstanding_cases    outstanding_cases[]
+
   @@unique([customer_id, name], map: "uq_project_per_customer")
   @@index([customer_id], map: "idx_projects_customer")
 }
 
 model knowledge_resources {
-  id            String   @id @default(uuid())
-  title         String   @db.VarChar(255)
-  category      String   @db.VarChar(100)
-  type          String   @db.VarChar(50) // PDF, PPTX, APP, SPREADSHEET, etc.
-  file_url      String?  @db.VarChar(255)
-  href          String?  @db.VarChar(255) // For interactive apps or external links
-  thumbnail     String?  @db.VarChar(255)
-  size          String?  @db.VarChar(20)
-  tags          String?  @db.Text // Store as comma-separated or JSON
-  content       String?  @db.LongText // For text-based guidelines like Juklak/Juknis
-  visibility    String   @default("Internal") // Internal, Public
-  allowed_users String?  @db.Text // Store as comma-separated user IDs or names
-  project_id    BigInt?  @db.UnsignedBigInt // Null means General (Umum)
+  id            String    @id @default(uuid())
+  title         String    @db.VarChar(255)
+  category      String    @db.VarChar(100)
+  type          String    @db.VarChar(50)
+  file_url      String?   @db.VarChar(255)
+  href          String?   @db.VarChar(255)
+  thumbnail     String?   @db.VarChar(255)
+  size          String?   @db.VarChar(20)
+  tags          String?   @db.Text
+  visibility    String    @default("Internal")
+  project_id    BigInt?   @db.UnsignedBigInt
+  created_at    DateTime  @default(now()) @db.Timestamp(0)
+  updated_at    DateTime  @updatedAt
+  allowed_users String?   @db.Text
+  content       String?   @db.LongText
   uploaded_by   Int?
-  created_at    DateTime @default(now()) @db.Timestamp(0)
-  updated_at    DateTime @updatedAt
-
-  projects   projects? @relation(fields: [project_id], references: [id], onDelete: Cascade)
-  uploader   users?    @relation("Uploader", fields: [uploaded_by], references: [id], onDelete: SetNull)
+  projects      projects? @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  uploader      users?    @relation("Uploader", fields: [uploaded_by], references: [id])
 
   @@index([project_id])
   @@index([uploaded_by])
@@ -98,7 +98,6 @@ model outstanding_cases {
   status      String    @default("Pending")
   created_at  DateTime  @default(now()) @db.Timestamp(0)
   updated_at  DateTime  @updatedAt
-  
   projects    projects  @relation(fields: [project_id], references: [id], onDelete: Cascade)
 
   @@index([project_id])
@@ -118,22 +117,21 @@ model refresh_tokens {
 }
 
 model work_orders {
-  id              Int      @id @default(autoincrement())
-  wo_number       String   @unique @db.VarChar(100)
-  customer_id     Int? // Optional link to existing customers
-  project_id      BigInt?  @db.UnsignedBigInt // Link to projects
-  customer_name   String?  @db.VarChar(150)
-  pic_name        String?  @db.VarChar(100)
-  company_address String?  @db.Text
-  status          String   @default("Draft") @db.VarChar(50) // Draft, Submitted, Quoted, Canceled
-  created_at      DateTime @default(now()) @db.Timestamp(0)
-  updated_at      DateTime @updatedAt
+  id              Int          @id @default(autoincrement())
+  wo_number       String       @unique @db.VarChar(100)
+  customer_id     Int?
+  customer_name   String?      @db.VarChar(150)
+  pic_name        String?      @db.VarChar(100)
+  company_address String?      @db.Text
+  status          String       @default("Draft") @db.VarChar(50)
+  created_at      DateTime     @default(now()) @db.Timestamp(0)
+  updated_at      DateTime     @updatedAt
   created_by      Int?
-
-  customers  customers?   @relation(fields: [customer_id], references: [id])
-  projects   projects?    @relation(fields: [project_id], references: [id])
-  users      users?       @relation(fields: [created_by], references: [id])
-  quotations quotations[]
+  project_id      BigInt?      @db.UnsignedBigInt
+  quotations      quotations[]
+  users           users?       @relation(fields: [created_by], references: [id])
+  customers       customers?   @relation(fields: [customer_id], references: [id])
+  projects        projects?    @relation(fields: [project_id], references: [id])
 
   @@index([customer_id])
   @@index([project_id])
@@ -141,57 +139,54 @@ model work_orders {
 }
 
 model quotations {
-  id            Int       @id @default(autoincrement())
-  quo_number    String    @unique @db.VarChar(100)
+  id            Int               @id @default(autoincrement())
+  quo_number    String            @unique @db.VarChar(100)
   work_order_id Int
-  total_amount  Decimal   @default(0) @db.Decimal(15, 2)
-  discount      Decimal   @default(0) @db.Decimal(15, 2)
-  tax           Decimal   @default(0) @db.Decimal(15, 2)
-  grand_total   Decimal   @default(0) @db.Decimal(15, 2)
-  status        String    @default("Draft") @db.VarChar(50) // Draft, Sent, Approved, Rejected
-  valid_until   DateTime? @db.Date
-  created_at    DateTime  @default(now()) @db.Timestamp(0)
-  updated_at    DateTime  @updatedAt
+  total_amount  Decimal           @default(0.00) @db.Decimal(15, 2)
+  discount      Decimal           @default(0.00) @db.Decimal(15, 2)
+  tax           Decimal           @default(0.00) @db.Decimal(15, 2)
+  grand_total   Decimal           @default(0.00) @db.Decimal(15, 2)
+  status        String            @default("Draft") @db.VarChar(50)
+  valid_until   DateTime?         @db.Date
+  created_at    DateTime          @default(now()) @db.Timestamp(0)
+  updated_at    DateTime          @updatedAt
   created_by    Int?
-
-  work_orders work_orders       @relation(fields: [work_order_id], references: [id], onDelete: Cascade)
-  users       users?            @relation(fields: [created_by], references: [id])
-  items       quotation_items[]
-  sla         slas?
+  items         quotation_items[]
+  users         users?            @relation(fields: [created_by], references: [id])
+  work_orders   work_orders       @relation(fields: [work_order_id], references: [id], onDelete: Cascade)
+  sla           slas?
 
   @@index([work_order_id])
   @@index([created_by])
 }
 
 model quotation_items {
-  id           Int     @id @default(autoincrement())
+  id           Int        @id @default(autoincrement())
   quotation_id Int
-  item_name    String  @db.VarChar(255)
-  category     String? @db.VarChar(100)
-  qty          Int     @default(1)
-  unit_price   Decimal @default(0) @db.Decimal(15, 2)
-  total_price  Decimal @default(0) @db.Decimal(15, 2)
-
-  quotations quotations @relation(fields: [quotation_id], references: [id], onDelete: Cascade)
+  item_name    String     @db.VarChar(255)
+  category     String?    @db.VarChar(100)
+  qty          Int        @default(1)
+  unit_price   Decimal    @default(0.00) @db.Decimal(15, 2)
+  total_price  Decimal    @default(0.00) @db.Decimal(15, 2)
+  quotations   quotations @relation(fields: [quotation_id], references: [id], onDelete: Cascade)
 
   @@index([quotation_id])
 }
 
 model slas {
-  id                Int      @id @default(autoincrement())
-  quotation_id      Int      @unique
-  contract_duration String   @db.VarChar(100)
-  service_frequency Int      @default(12) // times per year
-  custom_kpis       String?  @db.LongText // Stored as JSON
-  custom_terms      String?  @db.LongText // Stored as JSON
-  custom_sow        String?  @db.LongText // Stored as JSON
-  status            String   @default("Draft") @db.VarChar(50) // Draft, Active, Expired
-  created_at        DateTime @default(now()) @db.Timestamp(0)
-  updated_at        DateTime @updatedAt
+  id                Int        @id @default(autoincrement())
+  quotation_id      Int        @unique
+  contract_duration String     @db.VarChar(100)
+  service_frequency Int        @default(12)
+  custom_kpis       String?    @db.LongText
+  custom_terms      String?    @db.LongText
+  custom_sow        String?    @db.LongText
+  status            String     @default("Draft") @db.VarChar(50)
+  created_at        DateTime   @default(now()) @db.Timestamp(0)
+  updated_at        DateTime   @updatedAt
   created_by        Int?
-
-  quotations quotations @relation(fields: [quotation_id], references: [id], onDelete: Cascade)
-  users      users?     @relation(fields: [created_by], references: [id])
+  users             users?     @relation(fields: [created_by], references: [id])
+  quotations        quotations @relation(fields: [quotation_id], references: [id], onDelete: Cascade)
 
   @@index([created_by])
 }
@@ -307,28 +302,28 @@ model users {
   avatar_url                String?                @db.VarChar(255)
   bio                       String?                @db.VarChar(500)
   audit_logs                audit_logs[]
+  created_boq_projects      boq_projects[]
+  uploaded_resources        knowledge_resources[]  @relation("Uploader")
+  notifications             notifications[]
+  pipeline_deals            pipeline_deals[]
+  pipeline_history          pipeline_history[]
   intelligence_updates      project_intelligence[] @relation("IntelligenceUpdater")
+  created_quotations        quotations[]
   refresh_tokens            refresh_tokens[]
   schedule_messages         schedule_messages[]
   schedule_targets          schedule_targets[]
   schedules                 schedules[]
   service_activities        service_activities[]
+  created_slas              slas[]
+  processed_requests        unit_edit_requests[]   @relation("Processor")
+  unit_edit_requests        unit_edit_requests[]   @relation("Requester")
   user_project_access       user_project_access[]
   user_push_tokens          user_push_tokens[]
   user_roles                user_roles[]
   user_unit_access          user_unit_access[]
-  unit_edit_requests        unit_edit_requests[]   @relation("Requester")
-  processed_requests        unit_edit_requests[]   @relation("Processor")
-  notifications             notifications[]
   roles                     roles?                 @relation(fields: [role_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "users_ibfk_1")
   vendor_attendance         vendor_attendance[]
   created_work_orders       work_orders[]
-  created_quotations        quotations[]
-  created_slas              slas[]
-  created_boq_projects      boq_projects[]
-  pipeline_deals            pipeline_deals[]
-  pipeline_history          pipeline_history[]
-  uploaded_resources        knowledge_resources[] @relation("Uploader")
 
   @@index([role_id], map: "role_id")
 }
@@ -429,8 +424,8 @@ model ahu_audits {
   approval_status         ahu_audits_approval_status? @default(Pending)
   approved_by             String?                     @db.VarChar(100)
   customer_signature      String?                     @db.LongText
-  customer_signature_ip   String?                     @db.VarChar(45)
   customer_signature_date DateTime?                   @db.DateTime(0)
+  customer_signature_ip   String?                     @db.VarChar(45)
   reviewer_signature      String?                     @db.LongText
   reviewer_signature_ip   String?                     @db.VarChar(45)
 }
@@ -507,8 +502,8 @@ model corrective {
   status                 String?   @default("Final Approved") @db.VarChar(50)
   created_at             DateTime? @default(now()) @db.Timestamp(0)
   deleted_at             DateTime? @db.DateTime(0)
-  customer_approver_name String?   @db.VarChar(255)
   customer_approved_at   DateTime? @db.DateTime(0)
+  customer_approver_name String?   @db.VarChar(255)
   customer_signature     String?   @db.LongText
   customer_signature_ip  String?   @db.VarChar(45)
   reviewer_signature     String?   @db.LongText
@@ -588,13 +583,13 @@ model service_activities {
   customer_approver_name  String?                    @db.VarChar(255)
   engineer_signer_name    String?                    @db.VarChar(255)
   is_approved_by_customer Boolean?                   @default(false)
+  deleted_at              DateTime?                  @db.DateTime(0)
   customer_signature      String?                    @db.LongText
   customer_signature_ip   String?                    @db.VarChar(45)
   engineer_signature      String?                    @db.LongText
   engineer_signature_ip   String?                    @db.VarChar(45)
   reviewer_signature      String?                    @db.LongText
   reviewer_signature_ip   String?                    @db.VarChar(45)
-  deleted_at              DateTime?                  @db.DateTime(0)
   activity_photos         activity_photos[]
   audit_velocity_points   audit_velocity_points[]
   units                   units?                     @relation(fields: [unit_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "service_activities_ibfk_1")
@@ -773,10 +768,9 @@ model unit_edit_requests {
   processed_by  Int?
   processed_at  DateTime? @db.Timestamp(0)
   admin_note    String?   @db.Text
-
-  units     units  @relation(fields: [unit_id], references: [id], onDelete: Cascade)
-  users     users? @relation("Requester", fields: [requested_by], references: [id])
-  processor users? @relation("Processor", fields: [processed_by], references: [id])
+  processor     users?    @relation("Processor", fields: [processed_by], references: [id])
+  users         users?    @relation("Requester", fields: [requested_by], references: [id])
+  units         units     @relation(fields: [unit_id], references: [id], onDelete: Cascade)
 
   @@index([unit_id])
   @@index([requested_by])
@@ -798,15 +792,15 @@ model user_push_tokens {
 model notifications {
   id         Int       @id @default(autoincrement())
   user_id    Int
-  project_id BigInt?   @db.UnsignedBigInt
   title      String    @db.VarChar(150)
   message    String    @db.Text
   type       String    @default("info") @db.VarChar(20)
   link       String?   @db.VarChar(255)
   is_read    Boolean   @default(false)
   created_at DateTime  @default(now()) @db.Timestamp(0)
-  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  project_id BigInt?   @db.UnsignedBigInt
   projects   projects? @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
   @@index([project_id])
@@ -855,8 +849,8 @@ model daily_ops_logs {
   drainage_status        String?   @db.VarChar(50)
   notes                  String?   @db.Text
   deleted_at             DateTime? @db.DateTime(0)
-  customer_approver_name String?   @db.VarChar(255)
   customer_approved_at   DateTime? @db.DateTime(0)
+  customer_approver_name String?   @db.VarChar(255)
   customer_signature     String?   @db.LongText
   customer_signature_ip  String?   @db.VarChar(45)
   reviewer_signature     String?   @db.LongText
@@ -955,6 +949,181 @@ model logsheet_entries {
 
   @@unique([template_id, log_date, log_time])
   @@index([template_id, log_date])
+}
+
+model shopping_list {
+  id             BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  category       String   @db.VarChar(100)
+  work_type      String   @db.VarChar(100)
+  item_name      String   @db.VarChar(255)
+  capacity_unit  String   @db.VarChar(50)
+  capacity_range String   @db.VarChar(100)
+  price          Decimal  @db.Decimal(15, 2)
+  description    String?  @db.Text
+  created_at     DateTime @default(now()) @db.Timestamp(0)
+  updated_at     DateTime @updatedAt
+  allowed_users  String?  @db.Text
+  visibility     String   @default("Internal")
+  vendor_name    String?  @default("Daikin Certified Partner") @db.VarChar(100)
+}
+
+model rate_card_settings {
+  id            Int      @id @default(autoincrement())
+  setting_key   String   @unique @db.VarChar(100)
+  setting_value String?  @db.Text
+  updated_at    DateTime @default(now()) @db.Timestamp(0)
+}
+
+model unit_type_categories {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(100)
+  description String?  @db.Text
+  icon_color  String?  @default("#0073ea") @db.VarChar(20)
+  catalog_url String?  @db.Text
+  created_at  DateTime @default(now()) @db.Timestamp(0)
+  updated_at  DateTime @default(now()) @updatedAt @db.Timestamp(0)
+  image_url   String?  @db.Text
+  parent_id   Int?
+  sort_order  Int      @default(0)
+
+  @@unique([name, parent_id])
+}
+
+model pricelist_items {
+  id            String      @id @default(uuid())
+  category      String      @db.VarChar(100)
+  name          String      @db.VarChar(255)
+  specification String?     @db.Text
+  unit          String      @db.VarChar(50)
+  price         Decimal     @db.Decimal(15, 2)
+  created_at    DateTime    @default(now()) @db.Timestamp(0)
+  updated_at    DateTime    @updatedAt
+  boq_items     boq_items[]
+}
+
+model boq_projects {
+  id              String           @id @default(uuid())
+  project_name    String           @db.VarChar(255)
+  customer_name   String?          @db.VarChar(150)
+  created_by      Int
+  created_at      DateTime         @default(now()) @db.Timestamp(0)
+  updated_at      DateTime         @updatedAt
+  markup_labour   Decimal?         @default(0.00) @db.Decimal(5, 2)
+  markup_material Decimal?         @default(0.00) @db.Decimal(5, 2)
+  allowed_users   String?          @db.Text
+  folder_color    String?          @default("#0073ea") @db.VarChar(20)
+  categories      boq_categories[]
+  items           boq_items[]
+  users           users            @relation(fields: [created_by], references: [id])
+
+  @@index([created_by])
+}
+
+model boq_categories {
+  id          String       @id @default(uuid())
+  boq_id      String
+  name        String       @db.VarChar(255)
+  order_index Int          @default(0)
+  boq         boq_projects @relation(fields: [boq_id], references: [id], onDelete: Cascade)
+  items       boq_items[]
+
+  @@index([boq_id])
+}
+
+model boq_items {
+  id             String           @id @default(uuid())
+  boq_id         String
+  item_id        String?
+  quantity       Float
+  category_id    String
+  labour_price   Decimal          @default(0.00) @db.Decimal(15, 2)
+  manual_name    String?          @db.VarChar(255)
+  material_price Decimal          @default(0.00) @db.Decimal(15, 2)
+  specification  String?          @db.VarChar(255)
+  unit           String?          @db.VarChar(50)
+  boq            boq_projects     @relation(fields: [boq_id], references: [id], onDelete: Cascade)
+  category       boq_categories   @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  pricelist      pricelist_items? @relation(fields: [item_id], references: [id])
+
+  @@index([boq_id])
+  @@index([category_id])
+  @@index([item_id])
+}
+
+model pipeline_deals {
+  id                Int                @id @default(autoincrement())
+  client_name       String             @db.VarChar(255)
+  area              String?            @db.VarChar(100)
+  project_name      String             @db.VarChar(500)
+  bill_material     String?            @db.VarChar(255)
+  type              String?            @db.VarChar(100)
+  region            String?            @db.VarChar(50)
+  sales_planner     String?            @db.VarChar(100)
+  pic               String?            @db.VarChar(100)
+  category          String?            @db.VarChar(50)
+  sector            String?            @db.VarChar(50)
+  quotation         BigInt             @default(0)
+  status            String             @default("E") @db.VarChar(5)
+  est_booking_month DateTime?          @db.Date
+  booking_fc        String?            @db.VarChar(50)
+  remarks           String?            @db.Text
+  source            String             @default("EPL") @db.VarChar(20)
+  priority          String?            @db.VarChar(20)
+  latitude          Float?
+  longitude         Float?
+  created_at        DateTime           @default(now()) @db.Timestamp(0)
+  updated_at        DateTime           @updatedAt @db.Timestamp(0)
+  pic_id            Int?
+  target_po_date    DateTime?          @db.Date
+  is_closed         Boolean            @default(false)
+  users             users?             @relation(fields: [pic_id], references: [id])
+  history           pipeline_history[]
+
+  @@index([status])
+  @@index([pic])
+  @@index([pic_id])
+  @@index([category])
+  @@index([sector])
+  @@index([region])
+  @@index([source])
+}
+
+model pipeline_history {
+  id            Int            @id @default(autoincrement())
+  deal_id       Int
+  changed_by_id Int?
+  field_changed String         @db.VarChar(50)
+  old_value     String?        @db.Text
+  new_value     String?        @db.Text
+  remark        String?        @db.Text
+  created_at    DateTime       @default(now()) @db.Timestamp(0)
+  user          users?         @relation(fields: [changed_by_id], references: [id])
+  deal          pipeline_deals @relation(fields: [deal_id], references: [id], onDelete: Cascade)
+
+  @@index([deal_id])
+  @@index([changed_by_id], map: "pipeline_history_changed_by_id_fkey")
+}
+
+model pipeline_ops {
+  id              Int      @id @default(autoincrement())
+  status          String   @default("E") @db.VarChar(5)
+  customer        String   @db.VarChar(255)
+  project_name    String   @db.VarChar(500)
+  total_value     BigInt   @default(0)
+  values_by_month String?  @db.LongText
+  remark          String?  @db.Text
+  created_at      DateTime @default(now()) @db.Timestamp(0)
+  updated_at      DateTime @updatedAt @db.Timestamp(0)
+
+  @@index([status])
+  @@index([customer])
+}
+
+model pipeline_settings {
+  id          Int     @id @default(autoincrement())
+  key         String  @unique @db.VarChar(100)
+  value       String  @db.LongText
+  description String? @db.VarChar(255)
 }
 
 enum projects_status {
@@ -1072,200 +1241,4 @@ enum LogsheetType {
   AHU
   FCU
   CRAC
-}
-
-model shopping_list {
-  id             BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
-  category       String   @db.VarChar(100)
-  work_type      String   @db.VarChar(100)
-  item_name      String   @db.VarChar(255)
-  capacity_unit  String   @db.VarChar(50)
-  capacity_range String   @db.VarChar(100)
-  price          Decimal  @db.Decimal(15, 2)
-  description    String?  @db.Text
-  visibility     String   @default("Internal") // Internal (Admin Only), Public
-  allowed_users  String?  @db.Text // Comma separated user IDs
-  vendor_name    String?  @default("Daikin Certified Partner") @db.VarChar(100)
-  created_at     DateTime @default(now()) @db.Timestamp(0)
-  updated_at     DateTime @updatedAt
-}
-
-model rate_card_settings {
-  id            Int      @id @default(autoincrement())
-  setting_key   String   @unique @db.VarChar(100)
-  setting_value String?  @db.Text
-  updated_at    DateTime @default(now()) @db.Timestamp(0)
-}
-
-model unit_type_categories {
-  id          Int      @id @default(autoincrement())
-  name        String   @db.VarChar(100)
-  description String?  @db.Text
-  icon_color  String?  @default("#0073ea") @db.VarChar(20)
-  catalog_url String?  @db.Text
-  image_url   String?  @db.Text
-  parent_id   Int?
-  sort_order  Int      @default(0)
-  created_at  DateTime @default(now()) @db.Timestamp(0)
-  updated_at  DateTime @default(now()) @updatedAt @db.Timestamp(0)
-
-  @@unique([name, parent_id])
-}
-
-// Master Pricelist
-model pricelist_items {
-  id            String   @id @default(uuid())
-  category      String   @db.VarChar(100)
-  name          String   @db.VarChar(255)
-  specification String?  @db.Text
-  unit          String   @db.VarChar(50)
-  price         Decimal  @db.Decimal(15, 2)
-  created_at    DateTime @default(now()) @db.Timestamp(0)
-  updated_at    DateTime @updatedAt
-
-  boq_items boq_items[]
-}
-
-// BoQ Projects
-model boq_projects {
-  id              String   @id @default(uuid())
-  project_name    String   @db.VarChar(255)
-  customer_name   String?  @db.VarChar(150)
-  markup_material Decimal? @default(0) @db.Decimal(5, 2)
-  markup_labour   Decimal? @default(0) @db.Decimal(5, 2)
-  created_by      Int
-  created_at      DateTime @default(now()) @db.Timestamp(0)
-  updated_at      DateTime @updatedAt
-  folder_color    String?  @default("#0073ea") @db.VarChar(20)
-  allowed_users   String?  @db.Text
-
-  items      boq_items[]
-  categories boq_categories[]
-  users      users            @relation(fields: [created_by], references: [id])
-
-  @@index([created_by])
-}
-
-// BoQ Categories
-model boq_categories {
-  id          String @id @default(uuid())
-  boq_id      String
-  name        String @db.VarChar(255)
-  order_index Int    @default(0)
-
-  boq   boq_projects @relation(fields: [boq_id], references: [id], onDelete: Cascade)
-  items boq_items[]
-
-  @@index([boq_id])
-}
-
-// BoQ Line Items
-model boq_items {
-  id             String  @id @default(uuid())
-  boq_id         String
-  category_id    String
-  item_id        String?
-  manual_name    String? @db.VarChar(255)
-  specification  String? @db.VarChar(255)
-  unit           String? @db.VarChar(50)
-  quantity       Float
-  material_price Decimal @default(0) @db.Decimal(15, 2)
-  labour_price   Decimal @default(0) @db.Decimal(15, 2)
-
-  boq       boq_projects     @relation(fields: [boq_id], references: [id], onDelete: Cascade)
-  category  boq_categories   @relation(fields: [category_id], references: [id], onDelete: Cascade)
-  pricelist pricelist_items? @relation(fields: [item_id], references: [id])
-
-  @@index([boq_id])
-  @@index([category_id])
-  @@index([item_id])
-}
-
-// ============================================
-// PIPELINE DEALS (Sales Pipeline — EPL + Partnership)
-// ============================================
-model pipeline_deals {
-  id                Int                @id @default(autoincrement())
-  client_name       String             @db.VarChar(255)
-  area              String?            @db.VarChar(100)
-  project_name      String             @db.VarChar(500)
-  bill_material     String?            @db.VarChar(255)
-  type              String?            @db.VarChar(100)
-  region            String?            @db.VarChar(50)
-  sales_planner     String?            @db.VarChar(100)
-  pic               String?            @db.VarChar(100)
-  pic_id            Int?
-  category          String?            @db.VarChar(50)
-  sector            String?            @db.VarChar(50)
-  quotation         BigInt             @default(0)
-  status            String             @default("E") @db.VarChar(5)
-  est_booking_month DateTime?          @db.Date
-  target_po_date    DateTime?          @db.Date
-  booking_fc        String?            @db.VarChar(50)
-  is_closed         Boolean            @default(false)
-  remarks           String?            @db.Text
-  source            String             @default("EPL") @db.VarChar(20)
-  priority          String?            @db.VarChar(20)
-  latitude          Float?
-  longitude         Float?
-  created_at        DateTime           @default(now()) @db.Timestamp(0)
-  updated_at        DateTime           @updatedAt @db.Timestamp(0)
-  history           pipeline_history[]
-
-  users users? @relation(fields: [pic_id], references: [id], onDelete: SetNull)
-
-  @@index([status])
-  @@index([pic])
-  @@index([pic_id])
-  @@index([category])
-  @@index([sector])
-  @@index([region])
-  @@index([source])
-}
-
-// ============================================
-// PIPELINE HISTORY
-// ============================================
-model pipeline_history {
-  id            Int      @id @default(autoincrement())
-  deal_id       Int
-  changed_by_id Int?
-  field_changed String   @db.VarChar(50) // e.g. "status", "quotation", "est_booking_month", "new_deal"
-  old_value     String?  @db.Text
-  new_value     String?  @db.Text
-  remark        String?  @db.Text
-  created_at    DateTime @default(now()) @db.Timestamp(0)
-
-  deal pipeline_deals @relation(fields: [deal_id], references: [id], onDelete: Cascade)
-  user users?         @relation(fields: [changed_by_id], references: [id], onDelete: SetNull)
-
-  @@index([deal_id])
-}
-
-// ============================================
-// PIPELINE OPS (Operations/Service Pipeline)
-// ============================================
-model pipeline_ops {
-  id              Int      @id @default(autoincrement())
-  status          String   @default("E") @db.VarChar(5)
-  customer        String   @db.VarChar(255)
-  project_name    String   @db.VarChar(500)
-  total_value     BigInt   @default(0)
-  values_by_month Json?
-  remark          String?  @db.Text
-  created_at      DateTime @default(now()) @db.Timestamp(0)
-  updated_at      DateTime @updatedAt @db.Timestamp(0)
-
-  @@index([status])
-  @@index([customer])
-}
-
-// ============================================
-// PIPELINE SETTINGS (Lookup/Reference Values)
-// ============================================
-model pipeline_settings {
-  id          Int     @id @default(autoincrement())
-  key         String  @unique @db.VarChar(100)
-  value       Json
-  description String? @db.VarChar(255)
 }
