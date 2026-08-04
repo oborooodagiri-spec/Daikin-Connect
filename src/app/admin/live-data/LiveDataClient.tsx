@@ -463,6 +463,35 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
         <rect width="100%" height="100%" fill="url(#mapDotGrid)" />
       </svg>
 
+      {/* Aurora/Nebula atmospheric effects */}
+      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+        <div className="aurora-blob" style={{
+          position: "absolute", left: "20%", top: "30%", width: 500, height: 300,
+          background: "radial-gradient(ellipse, rgba(102,204,255,0.12) 0%, rgba(0,200,117,0.06) 40%, transparent 70%)",
+          borderRadius: "50%", filter: "blur(60px)"
+        }} />
+        <div className="aurora-blob" style={{
+          position: "absolute", left: "50%", top: "50%", width: 400, height: 250,
+          background: "radial-gradient(ellipse, rgba(253,171,61,0.08) 0%, rgba(102,204,255,0.04) 50%, transparent 70%)",
+          borderRadius: "50%", filter: "blur(50px)",
+          animationDelay: "-4s", animationDuration: "15s"
+        }} />
+        <div className="aurora-blob" style={{
+          position: "absolute", left: "70%", top: "20%", width: 350, height: 200,
+          background: "radial-gradient(ellipse, rgba(0,200,117,0.1) 0%, rgba(102,204,255,0.05) 40%, transparent 70%)",
+          borderRadius: "50%", filter: "blur(45px)",
+          animationDelay: "-8s", animationDuration: "18s"
+        }} />
+      </div>
+
+      {/* Scan line effect */}
+      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+        <div className="scan-line" style={{
+          position: "absolute", left: 0, right: 0, height: 2,
+          background: "linear-gradient(90deg, transparent, rgba(102,204,255,0.08), rgba(102,204,255,0.15), rgba(102,204,255,0.08), transparent)"
+        }} />
+      </div>
+
       {/* Subtle top border glow line */}
       <div style={{
         position: "absolute", top: 0, left: "10%", right: "10%", height: 1,
@@ -554,51 +583,110 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
       <div style={{ display: "flex", position: "relative" }}>
         {/* Main Geographic Map */}
         <div style={{ flex: 1, position: "relative" }}>
-          {/* PIC Profile Popup */}
-          {selectedPicCoverage && (
-            <div style={{
-              position: "absolute", top: 20, left: 20, zIndex: 10,
-              background: "linear-gradient(145deg, rgba(16, 28, 48, 0.95), rgba(11, 19, 33, 0.95))",
-              backdropFilter: "blur(12px)", border: "1px solid rgba(253,171,61,0.3)",
-              borderRadius: 20, padding: 20, width: 260,
-              boxShadow: "0 10px 40px rgba(0,0,0,0.5), 0 0 20px rgba(253,171,61,0.15)",
-              display: "flex", flexDirection: "column", gap: 16
-            }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <div style={{
-                  width: 60, height: 60, borderRadius: "50%",
-                  background: "linear-gradient(135deg, #2a4b7c, #152b4d)",
-                  border: "2px solid #fdab3d",
-                  boxShadow: "0 0 15px rgba(253,171,61,0.4)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
+          {/* PIC Profile Popup — Holographic Command Center Card */}
+          <AnimatePresence>
+          {selectedPicCoverage && (() => {
+            const picUser = usersList.find(u => u.name === selectedPicCoverage);
+            const picData = picStats[selectedPicCoverage];
+            const totalProjects = picData?.totalCount || 0;
+            const totalValue = picData?.totalValue || 0;
+            const wonValue = picData?.wonValue || 0;
+            const wonPct = totalValue > 0 ? Math.round((wonValue / totalValue) * 100) : 0;
+            const circumference = 2 * Math.PI * 25;
+            const strokeDash = (wonPct / 100) * circumference;
+            // Get cities this PIC covers
+            const picCities = Array.from(new Set(deals.filter(d => d.pic === selectedPicCoverage && d.status !== "L").map(d => {
+              const geo = guessCoords(d);
+              return geo ? geo.provinceName || geo.regionName : null;
+            }).filter(Boolean))).slice(0, 6) as string[];
+
+            return (
+              <motion.div
+                key="pic-card"
+                initial={{ x: -300, opacity: 0, scale: 0.8 }}
+                animate={{ x: 0, opacity: 1, scale: 1 }}
+                exit={{ x: -300, opacity: 0, scale: 0.8 }}
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                style={{
+                  position: "absolute", top: 16, left: 16, zIndex: 10,
+                  background: "linear-gradient(160deg, rgba(10,20,38,0.97), rgba(6,14,26,0.97))",
+                  backdropFilter: "blur(20px)", border: "1px solid rgba(253,171,61,0.2)",
+                  borderRadius: 24, padding: "20px 18px", width: 240,
+                  boxShadow: "0 16px 60px rgba(0,0,0,0.6), 0 0 30px rgba(253,171,61,0.1), inset 0 1px 0 rgba(253,171,61,0.1)",
                   overflow: "hidden"
-                }}>
-                  {usersList.find(u => u.name === selectedPicCoverage)?.avatarUrl ? (
-                    <img src={usersList.find(u => u.name === selectedPicCoverage)?.avatarUrl} alt={selectedPicCoverage} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  ) : (
-                    <span style={{ fontSize: 24, fontWeight: "bold", color: "#fdab3d" }}>
-                      {selectedPicCoverage.charAt(0)}
-                    </span>
-                  )}
+                }}
+              >
+                {/* Ambient glow inside card */}
+                <div style={{ position: "absolute", top: -40, right: -40, width: 120, height: 120, background: "radial-gradient(circle, rgba(253,171,61,0.08), transparent 70%)", borderRadius: "50%", pointerEvents: "none" }} />
+                
+                {/* Close button */}
+                <button onClick={() => setSelectedPicCoverage?.(null)} style={{ position: "absolute", top: 10, right: 10, width: 24, height: 24, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.5)", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}>✕</button>
+
+                {/* Avatar with SVG rotating ring */}
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, marginBottom: 16 }}>
+                  <div style={{ position: "relative", width: 72, height: 72 }}>
+                    {/* Outer rotating ring */}
+                    <svg width="72" height="72" style={{ position: "absolute", top: 0, left: 0 }} className="orbit-ring-cw">
+                      <circle cx="36" cy="36" r="34" fill="none" stroke="rgba(253,171,61,0.15)" strokeWidth="1" strokeDasharray="8 4" />
+                    </svg>
+                    {/* Progress ring (won percentage) */}
+                    <svg width="72" height="72" style={{ position: "absolute", top: 0, left: 0, transform: "rotate(-90deg)" }}>
+                      <circle cx="36" cy="36" r="25" fill="none" stroke="rgba(253,171,61,0.1)" strokeWidth="3" />
+                      <circle cx="36" cy="36" r="25" fill="none" stroke="#fdab3d" strokeWidth="3" strokeLinecap="round"
+                        strokeDasharray={`${strokeDash} ${circumference}`}
+                        style={{ transition: "stroke-dasharray 1s ease-out", filter: "drop-shadow(0 0 4px rgba(253,171,61,0.5))" }}
+                      />
+                    </svg>
+                    {/* Avatar */}
+                    <div style={{ position: "absolute", top: 11, left: 11, width: 50, height: 50, borderRadius: "50%", overflow: "hidden", background: "linear-gradient(135deg, #1a3a5c, #0d2240)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      {picUser?.avatarUrl ? (
+                        <img src={picUser.avatarUrl} alt={selectedPicCoverage} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      ) : (
+                        <span style={{ fontSize: 22, fontWeight: 900, color: "#fdab3d" }}>{selectedPicCoverage.charAt(0)}</span>
+                      )}
+                    </div>
+                    {/* Won % badge */}
+                    <div style={{ position: "absolute", bottom: -2, right: -2, background: "#fdab3d", color: "#000", fontSize: 8, fontWeight: 900, padding: "2px 5px", borderRadius: 6, boxShadow: "0 2px 8px rgba(253,171,61,0.4)" }}>{wonPct}%</div>
+                  </div>
+                  <div style={{ textAlign: "center" }}>
+                    <h3 style={{ margin: 0, color: "#fff", fontSize: 14, fontWeight: 900, letterSpacing: "-0.02em" }}>{selectedPicCoverage}</h3>
+                    <p style={{ margin: 0, color: "rgba(253,171,61,0.8)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Sales Engineer</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 style={{ margin: 0, color: "#fff", fontSize: 16, fontWeight: 800 }}>{selectedPicCoverage}</h3>
-                  <p style={{ margin: 0, color: "#fdab3d", fontSize: 12, fontWeight: 600 }}>Sales Engineer</p>
+
+                {/* Stats with count-up feel */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 14 }}>
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+                    style={{ background: "rgba(102,204,255,0.05)", border: "1px solid rgba(102,204,255,0.1)", borderRadius: 12, padding: "10px 8px", textAlign: "center" }}>
+                    <p style={{ margin: 0, color: "rgba(255,255,255,0.5)", fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>Projects</p>
+                    <p style={{ margin: 0, color: "#fff", fontSize: 20, fontWeight: 900, marginTop: 2 }}>{totalProjects}</p>
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                    style={{ background: "rgba(0,200,117,0.05)", border: "1px solid rgba(0,200,117,0.1)", borderRadius: 12, padding: "10px 8px", textAlign: "center" }}>
+                    <p style={{ margin: 0, color: "rgba(255,255,255,0.5)", fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>Value</p>
+                    <p style={{ margin: 0, color: "#00c875", fontSize: 13, fontWeight: 900, marginTop: 2 }}>{formatRp(totalValue)}</p>
+                  </motion.div>
                 </div>
-              </div>
-              
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.03)", padding: "8px 12px", borderRadius: 8 }}>
-                  <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, fontWeight: 600 }}>Total Projects</span>
-                  <span style={{ color: "#fff", fontSize: 14, fontWeight: 800 }}>{picStats[selectedPicCoverage]?.totalCount || 0}</span>
-                </div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.03)", padding: "8px 12px", borderRadius: 8 }}>
-                  <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, fontWeight: 600 }}>Total Value</span>
-                  <span style={{ color: "#00c875", fontSize: 14, fontWeight: 800 }}>{formatRp(picStats[selectedPicCoverage]?.totalValue || 0)}</span>
-                </div>
-              </div>
-            </div>
-          )}
+
+                {/* Coverage cities */}
+                {picCities.length > 0 && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
+                    <p style={{ margin: "0 0 6px", color: "rgba(255,255,255,0.35)", fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em" }}>Coverage Area</p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                      {picCities.map((city, i) => (
+                        <motion.span key={city} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5 + i * 0.05 }}
+                          style={{ padding: "3px 8px", borderRadius: 6, background: "rgba(253,171,61,0.08)", border: "1px solid rgba(253,171,61,0.12)", color: "rgba(253,171,61,0.8)", fontSize: 9, fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}>
+                          <span style={{ width: 4, height: 4, borderRadius: "50%", background: "#fdab3d", boxShadow: "0 0 4px rgba(253,171,61,0.6)" }} />
+                          {city}
+                        </motion.span>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </motion.div>
+            );
+          })()}
+          </AnimatePresence>
 
           <ComposableMap
             projection="geoMercator"
@@ -668,35 +756,73 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
               }
             </Geographies>
 
-            {/* CSS Animation for PIC lines */}
+            {/* Holographic Command Center Animations */}
             <style>{`
-              @keyframes dash {
-                to {
-                  stroke-dashoffset: -16;
-                }
-              }
+              @keyframes dash { to { stroke-dashoffset: -16; } }
+              @keyframes orbit1 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+              @keyframes orbit2 { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+              @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.25; } 50% { transform: scale(1.15); opacity: 0.4; } }
+              @keyframes particleMove { 0% { offset-distance: 0%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }
+              @keyframes radarSweep { 0% { transform: scale(0); opacity: 0.6; } 100% { transform: scale(8); opacity: 0; } }
+              @keyframes auroraShift { 0% { transform: translateX(-30%) translateY(0%) scale(1.2); opacity: 0.12; } 33% { transform: translateX(10%) translateY(-10%) scale(1.4); opacity: 0.18; } 66% { transform: translateX(-10%) translateY(10%) scale(1.1); opacity: 0.1; } 100% { transform: translateX(-30%) translateY(0%) scale(1.2); opacity: 0.12; } }
+              @keyframes scanDown { 0% { transform: translateY(-100%); } 100% { transform: translateY(500%); } }
+              @keyframes floatDust { 0% { transform: translateY(0) translateX(0); opacity: 0; } 20% { opacity: 0.5; } 80% { opacity: 0.5; } 100% { transform: translateY(-80px) translateX(40px); opacity: 0; } }
+              @keyframes shockwave { 0% { r: 0; opacity: 0.6; stroke-width: 2; } 100% { r: 50; opacity: 0; stroke-width: 0.5; } }
+              @keyframes countUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+              @keyframes ringRotate { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -157; } }
               .pic-line {
                 stroke-dasharray: 6 10;
                 animation: dash 1s linear infinite;
                 filter: drop-shadow(0 0 4px rgba(253,171,61,0.8));
               }
+              .pic-particle {
+                animation: particleMove 2.5s linear infinite;
+                filter: drop-shadow(0 0 3px rgba(253,171,61,0.9));
+              }
+              .aurora-blob {
+                animation: auroraShift 12s ease-in-out infinite;
+                mix-blend-mode: screen;
+                pointer-events: none;
+              }
+              .scan-line {
+                animation: scanDown 4s linear infinite;
+                pointer-events: none;
+              }
+              .cluster-breathe {
+                animation: breathe 3s ease-in-out infinite;
+              }
+              .orbit-ring-cw {
+                animation: orbit1 8s linear infinite;
+                transform-origin: center;
+              }
+              .orbit-ring-ccw {
+                animation: orbit2 12s linear infinite;
+                transform-origin: center;
+              }
             `}</style>
             
-            {/* PIC Connection Lines */}
-            {picLines.map((line, idx) => (
-              <Line
-                key={`line-${idx}`}
-                from={line.from}
-                to={line.to}
-                stroke="#fdab3d"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                className="pic-line"
-                style={{ fill: "none" }}
-              />
-            ))}
+            {/* PIC Particle Streams — animated flowing particles */}
+            {picLines.map((line, idx) => {
+              const pathId = `pic-path-${idx}`;
+              return (
+                <g key={`pic-stream-${idx}`}>
+                  {/* Base trail line (subtle glow) */}
+                  <Line from={line.from} to={line.to} stroke="#fdab3d" strokeWidth={1} strokeLinecap="round" className="pic-line" style={{ fill: "none", opacity: 0.4 }} />
+                  {/* Bright core line */}
+                  <Line from={line.from} to={line.to} stroke="#ffcf8a" strokeWidth={0.5} strokeLinecap="round" className="pic-line" style={{ fill: "none", opacity: 0.7 }} />
+                  {/* Animated particles along path */}
+                  {[0, 0.33, 0.66].map((offset, pIdx) => (
+                    <Line key={`particle-${idx}-${pIdx}`} from={line.from} to={line.to}
+                      stroke="#fdab3d" strokeWidth={3} strokeLinecap="round"
+                      style={{ fill: "none", strokeDasharray: "2 40", strokeDashoffset: -(offset * 42), filter: "drop-shadow(0 0 4px rgba(253,171,61,0.9))" }}
+                      className="pic-line"
+                    />
+                  ))}
+                </g>
+              );
+            })}
 
-            {/* Animated Markers for clusters */}
+            {/* Holographic Cluster Markers — Orbital Ring System */}
             {clusters.map((cluster) => {
               const radius = Math.max(8, Math.min(35, (cluster.totalValue / maxValue) * 35));
               const isHovered = hoveredCluster === cluster.key;
@@ -709,110 +835,169 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
               
               const isPicMode = showPICLines && selectedPicCoverage !== null;
               const belongsToPic = isPicMode && cluster.deals.some(d => d.pic === selectedPicCoverage);
-              const opacityMult = isPicMode && !belongsToPic ? 0.15 : 1;
+              const opacityMult = isPicMode && !belongsToPic ? 0.12 : 1;
               const finalColor = isPicMode && belongsToPic ? "#fdab3d" : color;
+              const orbitR1 = radius + 8;
+              const orbitR2 = radius + 14;
+
+              // Segmented data ring: won vs pipeline vs other
+              const wonAngle = wonRatio * 360;
+              const pipelineDeals = cluster.deals.filter(d => ["B", "C", "D"].includes(d.status)).length;
+              const pipelineAngle = (pipelineDeals / totalDeals) * 360;
 
               return (
                 <Marker key={cluster.key} coordinates={cluster.coords}>
-                  <g filter="url(#bubbleGlow)" opacity={opacityMult} style={{ transition: "opacity 0.3s" }}>
-                    {/* Outer pulse ring */}
-                    <circle cx={0} cy={0} r={radius + 8} fill="none" stroke={finalColor} strokeWidth={0.8} opacity={0.3}>
-                      <animate attributeName="r" from={radius + 2} to={radius + 22} dur="2.5s" repeatCount="indefinite" />
-                      <animate attributeName="opacity" from="0.35" to="0" dur="2.5s" repeatCount="indefinite" />
+                  <g opacity={opacityMult} style={{ transition: "opacity 0.5s ease" }}>
+                    {/* Orbital Ring 1 — clockwise, data segments */}
+                    <g className="orbit-ring-cw" style={{ animationDuration: isHovered ? "3s" : "8s" }}>
+                      <circle cx={0} cy={0} r={orbitR1} fill="none" stroke={finalColor} strokeWidth={0.6} strokeDasharray="3 5" opacity={0.25} />
+                      {/* Won segment indicator */}
+                      <circle cx={0} cy={0} r={orbitR1} fill="none" stroke="#00c875" strokeWidth={1.5} opacity={0.5}
+                        strokeDasharray={`${(wonAngle / 360) * 2 * Math.PI * orbitR1} ${2 * Math.PI * orbitR1}`}
+                        style={{ filter: "drop-shadow(0 0 2px rgba(0,200,117,0.5))" }}
+                      />
+                    </g>
+
+                    {/* Orbital Ring 2 — counter-clockwise, thin decorative */}
+                    <g className="orbit-ring-ccw" style={{ animationDuration: isHovered ? "5s" : "12s" }}>
+                      <circle cx={0} cy={0} r={orbitR2} fill="none" stroke={finalColor} strokeWidth={0.3} strokeDasharray="1 8" opacity={0.2} />
+                      {/* Small orbiting dot */}
+                      <circle cx={orbitR2} cy={0} r={1.5} fill={finalColor} opacity={0.6}>
+                        <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite" />
+                      </circle>
+                    </g>
+
+                    {/* Pulse rings */}
+                    <circle cx={0} cy={0} r={radius + 2} fill="none" stroke={finalColor} strokeWidth={0.8} opacity={0.3}>
+                      <animate attributeName="r" from={radius + 2} to={radius + 25} dur="3s" repeatCount="indefinite" />
+                      <animate attributeName="opacity" from="0.3" to="0" dur="3s" repeatCount="indefinite" />
                     </circle>
-                    {/* Second pulse ring (offset timing) */}
-                    <circle cx={0} cy={0} r={radius + 4} fill="none" stroke={finalColor} strokeWidth={0.5} opacity={0.2}>
-                      <animate attributeName="r" from={radius} to={radius + 18} dur="2.5s" begin="1.25s" repeatCount="indefinite" />
-                      <animate attributeName="opacity" from="0.25" to="0" dur="2.5s" begin="1.25s" repeatCount="indefinite" />
+                    <circle cx={0} cy={0} r={radius} fill="none" stroke={finalColor} strokeWidth={0.5} opacity={0.2}>
+                      <animate attributeName="r" from={radius} to={radius + 20} dur="3s" begin="1.5s" repeatCount="indefinite" />
+                      <animate attributeName="opacity" from="0.2" to="0" dur="3s" begin="1.5s" repeatCount="indefinite" />
                     </circle>
-                    
-                    {/* Outer ring (static) */}
-                    <circle cx={0} cy={0} r={radius + 3} fill="none" stroke={finalColor} strokeWidth={0.5} opacity={isHovered ? 0.6 : 0.3}
-                      style={{ transition: "all 0.3s" }}
-                    />
-                    
-                    {/* Main bubble with gradient */}
-                    <circle
-                      cx={0} cy={0} r={radius}
-                      fill={finalColor} fillOpacity={isHovered ? 0.4 : 0.2}
-                      stroke={finalColor} strokeWidth={isHovered ? 2 : 1.2}
-                      strokeOpacity={isHovered ? 1 : 0.7}
-                      style={{ cursor: canClickWidgets ? "pointer" : "default", transition: "all 0.3s" }}
-                      onMouseEnter={(e) => {
-                        setHoveredCluster(cluster.key);
-                        const rect = (e.target as SVGElement).closest("svg")?.getBoundingClientRect();
-                        if (rect) {
-                          setTooltip({
-                            x: e.clientX - rect.left,
-                            y: e.clientY - rect.top - 10,
-                            data: cluster
-                          });
-                        }
-                      }}
-                      onMouseLeave={() => { setHoveredCluster(null); setTooltip(null); }}
-                      onClick={() => canClickWidgets && setDrillDownCluster(cluster)}
-                    />
+
+                    {/* Breathing center bubble */}
+                    <g className="cluster-breathe">
+                      <circle cx={0} cy={0} r={radius} fill={finalColor} fillOpacity={isHovered ? 0.35 : 0.18}
+                        stroke={finalColor} strokeWidth={isHovered ? 2 : 1}
+                        strokeOpacity={isHovered ? 1 : 0.6}
+                        style={{ cursor: canClickWidgets ? "pointer" : "default", transition: "all 0.3s", filter: isHovered ? `drop-shadow(0 0 8px ${finalColor})` : "none" }}
+                        onMouseEnter={(e) => {
+                          setHoveredCluster(cluster.key);
+                          const rect = (e.target as SVGElement).closest("svg")?.getBoundingClientRect();
+                          if (rect) {
+                            setTooltip({ x: e.clientX - rect.left, y: e.clientY - rect.top - 10, data: cluster });
+                          }
+                        }}
+                        onMouseLeave={() => { setHoveredCluster(null); setTooltip(null); }}
+                        onClick={() => canClickWidgets && setDrillDownCluster(cluster)}
+                      />
+                    </g>
                     
                     {/* Inner glass highlight */}
-                    <circle cx={0} cy={-radius * 0.2} r={radius * 0.55} fill="url(#bubbleInner)" style={{ pointerEvents: "none" }} />
+                    <circle cx={0} cy={-radius * 0.15} r={radius * 0.5} fill="url(#bubbleInner)" style={{ pointerEvents: "none" }} />
                     
-                    {/* Count label with shadow */}
-                    <text x={0} y={4} textAnchor="middle" fill="white" fontSize={radius > 15 ? 12 : 9} fontWeight="900"
-                      style={{ pointerEvents: "none", textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}
+                    {/* Count label */}
+                    <text x={0} y={radius > 15 ? 5 : 4} textAnchor="middle" fill="white" fontSize={radius > 15 ? 13 : 9} fontWeight="900"
+                      style={{ pointerEvents: "none", filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.6))" }}
                     >
                       {totalDeals}
                     </text>
+                    
+                    {/* City label below cluster */}
+                    {radius > 12 && (
+                      <text x={0} y={radius + 14} textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize={7} fontWeight="700"
+                        style={{ pointerEvents: "none", letterSpacing: "0.05em" }}
+                      >
+                        {cluster.name}
+                      </text>
+                    )}
                   </g>
                 </Marker>
               );
             })}
           </ComposableMap>
 
-          {/* Tooltip */}
-          {tooltip && (
-            <div style={{
-              position: "absolute",
-              left: tooltip.x,
-              top: tooltip.y,
-              transform: "translate(-50%, -100%)",
-              background: "linear-gradient(135deg, rgba(10,22,40,0.95), rgba(15,30,55,0.95))",
-              border: "1px solid rgba(102,204,255,0.25)",
-              borderRadius: 14,
-              padding: "14px 18px",
-              minWidth: 220,
-              zIndex: 100,
-              backdropFilter: "blur(12px)",
-              pointerEvents: "none",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(102,204,255,0.08), inset 0 1px 0 rgba(102,204,255,0.1)"
-            }}>
-              <p style={{ color: "#66ccff", fontSize: 11, fontWeight: 800, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                {tooltip.data.name}
-              </p>
-              <p style={{ color: "white", fontSize: 18, fontWeight: 900 }}>
-                {tooltip.data.deals.length} Projects
-              </p>
-              <p style={{ color: "#00c875", fontSize: 13, fontWeight: 700 }}>
-                {formatRp(tooltip.data.totalValue)}
-              </p>
-              <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
-                {Object.entries(
-                  tooltip.data.deals.reduce((acc: Record<string, number>, d: Deal) => {
-                    acc[d.status] = (acc[d.status] || 0) + 1;
-                    return acc;
-                  }, {})
-                ).map(([status, count]) => (
-                  <span key={status} style={{
-                    padding: "2px 8px", borderRadius: 6, fontSize: 10, fontWeight: 800,
-                    background: STATUS_CONFIG[status]?.bg || "rgba(255,255,255,0.1)",
-                    color: STATUS_CONFIG[status]?.color || "#fff"
-                  }}>
-                    {status}: {count as number}
-                  </span>
-                ))}
-              </div>
-              <p style={{ color: "rgba(102,204,255,0.4)", fontSize: 9, fontWeight: 600, marginTop: 8, textAlign: "center" }}>Klik untuk detail</p>
-            </div>
-          )}
+          {/* Enhanced Tooltip with Mini Donut Chart */}
+          {tooltip && (() => {
+            const statusBreakdown = tooltip.data.deals.reduce((acc: Record<string, number>, d: Deal) => {
+              acc[d.status] = (acc[d.status] || 0) + 1;
+              return acc;
+            }, {});
+            const donutR = 22;
+            const donutCirc = 2 * Math.PI * donutR;
+            let donutOffset = 0;
+            const topProjects = [...tooltip.data.deals].sort((a, b) => (Number(b.quotation) || 0) - (Number(a.quotation) || 0)).slice(0, 3);
+
+            return (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                style={{
+                  position: "absolute", left: tooltip.x, top: tooltip.y,
+                  transform: "translate(-50%, -100%)",
+                  background: "linear-gradient(145deg, rgba(8,18,35,0.97), rgba(12,25,45,0.97))",
+                  border: "1px solid rgba(102,204,255,0.2)",
+                  borderRadius: 18, padding: "16px 18px", minWidth: 260, zIndex: 100,
+                  backdropFilter: "blur(16px)", pointerEvents: "none",
+                  boxShadow: "0 12px 48px rgba(0,0,0,0.5), 0 0 24px rgba(102,204,255,0.06), inset 0 1px 0 rgba(102,204,255,0.08)"
+                }}
+              >
+                {/* Header */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                  <div>
+                    <p style={{ color: "#66ccff", fontSize: 10, fontWeight: 800, margin: 0, textTransform: "uppercase", letterSpacing: "0.12em" }}>{tooltip.data.name}</p>
+                    <p style={{ color: "#fff", fontSize: 22, fontWeight: 900, margin: 0, letterSpacing: "-0.02em" }}>{tooltip.data.deals.length} <span style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.5)" }}>projects</span></p>
+                  </div>
+                  {/* Mini Donut */}
+                  <svg width="54" height="54" style={{ flexShrink: 0 }}>
+                    <circle cx="27" cy="27" r={donutR} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="6" />
+                    {Object.entries(statusBreakdown).map(([status, count]) => {
+                      const pct = (count as number) / tooltip.data.deals.length;
+                      const dashLen = pct * donutCirc;
+                      const el = (
+                        <circle key={status} cx="27" cy="27" r={donutR} fill="none"
+                          stroke={STATUS_CONFIG[status]?.color || "#888"} strokeWidth="6"
+                          strokeDasharray={`${dashLen} ${donutCirc - dashLen}`}
+                          strokeDashoffset={-donutOffset}
+                          style={{ transform: "rotate(-90deg)", transformOrigin: "center" }}
+                        />
+                      );
+                      donutOffset += dashLen;
+                      return el;
+                    })}
+                    <text x="27" y="30" textAnchor="middle" fill="#00c875" fontSize="10" fontWeight="900">{formatRp(tooltip.data.totalValue).replace("Rp ", "")}</text>
+                  </svg>
+                </div>
+                
+                {/* Status badges */}
+                <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 10 }}>
+                  {Object.entries(statusBreakdown).map(([status, count]) => (
+                    <span key={status} style={{ padding: "2px 8px", borderRadius: 6, fontSize: 9, fontWeight: 800, background: STATUS_CONFIG[status]?.bg || "rgba(255,255,255,0.1)", color: STATUS_CONFIG[status]?.color || "#fff" }}>
+                      {STATUS_CONFIG[status]?.label || status}: {count as number}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Top projects */}
+                {topProjects.length > 0 && (
+                  <div style={{ borderTop: "1px solid rgba(102,204,255,0.08)", paddingTop: 8 }}>
+                    <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 8, fontWeight: 800, margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.1em" }}>Top Projects</p>
+                    {topProjects.map((p, i) => (
+                      <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "3px 0" }}>
+                        <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 9, fontWeight: 700, maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.project || p.customer || "—"}</span>
+                        <span style={{ color: "#00c875", fontSize: 9, fontWeight: 800 }}>{formatRp(Number(p.quotation) || 0)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                <p style={{ color: "rgba(102,204,255,0.3)", fontSize: 8, fontWeight: 700, marginTop: 8, textAlign: "center", letterSpacing: "0.1em" }}>KLIK UNTUK DETAIL</p>
+              </motion.div>
+            );
+          })()}
         </div>
 
         {/* Regional Stats Side Panel */}
