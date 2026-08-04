@@ -12,7 +12,7 @@ export default async function LiveDataPage() {
   }
 
   const isAdmin = session?.roles?.some((r: string) => 
-    ["admin", "super admin", "administrator"].some(keyword => r.toLowerCase().includes(keyword))
+    ["admin", "super admin", "administrator", "management", "director"].some(keyword => r.toLowerCase().includes(keyword))
   );
 
   const canClickWidgets = true;
