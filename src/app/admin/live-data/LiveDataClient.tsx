@@ -10,7 +10,7 @@ import {
   ArrowDownRight, Activity, Globe2, Layers, RefreshCw, X,
   CheckCircle2, Clock, AlertTriangle, Briefcase, ArrowLeft, Trophy, Table2
 } from "lucide-react";
-import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
+import { ComposableMap, Geographies, Geography, Marker, Line } from "react-simple-maps";
 import ClosedProjectsWidget from './ClosedProjectsWidget';
 import DealFormModal from "./DealFormModal";
 import OpsFormModal from "./OpsFormModal";
@@ -399,29 +399,28 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
 
   // PIC connection lines
   const picLines = useMemo(() => {
-    if (!showPICLines) return [];
-    const picLocations: Record<string, [number, number][]> = {};
+    if (!showPICLines || !selectedPicCoverage) return [];
+    
+    const picLocations: [number, number][] = [];
     deals.forEach(deal => {
-      if (deal.status === "L" || !deal.pic) return;
+      if (deal.status === "L" || deal.pic !== selectedPicCoverage) return;
       const geo = guessCoords(deal);
       if (!geo) return;
-      if (!picLocations[deal.pic]) picLocations[deal.pic] = [];
       const key = `${geo.coords[0].toFixed(1)}-${geo.coords[1].toFixed(1)}`;
-      const exists = picLocations[deal.pic].some(c => `${c[0].toFixed(1)}-${c[1].toFixed(1)}` === key);
-      if (!exists) picLocations[deal.pic].push(geo.coords);
+      const exists = picLocations.some(c => `${c[0].toFixed(1)}-${c[1].toFixed(1)}` === key);
+      if (!exists) picLocations.push(geo.coords);
     });
     
     const lines: { from: [number, number]; to: [number, number]; pic: string }[] = [];
-    Object.entries(picLocations).forEach(([pic, coords]) => {
-      if (coords.length < 2) return;
-      for (let i = 0; i < coords.length - 1; i++) {
-        for (let j = i + 1; j < coords.length; j++) {
-          lines.push({ from: coords[i], to: coords[j], pic });
-        }
+    const jakartaCoords = PROVINCE_COORDS.jakarta.coords;
+    
+    picLocations.forEach(coords => {
+      if (coords[0] !== jakartaCoords[0] || coords[1] !== jakartaCoords[1]) {
+        lines.push({ from: jakartaCoords, to: coords, pic: selectedPicCoverage });
       }
     });
     return lines;
-  }, [deals, showPICLines]);
+  }, [deals, showPICLines, selectedPicCoverage]);
 
   // Total stats for header
   const totalStats = useMemo(() => {
@@ -555,6 +554,52 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
       <div style={{ display: "flex", position: "relative" }}>
         {/* Main Geographic Map */}
         <div style={{ flex: 1, position: "relative" }}>
+          {/* PIC Profile Popup */}
+          {selectedPicCoverage && (
+            <div style={{
+              position: "absolute", top: 20, left: 20, zIndex: 10,
+              background: "linear-gradient(145deg, rgba(16, 28, 48, 0.95), rgba(11, 19, 33, 0.95))",
+              backdropFilter: "blur(12px)", border: "1px solid rgba(253,171,61,0.3)",
+              borderRadius: 20, padding: 20, width: 260,
+              boxShadow: "0 10px 40px rgba(0,0,0,0.5), 0 0 20px rgba(253,171,61,0.15)",
+              display: "flex", flexDirection: "column", gap: 16
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{
+                  width: 60, height: 60, borderRadius: "50%",
+                  background: "linear-gradient(135deg, #2a4b7c, #152b4d)",
+                  border: "2px solid #fdab3d",
+                  boxShadow: "0 0 15px rgba(253,171,61,0.4)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  overflow: "hidden"
+                }}>
+                  {usersList.find(u => u.name === selectedPicCoverage)?.avatarUrl ? (
+                    <img src={usersList.find(u => u.name === selectedPicCoverage)?.avatarUrl} alt={selectedPicCoverage} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  ) : (
+                    <span style={{ fontSize: 24, fontWeight: "bold", color: "#fdab3d" }}>
+                      {selectedPicCoverage.charAt(0)}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, color: "#fff", fontSize: 16, fontWeight: 800 }}>{selectedPicCoverage}</h3>
+                  <p style={{ margin: 0, color: "#fdab3d", fontSize: 12, fontWeight: 600 }}>Sales Engineer</p>
+                </div>
+              </div>
+              
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.03)", padding: "8px 12px", borderRadius: 8 }}>
+                  <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, fontWeight: 600 }}>Total Projects</span>
+                  <span style={{ color: "#fff", fontSize: 14, fontWeight: 800 }}>{stats.byPic[selectedPicCoverage]?.totalCount || 0}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.03)", padding: "8px 12px", borderRadius: 8 }}>
+                  <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, fontWeight: 600 }}>Total Value</span>
+                  <span style={{ color: "#00c875", fontSize: 14, fontWeight: 800 }}>{formatRp(stats.byPic[selectedPicCoverage]?.totalValue || 0)}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
           <ComposableMap
             projection="geoMercator"
             projectionConfig={{
@@ -623,18 +668,32 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
               }
             </Geographies>
 
+            {/* CSS Animation for PIC lines */}
+            <style>{`
+              @keyframes dash {
+                to {
+                  stroke-dashoffset: -16;
+                }
+              }
+              .pic-line {
+                stroke-dasharray: 6 10;
+                animation: dash 1s linear infinite;
+                filter: drop-shadow(0 0 4px rgba(253,171,61,0.8));
+              }
+            `}</style>
+            
             {/* PIC Connection Lines */}
             {picLines.map((line, idx) => (
-              <Marker key={`line-${idx}`} coordinates={line.from}>
-                <line
-                  x1={0} y1={0}
-                  x2={(line.to[0] - line.from[0]) * (regionView.scale / 100)}
-                  y2={(line.to[1] - line.from[1]) * (regionView.scale / 100)}
-                  stroke="#fdab3d" strokeWidth={0.8} strokeDasharray="4 3" opacity={0.4}
-                >
-                  <animate attributeName="stroke-dashoffset" from="0" to="14" dur="2s" repeatCount="indefinite" />
-                </line>
-              </Marker>
+              <Line
+                key={`line-${idx}`}
+                from={line.from}
+                to={line.to}
+                stroke="#fdab3d"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                className="pic-line"
+                style={{ default: { fill: "none" } }}
+              />
             ))}
 
             {/* Animated Markers for clusters */}
@@ -648,30 +707,35 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
                 ? (STATUS_CONFIG[statusLayerFilter]?.color || "#66ccff")
                 : wonRatio > 0.5 ? "#00c875" : wonRatio > 0.2 ? "#fdab3d" : "#66ccff";
               
+              const isPicMode = showPICLines && selectedPicCoverage !== null;
+              const belongsToPic = isPicMode && cluster.deals.some(d => d.pic === selectedPicCoverage);
+              const opacityMult = isPicMode && !belongsToPic ? 0.15 : 1;
+              const finalColor = isPicMode && belongsToPic ? "#fdab3d" : color;
+
               return (
                 <Marker key={cluster.key} coordinates={cluster.coords}>
-                  <g filter="url(#bubbleGlow)">
+                  <g filter="url(#bubbleGlow)" opacity={opacityMult} style={{ transition: "opacity 0.3s" }}>
                     {/* Outer pulse ring */}
-                    <circle cx={0} cy={0} r={radius + 8} fill="none" stroke={color} strokeWidth={0.8} opacity={0.3}>
+                    <circle cx={0} cy={0} r={radius + 8} fill="none" stroke={finalColor} strokeWidth={0.8} opacity={0.3}>
                       <animate attributeName="r" from={radius + 2} to={radius + 22} dur="2.5s" repeatCount="indefinite" />
                       <animate attributeName="opacity" from="0.35" to="0" dur="2.5s" repeatCount="indefinite" />
                     </circle>
                     {/* Second pulse ring (offset timing) */}
-                    <circle cx={0} cy={0} r={radius + 4} fill="none" stroke={color} strokeWidth={0.5} opacity={0.2}>
+                    <circle cx={0} cy={0} r={radius + 4} fill="none" stroke={finalColor} strokeWidth={0.5} opacity={0.2}>
                       <animate attributeName="r" from={radius} to={radius + 18} dur="2.5s" begin="1.25s" repeatCount="indefinite" />
                       <animate attributeName="opacity" from="0.25" to="0" dur="2.5s" begin="1.25s" repeatCount="indefinite" />
                     </circle>
                     
                     {/* Outer ring (static) */}
-                    <circle cx={0} cy={0} r={radius + 3} fill="none" stroke={color} strokeWidth={0.5} opacity={isHovered ? 0.6 : 0.3}
+                    <circle cx={0} cy={0} r={radius + 3} fill="none" stroke={finalColor} strokeWidth={0.5} opacity={isHovered ? 0.6 : 0.3}
                       style={{ transition: "all 0.3s" }}
                     />
                     
                     {/* Main bubble with gradient */}
                     <circle
                       cx={0} cy={0} r={radius}
-                      fill={color} fillOpacity={isHovered ? 0.4 : 0.2}
-                      stroke={color} strokeWidth={isHovered ? 2 : 1.2}
+                      fill={finalColor} fillOpacity={isHovered ? 0.4 : 0.2}
+                      stroke={finalColor} strokeWidth={isHovered ? 2 : 1.2}
                       strokeOpacity={isHovered ? 1 : 0.7}
                       style={{ cursor: canClickWidgets ? "pointer" : "default", transition: "all 0.3s" }}
                       onMouseEnter={(e) => {
@@ -763,44 +827,86 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
           overflowY: "auto"
         }}>
           <p style={{ color: "rgba(102,204,255,0.5)", fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 4 }}>
-            Ranking Wilayah
+            {showPICLines ? "Sales Engineer (PIC)" : "Ranking Wilayah"}
           </p>
-          {regionalStats.map((rs, idx) => {
-            const maxRegVal = regionalStats[0]?.value || 1;
-            const pct = (rs.value / maxRegVal) * 100;
-            const isSelected = selectedRegion === rs.name;
-            return (
-              <div key={rs.name}
-                onClick={() => setSelectedRegion(isSelected ? "All" : rs.name)}
-                style={{
-                  cursor: "pointer", padding: "8px 10px", borderRadius: 10,
-                  background: isSelected ? "rgba(102,204,255,0.1)" : "rgba(255,255,255,0.02)",
-                  border: "1px solid",
-                  borderColor: isSelected ? "rgba(102,204,255,0.25)" : "rgba(255,255,255,0.04)",
-                  transition: "all 0.2s",
-                  boxShadow: isSelected ? "0 0 12px rgba(102,204,255,0.08)" : "none"
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                  <span style={{ color: isSelected ? "#66ccff" : "rgba(255,255,255,0.7)", fontSize: 10, fontWeight: 800 }}>
-                    {idx + 1}. {rs.name}
-                  </span>
-                  <span style={{ color: "#00c875", fontSize: 9, fontWeight: 700 }}>{rs.count}</span>
+          {showPICLines ? (
+            Object.entries(stats.byPic)
+              .filter(([name]) => name !== "Unassigned")
+              .sort(([, a], [, b]) => b.totalValue - a.totalValue)
+              .map(([pic, data], idx) => {
+                const maxPicVal = Math.max(...Object.values(stats.byPic).map(v => v.totalValue)) || 1;
+                const pct = (data.totalValue / maxPicVal) * 100;
+                const isSelected = selectedPicCoverage === pic;
+                return (
+                  <div key={pic}
+                    onClick={() => setSelectedPicCoverage(isSelected ? null : pic)}
+                    style={{
+                      cursor: "pointer", padding: "8px 10px", borderRadius: 10,
+                      background: isSelected ? "rgba(253,171,61,0.1)" : "rgba(255,255,255,0.02)",
+                      border: "1px solid",
+                      borderColor: isSelected ? "rgba(253,171,61,0.25)" : "rgba(255,255,255,0.04)",
+                      transition: "all 0.2s",
+                      boxShadow: isSelected ? "0 0 12px rgba(253,171,61,0.08)" : "none"
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                      <span style={{ color: isSelected ? "#fdab3d" : "rgba(255,255,255,0.7)", fontSize: 10, fontWeight: 800 }}>
+                        {idx + 1}. {pic}
+                      </span>
+                      <span style={{ color: "#fdab3d", fontSize: 9, fontWeight: 700 }}>{data.totalCount}</span>
+                    </div>
+                    <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${pct}%` }}
+                        transition={{ duration: 0.6, delay: idx * 0.05 }}
+                        style={{ height: "100%", background: "linear-gradient(90deg, #fdab3d, #ffcf8a)", borderRadius: 2, boxShadow: "0 0 6px rgba(253,171,61,0.3)" }}
+                      />
+                    </div>
+                    <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 9, fontWeight: 700, marginTop: 3 }}>
+                      {formatRp(data.totalValue)}
+                    </p>
+                  </div>
+                );
+              })
+          ) : (
+            regionalStats.map((rs, idx) => {
+              const maxRegVal = regionalStats[0]?.value || 1;
+              const pct = (rs.value / maxRegVal) * 100;
+              const isSelected = selectedRegion === rs.name;
+              return (
+                <div key={rs.name}
+                  onClick={() => setSelectedRegion(isSelected ? "All" : rs.name)}
+                  style={{
+                    cursor: "pointer", padding: "8px 10px", borderRadius: 10,
+                    background: isSelected ? "rgba(102,204,255,0.1)" : "rgba(255,255,255,0.02)",
+                    border: "1px solid",
+                    borderColor: isSelected ? "rgba(102,204,255,0.25)" : "rgba(255,255,255,0.04)",
+                    transition: "all 0.2s",
+                    boxShadow: isSelected ? "0 0 12px rgba(102,204,255,0.08)" : "none"
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                    <span style={{ color: isSelected ? "#66ccff" : "rgba(255,255,255,0.7)", fontSize: 10, fontWeight: 800 }}>
+                      {idx + 1}. {rs.name}
+                    </span>
+                    <span style={{ color: "#00c875", fontSize: 9, fontWeight: 700 }}>{rs.count}</span>
+                  </div>
+                  <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${pct}%` }}
+                      transition={{ duration: 0.6, delay: idx * 0.05 }}
+                      style={{ height: "100%", background: "linear-gradient(90deg, #3a8fd4, #00c875)", borderRadius: 2, boxShadow: "0 0 6px rgba(0,200,117,0.3)" }}
+                    />
+                  </div>
+                  <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 9, fontWeight: 700, marginTop: 3 }}>
+                    {formatRp(rs.value)}
+                  </p>
                 </div>
-                <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${pct}%` }}
-                    transition={{ duration: 0.6, delay: idx * 0.05 }}
-                    style={{ height: "100%", background: "linear-gradient(90deg, #3a8fd4, #00c875)", borderRadius: 2, boxShadow: "0 0 6px rgba(0,200,117,0.3)" }}
-                  />
-                </div>
-                <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 9, fontWeight: 700, marginTop: 3 }}>
-                  {formatRp(rs.value)}
-                </p>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       </div>
 
@@ -891,6 +997,8 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
   const [totalTarget, setTotalTarget] = useState(0);
   const [showOpsModal, setShowOpsModal] = useState(false);
   const [presentationState, setPresentationState] = useState<PresentationState | null>(null);
+  const [usersList, setUsersList] = useState<any[]>([]);
+  const [selectedPicCoverage, setSelectedPicCoverage] = useState<string | null>(null);
 
 
   
@@ -953,11 +1061,12 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
   const loadData = async () => {
     setLoading(true);
     try {
-      const [dealsRes, opsRes, leaderboardRes, targetRes] = await Promise.all([
+      const [dealsRes, opsRes, leaderboardRes, targetRes, usersRes] = await Promise.all([
         fetch("/api/v1/pipeline/deals").then(r => r.json()),
         fetch("/api/v1/pipeline/ops").then(r => r.json()),
         fetch("/api/v1/pipeline/deals?type=leaderboard").then(r => r.json()),
-        getTargetSettings()
+        getTargetSettings(),
+        fetch("/api/v1/users").then(r => r.json())
       ]);
       if (dealsRes.success) {
         setDeals(dealsRes.data || []);
@@ -969,6 +1078,9 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
         setLeaderboardDeals(leaderboardRes.data || []);
       }
       setTotalTarget(targetRes?.total || 0);
+      if (usersRes?.success) {
+        setUsersList(usersRes.data || []);
+      }
     } catch (e) {
       console.error("Load error:", e);
     }

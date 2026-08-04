@@ -36,7 +36,8 @@ export async function GET(req: NextRequest) {
         email: u.email,
         phone: u.phone,
         role: u.roles?.role_name || "Guest",
-        status: u.is_active ? "Active" : "Inactive"
+        status: u.is_active ? "Active" : "Inactive",
+        avatarUrl: u.avatar_url || null
       }))
     });
 
