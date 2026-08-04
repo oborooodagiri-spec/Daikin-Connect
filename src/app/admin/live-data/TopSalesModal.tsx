@@ -33,7 +33,8 @@ const formatRp = (val: number | bigint) => {
 
 export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: TopSalesModalProps) {
   const [selectedFY, setSelectedFY] = useState(`FY${initialFY}`);
-  const [userInfoMap, setUserInfoMap] = useState<Record<string, { avatar_url?: string | null, isSales: boolean }>>({});
+  const [activeRoleTab, setActiveRoleTab] = useState<'Sales Engineer' | 'Sales Partnership'>('Sales Engineer');
+  const [userInfoMap, setUserInfoMap] = useState<Record<string, { avatar_url?: string | null, isSales: boolean, isSalesEngineer: boolean, isSalesPartnership: boolean, roles: string[] }>>({});
 
   React.useEffect(() => {
     if (isOpen) {
@@ -70,9 +71,12 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
   const { leaderboard } = useMemo(() => {
     const picDataMap: Record<string, { salesValue: number, bookingValue: number, totalDeals: number }> = {};
     
-    // Pre-fill with all known Sales Engineers so they always appear in the list
+    // Pre-fill with all known Sales based on active tab so they always appear in the list
     Object.keys(userInfoMap).forEach(name => {
-      if (userInfoMap[name]?.isSales) {
+      const info = userInfoMap[name];
+      if (activeRoleTab === 'Sales Engineer' && info?.isSalesEngineer) {
+        picDataMap[name] = { salesValue: 0, bookingValue: 0, totalDeals: 0 };
+      } else if (activeRoleTab === 'Sales Partnership' && info?.isSalesPartnership) {
         picDataMap[name] = { salesValue: 0, bookingValue: 0, totalDeals: 0 };
       }
     });
@@ -105,6 +109,11 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
       if (!isIncluded) return;
       
       const picName = d.pic?.trim() || '(Unassigned)';
+      
+      const info = userInfoMap[picName];
+      if (activeRoleTab === 'Sales Engineer' && !info?.isSalesEngineer) return;
+      if (activeRoleTab === 'Sales Partnership' && !info?.isSalesPartnership) return;
+
       if (!picDataMap[picName]) {
         picDataMap[picName] = { salesValue: 0, bookingValue: 0, totalDeals: 0 };
       }
@@ -129,7 +138,7 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
       .sort((a, b) => b.bookingValue - a.bookingValue || b.salesValue - a.salesValue); // Sort strictly by bookingValue, then salesValue
 
     return { leaderboard: arr };
-  }, [deals, selectedFY, userInfoMap]);
+  }, [deals, selectedFY, userInfoMap, activeRoleTab]);
 
   const top3 = leaderboard.slice(0, 3);
   const rest = leaderboard.slice(3);
@@ -204,6 +213,42 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
                 <h2 style={{ fontSize: 24, fontWeight: 900, color: "#0f172a", margin: 0, letterSpacing: "-0.5px" }}>
                   Top Sales Performers
                 </h2>
+                
+                {/* Tabs for Role Selection */}
+                <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                  <button
+                    onClick={() => setActiveRoleTab('Sales Engineer')}
+                    style={{
+                      padding: "4px 12px",
+                      borderRadius: 16,
+                      fontSize: 12,
+                      fontWeight: 700,
+                      border: "none",
+                      cursor: "pointer",
+                      backgroundColor: activeRoleTab === 'Sales Engineer' ? "#0ea5e9" : "#e2e8f0",
+                      color: activeRoleTab === 'Sales Engineer' ? "#ffffff" : "#64748b",
+                      transition: "all 0.2s ease"
+                    }}
+                  >
+                    Sales Engineer
+                  </button>
+                  <button
+                    onClick={() => setActiveRoleTab('Sales Partnership')}
+                    style={{
+                      padding: "4px 12px",
+                      borderRadius: 16,
+                      fontSize: 12,
+                      fontWeight: 700,
+                      border: "none",
+                      cursor: "pointer",
+                      backgroundColor: activeRoleTab === 'Sales Partnership' ? "#0ea5e9" : "#e2e8f0",
+                      color: activeRoleTab === 'Sales Partnership' ? "#ffffff" : "#64748b",
+                      transition: "all 0.2s ease"
+                    }}
+                  >
+                    Sales Partnership
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -245,76 +290,15 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
                   Belum ada data project untuk tahun buku ini.
                 </div>
               ) : (
-                <>
-                  {/* Podium Showdown */}
-                  <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 16, marginBottom: 48, height: 350, marginTop: 40 }}>
-                  
-                  {/* Rank 2 (Silver) */}
-                  {top3[1] && (
-                    <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1, width: 140 }}>
-                      <img src={getAvatarUrl(top3[1].pic, 2)} alt={top3[1].pic} style={{ width: 80, height: 80, borderRadius: '50%', border: '4px solid #cbd5e1', marginBottom: -20, zIndex: 2, backgroundColor: 'white', objectFit: 'cover' }} />
-                      <div style={{ width: '100%', height: 230, background: 'linear-gradient(to top, #94a3b8, #e2e8f0)', borderRadius: '16px 16px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 24, color: '#334155', boxShadow: '0 10px 25px -5px rgba(148,163,184,0.4)' }}>
-                        <span style={{ fontSize: 48, fontWeight: 900, color: 'rgba(255,255,255,0.9)', lineHeight: 1 }}>2</span>
-                        <span style={{ fontSize: 13, fontWeight: 800, textAlign: 'center', padding: '0 8px', marginTop: 'auto', marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%', color: '#1e293b' }}>{top3[1].pic}</span>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, marginBottom: 6 }}>
-                          <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.7)', padding: '4px 8px', borderRadius: 10, color: '#0ea5e9' }}>Booking {formatRp(top3[1].bookingValue)}</span>
-                          <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.7)', padding: '4px 8px', borderRadius: 10, color: '#10b981' }}>Sales {formatRp(top3[1].salesValue)}</span>
-                        </div>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 16 }}>{top3[1].totalDeals} Projects</span>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* Rank 1 (Gold) */}
-                  {top3[0] && (
-                    <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2, width: 160 }}>
-                      <div style={{ position: 'relative' }}>
-                        <img src={getAvatarUrl(top3[0].pic, 1)} alt={top3[0].pic} style={{ width: 110, height: 110, borderRadius: '50%', border: '6px solid #fbbf24', marginBottom: -30, zIndex: 2, backgroundColor: 'white', position: 'relative', objectFit: 'cover' }} />
-                        <div style={{ position: 'absolute', top: -20, left: '50%', transform: 'translateX(-50%)', zIndex: 3, filter: 'drop-shadow(0 4px 6px rgba(251,191,36,0.5))' }}>
-                          <Medal size={40} color="#fbbf24" fill="#fef3c7" strokeWidth={1.5} />
-                        </div>
-                      </div>
-                      <div style={{ width: '100%', height: 290, background: 'linear-gradient(to top, #0284c7, #38bdf8)', borderRadius: '16px 16px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 36, color: 'white', boxShadow: '0 20px 30px -5px rgba(2,132,199,0.5)' }}>
-                        <span style={{ fontSize: 72, fontWeight: 900, color: 'rgba(255,255,255,0.95)', lineHeight: 1, textShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>1</span>
-                        <span style={{ fontSize: 15, fontWeight: 900, textAlign: 'center', padding: '0 8px', marginTop: 'auto', marginBottom: 8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{top3[0].pic}</span>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, marginBottom: 8 }}>
-                          <span style={{ fontSize: 12, fontWeight: 900, backgroundColor: 'rgba(255,255,255,0.9)', padding: '5px 12px', borderRadius: 12, color: '#0284c7', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Booking {formatRp(top3[0].bookingValue)}</span>
-                          <span style={{ fontSize: 12, fontWeight: 900, backgroundColor: 'rgba(255,255,255,0.9)', padding: '5px 12px', borderRadius: 12, color: '#059669', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Sales {formatRp(top3[0].salesValue)}</span>
-                        </div>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: 20 }}>{top3[0].totalDeals} Projects</span>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* Rank 3 (Bronze) */}
-                  {top3[2] && (
-                    <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1, width: 140 }}>
-                      <img src={getAvatarUrl(top3[2].pic, 3)} alt={top3[2].pic} style={{ width: 80, height: 80, borderRadius: '50%', border: '4px solid #b45309', marginBottom: -20, zIndex: 2, backgroundColor: 'white', objectFit: 'cover' }} />
-                      <div style={{ width: '100%', height: 200, background: 'linear-gradient(to top, #b45309, #f59e0b)', borderRadius: '16px 16px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 24, color: 'white', boxShadow: '0 10px 25px -5px rgba(180,83,9,0.4)' }}>
-                        <span style={{ fontSize: 48, fontWeight: 900, color: 'rgba(255,255,255,0.9)', lineHeight: 1 }}>3</span>
-                        <span style={{ fontSize: 13, fontWeight: 800, textAlign: 'center', padding: '0 8px', marginTop: 'auto', marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{top3[2].pic}</span>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, marginBottom: 6 }}>
-                          <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.85)', padding: '4px 8px', borderRadius: 10, color: '#d97706' }}>Booking {formatRp(top3[2].bookingValue)}</span>
-                          <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.85)', padding: '4px 8px', borderRadius: 10, color: '#059669' }}>Sales {formatRp(top3[2].salesValue)}</span>
-                        </div>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: 16 }}>{top3[2].totalDeals} Projects</span>
-                      </div>
-                    </motion.div>
-                  )}
-
-                </div>
-
-                {/* Rest of the leaderboard */}
-                {rest.length > 0 && (
-                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} style={{ width: '100%', maxWidth: 700, backgroundColor: 'white', borderRadius: 20, boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                {activeRoleTab === 'Sales Partnership' ? (
+                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} style={{ width: '100%', maxWidth: 700, backgroundColor: 'white', borderRadius: 20, boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)', overflow: 'hidden', border: '1px solid #e2e8f0', marginTop: 20 }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                       <tbody>
-                        {rest.map((item, idx) => (
-                          <tr key={item.pic} style={{ borderBottom: idx === rest.length - 1 ? 'none' : '1px solid #f1f5f9', transition: 'background-color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'} onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
-                            <td style={{ padding: '16px 24px', width: 60, textAlign: 'center', fontSize: 16, fontWeight: 900, color: '#94a3b8' }}>{idx + 4}</td>
-                            <td style={{ padding: '16px 12px' }}>
+                        {leaderboard.map((item, idx) => (
+                          <tr key={item.pic} style={{ borderBottom: idx === leaderboard.length - 1 ? 'none' : '1px solid #f1f5f9', transition: 'background-color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'} onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                            <td style={{ padding: '16px 24px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                                <img src={getAvatarUrl(item.pic, idx + 4)} alt={item.pic} style={{ width: 44, height: 44, borderRadius: '50%', border: '2px solid #e2e8f0' }} />
+                                <img src={getAvatarUrl(item.pic, 4)} alt={item.pic} style={{ width: 44, height: 44, borderRadius: '50%', border: '2px solid #e2e8f0' }} />
                                 <span style={{ fontSize: 15, fontWeight: 800, color: '#1e293b' }}>{item.pic}</span>
                               </div>
                             </td>
@@ -336,8 +320,101 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
                       </tbody>
                     </table>
                   </motion.div>
-                )}
-              </>
+                ) : (
+                  <>
+                    {/* Podium Showdown */}
+                    <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 16, marginBottom: 48, height: 350, marginTop: 40 }}>
+                    
+                    {/* Rank 2 (Silver) */}
+                    {top3[1] && (
+                      <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1, width: 140 }}>
+                        <img src={getAvatarUrl(top3[1].pic, 2)} alt={top3[1].pic} style={{ width: 80, height: 80, borderRadius: '50%', border: '4px solid #cbd5e1', marginBottom: -20, zIndex: 2, backgroundColor: 'white', objectFit: 'cover' }} />
+                        <div style={{ width: '100%', height: 230, background: 'linear-gradient(to top, #94a3b8, #e2e8f0)', borderRadius: '16px 16px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 24, color: '#334155', boxShadow: '0 10px 25px -5px rgba(148,163,184,0.4)' }}>
+                          <span style={{ fontSize: 48, fontWeight: 900, color: 'rgba(255,255,255,0.9)', lineHeight: 1 }}>2</span>
+                          <span style={{ fontSize: 13, fontWeight: 800, textAlign: 'center', padding: '0 8px', marginTop: 'auto', marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%', color: '#1e293b' }}>{top3[1].pic}</span>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, marginBottom: 6 }}>
+                            <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.7)', padding: '4px 8px', borderRadius: 10, color: '#0ea5e9' }}>Booking {formatRp(top3[1].bookingValue)}</span>
+                            <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.7)', padding: '4px 8px', borderRadius: 10, color: '#10b981' }}>Sales {formatRp(top3[1].salesValue)}</span>
+                          </div>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 16 }}>{top3[1].totalDeals} Projects</span>
+                        </div>
+                      </motion.div>
+                    )}
+  
+                    {/* Rank 1 (Gold) */}
+                    {top3[0] && (
+                      <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2, width: 160 }}>
+                        <div style={{ position: 'relative' }}>
+                          <img src={getAvatarUrl(top3[0].pic, 1)} alt={top3[0].pic} style={{ width: 110, height: 110, borderRadius: '50%', border: '6px solid #fbbf24', marginBottom: -30, zIndex: 2, backgroundColor: 'white', position: 'relative', objectFit: 'cover' }} />
+                          <div style={{ position: 'absolute', top: -20, left: '50%', transform: 'translateX(-50%)', zIndex: 3, filter: 'drop-shadow(0 4px 6px rgba(251,191,36,0.5))' }}>
+                            <Medal size={40} color="#fbbf24" fill="#fef3c7" strokeWidth={1.5} />
+                          </div>
+                        </div>
+                        <div style={{ width: '100%', height: 290, background: 'linear-gradient(to top, #0284c7, #38bdf8)', borderRadius: '16px 16px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 36, color: 'white', boxShadow: '0 20px 30px -5px rgba(2,132,199,0.5)' }}>
+                          <span style={{ fontSize: 72, fontWeight: 900, color: 'rgba(255,255,255,0.95)', lineHeight: 1, textShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>1</span>
+                          <span style={{ fontSize: 15, fontWeight: 900, textAlign: 'center', padding: '0 8px', marginTop: 'auto', marginBottom: 8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{top3[0].pic}</span>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, marginBottom: 8 }}>
+                            <span style={{ fontSize: 12, fontWeight: 900, backgroundColor: 'rgba(255,255,255,0.9)', padding: '5px 12px', borderRadius: 12, color: '#0284c7', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Booking {formatRp(top3[0].bookingValue)}</span>
+                            <span style={{ fontSize: 12, fontWeight: 900, backgroundColor: 'rgba(255,255,255,0.9)', padding: '5px 12px', borderRadius: 12, color: '#059669', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Sales {formatRp(top3[0].salesValue)}</span>
+                          </div>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: 20 }}>{top3[0].totalDeals} Projects</span>
+                        </div>
+                      </motion.div>
+                    )}
+  
+                    {/* Rank 3 (Bronze) */}
+                    {top3[2] && (
+                      <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1, width: 140 }}>
+                        <img src={getAvatarUrl(top3[2].pic, 3)} alt={top3[2].pic} style={{ width: 80, height: 80, borderRadius: '50%', border: '4px solid #b45309', marginBottom: -20, zIndex: 2, backgroundColor: 'white', objectFit: 'cover' }} />
+                        <div style={{ width: '100%', height: 200, background: 'linear-gradient(to top, #b45309, #f59e0b)', borderRadius: '16px 16px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 24, color: 'white', boxShadow: '0 10px 25px -5px rgba(180,83,9,0.4)' }}>
+                          <span style={{ fontSize: 48, fontWeight: 900, color: 'rgba(255,255,255,0.9)', lineHeight: 1 }}>3</span>
+                          <span style={{ fontSize: 13, fontWeight: 800, textAlign: 'center', padding: '0 8px', marginTop: 'auto', marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{top3[2].pic}</span>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, marginBottom: 6 }}>
+                            <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.85)', padding: '4px 8px', borderRadius: 10, color: '#d97706' }}>Booking {formatRp(top3[2].bookingValue)}</span>
+                            <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.85)', padding: '4px 8px', borderRadius: 10, color: '#059669' }}>Sales {formatRp(top3[2].salesValue)}</span>
+                          </div>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: 16 }}>{top3[2].totalDeals} Projects</span>
+                        </div>
+                      </motion.div>
+                    )}
+  
+                  </div>
+  
+                  {/* Rest of the leaderboard */}
+                  {rest.length > 0 && (
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} style={{ width: '100%', maxWidth: 700, backgroundColor: 'white', borderRadius: 20, boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <tbody>
+                          {rest.map((item, idx) => (
+                            <tr key={item.pic} style={{ borderBottom: idx === rest.length - 1 ? 'none' : '1px solid #f1f5f9', transition: 'background-color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'} onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                              <td style={{ padding: '16px 24px', width: 60, textAlign: 'center', fontSize: 16, fontWeight: 900, color: '#94a3b8' }}>{idx + 4}</td>
+                              <td style={{ padding: '16px 12px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                                  <img src={getAvatarUrl(item.pic, idx + 4)} alt={item.pic} style={{ width: 44, height: 44, borderRadius: '50%', border: '2px solid #e2e8f0' }} />
+                                  <span style={{ fontSize: 15, fontWeight: 800, color: '#1e293b' }}>{item.pic}</span>
+                                </div>
+                              </td>
+                              <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-end' }}>
+                                    <span style={{ fontSize: 14, fontWeight: 900, color: '#0ea5e9', display: 'flex', alignItems: 'center', gap: 8 }}>
+                                      <span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Booking</span> 
+                                      {formatRp(item.bookingValue)}
+                                    </span>
+                                    <span style={{ fontSize: 14, fontWeight: 900, color: '#10b981', display: 'flex', alignItems: 'center', gap: 8 }}>
+                                      <span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Sales</span> 
+                                      {formatRp(item.salesValue)}
+                                    </span>
+                                    <span style={{ fontSize: 11, fontWeight: 700, color: '#64748b', marginTop: 2 }}>{item.totalDeals} Projects</span>
+                                  </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </motion.div>
+                  )}
+                </>
+              )}
             )}
             </div>
           </div>
