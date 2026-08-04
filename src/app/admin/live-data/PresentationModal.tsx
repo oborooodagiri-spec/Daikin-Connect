@@ -340,7 +340,11 @@ export default function PresentationModal({ state, onClose, formatRp, STATUS_CON
                                 {d.target_po_date ? (
                                   <span style={{ fontSize: 12, fontWeight: 700, color: isOverdue ? "#ef4444" : "rgba(255,255,255,0.8)", display: "flex", alignItems: "center", gap: 5 }}>
                                     <Calendar size={12} />
-                                    {new Date(d.target_po_date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                                    {(() => {
+                                      const dObj = new Date(d.target_po_date);
+                                      dObj.setDate(20);
+                                      return dObj.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+                                    })()}
                                     {isOverdue && <span style={{ fontSize: 9, background: "#ef4444", color: "#323338", padding: "2px 5px", borderRadius: 3, marginLeft: 3, fontWeight: 900 }}>OVERDUE</span>}
                                   </span>
                                 ) : <span style={{ color: "#94a3b8", fontSize: 12 }}>–</span>}
