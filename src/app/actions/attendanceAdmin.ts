@@ -184,8 +184,13 @@ export async function getUserMonthlyAttendance(userId: number, month: number, ye
     }
 
     try {
-        const start = new Date(year, month, 1);
-        const end = new Date(year, month + 1, 0, 23, 59, 59, 999);
+        const startStr = `${year}-${String(month + 1).padStart(2, '0')}-01T00:00:00.000+07:00`;
+        const start = new Date(startStr);
+        const lastDay = new Date(year, month + 1, 0).getDate();
+        const endStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}T23:59:59.999+07:00`;
+        const end = new Date(endStr);
+
+        console.log("getUserMonthlyAttendance bounds (WIB):", { startStr, endStr, start, end, month, year });
 
         const whereClause: any = {
             user_id: userId,
