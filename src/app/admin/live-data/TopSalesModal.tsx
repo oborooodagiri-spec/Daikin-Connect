@@ -36,12 +36,17 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
   const [activeRoleTab, setActiveRoleTab] = useState<'Sales Engineer' | 'Sales Partnership'>('Sales Engineer');
   const [userInfoMap, setUserInfoMap] = useState<Record<string, { avatar_url?: string | null, isSales: boolean, isSalesEngineer: boolean, isSalesPartnership: boolean, roles: string[] }>>({});
 
+  const [partnershipPICs, setPartnershipPICs] = useState<string[]>([]);
+
   React.useEffect(() => {
     if (isOpen) {
       import("@/app/actions/users").then(m => m.getUsersAvatarMap()).then(res => {
         if (res.success && res.data) {
           setUserInfoMap(res.data);
         }
+      });
+      import("@/app/actions/pipeline").then(m => m.getPartnershipPICs()).then(res => {
+        if (res) setPartnershipPICs(res);
       });
     }
   }, [isOpen]);
@@ -101,9 +106,16 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
       let picName = '';
       if (activeRoleTab === 'Sales Engineer') {
         picName = d.pic?.trim() || '(Unassigned)';
+        
+        const info = userInfoMap[picName];
+        if (!info?.isSalesEngineer) return;
       } else {
         if (!d.sales_planner || d.sales_planner.trim() === '') return;
         picName = d.sales_planner.trim();
+        
+        const info = userInfoMap[picName];
+        if (!info?.isSalesEngineer) return;
+        if (!partnershipPICs.includes(picName)) return;
       }
       
       if (picName === '(Unassigned)' || picName === '') return;
@@ -132,7 +144,7 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
       .sort((a, b) => b.bookingValue - a.bookingValue || b.salesValue - a.salesValue); // Sort strictly by bookingValue, then salesValue
 
     return { leaderboard: arr };
-  }, [deals, selectedFY, userInfoMap, activeRoleTab]);
+  }, [deals, selectedFY, userInfoMap, activeRoleTab, partnershipPICs]);
 
   const top3 = leaderboard.slice(0, 3);
   const rest = leaderboard.slice(3);
