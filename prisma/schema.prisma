@@ -1110,7 +1110,7 @@ model pipeline_ops {
   customer        String   @db.VarChar(255)
   project_name    String   @db.VarChar(500)
   total_value     BigInt   @default(0)
-  values_by_month String?  @db.LongText
+  values_by_month Json?
   remark          String?  @db.Text
   created_at      DateTime @default(now()) @db.Timestamp(0)
   updated_at      DateTime @updatedAt @db.Timestamp(0)
@@ -1122,7 +1122,7 @@ model pipeline_ops {
 model pipeline_settings {
   id          Int     @id @default(autoincrement())
   key         String  @unique @db.VarChar(100)
-  value       String  @db.LongText
+  value       Json
   description String? @db.VarChar(255)
 }
 
