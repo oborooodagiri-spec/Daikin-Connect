@@ -322,7 +322,7 @@ function MapDrillDownModal({ cluster, onClose, formatRp }: { cluster: any; onClo
   );
 }
 
-function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canClickWidgets?: boolean }) {
+function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedPicCoverage = null, setSelectedPicCoverage, picStats = {} }: { deals: Deal[], canClickWidgets?: boolean, usersList?: any[], selectedPicCoverage?: string | null, setSelectedPicCoverage?: (v: string | null) => void, picStats?: Record<string, { totalCount: number; totalValue: number; wonValue: number; lostValue: number }> }) {
   const [hoveredCluster, setHoveredCluster] = useState<string | null>(null);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; data: any } | null>(null);
   const [selectedRegion, setSelectedRegion] = useState("All");
@@ -590,11 +590,11 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.03)", padding: "8px 12px", borderRadius: 8 }}>
                   <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, fontWeight: 600 }}>Total Projects</span>
-                  <span style={{ color: "#fff", fontSize: 14, fontWeight: 800 }}>{stats.byPic[selectedPicCoverage]?.totalCount || 0}</span>
+                  <span style={{ color: "#fff", fontSize: 14, fontWeight: 800 }}>{picStats[selectedPicCoverage]?.totalCount || 0}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.03)", padding: "8px 12px", borderRadius: 8 }}>
                   <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, fontWeight: 600 }}>Total Value</span>
-                  <span style={{ color: "#00c875", fontSize: 14, fontWeight: 800 }}>{formatRp(stats.byPic[selectedPicCoverage]?.totalValue || 0)}</span>
+                  <span style={{ color: "#00c875", fontSize: 14, fontWeight: 800 }}>{formatRp(picStats[selectedPicCoverage]?.totalValue || 0)}</span>
                 </div>
               </div>
             </div>
@@ -830,16 +830,16 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
             {showPICLines ? "Sales Engineer (PIC)" : "Ranking Wilayah"}
           </p>
           {showPICLines ? (
-            Object.entries(stats.byPic)
+            Object.entries(picStats)
               .filter(([name]) => name !== "Unassigned")
               .sort(([, a], [, b]) => b.totalValue - a.totalValue)
               .map(([pic, data], idx) => {
-                const maxPicVal = Math.max(...Object.values(stats.byPic).map(v => v.totalValue)) || 1;
+                const maxPicVal = Math.max(...Object.values(picStats).map(v => v.totalValue)) || 1;
                 const pct = (data.totalValue / maxPicVal) * 100;
                 const isSelected = selectedPicCoverage === pic;
                 return (
                   <div key={pic}
-                    onClick={() => setSelectedPicCoverage(isSelected ? null : pic)}
+                    onClick={() => setSelectedPicCoverage?.(isSelected ? null : pic)}
                     style={{
                       cursor: "pointer", padding: "8px 10px", borderRadius: 10,
                       background: isSelected ? "rgba(253,171,61,0.1)" : "rgba(255,255,255,0.02)",
@@ -1616,7 +1616,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
 
         {/* INDONESIA MAP */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <IndonesiaMap deals={activeDeals} canClickWidgets={canClickWidgets} />
+          <IndonesiaMap deals={activeDeals} canClickWidgets={canClickWidgets} usersList={usersList} selectedPicCoverage={selectedPicCoverage} setSelectedPicCoverage={setSelectedPicCoverage} picStats={stats.byPic} />
         </motion.div>
 
         {/* CLOSED PROJECTS WIDGET */}
