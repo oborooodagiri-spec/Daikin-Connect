@@ -348,7 +348,7 @@ export default function ScheduleClient() {
       
       if (eplLogo) {
         const ratio = eplLogo.width / eplLogo.height;
-        const h = 18; // Make EPL logo larger to balance visual weight
+        const h = headerLogoHeight; // Balance visual weight with Daikin logo
         const w = h * ratio;
         // Adjust Y to keep it vertically centered with the Daikin logo
         const eplY = headerLogoY - ((h - headerLogoHeight) / 2);
@@ -459,7 +459,7 @@ export default function ScheduleClient() {
       
       pdf.setFontSize(6);
       pdf.setTextColor(170, 170, 170);
-      pdf.text("EPL CONNECT - VALUE ENGINEERING SERVICES PORTAL", 10, pdfHeight - 4);
+      pdf.text("DSSI - VALUE ENGINEERING SERVICES PORTAL", 10, pdfHeight - 4);
       pdf.text(`Tgl. Cetak: ${format(new Date(), "dd MMM yyyy HH:mm")}`, pdfWidth - 10, pdfHeight - 4, { align: "right" });
 
     } catch (err) {

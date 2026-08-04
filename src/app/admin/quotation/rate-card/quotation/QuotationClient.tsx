@@ -882,7 +882,7 @@ export default function QuotationClient({
           <div className="w-full flex-shrink-0 relative">
             <div className="mx-[15mm] h-[0.5px] bg-slate-200" />
             <div className="px-[15mm] py-[3.5mm] flex justify-between items-center text-[7px] font-bold text-slate-400 uppercase tracking-widest">
-              <span>EPL CONNECT Portal • Service & Engineering Dept</span>
+              <span>DSSI Portal • Service & Engineering Dept</span>
               <span>Halaman 1 / {partitionedPages.length + 1}</span>
             </div>
           </div>
@@ -1031,7 +1031,7 @@ export default function QuotationClient({
               <div className="w-full flex-shrink-0 relative">
                 <div className="mx-[15mm] h-[0.5px] bg-slate-200" />
                 <div className="px-[15mm] py-[3.5mm] flex justify-between items-center text-[7px] font-bold text-slate-400 uppercase tracking-widest">
-                  <span>EPL CONNECT Portal • Service & Engineering Dept</span>
+                  <span>DSSI Portal • Service & Engineering Dept</span>
                   <span>Halaman {pageNum} / {partitionedPages.length + 1}</span>
                 </div>
               </div>

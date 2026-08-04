@@ -843,7 +843,7 @@ export default function WorkOrderClient({
                 <div className="px-[15mm] py-[3mm] border-t border-slate-100 flex justify-between items-center text-[7px] text-slate-400">
                   <div className="flex items-center gap-1">
                     <Building size={10} className="text-slate-350" />
-                    <span>EPL CONNECT Portal</span>
+                    <span>DSSI Portal</span>
                   </div>
                   <div className="font-bold text-slate-500 uppercase tracking-widest">
                     Halaman {pageIdx + 1} dari {partitionedPages.length}
