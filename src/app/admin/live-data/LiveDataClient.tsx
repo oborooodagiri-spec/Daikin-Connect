@@ -1091,8 +1091,8 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
       
       if (d.target_po_date) {
         const targetDate = new Date(d.target_po_date);
-        const isOverdueTime = targetDate.getFullYear() < today.getFullYear() || 
-                              (targetDate.getFullYear() === today.getFullYear() && targetDate.getMonth() <= today.getMonth());
+        const thresholdDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), 20, 23, 59, 59, 999);
+        const isOverdueTime = today.getTime() > thresholdDate.getTime();
         if (isOverdueTime && ['B', 'C', 'D', 'E'].includes(d.status) && isCurrentFY) {
           overdueCount++;
           byPic[pic].overdueCount = (byPic[pic].overdueCount || 0) + 1;
@@ -1116,7 +1116,9 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
     const now = new Date();
     const isOverdue = (deal: any) => {
       const targetDate = deal.target_po_date ? new Date(deal.target_po_date) : null;
-      return targetDate && targetDate < now && !["A", "L", "S", "N"].includes(deal.status) && !deal.is_closed;
+      if (!targetDate) return false;
+      const thresholdDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), 20, 23, 59, 59, 999);
+      return now.getTime() > thresholdDate.getTime() && !["A", "L", "S", "N"].includes(deal.status) && !deal.is_closed;
     };
 
     return deals.filter(d => {
@@ -1788,7 +1790,8 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
               <tbody>
                 {paginated.map((deal) => {
                   const targetDate = deal.target_po_date ? new Date(deal.target_po_date) : null;
-                  const isOverdue = targetDate && targetDate < new Date() && !["A", "L", "S", "N"].includes(deal.status) && !deal.is_closed;
+                  const thresholdDate = targetDate ? new Date(targetDate.getFullYear(), targetDate.getMonth(), 20, 23, 59, 59, 999) : null;
+                  const isOverdue = thresholdDate && new Date().getTime() > thresholdDate.getTime() && !["A", "L", "S", "N"].includes(deal.status) && !deal.is_closed;
                   const isClosed = deal.is_closed;
                   const isWonNotClosed = deal.status === "A" && !deal.is_closed;
                   
