@@ -94,6 +94,8 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
         if (ut >= fyStartTime && ut <= fyEndTime) {
           isIncluded = true;
         }
+      } else if (d.status === 'A') {
+        isIncluded = true;
       } else {
         const rawDate = d.target_po_date || d.est_booking_month || d.updated_at || d.created_at || Date.now();
         if (rawDate) {
