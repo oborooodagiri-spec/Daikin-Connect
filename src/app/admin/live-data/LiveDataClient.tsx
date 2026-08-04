@@ -26,7 +26,7 @@ import TargetSettingsModal from "./TargetSettingsModal";
 import TargetProgressModal from "./TargetProgressModal";
 import PartnershipSettingsModal from "./PartnershipSettingsModal";
 import { updateDeal, getPICAreas, updatePICAreas, getTargetSettings } from "@/app/actions/pipeline";
-import { exportToExcel } from "@/lib/excelExport";
+import { exportProjectByStatusMatrix, exportCategoryMatrix, exportSectorMatrix, exportHierarchyTree } from "@/lib/excelExport";
 
 // ============================================
 // TYPES
@@ -1268,145 +1268,53 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
     const commercialD = getCommercialStatusTotal('D');
     const commercialE = getCommercialStatusTotal('E');
     const handleDownloadAchievement = () => {
-      exportToExcel(
+      exportHierarchyTree(
+        closedFYDeals,
         `Achievement Report - FY${currentFY}`,
-        closedFYDeals.map(d => ({
-          region: d.region || '-',
-          pic: d.pic || '-',
-          client_name: d.client_name || '-',
-          project_name: d.project_name || '-',
-          po_date: d.target_po_date || d.est_booking_month || '-',
-          quotation: Number(d.quotation) || 0
-        })),
-        [
-          { header: 'Region', key: 'region', width: 15 },
-          { header: 'PIC', key: 'pic', width: 20 },
-          { header: 'Client Name', key: 'client_name', width: 30 },
-          { header: 'Project Name', key: 'project_name', width: 40 },
-          { header: 'PO Date', key: 'po_date', width: 15 },
-          { header: 'Quotation', key: 'quotation', width: 20, isCurrency: true }
-        ],
-        `Achievement_Report_FY${currentFY}.xlsx`
+        `Achievement_Report_FY${currentFY}.xlsx`,
+        true
       );
     };
 
     const handleDownloadProjectByStatus = () => {
-      exportToExcel(
-        `Active Projects By Status - FY${currentFY}`,
-        projectByStatusDeals.map(d => ({
-          status: d.status,
-          region: d.region || '-',
-          pic: d.pic || '-',
-          client_name: d.client_name || '-',
-          project_name: d.project_name || '-',
-          po_date: d.target_po_date || d.est_booking_month || '-',
-          quotation: Number(d.quotation) || 0
-        })).sort((a, b) => a.status.localeCompare(b.status)),
-        [
-          { header: 'Status', key: 'status', width: 10 },
-          { header: 'Region', key: 'region', width: 15 },
-          { header: 'PIC', key: 'pic', width: 20 },
-          { header: 'Client Name', key: 'client_name', width: 30 },
-          { header: 'Project Name', key: 'project_name', width: 40 },
-          { header: 'Target PO', key: 'po_date', width: 15 },
-          { header: 'Quotation', key: 'quotation', width: 20, isCurrency: true }
-        ],
+      exportProjectByStatusMatrix(
+        projectByStatusDeals,
+        currentFY,
         `ProjectByStatus_Report_FY${currentFY}.xlsx`
       );
     };
 
     const handleDownloadBookingForecast = () => {
-      exportToExcel(
+      exportHierarchyTree(
+        bookingFcDeals,
         `Booking Forecast (Status B) - FY${currentFY}`,
-        bookingFcDeals.map(d => ({
-          po_date: d.target_po_date || d.est_booking_month || '-',
-          pic: d.pic || '-',
-          client_name: d.client_name || '-',
-          project_name: d.project_name || '-',
-          category: d.category || '-',
-          quotation: Number(d.quotation) || 0
-        })),
-        [
-          { header: 'Target Month', key: 'po_date', width: 15 },
-          { header: 'PIC', key: 'pic', width: 20 },
-          { header: 'Client Name', key: 'client_name', width: 30 },
-          { header: 'Project Name', key: 'project_name', width: 40 },
-          { header: 'Category', key: 'category', width: 15 },
-          { header: 'Quotation', key: 'quotation', width: 20, isCurrency: true }
-        ],
-        `BookingForecast_Report_FY${currentFY}.xlsx`
+        `BookingForecast_Report_FY${currentFY}.xlsx`,
+        false
       );
     };
 
     const handleDownloadPipeline = () => {
-      exportToExcel(
-        `Full Pipeline - FY${currentFY}`,
-        pipelineDeals.map(d => ({
-          status: d.status,
-          region: d.region || '-',
-          pic: d.pic || '-',
-          sector: d.sector || '-',
-          category: d.category || '-',
-          client_name: d.client_name || '-',
-          project_name: d.project_name || '-',
-          quotation: Number(d.quotation) || 0
-        })),
-        [
-          { header: 'Status', key: 'status', width: 10 },
-          { header: 'Region', key: 'region', width: 15 },
-          { header: 'PIC', key: 'pic', width: 20 },
-          { header: 'Sector', key: 'sector', width: 15 },
-          { header: 'Category', key: 'category', width: 15 },
-          { header: 'Client Name', key: 'client_name', width: 30 },
-          { header: 'Project Name', key: 'project_name', width: 40 },
-          { header: 'Quotation', key: 'quotation', width: 20, isCurrency: true }
-        ],
+      exportCategoryMatrix(
+        pipelineDeals,
+        currentFY,
         `Pipeline_Report_FY${currentFY}.xlsx`
       );
     };
 
     const handleDownloadIndustry = () => {
-      exportToExcel(
-        `Industry Sector Pipeline - FY${currentFY}`,
-        industryDeals.map(d => ({
-          status: d.status,
-          pic: d.pic || '-',
-          sector: d.sector || '-',
-          client_name: d.client_name || '-',
-          project_name: d.project_name || '-',
-          quotation: Number(d.quotation) || 0
-        })),
-        [
-          { header: 'Status', key: 'status', width: 10 },
-          { header: 'PIC', key: 'pic', width: 20 },
-          { header: 'Sector', key: 'sector', width: 15 },
-          { header: 'Client Name', key: 'client_name', width: 30 },
-          { header: 'Project Name', key: 'project_name', width: 40 },
-          { header: 'Quotation', key: 'quotation', width: 20, isCurrency: true }
-        ],
+      exportSectorMatrix(
+        industryDeals,
+        currentFY,
+        'Industry',
         `Industry_Report_FY${currentFY}.xlsx`
       );
     };
 
     const handleDownloadCommercial = () => {
-      exportToExcel(
-        `Commercial Sector Pipeline - FY${currentFY}`,
-        commercialFYDeals.map(d => ({
-          status: d.status,
-          pic: d.pic || '-',
-          sector: d.sector || '-',
-          client_name: d.client_name || '-',
-          project_name: d.project_name || '-',
-          quotation: Number(d.quotation) || 0
-        })),
-        [
-          { header: 'Status', key: 'status', width: 10 },
-          { header: 'PIC', key: 'pic', width: 20 },
-          { header: 'Sector', key: 'sector', width: 15 },
-          { header: 'Client Name', key: 'client_name', width: 30 },
-          { header: 'Project Name', key: 'project_name', width: 40 },
-          { header: 'Quotation', key: 'quotation', width: 20, isCurrency: true }
-        ],
+      exportSectorMatrix(
+        commercialFYDeals,
+        currentFY,
+        'Commercial',
         `Commercial_Report_FY${currentFY}.xlsx`
       );
     };
