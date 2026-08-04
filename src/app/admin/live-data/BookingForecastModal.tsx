@@ -19,6 +19,7 @@ interface Deal {
   source: string;
   category?: string;
   project_name: string;
+  client_name?: string;
   bill_material?: string;
 }
 
@@ -32,6 +33,7 @@ interface BookingForecastModalProps {
 interface TreeNode {
   id: string;
   name: string;
+  subtitle?: string;
   level: number;
   values: Record<string, number>;
   total: number;
@@ -100,13 +102,15 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
       
       const val = Number(d.quotation || 0);
 
-      // Hierarchy: Region > PIC > Category > Project Name > Bill Material
+      // Hierarchy: Region > PIC > Project Name
       const path = [
-        d.region || "Uncategorized Region",
-        d.pic || "Unassigned PIC",
-        d.category || "Unknown Category",
-        d.project_name || "Unknown Project",
-        d.bill_material || "No Material Detail"
+        { key: d.region || "Uncategorized Region", name: d.region || "Uncategorized Region" },
+        { key: d.pic || "Unassigned PIC", name: d.pic || "Unassigned PIC" },
+        { 
+          key: d.id.toString(), 
+          name: d.project_name || "Unknown Project", 
+          subtitle: d.client_name || "" 
+        }
       ];
 
       addValueToNode(root, sortKey, val);
@@ -114,19 +118,21 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
       let current = root;
       let currentId = "root";
 
-      path.forEach((part, idx) => {
-        currentId += `|${part}`;
-        if (!current.children[part]) {
-          current.children[part] = {
+      path.forEach((partObj, idx) => {
+        const { key, name, subtitle } = partObj;
+        currentId += `|${key}`;
+        if (!current.children[key]) {
+          current.children[key] = {
             id: currentId,
-            name: part,
+            name: name,
+            subtitle: subtitle,
             level: idx + 1,
             values: {},
             total: 0,
             children: {}
           };
         }
-        current = current.children[part];
+        current = current.children[key];
         addValueToNode(current, sortKey, val);
       });
     });
@@ -187,7 +193,7 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
         return (
           <React.Fragment key={node.id}>
             <tr style={{ background: node.level % 2 === 1 ? "#ffffff" : "#fafafa", borderBottom: "1px solid #f0f0f0", transition: "background 0.2s" }} onMouseOver={(e) => e.currentTarget.style.background = "#f1f5f9"} onMouseOut={(e) => e.currentTarget.style.background = node.level % 2 === 1 ? "#ffffff" : "#fafafa"}>
-              <td style={{ padding: "10px 16px", fontSize: 13, fontWeight: node.level < 4 ? 800 : 500, color: node.level < 4 ? "#323338" : "#475569" }}>
+              <td style={{ padding: "10px 16px", fontSize: 13, fontWeight: node.level < 3 ? 800 : 700, color: node.level < 3 ? "#323338" : "#475569" }}>
                 <div style={{ display: "flex", alignItems: "center", paddingLeft }}>
                   {hasChildren ? (
                     <button onClick={() => toggleNode(node.id)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, marginRight: 4, color: "#676879" }}>
@@ -196,7 +202,16 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
                   ) : (
                     <div style={{ width: 28 }} />
                   )}
-                  {node.name}
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <span style={{ fontSize: node.level === 3 ? 14 : 13, fontWeight: node.level === 3 ? 800 : (node.level < 3 ? 800 : 500), color: node.level === 3 ? "#1e293b" : "inherit" }}>
+                      {node.name}
+                    </span>
+                    {node.subtitle && (
+                      <span style={{ fontSize: 11, color: "#64748b", marginTop: 2, fontWeight: 500 }}>
+                        {node.subtitle}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </td>
               {columns.map(col => (
