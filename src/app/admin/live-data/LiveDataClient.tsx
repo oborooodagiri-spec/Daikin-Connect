@@ -534,7 +534,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
           
           <div style={{ width: 1, height: 16, background: "rgba(102,204,255,0.15)", margin: "0 4px" }} />
           
-          <button onClick={() => setShowPICLines(!showPICLines)}
+          <button onClick={() => { const next = !showPICLines; setShowPICLines(next); if (!next) setSelectedPicCoverage?.(null); }}
             style={{
               padding: "4px 10px", borderRadius: 8, border: "1px solid",
               borderColor: showPICLines ? "#fdab3d" : "rgba(102,204,255,0.15)",
