@@ -692,7 +692,7 @@ function IndonesiaMap({ deals, canClickWidgets = true }: { deals: Deal[], canCli
                 strokeWidth={1.5}
                 strokeLinecap="round"
                 className="pic-line"
-                style={{ default: { fill: "none" } }}
+                style={{ fill: "none" }}
               />
             ))}
 
