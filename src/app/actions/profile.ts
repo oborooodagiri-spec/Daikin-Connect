@@ -134,6 +134,27 @@ export async function updateProfile(data: { name?: string; phone?: string; bio?:
           where: { sales_planner: currentUser.name },
           data: { sales_planner: data.name }
         });
+
+        // Cascade to settings keys that map by name (TARGETS, PIC_AREAS)
+        const targetSettings = await prisma.pipeline_settings.findUnique({ where: { key: "TARGETS" } });
+        if (targetSettings && targetSettings.value) {
+          const val = targetSettings.value as any;
+          if (val.byPic && val.byPic[currentUser.name] !== undefined) {
+            val.byPic[data.name] = val.byPic[currentUser.name];
+            delete val.byPic[currentUser.name];
+            await prisma.pipeline_settings.update({ where: { key: "TARGETS" }, data: { value: val }});
+          }
+        }
+
+        const picAreas = await prisma.pipeline_settings.findUnique({ where: { key: "PIC_AREAS" } });
+        if (picAreas && picAreas.value) {
+          const val = picAreas.value as any;
+          if (val[currentUser.name] !== undefined) {
+            val[data.name] = val[currentUser.name];
+            delete val[currentUser.name];
+            await prisma.pipeline_settings.update({ where: { key: "PIC_AREAS" }, data: { value: val }});
+          }
+        }
       }
     }
 
