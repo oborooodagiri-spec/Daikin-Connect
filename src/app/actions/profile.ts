@@ -109,8 +109,36 @@ export async function updateProfile(data: { name?: string; phone?: string; bio?:
   if (!session) return { error: "Not authenticated" };
 
   try {
+    const currentUserId = parseInt(session.userId);
+
+    if (data.name) {
+      const existingUser = await prisma.users.findFirst({
+        where: { 
+          name: data.name,
+          id: { not: currentUserId }
+        }
+      });
+      
+      if (existingUser) {
+        return { error: "Nama ini sudah digunakan oleh akun lain. Silakan gunakan nama yang berbeda." };
+      }
+      
+      // Cascade name change to pipeline_deals to prevent losing access
+      const currentUser = await prisma.users.findUnique({ where: { id: currentUserId } });
+      if (currentUser && currentUser.name !== data.name) {
+        await prisma.pipeline_deals.updateMany({
+          where: { pic: currentUser.name },
+          data: { pic: data.name, pic_id: currentUserId }
+        });
+        await prisma.pipeline_deals.updateMany({
+          where: { sales_planner: currentUser.name },
+          data: { sales_planner: data.name }
+        });
+      }
+    }
+
     await prisma.users.update({
-      where: { id: parseInt(session.userId) },
+      where: { id: currentUserId },
       data: {
         ...(data.name && { name: data.name }),
         ...(data.phone !== undefined && { phone: data.phone }),

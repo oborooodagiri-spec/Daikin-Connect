@@ -16,5 +16,5 @@ export default async function LiveDataPage() {
   );
 
   const canClickWidgets = true;
-  return <LiveDataClient isAdmin={isAdmin} canClickWidgets={canClickWidgets} sessionName={session.name} />;
+  return <LiveDataClient isAdmin={isAdmin} canClickWidgets={canClickWidgets} sessionName={session.name} sessionId={parseInt(session.userId)} />;
 }

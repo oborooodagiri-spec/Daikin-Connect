@@ -36,6 +36,7 @@ export interface DealData {
   region?: string;
   sales_planner?: string;
   pic?: string;
+  pic_id?: number;
   category?: string;
   sector?: string;
   quotation?: number;
@@ -312,8 +313,12 @@ export async function updateDeal(id: number, data: Partial<DealData>) {
     }
     // ---------------------------------------
 
-    // Non-internal users can only update their own deals
-    if (!session.isInternal && existing.pic !== session.name && existing.sales_planner !== session.name) {
+    const isAdminOrMgmt = session.roles?.some((r: string) => 
+      ["admin", "super", "management", "director"].some(kw => r.toLowerCase().includes(kw))
+    );
+
+    // Enforce ownership based on pic_id for non-admins
+    if (!isAdminOrMgmt && existing.pic_id !== parseInt(session.userId) && existing.sales_planner !== session.name) {
       return { error: "You can only update your own deals." };
     }
 

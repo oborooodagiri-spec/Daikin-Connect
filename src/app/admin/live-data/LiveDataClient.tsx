@@ -41,6 +41,7 @@ interface Deal {
   region?: string;
   sales_planner?: string;
   pic?: string;
+  pic_id?: number;
   category?: string;
   sector?: string;
   quotation: number;
@@ -1150,7 +1151,7 @@ function StatusBadge({ status }: { status: string }) {
 // ============================================
 // MAIN COMPONENT
 // ============================================
-export default function LiveDataClient({ isAdmin = false, canClickWidgets = true, sessionName = "User" }: { isAdmin?: boolean, canClickWidgets?: boolean, sessionName?: string }) {
+export default function LiveDataClient({ isAdmin = false, canClickWidgets = true, sessionName = "User", sessionId = 0 }: { isAdmin?: boolean, canClickWidgets?: boolean, sessionName?: string, sessionId?: number }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [deals, setDeals] = useState<Deal[]>([]);
@@ -1421,7 +1422,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
 
     return deals.filter(d => {
       // deals is already filtered for non-admins at loadData, but we keep this as an extra safety measure
-      if (!isAdmin && d.pic !== sessionName && d.sales_planner !== sessionName) return false;
+      if (!isAdmin && d.pic_id !== sessionId && d.sales_planner !== sessionName) return false;
 
       const s = searchTerm.toLowerCase();
       const matchSearch = !s || d.client_name?.toLowerCase().includes(s) || d.project_name?.toLowerCase().includes(s) || d.pic?.toLowerCase().includes(s) || d.remarks?.toLowerCase().includes(s);
@@ -1444,10 +1445,10 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
       if (!aOverdue && bOverdue) return 1;
       return 0;
     });
-  }, [deals, searchTerm, statusFilter, categoryFilter, sectorFilter, picFilter, sourceFilter, projectStateFilter, canClickWidgets, sessionName]);
+  }, [deals, searchTerm, statusFilter, categoryFilter, sectorFilter, picFilter, sourceFilter, projectStateFilter, canClickWidgets, sessionName, sessionId]);
 
   const filteredOps = useMemo(() => {
-    return opsRecords.filter(o => {
+    return opsRecords.filter((o: any) => {
       if (!isAdmin && o.pic !== sessionName) return false;
 
       const s = searchTerm.toLowerCase();
