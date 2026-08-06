@@ -111,10 +111,16 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
 
   const handleSaveProfile = async () => {
     setSaving(true);
-    await updateProfile({ name: editName, phone: editPhone });
+    const res = await updateProfile({ name: editName, phone: editPhone });
     setSaving(false);
-    setEditOpen(false);
-    router.refresh();
+    
+    if (res && res.error) {
+      alert(res.error);
+    } else {
+      alert("Profil berhasil diperbarui!");
+      setEditOpen(false);
+      router.refresh();
+    }
   };
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -626,10 +632,10 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
       {/* Edit Profile Modal */}
       <AnimatePresence>
         {editOpen && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setEditOpen(false)}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(e) => { if (e.target === e.currentTarget) setEditOpen(false); }}
             style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 20 }}>
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-              onClick={e => e.stopPropagation()}
+              onMouseDown={e => e.stopPropagation()}
               style={{ background: "#fff", borderRadius: 16, padding: 28, width: "100%", maxWidth: 420, boxShadow: "0 20px 60px rgba(0,0,0,0.15)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
                 <h3 style={{ fontSize: 18, fontWeight: 700, color: "#323338", margin: 0 }}>Edit Profil</h3>
@@ -659,10 +665,10 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
       {/* Modal Tambah Project Baru */}
       <AnimatePresence>
         {createProjectOpen && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setCreateProjectOpen(false)}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(e) => { if (e.target === e.currentTarget) setCreateProjectOpen(false); }}
             style={{ position: "fixed", inset: 0, background: "rgba(2,6,23,0.6)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 20 }}>
             <motion.div initial={{ scale: 0.95, y: 20, opacity: 0 }} animate={{ scale: 1, y: 0, opacity: 1 }} exit={{ scale: 0.95, y: 20, opacity: 0 }}
-              onClick={e => e.stopPropagation()}
+              onMouseDown={e => e.stopPropagation()}
               style={{ background: "#fff", borderRadius: 24, padding: 32, width: "100%", maxWidth: 500, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
                 <h3 style={{ fontSize: 20, fontWeight: 800, color: "#323338", margin: 0 }}>Tambah Project Baru</h3>
