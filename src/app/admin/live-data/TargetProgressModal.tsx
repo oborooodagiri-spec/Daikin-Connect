@@ -18,7 +18,8 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
   const [salesEngineers, setSalesEngineers] = useState<string[]>([]);
   const [partnershipPICs, setPartnershipPICs] = useState<string[]>([]);
   const [modalFY, setModalFY] = useState(currentFY);
-  const [activeTab, setActiveTab] = useState<"sales" | "partner">("sales");
+  const [activeTab, setActiveTab] = useState<"sales" | "partner" | "backlog">("sales");
+  const [expandedBacklogPic, setExpandedBacklogPic] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -62,6 +63,12 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
     let closedCount = 0;
     const byPic: Record<string, { value: number; count: number }> = {};
     const byPartner: Record<string, { value: number; count: number }> = {};
+    const backlogByPic: Record<string, { 
+      legacyValue: number; 
+      currentValue: number; 
+      legacyProjects: any[]; 
+      currentProjects: any[] 
+    }> = {};
 
     // FY date range: April 1 of FY year to March 31 of FY+1 year
     const fyStartYear = 2000 + modalFY;
@@ -88,10 +95,28 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
             byPartner[partner].count++;
           }
         }
+      } else if (d.status === "A") {
+        // BACKLOG: Status A and not closed
+        const pic = d.pic || "Unassigned";
+        if (!backlogByPic[pic]) {
+          backlogByPic[pic] = { legacyValue: 0, currentValue: 0, legacyProjects: [], currentProjects: [] };
+        }
+        
+        const val = Number(d.quotation) || 0;
+        const poDate = d.target_po_date || d.est_booking_month || d.updated_at;
+        const poTime = new Date(poDate).getTime();
+        
+        if (poTime < fyStart) {
+          backlogByPic[pic].legacyValue += val;
+          backlogByPic[pic].legacyProjects.push({ name: d.project_name, value: val, date: poDate });
+        } else {
+          backlogByPic[pic].currentValue += val;
+          backlogByPic[pic].currentProjects.push({ name: d.project_name, value: val, date: poDate });
+        }
       }
     });
 
-    return { totalAchievement: total, totalClosedCount: closedCount, picAchievements: byPic, partnerAchievements: byPartner };
+    return { totalAchievement: total, totalClosedCount: closedCount, picAchievements: byPic, partnerAchievements: byPartner, backlogByPic };
   }, [deals, modalFY]);
 
   if (!isOpen) return null;
@@ -113,7 +138,12 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
     const achievement = picAchievements[pic]?.value || 0;
     const count = picAchievements[pic]?.count || 0;
     const progress = calculateProgress(achievement, target);
-    return { pic, target, achievement, count, progress };
+    
+    const backlog = backlogByPic[pic] || { legacyValue: 0, currentValue: 0, legacyProjects: [], currentProjects: [] };
+    const totalBacklog = backlog.legacyValue + backlog.currentValue;
+    const backlogCoverage = target > 0 ? ((totalBacklog / target) * 100).toFixed(1) : "0.0";
+    
+    return { pic, target, achievement, count, progress, backlog, totalBacklog, backlogCoverage };
   }).sort((a, b) => b.progress - a.progress);
 
   const partnerProgressData = Array.from(new Set([
@@ -192,6 +222,12 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
                 style={{ flex: 1, padding: "12px", borderRadius: 12, fontSize: 13, fontWeight: 800, cursor: "pointer", border: "none", background: activeTab === "partner" ? "#0073ea" : "#f5f6f8", color: activeTab === "partner" ? "white" : "#676879", transition: "all 0.2s" }}
               >
                 Partner Relation
+              </button>
+              <button 
+                onClick={() => setActiveTab("backlog")}
+                style={{ flex: 1, padding: "12px", borderRadius: 12, fontSize: 13, fontWeight: 800, cursor: "pointer", border: "none", background: activeTab === "backlog" ? "#ffcb00" : "#f5f6f8", color: activeTab === "backlog" ? "#323338" : "#676879", transition: "all 0.2s" }}
+              >
+                Backlog Review
               </button>
             </div>
 
@@ -275,6 +311,78 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
                   {partnerProgressData.length === 0 && (
                     <div style={{ padding: 40, textAlign: "center", fontSize: 13, color: "#999", fontStyle: "italic", background: "#f8f9fb", borderRadius: 12, border: "1px solid #e8e8e8" }}>
                       No partnership contribution data available.
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* BACKLOG REVIEW */}
+            {activeTab === "backlog" && (
+              <div>
+                <h3 style={{ fontSize: 14, fontWeight: 800, color: "#323338", marginBottom: 16 }}>Backlog Pipeline (Status A)</h3>
+                
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {picProgressData.map((data) => {
+                    const hasBacklog = data.totalBacklog > 0;
+                    if (!hasBacklog) return null;
+                    
+                    const isExpanded = expandedBacklogPic === data.pic;
+                    
+                    return (
+                      <div key={data.pic} style={{ background: "#fff", borderRadius: 12, border: "1px solid #e8e8e8", overflow: "hidden" }}>
+                        <div 
+                          onClick={() => setExpandedBacklogPic(isExpanded ? null : data.pic)}
+                          style={{ padding: 16, display: "flex", alignItems: "center", gap: 16, cursor: "pointer", background: isExpanded ? "#f8f9fb" : "transparent" }}
+                        >
+                          <div style={{ flex: 1 }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                              <span style={{ fontSize: 14, fontWeight: 800, color: "#323338" }}>{data.pic}</span>
+                              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                <span style={{ fontSize: 16, fontWeight: 900, color: "#ffcb00" }}>{formatRp(data.totalBacklog)}</span>
+                                <ChevronDown size={16} style={{ color: "#999", transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }} />
+                              </div>
+                            </div>
+                            <div style={{ display: "flex", gap: 12, fontSize: 11, fontWeight: 600 }}>
+                              <span style={{ color: "#e2445c" }}>Legacy: {formatRp(data.backlog.legacyValue)}</span>
+                              <span style={{ color: "#00c875" }}>Current: {formatRp(data.backlog.currentValue)}</span>
+                              <span style={{ color: "#676879", marginLeft: "auto" }}>Covers {data.backlogCoverage}% of target</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {isExpanded && (
+                          <div style={{ padding: "0 16px 16px 16px", borderTop: "1px solid #e8e8e8", background: "#fcfdfd" }}>
+                            <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 8 }}>
+                              {data.backlog.legacyProjects.map((p: any, i: number) => (
+                                <div key={`legacy-${i}`} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "#fff", borderRadius: 8, border: "1px solid #ffe8eb" }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                    <span style={{ fontSize: 10, fontWeight: 800, padding: "2px 6px", background: "#e2445c", color: "white", borderRadius: 4 }}>LEGACY</span>
+                                    <span style={{ fontSize: 12, fontWeight: 700, color: "#323338" }}>{p.name}</span>
+                                  </div>
+                                  <span style={{ fontSize: 12, fontWeight: 800, color: "#e2445c" }}>{formatRp(p.value)}</span>
+                                </div>
+                              ))}
+                              
+                              {data.backlog.currentProjects.map((p: any, i: number) => (
+                                <div key={`current-${i}`} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "#fff", borderRadius: 8, border: "1px solid #e0efff" }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                    <span style={{ fontSize: 10, fontWeight: 800, padding: "2px 6px", background: "#00c875", color: "white", borderRadius: 4 }}>FY{modalFY}</span>
+                                    <span style={{ fontSize: 12, fontWeight: 700, color: "#323338" }}>{p.name}</span>
+                                  </div>
+                                  <span style={{ fontSize: 12, fontWeight: 800, color: "#00c875" }}>{formatRp(p.value)}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+
+                  {!picProgressData.some(d => d.totalBacklog > 0) && (
+                    <div style={{ padding: 40, textAlign: "center", fontSize: 13, color: "#999", fontStyle: "italic", background: "#f8f9fb", borderRadius: 12, border: "1px solid #e8e8e8" }}>
+                      No active backlog (Status A) found.
                     </div>
                   )}
                 </div>

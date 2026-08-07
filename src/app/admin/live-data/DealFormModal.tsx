@@ -174,6 +174,11 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
       setError("Lokasi proyek (koordinat map) wajib diisi sebelum mengubah status menjadi A atau B.");
       return;
     }
+
+    if (formData.status === "A" && !formData.target_po_date) {
+      setError("Tanggal PO (Target PO) wajib diisi saat status proyek diubah menjadi A (Secured/PO).");
+      return;
+    }
     
     setLoading(true);
     setError("");
@@ -373,7 +378,9 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
                 )}
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Calendar size={12}/> Target PO</label>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                    <Calendar size={12}/> Target PO {formData.status === "A" && <span className="text-red-500">*</span>}
+                  </label>
                   <input name="target_po_date" type="month" value={formData.target_po_date} onChange={handleChange}
                     className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
                 </div>
