@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { MapContainer, TileLayer, CircleMarker, useMap, Tooltip } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
 // Dynamic map controller to fly to location
@@ -22,7 +22,8 @@ export default function LeafletMap({
   STATUS_CONFIG, 
   canClickWidgets,
   selectedRegion,
-  setSelectedRegion
+  setSelectedRegion,
+  currentZoomLevel = 0
 }: any) {
   
   // Base center & zoom (Nasional)
@@ -45,7 +46,7 @@ export default function LeafletMap({
     // but not as much as the drill-down panel (so -1.0)
     center = [sumLat / clusters.length, (sumLng / clusters.length) - 1.0];
     const isLargeRegion = ["Jawa", "Sumatera", "Kalimantan", "Sulawesi", "Bali & Nusa Tenggara", "Papua & Maluku"].includes(selectedRegion);
-    zoom = isLargeRegion ? 6 : 7;
+    zoom = currentZoomLevel === 1 ? (isLargeRegion ? 6 : 7) : 8; // Deeper zoom for province
   }
 
   const maxValue = Math.max(...clusters.map((c: any) => c.totalValue), 1);
@@ -73,37 +74,84 @@ export default function LeafletMap({
           opacity={1}
         />
 
+        <style>{`
+          .pulse-bubble {
+            border-radius: 50%;
+            color: white;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            border: 2px solid white;
+          }
+          .pulse-bubble::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid inherit;
+            opacity: 0;
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+          }
+          @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            100% { transform: scale(1.6); opacity: 0; }
+          }
+          .custom-pulsing-marker {
+            background: transparent;
+            border: none;
+          }
+        `}</style>
+
         {clusters.map((cluster: any) => {
-          const radius = Math.max(12, Math.min(35, (cluster.totalValue / maxValue) * 35));
-          const wonDeals = cluster.deals.filter((d: any) => d.status === "A").length;
           const totalDeals = cluster.deals.length;
+          
+          // Radius based on number of projects (min 16px, max 40px)
+          const minRadius = 16;
+          const maxRadius = 40;
+          const maxExpectedDeals = 50; 
+          const radiusToUse = Math.min(maxRadius, minRadius + (totalDeals / maxExpectedDeals) * (maxRadius - minRadius));
+          
+          const wonDeals = cluster.deals.filter((d: any) => d.status === "A").length;
           const wonRatio = wonDeals / totalDeals;
           const color = statusLayerFilter 
             ? (STATUS_CONFIG[statusLayerFilter]?.color || "#66ccff")
-            : wonRatio > 0.5 ? "#00c875" : wonRatio > 0.2 ? "#fdab3d" : "#66ccff";
+            : wonRatio > 0.5 ? "#00c875" : wonRatio > 0.2 ? "#fdab3d" : "#ff3366";
           
           const isActive = drillDownCluster?.key === cluster.key;
+          const borderColor = isActive ? "#ffffff" : color;
 
-          return (
-            <CircleMarker
+          let icon;
+          if (typeof window !== "undefined") {
+            const L = require("leaflet");
+            icon = new L.DivIcon({
+              className: 'custom-pulsing-marker',
+              html: `<div class="pulse-bubble" style="width: ${radiusToUse * 2}px; height: ${radiusToUse * 2}px; background: ${color}; border-color: ${borderColor}; box-shadow: ${isActive ? '0 0 20px ' + color : '0 4px 10px rgba(0,0,0,0.4)'}">
+                      <span style="font-size: ${radiusToUse > 20 ? '13px' : '11px'}">${totalDeals}</span>
+                     </div>`,
+              iconSize: [radiusToUse * 2, radiusToUse * 2],
+              iconAnchor: [radiusToUse, radiusToUse]
+            });
+          }
+
+          return icon ? (
+            <Marker
               key={cluster.key}
-              center={[cluster.coords[1], cluster.coords[0]]}
-              radius={radius}
-              pathOptions={{
-                fillColor: color,
-                fillOpacity: isActive ? 0.8 : 0.6,
-                color: "#ffffff",
-                weight: isActive ? 3 : 1,
-                opacity: 1
-              }}
+              position={[cluster.coords[1], cluster.coords[0]]}
+              icon={icon}
               eventHandlers={{
                 click: () => {
                   if (!canClickWidgets) return;
-                  if (selectedRegion === "All") {
-                    // Level 1 -> Level 2
+                  if (currentZoomLevel === 0) {
+                    // Level 0 (National) -> Level 1 (Island)
+                    setSelectedRegion(cluster.regionName);
+                  } else if (currentZoomLevel === 1) {
+                    // Level 1 (Island) -> Level 2 (Province)
                     setSelectedRegion(cluster.name);
                   } else {
-                    // Level 2 -> Level 3
+                    // Level 2 (Province) -> Level 3 (City Detail)
                     if (isActive) {
                       setDrillDownCluster(null);
                       setDrillDownSearch("");
@@ -114,14 +162,8 @@ export default function LeafletMap({
                   }
                 }
               }}
-            >
-              <Tooltip direction="bottom" offset={[0, 10]} opacity={1} permanent>
-                <div style={{ textAlign: "center", fontWeight: "bold", color: "#333", fontSize: "12px" }}>
-                  {totalDeals}
-                </div>
-              </Tooltip>
-            </CircleMarker>
-          );
+            />
+          ) : null;
         })}
       </MapContainer>
     </div>

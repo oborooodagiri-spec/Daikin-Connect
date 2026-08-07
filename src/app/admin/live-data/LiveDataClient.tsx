@@ -186,6 +186,17 @@ function guessCoords(deal: Deal): { coords: [number, number]; regionName: string
   else if (deal.region === "East") match = { coords: [112.7521, -7.2504], name: "Jawa Timur", regionName: "Jawa" };
   else if (deal.region === "Bali") match = { ...PROVINCE_COORDS.bali, regionName: "Bali & Nusa Tenggara" };
 
+  // Extract a rough cityName from area string, or default to province name
+  let extractedCity = deal.area && deal.area.length > 2 ? deal.area.split(',')[0].trim() : match.name;
+  if (!extractedCity) extractedCity = match.name;
+  
+  // Hash function to scatter identical cities around province center
+  const hashString = (str: string) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) hash = Math.imul(31, hash) + str.charCodeAt(i) | 0;
+    return Math.abs(hash);
+  };
+
   if (deal.latitude != null && deal.longitude != null) {
     let r = match.regionName;
     let p = match.name;
@@ -203,10 +214,16 @@ function guessCoords(deal: Deal): { coords: [number, number]; regionName: string
       }
     }
     
-    return { coords: [deal.longitude, deal.latitude], regionName: r, provinceName: p };
+    return { coords: [deal.longitude, deal.latitude], regionName: r, provinceName: p, cityName: extractedCity };
   }
 
-  return { ...match, provinceName: match.name };
+  // Generate slightly offset coordinates based on city name to prevent identical overlap in province
+  const h = hashString(extractedCity);
+  const offsetX = (h % 100) / 100 * 0.4 - 0.2;
+  const offsetY = ((h >> 8) % 100) / 100 * 0.4 - 0.2;
+  const offsetCoords: [number, number] = [match.coords[0] + offsetX, match.coords[1] + offsetY];
+
+  return { ...match, coords: offsetCoords, provinceName: match.name, cityName: extractedCity };
 }
 
 // Drill-down modal for clicked cluster
@@ -352,6 +369,10 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
     return REGION_VIEWS["All"];
   }, [selectedRegion, drillDownCluster]);
 
+  const isNationalView = selectedRegion === "All";
+  const isIslandView = Object.keys(REGION_VIEWS).includes(selectedRegion); // e.g. "Sumatera"
+  const currentZoomLevel = isNationalView ? 0 : isIslandView ? 1 : 2;
+
   // Cluster deals by approximate geographic location
   const clusters = useMemo(() => {
     const clusterMap: Record<string, { coords: [number, number]; deals: Deal[]; totalValue: number; name: string; regionName: string }> = {};
@@ -363,15 +384,12 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
       const geo = guessCoords(deal);
       if (!geo) return;
 
-      // Filter by selected region or province
-      if (selectedRegion !== "All" && geo.regionName !== selectedRegion && geo.provinceName !== selectedRegion) return;
-      
-      let key = `${geo.coords[0].toFixed(1)}-${geo.coords[1].toFixed(1)}`;
+      let key = "";
       let displayCoords = geo.coords;
-      let displayName = geo.provinceName || geo.regionName || "Lainnya";
+      let displayName = "";
 
-      // Level 1 Clustering: Group by Region if view is National and no drill down
-      if (selectedRegion === "All" && !drillDownCluster) {
+      if (currentZoomLevel === 0) {
+        // Level 0: National -> Group by Region (Island)
         key = geo.regionName;
         displayName = geo.regionName;
         if (key === "Jawa") displayCoords = [110.0, -7.2];
@@ -380,30 +398,31 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
         else if (key === "Sulawesi") displayCoords = [121.5, -2.0];
         else if (key === "Bali & Nusa Tenggara") displayCoords = [118.0, -9.0];
         else if (key === "Papua & Maluku") displayCoords = [134.0, -3.5];
+        else displayCoords = geo.coords;
+      } else if (currentZoomLevel === 1) {
+        // Level 1: Island -> Group by Province
+        if (geo.regionName !== selectedRegion) return;
+        key = geo.provinceName || "Lainnya";
+        displayName = key;
+        const prov = Object.values(PROVINCE_COORDS).find(p => p.name === key);
+        if (prov) displayCoords = prov.coords;
+      } else {
+        // Level 2: Province -> Group by City (Kabupaten)
+        if (geo.provinceName !== selectedRegion) return;
+        key = geo.cityName || "Lainnya";
+        displayName = key;
+        displayCoords = geo.coords;
       }
       
       if (!clusterMap[key]) {
-        if (selectedRegion === "All" && !drillDownCluster) {
-          clusterMap[key] = { coords: displayCoords, deals: [], totalValue: 0, name: displayName, regionName: geo.regionName };
-        } else {
-          let nearestName = "Other";
-          let nearestDist = Infinity;
-          for (const [, prov] of Object.entries(PROVINCE_COORDS)) {
-            const dist = Math.sqrt((geo.coords[0] - prov.coords[0]) ** 2 + (geo.coords[1] - prov.coords[1]) ** 2);
-            if (dist < nearestDist) {
-              nearestDist = dist;
-              nearestName = prov.name;
-            }
-          }
-          clusterMap[key] = { coords: geo.coords, deals: [], totalValue: 0, name: nearestName, regionName: geo.regionName };
-        }
+        clusterMap[key] = { coords: displayCoords, deals: [], totalValue: 0, name: displayName, regionName: geo.regionName };
       }
       clusterMap[key].deals.push(deal);
       clusterMap[key].totalValue += Number(deal.quotation) || 0;
     });
     
     return Object.entries(clusterMap).map(([key, v]) => ({ key, ...v }));
-  }, [deals, selectedRegion, statusLayerFilter]);
+  }, [deals, selectedRegion, statusLayerFilter, currentZoomLevel]);
 
   const maxValue = useMemo(() => Math.max(...clusters.map(c => c.totalValue), 1), [clusters]);
 
@@ -782,6 +801,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
               canClickWidgets={canClickWidgets}
               selectedRegion={selectedRegion}
               setSelectedRegion={setSelectedRegion}
+              currentZoomLevel={currentZoomLevel}
             />
           </div>
 
@@ -790,7 +810,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
       {/* Regional Stats Bottom Panel */}
       {!drillDownCluster && (
         <div style={{ 
-          position: "absolute", bottom: 24, left: 24, right: 24, zIndex: 10, pointerEvents: "none"
+          position: "absolute", bottom: 12, left: 24, right: 24, zIndex: 10, pointerEvents: "none"
         }}>
           <p style={{ color: "rgba(255,255,255,0.9)", fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 8, textShadow: "0 2px 4px rgba(0,0,0,0.8)" }}>
             {showPICLines ? "Sales Engineer (PIC)" : "Ranking Wilayah"}
