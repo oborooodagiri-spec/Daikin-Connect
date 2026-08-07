@@ -776,6 +776,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
               statusLayerFilter={statusLayerFilter}
               STATUS_CONFIG={STATUS_CONFIG}
               canClickWidgets={canClickWidgets}
+              selectedRegion={selectedRegion}
             />
           </div>
 

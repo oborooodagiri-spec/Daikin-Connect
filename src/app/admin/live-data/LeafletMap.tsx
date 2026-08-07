@@ -20,7 +20,8 @@ export default function LeafletMap({
   setDrillDownSearch, 
   statusLayerFilter, 
   STATUS_CONFIG, 
-  canClickWidgets 
+  canClickWidgets,
+  selectedRegion
 }: any) {
   
   // Base center & zoom (Nasional)
@@ -32,6 +33,18 @@ export default function LeafletMap({
     // Offset longitude by -2.5 degrees so the point sits visually in the right 50% of the screen (since the left 50% is covered by the panel)
     center = [drillDownCluster.coords[1], drillDownCluster.coords[0] - 2.5];
     zoom = 7; // slightly lower zoom to show more context next to the panel
+  } else if (selectedRegion && selectedRegion !== "All" && clusters && clusters.length > 0) {
+    let sumLat = 0;
+    let sumLng = 0;
+    clusters.forEach((c: any) => {
+      sumLat += c.coords[1];
+      sumLng += c.coords[0];
+    });
+    // Add a slight offset to the right since the right panel takes up some space, 
+    // but not as much as the drill-down panel (so -1.0)
+    center = [sumLat / clusters.length, (sumLng / clusters.length) - 1.0];
+    const isLargeRegion = ["Jawa", "Sumatera", "Kalimantan", "Sulawesi", "Bali & Nusa Tenggara", "Papua & Maluku"].includes(selectedRegion);
+    zoom = isLargeRegion ? 6 : 7;
   }
 
   const maxValue = Math.max(...clusters.map((c: any) => c.totalValue), 1);
