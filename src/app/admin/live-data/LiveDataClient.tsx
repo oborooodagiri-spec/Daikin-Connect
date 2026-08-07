@@ -460,7 +460,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
     <div style={{ position: "relative", width: "100%", height: 600, borderRadius: 24, overflow: "hidden", background: "#c8e6f5" }}>
 
       {/* Title & Controls Bar */}
-      <div style={{ position: "absolute", top: 0, left: drillDownCluster ? "50%" : 0, right: 0, zIndex: 10, background: "rgba(6,14,26,0.3)", backdropFilter: "blur(20px)", padding: "20px 24px 16px", borderBottom: "1px solid rgba(102,204,255,0.1)", transition: "left 0.3s ease" }}>
+      <div style={{ position: "absolute", top: 0, left: drillDownCluster ? "50%" : 0, right: 0, zIndex: 10, background: "transparent", backdropFilter: "blur(20px)", padding: "20px 24px 16px", borderBottom: "1px solid rgba(255,255,255,0.1)", transition: "left 0.3s ease" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
           <div>
             <p style={{ color: "rgba(102,204,255,0.6)", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em" }}>Project Distribution</p>
@@ -656,8 +656,8 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
           style={{
             position: "absolute", left: 0, top: 0, bottom: 0, width: "50%", zIndex: 5,
-            background: "rgba(8,18,35,0.6)", backdropFilter: "blur(24px)",
-            borderRight: "1px solid rgba(102,204,255,0.12)",
+            background: "transparent", backdropFilter: "blur(24px)",
+            borderRight: "1px solid rgba(255,255,255,0.1)",
             display: "flex", flexDirection: "column",
           }}
         >
@@ -786,8 +786,8 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
       {!drillDownCluster && (
         <div style={{ 
           position: "absolute", top: 140, right: 24, zIndex: 10, width: 220,
-          background: "rgba(6, 14, 26, 0.4)", backdropFilter: "blur(20px)", 
-          borderRadius: 16, border: "1px solid rgba(102,204,255,0.15)", 
+          background: "transparent", backdropFilter: "blur(20px)", 
+          borderRadius: 16, border: "1px solid rgba(255,255,255,0.1)", 
           padding: "16px", display: "flex", flexDirection: "column", gap: 6, 
           maxHeight: "calc(100% - 160px)", overflowY: "auto"
         }}>

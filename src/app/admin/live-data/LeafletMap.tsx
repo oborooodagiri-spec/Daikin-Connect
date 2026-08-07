@@ -109,10 +109,8 @@ export default function LeafletMap({
               }}
             >
               <Tooltip direction="bottom" offset={[0, 10]} opacity={1} permanent>
-                <div style={{ textAlign: "center", fontWeight: "bold", color: "#333", fontSize: "10px" }}>
+                <div style={{ textAlign: "center", fontWeight: "bold", color: "#333", fontSize: "12px" }}>
                   {totalDeals}
-                  <br/>
-                  <span style={{ fontSize: "8px", color: "#666" }}>{cluster.name}</span>
                 </div>
               </Tooltip>
             </CircleMarker>
