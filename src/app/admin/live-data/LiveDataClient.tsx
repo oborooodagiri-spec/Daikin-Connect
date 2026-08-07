@@ -460,7 +460,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
     <div style={{ position: "relative", width: "100%", height: 600, borderRadius: 24, overflow: "hidden", background: "#c8e6f5" }}>
 
       {/* Title & Controls Bar */}
-      <div style={{ position: "absolute", top: 0, left: drillDownCluster ? "50%" : 0, right: 0, zIndex: 10, background: "rgba(6,14,26,0.5)", backdropFilter: "blur(12px)", padding: "20px 24px 16px", borderBottom: "1px solid rgba(102,204,255,0.15)", transition: "left 0.3s ease" }}>
+      <div style={{ position: "absolute", top: 0, left: drillDownCluster ? "50%" : 0, right: 0, zIndex: 10, background: "rgba(6,14,26,0.3)", backdropFilter: "blur(20px)", padding: "20px 24px 16px", borderBottom: "1px solid rgba(102,204,255,0.1)", transition: "left 0.3s ease" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
           <div>
             <p style={{ color: "rgba(102,204,255,0.6)", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em" }}>Project Distribution</p>
@@ -541,7 +541,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
       </div>
 
       {/* Map + Side Panel Container */}
-      <div style={{ position: "absolute", inset: 0, display: "flex", zIndex: 0 }}>
+      <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
           {/* PIC Profile Popup — Holographic Command Center Card */}
           <AnimatePresence>
           {selectedPicCoverage && (() => {
@@ -655,11 +655,10 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
           exit={{ opacity: 0, x: -30 }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
           style={{
-            width: "50%",
-            background: "linear-gradient(180deg, rgba(8,18,35,0.97), rgba(12,25,45,0.97))",
+            position: "absolute", left: 0, top: 0, bottom: 0, width: "50%", zIndex: 5,
+            background: "rgba(8,18,35,0.6)", backdropFilter: "blur(24px)",
             borderRight: "1px solid rgba(102,204,255,0.12)",
             display: "flex", flexDirection: "column",
-            height: 450,
           }}
         >
           {/* Panel Header */}
@@ -768,7 +767,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
           </div>
         </motion.div>
       )}
-          <div style={{ width: drillDownCluster ? "50%" : "100%", transition: "width 0.3s ease", height: "100%", position: "relative" }}>
+          <div style={{ position: "absolute", inset: 0, zIndex: 1 }}>
             <LeafletMap 
               clusters={clusters}
               drillDownCluster={drillDownCluster}
@@ -786,7 +785,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
       {!drillDownCluster && (
         <div style={{ 
           position: "absolute", top: 140, right: 24, zIndex: 10, width: 220,
-          background: "rgba(6, 14, 26, 0.6)", backdropFilter: "blur(12px)", 
+          background: "rgba(6, 14, 26, 0.4)", backdropFilter: "blur(20px)", 
           borderRadius: 16, border: "1px solid rgba(102,204,255,0.15)", 
           padding: "16px", display: "flex", flexDirection: "column", gap: 6, 
           maxHeight: "calc(100% - 160px)", overflowY: "auto"

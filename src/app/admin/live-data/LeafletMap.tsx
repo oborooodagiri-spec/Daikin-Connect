@@ -29,8 +29,9 @@ export default function LeafletMap({
 
   if (drillDownCluster) {
     // Zoom into the specific cluster
-    center = [drillDownCluster.coords[1], drillDownCluster.coords[0]];
-    zoom = 8;
+    // Offset longitude by -2.5 degrees so the point sits visually in the right 50% of the screen (since the left 50% is covered by the panel)
+    center = [drillDownCluster.coords[1], drillDownCluster.coords[0] - 2.5];
+    zoom = 7; // slightly lower zoom to show more context next to the panel
   }
 
   const maxValue = Math.max(...clusters.map((c: any) => c.totalValue), 1);
