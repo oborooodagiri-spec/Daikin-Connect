@@ -106,12 +106,15 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
         const poDate = d.target_po_date || d.est_booking_month || d.updated_at;
         const poTime = new Date(poDate).getTime();
         
+        let poFY = new Date(poDate).getFullYear() % 100;
+        if (new Date(poDate).getMonth() < 3) poFY -= 1;
+        
         if (poTime < fyStart) {
           backlogByPic[pic].legacyValue += val;
-          backlogByPic[pic].legacyProjects.push({ name: d.project_name, value: val, date: poDate });
+          backlogByPic[pic].legacyProjects.push({ name: d.project_name, value: val, date: poDate, fy: poFY });
         } else {
           backlogByPic[pic].currentValue += val;
-          backlogByPic[pic].currentProjects.push({ name: d.project_name, value: val, date: poDate });
+          backlogByPic[pic].currentProjects.push({ name: d.project_name, value: val, date: poDate, fy: poFY });
         }
       }
     });
@@ -344,7 +347,7 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
                               </div>
                             </div>
                             <div style={{ display: "flex", gap: 12, fontSize: 11, fontWeight: 600 }}>
-                              <span style={{ color: "#e2445c" }}>Legacy: {formatRp(data.backlog.legacyValue)}</span>
+                              <span style={{ color: "#e2445c" }}>Backlog: {formatRp(data.backlog.legacyValue)}</span>
                               <span style={{ color: "#00c875" }}>Current: {formatRp(data.backlog.currentValue)}</span>
                               <span style={{ color: "#676879", marginLeft: "auto" }}>Covers {data.backlogCoverage}% of target</span>
                             </div>
@@ -357,7 +360,7 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
                               {data.backlog.legacyProjects.map((p: any, i: number) => (
                                 <div key={`legacy-${i}`} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "#fff", borderRadius: 8, border: "1px solid #ffe8eb" }}>
                                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                    <span style={{ fontSize: 10, fontWeight: 800, padding: "2px 6px", background: "#e2445c", color: "white", borderRadius: 4 }}>LEGACY</span>
+                                    <span style={{ fontSize: 10, fontWeight: 800, padding: "2px 6px", background: "#e2445c", color: "white", borderRadius: 4 }}>FY{p.fy}</span>
                                     <span style={{ fontSize: 12, fontWeight: 700, color: "#323338" }}>{p.name}</span>
                                   </div>
                                   <span style={{ fontSize: 12, fontWeight: 800, color: "#e2445c" }}>{formatRp(p.value)}</span>
