@@ -324,14 +324,17 @@ function MapDrillDownModal({ cluster, onClose, formatRp }: { cluster: any; onClo
 }
 
 function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedPicCoverage = null, setSelectedPicCoverage, picStats = {} }: { deals: Deal[], canClickWidgets?: boolean, usersList?: any[], selectedPicCoverage?: string | null, setSelectedPicCoverage?: (v: string | null) => void, picStats?: Record<string, { totalCount: number; totalValue: number; wonValue: number; lostValue: number }> }) {
-  const [hoveredCluster, setHoveredCluster] = useState<string | null>(null);
-  const [tooltip, setTooltip] = useState<{ x: number; y: number; data: any } | null>(null);
   const [selectedRegion, setSelectedRegion] = useState("All");
   const [statusLayerFilter, setStatusLayerFilter] = useState<string | null>(null);
   const [drillDownCluster, setDrillDownCluster] = useState<any>(null);
+  const [drillDownSearch, setDrillDownSearch] = useState("");
+  const [drillDownSort, setDrillDownSort] = useState<"value" | "status" | "name">("value");
   const [showPICLines, setShowPICLines] = useState(false);
 
   const regionView = useMemo(() => {
+    if (drillDownCluster) {
+      return { center: drillDownCluster.coords, scale: 6000, label: drillDownCluster.name };
+    }
     if (REGION_VIEWS[selectedRegion]) return REGION_VIEWS[selectedRegion];
     
     // Check if selected region is a province
@@ -341,7 +344,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
     }
     
     return REGION_VIEWS["All"];
-  }, [selectedRegion]);
+  }, [selectedRegion, drillDownCluster]);
 
   // Cluster deals by approximate geographic location
   const clusters = useMemo(() => {
@@ -464,34 +467,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
         <rect width="100%" height="100%" fill="url(#mapDotGrid)" />
       </svg>
 
-      {/* Aurora/Nebula atmospheric effects */}
-      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
-        <div className="aurora-blob" style={{
-          position: "absolute", left: "20%", top: "30%", width: 500, height: 300,
-          background: "radial-gradient(ellipse, rgba(102,204,255,0.12) 0%, rgba(0,200,117,0.06) 40%, transparent 70%)",
-          borderRadius: "50%", filter: "blur(60px)"
-        }} />
-        <div className="aurora-blob" style={{
-          position: "absolute", left: "50%", top: "50%", width: 400, height: 250,
-          background: "radial-gradient(ellipse, rgba(253,171,61,0.08) 0%, rgba(102,204,255,0.04) 50%, transparent 70%)",
-          borderRadius: "50%", filter: "blur(50px)",
-          animationDelay: "-4s", animationDuration: "15s"
-        }} />
-        <div className="aurora-blob" style={{
-          position: "absolute", left: "70%", top: "20%", width: 350, height: 200,
-          background: "radial-gradient(ellipse, rgba(0,200,117,0.1) 0%, rgba(102,204,255,0.05) 40%, transparent 70%)",
-          borderRadius: "50%", filter: "blur(45px)",
-          animationDelay: "-8s", animationDuration: "18s"
-        }} />
-      </div>
 
-      {/* Scan line effect */}
-      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
-        <div className="scan-line" style={{
-          position: "absolute", left: 0, right: 0, height: 2,
-          background: "linear-gradient(90deg, transparent, rgba(102,204,255,0.08), rgba(102,204,255,0.15), rgba(102,204,255,0.08), transparent)"
-        }} />
-      </div>
 
       {/* Subtle top border glow line */}
       <div style={{
@@ -757,48 +733,17 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
               }
             </Geographies>
 
-            {/* Holographic Command Center Animations */}
+            {/* CSS Animation for PIC lines */}
             <style>{`
-              @keyframes dash { to { stroke-dashoffset: -16; } }
-              @keyframes orbit1 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-              @keyframes orbit2 { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
-              @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.25; } 50% { transform: scale(1.15); opacity: 0.4; } }
-              @keyframes particleMove { 0% { offset-distance: 0%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }
-              @keyframes radarSweep { 0% { transform: scale(0); opacity: 0.6; } 100% { transform: scale(8); opacity: 0; } }
-              @keyframes auroraShift { 0% { transform: translateX(-30%) translateY(0%) scale(1.2); opacity: 0.12; } 33% { transform: translateX(10%) translateY(-10%) scale(1.4); opacity: 0.18; } 66% { transform: translateX(-10%) translateY(10%) scale(1.1); opacity: 0.1; } 100% { transform: translateX(-30%) translateY(0%) scale(1.2); opacity: 0.12; } }
-              @keyframes scanDown { 0% { transform: translateY(-100%); } 100% { transform: translateY(500%); } }
-              @keyframes floatDust { 0% { transform: translateY(0) translateX(0); opacity: 0; } 20% { opacity: 0.5; } 80% { opacity: 0.5; } 100% { transform: translateY(-80px) translateX(40px); opacity: 0; } }
-              @keyframes shockwave { 0% { r: 0; opacity: 0.6; stroke-width: 2; } 100% { r: 50; opacity: 0; stroke-width: 0.5; } }
-              @keyframes countUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-              @keyframes ringRotate { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -157; } }
+              @keyframes dash {
+                to {
+                  stroke-dashoffset: -16;
+                }
+              }
               .pic-line {
                 stroke-dasharray: 6 10;
                 animation: dash 1s linear infinite;
                 filter: drop-shadow(0 0 4px rgba(253,171,61,0.8));
-              }
-              .pic-particle {
-                animation: particleMove 2.5s linear infinite;
-                filter: drop-shadow(0 0 3px rgba(253,171,61,0.9));
-              }
-              .aurora-blob {
-                animation: auroraShift 12s ease-in-out infinite;
-                mix-blend-mode: screen;
-                pointer-events: none;
-              }
-              .scan-line {
-                animation: scanDown 4s linear infinite;
-                pointer-events: none;
-              }
-              .cluster-breathe {
-                animation: breathe 3s ease-in-out infinite;
-              }
-              .orbit-ring-cw {
-                animation: orbit1 8s linear infinite;
-                transform-origin: center;
-              }
-              .orbit-ring-ccw {
-                animation: orbit2 12s linear infinite;
-                transform-origin: center;
               }
             `}</style>
             
@@ -823,10 +768,9 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
               );
             })}
 
-            {/* Holographic Cluster Markers — Orbital Ring System */}
+            {/* Clean Cluster Markers */}
             {clusters.map((cluster) => {
               const radius = Math.max(8, Math.min(35, (cluster.totalValue / maxValue) * 35));
-              const isHovered = hoveredCluster === cluster.key;
               const wonDeals = cluster.deals.filter(d => d.status === "A").length;
               const totalDeals = cluster.deals.length;
               const wonRatio = wonDeals / totalDeals;
@@ -838,66 +782,28 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
               const belongsToPic = isPicMode && cluster.deals.some(d => d.pic === selectedPicCoverage);
               const opacityMult = isPicMode && !belongsToPic ? 0.12 : 1;
               const finalColor = isPicMode && belongsToPic ? "#fdab3d" : color;
-              const orbitR1 = radius + 8;
-              const orbitR2 = radius + 14;
-
-              // Segmented data ring: won vs pipeline vs other
-              const wonAngle = wonRatio * 360;
-              const pipelineDeals = cluster.deals.filter(d => ["B", "C", "D"].includes(d.status)).length;
-              const pipelineAngle = (pipelineDeals / totalDeals) * 360;
+              const isActive = drillDownCluster?.key === cluster.key;
 
               return (
                 <Marker key={cluster.key} coordinates={cluster.coords}>
                   <g opacity={opacityMult} style={{ transition: "opacity 0.5s ease" }}>
-                    {/* Orbital Ring 1 — clockwise, data segments */}
-                    <g className="orbit-ring-cw" style={{ animationDuration: isHovered ? "3s" : "8s" }}>
-                      <circle cx={0} cy={0} r={orbitR1} fill="none" stroke={finalColor} strokeWidth={0.6} strokeDasharray="3 5" opacity={0.25} />
-                      {/* Won segment indicator */}
-                      <circle cx={0} cy={0} r={orbitR1} fill="none" stroke="#00c875" strokeWidth={1.5} opacity={0.5}
-                        strokeDasharray={`${(wonAngle / 360) * 2 * Math.PI * orbitR1} ${2 * Math.PI * orbitR1}`}
-                        style={{ filter: "drop-shadow(0 0 2px rgba(0,200,117,0.5))" }}
-                      />
-                    </g>
-
-                    {/* Orbital Ring 2 — counter-clockwise, thin decorative */}
-                    <g className="orbit-ring-ccw" style={{ animationDuration: isHovered ? "5s" : "12s" }}>
-                      <circle cx={0} cy={0} r={orbitR2} fill="none" stroke={finalColor} strokeWidth={0.3} strokeDasharray="1 8" opacity={0.2} />
-                      {/* Small orbiting dot */}
-                      <circle cx={orbitR2} cy={0} r={1.5} fill={finalColor} opacity={0.6}>
-                        <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite" />
-                      </circle>
-                    </g>
-
-                    {/* Pulse rings */}
-                    <circle cx={0} cy={0} r={radius + 2} fill="none" stroke={finalColor} strokeWidth={0.8} opacity={0.3}>
-                      <animate attributeName="r" from={radius + 2} to={radius + 25} dur="3s" repeatCount="indefinite" />
-                      <animate attributeName="opacity" from="0.3" to="0" dur="3s" repeatCount="indefinite" />
-                    </circle>
-                    <circle cx={0} cy={0} r={radius} fill="none" stroke={finalColor} strokeWidth={0.5} opacity={0.2}>
-                      <animate attributeName="r" from={radius} to={radius + 20} dur="3s" begin="1.5s" repeatCount="indefinite" />
-                      <animate attributeName="opacity" from="0.2" to="0" dur="3s" begin="1.5s" repeatCount="indefinite" />
-                    </circle>
-
-                    {/* Breathing center bubble */}
-                    <g className="cluster-breathe">
-                      <circle cx={0} cy={0} r={radius} fill={finalColor} fillOpacity={isHovered ? 0.35 : 0.18}
-                        stroke={finalColor} strokeWidth={isHovered ? 2 : 1}
-                        strokeOpacity={isHovered ? 1 : 0.6}
-                        style={{ cursor: canClickWidgets ? "pointer" : "default", transition: "all 0.3s", filter: isHovered ? `drop-shadow(0 0 8px ${finalColor})` : "none" }}
-                        onMouseEnter={(e) => {
-                          setHoveredCluster(cluster.key);
-                          const rect = (e.target as SVGElement).closest("svg")?.getBoundingClientRect();
-                          if (rect) {
-                            setTooltip({ x: e.clientX - rect.left, y: e.clientY - rect.top - 10, data: cluster });
+                    {/* Main bubble */}
+                    <circle cx={0} cy={0} r={radius} fill={finalColor} fillOpacity={isActive ? 0.45 : 0.2}
+                      stroke={finalColor} strokeWidth={isActive ? 2.5 : 1.2}
+                      strokeOpacity={isActive ? 1 : 0.6}
+                      style={{ cursor: canClickWidgets ? "pointer" : "default", transition: "all 0.3s", filter: isActive ? `drop-shadow(0 0 12px ${finalColor})` : `drop-shadow(0 0 4px ${finalColor}40)` }}
+                      onClick={() => {
+                        if (canClickWidgets) {
+                          if (isActive) {
+                            setDrillDownCluster(null);
+                            setDrillDownSearch("");
+                          } else {
+                            setDrillDownCluster(cluster);
+                            setDrillDownSearch("");
                           }
-                        }}
-                        onMouseLeave={() => { setHoveredCluster(null); setTooltip(null); }}
-                        onClick={() => canClickWidgets && setDrillDownCluster(cluster)}
-                      />
-                    </g>
-                    
-                    {/* Inner glass highlight */}
-                    <circle cx={0} cy={-radius * 0.15} r={radius * 0.5} fill="url(#bubbleInner)" style={{ pointerEvents: "none" }} />
+                        }
+                      }}
+                    />
                     
                     {/* Count label */}
                     <text x={0} y={radius > 15 ? 5 : 4} textAnchor="middle" fill="white" fontSize={radius > 15 ? 13 : 9} fontWeight="900"
@@ -920,85 +826,6 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
             })}
           </ComposableMap>
 
-          {/* Enhanced Tooltip with Mini Donut Chart */}
-          {tooltip && (() => {
-            const statusBreakdown = tooltip.data.deals.reduce((acc: Record<string, number>, d: Deal) => {
-              acc[d.status] = (acc[d.status] || 0) + 1;
-              return acc;
-            }, {});
-            const donutR = 22;
-            const donutCirc = 2 * Math.PI * donutR;
-            let donutOffset = 0;
-            const topProjects = [...tooltip.data.deals].sort((a, b) => (Number(b.quotation) || 0) - (Number(a.quotation) || 0)).slice(0, 3);
-
-            return (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                style={{
-                  position: "absolute", left: tooltip.x, top: tooltip.y,
-                  transform: "translate(-50%, -100%)",
-                  background: "linear-gradient(145deg, rgba(8,18,35,0.97), rgba(12,25,45,0.97))",
-                  border: "1px solid rgba(102,204,255,0.2)",
-                  borderRadius: 18, padding: "16px 18px", minWidth: 260, zIndex: 100,
-                  backdropFilter: "blur(16px)", pointerEvents: "none",
-                  boxShadow: "0 12px 48px rgba(0,0,0,0.5), 0 0 24px rgba(102,204,255,0.06), inset 0 1px 0 rgba(102,204,255,0.08)"
-                }}
-              >
-                {/* Header */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                  <div>
-                    <p style={{ color: "#66ccff", fontSize: 10, fontWeight: 800, margin: 0, textTransform: "uppercase", letterSpacing: "0.12em" }}>{tooltip.data.name}</p>
-                    <p style={{ color: "#fff", fontSize: 22, fontWeight: 900, margin: 0, letterSpacing: "-0.02em" }}>{tooltip.data.deals.length} <span style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.5)" }}>projects</span></p>
-                  </div>
-                  {/* Mini Donut */}
-                  <svg width="54" height="54" style={{ flexShrink: 0 }}>
-                    <circle cx="27" cy="27" r={donutR} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="6" />
-                    {Object.entries(statusBreakdown).map(([status, count]) => {
-                      const pct = (count as number) / tooltip.data.deals.length;
-                      const dashLen = pct * donutCirc;
-                      const el = (
-                        <circle key={status} cx="27" cy="27" r={donutR} fill="none"
-                          stroke={STATUS_CONFIG[status]?.color || "#888"} strokeWidth="6"
-                          strokeDasharray={`${dashLen} ${donutCirc - dashLen}`}
-                          strokeDashoffset={-donutOffset}
-                          style={{ transform: "rotate(-90deg)", transformOrigin: "center" }}
-                        />
-                      );
-                      donutOffset += dashLen;
-                      return el;
-                    })}
-                    <text x="27" y="30" textAnchor="middle" fill="#00c875" fontSize="10" fontWeight="900">{formatRp(tooltip.data.totalValue).replace("Rp ", "")}</text>
-                  </svg>
-                </div>
-                
-                {/* Status badges */}
-                <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 10 }}>
-                  {Object.entries(statusBreakdown).map(([status, count]) => (
-                    <span key={status} style={{ padding: "2px 8px", borderRadius: 6, fontSize: 9, fontWeight: 800, background: STATUS_CONFIG[status]?.bg || "rgba(255,255,255,0.1)", color: STATUS_CONFIG[status]?.color || "#fff" }}>
-                      {STATUS_CONFIG[status]?.label || status}: {count as number}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Top projects */}
-                {topProjects.length > 0 && (
-                  <div style={{ borderTop: "1px solid rgba(102,204,255,0.08)", paddingTop: 8 }}>
-                    <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 8, fontWeight: 800, margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.1em" }}>Top Projects</p>
-                    {topProjects.map((p, i) => (
-                      <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "3px 0" }}>
-                        <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 9, fontWeight: 700, maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.project || p.customer || "—"}</span>
-                        <span style={{ color: "#00c875", fontSize: 9, fontWeight: 800 }}>{formatRp(Number(p.quotation) || 0)}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                
-                <p style={{ color: "rgba(102,204,255,0.3)", fontSize: 8, fontWeight: 700, marginTop: 8, textAlign: "center", letterSpacing: "0.1em" }}>KLIK UNTUK DETAIL</p>
-              </motion.div>
-            );
-          })()}
         </div>
 
         {/* Regional Stats Side Panel */}
@@ -1112,13 +939,123 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
         background: "linear-gradient(90deg, transparent, rgba(102,204,255,0.2), transparent)"
       }} />
 
-      {/* Drill-down Modal */}
+      {/* Drill-down Inline Panel (Left Side) */}
       {drillDownCluster && (
-        <MapDrillDownModal
-          cluster={drillDownCluster}
-          onClose={() => setDrillDownCluster(null)}
-          formatRp={formatRp}
-        />
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -30 }}
+          transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          style={{
+            position: "absolute", left: 0, top: 0, bottom: 0, width: 360,
+            background: "linear-gradient(180deg, rgba(8,18,35,0.97), rgba(12,25,45,0.97))",
+            borderRight: "1px solid rgba(102,204,255,0.12)",
+            backdropFilter: "blur(20px)",
+            zIndex: 50, display: "flex", flexDirection: "column",
+            boxShadow: "4px 0 24px rgba(0,0,0,0.3)"
+          }}
+        >
+          {/* Panel Header */}
+          <div style={{ padding: "20px 20px 16px", borderBottom: "1px solid rgba(102,204,255,0.08)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div>
+                <p style={{ color: "rgba(102,204,255,0.7)", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em", margin: 0 }}>Region Detail</p>
+                <h3 style={{ color: "white", fontSize: 20, fontWeight: 900, marginTop: 6, margin: 0 }}>{drillDownCluster.name}</h3>
+                <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, fontWeight: 600, marginTop: 4 }}>
+                  {drillDownCluster.deals.length} Projects • {formatRp(drillDownCluster.totalValue)}
+                </p>
+              </div>
+              <button 
+                onClick={() => { setDrillDownCluster(null); setDrillDownSearch(""); }}
+                style={{ background: "rgba(255,255,255,0.08)", border: "none", borderRadius: 10, padding: 8, cursor: "pointer", color: "white", flexShrink: 0 }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Status breakdown */}
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 12 }}>
+              {Object.entries(
+                drillDownCluster.deals.reduce((acc: Record<string, { count: number; value: number }>, d: Deal) => {
+                  if (!acc[d.status]) acc[d.status] = { count: 0, value: 0 };
+                  acc[d.status].count++;
+                  acc[d.status].value += Number(d.quotation) || 0;
+                  return acc;
+                }, {})
+              ).sort(([a], [b]) => a.localeCompare(b)).map(([status, data]: [string, any]) => {
+                const cfg = STATUS_CONFIG[status] || { label: status, color: "#888", bg: "rgba(136,136,136,0.1)" };
+                return (
+                  <span key={status} style={{ padding: "3px 8px", borderRadius: 6, fontSize: 9, fontWeight: 800, background: cfg.bg, color: cfg.color }}>
+                    {status} {data.count} • {formatRp(data.value)}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Search & Sort */}
+          <div style={{ padding: "12px 20px", display: "flex", gap: 8, alignItems: "center" }}>
+            <div style={{ flex: 1, position: "relative" }}>
+              <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.3)" }} />
+              <input
+                value={drillDownSearch} onChange={(e) => setDrillDownSearch(e.target.value)}
+                placeholder="Cari project..."
+                style={{ width: "100%", padding: "8px 10px 8px 30px", borderRadius: 10, border: "1px solid rgba(102,204,255,0.12)", fontSize: 11, fontWeight: 600, outline: "none", background: "rgba(255,255,255,0.04)", color: "white" }}
+              />
+            </div>
+            <div style={{ display: "flex", gap: 3 }}>
+              {(["value", "status", "name"] as const).map(s => (
+                <button key={s} onClick={() => setDrillDownSort(s)}
+                  style={{ padding: "6px 10px", borderRadius: 8, border: "none", fontSize: 9, fontWeight: 700, cursor: "pointer", background: drillDownSort === s ? "rgba(102,204,255,0.2)" : "transparent", color: drillDownSort === s ? "#66ccff" : "rgba(255,255,255,0.4)" }}
+                >{s === "value" ? "Value" : s === "status" ? "Status" : "Nama"}</button>
+              ))}
+            </div>
+          </div>
+
+          {/* Project List */}
+          <div style={{ flex: 1, overflowY: "auto", padding: "0 20px 20px" }}>
+            {(() => {
+              let filtered = [...(drillDownCluster?.deals || [])];
+              if (drillDownSearch) {
+                const q = drillDownSearch.toLowerCase();
+                filtered = filtered.filter((d: Deal) => 
+                  d.client_name.toLowerCase().includes(q) || 
+                  d.project_name.toLowerCase().includes(q) ||
+                  (d.pic || "").toLowerCase().includes(q)
+                );
+              }
+              if (drillDownSort === "value") filtered.sort((a: Deal, b: Deal) => (Number(b.quotation) || 0) - (Number(a.quotation) || 0));
+              if (drillDownSort === "status") filtered.sort((a: Deal, b: Deal) => a.status.localeCompare(b.status));
+              if (drillDownSort === "name") filtered.sort((a: Deal, b: Deal) => a.client_name.localeCompare(b.client_name));
+              
+              return filtered.length === 0 ? (
+                <p style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", fontSize: 12, padding: 40 }}>Tidak ada project ditemukan</p>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  {filtered.map((deal: Deal) => {
+                    const cfg = STATUS_CONFIG[deal.status] || { label: deal.status, color: "#888", bg: "rgba(136,136,136,0.1)" };
+                    return (
+                      <div key={deal.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", background: "rgba(255,255,255,0.03)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.05)", cursor: "pointer", transition: "all 0.2s" }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(102,204,255,0.06)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(102,204,255,0.15)"; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.03)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.05)"; }}
+                      >
+                        <span style={{ width: 28, height: 28, borderRadius: 8, background: cfg.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 900, color: cfg.color, flexShrink: 0 }}>{deal.status}</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{ fontSize: 11, fontWeight: 700, color: "white", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", margin: 0 }}>{deal.client_name}</p>
+                          <p style={{ fontSize: 10, fontWeight: 500, color: "rgba(255,255,255,0.4)", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{deal.project_name}</p>
+                        </div>
+                        <div style={{ textAlign: "right", flexShrink: 0 }}>
+                          <p style={{ fontSize: 11, fontWeight: 800, color: "#00c875", margin: 0 }}>{formatRp(Number(deal.quotation) || 0)}</p>
+                          <p style={{ fontSize: 9, fontWeight: 600, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>{deal.pic || "-"}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
+          </div>
+        </motion.div>
       )}
     </div>
   );
