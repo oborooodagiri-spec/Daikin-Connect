@@ -698,8 +698,8 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
           exit={{ y: 100, opacity: 0 }}
           style={{
             position: "absolute", bottom: 12, left: 24, right: 24, zIndex: 10, pointerEvents: "none",
-            transition: "padding-left 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-            paddingLeft: (showPICLines && selectedPicCoverage) ? 310 : 0
+            transition: "padding-right 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+            paddingRight: (showPICLines && selectedPicCoverage) ? 310 : 0
           }}
         >
           <p style={{ color: "rgba(255,255,255,0.9)", fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 8, textShadow: "0 2px 4px rgba(0,0,0,0.8)", transition: "opacity 0.2s" }}>
@@ -809,11 +809,11 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
       <AnimatePresence>
         {showPICLines && selectedPicCoverage && (
           <motion.div 
-            initial={{ x: -100, opacity: 0 }}
+            initial={{ x: 100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -100, opacity: 0 }}
+            exit={{ x: 100, opacity: 0 }}
             style={{
-              position: "absolute", bottom: 20, left: 24, zIndex: 10, pointerEvents: "auto",
+              position: "absolute", bottom: 20, right: 24, zIndex: 10, pointerEvents: "auto",
               background: "rgba(10,20,30,0.85)", backdropFilter: "blur(10px)",
               border: "1px solid rgba(253,171,61,0.3)", borderRadius: 16,
               padding: "16px 20px", width: 280,
@@ -831,7 +831,9 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
             const picAvatar = (currentPic === sessionName) ? avatarUrl : (usersList.find(u => u.name === currentPic)?.avatarUrl || null);
             
             return (
-              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 14, position: "relative" }}>
+                {/* Close button */}
+                <button onClick={() => setSelectedPicCoverage?.(null)} style={{ position: "absolute", top: -4, right: -4, width: 24, height: 24, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.5)", fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}>✕</button>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   {picAvatar ? (
                     <img src={picAvatar} alt={currentPic || ""} style={{ width: 44, height: 44, borderRadius: "50%", border: "2px solid #fdab3d", objectFit: "cover" }} />
