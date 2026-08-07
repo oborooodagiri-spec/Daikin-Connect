@@ -551,110 +551,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
 
       {/* Map + Side Panel Container */}
       <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
-          {/* PIC Profile Popup — Holographic Command Center Card */}
-          <AnimatePresence>
-          {selectedPicCoverage && (() => {
-            const picUser = usersList.find(u => u.name === selectedPicCoverage);
-            const picData = picStats[selectedPicCoverage];
-            const totalProjects = picData?.totalCount || 0;
-            const totalValue = picData?.totalValue || 0;
-            const wonValue = picData?.wonValue || 0;
-            const wonPct = totalValue > 0 ? Math.round((wonValue / totalValue) * 100) : 0;
-            const circumference = 2 * Math.PI * 25;
-            const strokeDash = (wonPct / 100) * circumference;
-            // Get cities this PIC covers
-            const picCities = Array.from(new Set(deals.filter(d => d.pic === selectedPicCoverage && d.status !== "L").map(d => {
-              const geo = guessCoords(d);
-              return geo ? geo.provinceName || geo.regionName : null;
-            }).filter(Boolean))).slice(0, 6) as string[];
 
-            return (
-              <motion.div
-                key="pic-card"
-                initial={{ x: -300, opacity: 0, scale: 0.8 }}
-                animate={{ x: 0, opacity: 1, scale: 1 }}
-                exit={{ x: -300, opacity: 0, scale: 0.8 }}
-                transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                style={{
-                  position: "absolute", top: 16, left: 16, zIndex: 10,
-                  background: "linear-gradient(160deg, rgba(10,20,38,0.97), rgba(6,14,26,0.97))",
-                  backdropFilter: "blur(20px)", border: "1px solid rgba(253,171,61,0.2)",
-                  borderRadius: 24, padding: "20px 18px", width: 240,
-                  boxShadow: "0 16px 60px rgba(0,0,0,0.6), 0 0 30px rgba(253,171,61,0.1), inset 0 1px 0 rgba(253,171,61,0.1)",
-                  overflow: "hidden"
-                }}
-              >
-                {/* Ambient glow inside card */}
-                <div style={{ position: "absolute", top: -40, right: -40, width: 120, height: 120, background: "radial-gradient(circle, rgba(253,171,61,0.08), transparent 70%)", borderRadius: "50%", pointerEvents: "none" }} />
-                
-                {/* Close button */}
-                <button onClick={() => setSelectedPicCoverage?.(null)} style={{ position: "absolute", top: 10, right: 10, width: 24, height: 24, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.5)", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}>✕</button>
-
-                {/* Avatar with SVG rotating ring */}
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, marginBottom: 16 }}>
-                  <div style={{ position: "relative", width: 72, height: 72 }}>
-                    {/* Outer rotating ring */}
-                    <svg width="72" height="72" style={{ position: "absolute", top: 0, left: 0 }} className="orbit-ring-cw">
-                      <circle cx="36" cy="36" r="34" fill="none" stroke="rgba(253,171,61,0.15)" strokeWidth="1" strokeDasharray="8 4" />
-                    </svg>
-                    {/* Progress ring (won percentage) */}
-                    <svg width="72" height="72" style={{ position: "absolute", top: 0, left: 0, transform: "rotate(-90deg)" }}>
-                      <circle cx="36" cy="36" r="25" fill="none" stroke="rgba(253,171,61,0.1)" strokeWidth="3" />
-                      <circle cx="36" cy="36" r="25" fill="none" stroke="#fdab3d" strokeWidth="3" strokeLinecap="round"
-                        strokeDasharray={`${strokeDash} ${circumference}`}
-                        style={{ transition: "stroke-dasharray 1s ease-out", filter: "drop-shadow(0 0 4px rgba(253,171,61,0.5))" }}
-                      />
-                    </svg>
-                    {/* Avatar */}
-                    <div style={{ position: "absolute", top: 11, left: 11, width: 50, height: 50, borderRadius: "50%", overflow: "hidden", background: "linear-gradient(135deg, #1a3a5c, #0d2240)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      {picUser?.avatarUrl ? (
-                        <img src={picUser.avatarUrl} alt={selectedPicCoverage} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      ) : (
-                        <span style={{ fontSize: 22, fontWeight: 900, color: "#fdab3d" }}>{selectedPicCoverage.charAt(0)}</span>
-                      )}
-                    </div>
-                    {/* Won % badge */}
-                    <div style={{ position: "absolute", bottom: -2, right: -2, background: "#fdab3d", color: "#000", fontSize: 8, fontWeight: 900, padding: "2px 5px", borderRadius: 6, boxShadow: "0 2px 8px rgba(253,171,61,0.4)" }}>{wonPct}%</div>
-                  </div>
-                  <div style={{ textAlign: "center" }}>
-                    <h3 style={{ margin: 0, color: "#fff", fontSize: 14, fontWeight: 900, letterSpacing: "-0.02em" }}>{selectedPicCoverage}</h3>
-                    <p style={{ margin: 0, color: "rgba(253,171,61,0.8)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Sales Engineer</p>
-                  </div>
-                </div>
-
-                {/* Stats with count-up feel */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 14 }}>
-                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-                    style={{ background: "rgba(102,204,255,0.05)", border: "1px solid rgba(102,204,255,0.1)", borderRadius: 12, padding: "10px 8px", textAlign: "center" }}>
-                    <p style={{ margin: 0, color: "rgba(255,255,255,0.5)", fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>Projects</p>
-                    <p style={{ margin: 0, color: "#fff", fontSize: 20, fontWeight: 900, marginTop: 2 }}>{totalProjects}</p>
-                  </motion.div>
-                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-                    style={{ background: "rgba(0,200,117,0.05)", border: "1px solid rgba(0,200,117,0.1)", borderRadius: 12, padding: "10px 8px", textAlign: "center" }}>
-                    <p style={{ margin: 0, color: "rgba(255,255,255,0.5)", fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>Value</p>
-                    <p style={{ margin: 0, color: "#00c875", fontSize: 13, fontWeight: 900, marginTop: 2 }}>{formatRp(totalValue)}</p>
-                  </motion.div>
-                </div>
-
-                {/* Coverage cities */}
-                {picCities.length > 0 && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
-                    <p style={{ margin: "0 0 6px", color: "rgba(255,255,255,0.35)", fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em" }}>Coverage Area</p>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                      {picCities.map((city, i) => (
-                        <motion.span key={city} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5 + i * 0.05 }}
-                          style={{ padding: "3px 8px", borderRadius: 6, background: "rgba(253,171,61,0.08)", border: "1px solid rgba(253,171,61,0.12)", color: "rgba(253,171,61,0.8)", fontSize: 9, fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}>
-                          <span style={{ width: 4, height: 4, borderRadius: "50%", background: "#fdab3d", boxShadow: "0 0 4px rgba(253,171,61,0.6)" }} />
-                          {city}
-                        </motion.span>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </motion.div>
-            );
-          })()}
-          </AnimatePresence>
 
       {/* Drill-down Inline Panel (Left Side) */}
       {drillDownCluster && (
@@ -806,13 +703,18 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
           }}
         >
           <p style={{ color: "rgba(255,255,255,0.9)", fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 8, textShadow: "0 2px 4px rgba(0,0,0,0.8)", transition: "opacity 0.2s" }}>
-            {showPICLines ? "Sales Engineer (PIC)" : 
-             currentZoomLevel === 0 ? "Ranking Wilayah - Nasional" : 
-             currentZoomLevel === 1 ? "Ranking Wilayah - Provinsi" : 
-             "Ranking Wilayah - Kabupaten"}
+            {(showPICLines && !selectedPicCoverage) ? "Sales Engineer (PIC)" : 
+             (showPICLines && selectedPicCoverage) ? 
+               (currentZoomLevel === 0 ? "Coverage Area - Nasional" : 
+                currentZoomLevel === 1 ? "Coverage Area - Provinsi" : 
+                "Coverage Area - Kabupaten") :
+               (currentZoomLevel === 0 ? "Ranking Wilayah - Nasional" : 
+                currentZoomLevel === 1 ? "Ranking Wilayah - Provinsi" : 
+                "Ranking Wilayah - Kabupaten")
+            }
           </p>
           <div className="no-scrollbar" style={{ display: "flex", flexDirection: "row", gap: 12, overflowX: "auto", paddingBottom: 10 }}>
-          {showPICLines ? (
+          {(showPICLines && !selectedPicCoverage) ? (
             Object.entries(picStats)
               .filter(([name]) => name !== "Unassigned")
               .sort(([, a], [, b]) => b.totalValue - a.totalValue)
