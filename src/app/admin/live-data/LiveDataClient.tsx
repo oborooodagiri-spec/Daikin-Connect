@@ -3,6 +3,12 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import dynamic from 'next/dynamic';
+
+const LeafletMap = dynamic(() => import('./LeafletMap'), {
+  ssr: false,
+  loading: () => <div style={{ width: "100%", height: 450, display: "flex", alignItems: "center", justifyContent: "center", color: "white" }}>Loading Map...</div>
+});
 import {
   TrendingUp, BarChart3, PieChart, Map, Settings, Plus, Search,
   Download, Upload, Edit2, Trash2, ChevronRight, ChevronLeft,
@@ -559,7 +565,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
       {/* Map + Side Panel Container */}
       <div style={{ display: "flex", position: "relative" }}>
         {/* Main Geographic Map */}
-        <div style={{ flex: 1, position: "relative" }}>
+        <div style={{ flex: 1, position: "relative", display: "flex", flexDirection: "row", width: "100%" }}>
           {/* PIC Profile Popup — Holographic Command Center Card */}
           <AnimatePresence>
           {selectedPicCoverage && (() => {
@@ -665,280 +671,6 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
           })()}
           </AnimatePresence>
 
-          <ComposableMap
-            projection="geoMercator"
-            projectionConfig={{
-              scale: regionView.scale,
-              center: regionView.center
-            }}
-            width={700}
-            height={450}
-            style={{ width: "100%", height: "auto" }}
-          >
-            {/* SVG Definitions for premium effects */}
-            <defs>
-              {/* Province gradient fill */}
-              <linearGradient id="provinceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#1a4a6e" stopOpacity={0.5} />
-                <stop offset="50%" stopColor="#1a3a5c" stopOpacity={0.35} />
-                <stop offset="100%" stopColor="#132d4a" stopOpacity={0.45} />
-              </linearGradient>
-              {/* Province hover gradient */}
-              <linearGradient id="provinceGradHover" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#2a6a9e" stopOpacity={0.6} />
-                <stop offset="100%" stopColor="#1a5a8e" stopOpacity={0.5} />
-              </linearGradient>
-              {/* Neon glow filter for borders */}
-              <filter id="borderGlow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur" />
-                <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.4  0 0 0 0 0.8  0 0 0 0 1  0 0 0 0.6 0" result="glow" />
-                <feMerge>
-                  <feMergeNode in="glow" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-              {/* Bubble glow filter */}
-              <filter id="bubbleGlow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
-                <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.4  0 0 0 0 0.8  0 0 0 0 1  0 0 0 0.5 0" result="glow" />
-                <feMerge>
-                  <feMergeNode in="glow" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-              {/* Radial gradient for bubble center glow */}
-              <radialGradient id="bubbleInner">
-                <stop offset="0%" stopColor="white" stopOpacity={0.15} />
-                <stop offset="100%" stopColor="white" stopOpacity={0} />
-              </radialGradient>
-            </defs>
-
-            <Geographies geography="/maps/indonesia.json">
-              {({ geographies }) =>
-                geographies.map((geo) => (
-                  <Geography
-                    key={geo.rsmKey}
-                    geography={geo}
-                    fill="url(#provinceGrad)"
-                    stroke="#4aa8d8"
-                    strokeWidth={0.6}
-                    filter="url(#borderGlow)"
-                    style={{
-                      default: { outline: "none" },
-                      hover: { fill: "url(#provinceGradHover)", stroke: "#66ccff", strokeWidth: 0.8, outline: "none", cursor: canClickWidgets ? "pointer" : "default" },
-                      pressed: { outline: "none" },
-                    }}
-                  />
-                ))
-              }
-            </Geographies>
-
-            {/* CSS Animation for PIC lines */}
-            <style>{`
-              @keyframes dash {
-                to {
-                  stroke-dashoffset: -16;
-                }
-              }
-              .pic-line {
-                stroke-dasharray: 6 10;
-                animation: dash 1s linear infinite;
-                filter: drop-shadow(0 0 4px rgba(253,171,61,0.8));
-              }
-            `}</style>
-            
-            {/* PIC Particle Streams — animated flowing particles */}
-            {picLines.map((line, idx) => {
-              const pathId = `pic-path-${idx}`;
-              return (
-                <g key={`pic-stream-${idx}`}>
-                  {/* Base trail line (subtle glow) */}
-                  <Line from={line.from} to={line.to} stroke="#fdab3d" strokeWidth={1} strokeLinecap="round" className="pic-line" style={{ fill: "none", opacity: 0.4 }} />
-                  {/* Bright core line */}
-                  <Line from={line.from} to={line.to} stroke="#ffcf8a" strokeWidth={0.5} strokeLinecap="round" className="pic-line" style={{ fill: "none", opacity: 0.7 }} />
-                  {/* Animated particles along path */}
-                  {[0, 0.33, 0.66].map((offset, pIdx) => (
-                    <Line key={`particle-${idx}-${pIdx}`} from={line.from} to={line.to}
-                      stroke="#fdab3d" strokeWidth={3} strokeLinecap="round"
-                      style={{ fill: "none", strokeDasharray: "2 40", strokeDashoffset: -(offset * 42), filter: "drop-shadow(0 0 4px rgba(253,171,61,0.9))" }}
-                      className="pic-line"
-                    />
-                  ))}
-                </g>
-              );
-            })}
-
-            {/* Clean Cluster Markers */}
-            {clusters.map((cluster) => {
-              const radius = Math.max(8, Math.min(35, (cluster.totalValue / maxValue) * 35));
-              const wonDeals = cluster.deals.filter(d => d.status === "A").length;
-              const totalDeals = cluster.deals.length;
-              const wonRatio = wonDeals / totalDeals;
-              const color = statusLayerFilter 
-                ? (STATUS_CONFIG[statusLayerFilter]?.color || "#66ccff")
-                : wonRatio > 0.5 ? "#00c875" : wonRatio > 0.2 ? "#fdab3d" : "#66ccff";
-              
-              const isPicMode = showPICLines && selectedPicCoverage !== null;
-              const belongsToPic = isPicMode && cluster.deals.some(d => d.pic === selectedPicCoverage);
-              const opacityMult = isPicMode && !belongsToPic ? 0.12 : 1;
-              const finalColor = isPicMode && belongsToPic ? "#fdab3d" : color;
-              const isActive = drillDownCluster?.key === cluster.key;
-
-              return (
-                <Marker key={cluster.key} coordinates={cluster.coords}>
-                  <g opacity={opacityMult} style={{ transition: "opacity 0.5s ease" }}>
-                    {/* Main bubble */}
-                    <circle cx={0} cy={0} r={radius} fill={finalColor} fillOpacity={isActive ? 0.45 : 0.2}
-                      stroke={finalColor} strokeWidth={isActive ? 2.5 : 1.2}
-                      strokeOpacity={isActive ? 1 : 0.6}
-                      style={{ cursor: canClickWidgets ? "pointer" : "default", transition: "all 0.3s", filter: isActive ? `drop-shadow(0 0 12px ${finalColor})` : `drop-shadow(0 0 4px ${finalColor}40)` }}
-                      onClick={() => {
-                        if (canClickWidgets) {
-                          if (isActive) {
-                            setDrillDownCluster(null);
-                            setDrillDownSearch("");
-                          } else {
-                            setDrillDownCluster(cluster);
-                            setDrillDownSearch("");
-                          }
-                        }
-                      }}
-                    />
-                    
-                    {/* Count label */}
-                    <text x={0} y={radius > 15 ? 5 : 4} textAnchor="middle" fill="white" fontSize={radius > 15 ? 13 : 9} fontWeight="900"
-                      style={{ pointerEvents: "none", filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.6))" }}
-                    >
-                      {totalDeals}
-                    </text>
-                    
-                    {/* City label below cluster */}
-                    {radius > 12 && (
-                      <text x={0} y={radius + 14} textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize={7} fontWeight="700"
-                        style={{ pointerEvents: "none", letterSpacing: "0.05em" }}
-                      >
-                        {cluster.name}
-                      </text>
-                    )}
-                  </g>
-                </Marker>
-              );
-            })}
-          </ComposableMap>
-
-        </div>
-
-        {/* Regional Stats Side Panel */}
-        <div style={{ 
-          width: 180, 
-          padding: "10px 16px 16px 0", 
-          display: "flex", 
-          flexDirection: "column", 
-          gap: 6, 
-          flexShrink: 0,
-          maxHeight: 450,
-          overflowY: "auto"
-        }}>
-          <p style={{ color: "rgba(102,204,255,0.5)", fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 4 }}>
-            {showPICLines ? "Sales Engineer (PIC)" : "Ranking Wilayah"}
-          </p>
-          {showPICLines ? (
-            Object.entries(picStats)
-              .filter(([name]) => name !== "Unassigned")
-              .sort(([, a], [, b]) => b.totalValue - a.totalValue)
-              .map(([pic, data], idx) => {
-                const maxPicVal = Math.max(...Object.values(picStats).map(v => v.totalValue)) || 1;
-                const pct = (data.totalValue / maxPicVal) * 100;
-                const isSelected = selectedPicCoverage === pic;
-                return (
-                  <div key={pic}
-                    onClick={() => setSelectedPicCoverage?.(isSelected ? null : pic)}
-                    style={{
-                      cursor: "pointer", padding: "8px 10px", borderRadius: 10,
-                      background: isSelected ? "rgba(253,171,61,0.1)" : "rgba(255,255,255,0.02)",
-                      border: "1px solid",
-                      borderColor: isSelected ? "rgba(253,171,61,0.25)" : "rgba(255,255,255,0.04)",
-                      transition: "all 0.2s",
-                      boxShadow: isSelected ? "0 0 12px rgba(253,171,61,0.08)" : "none"
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                      <span style={{ color: isSelected ? "#fdab3d" : "rgba(255,255,255,0.7)", fontSize: 10, fontWeight: 800 }}>
-                        {idx + 1}. {pic}
-                      </span>
-                      <span style={{ color: "#fdab3d", fontSize: 9, fontWeight: 700 }}>{data.totalCount}</span>
-                    </div>
-                    <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${pct}%` }}
-                        transition={{ duration: 0.6, delay: idx * 0.05 }}
-                        style={{ height: "100%", background: "linear-gradient(90deg, #fdab3d, #ffcf8a)", borderRadius: 2, boxShadow: "0 0 6px rgba(253,171,61,0.3)" }}
-                      />
-                    </div>
-                    <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 9, fontWeight: 700, marginTop: 3 }}>
-                      {formatRp(data.totalValue)}
-                    </p>
-                  </div>
-                );
-              })
-          ) : (
-            regionalStats.map((rs, idx) => {
-              const maxRegVal = regionalStats[0]?.value || 1;
-              const pct = (rs.value / maxRegVal) * 100;
-              const isSelected = selectedRegion === rs.name;
-              return (
-                <div key={rs.name}
-                  onClick={() => setSelectedRegion(isSelected ? "All" : rs.name)}
-                  style={{
-                    cursor: "pointer", padding: "8px 10px", borderRadius: 10,
-                    background: isSelected ? "rgba(102,204,255,0.1)" : "rgba(255,255,255,0.02)",
-                    border: "1px solid",
-                    borderColor: isSelected ? "rgba(102,204,255,0.25)" : "rgba(255,255,255,0.04)",
-                    transition: "all 0.2s",
-                    boxShadow: isSelected ? "0 0 12px rgba(102,204,255,0.08)" : "none"
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                    <span style={{ color: isSelected ? "#66ccff" : "rgba(255,255,255,0.7)", fontSize: 10, fontWeight: 800 }}>
-                      {idx + 1}. {rs.name}
-                    </span>
-                    <span style={{ color: "#00c875", fontSize: 9, fontWeight: 700 }}>{rs.count}</span>
-                  </div>
-                  <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${pct}%` }}
-                      transition={{ duration: 0.6, delay: idx * 0.05 }}
-                      style={{ height: "100%", background: "linear-gradient(90deg, #3a8fd4, #00c875)", borderRadius: 2, boxShadow: "0 0 6px rgba(0,200,117,0.3)" }}
-                    />
-                  </div>
-                  <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 9, fontWeight: 700, marginTop: 3 }}>
-                    {formatRp(rs.value)}
-                  </p>
-                </div>
-              );
-            })
-          )}
-        </div>
-      </div>
-
-      {/* Legend */}
-      <div style={{ position: "relative", padding: "0 24px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ display: "flex", gap: 12, fontSize: 10, fontWeight: 700 }}>
-          <span style={{ color: "#00c875" }}>● Won {">"} 50%</span>
-          <span style={{ color: "#fdab3d" }}>● Mixed</span>
-          <span style={{ color: "#66ccff" }}>● Pipeline</span>
-          {showPICLines && <span style={{ color: "#fdab3d" }}>--- PIC Coverage</span>}
-        </div>
-      </div>
-
-      {/* Bottom border glow line */}
-      <div style={{
-        position: "absolute", bottom: 0, left: "10%", right: "10%", height: 1,
-        background: "linear-gradient(90deg, transparent, rgba(102,204,255,0.2), transparent)"
-      }} />
-
       {/* Drill-down Inline Panel (Left Side) */}
       {drillDownCluster && (
         <motion.div
@@ -947,12 +679,11 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
           exit={{ opacity: 0, x: -30 }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
           style={{
-            position: "absolute", left: 0, top: 0, bottom: 0, width: 360,
+            width: "50%",
             background: "linear-gradient(180deg, rgba(8,18,35,0.97), rgba(12,25,45,0.97))",
             borderRight: "1px solid rgba(102,204,255,0.12)",
-            backdropFilter: "blur(20px)",
-            zIndex: 50, display: "flex", flexDirection: "column",
-            boxShadow: "4px 0 24px rgba(0,0,0,0.3)"
+            display: "flex", flexDirection: "column",
+            height: 450,
           }}
         >
           {/* Panel Header */}
@@ -964,6 +695,10 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
                 <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, fontWeight: 600, marginTop: 4 }}>
                   {drillDownCluster.deals.length} Projects • {formatRp(drillDownCluster.totalValue)}
                 </p>
+                <div style={{ display: "flex", gap: 12, marginTop: 8, fontSize: 10, color: "rgba(255,255,255,0.5)" }}>
+                  <div>Win Rate: <span style={{ color: "#00c875", fontWeight: "bold" }}>{Math.round((drillDownCluster.deals.filter((d: any) => d.status === "A").length / drillDownCluster.deals.length) * 100)}%</span></div>
+                  <div>Avg Value: <span style={{ color: "#fff", fontWeight: "bold" }}>{formatRp(drillDownCluster.totalValue / drillDownCluster.deals.length)}</span></div>
+                </div>
               </div>
               <button 
                 onClick={() => { setDrillDownCluster(null); setDrillDownSearch(""); }}
@@ -1057,6 +792,132 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
           </div>
         </motion.div>
       )}
+          <div style={{ width: drillDownCluster ? "50%" : "100%", transition: "width 0.3s ease", height: 450, borderRadius: drillDownCluster ? "0 24px 24px 0" : 24, overflow: "hidden" }}>
+            <LeafletMap 
+              clusters={clusters}
+              drillDownCluster={drillDownCluster}
+              setDrillDownCluster={setDrillDownCluster}
+              setDrillDownSearch={setDrillDownSearch}
+              statusLayerFilter={statusLayerFilter}
+              STATUS_CONFIG={STATUS_CONFIG}
+              canClickWidgets={canClickWidgets}
+            />
+          </div>
+
+        </div>
+
+        {/* Regional Stats Side Panel */}
+        {!drillDownCluster && (
+        <div style={{ 
+          width: 180, 
+          padding: "10px 16px 16px 0", 
+          display: "flex", 
+          flexDirection: "column", 
+          gap: 6, 
+          flexShrink: 0,
+          maxHeight: 450,
+          overflowY: "auto"
+        }}>
+          <p style={{ color: "rgba(102,204,255,0.5)", fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 4 }}>
+            {showPICLines ? "Sales Engineer (PIC)" : "Ranking Wilayah"}
+          </p>
+          {showPICLines ? (
+            Object.entries(picStats)
+              .filter(([name]) => name !== "Unassigned")
+              .sort(([, a], [, b]) => b.totalValue - a.totalValue)
+              .map(([pic, data], idx) => {
+                const maxPicVal = Math.max(...Object.values(picStats).map(v => v.totalValue)) || 1;
+                const pct = (data.totalValue / maxPicVal) * 100;
+                const isSelected = selectedPicCoverage === pic;
+                return (
+                  <div key={pic}
+                    onClick={() => setSelectedPicCoverage?.(isSelected ? null : pic)}
+                    style={{
+                      cursor: "pointer", padding: "8px 10px", borderRadius: 10,
+                      background: isSelected ? "rgba(253,171,61,0.1)" : "rgba(255,255,255,0.02)",
+                      border: "1px solid",
+                      borderColor: isSelected ? "rgba(253,171,61,0.25)" : "rgba(255,255,255,0.04)",
+                      transition: "all 0.2s",
+                      boxShadow: isSelected ? "0 0 12px rgba(253,171,61,0.08)" : "none"
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                      <span style={{ color: isSelected ? "#fdab3d" : "rgba(255,255,255,0.7)", fontSize: 10, fontWeight: 800 }}>
+                        {idx + 1}. {pic}
+                      </span>
+                      <span style={{ color: "#fdab3d", fontSize: 9, fontWeight: 700 }}>{data.totalCount}</span>
+                    </div>
+                    <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${pct}%` }}
+                        transition={{ duration: 0.6, delay: idx * 0.05 }}
+                        style={{ height: "100%", background: "linear-gradient(90deg, #fdab3d, #ffcf8a)", borderRadius: 2, boxShadow: "0 0 6px rgba(253,171,61,0.3)" }}
+                      />
+                    </div>
+                    <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 9, fontWeight: 700, marginTop: 3 }}>
+                      {formatRp(data.totalValue)}
+                    </p>
+                  </div>
+                );
+              })
+          ) : (
+            regionalStats.map((rs, idx) => {
+              const maxRegVal = regionalStats[0]?.value || 1;
+              const pct = (rs.value / maxRegVal) * 100;
+              const isSelected = selectedRegion === rs.name;
+              return (
+                <div key={rs.name}
+                  onClick={() => setSelectedRegion(isSelected ? "All" : rs.name)}
+                  style={{
+                    cursor: "pointer", padding: "8px 10px", borderRadius: 10,
+                    background: isSelected ? "rgba(102,204,255,0.1)" : "rgba(255,255,255,0.02)",
+                    border: "1px solid",
+                    borderColor: isSelected ? "rgba(102,204,255,0.25)" : "rgba(255,255,255,0.04)",
+                    transition: "all 0.2s",
+                    boxShadow: isSelected ? "0 0 12px rgba(102,204,255,0.08)" : "none"
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                    <span style={{ color: isSelected ? "#66ccff" : "rgba(255,255,255,0.7)", fontSize: 10, fontWeight: 800 }}>
+                      {idx + 1}. {rs.name}
+                    </span>
+                    <span style={{ color: "#00c875", fontSize: 9, fontWeight: 700 }}>{rs.count}</span>
+                  </div>
+                  <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${pct}%` }}
+                      transition={{ duration: 0.6, delay: idx * 0.05 }}
+                      style={{ height: "100%", background: "linear-gradient(90deg, #3a8fd4, #00c875)", borderRadius: 2, boxShadow: "0 0 6px rgba(0,200,117,0.3)" }}
+                    />
+                  </div>
+                  <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 9, fontWeight: 700, marginTop: 3 }}>
+                    {formatRp(rs.value)}
+                  </p>
+                </div>
+              );
+            })
+          )}
+        </div>
+        )}
+      </div>
+
+      {/* Legend */}
+      <div style={{ position: "relative", padding: "0 24px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 12, fontSize: 10, fontWeight: 700 }}>
+          <span style={{ color: "#00c875" }}>● Won {">"} 50%</span>
+          <span style={{ color: "#fdab3d" }}>● Mixed</span>
+          <span style={{ color: "#66ccff" }}>● Pipeline</span>
+          {showPICLines && <span style={{ color: "#fdab3d" }}>--- PIC Coverage</span>}
+        </div>
+      </div>
+
+      {/* Bottom border glow line */}
+      <div style={{
+        position: "absolute", bottom: 0, left: "10%", right: "10%", height: 1,
+        background: "linear-gradient(90deg, transparent, rgba(102,204,255,0.2), transparent)"
+      }} />
     </div>
   );
 }
