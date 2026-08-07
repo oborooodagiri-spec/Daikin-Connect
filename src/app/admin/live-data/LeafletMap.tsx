@@ -85,19 +85,25 @@ export default function LeafletMap({
             position: relative;
             box-shadow: 0 4px 10px rgba(0,0,0,0.4);
             border: 2px solid white;
+            animation: bubble-breathe 2s ease-in-out infinite alternate;
           }
           .pulse-bubble::after {
             content: '';
             position: absolute;
             inset: -4px;
             border-radius: 50%;
-            border: 2px solid inherit;
+            border: 3px solid;
+            border-color: inherit;
             opacity: 0;
             animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
           }
+          @keyframes bubble-breathe {
+            0% { transform: scale(0.95); }
+            100% { transform: scale(1.05); }
+          }
           @keyframes pulse-ring {
             0% { transform: scale(0.8); opacity: 0.8; }
-            100% { transform: scale(1.6); opacity: 0; }
+            100% { transform: scale(1.8); opacity: 0; }
           }
           .custom-pulsing-marker {
             background: transparent;

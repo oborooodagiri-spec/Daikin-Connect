@@ -433,7 +433,15 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
       if (deal.status === "L") return;
       const geo = guessCoords(deal);
       if (!geo) return;
-      const rn = geo.provinceName || geo.regionName || "Lainnya";
+      
+      if (currentZoomLevel === 1 && geo.regionName !== selectedRegion) return;
+      if (currentZoomLevel === 2 && geo.provinceName !== selectedRegion) return;
+
+      let rn = "Lainnya";
+      if (currentZoomLevel === 0) rn = geo.regionName;
+      else if (currentZoomLevel === 1) rn = geo.provinceName || "Lainnya";
+      else rn = geo.cityName || "Lainnya";
+
       if (!regionMap[rn]) regionMap[rn] = { value: 0, count: 0, won: 0 };
       regionMap[rn].value += Number(deal.quotation) || 0;
       regionMap[rn].count++;
@@ -442,7 +450,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
     return Object.entries(regionMap)
       .map(([name, data]) => ({ name, ...data }))
       .sort((a, b) => b.value - a.value);
-  }, [deals]);
+  }, [deals, currentZoomLevel, selectedRegion]);
 
   // PIC connection lines
   const picLines = useMemo(() => {
@@ -813,7 +821,10 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
           position: "absolute", bottom: 12, left: 24, right: 24, zIndex: 10, pointerEvents: "none"
         }}>
           <p style={{ color: "rgba(255,255,255,0.9)", fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 8, textShadow: "0 2px 4px rgba(0,0,0,0.8)" }}>
-            {showPICLines ? "Sales Engineer (PIC)" : "Ranking Wilayah"}
+            {showPICLines ? "Sales Engineer (PIC)" : 
+             currentZoomLevel === 0 ? "Ranking Wilayah - Nasional" : 
+             currentZoomLevel === 1 ? "Ranking Wilayah - Provinsi" : 
+             "Ranking Wilayah - Kabupaten"}
           </p>
           <div className="no-scrollbar" style={{ display: "flex", flexDirection: "row", gap: 12, overflowX: "auto", paddingBottom: 10 }}>
           {showPICLines ? (
@@ -865,7 +876,14 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
               const isSelected = selectedRegion === rs.name;
               return (
                 <div key={rs.name}
-                  onClick={() => setSelectedRegion(isSelected ? "All" : rs.name)}
+                  onClick={() => {
+                    if (currentZoomLevel === 0 || currentZoomLevel === 1) {
+                      setSelectedRegion(rs.name);
+                    } else if (currentZoomLevel === 2) {
+                      const matchingCluster = clusters.find(c => c.name === rs.name);
+                      if (matchingCluster) setDrillDownCluster(matchingCluster);
+                    }
+                  }}
                   style={{
                     flexShrink: 0, width: 180,
                     pointerEvents: "auto",
