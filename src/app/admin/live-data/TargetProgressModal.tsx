@@ -58,7 +58,7 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
   };
 
   // Filter closed deals by selected FY
-  const { totalAchievement, totalClosedCount, picAchievements, partnerAchievements } = useMemo(() => {
+  const { totalAchievement, totalClosedCount, picAchievements, partnerAchievements, backlogByPic } = useMemo(() => {
     let total = 0;
     let closedCount = 0;
     const byPic: Record<string, { value: number; count: number }> = {};
