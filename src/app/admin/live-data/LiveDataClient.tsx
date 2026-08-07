@@ -458,6 +458,10 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
 
   return (
     <div style={{ position: "relative", width: "100%", height: 600, borderRadius: 24, overflow: "hidden", background: "#c8e6f5" }}>
+      <style>{`
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
 
       {/* Title & Controls Bar */}
       <div style={{ position: "absolute", top: 0, left: drillDownCluster ? "50%" : 0, right: 0, zIndex: 10, background: "transparent", backdropFilter: "blur(20px)", padding: "20px 24px 16px", borderBottom: "1px solid rgba(255,255,255,0.1)", transition: "left 0.3s ease" }}>
@@ -655,7 +659,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
           exit={{ opacity: 0, x: -30 }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
           style={{
-            position: "absolute", left: 0, top: 0, bottom: 0, width: "50%", zIndex: 5,
+            position: "absolute", left: 0, top: 0, bottom: 0, width: "35%", zIndex: 5,
             background: "transparent", backdropFilter: "blur(24px)",
             borderRight: "1px solid rgba(255,255,255,0.1)",
             display: "flex", flexDirection: "column",
@@ -723,7 +727,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
           </div>
 
           {/* Project List */}
-          <div style={{ flex: 1, overflowY: "auto", padding: "0 20px 20px" }}>
+          <div className="no-scrollbar" style={{ flex: 1, overflowY: "auto", padding: "0 20px 20px" }}>
             {(() => {
               let filtered = [...(drillDownCluster?.deals || [])];
               if (drillDownSearch) {
@@ -777,6 +781,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
               STATUS_CONFIG={STATUS_CONFIG}
               canClickWidgets={canClickWidgets}
               selectedRegion={selectedRegion}
+              setSelectedRegion={setSelectedRegion}
             />
           </div>
 
@@ -784,7 +789,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
 
       {/* Regional Stats Side Panel */}
       {!drillDownCluster && (
-        <div style={{ 
+        <div className="no-scrollbar" style={{ 
           position: "absolute", top: 140, right: 24, zIndex: 10, width: 220,
           background: "transparent", backdropFilter: "blur(20px)", 
           borderRadius: 16, border: "1px solid rgba(255,255,255,0.1)", 

@@ -21,7 +21,8 @@ export default function LeafletMap({
   statusLayerFilter, 
   STATUS_CONFIG, 
   canClickWidgets,
-  selectedRegion
+  selectedRegion,
+  setSelectedRegion
 }: any) {
   
   // Base center & zoom (Nasional)
@@ -30,8 +31,8 @@ export default function LeafletMap({
 
   if (drillDownCluster) {
     // Zoom into the specific cluster
-    // Offset longitude by -2.5 degrees so the point sits visually in the right 50% of the screen (since the left 50% is covered by the panel)
-    center = [drillDownCluster.coords[1], drillDownCluster.coords[0] - 2.5];
+    // Offset longitude by -1.5 degrees so the point sits visually in the right 65% of the screen (since the left 35% is covered by the panel)
+    center = [drillDownCluster.coords[1], drillDownCluster.coords[0] - 1.5];
     zoom = 7; // slightly lower zoom to show more context next to the panel
   } else if (selectedRegion && selectedRegion !== "All" && clusters && clusters.length > 0) {
     let sumLat = 0;
@@ -98,12 +99,18 @@ export default function LeafletMap({
               eventHandlers={{
                 click: () => {
                   if (!canClickWidgets) return;
-                  if (isActive) {
-                    setDrillDownCluster(null);
-                    setDrillDownSearch("");
+                  if (selectedRegion === "All") {
+                    // Level 1 -> Level 2
+                    setSelectedRegion(cluster.name);
                   } else {
-                    setDrillDownCluster(cluster);
-                    setDrillDownSearch("");
+                    // Level 2 -> Level 3
+                    if (isActive) {
+                      setDrillDownCluster(null);
+                      setDrillDownSearch("");
+                    } else {
+                      setDrillDownCluster(cluster);
+                      setDrillDownSearch("");
+                    }
                   }
                 }
               }}
