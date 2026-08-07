@@ -1,4 +1,5 @@
 import { getSession } from "@/app/actions/auth";
+import { getProfile } from "@/app/actions/profile";
 import { redirect } from "next/navigation";
 import LiveDataClient from "./LiveDataClient";
 
@@ -11,10 +12,12 @@ export default async function LiveDataPage() {
     redirect("/");
   }
 
+  const profile = await getProfile();
+
   const isAdmin = session?.roles?.some((r: string) => 
     ["admin", "super admin", "administrator", "management", "director"].some(keyword => r.toLowerCase().includes(keyword))
   );
 
   const canClickWidgets = true;
-  return <LiveDataClient isAdmin={isAdmin} canClickWidgets={canClickWidgets} sessionName={session.name} sessionId={parseInt(session.userId)} />;
+  return <LiveDataClient isAdmin={isAdmin} canClickWidgets={canClickWidgets} sessionName={session.name} sessionId={parseInt(session.userId)} avatarUrl={profile?.avatarUrl || null} />;
 }

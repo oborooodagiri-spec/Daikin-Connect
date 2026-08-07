@@ -346,7 +346,7 @@ function MapDrillDownModal({ cluster, onClose, formatRp }: { cluster: any; onClo
   );
 }
 
-function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedPicCoverage = null, setSelectedPicCoverage, picStats = {} }: { deals: Deal[], canClickWidgets?: boolean, usersList?: any[], selectedPicCoverage?: string | null, setSelectedPicCoverage?: (v: string | null) => void, picStats?: Record<string, { totalCount: number; totalValue: number; wonValue: number; lostValue: number }> }) {
+function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedPicCoverage = null, setSelectedPicCoverage, picStats = {}, sessionName, avatarUrl }: { deals: Deal[], canClickWidgets?: boolean, usersList?: any[], selectedPicCoverage?: string | null, setSelectedPicCoverage?: (v: string | null) => void, picStats?: Record<string, { totalCount: number; totalValue: number; wonValue: number; lostValue: number }>, sessionName?: string, avatarUrl?: string | null }) {
   const [selectedRegion, setSelectedRegion] = useState("All");
   const [statusLayerFilter, setStatusLayerFilter] = useState<string | null>(null);
   const [drillDownCluster, setDrillDownCluster] = useState<any>(null);
@@ -525,37 +525,17 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
 
         {/* Status Layer Toggle + PIC Lines Toggle */}
         <div style={{ display: "flex", gap: 6, marginTop: 10, alignItems: "center", flexWrap: "wrap" }}>
-          <span style={{ color: "rgba(102,204,255,0.4)", fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginRight: 4 }}>Filter Status:</span>
-          <button onClick={() => setStatusLayerFilter(null)}
-            style={{
-              padding: "4px 10px", borderRadius: 8, border: "1px solid",
-              borderColor: !statusLayerFilter ? "#66ccff" : "rgba(102,204,255,0.15)",
-              background: !statusLayerFilter ? "rgba(102,204,255,0.15)" : "transparent",
-              color: !statusLayerFilter ? "#66ccff" : "rgba(255,255,255,0.4)",
-              fontSize: 10, fontWeight: 700, cursor: "pointer",
-              boxShadow: !statusLayerFilter ? "0 0 8px rgba(102,204,255,0.1)" : "none"
-            }}
-          >All</button>
-          {["A", "B", "C", "D", "E"].map(s => {
-            const cfg = STATUS_CONFIG[s];
-            const isActive = statusLayerFilter === s;
-            return (
-              <button key={s} onClick={() => setStatusLayerFilter(isActive ? null : s)}
-                style={{
-                  padding: "4px 10px", borderRadius: 8, border: "1px solid",
-                  borderColor: isActive ? cfg.color : "rgba(102,204,255,0.15)",
-                  background: isActive ? `${cfg.color}22` : "transparent",
-                  color: isActive ? cfg.color : "rgba(255,255,255,0.4)",
-                  fontSize: 10, fontWeight: 700, cursor: "pointer",
-                  boxShadow: isActive ? `0 0 10px ${cfg.color}33` : "none"
-                }}
-              >{s}</button>
-            );
-          })}
+          {/* Removed Status Filter Buttons */}
           
-          <div style={{ width: 1, height: 16, background: "rgba(102,204,255,0.15)", margin: "0 4px" }} />
-          
-          <button onClick={() => { const next = !showPICLines; setShowPICLines(next); if (!next) setSelectedPicCoverage?.(null); }}
+          <button onClick={() => { 
+            const next = !showPICLines; 
+            setShowPICLines(next); 
+            if (next && sessionName) {
+              setSelectedPicCoverage?.(sessionName);
+            } else {
+              setSelectedPicCoverage?.(null);
+            }
+          }}
             style={{
               padding: "4px 10px", borderRadius: 8, border: "1px solid",
               borderColor: showPICLines ? "#fdab3d" : "rgba(102,204,255,0.15)",
@@ -817,60 +797,23 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
 
       {/* Regional Stats Bottom Panel */}
       {!drillDownCluster && (
-        <div style={{ 
-          position: "absolute", bottom: 12, left: 24, right: 24, zIndex: 10, pointerEvents: "none"
-        }}>
+              <AnimatePresence>
+        {!showPICLines && (
+          <motion.div 
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            style={{
+              position: "absolute", bottom: 12, left: 24, right: 24, zIndex: 10, pointerEvents: "none"
+            }}
+          >
           <p style={{ color: "rgba(255,255,255,0.9)", fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 8, textShadow: "0 2px 4px rgba(0,0,0,0.8)" }}>
-            {showPICLines ? "Sales Engineer (PIC)" : 
-             currentZoomLevel === 0 ? "Ranking Wilayah - Nasional" : 
+            {currentZoomLevel === 0 ? "Ranking Wilayah - Nasional" : 
              currentZoomLevel === 1 ? "Ranking Wilayah - Provinsi" : 
              "Ranking Wilayah - Kabupaten"}
           </p>
           <div className="no-scrollbar" style={{ display: "flex", flexDirection: "row", gap: 12, overflowX: "auto", paddingBottom: 10 }}>
-          {showPICLines ? (
-            Object.entries(picStats)
-              .filter(([name]) => name !== "Unassigned")
-              .sort(([, a], [, b]) => b.totalValue - a.totalValue)
-              .map(([pic, data], idx) => {
-                const maxPicVal = Math.max(...Object.values(picStats).map(v => v.totalValue)) || 1;
-                const pct = (data.totalValue / maxPicVal) * 100;
-                const isSelected = selectedPicCoverage === pic;
-                return (
-                  <div key={pic}
-                    onClick={() => setSelectedPicCoverage?.(isSelected ? null : pic)}
-                    style={{
-                      flexShrink: 0, width: 180,
-                      pointerEvents: "auto",
-                      cursor: "pointer", padding: "12px 16px", borderRadius: 16,
-                      background: isSelected ? "rgba(253,171,61,0.9)" : "rgba(10,20,30,0.85)",
-                      border: "1px solid",
-                      borderColor: isSelected ? "rgba(253,171,61,1)" : "rgba(255,255,255,0.15)",
-                      transition: "all 0.2s",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.5)"
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                      <span style={{ color: isSelected ? "#0a141e" : "white", fontSize: 11, fontWeight: 800 }}>
-                        {idx + 1}. {pic}
-                      </span>
-                      <span style={{ color: isSelected ? "#0a141e" : "#fdab3d", fontSize: 11, fontWeight: 800 }}>{data.totalCount}</span>
-                    </div>
-                    <div style={{ height: 4, background: isSelected ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.1)", borderRadius: 2, overflow: "hidden" }}>
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${pct}%` }}
-                        transition={{ duration: 0.6, delay: idx * 0.05 }}
-                        style={{ height: "100%", background: isSelected ? "#0a141e" : "#fdab3d", borderRadius: 2 }}
-                      />
-                    </div>
-                    <p style={{ color: isSelected ? "rgba(10,20,30,0.7)" : "rgba(255,255,255,0.5)", fontSize: 10, fontWeight: 700, marginTop: 6 }}>
-                      {formatRp(data.totalValue)}
-                    </p>
-                  </div>
-                );
-              })
-          ) : (
-            regionalStats.map((rs, idx) => {
+          {regionalStats.map((rs, idx) => {
               const maxRegVal = regionalStats[0]?.value || 1;
               const pct = (rs.value / maxRegVal) * 100;
               const isSelected = selectedRegion === rs.name;
@@ -914,10 +857,66 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
                   </p>
                 </div>
               );
-            })
-          )}
+            })}
           </div>
-        </div>
+          </motion.div>
+        )}
+        {showPICLines && (
+          <motion.div 
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -100, opacity: 0 }}
+            style={{
+              position: "absolute", bottom: 20, left: 24, zIndex: 10, pointerEvents: "auto",
+              background: "rgba(10,20,30,0.85)", backdropFilter: "blur(10px)",
+              border: "1px solid rgba(253,171,61,0.3)", borderRadius: 16,
+              padding: "16px 20px", width: 280,
+              boxShadow: "0 8px 32px rgba(0,0,0,0.6), inset 0 0 20px rgba(253,171,61,0.05)"
+            }}
+          >
+          {(() => {
+            const myDeals = deals.filter(d => d.status !== "L" && d.pic === sessionName);
+            const myTotalDeals = myDeals.length;
+            const myTotalValue = myDeals.reduce((sum, d) => sum + (Number(d.quotation) || 0), 0);
+            const myWonValue = myDeals.filter(d => d.status === "A").reduce((sum, d) => sum + (Number(d.quotation) || 0), 0);
+            const myWonPct = myTotalValue > 0 ? Math.round((myWonValue / myTotalValue) * 100) : 0;
+            
+            return (
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt={sessionName} style={{ width: 44, height: 44, borderRadius: "50%", border: "2px solid #fdab3d", objectFit: "cover" }} />
+                  ) : (
+                    <div style={{ width: 44, height: 44, borderRadius: "50%", border: "2px solid #fdab3d", background: "rgba(253,171,61,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fdab3d", fontWeight: 800, fontSize: 18 }}>
+                      {sessionName?.charAt(0) || "U"}
+                    </div>
+                  )}
+                  <div>
+                    <p style={{ color: "white", fontSize: 14, fontWeight: 800 }}>{sessionName}</p>
+                    <p style={{ color: "rgba(253,171,61,0.9)", fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em" }}>Coverage Summary</p>
+                  </div>
+                </div>
+                
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, background: "rgba(0,0,0,0.3)", padding: 12, borderRadius: 12, border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <div>
+                    <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>Projects</p>
+                    <p style={{ color: "white", fontSize: 15, fontWeight: 800, margin: 0 }}>{myTotalDeals}</p>
+                  </div>
+                  <div>
+                    <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>Win Rate</p>
+                    <p style={{ color: "#00c875", fontSize: 15, fontWeight: 800, margin: 0 }}>{myWonPct}%</p>
+                  </div>
+                  <div style={{ gridColumn: "1 / -1", marginTop: 4, paddingTop: 8, borderTop: "1px dashed rgba(255,255,255,0.1)" }}>
+                    <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>Total Nominal</p>
+                    <p style={{ color: "#fdab3d", fontSize: 18, fontWeight: 900, margin: 0 }}>{formatRp(myTotalValue)}</p>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+          </motion.div>
+        )}
+        </AnimatePresence>
       )}
     </div>
   );
@@ -950,7 +949,7 @@ function StatusBadge({ status }: { status: string }) {
 // ============================================
 // MAIN COMPONENT
 // ============================================
-export default function LiveDataClient({ isAdmin = false, canClickWidgets = true, sessionName = "User", sessionId = 0 }: { isAdmin?: boolean, canClickWidgets?: boolean, sessionName?: string, sessionId?: number }) {
+export default function LiveDataClient({ isAdmin = false, canClickWidgets = true, sessionName = "User", sessionId = 0, avatarUrl = null }: { isAdmin?: boolean, canClickWidgets?: boolean, sessionName?: string, sessionId?: number, avatarUrl?: string | null }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [deals, setDeals] = useState<Deal[]>([]);
@@ -984,6 +983,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
   const [presentationState, setPresentationState] = useState<PresentationState | null>(null);
   const [usersList, setUsersList] = useState<any[]>([]);
   const [selectedPicCoverage, setSelectedPicCoverage] = useState<string | null>(null);
+  const [showPICLines, setShowPICLines] = useState(false);
 
 
   
@@ -1601,7 +1601,16 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
 
         {/* INDONESIA MAP */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <IndonesiaMap deals={activeDeals} canClickWidgets={canClickWidgets} usersList={usersList} selectedPicCoverage={selectedPicCoverage} setSelectedPicCoverage={setSelectedPicCoverage} picStats={stats.byPic} />
+        <IndonesiaMap 
+          deals={deals} 
+          canClickWidgets={canClickWidgets} 
+          usersList={usersList}
+          selectedPicCoverage={selectedPicCoverage}
+          setSelectedPicCoverage={setSelectedPicCoverage}
+          picStats={stats.byPic}
+          sessionName={sessionName}
+          avatarUrl={avatarUrl}
+        />
         </motion.div>
 
         {/* CLOSED PROJECTS WIDGET */}
