@@ -43,6 +43,11 @@ export default function LeafletMap({
         style={{ width: "100%", height: "100%", background: "#c8e6f5" }}
         zoomControl={false}
         attributionControl={false}
+        dragging={false}
+        scrollWheelZoom={false}
+        doubleClickZoom={false}
+        touchZoom={false}
+        keyboard={false}
       >
         <MapController center={center} zoom={zoom} />
         

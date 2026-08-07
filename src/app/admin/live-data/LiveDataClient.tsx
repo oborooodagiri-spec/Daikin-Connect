@@ -366,19 +366,37 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
       // Filter by selected region or province
       if (selectedRegion !== "All" && geo.regionName !== selectedRegion && geo.provinceName !== selectedRegion) return;
       
-      const key = `${geo.coords[0].toFixed(1)}-${geo.coords[1].toFixed(1)}`;
+      let key = `${geo.coords[0].toFixed(1)}-${geo.coords[1].toFixed(1)}`;
+      let displayCoords = geo.coords;
+      let displayName = geo.provinceName || geo.regionName || "Lainnya";
+
+      // Level 1 Clustering: Group by Region if view is National and no drill down
+      if (selectedRegion === "All" && !drillDownCluster) {
+        key = geo.regionName;
+        displayName = geo.regionName;
+        if (key === "Jawa") displayCoords = [110.0, -7.2];
+        else if (key === "Sumatera") displayCoords = [102.5, -0.5];
+        else if (key === "Kalimantan") displayCoords = [114.5, -1.0];
+        else if (key === "Sulawesi") displayCoords = [121.5, -2.0];
+        else if (key === "Bali & Nusa Tenggara") displayCoords = [118.0, -9.0];
+        else if (key === "Papua & Maluku") displayCoords = [134.0, -3.5];
+      }
       
       if (!clusterMap[key]) {
-        let nearestName = "Other";
-        let nearestDist = Infinity;
-        for (const [, prov] of Object.entries(PROVINCE_COORDS)) {
-          const dist = Math.sqrt((geo.coords[0] - prov.coords[0]) ** 2 + (geo.coords[1] - prov.coords[1]) ** 2);
-          if (dist < nearestDist) {
-            nearestDist = dist;
-            nearestName = prov.name;
+        if (selectedRegion === "All" && !drillDownCluster) {
+          clusterMap[key] = { coords: displayCoords, deals: [], totalValue: 0, name: displayName, regionName: geo.regionName };
+        } else {
+          let nearestName = "Other";
+          let nearestDist = Infinity;
+          for (const [, prov] of Object.entries(PROVINCE_COORDS)) {
+            const dist = Math.sqrt((geo.coords[0] - prov.coords[0]) ** 2 + (geo.coords[1] - prov.coords[1]) ** 2);
+            if (dist < nearestDist) {
+              nearestDist = dist;
+              nearestName = prov.name;
+            }
           }
+          clusterMap[key] = { coords: geo.coords, deals: [], totalValue: 0, name: nearestName, regionName: geo.regionName };
         }
-        clusterMap[key] = { coords: geo.coords, deals: [], totalValue: 0, name: nearestName, regionName: geo.regionName };
       }
       clusterMap[key].deals.push(deal);
       clusterMap[key].totalValue += Number(deal.quotation) || 0;
@@ -439,50 +457,10 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
   }, [clusters]);
 
   return (
-    <div style={{ position: "relative", width: "100%", background: "linear-gradient(145deg, #060e1a 0%, #0b1a2e 30%, #0d2240 55%, #0b1a2e 80%, #060e1a 100%)", borderRadius: 24, overflow: "hidden" }}>
-      
-      {/* Ambient radial glow effects */}
-      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
-        {/* Center glow - warm accent behind Java */}
-        <div style={{
-          position: "absolute", left: "30%", top: "55%", width: 400, height: 400,
-          background: "radial-gradient(circle, rgba(0,200,117,0.08) 0%, rgba(0,200,117,0.03) 40%, transparent 70%)",
-          transform: "translate(-50%,-50%)", borderRadius: "50%"
-        }} />
-        {/* Top-left corner glow */}
-        <div style={{
-          position: "absolute", left: -60, top: -60, width: 300, height: 300,
-          background: "radial-gradient(circle, rgba(102,204,255,0.06) 0%, transparent 70%)",
-          borderRadius: "50%"
-        }} />
-        {/* Right edge subtle glow for panel */}
-        <div style={{
-          position: "absolute", right: 0, top: "40%", width: 200, height: 300,
-          background: "radial-gradient(ellipse at right, rgba(102,204,255,0.04) 0%, transparent 70%)",
-          transform: "translateY(-50%)"
-        }} />
-      </div>
-
-      {/* Dot-matrix grid overlay */}
-      <svg width="100%" height="100%" style={{ opacity: 0.035, position: "absolute", top: 0, left: 0, pointerEvents: "none" }}>
-        <defs>
-          <pattern id="mapDotGrid" width="24" height="24" patternUnits="userSpaceOnUse">
-            <circle cx="1" cy="1" r="0.6" fill="#66ccff" />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#mapDotGrid)" />
-      </svg>
-
-
-
-      {/* Subtle top border glow line */}
-      <div style={{
-        position: "absolute", top: 0, left: "10%", right: "10%", height: 1,
-        background: "linear-gradient(90deg, transparent, rgba(102,204,255,0.3), transparent)"
-      }} />
+    <div style={{ position: "relative", width: "100%", height: 600, borderRadius: 24, overflow: "hidden", background: "#c8e6f5" }}>
 
       {/* Title & Controls Bar */}
-      <div style={{ position: "relative", zIndex: 10, padding: "20px 24px 0" }}>
+      <div style={{ position: "absolute", top: 0, left: drillDownCluster ? "50%" : 0, right: 0, zIndex: 10, background: "rgba(6,14,26,0.5)", backdropFilter: "blur(12px)", padding: "20px 24px 16px", borderBottom: "1px solid rgba(102,204,255,0.15)", transition: "left 0.3s ease" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
           <div>
             <p style={{ color: "rgba(102,204,255,0.6)", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em" }}>Project Distribution</p>
@@ -563,9 +541,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
       </div>
 
       {/* Map + Side Panel Container */}
-      <div style={{ display: "flex", position: "relative" }}>
-        {/* Main Geographic Map */}
-        <div style={{ flex: 1, position: "relative", display: "flex", flexDirection: "row", width: "100%" }}>
+      <div style={{ position: "absolute", inset: 0, display: "flex", zIndex: 0 }}>
           {/* PIC Profile Popup — Holographic Command Center Card */}
           <AnimatePresence>
           {selectedPicCoverage && (() => {
@@ -792,7 +768,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
           </div>
         </motion.div>
       )}
-          <div style={{ width: drillDownCluster ? "50%" : "100%", transition: "width 0.3s ease", height: 450, borderRadius: drillDownCluster ? "0 24px 24px 0" : 24, overflow: "hidden" }}>
+          <div style={{ width: drillDownCluster ? "50%" : "100%", transition: "width 0.3s ease", height: "100%", position: "relative" }}>
             <LeafletMap 
               clusters={clusters}
               drillDownCluster={drillDownCluster}
@@ -804,19 +780,16 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
             />
           </div>
 
-        </div>
+      </div>
 
-        {/* Regional Stats Side Panel */}
-        {!drillDownCluster && (
+      {/* Regional Stats Side Panel */}
+      {!drillDownCluster && (
         <div style={{ 
-          width: 180, 
-          padding: "10px 16px 16px 0", 
-          display: "flex", 
-          flexDirection: "column", 
-          gap: 6, 
-          flexShrink: 0,
-          maxHeight: 450,
-          overflowY: "auto"
+          position: "absolute", top: 140, right: 24, zIndex: 10, width: 220,
+          background: "rgba(6, 14, 26, 0.6)", backdropFilter: "blur(12px)", 
+          borderRadius: 16, border: "1px solid rgba(102,204,255,0.15)", 
+          padding: "16px", display: "flex", flexDirection: "column", gap: 6, 
+          maxHeight: "calc(100% - 160px)", overflowY: "auto"
         }}>
           <p style={{ color: "rgba(102,204,255,0.5)", fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 4 }}>
             {showPICLines ? "Sales Engineer (PIC)" : "Ranking Wilayah"}
@@ -900,24 +873,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
             })
           )}
         </div>
-        )}
-      </div>
-
-      {/* Legend */}
-      <div style={{ position: "relative", padding: "0 24px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ display: "flex", gap: 12, fontSize: 10, fontWeight: 700 }}>
-          <span style={{ color: "#00c875" }}>● Won {">"} 50%</span>
-          <span style={{ color: "#fdab3d" }}>● Mixed</span>
-          <span style={{ color: "#66ccff" }}>● Pipeline</span>
-          {showPICLines && <span style={{ color: "#fdab3d" }}>--- PIC Coverage</span>}
-        </div>
-      </div>
-
-      {/* Bottom border glow line */}
-      <div style={{
-        position: "absolute", bottom: 0, left: "10%", right: "10%", height: 1,
-        background: "linear-gradient(90deg, transparent, rgba(102,204,255,0.2), transparent)"
-      }} />
+      )}
     </div>
   );
 }
