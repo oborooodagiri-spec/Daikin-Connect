@@ -523,8 +523,8 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
           ))}
         </div>
 
-        {/* Status Layer Toggle + PIC Lines Toggle */}
-        <div style={{ display: "flex", gap: 6, marginTop: 10, alignItems: "center", flexWrap: "wrap" }}>
+        {/* PIC Lines Toggle */}
+        <div style={{ display: "flex", gap: 6, marginTop: 10, alignItems: "center", flexWrap: "wrap", pointerEvents: "auto" }}>
           {/* Removed Status Filter Buttons */}
           
           <button onClick={() => { 
