@@ -464,8 +464,8 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
       `}</style>
 
       {/* Title & Controls Bar */}
-      <div style={{ position: "absolute", top: 0, left: drillDownCluster ? "50%" : 0, right: 0, zIndex: 10, background: "transparent", backdropFilter: "blur(20px)", padding: "20px 24px 16px", borderBottom: "1px solid rgba(255,255,255,0.1)", transition: "left 0.3s ease" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
+      <div style={{ position: "absolute", top: 0, left: drillDownCluster ? "50%" : 0, right: 0, zIndex: 10, background: "linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 60%, transparent 100%)", padding: "20px 24px 30px", pointerEvents: "none", transition: "left 0.3s ease" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12, pointerEvents: "auto" }}>
           <div>
             <p style={{ color: "rgba(102,204,255,0.6)", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em" }}>Project Distribution</p>
             <h3 style={{ color: "white", fontSize: 20, fontWeight: 900, marginTop: 4 }}>
@@ -480,7 +480,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
         </div>
 
         {/* Region Filter Buttons */}
-        <div style={{ display: "flex", gap: 6, marginTop: 14, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 6, marginTop: 14, flexWrap: "wrap", pointerEvents: "auto" }}>
           {Object.entries(REGION_VIEWS).map(([key, rv]) => (
             <button key={key} onClick={() => setSelectedRegion(key)}
               style={{
@@ -660,8 +660,8 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
           style={{
             position: "absolute", left: 0, top: 0, bottom: 0, width: "35%", zIndex: 5,
-            background: "transparent", backdropFilter: "blur(24px)",
-            borderRight: "1px solid rgba(255,255,255,0.1)",
+            background: "linear-gradient(90deg, rgba(8,18,35,0.95) 0%, rgba(8,18,35,0.85) 100%)",
+            boxShadow: "10px 0 30px rgba(0,0,0,0.5)",
             display: "flex", flexDirection: "column",
           }}
         >
@@ -749,9 +749,9 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
                   {filtered.map((deal: Deal) => {
                     const cfg = STATUS_CONFIG[deal.status] || { label: deal.status, color: "#888", bg: "rgba(136,136,136,0.1)" };
                     return (
-                      <div key={deal.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", background: "rgba(255,255,255,0.03)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.05)", cursor: "pointer", transition: "all 0.2s" }}
-                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(102,204,255,0.06)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(102,204,255,0.15)"; }}
-                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.03)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.05)"; }}
+                      <div key={deal.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", background: "rgba(0,0,0,0.4)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.05)", cursor: "pointer", transition: "all 0.2s" }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(102,204,255,0.15)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(102,204,255,0.3)"; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(0,0,0,0.4)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.05)"; }}
                       >
                         <span style={{ width: 28, height: 28, borderRadius: 8, background: cfg.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 900, color: cfg.color, flexShrink: 0 }}>{deal.status}</span>
                         <div style={{ flex: 1, minWidth: 0 }}>
@@ -787,18 +787,15 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
 
       </div>
 
-      {/* Regional Stats Side Panel */}
+      {/* Regional Stats Bottom Panel */}
       {!drillDownCluster && (
-        <div className="no-scrollbar" style={{ 
-          position: "absolute", top: 140, right: 24, zIndex: 10, width: 220,
-          background: "transparent", backdropFilter: "blur(20px)", 
-          borderRadius: 16, border: "1px solid rgba(255,255,255,0.1)", 
-          padding: "16px", display: "flex", flexDirection: "column", gap: 6, 
-          maxHeight: "calc(100% - 160px)", overflowY: "auto"
+        <div style={{ 
+          position: "absolute", bottom: 24, left: 24, right: 24, zIndex: 10, pointerEvents: "none"
         }}>
-          <p style={{ color: "rgba(102,204,255,0.5)", fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 4 }}>
+          <p style={{ color: "rgba(255,255,255,0.9)", fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 8, textShadow: "0 2px 4px rgba(0,0,0,0.8)" }}>
             {showPICLines ? "Sales Engineer (PIC)" : "Ranking Wilayah"}
           </p>
+          <div className="no-scrollbar" style={{ display: "flex", flexDirection: "row", gap: 12, overflowX: "auto", paddingBottom: 10 }}>
           {showPICLines ? (
             Object.entries(picStats)
               .filter(([name]) => name !== "Unassigned")
@@ -811,29 +808,31 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
                   <div key={pic}
                     onClick={() => setSelectedPicCoverage?.(isSelected ? null : pic)}
                     style={{
-                      cursor: "pointer", padding: "8px 10px", borderRadius: 10,
-                      background: isSelected ? "rgba(253,171,61,0.1)" : "rgba(255,255,255,0.02)",
+                      flexShrink: 0, width: 180,
+                      pointerEvents: "auto",
+                      cursor: "pointer", padding: "12px 16px", borderRadius: 16,
+                      background: isSelected ? "rgba(253,171,61,0.9)" : "rgba(10,20,30,0.85)",
                       border: "1px solid",
-                      borderColor: isSelected ? "rgba(253,171,61,0.25)" : "rgba(255,255,255,0.04)",
+                      borderColor: isSelected ? "rgba(253,171,61,1)" : "rgba(255,255,255,0.15)",
                       transition: "all 0.2s",
-                      boxShadow: isSelected ? "0 0 12px rgba(253,171,61,0.08)" : "none"
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.5)"
                     }}
                   >
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                      <span style={{ color: isSelected ? "#fdab3d" : "rgba(255,255,255,0.7)", fontSize: 10, fontWeight: 800 }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                      <span style={{ color: isSelected ? "#0a141e" : "white", fontSize: 11, fontWeight: 800 }}>
                         {idx + 1}. {pic}
                       </span>
-                      <span style={{ color: "#fdab3d", fontSize: 9, fontWeight: 700 }}>{data.totalCount}</span>
+                      <span style={{ color: isSelected ? "#0a141e" : "#fdab3d", fontSize: 11, fontWeight: 800 }}>{data.totalCount}</span>
                     </div>
-                    <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
+                    <div style={{ height: 4, background: isSelected ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.1)", borderRadius: 2, overflow: "hidden" }}>
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${pct}%` }}
                         transition={{ duration: 0.6, delay: idx * 0.05 }}
-                        style={{ height: "100%", background: "linear-gradient(90deg, #fdab3d, #ffcf8a)", borderRadius: 2, boxShadow: "0 0 6px rgba(253,171,61,0.3)" }}
+                        style={{ height: "100%", background: isSelected ? "#0a141e" : "#fdab3d", borderRadius: 2 }}
                       />
                     </div>
-                    <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 9, fontWeight: 700, marginTop: 3 }}>
+                    <p style={{ color: isSelected ? "rgba(10,20,30,0.7)" : "rgba(255,255,255,0.5)", fontSize: 10, fontWeight: 700, marginTop: 6 }}>
                       {formatRp(data.totalValue)}
                     </p>
                   </div>
@@ -848,35 +847,38 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
                 <div key={rs.name}
                   onClick={() => setSelectedRegion(isSelected ? "All" : rs.name)}
                   style={{
-                    cursor: "pointer", padding: "8px 10px", borderRadius: 10,
-                    background: isSelected ? "rgba(102,204,255,0.1)" : "rgba(255,255,255,0.02)",
+                    flexShrink: 0, width: 180,
+                    pointerEvents: "auto",
+                    cursor: "pointer", padding: "12px 16px", borderRadius: 16,
+                    background: isSelected ? "rgba(102,204,255,0.9)" : "rgba(10,20,30,0.85)",
                     border: "1px solid",
-                    borderColor: isSelected ? "rgba(102,204,255,0.25)" : "rgba(255,255,255,0.04)",
+                    borderColor: isSelected ? "rgba(102,204,255,1)" : "rgba(255,255,255,0.15)",
                     transition: "all 0.2s",
-                    boxShadow: isSelected ? "0 0 12px rgba(102,204,255,0.08)" : "none"
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.5)"
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                    <span style={{ color: isSelected ? "#66ccff" : "rgba(255,255,255,0.7)", fontSize: 10, fontWeight: 800 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                    <span style={{ color: isSelected ? "#0a141e" : "white", fontSize: 11, fontWeight: 800 }}>
                       {idx + 1}. {rs.name}
                     </span>
-                    <span style={{ color: "#00c875", fontSize: 9, fontWeight: 700 }}>{rs.count}</span>
+                    <span style={{ color: isSelected ? "#0a141e" : "#00c875", fontSize: 11, fontWeight: 800 }}>{rs.count}</span>
                   </div>
-                  <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
+                  <div style={{ height: 4, background: isSelected ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.1)", borderRadius: 2, overflow: "hidden" }}>
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${pct}%` }}
                       transition={{ duration: 0.6, delay: idx * 0.05 }}
-                      style={{ height: "100%", background: "linear-gradient(90deg, #3a8fd4, #00c875)", borderRadius: 2, boxShadow: "0 0 6px rgba(0,200,117,0.3)" }}
+                      style={{ height: "100%", background: isSelected ? "#0a141e" : "#00c875", borderRadius: 2 }}
                     />
                   </div>
-                  <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 9, fontWeight: 700, marginTop: 3 }}>
+                  <p style={{ color: isSelected ? "rgba(10,20,30,0.7)" : "rgba(255,255,255,0.5)", fontSize: 10, fontWeight: 700, marginTop: 6 }}>
                     {formatRp(rs.value)}
                   </p>
                 </div>
               );
             })
           )}
+          </div>
         </div>
       )}
     </div>
