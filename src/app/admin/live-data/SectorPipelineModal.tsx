@@ -72,6 +72,10 @@ export default function SectorPipelineModal({
       ["A", "B", "C", "D", "E"].forEach(s => {
         rowMap[s] = { values: {}, total: 0 };
       });
+    } else if (viewMode === "category") {
+      ["EPL", "RC", "IAQ", "Control", "VES"].forEach(c => {
+        rowMap[c] = { values: {}, total: 0 };
+      });
     }
 
     deals.forEach(d => {
@@ -91,7 +95,8 @@ export default function SectorPipelineModal({
       
       const val = Number(d.quotation || 0);
       const status = d.status || "Unknown";
-      const category = d.category || "Uncategorized";
+      let category = d.category || "Others";
+      if (category.toLowerCase().startsWith("cont")) category = "Control";
 
       const groupKey = viewMode === "status" ? status : category;
 
@@ -122,7 +127,10 @@ export default function SectorPipelineModal({
         values: rowMap[key].values,
         total: rowMap[key].total,
       }))
-      .filter(r => r.total > 0 || (viewMode === "status" && ["A", "B", "C", "D", "E"].includes(r.key))); // Keep A-E empty rows in status mode
+      .filter(r => r.total > 0 || 
+        (viewMode === "status" && ["A", "B", "C", "D", "E"].includes(r.key)) || 
+        (viewMode === "category" && ["EPL", "RC", "IAQ", "Control", "VES"].includes(r.key))
+      ); // Keep empty rows for standard items
 
     // Prepare chart data (Stacked Bar Chart)
     const chartData = columns.map(col => {
@@ -156,13 +164,18 @@ export default function SectorPipelineModal({
     'H': '#64748b',
   };
 
-  const CATEGORY_COLORS = [
-    '#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#eab308', '#84cc16', '#10b981', '#06b6d4', '#0ea5e9', '#6366f1'
-  ];
+  const CATEGORY_COLORS: Record<string, string> = {
+    'EPL': '#fdab3d',
+    'RC': '#7b2cbf',
+    'IAQ': '#00c875',
+    'Control': '#0073ea',
+    'VES': '#e44258',
+    'Others': '#94a3b8'
+  };
 
   const getRowColor = (key: string, idx: number) => {
     if (viewMode === "status") return STATUS_COLORS[key] || color;
-    return CATEGORY_COLORS[idx % CATEGORY_COLORS.length];
+    return CATEGORY_COLORS[key] || CATEGORY_COLORS['Others'];
   };
 
   if (!isOpen) return null;
