@@ -727,7 +727,13 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
                 const isSelected = selectedPicCoverage === pic;
                 return (
                   <div key={pic}
-                    onClick={() => setSelectedPicCoverage?.(isSelected ? null : pic)}
+                    onClick={() => {
+                      setSelectedPicCoverage?.(isSelected ? null : pic);
+                      if (!isSelected) {
+                        setSelectedRegion("All");
+                        setDrillDownCluster(null);
+                      }
+                    }}
                     style={{
                       flexShrink: 0, width: 180,
                       pointerEvents: "auto",
