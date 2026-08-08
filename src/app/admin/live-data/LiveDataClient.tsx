@@ -433,6 +433,9 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
     const regionMap: Record<string, { value: number; count: number; won: number }> = {};
     deals.forEach(deal => {
       if (deal.status === "L") return;
+      if (statusLayerFilter && deal.status !== statusLayerFilter) return;
+      if (showPICLines && selectedPicCoverage && deal.pic !== selectedPicCoverage) return;
+      
       const geo = guessCoords(deal);
       if (!geo) return;
       
@@ -452,7 +455,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
     return Object.entries(regionMap)
       .map(([name, data]) => ({ name, ...data }))
       .sort((a, b) => b.value - a.value);
-  }, [deals, currentZoomLevel, selectedRegion]);
+  }, [deals, currentZoomLevel, selectedRegion, statusLayerFilter, showPICLines, selectedPicCoverage]);
 
   // PIC connection lines
   const picLines = useMemo(() => {
