@@ -1633,11 +1633,25 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
               <h3 style={{ fontSize: 13, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em", color: "#323338" }}>Sales Overdue Leaderboard</h3>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {Object.entries(stats.byPic)
-                .filter(([name, data]) => name !== "Unassigned" && (data as any).overdueCount > 0)
-                .sort(([, a], [, b]) => (b as any).overdueCount - (a as any).overdueCount)
-                .slice(0, 5)
-                .map(([pic, data], idx) => {
+              {(() => {
+                const overdueList = Object.entries(stats.byPic)
+                  .filter(([name, data]) => name !== "Unassigned" && (data as any).overdueCount > 0)
+                  .sort(([, a], [, b]) => (b as any).overdueCount - (a as any).overdueCount)
+                  .slice(0, 5);
+
+                if (overdueList.length === 0) {
+                  return (
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "16px 0", textAlign: "center", opacity: 0.9 }}>
+                      <div style={{ width: 44, height: 44, borderRadius: "50%", background: "rgba(16, 185, 129, 0.1)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                        <CheckCircle2 size={22} color="#10b981" />
+                      </div>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: "#10b981", marginBottom: 4 }}>Semua Aman!</span>
+                      <span style={{ fontSize: 11, color: "#6b7280", maxWidth: "85%", lineHeight: 1.4 }}>Luar biasa, saat ini tidak ada satu pun proyek sales yang melewati batas waktu PO. Pertahankan kinerja hebat ini!</span>
+                    </div>
+                  );
+                }
+
+                return overdueList.map(([pic, data], idx) => {
                   const overdueCount = (data as any).overdueCount;
                   return (
                     <div key={pic} style={{ position: "relative", cursor: canClickWidgets ? "pointer" : "default" }}
@@ -1658,7 +1672,8 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                       </div>
                     </div>
                   );
-                })}
+                });
+              })()}
             </div>
           </div>
 
