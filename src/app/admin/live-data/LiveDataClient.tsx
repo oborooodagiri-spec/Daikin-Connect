@@ -1645,8 +1645,8 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                       <div style={{ width: 44, height: 44, borderRadius: "50%", background: "rgba(16, 185, 129, 0.1)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
                         <CheckCircle2 size={22} color="#10b981" />
                       </div>
-                      <span style={{ fontSize: 13, fontWeight: 800, color: "#10b981", marginBottom: 4 }}>Semua Aman!</span>
-                      <span style={{ fontSize: 11, color: "#6b7280", maxWidth: "85%", lineHeight: 1.4 }}>Luar biasa, saat ini tidak ada satu pun proyek sales yang melewati batas waktu PO. Pertahankan kinerja hebat ini!</span>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: "#10b981", marginBottom: 4 }}>All Good!</span>
+                      <span style={{ fontSize: 11, color: "#6b7280", maxWidth: "85%", lineHeight: 1.4 }}>Luar biasa, saat ini tidak ada proyek overdue. Pertahankan kinerja hebat ini! EPL GOKIL</span>
                     </div>
                   );
                 }
