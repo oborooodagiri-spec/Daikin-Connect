@@ -82,9 +82,9 @@ export default function PICSettingsModal({ isOpen, onClose }: PICSettingsModalPr
         {loading ? (
           <p style={{ textAlign: "center", padding: 40, color: "#676879" }}>Loading...</p>
         ) : (
-          <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 16, minHeight: 0 }}>
             
-            <div style={{ display: "flex", gap: 12, alignItems: "flex-end", background: "#f8f9fb", padding: 16, borderRadius: 12, border: "1px solid #e8e8e8" }}>
+            <div style={{ display: "flex", gap: 12, alignItems: "flex-end", background: "#f8f9fb", padding: 16, borderRadius: 12, border: "1px solid #e8e8e8", flexShrink: 0 }}>
               <div style={{ flex: 1 }}>
                 <label style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: "#676879", marginBottom: 6, display: "block" }}>PIC Name</label>
                 <select value={newPic} onChange={e => setNewPic(e.target.value)} style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid #e8e8e8", fontSize: 13, outline: "none", background: "white", cursor: "pointer" }}>
@@ -106,18 +106,18 @@ export default function PICSettingsModal({ isOpen, onClose }: PICSettingsModalPr
                   ))}
                 </select>
               </div>
-              <button onClick={addMapping} style={{ padding: "10px 16px", borderRadius: 10, border: "none", background: "#0073ea", color: "white", fontSize: 13, fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, height: 40 }}>
+              <button onClick={addMapping} style={{ padding: "10px 16px", borderRadius: 10, border: "none", background: "#0073ea", color: "white", fontSize: 13, fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, height: 40, flexShrink: 0 }}>
                 <Plus size={16} /> Add
               </button>
             </div>
 
-            <div style={{ border: "1px solid #e8e8e8", borderRadius: 12, overflow: "hidden" }}>
+            <div style={{ border: "1px solid #e8e8e8", borderRadius: 12, overflowY: "auto", flex: 1, minHeight: 0 }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
-                  <tr style={{ background: "#f8f9fb", borderBottom: "1px solid #e8e8e8" }}>
-                    <th style={{ padding: "12px 16px", textAlign: "left", fontSize: 10, fontWeight: 800, textTransform: "uppercase", color: "#676879" }}>PIC Name</th>
-                    <th style={{ padding: "12px 16px", textAlign: "left", fontSize: 10, fontWeight: 800, textTransform: "uppercase", color: "#676879" }}>Area</th>
-                    <th style={{ padding: "12px 16px", textAlign: "right", width: 60 }}></th>
+                  <tr>
+                    <th style={{ position: "sticky", top: 0, background: "#f8f9fb", zIndex: 1, borderBottom: "1px solid #e8e8e8", padding: "12px 16px", textAlign: "left", fontSize: 10, fontWeight: 800, textTransform: "uppercase", color: "#676879" }}>PIC Name</th>
+                    <th style={{ position: "sticky", top: 0, background: "#f8f9fb", zIndex: 1, borderBottom: "1px solid #e8e8e8", padding: "12px 16px", textAlign: "left", fontSize: 10, fontWeight: 800, textTransform: "uppercase", color: "#676879" }}>Area</th>
+                    <th style={{ position: "sticky", top: 0, background: "#f8f9fb", zIndex: 1, borderBottom: "1px solid #e8e8e8", padding: "12px 16px", textAlign: "right", width: 60 }}></th>
                   </tr>
                 </thead>
                 <tbody>
