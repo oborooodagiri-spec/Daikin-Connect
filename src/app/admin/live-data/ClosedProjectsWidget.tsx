@@ -45,8 +45,9 @@ export default function ClosedProjectsWidget({
   const totalValue = closedDeals.reduce((sum: number, d: any) => sum + (Number(d.quotation) || 0), 0);
 
   const formatRp = (value: number) => {
-    if (value >= 1e9) return `Rp ${(value / 1e9).toFixed(1)}B`;
-    if (value >= 1e6) return `Rp ${(value / 1e6).toFixed(1)}M`;
+    if (value >= 1e12) return `Rp ${(value / 1e12).toFixed(1)}T`;
+    if (value >= 1e9) return `Rp ${(value / 1e9).toFixed(1)}M`;
+    if (value >= 1e6) return `Rp ${(value / 1e6).toFixed(1)}Jt`;
     return `Rp ${value.toLocaleString("id-ID")}`;
   };
 
