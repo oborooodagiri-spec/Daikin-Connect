@@ -829,7 +829,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
             const myWonValue = myDeals.filter(d => d.status === "A").reduce((sum, d) => sum + (Number(d.quotation) || 0), 0);
             const myWonPct = myTotalValue > 0 ? Math.round((myWonValue / myTotalValue) * 100) : 0;
             
-            const picAvatar = (currentPic === sessionName) ? avatarUrl : (usersList.find(u => u.name === currentPic)?.avatarUrl || null);
+            const picAvatar = usersList.find(u => u.name === currentPic)?.avatarUrl || avatarUrl;
             
             return (
               <div style={{ display: "flex", flexDirection: "column", gap: 14, position: "relative" }}>
