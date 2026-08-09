@@ -63,7 +63,7 @@ export default function CategoryPipelineModal({
     }
   }, [isOpen, initialFY]);
 
-  const { columns, rows, totals, grandTotal, chartData } = useMemo(() => {
+  const { columns, rows, totals, grandTotal, chartData, tree } = useMemo(() => {
     const year = 2000 + selectedFY;
     const columns: { key: string; label: string }[] = [];
     const colSet = new Set<string>();
