@@ -2,10 +2,21 @@
 
 import React, { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, TrendingUp, BarChart3, PieChart } from "lucide-react";
+import { X, TrendingUp, BarChart3, PieChart , ChevronDown, ChevronRight } from "lucide-react";
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from "recharts";
+
+interface TreeNode {
+  id: string;
+  name: string;
+  subtitle?: string;
+  level: number;
+  values: Record<string, number>;
+  total: number;
+  children: Record<string, TreeNode>;
+  color?: string;
+}
 
 interface Deal {
   id: number;
@@ -38,6 +49,11 @@ export default function SectorPipelineModal({
   const [selectedFY, setSelectedFY] = useState(initialFY);
   const [showTender, setShowTender] = useState(false);
   const [showHold, setShowHold] = useState(false);
+  const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({});
+
+  const toggleNode = (id: string) => {
+    setExpandedNodes(prev => ({ ...prev, [id]: !prev[id] }));
+  };
   const [viewMode, setViewMode] = useState<"status" | "category">("status");
 
   useEffect(() => {
@@ -141,8 +157,126 @@ export default function SectorPipelineModal({
       return dataPoint;
     });
 
-    return { columns, rows, totals, grandTotal, chartData };
+    
+    const root: TreeNode = {
+      id: "root", name: "Root", level: 0, values: {}, total: 0, children: {}
+    };
+
+    const addValueToNode = (node: TreeNode, colKey: string, val: number) => {
+      node.values[colKey] = (node.values[colKey] || 0) + val;
+      node.total += val;
+    };
+
+    deals.forEach(d => {
+      if (d.status === 'L') return;
+      if (typeof showTender !== 'undefined' && !showTender && d.status === 'T') return;
+      if (typeof showHold !== 'undefined' && !showHold && d.status === 'H') return;
+      
+      const rawDate = d.target_po_date || d.est_booking_month;
+      if (!rawDate) return;
+      const dt = new Date(rawDate);
+      if (isNaN(dt.getTime())) return;
+
+      const mYear = dt.getFullYear();
+      const key = `${mYear}-${String(dt.getMonth() + 1).padStart(2, '0')}`;
+      if (!colSet.has(key)) return; 
+      
+      const val = Number(d.quotation || 0);
+      
+      const status = d.status || "Unknown";
+      let category = d.category || "Others";
+      if (category.toLowerCase().startsWith("cont")) category = "Control";
+      const groupKey = viewMode === "status" ? status : category;
+
+      const topLevelColor = (name) => {
+        if (viewMode === "status") {
+          return {'A': '#10b981', 'B': '#3b82f6', 'C': '#8b5cf6', 'D': '#f59e0b', 'E': '#ef4444', 'T': '#f97316', 'H': '#64748b'}[name] || '#ccc';
+        } else {
+          return {'EPL': '#fdab3d', 'RC': '#7b2cbf', 'IAQ': '#00c875', 'Control': '#0073ea', 'VES': '#e44258', 'Others': '#94a3b8'}[name] || '#ccc';
+        }
+      };
+
+      const path = [
+        { key: groupKey, name: groupKey },
+        { key: d.pic || "Unassigned", name: d.pic || "Unassigned" },
+        { key: d.id.toString(), name: d.client_name || "Unknown Customer", subtitle: d.project_name || "Unknown Project" }
+      ];
+
+      
+      addValueToNode(root, key, val);
+      let current = root;
+      let currentId = "root";
+
+      path.forEach((partObj, idx) => {
+        const { key: pKey, name, subtitle } = partObj;
+        currentId += "|" + pKey;
+        if (!current.children[pKey]) {
+          current.children[pKey] = {
+            id: currentId, name: name, subtitle: subtitle, level: idx + 1, values: {}, total: 0, children: {}
+          };
+          if (idx === 0) {
+            current.children[pKey].color = topLevelColor ? topLevelColor(pKey) : "#ccc";
+          }
+        }
+        current = current.children[pKey];
+        addValueToNode(current, key, val);
+      });
+    });
+
+    return { columns, rows, totals, grandTotal, chartData, tree: root };
   }, [deals, selectedFY, showTender, showHold, viewMode]);
+
+  
+  const renderTree = (nodes: Record<string, TreeNode>) => {
+    return Object.values(nodes)
+      .sort((a, b) => {
+        // Sort level 1 according to original logic if needed, otherwise alphabetical
+        return a.name.localeCompare(b.name);
+      })
+      .map(node => {
+        const hasChildren = Object.keys(node.children).length > 0;
+        const isExpanded = !!expandedNodes[node.id];
+        const paddingLeft = node.level === 1 ? 8 : (node.level - 1) * 24 + 8;
+
+        return (
+          <React.Fragment key={node.id}>
+            <tr style={{ background: node.level % 2 === 1 ? "#ffffff" : "#fafafa", borderBottom: "1px solid #f0f0f0", transition: "background 0.2s" }} onMouseOver={(e) => e.currentTarget.style.background = "#f1f5f9"} onMouseOut={(e) => e.currentTarget.style.background = node.level % 2 === 1 ? "#ffffff" : "#fafafa"}>
+              <td style={{ padding: "10px 16px", fontSize: 13, fontWeight: node.level < 3 ? 800 : 500, color: node.level < 3 ? "#323338" : "#475569", borderRight: "1px solid #f1f5f9" }}>
+                <div style={{ display: "flex", alignItems: "center", paddingLeft }}>
+                  {hasChildren ? (
+                    <button onClick={() => toggleNode(node.id)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, marginRight: 8, color: "#676879", borderRadius: 4 }}>
+                      {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                    </button>
+                  ) : (
+                    <div style={{ width: 32 }} />
+                  )}
+                  {node.level === 1 && <div style={{ width: 12, height: 12, borderRadius: "50%", background: node.color || "#ccc", marginRight: 8 }} />}
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <span style={{ fontSize: node.level === 3 ? 14 : 13, fontWeight: node.level === 3 ? 800 : (node.level < 3 ? 800 : 500), color: node.level === 3 ? "#1e293b" : "inherit" }}>
+                      {node.name}
+                    </span>
+                    {node.subtitle && (
+                      <span style={{ fontSize: 11, color: "#64748b", marginTop: 2, fontWeight: 500 }}>
+                        {node.subtitle}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </td>
+              {columns.map(col => (
+                <td key={col.key} style={{ padding: "10px 12px", fontSize: 13, fontWeight: node.level < 3 ? 700 : 500, color: node.values[col.key] > 0 ? (node.level < 3 ? "#0f172a" : "#334155") : "#cbd5e1", textAlign: "right", borderRight: "1px dashed #f1f5f9" }}>
+                  {node.values[col.key] > 0 ? formatRp(node.values[col.key]) : "-"}
+                </td>
+              ))}
+              <td style={{ padding: "10px 24px", fontSize: 13, fontWeight: 900, color: "#0f172a", textAlign: "right", background: "#f8fafc" }}>
+                {formatRp(node.total)}
+              </td>
+            </tr>
+            {isExpanded && hasChildren && renderTree(node.children)}
+          </React.Fragment>
+        );
+      });
+  };
 
   const formatRp = (val: number) => {
     if (val === 0 || !val) return "-";
@@ -341,35 +475,10 @@ export default function SectorPipelineModal({
                     </tr>
                   </thead>
                   <tbody>
-                    {rows.map((row, idx) => (
-                      <tr 
-                        key={row.key}
-                        style={{ 
-                          borderBottom: "1px solid #e2e8f0", 
-                          background: "white", 
-                          transition: "background 0.2s"
-                        }} 
-                        onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'} 
-                        onMouseLeave={e => e.currentTarget.style.background = 'white'}
-                      >
-                        <td style={{ padding: "16px 24px", fontSize: 14, fontWeight: 700, color: "#334155", position: "sticky", left: 0, background: "inherit", zIndex: 5, borderRight: "1px solid #f1f5f9", display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ display: "inline-block", width: 12, height: 12, borderRadius: "50%", background: getRowColor(row.key, idx) }} />
-                          {row.key}
-                        </td>
-                        {columns.map(col => (
-                          <td key={col.key} style={{ padding: "16px 12px", textAlign: "right", fontSize: 13, color: "#64748b", fontWeight: 500, borderRight: "1px dashed #f1f5f9" }}>
-                            {formatRp(row.values[col.key] || 0)}
-                          </td>
-                        ))}
-                        <td style={{ padding: "16px 24px", textAlign: "right", fontSize: 14, fontWeight: 800, color: "#0f172a", background: "#f8fafc" }}>
-                          {formatRp(row.total)}
-                        </td>
-                      </tr>
-                    ))}
-                    {rows.length === 0 && (
+                    {tree && Object.keys(tree.children).length > 0 ? renderTree(tree.children) : (
                       <tr>
                         <td colSpan={columns.length + 2} style={{ padding: "32px", textAlign: "center", color: "#64748b", fontSize: 14 }}>
-                          No project data available for {sectorName} in FY{selectedFY}
+                          No project data available in FY{selectedFY}
                         </td>
                       </tr>
                     )}

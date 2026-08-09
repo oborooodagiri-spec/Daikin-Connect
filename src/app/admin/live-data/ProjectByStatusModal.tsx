@@ -10,6 +10,7 @@ import {
 interface TreeNode {
   id: string;
   name: string;
+  subtitle?: string;
   level: number;
   values: Record<string, number>;
   total: number;
@@ -157,11 +158,11 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
       
       const val = Number(d.quotation || 0);
 
-      // Hierarchy: Status > PIC > Project Name
+      // Hierarchy: Status > PIC > Customer Name > Project Name
       const path = [
-        d.status || "Unknown Status",
-        d.pic || "Unassigned",
-        d.project_name || "Unknown Project"
+        { key: d.status || "Unknown Status", name: d.status || "Unknown Status" },
+        { key: d.pic || "Unassigned", name: d.pic || "Unassigned" },
+        { key: d.id.toString(), name: d.client_name || "Unknown Customer", subtitle: d.project_name || "Unknown Project" }
       ];
 
       addValueToNode(root, sortKey, val);
@@ -169,22 +170,24 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
       let current = root;
       let currentId = "root";
 
-      path.forEach((part, idx) => {
-        currentId += `|${part}`;
-        if (!current.children[part]) {
-          current.children[part] = {
+      path.forEach((partObj, idx) => {
+        const { key: pKey, name, subtitle } = partObj;
+        currentId += `|${pKey}`;
+        if (!current.children[pKey]) {
+          current.children[pKey] = {
             id: currentId,
-            name: part,
+            name: name,
+            subtitle: subtitle,
             level: idx + 1,
             values: {},
             total: 0,
             children: {}
           };
           if (idx === 0) { // Status level
-            current.children[part].color = STATUS_CONFIG[part]?.color || "#ccc";
+            current.children[pKey].color = STATUS_CONFIG[pKey]?.color || "#ccc";
           }
         }
-        current = current.children[part];
+        current = current.children[pKey];
         addValueToNode(current, sortKey, val);
       });
     });
@@ -256,7 +259,16 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
                     <div style={{ width: 32 }} />
                   )}
                   {node.level === 1 && <div style={{ width: 12, height: 12, borderRadius: "50%", background: node.color, marginRight: 8 }} />}
-                  {node.level === 1 ? (STATUS_CONFIG[node.name]?.label || node.name) : node.name}
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <span style={{ fontSize: node.level === 3 ? 14 : 13, fontWeight: node.level === 3 ? 800 : (node.level < 3 ? 800 : 500), color: node.level === 3 ? "#1e293b" : "inherit" }}>
+                      {node.level === 1 ? (STATUS_CONFIG[node.name]?.label || node.name) : node.name}
+                    </span>
+                    {node.subtitle && (
+                      <span style={{ fontSize: 11, color: "#64748b", marginTop: 2, fontWeight: 500 }}>
+                        {node.subtitle}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </td>
               {columns.map(col => (
