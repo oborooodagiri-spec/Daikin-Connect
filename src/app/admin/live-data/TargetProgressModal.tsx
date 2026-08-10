@@ -262,7 +262,11 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
                           </div>
                           
                           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, fontWeight: 600, color: "#676879" }}>
-                            <span>Closed: <span style={{ color: "#323338" }}>{formatRp(data.achievement)}</span> ({data.count} projects)</span>
+                            <div style={{ display: "flex", gap: 12 }}>
+                              <span>Closed: <span style={{ color: "#10b981" }}>{formatRp(data.achievement)}</span> ({data.count} projects)</span>
+                              <span>Backlog: <span style={{ color: "#0ea5e9" }}>{formatRp(data.totalBacklog)}</span></span>
+                              <span style={{ color: "#f59e0b" }}>Total: <span style={{ fontWeight: 800 }}>{formatRp(data.achievement + data.totalBacklog)}</span></span>
+                            </div>
                             <span>Target: {formatRp(data.target)}</span>
                           </div>
                         </div>
