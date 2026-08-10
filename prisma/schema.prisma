@@ -1075,9 +1075,12 @@ model pipeline_deals {
   updated_at        DateTime           @updatedAt @db.Timestamp(0)
   pic_id            Int?
   target_po_date    DateTime?          @db.Date
-  is_closed         Boolean            @default(false)
-  users             users?             @relation(fields: [pic_id], references: [id])
-  history           pipeline_history[]
+  is_closed          Boolean            @default(false)
+  is_partial_close   Boolean            @default(false)
+  partial_percentage Float?
+  parent_deal_id     Int?
+  users              users?             @relation(fields: [pic_id], references: [id])
+  history            pipeline_history[]
 
   @@index([status])
   @@index([pic])

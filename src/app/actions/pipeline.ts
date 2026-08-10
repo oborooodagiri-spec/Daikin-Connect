@@ -50,6 +50,9 @@ export interface DealData {
   latitude?: number;
   longitude?: number;
   is_closed?: boolean;
+  is_partial_close?: boolean;
+  partial_percentage?: number | null;
+  parent_deal_id?: number | null;
 }
 
 interface OpsData {
@@ -1023,3 +1026,79 @@ export async function updateTargetSettings(data: any) {
     return { error: "Failed to update target settings." };
   }
 }
+
+export async function partialCloseDeal(id: number, closedAmount: number) {
+  try {
+    const session = await getSession();
+    if (!session) return { error: "Unauthorized" };
+
+    const existing = await prisma.pipeline_deals.findUnique({ where: { id } });
+    if (!existing) return { error: "Deal not found" };
+
+    const totalQuotation = Number(existing.quotation);
+    if (closedAmount <= 0 || closedAmount >= totalQuotation) {
+      return { error: "Invalid partial close amount" };
+    }
+
+    const remainingAmount = totalQuotation - closedAmount;
+    const partialPercentage = parseFloat(((closedAmount / totalQuotation) * 100).toFixed(2));
+
+    // 1. Create the new closed deal (the partial close chunk)
+    const closedDeal = await prisma.pipeline_deals.create({
+      data: {
+        client_name: existing.client_name,
+        area: existing.area,
+        project_name: `${existing.project_name}`,
+        bill_material: existing.bill_material,
+        type: existing.type,
+        region: existing.region,
+        sales_planner: existing.sales_planner,
+        pic: existing.pic,
+        pic_id: existing.pic_id,
+        category: existing.category,
+        sector: existing.sector,
+        quotation: closedAmount,
+        status: existing.status,
+        est_booking_month: existing.est_booking_month,
+        booking_fc: existing.booking_fc,
+        remarks: existing.remarks,
+        source: existing.source,
+        priority: existing.priority,
+        latitude: existing.latitude,
+        longitude: existing.longitude,
+        target_po_date: existing.target_po_date,
+        is_closed: true,
+        is_partial_close: true,
+        partial_percentage: partialPercentage,
+        parent_deal_id: existing.id
+      }
+    });
+
+    // 2. Update the existing deal to reflect the remaining amount
+    const updatedDeal = await prisma.pipeline_deals.update({
+      where: { id },
+      data: {
+        quotation: remainingAmount,
+        is_partial_close: true
+      }
+    });
+
+    // 3. Log history for original deal
+    await prisma.pipeline_history.create({
+      data: {
+        deal_id: existing.id,
+        changed_by_id: session.user.id,
+        field_changed: "quotation",
+        old_value: totalQuotation.toString(),
+        new_value: remainingAmount.toString(),
+        remark: `Partially closed Rp ${closedAmount.toLocaleString("id-ID")} (${partialPercentage}%). Split into new closed deal ID ${closedDeal.id}.`
+      }
+    });
+
+    return { success: true, newDealId: closedDeal.id, remainingDealId: updatedDeal.id };
+  } catch (error) {
+    console.error("partialCloseDeal error:", error);
+    return { error: "Failed to perform partial close" };
+  }
+}
+

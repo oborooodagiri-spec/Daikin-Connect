@@ -31,7 +31,8 @@ import PICSettingsModal from "./PICSettingsModal";
 import TargetSettingsModal from "./TargetSettingsModal";
 import TargetProgressModal from "./TargetProgressModal";
 import PartnershipSettingsModal from "./PartnershipSettingsModal";
-import { updateDeal, getPICAreas, updatePICAreas, getTargetSettings } from "@/app/actions/pipeline";
+import PartialCloseModal from "./PartialCloseModal";
+import { getDealsPipeline, updateDeal, partialCloseDeal, getPICAreas, updatePICAreas, getTargetSettings } from "@/app/actions/pipeline";
 import { exportProjectByStatusMatrix, exportCategoryMatrix, exportSectorMatrix, exportHierarchyTree } from "@/lib/excelExport";
 
 // ============================================
@@ -923,8 +924,13 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
   const [sourceFilter, setSourceFilter] = useState("All");
   const [projectStateFilter, setProjectStateFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
-  const [editingDeal, setEditingDeal] = useState<Deal | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingDeal, setEditingDeal] = useState<DealData | null>(null);
+
+  // Partial Close Modal
+  const [partialCloseModal, setPartialCloseModal] = useState<{isOpen: boolean, deal: DealData | null}>({isOpen: false, deal: null});
+
+  // Settings modals
   const [editingOps, setEditingOps] = useState<OpsRecord | null>(null);
   
   const [showProjectByStatusModal, setShowProjectByStatusModal] = useState(false);
@@ -1933,6 +1939,19 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
           </div>
         </div>
 
+        {/* Legend */}
+        <div style={{ ...cardStyle, padding: "12px 16px", display: "flex", flexWrap: "wrap", gap: 24, alignItems: "center" }}>
+          <span style={{ fontSize: 11, fontWeight: 800, color: "#676879", textTransform: "uppercase" }}>Indikator Warna:</span>
+          <div className="flex items-center gap-4 text-[11px] font-bold">
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-sm bg-blue-100 border-l-2 border-blue-500"></div> <span className="text-blue-800">Full Close (Selesai)</span></div>
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-sm bg-amber-50 border-l-2 border-amber-400"></div> <span className="text-amber-700">Partial Close (Tutup Sebagian)</span></div>
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-sm bg-green-50 border-l-2 border-green-500"></div> <span className="text-green-700">Won (Belum Close)</span></div>
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-sm bg-red-50 border-l-2 border-red-500 animate-pulse"></div> <span className="text-red-700">Overdue (Lewat Deadline)</span></div>
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-sm bg-gray-200 border-l-2 border-gray-400"></div> <span className="text-gray-700">Hold</span></div>
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-sm bg-gray-100 border-l-2 border-gray-800"></div> <span className="text-gray-900">Lost / Cancel</span></div>
+          </div>
+        </div>
+
         {/* Table */}
         <div style={{ ...cardStyle, padding: 0, overflow: "hidden" }}>
           <div style={{ overflowX: "auto" }}>
@@ -1972,6 +1991,10 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                       rowClass = "border-gray-400 border-l-4";
                       bgColor = "rgba(141,148,158,0.05)";
                       bgHover = "rgba(141,148,158,0.1)";
+                  } else if (isClosed && deal.is_partial_close) {
+                     rowClass = "border-amber-400 border-l-4";
+                     bgColor = "#fffbeb";
+                     bgHover = "#fef3c7";
                   } else if (isClosed) {
                      rowClass = "border-blue-500 border-l-4";
                      bgColor = "#f0f7ff";
@@ -2000,11 +2023,18 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                               e.preventDefault();
                               return;
                             }
-                            setDeals(prev => prev.map(d => d.id === deal.id ? { ...d, is_closed: newState } : d));
-                            const res = await updateDeal(deal.id, { is_closed: newState });
-                            if ((res as any).error) {
-                              setDeals(prev => prev.map(d => d.id === deal.id ? { ...d, is_closed: !newState } : d));
-                              alert("Failed to update close status: " + (res as any).error);
+                            
+                            if (newState) {
+                              // If checked (closing), open the modal instead of closing immediately
+                              setPartialCloseModal({ isOpen: true, deal });
+                            } else {
+                              // If unchecking (re-opening), do it immediately
+                              setDeals(prev => prev.map(d => d.id === deal.id ? { ...d, is_closed: false } : d));
+                              const res = await updateDeal(deal.id, { is_closed: false });
+                              if ((res as any).error) {
+                                setDeals(prev => prev.map(d => d.id === deal.id ? { ...d, is_closed: true } : d));
+                                alert("Failed to reopen project: " + (res as any).error);
+                              }
                             }
                           }} style={{ width: 16, height: 16, cursor: canClickWidgets ? "pointer" : "default" }} />
                         </label>
@@ -2019,7 +2049,14 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                           <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-red-100 text-red-600 leading-none animate-pulse border border-red-200 uppercase whitespace-nowrap">Input Location</span>
                         )}
                       </div>
-                      <p style={{ fontSize: 11, fontWeight: 600, color: "#676879", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{deal.project_name}</p>
+                      <div className="flex items-center gap-2">
+                        <p style={{ fontSize: 11, fontWeight: 600, color: "#676879", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{deal.project_name}</p>
+                        {deal.is_partial_close && (
+                          <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 text-[9px] font-bold whitespace-nowrap">
+                            PARTIAL CLOSE {deal.partial_percentage ? `${deal.partial_percentage}%` : ""}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td style={{ padding: "12px 16px" }}>
                       <span style={{ padding: "4px 10px", borderRadius: 8, background: "#f0f0ff", fontSize: 10, fontWeight: 800, color: "#5a189a" }}>{deal.category || "-"}</span>
@@ -2319,6 +2356,33 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
       <TargetSettingsModal isOpen={showTargetSettingsModal} onClose={() => setShowTargetSettingsModal(false)} />
       <PartnershipSettingsModal isOpen={showPartnershipSettingsModal} onClose={() => setShowPartnershipSettingsModal(false)} />
       <TargetProgressModal isOpen={showTargetProgressModal} onClose={() => setShowTargetProgressModal(false)} formatRp={formatRp} deals={deals} currentFY={currentFY} fyOptions={fyOptions} />
+      
+      <PartialCloseModal
+        isOpen={partialCloseModal.isOpen}
+        onClose={() => setPartialCloseModal({ isOpen: false, deal: null })}
+        deal={partialCloseModal.deal}
+        formatRp={formatRp}
+        onFullClose={async (dealToClose) => {
+          // Optimistic UI update
+          setDeals(prev => prev.map(d => d.id === dealToClose.id ? { ...d, is_closed: true } : d));
+          const res = await updateDeal(dealToClose.id, { is_closed: true });
+          if ((res as any).error) {
+            setDeals(prev => prev.map(d => d.id === dealToClose.id ? { ...d, is_closed: false } : d));
+            alert("Failed to close project: " + (res as any).error);
+          }
+        }}
+        onPartialClose={async (dealToClose, amount) => {
+          const res = await partialCloseDeal(dealToClose.id!, amount);
+          if (res.error) {
+            alert("Failed to partial close project: " + res.error);
+          } else {
+            // Refresh deals list from DB to get the new split record and updated original
+            const refreshedDeals = await getDealsPipeline();
+            setDeals(refreshedDeals);
+          }
+        }}
+      />
+
       <PresentationModal state={presentationState} onClose={() => setPresentationState(null)} formatRp={formatRp} STATUS_CONFIG={STATUS_CONFIG} />
     </div>
   );
