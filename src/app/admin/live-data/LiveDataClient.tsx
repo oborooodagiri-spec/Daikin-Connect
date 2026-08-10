@@ -1242,9 +1242,9 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
   const paginatedDeals = filteredDeals.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   const totalPages = Math.ceil(filteredDeals.length / itemsPerPage);
 
-  const uniquePics = useMemo(() => [...new Set(deals.map(d => d.pic).filter(Boolean))].sort(), [deals]);
-  const uniqueCategories = useMemo(() => [...new Set(deals.map(d => d.category).filter(Boolean))].sort(), [deals]);
-  const uniqueSectors = useMemo(() => [...new Set(deals.map(d => d.sector).filter(Boolean))].sort(), [deals]);
+  const uniquePics = useMemo(() => [...new Set(deals.map(d => d.pic?.trim()).filter(Boolean))].sort(), [deals]);
+  const uniqueCategories = useMemo(() => [...new Set(deals.map(d => d.category?.trim().toUpperCase()).filter(Boolean))].sort(), [deals]);
+  const uniqueSectors = useMemo(() => [...new Set(deals.map(d => d.sector?.trim().toUpperCase()).filter(Boolean))].sort(), [deals]);
   const uniqueStatuses = useMemo(() => Object.keys(STATUS_CONFIG), []);
 
   // ============================================
@@ -1929,9 +1929,15 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
           ))}
 
           <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontSize: 11, fontWeight: 800, color: "#676879" }}>
-              {data.length} results · {formatRp(data.reduce((s, d) => s + Number(d.quotation), 0))}
-            </span>
+            <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", padding: "8px 16px", borderRadius: 12, display: "flex", alignItems: "center", gap: 8, boxShadow: "0 2px 4px rgba(59,130,246,0.1)" }}>
+              <span style={{ fontSize: 14, fontWeight: 900, color: "#1d4ed8" }}>
+                {data.length} <span style={{ fontSize: 12, fontWeight: 700, color: "#3b82f6" }}>results</span>
+              </span>
+              <span style={{ color: "#93c5fd", fontWeight: 900 }}>·</span>
+              <span style={{ fontSize: 14, fontWeight: 900, color: "#10b981" }}>
+                {formatRp(data.reduce((s, d) => s + Number(d.quotation), 0))}
+              </span>
+            </div>
             <button onClick={() => { setEditingDeal(null); setShowAddModal(true); }}
               className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20">
               <Plus size={14} /> Add Project
