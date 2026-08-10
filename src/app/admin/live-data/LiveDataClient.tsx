@@ -989,8 +989,25 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
 
   // Specific deals scope for Project By Status and Pipeline Status Funnel widgets
   const projectByStatusDeals = useMemo(() => {
-    return deals.filter(d => !d.is_closed && ['A', 'B', 'C', 'D', 'E'].includes(d.status));
-  }, [deals]);
+    const fyStart = new Date(2000 + selectedFY, 3, 1).getTime(); // April 1st
+    const fyEnd = new Date(2000 + selectedFY + 1, 2, 31, 23, 59, 59, 999).getTime(); // March 31st
+    
+    return deals.filter(d => {
+      // Must be a valid pipeline status (A-E)
+      if (!['A', 'B', 'C', 'D', 'E'].includes(d.status)) return false;
+      
+      // If it's active (not closed), always carry over and include it
+      if (!d.is_closed) return true;
+      
+      // If it IS closed, ONLY include it if its date falls within the selected FY
+      const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
+      const dt = rawDate ? new Date(rawDate) : null;
+      if (!dt || isNaN(dt.getTime())) return false; // Safety fallback
+      
+      const t = dt.getTime();
+      return t >= fyStart && t <= fyEnd;
+    });
+  }, [deals, selectedFY]);
 
 
   // Sector groupings matching Excel definitions
