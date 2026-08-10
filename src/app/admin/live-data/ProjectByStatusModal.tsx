@@ -162,7 +162,7 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
       const path = [
         { key: d.status || "Unknown Status", name: d.status || "Unknown Status" },
         { key: d.pic || "Unassigned", name: d.pic || "Unassigned" },
-        { key: d.id.toString(), name: d.client_name || "Unknown Customer", subtitle: d.project_name || "Unknown Project" }
+        { key: d.id.toString(), name: d.client_name || "Unknown Customer", subtitle: (d.is_closed ? "🔴 [CLOSED] " : "") + (d.project_name || "Unknown Project") }
       ];
 
       addValueToNode(root, sortKey, val);

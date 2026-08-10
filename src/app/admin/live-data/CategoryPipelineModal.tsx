@@ -162,7 +162,7 @@ export default function CategoryPipelineModal({
       const path = [
         { key: category, name: category },
         { key: d.pic || "Unassigned", name: d.pic || "Unassigned" },
-        { key: d.id.toString(), name: d.client_name || "Unknown Customer", subtitle: d.project_name || "Unknown Project" }
+        { key: d.id.toString(), name: d.client_name || "Unknown Customer", subtitle: (d.is_closed ? "🔴 [CLOSED] " : "") + (d.project_name || "Unknown Project") }
       ];
 
       
