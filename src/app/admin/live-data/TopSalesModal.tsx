@@ -157,7 +157,7 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
         bookingValue: picDataMap[pic].bookingValue,
         totalDeals: picDataMap[pic].totalDeals
       }))
-      .sort((a, b) => b.bookingValue - a.bookingValue || b.salesValue - a.salesValue); // Sort strictly by bookingValue, then salesValue
+      .sort((a, b) => (b.bookingValue + b.salesValue) - (a.bookingValue + a.salesValue)); // Sort strictly by bookingValue, then salesValue
 
     return { leaderboard: arr };
   }, [deals, selectedFY, userInfoMap, activeRoleTab, partnershipPICs]);
@@ -326,13 +326,11 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
                             <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-end' }}>
                                   <span style={{ fontSize: 14, fontWeight: 900, color: '#0ea5e9', display: 'flex', alignItems: 'center', gap: 8 }}>
-                                    <span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Booking</span> 
+                                    <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>Backlog</span> 
                                     {formatRp(item.bookingValue)}
                                   </span>
-                                  <span style={{ fontSize: 14, fontWeight: 900, color: '#10b981', display: 'flex', alignItems: 'center', gap: 8 }}>
-                                    <span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Sales</span> 
-                                    {formatRp(item.salesValue)}
-                                  </span>
+                                  <span style={{ fontSize: 14, fontWeight: 900, color: '#10b981', display: 'flex', alignItems: 'center', gap: 8 }}><span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Sales</span>{formatRp(item.salesValue)}</span>
+                                  <span style={{ fontSize: 15, fontWeight: 900, color: '#f59e0b', display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}><span style={{ fontSize: 11, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total</span>{formatRp(item.bookingValue + item.salesValue)}</span>
                                   <span style={{ fontSize: 11, fontWeight: 700, color: '#64748b', marginTop: 2 }}>{item.totalDeals} Projects</span>
                                 </div>
                             </td>
@@ -354,8 +352,9 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
                           <span style={{ fontSize: 48, fontWeight: 900, color: 'rgba(255,255,255,0.9)', lineHeight: 1 }}>2</span>
                           <span style={{ fontSize: 13, fontWeight: 800, textAlign: 'center', padding: '0 8px', marginTop: 'auto', marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%', color: '#1e293b' }}>{top3[1].pic}</span>
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, marginBottom: 6 }}>
-                            <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.7)', padding: '4px 8px', borderRadius: 10, color: '#0ea5e9' }}>Booking {formatRp(top3[1].bookingValue)}</span>
+                            <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.7)', padding: '4px 8px', borderRadius: 10, color: '#0ea5e9' }}>Backlog {formatRp(top3[1].bookingValue)}</span>
                             <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.7)', padding: '4px 8px', borderRadius: 10, color: '#10b981' }}>Sales {formatRp(top3[1].salesValue)}</span>
+                            <span style={{ fontSize: 12, fontWeight: 900, backgroundColor: '#94a3b8', padding: '4px 8px', borderRadius: 10, color: 'white', marginTop: 4 }}>Total {formatRp(top3[1].bookingValue + top3[1].salesValue)}</span>
                           </div>
                           <span style={{ fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 16 }}>{top3[1].totalDeals} Projects</span>
                         </div>
@@ -375,8 +374,9 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
                           <span style={{ fontSize: 72, fontWeight: 900, color: 'rgba(255,255,255,0.95)', lineHeight: 1, textShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>1</span>
                           <span style={{ fontSize: 15, fontWeight: 900, textAlign: 'center', padding: '0 8px', marginTop: 'auto', marginBottom: 8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{top3[0].pic}</span>
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, marginBottom: 8 }}>
-                            <span style={{ fontSize: 12, fontWeight: 900, backgroundColor: 'rgba(255,255,255,0.9)', padding: '5px 12px', borderRadius: 12, color: '#0284c7', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Booking {formatRp(top3[0].bookingValue)}</span>
+                            <span style={{ fontSize: 12, fontWeight: 900, backgroundColor: 'rgba(255,255,255,0.9)', padding: '5px 12px', borderRadius: 12, color: '#0284c7', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Backlog {formatRp(top3[0].bookingValue)}</span>
                             <span style={{ fontSize: 12, fontWeight: 900, backgroundColor: 'rgba(255,255,255,0.9)', padding: '5px 12px', borderRadius: 12, color: '#059669', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Sales {formatRp(top3[0].salesValue)}</span>
+                            <span style={{ fontSize: 13, fontWeight: 900, backgroundColor: '#fbbf24', padding: '5px 12px', borderRadius: 12, color: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', marginTop: 4 }}>Total {formatRp(top3[0].bookingValue + top3[0].salesValue)}</span>
                           </div>
                           <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: 20 }}>{top3[0].totalDeals} Projects</span>
                         </div>
@@ -391,8 +391,9 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
                           <span style={{ fontSize: 48, fontWeight: 900, color: 'rgba(255,255,255,0.9)', lineHeight: 1 }}>3</span>
                           <span style={{ fontSize: 13, fontWeight: 800, textAlign: 'center', padding: '0 8px', marginTop: 'auto', marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{top3[2].pic}</span>
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, marginBottom: 6 }}>
-                            <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.85)', padding: '4px 8px', borderRadius: 10, color: '#d97706' }}>Booking {formatRp(top3[2].bookingValue)}</span>
+                            <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.85)', padding: '4px 8px', borderRadius: 10, color: '#d97706' }}>Backlog {formatRp(top3[2].bookingValue)}</span>
                             <span style={{ fontSize: 11, fontWeight: 800, backgroundColor: 'rgba(255,255,255,0.85)', padding: '4px 8px', borderRadius: 10, color: '#059669' }}>Sales {formatRp(top3[2].salesValue)}</span>
+                            <span style={{ fontSize: 12, fontWeight: 900, backgroundColor: '#b45309', padding: '4px 8px', borderRadius: 10, color: 'white', marginTop: 4 }}>Total {formatRp(top3[2].bookingValue + top3[2].salesValue)}</span>
                           </div>
                           <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: 16 }}>{top3[2].totalDeals} Projects</span>
                         </div>
@@ -418,13 +419,11 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
                               <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-end' }}>
                                     <span style={{ fontSize: 14, fontWeight: 900, color: '#0ea5e9', display: 'flex', alignItems: 'center', gap: 8 }}>
-                                      <span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Booking</span> 
+                                      <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>Backlog</span> 
                                       {formatRp(item.bookingValue)}
                                     </span>
-                                    <span style={{ fontSize: 14, fontWeight: 900, color: '#10b981', display: 'flex', alignItems: 'center', gap: 8 }}>
-                                      <span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Sales</span> 
-                                      {formatRp(item.salesValue)}
-                                    </span>
+                                    <span style={{ fontSize: 14, fontWeight: 900, color: '#10b981', display: 'flex', alignItems: 'center', gap: 8 }}><span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Sales</span>{formatRp(item.salesValue)}</span>
+                                  <span style={{ fontSize: 15, fontWeight: 900, color: '#f59e0b', display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}><span style={{ fontSize: 11, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total</span>{formatRp(item.bookingValue + item.salesValue)}</span>
                                     <span style={{ fontSize: 11, fontWeight: 700, color: '#64748b', marginTop: 2 }}>{item.totalDeals} Projects</span>
                                   </div>
                               </td>
