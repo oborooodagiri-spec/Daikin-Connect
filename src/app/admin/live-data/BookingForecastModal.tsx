@@ -106,8 +106,8 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
       const path = [
         { key: d.region || "Uncategorized Region", name: d.region || "Uncategorized Region" },
         { key: d.pic || "Unassigned PIC", name: d.pic || "Unassigned PIC" },
-        { 
-          key: d.id.toString(), 
+        { key: d.category || "Uncategorized", name: d.category || "Uncategorized" },
+        { key: d.id.toString(), 
           name: d.client_name || "Unknown Client", 
           subtitle: d.project_name || "" 
         }

@@ -162,6 +162,7 @@ export default function StatusPipelineModal({
       const path = [
         { key: status, name: status },
         { key: d.pic || "Unassigned", name: d.pic || "Unassigned" },
+        { key: d.category || "Uncategorized", name: d.category || "Uncategorized" },
         { key: d.id.toString(), name: d.client_name || "Unknown Customer", subtitle: (d.is_closed && !d.is_partial_close ? "🔴 [CLOSED] " : "") + (d.is_partial_close ? `🟡 [PARTIAL CLOSE ${d.partial_percentage || ""}%] ` : "") + (d.project_name || "Unknown Project") }
       ];
 

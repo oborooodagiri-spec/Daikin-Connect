@@ -1443,7 +1443,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
               icon: DollarSign, 
               color: "#f59e0b", 
               gradient: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)",
-              onClick: () => setCategoryModalState({ isOpen: true, categoryName: "Pipeline", color: "#f59e0b", deals: pipelineModalDeals }),
+              onClick: () => setStatusModalState({ isOpen: true, statusName: "Pipeline", color: "#f59e0b", deals: pipelineModalDeals }),
               onDownload: handleDownloadPipeline,
               isAnimatedPipeline: true
             },
