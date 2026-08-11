@@ -117,6 +117,15 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
         picName = d.sales_planner.trim();
       }
       
+      if (picName !== '(Unassigned)' && picName !== '') {
+        const matchingKey = Object.keys(userInfoMap).find(k => k.toLowerCase() === picName.toLowerCase());
+        if (matchingKey) {
+          picName = matchingKey;
+        } else {
+          picName = picName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+        }
+      }
+      
       if (picName === '(Unassigned)' || picName === '') return;
       if (activeRoleTab === 'Sales Engineer' && partnershipPICs.includes(picName)) return;
 
