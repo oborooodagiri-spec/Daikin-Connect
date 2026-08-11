@@ -1406,7 +1406,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
         {/* KPI CARDS */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
             { 
               label: "Achievement", 
@@ -1571,16 +1571,15 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                 />
               );
             }
-            return (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
               onClick={canClickWidgets ? kpi.onClick : undefined}
-              style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
+              style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "24px", transition: "all 0.15s", minHeight: 100 }}
               whileHover={{ scale: 1.02, boxShadow: `0 8px 25px ${kpi.color}40` }}
             >
-              <div style={{ minWidth: 0 }}>
-                <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.8)", marginBottom: 4 }}>{kpi.label}</p>
-                <p style={{ fontSize: 14, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{kpi.value}</p>
-                <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{kpi.sub}</p>
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <p style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.8)", marginBottom: 6 }}>{kpi.label}</p>
+                <p style={{ fontSize: 20, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{kpi.value}</p>
+                <p style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginTop: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{kpi.sub}</p>
               </div>
             </motion.div>
           )})}
@@ -2467,10 +2466,10 @@ function AnimatedAchievementCard({
     <motion.div 
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }}
       onClick={canClickWidgets ? kpi.onClick : undefined}
-      style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
+      style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "24px", transition: "all 0.15s", minHeight: 100 }}
       whileHover={{ scale: 1.02, boxShadow: `0 8px 25px ${kpi.color}40` }}
     >
-      <div style={{ minWidth: 0, position: "relative", height: 48, flex: 1, overflow: "hidden" }}>
+      <div style={{ minWidth: 0, position: "relative", height: 60, flex: 1, overflow: "hidden" }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
@@ -2480,9 +2479,9 @@ function AnimatedAchievementCard({
             transition={{ duration: 0.3 }}
             style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}
           >
-            <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.8)", marginBottom: 4 }}>{kpi.label}</p>
-            <p style={{ fontSize: 14, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.value}</p>
-            <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.sub}</p>
+            <p style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.8)", marginBottom: 6 }}>{kpi.label}</p>
+            <p style={{ fontSize: 20, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.value}</p>
+            <p style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginTop: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.sub}</p>
           </motion.div>
         </AnimatePresence>
       </div>
@@ -2534,10 +2533,10 @@ function AnimatedProjectByStatusCard({
     <motion.div 
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
       onClick={canClickWidgets ? kpi.onClick : undefined}
-      style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
+      style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "24px", transition: "all 0.15s", minHeight: 100 }}
       whileHover={{ scale: 1.02, boxShadow: `0 8px 25px ${kpi.color}40` }}
     >
-      <div style={{ minWidth: 0, position: "relative", height: 48, flex: 1, overflow: "hidden" }}>
+      <div style={{ minWidth: 0, position: "relative", height: 60, flex: 1, overflow: "hidden" }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
@@ -2547,9 +2546,9 @@ function AnimatedProjectByStatusCard({
             transition={{ duration: 0.3 }}
             style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}
           >
-            <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.8)", marginBottom: 4 }}>{kpi.label}</p>
-            <p style={{ fontSize: 14, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.value}</p>
-            <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.sub}</p>
+            <p style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.8)", marginBottom: 6 }}>{kpi.label}</p>
+            <p style={{ fontSize: 20, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.value}</p>
+            <p style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginTop: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.sub}</p>
           </motion.div>
         </AnimatePresence>
       </div>
@@ -2589,10 +2588,10 @@ function AnimatedBookingForecastCard({
     <motion.div 
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
       onClick={canClickWidgets ? kpi.onClick : undefined}
-      style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
+      style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "24px", transition: "all 0.15s", minHeight: 100 }}
       whileHover={{ scale: 1.02, boxShadow: `0 8px 25px ${kpi.color}40` }}
     >
-      <div style={{ minWidth: 0, position: "relative", height: 48, flex: 1, overflow: "hidden" }}>
+      <div style={{ minWidth: 0, position: "relative", height: 60, flex: 1, overflow: "hidden" }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
@@ -2602,9 +2601,9 @@ function AnimatedBookingForecastCard({
             transition={{ duration: 0.3 }}
             style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}
           >
-            <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.8)", marginBottom: 4 }}>{kpi.label}</p>
-            <p style={{ fontSize: 14, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.value}</p>
-            <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.sub}</p>
+            <p style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.8)", marginBottom: 6 }}>{kpi.label}</p>
+            <p style={{ fontSize: 20, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.value}</p>
+            <p style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginTop: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.sub}</p>
           </motion.div>
         </AnimatePresence>
       </div>
@@ -2650,10 +2649,10 @@ function AnimatedPipelineCard({
     <motion.div 
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
       onClick={canClickWidgets ? kpi.onClick : undefined}
-      style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
+      style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "24px", transition: "all 0.15s", minHeight: 100 }}
       whileHover={{ scale: 1.02, boxShadow: `0 8px 25px ${kpi.color}40` }}
     >
-      <div style={{ minWidth: 0, position: "relative", height: 48, flex: 1, overflow: "hidden" }}>
+      <div style={{ minWidth: 0, position: "relative", height: 60, flex: 1, overflow: "hidden" }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
@@ -2663,9 +2662,9 @@ function AnimatedPipelineCard({
             transition={{ duration: 0.3 }}
             style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}
           >
-            <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.8)", marginBottom: 4 }}>{kpi.label}</p>
-            <p style={{ fontSize: 14, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.value}</p>
-            <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.sub}</p>
+            <p style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.8)", marginBottom: 6 }}>{kpi.label}</p>
+            <p style={{ fontSize: 20, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.value}</p>
+            <p style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginTop: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.sub}</p>
           </motion.div>
         </AnimatePresence>
       </div>
@@ -2711,10 +2710,10 @@ function AnimatedIndustryCard({
     <motion.div 
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
       onClick={canClickWidgets ? kpi.onClick : undefined}
-      style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
+      style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "24px", transition: "all 0.15s", minHeight: 100 }}
       whileHover={{ scale: 1.02, boxShadow: `0 8px 25px ${kpi.color}40` }}
     >
-      <div style={{ minWidth: 0, position: "relative", height: 48, flex: 1, overflow: "hidden" }}>
+      <div style={{ minWidth: 0, position: "relative", height: 60, flex: 1, overflow: "hidden" }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
@@ -2724,9 +2723,9 @@ function AnimatedIndustryCard({
             transition={{ duration: 0.3 }}
             style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}
           >
-            <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.8)", marginBottom: 4 }}>{kpi.label}</p>
-            <p style={{ fontSize: 14, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.value}</p>
-            <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.sub}</p>
+            <p style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.8)", marginBottom: 6 }}>{kpi.label}</p>
+            <p style={{ fontSize: 20, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.value}</p>
+            <p style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginTop: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.sub}</p>
           </motion.div>
         </AnimatePresence>
       </div>
@@ -2772,10 +2771,10 @@ function AnimatedCommercialCard({
     <motion.div 
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
       onClick={canClickWidgets ? kpi.onClick : undefined}
-      style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "20px", transition: "all 0.15s" }}
+      style={{ ...cardStyle, background: kpi.gradient, display: "flex", alignItems: "center", gap: 16, cursor: canClickWidgets ? "pointer" : "default", padding: "24px", transition: "all 0.15s", minHeight: 100 }}
       whileHover={{ scale: 1.02, boxShadow: `0 8px 25px ${kpi.color}40` }}
     >
-      <div style={{ minWidth: 0, position: "relative", height: 48, flex: 1, overflow: "hidden" }}>
+      <div style={{ minWidth: 0, position: "relative", height: 60, flex: 1, overflow: "hidden" }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
@@ -2785,9 +2784,9 @@ function AnimatedCommercialCard({
             transition={{ duration: 0.3 }}
             style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}
           >
-            <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.8)", marginBottom: 4 }}>{kpi.label}</p>
-            <p style={{ fontSize: 14, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.value}</p>
-            <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.sub}</p>
+            <p style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.8)", marginBottom: 6 }}>{kpi.label}</p>
+            <p style={{ fontSize: 20, fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.value}</p>
+            <p style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginTop: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentContent.sub}</p>
           </motion.div>
         </AnimatePresence>
       </div>
