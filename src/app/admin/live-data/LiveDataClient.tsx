@@ -2389,7 +2389,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
           } else {
             // Refresh deals list from DB to get the new split record and updated original
             const refreshedDeals = await getDealsPipeline();
-            setDeals(refreshedDeals);
+            setDeals(refreshedDeals.data);
           }
         }}
       />
