@@ -110,7 +110,7 @@ export async function updateProjectWaTargets(projectId: string | number | bigint
 
     await prisma.projects.update({
       where: { id: BigInt(projectId) },
-      data: { wa_settings: settings }
+      data: { wa_settings: JSON.stringify(settings) }
     });
 
     revalidatePath(`/w/${projectId}/client/dashboard`);
