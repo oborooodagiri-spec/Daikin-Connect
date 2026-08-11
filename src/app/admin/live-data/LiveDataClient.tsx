@@ -1207,7 +1207,11 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
 
     return deals.filter(d => {
       // deals is already filtered for non-admins at loadData, but we keep this as an extra safety measure
-      if (!isAdmin && d.pic_id !== sessionId && d.sales_planner !== sessionName) return false;
+      if (!isAdmin && 
+          d.pic_id !== sessionId && 
+          d.sales_planner?.toLowerCase() !== sessionName.toLowerCase() &&
+          d.pic?.toLowerCase() !== sessionName.toLowerCase()
+      ) return false;
 
       const s = searchTerm.toLowerCase();
       const matchSearch = !s || d.client_name?.toLowerCase().includes(s) || d.project_name?.toLowerCase().includes(s) || d.pic?.toLowerCase().includes(s) || d.remarks?.toLowerCase().includes(s);
