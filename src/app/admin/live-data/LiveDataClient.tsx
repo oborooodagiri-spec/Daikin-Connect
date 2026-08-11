@@ -892,6 +892,10 @@ function formatRp(val: number): string {
   return `Rp ${val.toLocaleString("id-ID")}`;
 }
 
+function formatRpFull(val: number): string {
+  return `Rp ${val.toLocaleString("id-ID")}`;
+}
+
 function StatusBadge({ status }: { status: string }) {
   const cfg = STATUS_CONFIG[status] || { label: status, color: "#888", bg: "rgba(136,136,136,0.1)" };
   return (
@@ -1935,7 +1939,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
               </span>
               <span style={{ color: "#93c5fd", fontWeight: 900 }}>·</span>
               <span style={{ fontSize: 14, fontWeight: 900, color: "#10b981" }}>
-                {formatRp(data.reduce((s, d) => s + Number(d.quotation), 0))}
+                {formatRpFull(data.reduce((s, d) => s + Number(d.quotation), 0))}
               </span>
             </div>
             <button onClick={() => { setEditingDeal(null); setShowAddModal(true); }}
@@ -2072,7 +2076,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                       <span style={{ fontSize: 12, fontWeight: 700, color: "#323338" }}>{deal.pic || "-"}</span>
                     </td>
                     <td style={{ padding: "12px 16px", fontSize: 13, fontWeight: 800, color: "#323338", fontVariantNumeric: "tabular-nums" }}>
-                      {formatRp(Number(deal.quotation))}
+                      {formatRpFull(Number(deal.quotation))}
                     </td>
                     <td style={{ padding: "12px 16px" }}><StatusBadge status={deal.status} /></td>
                     <td style={{ padding: "12px 16px", fontSize: 11, fontWeight: 600, color: "#676879", maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
