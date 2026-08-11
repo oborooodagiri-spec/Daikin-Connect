@@ -152,7 +152,8 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
       });
     } else if (activeRoleTab === 'Sales Engineer') {
       Object.keys(userInfoMap).forEach(pic => {
-        if (userInfoMap[pic].isSales && !partnershipPICs.includes(pic)) {
+        const isPartnership = partnershipPICs.some(p => p.toLowerCase() === pic.toLowerCase());
+        if (userInfoMap[pic].isSales && !isPartnership) {
           const existingKey = Object.keys(picDataMap).find(k => k.toLowerCase() === pic.toLowerCase());
           if (!existingKey) {
             picDataMap[pic] = { salesValue: 0, bookingValue: 0, totalDeals: 0 };
@@ -161,12 +162,30 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
       });
     }
 
-    const arr = Object.keys(picDataMap)
+    // Merge duplicate entries that differ only by case (e.g. "Setyo Wahyudi" and "SETYO WAHYUDI")
+    const mergedMap: Record<string, { salesValue: number, bookingValue: number, totalDeals: number }> = {};
+    Object.keys(picDataMap).forEach(key => {
+      const normalizedKey = Object.keys(mergedMap).find(k => k.toLowerCase() === key.toLowerCase());
+      if (normalizedKey) {
+        // Merge into existing entry
+        mergedMap[normalizedKey].salesValue += picDataMap[key].salesValue;
+        mergedMap[normalizedKey].bookingValue += picDataMap[key].bookingValue;
+        mergedMap[normalizedKey].totalDeals += picDataMap[key].totalDeals;
+      } else {
+        // Use the version from userInfoMap if available, otherwise use Title Case
+        const canonicalKey = Object.keys(userInfoMap).find(k => k.toLowerCase() === key.toLowerCase()) 
+          || key.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+        mergedMap[canonicalKey] = { ...picDataMap[key] };
+      }
+    });
+
+    const arr = Object.keys(mergedMap)
+      .filter(pic => pic && pic.trim() !== '' && pic !== '(Unassigned)')
       .map(pic => ({
         pic,
-        salesValue: picDataMap[pic].salesValue,
-        bookingValue: picDataMap[pic].bookingValue,
-        totalDeals: picDataMap[pic].totalDeals
+        salesValue: mergedMap[pic].salesValue,
+        bookingValue: mergedMap[pic].bookingValue,
+        totalDeals: mergedMap[pic].totalDeals
       }))
       .sort((a, b) => (b.bookingValue + b.salesValue) - (a.bookingValue + a.salesValue)); // Sort strictly by bookingValue, then salesValue
 
