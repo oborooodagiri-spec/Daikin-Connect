@@ -1087,7 +1087,7 @@ export async function partialCloseDeal(id: number, closedAmount: number) {
     await prisma.pipeline_history.create({
       data: {
         deal_id: existing.id,
-        changed_by_id: session.user.id,
+        changed_by_id: parseInt(session.userId, 10),
         field_changed: "quotation",
         old_value: totalQuotation.toString(),
         new_value: remainingAmount.toString(),
