@@ -145,14 +145,16 @@ export default function TopSalesModal({ isOpen, onClose, deals, initialFY }: Top
 
     if (activeRoleTab === 'Sales Partnership') {
       partnershipPICs.forEach(pic => {
-        if (!picDataMap[pic]) {
+        const existingKey = Object.keys(picDataMap).find(k => k.toLowerCase() === pic.toLowerCase());
+        if (!existingKey) {
           picDataMap[pic] = { salesValue: 0, bookingValue: 0, totalDeals: 0 };
         }
       });
     } else if (activeRoleTab === 'Sales Engineer') {
       Object.keys(userInfoMap).forEach(pic => {
         if (userInfoMap[pic].isSales && !partnershipPICs.includes(pic)) {
-          if (!picDataMap[pic]) {
+          const existingKey = Object.keys(picDataMap).find(k => k.toLowerCase() === pic.toLowerCase());
+          if (!existingKey) {
             picDataMap[pic] = { salesValue: 0, bookingValue: 0, totalDeals: 0 };
           }
         }
