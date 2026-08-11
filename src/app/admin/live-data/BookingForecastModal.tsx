@@ -151,13 +151,7 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
   }, [deals, selectedFY]);
 
   const formatRp = (value: number) => {
-    if (value === 0) return "-";
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(value);
+    return `Rp ${value.toLocaleString("id-ID")}`;
   };
 
   const formatYAxis = (val: number) => {

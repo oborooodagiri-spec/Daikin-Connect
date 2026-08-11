@@ -886,9 +886,6 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
 // FORMAT HELPERS
 // ============================================
 function formatRp(val: number): string {
-  if (val >= 1e12) return `Rp ${(val / 1e12).toFixed(1)}T`;
-  if (val >= 1e9) return `Rp ${(val / 1e9).toFixed(1)}M`;
-  if (val >= 1e6) return `Rp ${(val / 1e6).toFixed(0)}Jt`;
   return `Rp ${val.toLocaleString("id-ID")}`;
 }
 

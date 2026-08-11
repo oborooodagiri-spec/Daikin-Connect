@@ -92,9 +92,6 @@ export default function LostAndClosedAnalyticsModal({ isOpen, onClose, deals }: 
   if (!isOpen) return null;
 
   const formatRp = (val: number | bigint) => {
-    if (val >= 1e12) return `Rp ${(Number(val) / 1e12).toFixed(1)}T`;
-    if (val >= 1e9) return `Rp ${(Number(val) / 1e9).toFixed(1)}M`;
-    if (val >= 1e6) return `Rp ${(Number(val) / 1e6).toFixed(0)}Jt`;
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
