@@ -15,15 +15,29 @@ const getFYMonths = (fy: number) => {
   return months;
 };
 
+const getExcelColName = (colIndex: number) => {
+  let name = '';
+  let index = colIndex;
+  while (index > 0) {
+    let mod = (index - 1) % 26;
+    name = String.fromCharCode(65 + mod) + name;
+    index = Math.floor((index - mod) / 26);
+  }
+  return name;
+};
+
 const setupMatrixSheet = (worksheet: ExcelJS.Worksheet, title: string, columns: any[]) => {
   worksheet.views = [{ state: 'frozen', ySplit: 5 }];
-  worksheet.mergeCells(`A1:${String.fromCharCode(65 + columns.length)}1`);
+  
+  const lastColName = getExcelColName(columns.length + 2);
+  
+  worksheet.mergeCells(`A1:${lastColName}1`);
   const titleCell = worksheet.getCell('A1');
   titleCell.value = title.toUpperCase();
   titleCell.font = { size: 16, bold: true, color: { argb: 'FF000000' } };
   titleCell.alignment = { vertical: 'middle', horizontal: 'left' };
 
-  worksheet.mergeCells(`A2:${String.fromCharCode(65 + columns.length)}2`);
+  worksheet.mergeCells(`A2:${lastColName}2`);
   const dateCell = worksheet.getCell('A2');
   const now = new Date();
   dateCell.value = `Generated on: ${now.toLocaleDateString('en-GB')} ${now.toLocaleTimeString('en-GB')}`;
