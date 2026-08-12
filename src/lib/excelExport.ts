@@ -60,11 +60,19 @@ const downloadBuffer = async (workbook: ExcelJS.Workbook, filename: string) => {
 export const exportProjectByStatusMatrix = async (deals: any[], fy: number, filename: string) => {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Project By Status');
-  const columns = getFYMonths(fy);
+  const fyMonths = getFYMonths(fy);
+  const columns = [
+    { key: 'previous_fy', label: '< APR ' + (2000 + fy) },
+    ...fyMonths,
+    { key: 'future_fy', label: '> MAR ' + (2000 + fy + 1) }
+  ];
   setupMatrixSheet(worksheet, `Project By Status Analytics - FY${fy}`, columns);
 
   const monthMap: Record<string, Record<string, number>> = {};
   const projectMap: Record<string, any[]> = {};
+
+  const fyStart = new Date(2000 + fy, 3, 1).getTime();
+  const fyEnd = new Date(2000 + fy + 1, 2, 31, 23, 59, 59, 999).getTime();
 
   deals.forEach(d => {
     if (['L', 'H', 'T'].includes(d.status)) return;
@@ -72,9 +80,17 @@ export const exportProjectByStatusMatrix = async (deals: any[], fy: number, file
     if (!rawDate) return;
     const dt = new Date(rawDate);
     if (isNaN(dt.getTime())) return;
-    const mYear = dt.getFullYear();
-    const mStr = dt.toLocaleString('default', { month: 'short' }).toUpperCase();
-    const sortKey = `${mYear}-${String(dt.getMonth() + 1).padStart(2, '0')} ${mStr} ${mYear}`;
+    
+    let sortKey = '';
+    if (dt.getTime() < fyStart) {
+      sortKey = 'previous_fy';
+    } else if (dt.getTime() > fyEnd) {
+      sortKey = 'future_fy';
+    } else {
+      const mYear = dt.getFullYear();
+      const mStr = dt.toLocaleString('default', { month: 'short' }).toUpperCase();
+      sortKey = `${mYear}-${String(dt.getMonth() + 1).padStart(2, '0')} ${mStr} ${mYear}`;
+    }
     
     if (!monthMap[d.status]) monthMap[d.status] = {};
     if (!projectMap[d.status]) projectMap[d.status] = [];
