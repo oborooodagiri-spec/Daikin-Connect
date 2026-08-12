@@ -33,7 +33,7 @@ import TargetProgressModal from "./TargetProgressModal";
 import PartnershipSettingsModal from "./PartnershipSettingsModal";
 import PartialCloseModal from "./PartialCloseModal";
 import { getDealsPipeline, updateDeal, partialCloseDeal, getPICAreas, updatePICAreas, getTargetSettings } from "@/app/actions/pipeline";
-import { exportProjectByStatusMatrix, exportCategoryMatrix, exportSectorMatrix, exportHierarchyTree } from "@/lib/excelExport";
+import { exportProjectByStatusMatrix, exportCategoryMatrix, exportSectorMatrix, exportHierarchyTree, exportBookingForecastMatrix } from "@/lib/excelExport";
 
 // ============================================
 // TYPES
