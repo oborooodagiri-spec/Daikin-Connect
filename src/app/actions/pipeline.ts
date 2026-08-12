@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
 import { revalidatePath } from "next/cache";
 import { serializePrisma } from "@/lib/serialize";
-import { unstable_noStore as noStore } from "next/cache";
+import { unstable_noStore as noStore, unstable_cache } from "next/cache";
 
 // ============================================
 // TYPES
@@ -745,16 +745,11 @@ export async function deleteOpsRecord(id: number) {
 // ============================================
 // 9. GET PIPELINE STATS (Aggregated)
 // ============================================
-export async function getPipelineStats() {
-  noStore();
+// ============================================
 
-  try {
-    const session = await getSession();
-    if (!session) return { error: "Unauthorized" };
-
-    // Fetch all relevant deals in one query to compute aggregations in JS
-    // This allows everyone (including Sales Engineers) to see the overall company stats on the dashboard
-    const deals = await prisma.pipeline_deals.findMany({
+const getCachedDealsForStats = unstable_cache(
+  async () => {
+    return prisma.pipeline_deals.findMany({
       select: {
         quotation: true,
         status: true,
@@ -765,6 +760,17 @@ export async function getPipelineStats() {
         est_booking_month: true,
       },
     });
+  },
+  ["pipeline-stats-deals"],
+  { revalidate: 30 } // Cache for 30 seconds
+);
+
+export async function getPipelineStats() {
+  try {
+    const session = await getSession();
+    if (!session) return { error: "Unauthorized" };
+
+    const deals = await getCachedDealsForStats();
 
     // --- Count & Sum by status ---
     const statusMap: Record<string, { count: number; total: bigint }> = {};

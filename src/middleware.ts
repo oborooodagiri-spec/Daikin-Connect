@@ -12,9 +12,10 @@ import { jwtVerify } from "jose";
  * 4. Malicious bot user-agent blocking
  */
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "daikin-connect-secret-key-change-in-production"
-);
+if (!process.env.JWT_SECRET) {
+  throw new Error("FATAL: JWT_SECRET environment variable is not defined. Halting application to prevent unauthorized access.");
+}
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 // ─── In-Memory Rate Limiter (Edge-compatible) ───────────────────────────
 
