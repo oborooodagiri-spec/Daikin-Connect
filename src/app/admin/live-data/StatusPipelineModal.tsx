@@ -47,6 +47,8 @@ export default function StatusPipelineModal({
 }: StatusPipelineModalProps) {
   
   const [selectedFY, setSelectedFY] = useState(initialFY);
+  const [showTender, setShowTender] = useState(false);
+  const [showHold, setShowHold] = useState(false);
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({});
 
   const toggleNode = (id: string) => {
@@ -54,7 +56,11 @@ export default function StatusPipelineModal({
   };
 
   useEffect(() => {
-    if (isOpen) setSelectedFY(initialFY);
+    if (isOpen) {
+      setSelectedFY(initialFY);
+      setShowTender(false);
+      setShowHold(false);
+    }
   }, [isOpen, initialFY]);
 
   const { columns, rows, totals, grandTotal, chartData, tree } = useMemo(() => {
@@ -78,6 +84,8 @@ export default function StatusPipelineModal({
 
     deals.forEach(d => {
       if (d.status === 'L') return; // Exclude lost
+      if (!showTender && d.status === 'T') return;
+      if (!showHold && d.status === 'H') return;
       if (d.is_closed) return;
       
       const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
@@ -139,8 +147,9 @@ export default function StatusPipelineModal({
 
     deals.forEach(d => {
       if (d.status === 'L') return;
+      if (!showTender && d.status === 'T') return;
+      if (!showHold && d.status === 'H') return;
 
-      
       const rawDate = d.target_po_date || d.est_booking_month;
       if (!rawDate) return;
       const dt = new Date(rawDate);
@@ -187,7 +196,7 @@ export default function StatusPipelineModal({
     });
 
     return { columns, rows, totals, grandTotal, chartData, tree: root };
-  }, [deals, selectedFY]);
+  }, [deals, selectedFY, showTender, showHold]);
 
   
   const renderTree = (nodes: Record<string, TreeNode>) => {
@@ -302,6 +311,22 @@ export default function StatusPipelineModal({
             </div>
             
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <div style={{ display: "flex", gap: 16, marginRight: 8, paddingRight: 16, borderRight: "1px solid #e2e8f0" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                  <div style={{ position: "relative", width: 32, height: 18, background: showTender ? "#e44258" : "#cbd5e1", borderRadius: 20, transition: "0.3s" }}>
+                    <div style={{ position: "absolute", top: 2, left: showTender ? 16 : 2, width: 14, height: 14, background: "white", borderRadius: "50%", transition: "0.3s", boxShadow: "0 1px 2px rgba(0,0,0,0.2)" }} />
+                  </div>
+                  <input type="checkbox" checked={showTender} onChange={(e) => setShowTender(e.target.checked)} style={{ display: "none" }} />
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#475569" }}>Eng. Review</span>
+                </label>
+                <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                  <div style={{ position: "relative", width: 32, height: 18, background: showHold ? "#8d949e" : "#cbd5e1", borderRadius: 20, transition: "0.3s" }}>
+                    <div style={{ position: "absolute", top: 2, left: showHold ? 16 : 2, width: 14, height: 14, background: "white", borderRadius: "50%", transition: "0.3s", boxShadow: "0 1px 2px rgba(0,0,0,0.2)" }} />
+                  </div>
+                  <input type="checkbox" checked={showHold} onChange={(e) => setShowHold(e.target.checked)} style={{ display: "none" }} />
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#475569" }}>Hold</span>
+                </label>
+              </div>
               <select
                 value={selectedFY}
                 onChange={(e) => setSelectedFY(Number(e.target.value))}
