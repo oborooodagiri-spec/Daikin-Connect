@@ -92,20 +92,22 @@ export const exportProjectByStatusMatrix = async (deals: any[], fy: number, file
       sortKey = `${mYear}-${String(dt.getMonth() + 1).padStart(2, '0')} ${mStr} ${mYear}`;
     }
     
-    if (!monthMap[d.status]) monthMap[d.status] = {};
-    if (!projectMap[d.status]) projectMap[d.status] = [];
+    const pic = d.pic || 'Unassigned';
+    
+    if (!monthMap[pic]) monthMap[pic] = {};
+    if (!projectMap[pic]) projectMap[pic] = [];
     
     const val = Number(d.quotation || 0);
-    monthMap[d.status][sortKey] = (monthMap[d.status][sortKey] || 0) + val;
-    projectMap[d.status].push({ ...d, sortKey, val });
+    monthMap[pic][sortKey] = (monthMap[pic][sortKey] || 0) + val;
+    projectMap[pic].push({ ...d, sortKey, val });
   });
 
-  const statuses = ["A", "B", "C", "D", "E"].filter(s => monthMap[s]);
-  statuses.forEach(status => {
-    const rowValues = [status];
+  const pics = Object.keys(monthMap).sort();
+  pics.forEach(pic => {
+    const rowValues = [pic];
     let rowTotal = 0;
     columns.forEach(col => {
-      const val = monthMap[status][col.key] || 0;
+      const val = monthMap[pic][col.key] || 0;
       rowValues.push(val as any);
       rowTotal += val;
     });
@@ -121,10 +123,10 @@ export const exportProjectByStatusMatrix = async (deals: any[], fy: number, file
       cell.border = { bottom: { style: 'thin', color: { argb: 'FFF1F5F9' } } };
     });
 
-    const projects = projectMap[status] || [];
+    const projects = projectMap[pic] || [];
     projects.forEach(p => {
       const projValues = Array(columns.length + 2).fill(0);
-      projValues[0] = `   - ${p.project_name || 'Unknown Project'} (${p.pic || 'Unassigned'})`;
+      projValues[0] = `   - ${p.project_name || 'Unknown Project'} [Status: ${p.status}]`;
       const colIndex = columns.findIndex(c => c.key === p.sortKey);
       if (colIndex >= 0) projValues[colIndex + 1] = p.val;
       projValues[columns.length + 1] = p.val;
@@ -141,13 +143,13 @@ export const exportProjectByStatusMatrix = async (deals: any[], fy: number, file
       });
     });
   });
-
+  
   const totalValues = ['GRAND TOTAL'];
   columns.forEach(col => {
-    const sum = statuses.reduce((acc, s) => acc + (monthMap[s][col.key] || 0), 0);
+    const sum = pics.reduce((acc, p) => acc + (monthMap[p][col.key] || 0), 0);
     totalValues.push(sum as any);
   });
-  totalValues.push(statuses.reduce((acc, s) => acc + columns.reduce((a, c) => a + (monthMap[s][c.key] || 0), 0), 0) as any);
+  totalValues.push(pics.reduce((acc, p) => acc + columns.reduce((a, c) => a + (monthMap[p][c.key] || 0), 0), 0) as any);
   const tRow = worksheet.addRow(totalValues);
   tRow.eachCell((cell, colNumber) => {
     cell.font = { bold: true };
