@@ -1375,11 +1375,11 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
       );
     };
 
-        const handleDownloadBookingForecast = () => {
+    const handleDownloadBookingForecast = () => {
       exportBookingForecastMatrix(
         bookingFcDeals,
         currentFY,
-        \BookingForecast_Report_FY\.xlsx\
+        `BookingForecast_Report_FY${currentFY}.xlsx`
       );
     };
 
