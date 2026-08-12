@@ -60,96 +60,144 @@ const downloadBuffer = async (workbook: ExcelJS.Workbook, filename: string) => {
 export const exportProjectByStatusMatrix = async (deals: any[], fy: number, filename: string) => {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Project By Status');
-  const fyMonths = getFYMonths(fy);
-  const columns = [
-    { key: 'previous_fy', label: '< APR ' + (2000 + fy) },
-    ...fyMonths,
-    { key: 'future_fy', label: '> MAR ' + (2000 + fy + 1) }
-  ];
-  setupMatrixSheet(worksheet, `Project By Status Analytics - FY${fy}`, columns);
-
-  const monthMap: Record<string, Record<string, number>> = {};
-  const projectMap: Record<string, any[]> = {};
-
-  const fyStart = new Date(2000 + fy, 3, 1).getTime();
-  const fyEnd = new Date(2000 + fy + 1, 2, 31, 23, 59, 59, 999).getTime();
-
-  deals.forEach(d => {
-    if (['L', 'H', 'T'].includes(d.status)) return;
+  
+  let minTime = Infinity;
+  let maxTime = -Infinity;
+  const validDeals = deals.filter(d => {
+    if (['L', 'H', 'T'].includes(d.status)) return false;
     const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
-    if (!rawDate) return;
+    if (!rawDate) return false;
     const dt = new Date(rawDate);
-    if (isNaN(dt.getTime())) return;
-    
-    let sortKey = '';
-    if (dt.getTime() < fyStart) {
-      sortKey = 'previous_fy';
-    } else if (dt.getTime() > fyEnd) {
-      sortKey = 'future_fy';
-    } else {
-      const mYear = dt.getFullYear();
-      const mStr = dt.toLocaleString('default', { month: 'short' }).toUpperCase();
-      sortKey = `${mYear}-${String(dt.getMonth() + 1).padStart(2, '0')} ${mStr} ${mYear}`;
-    }
-    
-    const pic = d.pic || 'Unassigned';
-    
-    if (!monthMap[pic]) monthMap[pic] = {};
-    if (!projectMap[pic]) projectMap[pic] = [];
-    
-    const val = Number(d.quotation || 0);
-    monthMap[pic][sortKey] = (monthMap[pic][sortKey] || 0) + val;
-    projectMap[pic].push({ ...d, sortKey, val });
+    if (isNaN(dt.getTime())) return false;
+    return true;
   });
 
-  const pics = Object.keys(monthMap).sort();
-  pics.forEach(pic => {
-    const rowValues = [pic];
+  validDeals.forEach(d => {
+    const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
+    const dt = new Date(rawDate);
+    const t = dt.getTime();
+    if (t < minTime) minTime = t;
+    if (t > maxTime) maxTime = t;
+  });
+
+  if (minTime === Infinity) {
+    minTime = new Date().getTime();
+    maxTime = new Date().getTime();
+  }
+
+  const columns: { key: string; label: string }[] = [];
+  const minDate = new Date(minTime);
+  const maxDate = new Date(maxTime);
+
+  let current = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
+  const end = new Date(maxDate.getFullYear(), maxDate.getMonth(), 1);
+
+  let safetyCounter = 0;
+  while (current <= end && safetyCounter < 72) { // up to 6 years range safety
+    const mYear = current.getFullYear();
+    const mStr = current.toLocaleString('default', { month: 'short' }).toUpperCase();
+    const key = `${mYear}-${String(current.getMonth() + 1).padStart(2, '0')} ${mStr} ${mYear}`;
+    columns.push({ key, label: `${mStr} ${mYear}` });
+    current.setMonth(current.getMonth() + 1);
+    safetyCounter++;
+  }
+
+  setupMatrixSheet(worksheet, `Project By Status Analytics - FY${fy}`, columns);
+
+  type TreeNode = {
+    name: string;
+    values: Record<string, number>;
+    total: number;
+    children: Record<string, TreeNode>;
+  };
+
+  const root: TreeNode = { name: "Root", values: {}, total: 0, children: {} };
+
+  validDeals.forEach(d => {
+    const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
+    const dt = new Date(rawDate);
+    const mYear = dt.getFullYear();
+    const mStr = dt.toLocaleString('default', { month: 'short' }).toUpperCase();
+    const sortKey = `${mYear}-${String(dt.getMonth() + 1).padStart(2, '0')} ${mStr} ${mYear}`;
+    
+    if (!columns.find(c => c.key === sortKey)) return;
+    
+    const val = Number(d.quotation || 0);
+
+    const path = [
+      d.status || "Unknown Status",
+      d.pic || "Unassigned",
+      d.category || "Uncategorized",
+      `${d.client_name || "Unknown Customer"} \n(${d.project_name || "Unknown Project"})`
+    ];
+
+    let currentLevel = root.children;
+    path.forEach((p, idx) => {
+      if (!currentLevel[p]) {
+        currentLevel[p] = { name: p, values: {}, total: 0, children: {} };
+      }
+      currentLevel[p].values[sortKey] = (currentLevel[p].values[sortKey] || 0) + val;
+      currentLevel[p].total += val;
+      if (idx < path.length - 1) {
+        currentLevel = currentLevel[p].children;
+      }
+    });
+  });
+
+  const writeNode = (node: TreeNode, level: number) => {
+    const rowValues = [node.name];
     let rowTotal = 0;
     columns.forEach(col => {
-      const val = monthMap[pic][col.key] || 0;
+      const val = node.values[col.key] || 0;
       rowValues.push(val as any);
       rowTotal += val;
     });
     rowValues.push(rowTotal as any);
+
     const row = worksheet.addRow(rowValues);
-    row.getCell(1).font = { bold: true, color: { argb: 'FF0F172A' } };
+    row.outlineLevel = level;
+    
+    row.getCell(1).font = { 
+      bold: level < 3, 
+      color: { argb: level === 0 ? 'FF0F172A' : level === 1 ? 'FF334155' : 'FF64748B' },
+      size: level === 3 ? 9 : 10
+    };
+
+    if (level === 3) {
+      row.getCell(1).alignment = { wrapText: true, vertical: 'middle' };
+      row.getCell(1).value = `      - ${node.name}`;
+    } else {
+      row.getCell(1).alignment = { vertical: 'middle' };
+      row.getCell(1).value = '   '.repeat(level) + (level > 0 ? (level === 1 ? '▾ ' : '  ') : '') + node.name;
+    }
+
     row.eachCell((cell, colNumber) => {
       if (colNumber > 1) {
         cell.numFmt = '_("Rp"* #,##0_);_("Rp"* \\(#,##0\\);_("Rp"* "-"_);_(@_)';
         cell.alignment = { horizontal: 'right', vertical: 'middle' };
-        if (cell.value === 0) { cell.value = '-'; cell.alignment = { horizontal: 'center' }; }
+        if (cell.value === 0) { cell.value = level === 3 ? '' : '-'; cell.alignment = { horizontal: 'center' }; }
       }
-      cell.border = { bottom: { style: 'thin', color: { argb: 'FFF1F5F9' } } };
+      cell.border = { bottom: { style: level === 3 ? 'dotted' : 'thin', color: { argb: 'FFF1F5F9' } } };
     });
 
-    const projects = projectMap[pic] || [];
-    projects.forEach(p => {
-      const projValues = Array(columns.length + 2).fill(0);
-      projValues[0] = `   - ${p.project_name || 'Unknown Project'} [Status: ${p.status}]`;
-      const colIndex = columns.findIndex(c => c.key === p.sortKey);
-      if (colIndex >= 0) projValues[colIndex + 1] = p.val;
-      projValues[columns.length + 1] = p.val;
-      const pRow = worksheet.addRow(projValues);
-      pRow.getCell(1).font = { color: { argb: 'FF64748B' }, size: 9 };
-      pRow.outlineLevel = 1;
-      pRow.eachCell((cell, colNumber) => {
-        if (colNumber > 1) {
-          cell.numFmt = '_("Rp"* #,##0_);_("Rp"* \\(#,##0\\);_("Rp"* "-"_);_(@_)';
-          cell.alignment = { horizontal: 'right', vertical: 'middle' };
-          if (cell.value === 0) { cell.value = ''; }
-        }
-        cell.border = { bottom: { style: 'dotted', color: { argb: 'FFF1F5F9' } } };
-      });
-    });
+    Object.values(node.children).sort((a, b) => b.total - a.total).forEach(child => writeNode(child, level + 1));
+  };
+
+  const relevantStatuses = ["A", "B", "C", "D", "E"];
+  relevantStatuses.forEach(s => {
+    if (root.children[s]) {
+      writeNode(root.children[s], 0);
+    }
   });
-  
+
   const totalValues = ['GRAND TOTAL'];
+  let gTotal = 0;
   columns.forEach(col => {
-    const sum = pics.reduce((acc, p) => acc + (monthMap[p][col.key] || 0), 0);
+    const sum = relevantStatuses.reduce((acc, s) => acc + (root.children[s]?.values[col.key] || 0), 0);
     totalValues.push(sum as any);
+    gTotal += sum;
   });
-  totalValues.push(pics.reduce((acc, p) => acc + columns.reduce((a, c) => a + (monthMap[p][c.key] || 0), 0), 0) as any);
+  totalValues.push(gTotal as any);
   const tRow = worksheet.addRow(totalValues);
   tRow.eachCell((cell, colNumber) => {
     cell.font = { bold: true };
