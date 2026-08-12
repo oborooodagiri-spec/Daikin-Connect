@@ -1375,12 +1375,11 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
       );
     };
 
-    const handleDownloadBookingForecast = () => {
-      exportHierarchyTree(
+        const handleDownloadBookingForecast = () => {
+      exportBookingForecastMatrix(
         bookingFcDeals,
-        `Booking Forecast (Status B) - FY${currentFY}`,
-        `BookingForecast_Report_FY${currentFY}.xlsx`,
-        false
+        currentFY,
+        \BookingForecast_Report_FY\.xlsx\
       );
     };
 
@@ -2823,3 +2822,4 @@ function AnimatedCommercialCard({
     </motion.div>
   );
 }
+
