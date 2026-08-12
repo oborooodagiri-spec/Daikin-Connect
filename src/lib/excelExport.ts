@@ -482,6 +482,7 @@ export const exportHierarchyTree = async (deals: any[], title: string, filename:
   await downloadBuffer(workbook, filename);
 };
 
+
 export const exportBookingForecastMatrix = async (deals: any[], fy: number, filename: string) => {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Booking Forecast');
@@ -490,7 +491,7 @@ export const exportBookingForecastMatrix = async (deals: any[], fy: number, file
   let maxTime = -Infinity;
   const validDeals = deals.filter(d => {
     if (d.status !== 'B') return false;
-    const rawDate = d.target_po_date || d.est_booking_month;
+    const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
     if (!rawDate) return false;
     const dt = new Date(rawDate);
     if (isNaN(dt.getTime())) return false;
@@ -498,7 +499,7 @@ export const exportBookingForecastMatrix = async (deals: any[], fy: number, file
   });
 
   validDeals.forEach(d => {
-    const rawDate = d.target_po_date || d.est_booking_month;
+    const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
     const dt = new Date(rawDate);
     const t = dt.getTime();
     if (t < minTime) minTime = t;
@@ -521,13 +522,13 @@ export const exportBookingForecastMatrix = async (deals: any[], fy: number, file
   while (current <= end && safetyCounter < 72) {
     const mYear = current.getFullYear();
     const mStr = current.toLocaleString('default', { month: 'short' }).toUpperCase();
-    const key = \\-\ \ \\;
-    columns.push({ key, label: \\ \\ });
+    const key = `${mYear}-${String(current.getMonth() + 1).padStart(2, '0')} ${mStr} ${mYear}`;
+    columns.push({ key, label: `${mStr} ${mYear}` });
     current.setMonth(current.getMonth() + 1);
     safetyCounter++;
   }
 
-  setupMatrixSheet(worksheet, \Booking Forecast (Status B) Analytics - FY\\, columns);
+  setupMatrixSheet(worksheet, `Booking Forecast (Status B) Analytics - FY${fy}`, columns);
 
   type TreeNode = {
     name: string;
@@ -539,11 +540,11 @@ export const exportBookingForecastMatrix = async (deals: any[], fy: number, file
   const root: TreeNode = { name: "Root", values: {}, total: 0, children: {} };
 
   validDeals.forEach(d => {
-    const rawDate = d.target_po_date || d.est_booking_month;
+    const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
     const dt = new Date(rawDate);
     const mYear = dt.getFullYear();
     const mStr = dt.toLocaleString('default', { month: 'short' }).toUpperCase();
-    const sortKey = \\-\ \ \\;
+    const sortKey = `${mYear}-${String(dt.getMonth() + 1).padStart(2, '0')} ${mStr} ${mYear}`;
     
     if (!columns.find(c => c.key === sortKey)) return;
     
@@ -553,7 +554,7 @@ export const exportBookingForecastMatrix = async (deals: any[], fy: number, file
       d.region || "Uncategorized Region",
       d.pic || "Unassigned PIC",
       d.category || "Uncategorized",
-      \\ \n(\)\
+      `${d.client_name || "Unknown Customer"} \n(${d.project_name || "Unknown Project"})`
     ];
 
     let currentLevel = root.children;
@@ -590,10 +591,10 @@ export const exportBookingForecastMatrix = async (deals: any[], fy: number, file
 
     if (level === 3) {
       row.getCell(1).alignment = { wrapText: true, vertical: 'middle' };
-      row.getCell(1).value = \      - \\;
+      row.getCell(1).value = `      - ${node.name}`;
     } else {
       row.getCell(1).alignment = { vertical: 'middle' };
-      row.getCell(1).value = '   '.repeat(level) + (level > 0 ? (level === 1 ? '? ' : '  ') : '') + node.name;
+      row.getCell(1).value = '   '.repeat(level) + (level > 0 ? (level === 1 ? '▾ ' : '  ') : '') + node.name;
     }
 
     row.eachCell((cell, colNumber) => {
@@ -634,3 +635,4 @@ export const exportBookingForecastMatrix = async (deals: any[], fy: number, file
 
   await downloadBuffer(workbook, filename);
 };
+
