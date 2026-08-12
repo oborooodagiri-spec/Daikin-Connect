@@ -1306,7 +1306,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
       return dt >= fyStartTime && dt <= fyEndTime;
     });
 
-    const pipelineModalDeals = activeDeals.filter(d => d.status !== 'B');
+    const pipelineModalDeals = activeDeals.filter(d => ['C', 'D', 'E', 'T', 'H'].includes(d.status));
 
     const pipelineTotal = pipelineDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
     const getCategoryTotal = (catName: string) => pipelineDeals.filter(d => {
