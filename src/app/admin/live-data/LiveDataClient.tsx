@@ -926,6 +926,8 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
   const [projectStateFilter, setProjectStateFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showPipelineTender, setShowPipelineTender] = useState(false);
+  const [showPipelineHold, setShowPipelineHold] = useState(false);
   const [editingDeal, setEditingDeal] = useState<DealData | null>(null);
 
   // Partial Close Modal
@@ -1001,7 +1003,9 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
     
     return deals.filter(d => {
       // Must be a valid pipeline status (A-E)
-      if (!['A', 'B', 'C', 'D', 'E'].includes(d.status)) return false;
+      if (!['A', 'B', 'C', 'D', 'E', 'T', 'H'].includes(d.status)) return false;
+        if (d.status === 'T' && !showPipelineTender) return false;
+        if (d.status === 'H' && !showPipelineHold) return false;
       
       // If it's active (not closed), always carry over and include it
       if (!d.is_closed) return true;
@@ -1292,7 +1296,10 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
 
     // Pipeline: status C/D/E only (not yet won, not forecasted), in current FY
     const pipelineDeals = activeDeals.filter(d => {
-      if (!['C', 'D', 'E'].includes(d.status)) return false;
+      const allowed = ['C', 'D', 'E'];
+      if (showPipelineTender) allowed.push('T');
+      if (showPipelineHold) allowed.push('H');
+      if (!allowed.includes(d.status)) return false;
       const rawDate = d.target_po_date || d.est_booking_month;
       if (!rawDate) return false;
       const dt = new Date(rawDate).getTime();
@@ -1750,11 +1757,32 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
         {/* PIPELINE FUNNEL & COMPARATIVE ANALYTICS */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div style={cardStyle}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, cursor: canClickWidgets ? "pointer" : "default" }} onClick={() => canClickWidgets && setStatusModalState({ isOpen: true, statusName: "Overview", color: "#10b981", deals: projectByStatusDeals })}>
-              <h3 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#676879" }}>Pipeline Status Funnel</h3>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: canClickWidgets ? "pointer" : "default" }} onClick={() => canClickWidgets && setStatusModalState({ isOpen: true, statusName: "Overview", color: "#10b981", deals: projectByStatusDeals })}>
+                <h3 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#676879" }}>Pipeline Status Funnel</h3>
+              </div>
+              
+              <div style={{ display: "flex", gap: 12 }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
+                  <div style={{ position: "relative", width: 28, height: 16, background: showPipelineTender ? "#e44258" : "#cbd5e1", borderRadius: 16, transition: "0.3s" }}>
+                    <div style={{ position: "absolute", top: 2, left: showPipelineTender ? 14 : 2, width: 12, height: 12, background: "white", borderRadius: "50%", transition: "0.3s", boxShadow: "0 1px 2px rgba(0,0,0,0.2)" }} />
+                  </div>
+                  <input type="checkbox" checked={showPipelineTender} onChange={(e) => setShowPipelineTender(e.target.checked)} style={{ display: "none" }} />
+                  <span style={{ fontSize: 10, fontWeight: 600, color: "#64748b" }}>Eng. Review</span>
+                </label>
+                <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
+                  <div style={{ position: "relative", width: 28, height: 16, background: showPipelineHold ? "#8d949e" : "#cbd5e1", borderRadius: 16, transition: "0.3s" }}>
+                    <div style={{ position: "absolute", top: 2, left: showPipelineHold ? 14 : 2, width: 12, height: 12, background: "white", borderRadius: "50%", transition: "0.3s", boxShadow: "0 1px 2px rgba(0,0,0,0.2)" }} />
+                  </div>
+                  <input type="checkbox" checked={showPipelineHold} onChange={(e) => setShowPipelineHold(e.target.checked)} style={{ display: "none" }} />
+                  <span style={{ fontSize: 10, fontWeight: 600, color: "#64748b" }}>Hold</span>
+                </label>
+              </div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {["E", "D", "C", "B", "A"]
+              {(showPipelineHold ? ["H"] : [])
+                .concat(showPipelineTender ? ["T"] : [])
+                .concat(["E", "D", "C", "B", "A"])
                 .map((status) => {
                   const data = stats.byStatus[status];
                   if (!data) return null;

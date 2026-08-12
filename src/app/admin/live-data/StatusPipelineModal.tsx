@@ -77,7 +77,7 @@ export default function StatusPipelineModal({
     let grandTotal = 0;
 
     deals.forEach(d => {
-      if (['L', 'H', 'T'].includes(d.status)) return; // Exclude lost/hold/engineering review
+      if (d.status === 'L') return; // Exclude lost
       if (d.is_closed) return;
       
       const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
@@ -105,7 +105,7 @@ export default function StatusPipelineModal({
       grandTotal += val;
     });
 
-    const funnelOrder = ["Submitted", "Planning", "Contracted", "Budgeted", "Won"];
+    const funnelOrder = ["Hold", "Engineering Review", "Submitted", "Planning", "Contracted", "Budgeted", "Won"];
     const rows = Object.keys(rowMap).map(status => ({
       status,
       values: rowMap[status],
@@ -139,8 +139,7 @@ export default function StatusPipelineModal({
 
     deals.forEach(d => {
       if (d.status === 'L') return;
-      if (typeof showTender !== 'undefined' && !showTender && d.status === 'T') return;
-      if (typeof showHold !== 'undefined' && !showHold && d.status === 'H') return;
+
       
       const rawDate = d.target_po_date || d.est_booking_month;
       if (!rawDate) return;
