@@ -60,6 +60,7 @@ model projects {
   user_project_access  user_project_access[]
   vendor_attendance    vendor_attendance[]
   work_orders          work_orders[]
+  modbus_gateways      modbus_gateways[]
 
   @@unique([customer_id, name], map: "uq_project_per_customer")
   @@index([customer_id], map: "idx_projects_customer")
@@ -1051,30 +1052,30 @@ model boq_items {
 }
 
 model pipeline_deals {
-  id                Int                @id @default(autoincrement())
-  client_name       String             @db.VarChar(255)
-  area              String?            @db.VarChar(100)
-  project_name      String             @db.VarChar(500)
-  bill_material     String?            @db.VarChar(255)
-  type              String?            @db.VarChar(100)
-  region            String?            @db.VarChar(50)
-  sales_planner     String?            @db.VarChar(100)
-  pic               String?            @db.VarChar(100)
-  category          String?            @db.VarChar(50)
-  sector            String?            @db.VarChar(50)
-  quotation         BigInt             @default(0)
-  status            String             @default("E") @db.VarChar(5)
-  est_booking_month DateTime?          @db.Date
-  booking_fc        String?            @db.VarChar(50)
-  remarks           String?            @db.Text
-  source            String             @default("EPL") @db.VarChar(20)
-  priority          String?            @db.VarChar(20)
-  latitude          Float?
-  longitude         Float?
-  created_at        DateTime           @default(now()) @db.Timestamp(0)
-  updated_at        DateTime           @updatedAt @db.Timestamp(0)
-  pic_id            Int?
-  target_po_date    DateTime?          @db.Date
+  id                 Int                @id @default(autoincrement())
+  client_name        String             @db.VarChar(255)
+  area               String?            @db.VarChar(100)
+  project_name       String             @db.VarChar(500)
+  bill_material      String?            @db.VarChar(255)
+  type               String?            @db.VarChar(100)
+  region             String?            @db.VarChar(50)
+  sales_planner      String?            @db.VarChar(100)
+  pic                String?            @db.VarChar(100)
+  category           String?            @db.VarChar(50)
+  sector             String?            @db.VarChar(50)
+  quotation          BigInt             @default(0)
+  status             String             @default("E") @db.VarChar(5)
+  est_booking_month  DateTime?          @db.Date
+  booking_fc         String?            @db.VarChar(50)
+  remarks            String?            @db.Text
+  source             String             @default("EPL") @db.VarChar(20)
+  priority           String?            @db.VarChar(20)
+  latitude           Float?
+  longitude          Float?
+  created_at         DateTime           @default(now()) @db.Timestamp(0)
+  updated_at         DateTime           @updatedAt @db.Timestamp(0)
+  pic_id             Int?
+  target_po_date     DateTime?          @db.Date
   is_closed          Boolean            @default(false)
   is_partial_close   Boolean            @default(false)
   partial_percentage Float?
@@ -1244,4 +1245,64 @@ enum LogsheetType {
   AHU
   FCU
   CRAC
+}
+
+model modbus_gateways {
+  id            Int                @id @default(autoincrement())
+  name          String             @db.VarChar(150)
+  description   String?            @db.Text
+  ip_address    String             @db.VarChar(45)
+  port          Int                @default(502)
+  slave_id      Int                @default(1)
+  poll_interval Int                @default(60)
+  is_active     Boolean            @default(true)
+  api_key       String             @unique @db.VarChar(64)
+  project_id    BigInt?            @db.UnsignedBigInt
+  last_seen_at  DateTime?          @db.Timestamp(0)
+  created_at    DateTime           @default(now()) @db.Timestamp(0)
+  updated_at    DateTime           @default(now()) @updatedAt @db.Timestamp(0)
+  projects      projects?          @relation(fields: [project_id], references: [id], onUpdate: Restrict)
+  registers     modbus_registers[]
+  logs          modbus_logs[]
+
+  @@index([project_id])
+  @@index([api_key])
+}
+
+model modbus_registers {
+  id               Int             @id @default(autoincrement())
+  gateway_id       Int
+  name             String          @db.VarChar(150)
+  description      String?         @db.Text
+  category         String          @db.VarChar(100)
+  sub_category     String?         @db.VarChar(100)
+  register_address Int
+  register_type    String          @default("holding") @db.VarChar(20)
+  data_type        String          @default("INT16") @db.VarChar(20)
+  scale_factor     Float           @default(1)
+  unit             String?         @db.VarChar(20)
+  is_active        Boolean         @default(true)
+  sort_order       Int             @default(0)
+  created_at       DateTime        @default(now()) @db.Timestamp(0)
+  gateway          modbus_gateways @relation(fields: [gateway_id], references: [id], onDelete: Cascade)
+  logs             modbus_logs[]
+
+  @@index([gateway_id])
+  @@index([category])
+}
+
+model modbus_logs {
+  id           BigInt           @id @default(autoincrement()) @db.UnsignedBigInt
+  gateway_id   Int
+  register_id  Int
+  raw_value    Int
+  scaled_value Float
+  recorded_at  DateTime         @default(now()) @db.Timestamp(0)
+  gateway      modbus_gateways  @relation(fields: [gateway_id], references: [id], onDelete: Cascade)
+  register     modbus_registers @relation(fields: [register_id], references: [id], onDelete: Cascade)
+
+  @@index([gateway_id])
+  @@index([register_id])
+  @@index([recorded_at])
+  @@index([gateway_id, recorded_at])
 }

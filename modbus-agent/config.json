@@ -1,0 +1,9 @@
+{
+  "server_url": "https://daikin.oborooodagiri.com",
+  "api_key": "PASTE_API_KEY_FROM_ADMIN_PANEL_HERE",
+  "gateway_ip": "172.18.35.10",
+  "gateway_port": 502,
+  "slave_id": 1,
+  "poll_interval_seconds": 60,
+  "registers": []
+}

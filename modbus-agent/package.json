@@ -1,0 +1,15 @@
+{
+  "name": "daikin-modbus-agent",
+  "version": "1.0.0",
+  "description": "Daikin Connect - Local Modbus TCP Agent",
+  "main": "agent.js",
+  "scripts": {
+    "start": "node agent.js",
+    "install-service": "node service-install.js",
+    "uninstall-service": "node service-uninstall.js"
+  },
+  "dependencies": {
+    "modbus-serial": "^8.0.17",
+    "node-windows": "^1.0.0-beta.8"
+  }
+}
