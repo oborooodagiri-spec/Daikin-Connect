@@ -1,4 +1,7 @@
 import { getSession } from "@/app/actions/auth";
+import { getResources } from "@/app/actions/database";
+import { getAllProjects } from "@/app/actions/projects";
+import { getAllUsers } from "@/app/actions/users";
 import { redirect } from "next/navigation";
 import DatabaseClient from "./DatabaseClient";
 
@@ -14,5 +17,22 @@ export default async function ResourceDatabasePage() {
     redirect("/");
   }
 
-  return <DatabaseClient />;
+  const [resData, projData, usersData] = await Promise.all([
+    getResources(),
+    getAllProjects(),
+    getAllUsers()
+  ]);
+
+  const initialResources = ('success' in resData && resData.success && 'data' in resData) ? resData.data : [];
+  const initialProjects = ('success' in projData && projData.success && 'data' in projData) ? projData.data : [];
+  const initialUsers = (usersData && 'success' in usersData && usersData.success && 'data' in usersData) ? usersData.data : [];
+
+  return (
+    <DatabaseClient 
+      initialResources={initialResources} 
+      initialSession={session} 
+      initialProjects={initialProjects} 
+      initialUsers={initialUsers} 
+    />
+  );
 }

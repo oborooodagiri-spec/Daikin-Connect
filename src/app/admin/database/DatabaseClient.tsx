@@ -32,6 +32,7 @@ import {
   Briefcase
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getResources, createResource, deleteResource, updateResource } from "@/app/actions/database";
 import { getAllUsers } from "@/app/actions/users";
@@ -40,54 +41,22 @@ import { getAllProjects } from "@/app/actions/projects";
 
 const CATEGORIES = ["All", "Strategy", "Juklak", "Juknis", "Rate Card", "Logsheet", "Interactive App", "Presentation", "Catalog", "Technical", "Marketing"];
 
-export default function KnowledgeCenterPage() {
+export default function KnowledgeCenterPage({
+  initialResources = [],
+  initialSession = null,
+  initialProjects = [],
+  initialUsers = []
+}: {
+  initialResources?: any[],
+  initialSession?: any,
+  initialProjects?: any[],
+  initialUsers?: any[]
+}) {
   const router = useRouter();
-  const [resources, setResources] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [resources, setResources] = useState<any[]>(initialResources);
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [currentPath, setCurrentPath] = useState<string[]>([]);
-  // View mode is always list
-  const [session, setSession] = useState<any>(null);
-  
-  const [viewingResource, setViewingResource] = useState<any>(null);
-  
-  // Admin Specific
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editId, setEditId] = useState<string | null>(null);
-  const [projects, setProjects] = useState<any[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [allUsers, setAllUsers] = useState<any[]>([]);
-  const [userSearch, setUserSearch] = useState("");
-  const [formData, setFormData] = useState({
-    title: "", category: "Presentation", type: "PPTX",
-    file_url: "", href: "", thumbnail: "", size: "",
-    tags: "", visibility: "Internal", allowed_users: "", project_id: ""
-  });
-
-  const fetchData = async () => {
-    setLoading(true);
-    const [resData, sessData, projData, usersData] = await Promise.all([
-      getResources(),
-      getSession(),
-      getAllProjects(),
-      getAllUsers()
-    ]);
-
-    if ('success' in resData && resData.success && 'data' in resData) {
-      setResources(resData.data);
-    }
-    if (sessData) setSession(sessData);
-    if ('success' in projData && projData.success && 'data' in projData) setProjects(projData.data);
-    if (usersData && 'success' in usersData && usersData.success && 'data' in usersData) setAllUsers(usersData.data);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const isAdmin = session?.roles?.some((r: string) => ["Admin", "Super Admin"].includes(r));
 
   const filteredResources = useMemo(() => {
     return resources.filter(res => {
@@ -141,7 +110,7 @@ export default function KnowledgeCenterPage() {
         file_url: "", href: "", thumbnail: "", size: "",
         tags: "", visibility: "Internal", allowed_users: "", project_id: ""
       });
-      fetchData();
+      router.refresh();
     } else {
       alert(res.error);
     }
@@ -151,7 +120,7 @@ export default function KnowledgeCenterPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this resource?")) return;
     const res = await deleteResource(id);
-    if (res.success) fetchData();
+    if (res.success) router.refresh();
     else alert(res.error);
   };
 
@@ -206,7 +175,7 @@ export default function KnowledgeCenterPage() {
     >
       <div className="w-full aspect-[4/3] rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 shrink-0 mb-4 overflow-hidden relative">
         {res.thumbnail ? (
-          <img src={res.thumbnail} alt={res.title} className="w-full h-full object-cover" />
+          <Image src={res.thumbnail} alt={res.title || "Thumbnail"} fill className="object-cover" sizes="(max-width: 768px) 50vw, 20vw" unoptimized />
         ) : (
            res.id === "internal-rate-card" ? <Briefcase className="w-12 h-12 text-[#0073ea]" strokeWidth={1} /> :
            res.category === "Interactive App" ? <Sparkles className="w-12 h-12 text-emerald-500" strokeWidth={1} /> :
