@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Plus, ArrowLeft, Trash2, List } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Plus, ArrowLeft, Trash2, List, Upload, Download } from "lucide-react";
 import Link from "next/link";
+import * as XLSX from "xlsx";
 
 interface Register {
   id: string;
@@ -22,6 +23,9 @@ export default function RegisterClient({ gatewayId }: { gatewayId: string }) {
   const [registers, setRegisters] = useState<Register[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [formData, setFormData] = useState({
     name: "",
     category: "Chiller",
@@ -93,6 +97,86 @@ export default function RegisterClient({ gatewayId }: { gatewayId: string }) {
     }
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet) as any[];
+
+      if (jsonData.length === 0) {
+        alert("File Excel kosong atau format tidak sesuai.");
+        return;
+      }
+
+      const payload = jsonData.map((row) => ({
+        name: row["Nama"] || row["name"] || "Unknown",
+        category: row["Kategori"] || row["category"] || "Chiller",
+        sub_category: row["Sub Kategori"] || row["sub_category"] || "",
+        register_address: parseInt(row["Address"] || row["register_address"] || 0),
+        register_type: (row["Tipe"] || row["register_type"] || "holding").toString().toLowerCase(),
+        data_type: (row["Data Type"] || row["data_type"] || "INT16").toString().toUpperCase(),
+        scale_factor: parseFloat(row["Skala"] || row["scale_factor"] || 1),
+        unit: row["Satuan"] || row["unit"] || "",
+      }));
+
+      const res = await fetch("/api/v1/modbus/registers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gateway_id: gatewayId, registers: payload }),
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        alert(`Berhasil import ${result.count} register!`);
+        fetchRegisters();
+      } else {
+        const err = await res.json();
+        alert(`Gagal import: ${err.error}`);
+      }
+    } catch (error: any) {
+      console.error("Error reading excel:", error);
+      alert(`Terjadi kesalahan saat membaca file: ${error.message}`);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const downloadTemplate = () => {
+    const templateData = [
+      {
+        "Nama": "Chiller 1 Temp",
+        "Kategori": "Chiller",
+        "Sub Kategori": "Suhu",
+        "Address": 100,
+        "Tipe": "holding",
+        "Data Type": "INT16",
+        "Skala": 0.1,
+        "Satuan": "°C",
+      },
+      {
+        "Nama": "Chiller 1 Power",
+        "Kategori": "Chiller",
+        "Sub Kategori": "Listrik",
+        "Address": 102,
+        "Tipe": "input",
+        "Data Type": "FLOAT32",
+        "Skala": 1,
+        "Satuan": "kW",
+      }
+    ];
+
+    const ws = XLSX.utils.json_to_sheet(templateData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Template");
+    XLSX.writeFile(wb, "Template_Import_Register.xlsx");
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -103,13 +187,41 @@ export default function RegisterClient({ gatewayId }: { gatewayId: string }) {
           <ArrowLeft className="mr-2 h-4 w-4" />
           Kembali ke Gateway
         </Link>
-        <button
-          onClick={() => setShowModal(true)}
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Tambah Register
-        </button>
+        <div className="flex items-center gap-2">
+          <input
+            type="file"
+            accept=".xlsx, .xls"
+            className="hidden"
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+          />
+          <button
+            onClick={downloadTemplate}
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 h-10 px-4 py-2"
+          >
+            <Download className="mr-2 h-4 w-4 text-gray-500" />
+            Template Excel
+          </button>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 h-10 px-4 py-2"
+          >
+            {isUploading ? (
+              <span className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+            ) : (
+              <Upload className="mr-2 h-4 w-4" />
+            )}
+            Import Excel
+          </button>
+          <button
+            onClick={() => setShowModal(true)}
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Tambah Register
+          </button>
+        </div>
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
@@ -139,7 +251,7 @@ export default function RegisterClient({ gatewayId }: { gatewayId: string }) {
                   <td colSpan={8} className="px-6 py-12 text-center">
                     <List className="mx-auto h-10 w-10 text-gray-400 mb-2" />
                     <p className="text-gray-900 dark:text-white font-medium">Belum ada register</p>
-                    <p className="text-sm mt-1">Tambahkan register pertama untuk gateway ini.</p>
+                    <p className="text-sm mt-1">Tambahkan register pertama untuk gateway ini atau import dari Excel.</p>
                   </td>
                 </tr>
               ) : (
