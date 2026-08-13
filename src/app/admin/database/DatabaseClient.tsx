@@ -175,7 +175,7 @@ export default function KnowledgeCenterPage({
     >
       <div className="w-full aspect-[4/3] rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 shrink-0 mb-4 overflow-hidden relative">
         {res.thumbnail ? (
-          <Image src={res.thumbnail} alt={res.title || "Thumbnail"} fill className="object-cover" sizes="(max-width: 768px) 50vw, 20vw" unoptimized />
+          <img src={res.thumbnail} alt={res.title || "Thumbnail"} className="w-full h-full object-cover" />
         ) : (
            res.id === "internal-rate-card" ? <Briefcase className="w-12 h-12 text-[#0073ea]" strokeWidth={1} /> :
            res.category === "Interactive App" ? <Sparkles className="w-12 h-12 text-emerald-500" strokeWidth={1} /> :
