@@ -77,6 +77,9 @@ export default function RegisterClient({ gatewayId }: { gatewayId: string }) {
           scale_factor: 1,
           unit: "",
         });
+      } else {
+        const err = await res.json();
+        alert(`Gagal menyimpan register: ${err.error || 'Terjadi kesalahan server'}`);
       }
     } catch (error) {
       console.error("Failed to add register:", error);

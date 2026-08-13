@@ -11,7 +11,7 @@ interface Gateway {
   ip_address: string;
   port: number;
   slave_id: number;
-  poll_interval_ms: number;
+  poll_interval: number;
   api_key: string;
   status: string;
   created_at: string;
@@ -27,7 +27,7 @@ export default function ModbusClient() {
     ip_address: "192.168.1.100",
     port: 502,
     slave_id: 1,
-    poll_interval_ms: 1000,
+    poll_interval: 60,
   });
 
   const fetchGateways = async () => {
@@ -71,7 +71,7 @@ export default function ModbusClient() {
           ip_address: "192.168.1.100",
           port: 502,
           slave_id: 1,
-          poll_interval_ms: 1000,
+          poll_interval: 60,
         });
       }
     } catch (error) {
@@ -163,7 +163,7 @@ export default function ModbusClient() {
                   <div>
                     <p className="text-gray-500 dark:text-gray-400">Interval Poll</p>
                     <p className="font-medium text-gray-900 dark:text-white">
-                      {gw.poll_interval_ms} ms
+                      {gw.poll_interval} detik
                     </p>
                   </div>
                 </div>
@@ -292,13 +292,13 @@ export default function ModbusClient() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Interval (ms)
+                    Interval (detik)
                   </label>
                   <input
                     type="number"
                     required
-                    value={formData.poll_interval_ms}
-                    onChange={(e) => setFormData({ ...formData, poll_interval_ms: parseInt(e.target.value) })}
+                    value={formData.poll_interval}
+                    onChange={(e) => setFormData({ ...formData, poll_interval: parseInt(e.target.value) })}
                     className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>

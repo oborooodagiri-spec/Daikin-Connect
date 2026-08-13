@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     for (const item of items) {
       const register = await prisma.modbus_registers.create({
         data: {
-          gateway_id,
+          gateway_id: parseInt(gateway_id),
           name: item.name,
           description: item.description || null,
           category: item.category || "General",
