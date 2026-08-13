@@ -237,7 +237,6 @@ export default function KnowledgeCenterPage() {
   );
 
   return (
-
     <div className="min-h-screen bg-white text-[#323338] p-6 md:p-12 selection:bg-blue-100">
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header Section */}
@@ -251,51 +250,29 @@ export default function KnowledgeCenterPage() {
           <div className="flex items-center gap-3"></div>
         </header>
 
-        {/* Search & Filter Bar */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-12">
-          <div className="lg:col-span-3 relative group">
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-[#0073ea] transition-colors" />
-            <input 
-              type="text" 
-              placeholder="Cari materi, katalog, atau tag khusus..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white border border-[#e6e9ef] rounded-2xl py-5 px-16 text-lg font-bold outline-none focus:border-[#0073ea] focus:ring-4 focus:ring-blue-500/5 transition-all placeholder:text-slate-400 shadow-sm"
-            />
-          </div>
-          <div className="relative group">
-            <Filter className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-hover:text-[#0073ea] transition-colors" />
-            <select 
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full appearance-none bg-white border border-[#e6e9ef] rounded-2xl py-5 px-16 font-bold text-xs uppercase tracking-widest outline-none focus:border-[#0073ea] transition-all cursor-pointer shadow-sm"
-            >
-              {CATEGORIES.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
         {/* Results Info */}
         <div className="flex items-center justify-between mb-8 px-2">
            <div className="flex items-center gap-4">
+             {currentPath.length > 0 && (
+               <button 
+                 onClick={() => setCurrentPath(currentPath.slice(0, -1))}
+                 className="w-12 h-12 bg-slate-50 border border-slate-200 hover:border-[#0073ea] hover:bg-blue-50 text-slate-500 hover:text-[#0073ea] rounded-full flex items-center justify-center transition-all shadow-sm"
+                 title="Back"
+               >
+                 <ChevronRight className="rotate-180 w-6 h-6" />
+               </button>
+             )}
+           </div>
+
+           <div className="flex items-center gap-4 text-right">
               <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
                 {currentPath.length === 0 ? "Root" : currentPath.join(" / ")}
               </span>
               <div className="h-4 w-px bg-slate-100" />
               <span className="text-sm font-bold text-[#0073ea]">
-                {searchQuery ? `${filteredResources.length} Assets Found` : "Directory"}
+                Directory
               </span>
            </div>
-           {currentPath.length > 0 && !searchQuery && (
-             <button 
-               onClick={() => setCurrentPath(currentPath.slice(0, -1))}
-               className="text-xs font-bold text-slate-500 hover:text-[#0073ea] flex items-center gap-1"
-             >
-               &larr; Back
-             </button>
-           )}
         </div>
 
         {/* Assets Grid/List */}
