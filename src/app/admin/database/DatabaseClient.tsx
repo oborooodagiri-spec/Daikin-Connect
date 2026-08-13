@@ -189,12 +189,26 @@ export default function KnowledgeCenterPage() {
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
           <div className="space-y-4">
             <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-none uppercase text-[#323338]">
-              Document <br/>
-              <span className="text-slate-400">Database</span>
+              Data<span className="text-slate-400">base</span>
             </h1>
           </div>
 
           <div className="flex items-center gap-3">
+               {session?.isInternal && (
+                 <div className="relative group">
+                   <button className="flex items-center gap-2 px-6 py-4 bg-white border border-[#e6e9ef] text-[#323338] rounded-2xl font-black text-[10px] uppercase tracking-widest hover:border-[#0073ea] hover:text-[#0073ea] transition-all shadow-sm">
+                     <FileText size={18} /> Database Report
+                   </button>
+                   <div className="absolute top-full right-0 mt-2 w-64 bg-white border border-slate-100 rounded-2xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
+                     <div className="p-2 space-y-1">
+                       <Link href="/admin/database/preventive" className="block px-4 py-3 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl">Preventive Maintenance</Link>
+                       <Link href="/admin/database/corrective" className="block px-4 py-3 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl">Corrective Maintenance</Link>
+                       <Link href="/admin/database/mci" className="block px-4 py-3 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl">MCI</Link>
+                       <Link href="/admin/database/audit" className="block px-4 py-3 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl">Audit</Link>
+                     </div>
+                   </div>
+                 </div>
+               )}
                <button 
                  onClick={() => setIsModalOpen(true)}
                  className="flex items-center gap-2 px-8 py-4 bg-[#323338] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-slate-200"
@@ -333,10 +347,10 @@ export default function KnowledgeCenterPage() {
            <div className="flex items-center gap-3">
               <ShieldAlert className="w-4 h-4 text-orange-500" />
               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-relaxed">
-                Akses Terbatas &bull; {session?.isInternal ? "INTERNAL STAFF MODE" : "EXTERNAL ACCESS"}
+                Akses Terbatas - {session?.isInternal ? "Internal" : "External"}
               </p>
            </div>
-           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">&copy; 2026 DSSI Connect Portal</p>
+           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">&copy; 2026 Daikin Service & Solutions Indonesia Portal</p>
         </footer>
       </div>
 
