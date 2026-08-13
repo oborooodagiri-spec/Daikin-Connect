@@ -57,6 +57,26 @@ export default function KnowledgeCenterPage({
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [currentPath, setCurrentPath] = useState<string[]>([]);
+  // View mode is always list
+  const [session, setSession] = useState<any>(initialSession);
+  
+  const [viewingResource, setViewingResource] = useState<any>(null);
+  
+  // Admin Specific
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [projects, setProjects] = useState<any[]>(initialProjects);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [allUsers, setAllUsers] = useState<any[]>(initialUsers);
+  const [userSearch, setUserSearch] = useState("");
+  const [formData, setFormData] = useState({
+    title: "", category: "Presentation", type: "PPTX",
+    file_url: "", href: "", thumbnail: "", size: "",
+    tags: "", visibility: "Internal", allowed_users: "", project_id: ""
+  });
+
+  const isAdmin = session?.roles?.some((r: string) => ["Admin", "Super Admin"].includes(r));
 
   const filteredResources = useMemo(() => {
     return resources.filter(res => {
