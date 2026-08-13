@@ -1,6 +1,6 @@
 {
-  "server_url": "https://daikin.oborooodagiri.com",
-  "api_key": "PASTE_API_KEY_FROM_ADMIN_PANEL_HERE",
+  "server_url": "https://dconnect.id",
+  "api_key": "e98d7e9a7fd3407ecd9d0300559f20e4572406880d1ad50da1c112e63b21eb08",
   "gateway_ip": "172.18.35.10",
   "gateway_port": 502,
   "slave_id": 1,
