@@ -46,6 +46,7 @@ export default function KnowledgeCenterPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [currentPath, setCurrentPath] = useState<string[]>([]);
   // View mode is always list
   const [session, setSession] = useState<any>(null);
   
@@ -182,7 +183,61 @@ export default function KnowledgeCenterPage() {
     return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
   };
 
+
+  const renderFolderCard = (title: string, onClick: () => void) => (
+    <div 
+      key={title}
+      onClick={onClick}
+      className="flex flex-col bg-white border border-[#e6e9ef] p-6 rounded-[1.5rem] hover:border-[#0073ea] hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer items-center justify-center gap-4"
+    >
+      <Folder className="w-16 h-16 text-[#0073ea] fill-blue-50" strokeWidth={1} />
+      <h3 className="text-sm font-bold text-[#323338] text-center leading-tight">{title}</h3>
+    </div>
+  );
+
+  const renderResourceCard = (res: any, i: number) => (
+    <motion.div
+      key={res.id}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: i * 0.05 }}
+      className="flex flex-col bg-white border border-[#e6e9ef] p-4 rounded-[1.5rem] hover:border-[#0073ea] hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer relative"
+      onClick={() => handleResourceClick(res)}
+    >
+      <div className="w-full aspect-[4/3] rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 shrink-0 mb-4 overflow-hidden relative">
+        {res.thumbnail ? (
+          <img src={res.thumbnail} alt={res.title} className="w-full h-full object-cover" />
+        ) : (
+           res.id === "internal-rate-card" ? <Briefcase className="w-12 h-12 text-[#0073ea]" strokeWidth={1} /> :
+           res.category === "Interactive App" ? <Sparkles className="w-12 h-12 text-emerald-500" strokeWidth={1} /> :
+           (res.type === "PPTX" || res.category === "Presentation") ? <Presentation className="w-12 h-12 text-orange-500" strokeWidth={1} /> : 
+           res.category === "Catalog" ? <BookOpen className="w-12 h-12 text-indigo-500" strokeWidth={1} /> : 
+           <FileText className="w-12 h-12 text-slate-400" strokeWidth={1} />
+        )}
+        
+        <div className="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-md shadow-sm border border-slate-200">
+          <span className="text-[8px] font-black uppercase text-slate-500">{res.type}</span>
+        </div>
+      </div>
+      
+      <div className="flex-1 min-w-0 flex flex-col justify-between">
+        <h3 className="text-sm font-bold text-[#323338] line-clamp-2 leading-tight group-hover:text-[#0073ea] transition-colors mb-2 text-center">{res.title}</h3>
+        
+        <div className="flex flex-wrap items-center justify-center gap-2 mt-auto">
+           {res.projects?.name && (
+             <span className="text-[8px] font-black text-[#0073ea] bg-blue-50 px-1.5 py-0.5 rounded-md border border-blue-100 shrink-0 truncate max-w-[80px]">{res.projects.name}</span>
+           )}
+           <span className={`text-[8px] font-black uppercase tracking-widest flex items-center gap-1 ${res.visibility === 'Internal' ? 'text-indigo-500' : 'text-emerald-500'}`}>
+              {res.visibility === 'Internal' ? <Shield size={8} /> : <Globe size={8} />}
+              {res.visibility}
+           </span>
+        </div>
+      </div>
+    </motion.div>
+  );
+
   return (
+
     <div className="min-h-screen bg-white text-[#323338] p-6 md:p-12 selection:bg-blue-100">
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header Section */}
@@ -193,29 +248,7 @@ export default function KnowledgeCenterPage() {
             </h1>
           </div>
 
-          <div className="flex items-center gap-3">
-               {session?.isInternal && (
-                 <div className="relative group">
-                   <button className="flex items-center gap-2 px-6 py-4 bg-white border border-[#e6e9ef] text-[#323338] rounded-2xl font-black text-[10px] uppercase tracking-widest hover:border-[#0073ea] hover:text-[#0073ea] transition-all shadow-sm">
-                     <FileText size={18} /> Database Report
-                   </button>
-                   <div className="absolute top-full right-0 mt-2 w-64 bg-white border border-slate-100 rounded-2xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
-                     <div className="p-2 space-y-1">
-                       <Link href="/admin/database/preventive" className="block px-4 py-3 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl">Preventive Maintenance</Link>
-                       <Link href="/admin/database/corrective" className="block px-4 py-3 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl">Corrective Maintenance</Link>
-                       <Link href="/admin/database/mci" className="block px-4 py-3 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl">MCI</Link>
-                       <Link href="/admin/database/audit" className="block px-4 py-3 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl">Audit</Link>
-                     </div>
-                   </div>
-                 </div>
-               )}
-               <button 
-                 onClick={() => setIsModalOpen(true)}
-                 className="flex items-center gap-2 px-8 py-4 bg-[#323338] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-slate-200"
-               >
-                 <Plus size={18} /> Add Resource
-               </button>
-          </div>
+          <div className="flex items-center gap-3"></div>
         </header>
 
         {/* Search & Filter Bar */}
@@ -247,97 +280,90 @@ export default function KnowledgeCenterPage() {
         {/* Results Info */}
         <div className="flex items-center justify-between mb-8 px-2">
            <div className="flex items-center gap-4">
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Displaying Results</span>
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
+                {currentPath.length === 0 ? "Root" : currentPath.join(" / ")}
+              </span>
               <div className="h-4 w-px bg-slate-100" />
-              <span className="text-sm font-bold text-[#0073ea]">{loading ? "Loading Assets..." : `${filteredResources.length} Assets Found`}</span>
+              <span className="text-sm font-bold text-[#0073ea]">
+                {searchQuery ? `${filteredResources.length} Assets Found` : "Directory"}
+              </span>
            </div>
+           {currentPath.length > 0 && !searchQuery && (
+             <button 
+               onClick={() => setCurrentPath(currentPath.slice(0, -1))}
+               className="text-xs font-bold text-slate-500 hover:text-[#0073ea] flex items-center gap-1"
+             >
+               &larr; Back
+             </button>
+           )}
         </div>
 
         {/* Assets Grid/List */}
         <AnimatePresence mode="wait">
-          {filteredResources.length === 0 ? (
-            <motion.div
-              key="empty"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="text-center py-24 bg-slate-50/50 rounded-[2.5rem] border-2 border-dashed border-slate-200/60 p-8 flex flex-col items-center justify-center"
-            >
-              <div className="w-16 h-16 bg-white border border-slate-100 rounded-2xl flex items-center justify-center text-slate-300 mb-6 shadow-sm">
-                <FileText className="w-8 h-8 text-slate-400" />
-              </div>
-              <h3 className="text-xl font-black text-[#323338] mb-2 uppercase tracking-tight">Belum Ada File Tersedia</h3>
-              <p className="text-sm font-bold text-slate-400 max-w-md mx-auto leading-relaxed">
-                {session?.isInternal 
-                  ? "Database internal Anda masih kosong. Silakan tambahkan resource baru dengan menekan tombol 'Add Resource' di atas."
-                  : "Belum ada materi, katalog, atau database yang dibagikan ke akun Anda saat ini. Hubungi administrator jika Anda memerlukan akses."}
-              </p>
-            </motion.div>
+          {searchQuery ? (
+            // Search Mode: Show files directly
+            filteredResources.length === 0 ? (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="text-center py-24 bg-slate-50/50 rounded-[2.5rem] border-2 border-dashed border-slate-200/60 p-8 flex flex-col items-center justify-center"
+              >
+                <div className="w-16 h-16 bg-white border border-slate-100 rounded-2xl flex items-center justify-center text-slate-300 mb-6 shadow-sm">
+                  <Search className="w-8 h-8 text-slate-400" />
+                </div>
+                <h3 className="text-xl font-black text-[#323338] mb-2 uppercase tracking-tight">Tidak Ada Hasil</h3>
+                <p className="text-sm font-bold text-slate-400 max-w-md mx-auto leading-relaxed">
+                  Pencarian Anda tidak menemukan dokumen yang cocok.
+                </p>
+              </motion.div>
+            ) : (
+              <motion.div 
+                key="search-grid"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6"
+              >
+                {filteredResources.map((res: any, i: number) => renderResourceCard(res, i))}
+              </motion.div>
+            )
           ) : (
+            // Directory Mode
             <motion.div 
-              key="grid"
+              key="dir-grid"
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.98 }}
               className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6"
             >
-              {filteredResources.map((res, i) => (
-                <motion.div
-                  key={res.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  className="flex flex-col bg-white border border-[#e6e9ef] p-4 rounded-[1.5rem] hover:border-[#0073ea] hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer relative"
-                  onClick={() => handleResourceClick(res)}
-                >
-                  {(isAdmin || res.uploaded_by === parseInt(session?.userId || "0")) && (
-                    <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all z-10">
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); handleOpenEdit(res); }}
-                        className="p-1.5 bg-indigo-50 text-indigo-500 rounded-lg hover:bg-indigo-500 hover:text-white"
-                      >
-                        <SettingsIcon size={14} />
-                      </button>
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); handleDelete(res.id); }}
-                        className="p-1.5 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  )}
-
-                  <div className="w-full aspect-[4/3] rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 shrink-0 mb-4 overflow-hidden relative">
-                    {res.thumbnail ? (
-                      <img src={res.thumbnail} alt={res.title} className="w-full h-full object-cover" />
-                    ) : (
-                       res.id === "internal-rate-card" ? <Briefcase className="w-12 h-12 text-[#0073ea]" strokeWidth={1} /> :
-                       res.category === "Interactive App" ? <Sparkles className="w-12 h-12 text-emerald-500" strokeWidth={1} /> :
-                       (res.type === "PPTX" || res.category === "Presentation") ? <Presentation className="w-12 h-12 text-orange-500" strokeWidth={1} /> : 
-                       res.category === "Catalog" ? <BookOpen className="w-12 h-12 text-indigo-500" strokeWidth={1} /> : 
-                       <FileText className="w-12 h-12 text-slate-400" strokeWidth={1} />
-                    )}
-                    
-                    <div className="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-md shadow-sm border border-slate-200">
-                      <span className="text-[8px] font-black uppercase text-slate-500">{res.type}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex-1 min-w-0 flex flex-col justify-between">
-                    <h3 className="text-sm font-bold text-[#323338] line-clamp-2 leading-tight group-hover:text-[#0073ea] transition-colors mb-2 text-center">{res.title}</h3>
-                    
-                    <div className="flex flex-wrap items-center justify-center gap-2 mt-auto">
-                       {res.projects?.name && (
-                         <span className="text-[8px] font-black text-[#0073ea] bg-blue-50 px-1.5 py-0.5 rounded-md border border-blue-100 shrink-0 truncate max-w-[80px]">{res.projects.name}</span>
-                       )}
-                       <span className={`text-[8px] font-black uppercase tracking-widest flex items-center gap-1 ${res.visibility === 'Internal' ? 'text-indigo-500' : 'text-emerald-500'}`}>
-                          {res.visibility === 'Internal' ? <Shield size={8} /> : <Globe size={8} />}
-                          {res.visibility}
-                       </span>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+              {currentPath.length === 0 && (
+                <>
+                  {renderFolderCard("Reports", () => setCurrentPath(["Reports"]))}
+                  {renderFolderCard("Schedule", () => setCurrentPath(["Schedule"]))}
+                </>
+              )}
+              {currentPath.length === 1 && currentPath[0] === "Reports" && (
+                <>
+                  {renderFolderCard("Preventive Maintenance", () => setCurrentPath(["Reports", "Preventive Maintenance"]))}
+                  {renderFolderCard("Corrective Maintenance", () => setCurrentPath(["Reports", "Corrective Maintenance"]))}
+                  {renderFolderCard("MCI", () => setCurrentPath(["Reports", "MCI"]))}
+                  {renderFolderCard("Audit", () => setCurrentPath(["Reports", "Audit"]))}
+                  {renderFolderCard("Logsheet", () => setCurrentPath(["Reports", "Logsheet"]))}
+                </>
+              )}
+              {/* Files based on path */}
+              {(() => {
+                 let pathFiltered: any[] = [];
+                 if (currentPath.length === 1 && currentPath[0] === "Schedule") {
+                   pathFiltered = resources.filter((res: any) => res.title.toLowerCase().includes("schedule"));
+                 } else if (currentPath.length === 2 && currentPath[0] === "Reports" && currentPath[1] === "Logsheet") {
+                   pathFiltered = resources.filter((res: any) => res.title.toLowerCase().includes("logsheet"));
+                 }
+                 
+                 return pathFiltered.map((res: any, i: number) => renderResourceCard(res, i));
+              })()}
             </motion.div>
           )}
         </AnimatePresence>
@@ -589,7 +615,7 @@ export default function KnowledgeCenterPage() {
                                </p>
                                <p className="text-xs font-bold text-slate-700">
                                   {formData.project_id && formData.project_id !== "General" ? (
-                                     <span className="text-emerald-600">All members assigned to "{projects.find(p => p.id.toString() === formData.project_id)?.name}"</span>
+                                     <span className="text-emerald-600">All members assigned to &quot;{projects.find(p => p.id.toString() === formData.project_id)?.name}&quot;</span>
                                   ) : (
                                      <span className="text-slate-400 italic">No specific project association.</span>
                                   )}
