@@ -88,26 +88,31 @@ if not exist "%~dp0config.json" (
 
 :: Check if API key is configured
 findstr /C:"PASTE_API_KEY" "%~dp0config.json" >nul 2>&1
-if %errorlevel% equ 0 (
-    echo.
-    echo  ===========================================================
-    echo  PERHATIAN: API Key belum dikonfigurasi!
-    echo.
-    echo  Langkah-langkah:
-    echo    1. Buka admin panel Daikin Connect di browser
-    echo    2. Buat gateway baru di halaman Modbus Settings
-    echo    3. Copy API Key yang diberikan
-    echo    4. Buka file config.json di folder ini
-    echo    5. Ganti "PASTE_API_KEY_FROM_ADMIN_PANEL_HERE" dengan API Key
-    echo    6. Simpan file, lalu jalankan install.bat lagi
-    echo  ===========================================================
-    echo.
-    echo  Membuka config.json untuk diedit...
-    notepad "%~dp0config.json"
+if %errorlevel% neq 0 goto config_ok
+
+echo.
+echo  ===========================================================
+echo  API Key belum diatur dalam config.json.
+echo  Silakan copy API Key dari Admin Panel Daikin Connect.
+echo  ===========================================================
+echo.
+set /p NEW_API_KEY="Paste API Key di sini (klik kanan untuk paste), lalu tekan Enter: "
+
+if "%NEW_API_KEY%"=="" (
+    echo  [ERROR] API Key tidak boleh kosong!
     pause
     exit /b 1
 )
 
+echo  [!] Mengupdate config.json...
+node -e "const fs=require('fs');const p='%~dp0config.json'.replace(/\\/g, '\\\\');try{const c=JSON.parse(fs.readFileSync(p));c.api_key=process.env.NEW_API_KEY;fs.writeFileSync(p,JSON.stringify(c,null,2));console.log('  [OK] API Key berhasil disimpan!');}catch(e){console.error('  [ERROR] Gagal update config:',e.message);process.exit(1);}"
+
+if %errorlevel% neq 0 (
+    pause
+    exit /b 1
+)
+
+:config_ok
 echo  [OK] Konfigurasi valid
 
 echo.
