@@ -323,6 +323,16 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
                      <span className="app-label">Pengaturan</span>
                   </div>
 
+                  <div 
+                    className="app-item"
+                    onClick={() => router.push("/admin/modbus")}
+                  >
+                     <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #0f172a 0%, #334155 100%)" }}>
+                        <Database size={22} />
+                     </div>
+                     <span className="app-label">Modbus IoT</span>
+                  </div>
+
 
                 </>
               )}
