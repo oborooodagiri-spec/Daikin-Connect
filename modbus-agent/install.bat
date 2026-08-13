@@ -104,8 +104,20 @@ if "%NEW_API_KEY%"=="" (
     exit /b 1
 )
 
+echo.
+echo  ===========================================================
+echo  Konfigurasi Alamat Server (VPS)
+echo  Default: https://dconnect.id
+echo  ===========================================================
+set /p NEW_SERVER_URL="Masukkan alamat server (Tekan Enter untuk pakai default https://dconnect.id): "
+
+if "%NEW_SERVER_URL%"=="" (
+    set "NEW_SERVER_URL=https://dconnect.id"
+)
+
+echo.
 echo  [!] Mengupdate config.json...
-node -e "const fs=require('fs');const p='%~dp0config.json'.replace(/\\/g, '\\\\');try{const c=JSON.parse(fs.readFileSync(p));c.api_key=process.env.NEW_API_KEY;fs.writeFileSync(p,JSON.stringify(c,null,2));console.log('  [OK] API Key berhasil disimpan!');}catch(e){console.error('  [ERROR] Gagal update config:',e.message);process.exit(1);}"
+node -e "const fs=require('fs');const p='%~dp0config.json'.replace(/\\/g, '\\\\');try{const c=JSON.parse(fs.readFileSync(p));c.api_key=process.env.NEW_API_KEY;c.server_url=process.env.NEW_SERVER_URL;fs.writeFileSync(p,JSON.stringify(c,null,2));console.log('  [OK] Konfigurasi berhasil disimpan!');}catch(e){console.error('  [ERROR] Gagal update config:',e.message);process.exit(1);}"
 
 if %errorlevel% neq 0 (
     pause
