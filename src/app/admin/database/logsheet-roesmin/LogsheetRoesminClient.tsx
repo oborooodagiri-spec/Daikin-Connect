@@ -248,6 +248,7 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("Semua");
+  const [selectedHistoryMonth, setSelectedHistoryMonth] = useState<string>("");
 
   useEffect(() => {
     if (activeTab === "history") {
@@ -360,21 +361,54 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
             <p className="font-bold text-lg text-slate-500">Tidak ada data ditemukan</p>
             <p className="text-sm mt-1">Coba sesuaikan kata kunci pencarian atau filter status.</p>
           </div>
-        ) : (
-          <div className="px-4 md:px-0 space-y-10">
-            {Object.keys(grouped).map(groupKey => (
-              <div key={groupKey} className="relative">
-                {/* Timeline Header */}
-                <div className="sticky top-20 z-10 bg-[#fafbfc]/95 backdrop-blur-sm py-2 mb-4">
-                  <h3 className="text-lg font-black text-slate-800 flex items-center gap-2">
-                    <Calendar className="text-[#00a1e4]" size={20} />
-                    {groupKey}
-                  </h3>
+        ) : (() => {
+          const availableMonths = Object.keys(grouped);
+          const displayMonth = selectedHistoryMonth && availableMonths.includes(selectedHistoryMonth) 
+            ? selectedHistoryMonth 
+            : availableMonths[0];
+          const currentIndex = availableMonths.indexOf(displayMonth);
+          const hasPrev = currentIndex < availableMonths.length - 1; // older month
+          const hasNext = currentIndex > 0; // newer month
+
+          return (
+            <div className="px-4 md:px-0 space-y-10">
+              {/* Pagination Controls */}
+              <div className="flex items-center justify-between bg-white border border-slate-100 p-2 rounded-2xl shadow-sm">
+                <button 
+                  disabled={!hasPrev}
+                  onClick={() => setSelectedHistoryMonth(availableMonths[currentIndex + 1])}
+                  className="p-2 text-slate-500 hover:bg-slate-50 hover:text-[#00a1e4] rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 font-bold text-sm"
+                >
+                  <ArrowLeft size={16} /> <span className="hidden md:inline">Bulan Sebelumnya</span>
+                </button>
+                
+                <div className="flex items-center gap-2 px-4 relative">
+                  <Calendar className="text-[#00a1e4]" size={18} />
+                  <select 
+                    value={displayMonth}
+                    onChange={(e) => setSelectedHistoryMonth(e.target.value)}
+                    className="bg-transparent font-black text-lg text-[#003366] outline-none cursor-pointer appearance-none text-center pr-6"
+                  >
+                    {availableMonths.map(m => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </select>
+                  <ChevronDown size={14} className="text-slate-400 absolute right-4 pointer-events-none" />
                 </div>
 
+                <button 
+                  disabled={!hasNext}
+                  onClick={() => setSelectedHistoryMonth(availableMonths[currentIndex - 1])}
+                  className="p-2 text-slate-500 hover:bg-slate-50 hover:text-[#00a1e4] rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 font-bold text-sm"
+                >
+                  <span className="hidden md:inline">Bulan Berikutnya</span> <ChevronRight size={16} />
+                </button>
+              </div>
+
+              <div className="relative">
                 {/* Timeline Content */}
                 <div className="relative pl-6 md:pl-10 space-y-6 before:absolute before:inset-0 before:ml-6 md:before:ml-10 before:-translate-x-px md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-slate-200 before:via-slate-200 before:to-transparent">
-                  {grouped[groupKey].map(item => {
+                  {grouped[displayMonth].map(item => {
                     const isDraft = (() => {
                       try { return JSON.parse(item.technical_json || "{}").is_draft; }
                       catch { return false; }
@@ -426,9 +460,9 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
                   })}
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+          );
+        })()}
       </div>
     );
   };
