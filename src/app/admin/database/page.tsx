@@ -5,6 +5,8 @@ import { getAllUsers } from "@/app/actions/users";
 import { redirect } from "next/navigation";
 import DatabaseClient from "./DatabaseClient";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: "Resource Database | DSSI Connect",
   description: "Internal repository for presentation materials, catalogs, and technical documents.",
