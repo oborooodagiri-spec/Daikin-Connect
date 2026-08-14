@@ -348,6 +348,7 @@ export default function KnowledgeCenterPage({
                   {renderFolderCard("Reports", () => setCurrentPath(["Reports"]))}
                   {renderFolderCard("Schedule", () => setCurrentPath(["Schedule"]))}
                   {renderFolderCard("Presentasi", () => setCurrentPath(["Presentasi"]))}
+                  {renderFolderCard("Product Lineup", () => router.push("/admin/product-lineup"))}
                 </>
               )}
               {currentPath.length === 1 && currentPath[0] === "Reports" && (

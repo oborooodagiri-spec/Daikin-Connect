@@ -400,15 +400,7 @@ export default function HomeClient({ profile, recentActivity }: { profile: Profi
                <span className="app-label">Database</span>
             </div>
 
-            <div 
-              className="app-item"
-              onClick={() => window.open("/admin/product-lineup", "_blank")}
-            >
-               <div className="app-icon-container" style={{ background: "linear-gradient(135deg, #00c875 0%, #00d68f 100%)" }}>
-                  <Package size={22} />
-               </div>
-               <span className="app-label">Product Lineup</span>
-            </div>
+
 
             <div 
               className="app-item"
