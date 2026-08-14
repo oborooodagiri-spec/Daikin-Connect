@@ -308,6 +308,7 @@ export default function KnowledgeCenterPage({
                 <>
                   {renderFolderCard("Reports", () => setCurrentPath(["Reports"]))}
                   {renderFolderCard("Schedule", () => setCurrentPath(["Schedule"]))}
+                  {renderFolderCard("Presentasi", () => setCurrentPath(["Presentasi"]))}
                 </>
               )}
               {currentPath.length === 1 && currentPath[0] === "Reports" && (
@@ -324,6 +325,8 @@ export default function KnowledgeCenterPage({
                  let pathFiltered: any[] = [];
                  if (currentPath.length === 1 && currentPath[0] === "Schedule") {
                    pathFiltered = resources.filter((res: any) => res.title.toLowerCase().includes("schedule"));
+                 } else if (currentPath.length === 1 && currentPath[0] === "Presentasi") {
+                   pathFiltered = resources.filter((res: any) => res.category === "Presentation" || res.type === "PPTX");
                  } else if (currentPath.length === 2 && currentPath[0] === "Reports" && currentPath[1] === "Logsheet") {
                    pathFiltered = resources.filter((res: any) => res.title.toLowerCase().includes("logsheet"));
                  }
