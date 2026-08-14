@@ -29,7 +29,8 @@ import {
   Settings as SettingsIcon,
   Plus,
   X as CloseIcon,
-  Briefcase
+  Briefcase,
+  Edit2
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -223,6 +224,25 @@ export default function KnowledgeCenterPage({
            <FileText className="w-12 h-12 text-slate-400" strokeWidth={1} />
         )}
         
+        {isAdmin && (
+          <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button 
+              onClick={(e) => { e.stopPropagation(); handleOpenEdit(res); }}
+              className="w-7 h-7 bg-white/90 backdrop-blur-sm rounded-md shadow-sm border border-slate-200 flex items-center justify-center text-blue-600 hover:bg-blue-50 transition-colors"
+              title="Edit Resource"
+            >
+              <Edit2 size={12} />
+            </button>
+            <button 
+              onClick={(e) => { e.stopPropagation(); handleDelete(res.id); }}
+              className="w-7 h-7 bg-white/90 backdrop-blur-sm rounded-md shadow-sm border border-slate-200 flex items-center justify-center text-rose-600 hover:bg-rose-50 transition-colors"
+              title="Delete Resource"
+            >
+              <Trash2 size={12} />
+            </button>
+          </div>
+        )}
+
         <div className="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-md shadow-sm border border-slate-200">
           <span className="text-[8px] font-black uppercase text-slate-500">{res.type}</span>
         </div>
