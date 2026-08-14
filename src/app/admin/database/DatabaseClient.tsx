@@ -188,7 +188,9 @@ export default function KnowledgeCenterPage({
         absoluteUrl = `https://dconnect.id${url}`;
       }
     }
-    return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(absoluteUrl)}`;
+    // Fallback to Google Docs Viewer for better iframe compatibility with PPTX/DOCX
+    // Microsoft's embed.aspx sometimes blocks non-Sharepoint/OneDrive URLs
+    return `https://docs.google.com/viewer?url=${encodeURIComponent(absoluteUrl)}&embedded=true`;
   };
 
 
