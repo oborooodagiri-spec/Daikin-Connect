@@ -58,7 +58,7 @@ export async function getResources() {
 
     let resources: any[];
 
-    if (isAdmin) {
+    if (isAdmin || isInternal) {
       resources = await prisma.$queryRawUnsafe(`
         SELECT kr.*, p.name as project_name 
         FROM knowledge_resources kr

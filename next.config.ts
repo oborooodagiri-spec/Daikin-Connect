@@ -55,7 +55,7 @@ const nextConfig: NextConfig = {
               "connect-src 'self' https: wss: ws:",
               "worker-src 'self' blob:",
               "media-src 'self' blob:",
-              "frame-src 'self' https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com",
+              "frame-src 'self' https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com https://docs.google.com https://view.officeapps.live.com",
             ].join('; '),
           },
         ],
