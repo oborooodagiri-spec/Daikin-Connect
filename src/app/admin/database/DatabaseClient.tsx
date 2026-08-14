@@ -346,8 +346,21 @@ export default function KnowledgeCenterPage({
                    pathFiltered = resources.filter((res: any) => res.title.toLowerCase().includes("schedule"));
                  } else if (currentPath.length === 1 && currentPath[0] === "Presentasi") {
                    pathFiltered = resources.filter((res: any) => res.category === "Presentation" || res.type === "PPTX");
+                   console.log("[PRESENTASI DEBUG] resources total:", resources.length, "filtered:", pathFiltered.length, pathFiltered.map(r => r.title));
                  } else if (currentPath.length === 2 && currentPath[0] === "Reports" && currentPath[1] === "Logsheet") {
                    pathFiltered = resources.filter((res: any) => res.title.toLowerCase().includes("logsheet"));
+                 }
+                 
+                 // Temporary debug display for Presentasi folder
+                 if (currentPath.length === 1 && currentPath[0] === "Presentasi") {
+                   return (
+                     <>
+                       <div className="col-span-full text-xs bg-yellow-50 border border-yellow-200 p-3 rounded-xl text-yellow-800 font-mono">
+                         DEBUG: resources.length={resources.length}, filtered={pathFiltered.length}, categories=[{resources.map(r => r.category).join(", ")}]
+                       </div>
+                       {pathFiltered.map((res: any, i: number) => renderResourceCard(res, i))}
+                     </>
+                   );
                  }
                  
                  return pathFiltered.map((res: any, i: number) => renderResourceCard(res, i));
