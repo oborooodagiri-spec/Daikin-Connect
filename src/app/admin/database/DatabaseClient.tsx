@@ -351,18 +351,6 @@ export default function KnowledgeCenterPage({
                    pathFiltered = resources.filter((res: any) => res.title.toLowerCase().includes("logsheet"));
                  }
                  
-                 // Temporary debug display for Presentasi folder
-                 if (currentPath.length === 1 && currentPath[0] === "Presentasi") {
-                   return (
-                     <>
-                       <div className="col-span-full text-xs bg-yellow-50 border border-yellow-200 p-3 rounded-xl text-yellow-800 font-mono">
-                         DEBUG: resources.length={resources.length}, filtered={pathFiltered.length}, categories=[{resources.map(r => r.category).join(", ")}]
-                       </div>
-                       {pathFiltered.map((res: any, i: number) => renderResourceCard(res, i))}
-                     </>
-                   );
-                 }
-                 
                  return pathFiltered.map((res: any, i: number) => renderResourceCard(res, i));
               })()}
             </motion.div>
