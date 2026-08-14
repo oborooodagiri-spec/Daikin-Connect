@@ -54,6 +54,12 @@ export default function KnowledgeCenterPage({
 }) {
   const router = useRouter();
   const [resources, setResources] = useState<any[]>(initialResources);
+  
+  // Keep resources in sync with server props
+  useEffect(() => {
+    setResources(initialResources);
+  }, [initialResources]);
+
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -61,6 +67,10 @@ export default function KnowledgeCenterPage({
   // View mode is always list
   const [session, setSession] = useState<any>(initialSession);
   
+  useEffect(() => {
+    setSession(initialSession);
+  }, [initialSession]);
+
   const [viewingResource, setViewingResource] = useState<any>(null);
   
   // Admin Specific
