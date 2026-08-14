@@ -169,7 +169,16 @@ export default function KnowledgeCenterPage({
     if (url.toLowerCase().endsWith(".pdf")) {
       return url; 
     }
-    return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
+    // Ensure absolute URL for Microsoft Office Viewer
+    let absoluteUrl = url;
+    if (url.startsWith("/")) {
+      if (typeof window !== "undefined") {
+        absoluteUrl = `${window.location.origin}${url}`;
+      } else {
+        absoluteUrl = `https://dconnect.id${url}`;
+      }
+    }
+    return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(absoluteUrl)}`;
   };
 
 
