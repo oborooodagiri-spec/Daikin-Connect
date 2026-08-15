@@ -88,7 +88,16 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
           byPic[pic].value += val;
           byPic[pic].count++;
 
-          if (d.source === "Partnership" && d.sales_planner) {
+          // Credit the main PIC if they are a Partnership PIC
+          if (partnershipPICs.includes(pic)) {
+            if (!byPartner[pic]) byPartner[pic] = { value: 0, count: 0 };
+            byPartner[pic].value += val;
+            byPartner[pic].count++;
+          }
+
+          // Credit the sales_planner (assisting partner) regardless of 'source',
+          // as long as they aren't already the main PIC receiving credit above.
+          if (d.sales_planner && d.sales_planner.trim() !== "" && d.sales_planner !== pic) {
             const partner = d.sales_planner;
             if (!byPartner[partner]) byPartner[partner] = { value: 0, count: 0 };
             byPartner[partner].value += val;
@@ -120,7 +129,7 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
     });
 
     return { totalAchievement: total, totalClosedCount: closedCount, picAchievements: byPic, partnerAchievements: byPartner, backlogByPic };
-  }, [deals, modalFY]);
+  }, [deals, modalFY, partnershipPICs]);
 
   if (!isOpen) return null;
 
