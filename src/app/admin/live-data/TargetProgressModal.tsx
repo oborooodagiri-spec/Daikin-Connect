@@ -58,7 +58,7 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
   };
 
   // Filter closed deals by selected FY
-  const { totalAchievement, totalClosedCount, picAchievements, partnerAchievements, backlogByPic } = useMemo(() => {
+  const { totalAchievement, totalClosedCount, picAchievements, partnerAchievements, backlogByPic, backlogByPartner } = useMemo(() => {
     let total = 0;
     let closedCount = 0;
     const byPic: Record<string, { value: number; count: number }> = {};
@@ -69,6 +69,7 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
       legacyProjects: any[]; 
       currentProjects: any[] 
     }> = {};
+    const backlogByPartner: Record<string, { value: number; count: number }> = {};
 
     // FY date range: April 1 of FY year to March 31 of FY+1 year
     const fyStartYear = 2000 + modalFY;
@@ -76,14 +77,16 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
     const fyEnd = new Date(fyStartYear + 1, 2, 31, 23, 59, 59, 999).getTime(); // March 31
 
     deals.forEach(d => {
+      const pic = (d.pic || "Unassigned").trim();
+      const salesPlanner = d.sales_planner ? d.sales_planner.trim() : "";
+      const val = Number(d.quotation) || 0;
+
       if (d.is_closed) {
         const updatedAt = new Date(d.updated_at).getTime();
         if (updatedAt >= fyStart && updatedAt <= fyEnd) {
-          const val = Number(d.quotation) || 0;
           total += val;
           closedCount++;
           
-          const pic = d.pic || "Unassigned";
           if (!byPic[pic]) byPic[pic] = { value: 0, count: 0 };
           byPic[pic].value += val;
           byPic[pic].count++;
@@ -95,23 +98,19 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
             byPartner[pic].count++;
           }
 
-          // Credit the sales_planner (assisting partner) regardless of 'source',
-          // as long as they aren't already the main PIC receiving credit above.
-          if (d.sales_planner && d.sales_planner.trim() !== "" && d.sales_planner !== pic) {
-            const partner = d.sales_planner;
-            if (!byPartner[partner]) byPartner[partner] = { value: 0, count: 0 };
-            byPartner[partner].value += val;
-            byPartner[partner].count++;
+          // Credit the sales_planner (assisting partner) regardless of 'source'
+          if (salesPlanner !== "" && salesPlanner !== pic) {
+            if (!byPartner[salesPlanner]) byPartner[salesPlanner] = { value: 0, count: 0 };
+            byPartner[salesPlanner].value += val;
+            byPartner[salesPlanner].count++;
           }
         }
       } else if (d.status === "A") {
         // BACKLOG: Status A and not closed
-        const pic = d.pic || "Unassigned";
         if (!backlogByPic[pic]) {
           backlogByPic[pic] = { legacyValue: 0, currentValue: 0, legacyProjects: [], currentProjects: [] };
         }
         
-        const val = Number(d.quotation) || 0;
         const poDate = d.target_po_date || d.est_booking_month || d.updated_at;
         const poTime = new Date(poDate).getTime();
         
@@ -125,10 +124,22 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
           backlogByPic[pic].currentValue += val;
           backlogByPic[pic].currentProjects.push({ name: d.project_name, value: val, date: poDate, fy: poFY });
         }
+
+        // Also track Backlog for Partners
+        if (partnershipPICs.includes(pic)) {
+          if (!backlogByPartner[pic]) backlogByPartner[pic] = { value: 0, count: 0 };
+          backlogByPartner[pic].value += val;
+          backlogByPartner[pic].count++;
+        }
+        if (salesPlanner !== "" && salesPlanner !== pic) {
+          if (!backlogByPartner[salesPlanner]) backlogByPartner[salesPlanner] = { value: 0, count: 0 };
+          backlogByPartner[salesPlanner].value += val;
+          backlogByPartner[salesPlanner].count++;
+        }
       }
     });
 
-    return { totalAchievement: total, totalClosedCount: closedCount, picAchievements: byPic, partnerAchievements: byPartner, backlogByPic };
+    return { totalAchievement: total, totalClosedCount: closedCount, picAchievements: byPic, partnerAchievements: byPartner, backlogByPic, backlogByPartner };
   }, [deals, modalFY, partnershipPICs]);
 
   if (!isOpen) return null;
@@ -160,12 +171,20 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
 
   const partnerProgressData = Array.from(new Set([
     ...partnershipPICs,
-    ...Object.keys(partnerAchievements)
+    ...Object.keys(partnerAchievements),
+    ...Object.keys(backlogByPartner)
   ])).map(partner => {
     const achievement = partnerAchievements[partner]?.value || 0;
     const count = partnerAchievements[partner]?.count || 0;
-    return { partner, achievement, count };
-  }).sort((a, b) => b.achievement - a.achievement);
+    const backlogValue = backlogByPartner[partner]?.value || 0;
+    const backlogCount = backlogByPartner[partner]?.count || 0;
+    
+    // Total contribution is closed + backlog
+    const totalValue = achievement + backlogValue;
+    const totalCount = count + backlogCount;
+
+    return { partner, achievement, count, backlogValue, backlogCount, totalValue, totalCount };
+  }).sort((a, b) => b.totalValue - a.totalValue);
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -300,7 +319,7 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
                 
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   {partnerProgressData.map((data, index) => {
-                    const isTop = index === 0 && data.achievement > 0;
+                    const isTop = index === 0 && data.totalValue > 0;
                     
                     return (
                       <div key={data.partner} style={{ background: "#f0f7ff", borderRadius: 12, padding: 16, border: "1px solid #d0e3ff", display: "flex", alignItems: "center", gap: 20 }}>
@@ -314,9 +333,15 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
                             <span style={{ fontSize: 14, fontWeight: 800, color: "#0073ea" }}>{data.partner}</span>
                           </div>
                           
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: "#676879" }}>Projects assisted: <span style={{ color: "#323338", fontWeight: 800 }}>{data.count}</span></span>
-                            <span style={{ fontSize: 16, fontWeight: 900, color: "#323338" }}>{formatRp(data.achievement)}</span>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: 6 }}>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                              <span style={{ fontSize: 11, fontWeight: 600, color: "#676879" }}>Closed ({data.count}): <span style={{ color: "#323338", fontWeight: 800 }}>{formatRp(data.achievement)}</span></span>
+                              <span style={{ fontSize: 11, fontWeight: 600, color: "#676879" }}>Backlog ({data.backlogCount}): <span style={{ color: "#323338", fontWeight: 800 }}>{formatRp(data.backlogValue)}</span></span>
+                            </div>
+                            <div style={{ textAlign: "right", display: "flex", flexDirection: "column" }}>
+                              <span style={{ fontSize: 10, fontWeight: 800, color: "#676879", textTransform: "uppercase" }}>Total Progress</span>
+                              <span style={{ fontSize: 16, fontWeight: 900, color: "#323338" }}>{formatRp(data.totalValue)}</span>
+                            </div>
                           </div>
                         </div>
 
