@@ -354,6 +354,7 @@ export const getUWAPPreventiveSections = (data: any, unit: any, engineerName?: s
              reviewerSignatureUrl={undefined}
              onCustomerSignClick={typeof data !== 'undefined' ? data.onCustomerSignClick : undefined}
              onEngineerSignClick={typeof data !== 'undefined' ? data.onEngineerSignClick : undefined}
+         onReviewerSignClick={typeof data !== 'undefined' ? data.onReviewerSignClick : undefined}
           />
         </div>
       </div>

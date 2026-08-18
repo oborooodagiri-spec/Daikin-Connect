@@ -191,6 +191,7 @@ export const getDailyLogSections = (data: any, unit: any, engineerName?: string,
          reviewerSignatureUrl={typeof data !== 'undefined' ? (data.reviewerSignatureUrl || data.reviewer_signature) : undefined}
          onCustomerSignClick={typeof data !== 'undefined' ? data.onCustomerSignClick : undefined}
          onEngineerSignClick={typeof data !== 'undefined' ? data.onEngineerSignClick : undefined}
+         onReviewerSignClick={typeof data !== 'undefined' ? data.onReviewerSignClick : undefined}
        />
     </div>
   ];
