@@ -806,7 +806,7 @@ export default function ProductLineupClient({ session }: { session?: any }) {
                       <>
                         <div className="px-4 py-3 border-b border-t border-slate-100 bg-white/50 flex items-center gap-2">
                           <FileText size={14} className="text-emerald-500" />
-                          <span className="text-xs font-bold text-emerald-500">Format Report PM (Internal)</span>
+                          <span className="text-xs font-bold text-emerald-500">Preventive Maintenance (Internal)</span>
                         </div>
                         <div className="p-4">
                           <a 
@@ -821,10 +821,7 @@ export default function ProductLineupClient({ session }: { session?: any }) {
                               </div>
                               <div className="flex flex-col overflow-hidden">
                                 <span className="text-sm font-bold text-[#323338] truncate group-hover:text-emerald-500 transition-colors">
-                                  Download Blank PDF Report
-                                </span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
-                                  Sistem Auto-Generate Template
+                                  Download Report Template
                                 </span>
                               </div>
                             </div>
