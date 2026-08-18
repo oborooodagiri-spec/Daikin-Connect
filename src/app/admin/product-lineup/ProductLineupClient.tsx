@@ -796,11 +796,45 @@ export default function ProductLineupClient({ session }: { session?: any }) {
                           <ExternalLink size={16} className="text-slate-300 group-hover:text-[#0073ea]" />
                         </a>
                       ) : (
-                        <div className="text-center py-6 text-slate-400">
-                          <p className="text-xs font-bold">Katalog belum tersedia</p>
+                        <div className="text-center py-6 text-sm font-bold text-slate-400">
+                          Katalog belum tersedia
                         </div>
                       )}
                     </div>
+                    
+                    {isAdmin && (
+                      <>
+                        <div className="px-4 py-3 border-b border-t border-slate-100 bg-white/50 flex items-center gap-2">
+                          <FileText size={14} className="text-emerald-500" />
+                          <span className="text-xs font-bold text-emerald-500">Format Report PM (Internal)</span>
+                        </div>
+                        <div className="p-4">
+                          <a 
+                            href={`/reports/blank/preventive/${encodeURIComponent(selectedProduct.name)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-100 hover:border-emerald-500 hover:shadow-md transition-all group"
+                          >
+                            <div className="flex items-center gap-3 overflow-hidden">
+                              <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0 text-emerald-500">
+                                <FileText size={20} />
+                              </div>
+                              <div className="flex flex-col overflow-hidden">
+                                <span className="text-sm font-bold text-[#323338] truncate group-hover:text-emerald-500 transition-colors">
+                                  Download Blank PDF Report
+                                </span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+                                  Sistem Auto-Generate Template
+                                </span>
+                              </div>
+                            </div>
+                            <div className="w-8 h-8 rounded-full bg-slate-50 group-hover:bg-emerald-50 flex items-center justify-center flex-shrink-0 transition-colors">
+                              <ExternalLink size={14} className="text-slate-400 group-hover:text-emerald-500" />
+                            </div>
+                          </a>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
 

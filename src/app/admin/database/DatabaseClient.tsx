@@ -370,6 +370,42 @@ export default function KnowledgeCenterPage({
                    console.log("[PRESENTASI DEBUG] resources total:", resources.length, "filtered:", pathFiltered.length, pathFiltered.map(r => r.title));
                  } else if (currentPath.length === 2 && currentPath[0] === "Reports" && currentPath[1] === "Logsheet") {
                    pathFiltered = resources.filter((res: any) => res.title.toLowerCase().includes("logsheet"));
+                 } else if (currentPath.length === 2 && currentPath[0] === "Reports" && currentPath[1] === "Preventive Maintenance") {
+                   pathFiltered = resources.filter((res: any) => res.category === "Reports" && res.title.toLowerCase().includes("preventive maintenance"));
+                   
+                   // Dynamically inject the auto-generated blank templates for Internal users
+                   if (isAdmin) {
+                     pathFiltered.push({
+                       id: "auto-blank-uwap",
+                       title: "Blank Template - Air Cooled Screw Chiller (UWAP)",
+                       category: "Reports",
+                       type: "PDF (Auto)",
+                       href: "/reports/blank/preventive/UWAP",
+                       tags: "Preventive Maintenance, UWAP",
+                       visibility: "Internal",
+                       created_at: new Date().toISOString(),
+                     });
+                     pathFiltered.push({
+                       id: "auto-blank-fcu",
+                       title: "Blank Template - Fan Coil Unit (FCU)",
+                       category: "Reports",
+                       type: "PDF (Auto)",
+                       href: "/reports/blank/preventive/FCU",
+                       tags: "Preventive Maintenance, FCU",
+                       visibility: "Internal",
+                       created_at: new Date().toISOString(),
+                     });
+                     pathFiltered.push({
+                       id: "auto-blank-ahu",
+                       title: "Blank Template - Air Handling Unit (AHU)",
+                       category: "Reports",
+                       type: "PDF (Auto)",
+                       href: "/reports/blank/preventive/AHU",
+                       tags: "Preventive Maintenance, AHU",
+                       visibility: "Internal",
+                       created_at: new Date().toISOString(),
+                     });
+                   }
                  }
                  
                  return pathFiltered.map((res: any, i: number) => renderResourceCard(res, i));
