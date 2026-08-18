@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 
 export type DocumentType = 'service_activities' | 'ahu_audits' | 'daily_ops_logs' | 'corrective';
-export type SignatureRole = 'customer' | 'engineer';
+export type SignatureRole = 'customer' | 'engineer' | 'technician';
 
 export async function saveSignature(
   documentType: DocumentType,
@@ -40,6 +40,15 @@ export async function saveSignature(
             engineer_signer_name: signerName,
           }
         });
+      } else if (role === 'technician') {
+        await prisma.service_activities.update({
+          where: { id: documentId },
+          data: {
+            engineer_signature: signatureBase64,
+            engineer_signature_ip: ipAddress,
+            inspector_name: signerName,
+          }
+        });
       }
     } 
     else if (documentType === 'ahu_audits') {
@@ -60,7 +69,15 @@ export async function saveSignature(
           data: {
             reviewer_signature: signatureBase64,
             reviewer_signature_ip: ipAddress,
-            // reviewer name might be tracked somewhere else if available, but for now we just save signature
+          }
+        });
+      } else if (role === 'technician') {
+        await prisma.ahu_audits.update({
+          where: { id: documentId },
+          data: {
+            engineer_signature: signatureBase64,
+            engineer_signature_ip: ipAddress,
+            inspector_name: signerName,
           }
         });
       }
@@ -84,6 +101,15 @@ export async function saveSignature(
             reviewer_signature_ip: ipAddress,
           }
         });
+      } else if (role === 'technician') {
+        await prisma.daily_ops_logs.update({
+          where: { id: documentId },
+          data: {
+            engineer_signature: signatureBase64,
+            engineer_signature_ip: ipAddress,
+            inspector_name: signerName,
+          }
+        });
       }
     }
     else if (documentType === 'corrective') {
@@ -103,6 +129,15 @@ export async function saveSignature(
           data: {
             reviewer_signature: signatureBase64,
             reviewer_signature_ip: ipAddress,
+          }
+        });
+      } else if (role === 'technician') {
+        await prisma.corrective.update({
+          where: { id: documentId },
+          data: {
+            engineer_signature: signatureBase64,
+            engineer_signature_ip: ipAddress,
+            inspector_name: signerName,
           }
         });
       }

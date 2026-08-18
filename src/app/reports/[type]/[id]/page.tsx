@@ -432,19 +432,30 @@ export default function ReportHubPage() {
     }
   };
 
-  const handleEngineerSignClick = () => {
-    if (!isReviewedLocal) {
-      if (!session) {
-        alert(activeLang === 'en' ? "You must be logged in to sign this document." : "Anda harus login untuk menandatangani dokumen ini.");
-        return;
-      }
-      if (!session.isInternal) {
-        alert(activeLang === 'en' ? "Only Technicians, Supervisors, or Admins can sign this section." : "Hanya Teknisi, Supervisor, atau Admin yang dapat menandatangani bagian ini.");
-        return;
-      }
-      setSignatureRole('engineer');
-      setSignatureModalOpen(true);
+  const handleReviewerSignClick = () => {
+    if (!session) {
+      alert(activeLang === 'en' ? "You must be logged in to sign this document." : "Anda harus login untuk menandatangani dokumen ini.");
+      return;
     }
+    if (!session.isInternal) {
+      alert(activeLang === 'en' ? "Only Technicians, Supervisors, or Admins can sign this section." : "Hanya Teknisi, Supervisor, atau Admin yang dapat menandatangani bagian ini.");
+      return;
+    }
+    setSignatureRole('engineer'); // Backwards compatibility for Reviewer
+    setSignatureModalOpen(true);
+  };
+
+  const handleTechnicianSignClick = () => {
+    if (!session) {
+      alert(activeLang === 'en' ? "You must be logged in to sign this document." : "Anda harus login untuk menandatangani dokumen ini.");
+      return;
+    }
+    if (!session.isInternal) {
+      alert(activeLang === 'en' ? "Only Technicians, Supervisors, or Admins can sign this section." : "Hanya Teknisi, Supervisor, atau Admin yang dapat menandatangani bagian ini.");
+      return;
+    }
+    setSignatureRole('technician'); // Prepared By
+    setSignatureModalOpen(true);
   };
 
   const handleSaveSignature = async (signatureBase64: string, name: string) => {
@@ -465,11 +476,16 @@ export default function ReportHubPage() {
              ...prev,
              activity: { ...prev.activity, customer_signature: signatureBase64, customer_approver_name: name, customer_approved_at: new Date() }
           }));
-       } else {
+       } else if (signatureRole === 'engineer') {
           setIsReviewedLocal(true);
           setData((prev: any) => ({
              ...prev,
              activity: { ...prev.activity, reviewer_signature: signatureBase64, engineer_signer_name: name }
+          }));
+       } else if (signatureRole === 'technician') {
+          setData((prev: any) => ({
+             ...prev,
+             activity: { ...prev.activity, engineer_signature: signatureBase64, inspector_name: name }
           }));
        }
     } else {
@@ -488,7 +504,8 @@ export default function ReportHubPage() {
     engineerSignatureUrl: data.activity.engineer_signature,
     reviewerSignatureUrl: data.activity.reviewer_signature,
     onCustomerSignClick: handleCustomerSignClick,
-    onEngineerSignClick: handleEngineerSignClick,
+    onEngineerSignClick: handleTechnicianSignClick, // Maps to PREPARED BY in ReportSignatureFooter
+    onReviewerSignClick: handleReviewerSignClick,   // Maps to REVIEWED BY in ReportSignatureFooter
     customerApproverName: data.activity.customer_approver_name,
     engineerSignerName: data.activity.engineer_signer_name,
     engineerName: data.activity.inspector_name,
