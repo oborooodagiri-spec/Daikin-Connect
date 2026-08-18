@@ -41,6 +41,7 @@ export async function POST(req: Request) {
           requestBody: {
             name: fileName,
             mimeType: file.type,
+            parents: ['1xbkEwELx9pmDXsufokqENm2mhf-___DO'] // User's DSSI > Database folder
           },
           media: {
             mimeType: file.type,
