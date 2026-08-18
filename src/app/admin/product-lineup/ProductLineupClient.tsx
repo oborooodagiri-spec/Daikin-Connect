@@ -23,6 +23,7 @@ interface UnitCategory {
   icon_color: string;
   catalog_url: string;
   image_url: string;
+  pm_report_url: string;
   parent_id: number | null;
   sort_order: number;
   created_at: string;
@@ -58,10 +59,12 @@ export default function ProductLineupClient({ session }: { session?: any }) {
   const [formColor, setFormColor] = useState("#0073ea");
   const [formCatalogUrl, setFormCatalogUrl] = useState("");
   const [formImageUrl, setFormImageUrl] = useState("");
+  const [formPmReportUrl, setFormPmReportUrl] = useState("");
   const [formParentId, setFormParentId] = useState<number | null>(null);
 
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isUploadingCatalog, setIsUploadingCatalog] = useState(false);
+  const [isUploadingPmReport, setIsUploadingPmReport] = useState(false);
 
   const fetchCategories = useCallback(async () => {
     setLoading(true);
@@ -132,8 +135,9 @@ export default function ProductLineupClient({ session }: { session?: any }) {
     setFormName(cat.name);
     setFormDescription(cat.description);
     setFormColor(cat.icon_color);
-    setFormCatalogUrl(cat.catalog_url);
-    setFormImageUrl(cat.image_url);
+    setFormCatalogUrl(cat.catalog_url || "");
+    setFormImageUrl(cat.image_url || "");
+    setFormPmReportUrl(cat.pm_report_url || "");
     setFormParentId(cat.parent_id);
     setModalOpen(true);
   };
@@ -234,6 +238,32 @@ export default function ProductLineupClient({ session }: { session?: any }) {
     }
   };
 
+  const handlePmReportUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingPmReport(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "reports");
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Gagal upload report format");
+      
+      setFormPmReportUrl(data.url);
+    } catch (err: any) {
+      alert("Error uploading report format: " + err.message);
+    } finally {
+      setIsUploadingPmReport(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -244,6 +274,7 @@ export default function ProductLineupClient({ session }: { session?: any }) {
       icon_color: formColor,
       catalog_url: formCatalogUrl,
       image_url: formImageUrl,
+      pm_report_url: formPmReportUrl,
       parent_id: formParentId,
     };
 
@@ -676,6 +707,37 @@ export default function ProductLineupClient({ session }: { session?: any }) {
                         </label>
                       )}
                     </div>
+                    {/* Format Report PM (Only for internal/admin if we want to restrict, but this modal is admin-only anyway) */}
+                    <div>
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1.5">
+                        <FileText size={10} className="inline mr-1" /> Format Report PM (PDF/Excel)
+                      </label>
+                      {formPmReportUrl ? (
+                        <div className="flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-2xl">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-white rounded-lg border border-slate-200 flex items-center justify-center text-green-500">
+                              <FileText size={18} />
+                            </div>
+                            <span className="text-xs font-bold text-slate-600 truncate max-w-[200px]">Format Tersimpan</span>
+                          </div>
+                          <button type="button" onClick={() => setFormPmReportUrl("")} className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      ) : (
+                        <label className="cursor-pointer w-full p-4 border-2 border-dashed border-slate-200 hover:border-[#0073ea] hover:bg-blue-50/50 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all">
+                          {isUploadingPmReport ? (
+                            <div className="w-5 h-5 border-2 border-[#0073ea] border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            <>
+                              <FileText size={20} className="text-slate-400" />
+                              <span className="text-xs font-bold text-slate-500">Klik untuk upload format (PDF/Excel)</span>
+                            </>
+                          )}
+                          <input type="file" accept="application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" className="hidden" onChange={handlePmReportUpload} disabled={isUploadingPmReport} />
+                        </label>
+                      )}
+                    </div>
                   </>
                 )}
 
@@ -796,16 +858,55 @@ export default function ProductLineupClient({ session }: { session?: any }) {
                           <ExternalLink size={16} className="text-slate-300 group-hover:text-[#0073ea]" />
                         </a>
                       ) : (
-                        <div className="text-center py-6 text-slate-400">
-                          <p className="text-xs font-bold">Katalog belum tersedia</p>
+                        <div className="text-center py-6 text-sm font-bold text-slate-400">
+                          Katalog belum tersedia
                         </div>
+                      )}
+                    </div>
+                      
+                      {isAdmin && (
+                        <>
+                          <div className="px-4 py-3 border-b border-t border-slate-100 bg-white/50 flex items-center gap-2">
+                            <FileText size={14} className="text-emerald-500" />
+                            <span className="text-xs font-bold text-emerald-500">Format Report PM (Internal)</span>
+                          </div>
+                          <div className="p-4">
+                            {selectedProduct.pm_report_url ? (
+                              <a 
+                                href={selectedProduct.pm_report_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-100 hover:border-emerald-500 hover:shadow-md transition-all group"
+                              >
+                                <div className="flex items-center gap-3 overflow-hidden">
+                                  <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0 text-emerald-500">
+                                    <FileText size={20} />
+                                  </div>
+                                  <div className="flex flex-col overflow-hidden">
+                                    <span className="text-sm font-bold text-[#323338] truncate group-hover:text-emerald-500 transition-colors">
+                                      Format Report Preventive Maintenance
+                                    </span>
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+                                      PDF / Excel Document
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="w-8 h-8 rounded-full bg-slate-50 group-hover:bg-emerald-50 flex items-center justify-center flex-shrink-0 transition-colors">
+                                  <ExternalLink size={14} className="text-slate-400 group-hover:text-emerald-500" />
+                                </div>
+                              </a>
+                            ) : (
+                              <div className="text-center py-6 text-sm font-bold text-slate-400">
+                                Format report belum tersedia
+                              </div>
+                            )}
+                          </div>
+                        </>
                       )}
                     </div>
                   </div>
                 </div>
-
-              </div>
-            </motion.div>
+              </motion.div>
           </div>
         )}
       </AnimatePresence>
