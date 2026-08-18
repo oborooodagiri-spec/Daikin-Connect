@@ -622,37 +622,59 @@ export default function ProductLineupClient({ session }: { session?: any }) {
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1.5">
                         <ImageIcon size={10} className="inline mr-1" /> Gambar Ilustrasi
                       </label>
-                      <div className="flex gap-2">
-                        <input
-                          type="url"
-                          value={formImageUrl}
-                          onChange={(e) => setFormImageUrl(e.target.value)}
-                          placeholder="Link (opsional) atau Upload..."
-                          className="flex-1 px-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#0073ea] transition-all"
-                        />
-                        <label className="flex-shrink-0 cursor-pointer px-4 py-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 rounded-2xl text-sm font-bold transition-all flex items-center justify-center gap-2">
-                          {isUploadingImage ? <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" /> : "Upload"}
+                      {formImageUrl ? (
+                        <div className="flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-2xl">
+                          <div className="flex items-center gap-3">
+                            <img src={formImageUrl} alt="Preview" className="w-10 h-10 object-contain bg-white rounded-lg border border-slate-200" />
+                            <span className="text-xs font-bold text-slate-600 truncate max-w-[200px]">Gambar Tersimpan</span>
+                          </div>
+                          <button type="button" onClick={() => setFormImageUrl("")} className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      ) : (
+                        <label className="cursor-pointer w-full p-4 border-2 border-dashed border-slate-200 hover:border-[#0073ea] hover:bg-blue-50/50 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all">
+                          {isUploadingImage ? (
+                            <div className="w-5 h-5 border-2 border-[#0073ea] border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            <>
+                              <ImageIcon size={20} className="text-slate-400" />
+                              <span className="text-xs font-bold text-slate-500">Klik untuk upload gambar</span>
+                            </>
+                          )}
                           <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={isUploadingImage} />
                         </label>
-                      </div>
+                      )}
                     </div>
                     <div>
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1.5">
                         <Link2 size={10} className="inline mr-1" /> Katalog PDF
                       </label>
-                      <div className="flex gap-2">
-                        <input
-                          type="url"
-                          value={formCatalogUrl}
-                          onChange={(e) => setFormCatalogUrl(e.target.value)}
-                          placeholder="Link Katalog (opsional) atau Upload..."
-                          className="flex-1 px-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#0073ea] transition-all"
-                        />
-                        <label className="flex-shrink-0 cursor-pointer px-4 py-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 rounded-2xl text-sm font-bold transition-all flex items-center justify-center gap-2">
-                          {isUploadingCatalog ? <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" /> : "Upload"}
+                      {formCatalogUrl ? (
+                        <div className="flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-2xl">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-white rounded-lg border border-slate-200 flex items-center justify-center text-red-500">
+                              <FileText size={18} />
+                            </div>
+                            <span className="text-xs font-bold text-slate-600 truncate max-w-[200px]">Katalog Tersimpan</span>
+                          </div>
+                          <button type="button" onClick={() => setFormCatalogUrl("")} className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      ) : (
+                        <label className="cursor-pointer w-full p-4 border-2 border-dashed border-slate-200 hover:border-[#0073ea] hover:bg-blue-50/50 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all">
+                          {isUploadingCatalog ? (
+                            <div className="w-5 h-5 border-2 border-[#0073ea] border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            <>
+                              <FileText size={20} className="text-slate-400" />
+                              <span className="text-xs font-bold text-slate-500">Klik untuk upload katalog (PDF)</span>
+                            </>
+                          )}
                           <input type="file" accept="application/pdf" className="hidden" onChange={handleCatalogUpload} disabled={isUploadingCatalog} />
                         </label>
-                      </div>
+                      )}
                     </div>
                   </>
                 )}
