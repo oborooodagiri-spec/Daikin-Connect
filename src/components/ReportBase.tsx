@@ -49,7 +49,7 @@ export const ReportBase = ({
       {/* HEADER SECTION - FULL BLEED */}
       <div id="report-header" style={{ width: "100%", backgroundColor: "white" }}>
         <div style={{ padding: "10mm 15mm 0 15mm" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "5mm" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4mm" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "5mm" }}>
               <img src="/daikin_logo.png" alt="Daikin" style={{ height: "12mm", objectFit: "contain" }} />
               <div style={{ height: "10mm", width: "1px", backgroundColor: "#003366" }}></div>
@@ -58,24 +58,39 @@ export const ReportBase = ({
               </div>
             </div>
             <div style={{ textAlign: "right" }}>
-              <img src="/logo/Logo DSSI.png" alt="DSSI Connect" style={{ height: "24mm", objectFit: "contain" }} />
+              <img src="/logo/Logo DSSI.png" alt="DSSI Connect" style={{ height: "14mm", objectFit: "contain" }} />
             </div>
           </div>
+          
+          {/* THICK BLUE BAR - MOVED UP */}
+          <div style={{ 
+            width: "100%", 
+            height: "2.5mm", 
+            backgroundColor: "#003366", 
+            marginBottom: "4mm",
+            borderRadius: "1mm"
+          }}></div>
 
           <div style={{ textAlign: "center", position: "relative", marginBottom: "3mm" }}>
             <h1 style={{ 
-              fontSize: "22pt", 
+              fontSize: "16pt", 
               fontWeight: 900, 
               color: "#003366", 
               margin: 0, 
               textTransform: "uppercase", 
-              letterSpacing: "2.5px" 
+              letterSpacing: "2px",
+              lineHeight: "1.3"
             }}>
-              {reportTitle}
+              {reportTitle.split('\n').map((line, i) => (
+                <React.Fragment key={i}>
+                  {line}
+                  {i < reportTitle.split('\n').length - 1 && <br />}
+                </React.Fragment>
+              ))}
             </h1>
             {projectName && (
               <div style={{ 
-                fontSize: "11pt", 
+                fontSize: "10pt", 
                 fontWeight: 800, 
                 color: "#003366", 
                 backgroundColor: "#e0f2fe",
@@ -92,7 +107,7 @@ export const ReportBase = ({
             )}
             {!projectName && reportCode && (
               <div style={{ 
-                fontSize: "11pt", 
+                fontSize: "10pt", 
                 fontWeight: 800, 
                 color: "#444", 
                 backgroundColor: "#f1f5f9",
@@ -121,15 +136,6 @@ export const ReportBase = ({
               </div>
             )}
           </div>
-          
-          {/* THICK BLUE BAR */}
-          <div style={{ 
-            width: "100%", 
-            height: "2.5mm", 
-            backgroundColor: "#003366", 
-            marginBottom: "4mm",
-            borderRadius: "1mm"
-          }}></div>
         </div>
       </div>
 

@@ -151,10 +151,15 @@ export default function BlankReportPage() {
         }}
         ref={reportRef}
       >
-        {pages.map((pageSections, index) => (
+        {pages.map((pageSections, index) => {
+          let customTitle = `PREVENTIVE MAINTENANCE\n${unitType}`;
+          if (unitType === "UWAP") {
+            customTitle = "PREVENTIVE MAINTENANCE\nUWAP\nAIR COOLED SCREW COMPRESSOR CHILLER";
+          }
+          return (
           <div key={index} className="report-page bg-white shadow-xl">
             <ReportBase
-              reportTitle={`PREVENTIVE MAINTENANCE - ${unitType}`}
+              reportTitle={customTitle}
               unit={dummyUnit}
               pageNumber={index + 1}
               totalPages={pages.length}
@@ -171,7 +176,8 @@ export default function BlankReportPage() {
               </div>
             </ReportBase>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

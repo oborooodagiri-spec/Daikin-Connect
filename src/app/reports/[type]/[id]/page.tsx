@@ -518,7 +518,7 @@ export default function ReportHubPage() {
       reportTitle = activityData.reportTitle || "PREVENTIVE MAINTENANCE FCU";
       sections = getFCUPreventiveSections({...activityData, ...commonApproval}, data.unit, data.activity.inspector_name, data.customer?.name, activeLang);
     } else if (isUWAP) {
-      reportTitle = "PREVENTIVE MAINTENANCE AIR COOLED CHILLER - SCREW - UWAP";
+      reportTitle = "PREVENTIVE MAINTENANCE\nUWAP\nAIR COOLED SCREW COMPRESSOR CHILLER";
       sections = getUWAPPreventiveSections({...activityData, ...commonApproval}, data.unit, data.activity.inspector_name, data.customer?.name, activeLang);
     } else if (isChiller) {
       reportTitle = activityData.reportTitle || "PREVENTIVE MAINTENANCE CHILLER";
