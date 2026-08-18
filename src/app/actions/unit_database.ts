@@ -40,7 +40,6 @@ export async function getUnitTypeCategories() {
         icon_color: c.icon_color || "#0073ea",
         catalog_url: c.catalog_url || "",
         image_url: c.image_url || "",
-        pm_report_url: c.pm_report_url || "",
         parent_id: c.parent_id,
         sort_order: c.sort_order,
         created_at: c.created_at?.toISOString() || "",
@@ -103,7 +102,6 @@ export async function updateUnitTypeCategory(
     icon_color?: string;
     catalog_url?: string;
     image_url?: string;
-    pm_report_url?: string;
     parent_id?: number | null;
     sort_order?: number;
   }
@@ -118,49 +116,13 @@ export async function updateUnitTypeCategory(
     if (data.icon_color !== undefined) updateData.icon_color = data.icon_color;
     if (data.catalog_url !== undefined) updateData.catalog_url = data.catalog_url || null;
     if (data.image_url !== undefined) updateData.image_url = data.image_url || null;
-    if (data.pm_report_url !== undefined) updateData.pm_report_url = data.pm_report_url || null;
     if (data.parent_id !== undefined) updateData.parent_id = data.parent_id;
     if (data.sort_order !== undefined) updateData.sort_order = data.sort_order;
 
-    const updatedCategory = await (prisma.unit_type_categories as any).update({
+    await (prisma.unit_type_categories as any).update({
       where: { id },
       data: updateData,
     });
-
-    // If pm_report_url is updated, sync it to knowledge_resources so it appears in the Database
-    if (data.pm_report_url !== undefined) {
-      const resourceTitle = `Format Report Preventive Maintenance - ${updatedCategory.name}`;
-      if (data.pm_report_url) {
-        // Upsert knowledge resource
-        const existingResource = await (prisma.knowledge_resources as any).findFirst({
-          where: { title: resourceTitle, category: "Reports" }
-        });
-        
-        if (existingResource) {
-          await (prisma.knowledge_resources as any).update({
-            where: { id: existingResource.id },
-            data: { file_url: data.pm_report_url }
-          });
-        } else {
-          await (prisma.knowledge_resources as any).create({
-            data: {
-              title: resourceTitle,
-              category: "Reports",
-              type: "PDF",
-              file_url: data.pm_report_url,
-              tags: "Preventive Maintenance, Format Report, " + updatedCategory.name,
-              visibility: "Internal",
-              uploaded_by: session.id
-            }
-          });
-        }
-      } else {
-        // Delete if url is cleared
-        await (prisma.knowledge_resources as any).deleteMany({
-          where: { title: resourceTitle, category: "Reports" }
-        });
-      }
-    }
 
     revalidatePath("/admin/unit-database");
     return { success: true };

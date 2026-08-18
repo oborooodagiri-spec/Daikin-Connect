@@ -983,10 +983,9 @@ model unit_type_categories {
   catalog_url String?  @db.Text
   created_at  DateTime @default(now()) @db.Timestamp(0)
   updated_at  DateTime @default(now()) @updatedAt @db.Timestamp(0)
-  image_url     String?  @db.Text
-  pm_report_url String?  @db.Text
-  parent_id     Int?
-  sort_order    Int      @default(0)
+  image_url   String?  @db.Text
+  parent_id   Int?
+  sort_order  Int      @default(0)
 
   @@unique([name, parent_id])
 }

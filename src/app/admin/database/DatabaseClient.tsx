@@ -370,8 +370,6 @@ export default function KnowledgeCenterPage({
                    console.log("[PRESENTASI DEBUG] resources total:", resources.length, "filtered:", pathFiltered.length, pathFiltered.map(r => r.title));
                  } else if (currentPath.length === 2 && currentPath[0] === "Reports" && currentPath[1] === "Logsheet") {
                    pathFiltered = resources.filter((res: any) => res.title.toLowerCase().includes("logsheet"));
-                 } else if (currentPath.length === 2 && currentPath[0] === "Reports" && currentPath[1] === "Preventive Maintenance") {
-                   pathFiltered = resources.filter((res: any) => res.category === "Reports" && res.title.toLowerCase().includes("preventive maintenance"));
                  }
                  
                  return pathFiltered.map((res: any, i: number) => renderResourceCard(res, i));
