@@ -48,6 +48,7 @@ export async function POST(req: Request) {
             body: stream,
           },
           fields: 'id',
+          supportsAllDrives: true,
         });
         
         const fileId = response.data.id;
