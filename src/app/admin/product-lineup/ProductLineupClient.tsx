@@ -84,14 +84,15 @@ export default function ProductLineupClient({ session }: { session?: any }) {
   // Derived data
   const mainCategories = categories.filter(c => c.parent_id === null);
   
-  // A product is considered anything that belongs to the currently active category
   const activeChildren = categories.filter(c => c.parent_id === activeCategoryId);
   
-  const filteredChildren = activeChildren.filter(
-    (c) =>
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.description.toLowerCase().includes(search.toLowerCase())
-  );
+  const isSearching = search.trim().length > 0;
+  const filteredChildren = isSearching
+    ? categories.filter(c => 
+        c.name.toLowerCase().includes(search.toLowerCase()) || 
+        (c.description && c.description.toLowerCase().includes(search.toLowerCase()))
+      )
+    : activeChildren;
 
   const toggleExpand = (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -294,9 +295,6 @@ export default function ProductLineupClient({ session }: { session?: any }) {
               <h1 className="text-xl font-black text-[#323338] flex items-center gap-2">
                 <Database size={22} className="text-[#0073ea]" /> Product Library
               </h1>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
-                Master Data Unit Database
-              </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -354,14 +352,21 @@ export default function ProductLineupClient({ session }: { session?: any }) {
           {/* Main Content Area */}
           <div className="flex-1 flex flex-col">
             {/* Search */}
-            <div className="bg-white rounded-2xl border border-slate-100 p-4 mb-6 flex items-center gap-3">
-              <Search size={18} className="text-slate-300" />
+            <div className="bg-white rounded-2xl border-2 border-transparent focus-within:border-blue-100 shadow-sm p-4 mb-6 flex items-center gap-4 transition-all hover:shadow-md">
+              <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
+                <Search size={18} className="text-[#0073ea]" />
+              </div>
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Cari produk di dalam kategori ini..."
-                className="flex-1 bg-transparent border-none focus:outline-none text-sm font-bold text-[#323338] placeholder-slate-300"
+                placeholder="Cari produk atau model di seluruh database..."
+                className="flex-1 bg-transparent border-none focus:outline-none text-base font-bold text-[#323338] placeholder-slate-300"
               />
+              {search && (
+                <button onClick={() => setSearch("")} className="p-2 rounded-full hover:bg-slate-100 text-slate-400 transition-colors">
+                  <X size={16} />
+                </button>
+              )}
             </div>
 
             {/* Title */}
@@ -369,7 +374,7 @@ export default function ProductLineupClient({ session }: { session?: any }) {
               <div className="flex items-center gap-3">
                 <Box size={24} className="text-slate-400" />
                 <h2 className="text-xl font-black text-[#323338]">
-                  {activeCategoryId ? categories.find(c => c.id === activeCategoryId)?.name : "Semua Produk"}
+                  {isSearching ? `Hasil Pencarian: "${search}"` : (activeCategoryId ? categories.find(c => c.id === activeCategoryId)?.name : "Semua Produk")}
                 </h2>
               </div>
               <span className="text-xs font-bold text-slate-400 bg-white px-3 py-1.5 rounded-full border border-slate-100">
