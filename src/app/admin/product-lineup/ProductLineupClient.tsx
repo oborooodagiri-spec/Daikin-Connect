@@ -60,6 +60,9 @@ export default function ProductLineupClient({ session }: { session?: any }) {
   const [formImageUrl, setFormImageUrl] = useState("");
   const [formParentId, setFormParentId] = useState<number | null>(null);
 
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isUploadingCatalog, setIsUploadingCatalog] = useState(false);
+
   const fetchCategories = useCallback(async () => {
     setLoading(true);
     const res = await getUnitTypeCategories();
@@ -138,6 +141,97 @@ export default function ProductLineupClient({ session }: { session?: any }) {
   const openDetail = (cat: UnitCategory) => {
     setSelectedProduct(cat);
     setDetailOpen(true);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingImage(true);
+    try {
+      // Compress image using canvas
+      const img = new window.Image();
+      const objectUrl = URL.createObjectURL(file);
+      
+      const compressedBlob = await new Promise<Blob>((resolve, reject) => {
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          
+          let width = img.width;
+          let height = img.height;
+          
+          // Max dimension 800px
+          const MAX_SIZE = 800;
+          if (width > height && width > MAX_SIZE) {
+            height *= MAX_SIZE / width;
+            width = MAX_SIZE;
+          } else if (height > MAX_SIZE) {
+            width *= MAX_SIZE / height;
+            height = MAX_SIZE;
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          canvas.toBlob((blob) => {
+            if (blob) resolve(blob);
+            else reject(new Error("Canvas to Blob failed"));
+          }, "image/jpeg", 0.7); // 70% quality JPEG
+          
+          URL.revokeObjectURL(objectUrl);
+        };
+        img.onerror = reject;
+        img.src = objectUrl;
+      });
+
+      const formData = new FormData();
+      formData.append("file", compressedBlob, file.name.replace(/\.[^/.]+$/, "") + ".jpg");
+      formData.append("folder", "products");
+
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+
+      if (data.url) {
+        setFormImageUrl(data.url);
+      } else {
+        alert("Gagal mengupload gambar.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Terjadi kesalahan saat kompresi/upload.");
+    } finally {
+      setIsUploadingImage(false);
+      e.target.value = "";
+    }
+  };
+
+  const handleCatalogUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingCatalog(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "catalogs");
+
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+
+      if (data.url) {
+        setFormCatalogUrl(data.url);
+      } else {
+        alert("Gagal mengupload katalog.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Terjadi kesalahan saat upload.");
+    } finally {
+      setIsUploadingCatalog(false);
+      e.target.value = "";
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -526,27 +620,39 @@ export default function ProductLineupClient({ session }: { session?: any }) {
                   <>
                     <div>
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1.5">
-                        <ImageIcon size={10} className="inline mr-1" /> Link Gambar Ilustrasi
+                        <ImageIcon size={10} className="inline mr-1" /> Gambar Ilustrasi
                       </label>
-                      <input
-                        type="url"
-                        value={formImageUrl}
-                        onChange={(e) => setFormImageUrl(e.target.value)}
-                        placeholder="https://..."
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#0073ea] transition-all"
-                      />
+                      <div className="flex gap-2">
+                        <input
+                          type="url"
+                          value={formImageUrl}
+                          onChange={(e) => setFormImageUrl(e.target.value)}
+                          placeholder="Link (opsional) atau Upload..."
+                          className="flex-1 px-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#0073ea] transition-all"
+                        />
+                        <label className="flex-shrink-0 cursor-pointer px-4 py-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 rounded-2xl text-sm font-bold transition-all flex items-center justify-center gap-2">
+                          {isUploadingImage ? <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" /> : "Upload"}
+                          <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={isUploadingImage} />
+                        </label>
+                      </div>
                     </div>
                     <div>
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1.5">
-                        <Link2 size={10} className="inline mr-1" /> Link Katalog PDF
+                        <Link2 size={10} className="inline mr-1" /> Katalog PDF
                       </label>
-                      <input
-                        type="url"
-                        value={formCatalogUrl}
-                        onChange={(e) => setFormCatalogUrl(e.target.value)}
-                        placeholder="https://drive.google.com/..."
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#0073ea] transition-all"
-                      />
+                      <div className="flex gap-2">
+                        <input
+                          type="url"
+                          value={formCatalogUrl}
+                          onChange={(e) => setFormCatalogUrl(e.target.value)}
+                          placeholder="Link Katalog (opsional) atau Upload..."
+                          className="flex-1 px-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#0073ea] transition-all"
+                        />
+                        <label className="flex-shrink-0 cursor-pointer px-4 py-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 rounded-2xl text-sm font-bold transition-all flex items-center justify-center gap-2">
+                          {isUploadingCatalog ? <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" /> : "Upload"}
+                          <input type="file" accept="application/pdf" className="hidden" onChange={handleCatalogUpload} disabled={isUploadingCatalog} />
+                        </label>
+                      </div>
                     </div>
                   </>
                 )}
@@ -595,7 +701,7 @@ export default function ProductLineupClient({ session }: { session?: any }) {
               
               <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white">
                 <div>
-                  <h2 className="text-xl font-black text-[#323338]">Parts Details</h2>
+                  <h2 className="text-xl font-black text-[#323338]">Unit Information</h2>
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
                     {categories.find(c => c.id === selectedProduct.parent_id)?.name || "Product"}
                   </p>
