@@ -20,7 +20,7 @@ export async function createCorrectiveActivity(data: any) {
       photos,
       location,
       unit_tag,
-      reviewer_signature,
+      engineer_signature,
       engineer_signer_name,
     } = data;
     
@@ -39,7 +39,7 @@ export async function createCorrectiveActivity(data: any) {
         location: location || "",
         unit_tag: unit_tag || "",
         pdf_report_url,
-        reviewer_signature,
+        engineer_signature,
         engineer_signer_name,
       },
     });
@@ -57,7 +57,7 @@ export async function createCorrectiveActivity(data: any) {
           perm_action: data.perm_action || "",
           recommendation: data.recommendation || "",
           photo_url: pdf_report_url || "",
-          reviewer_signature,
+          engineer_signature,
           status: "Submitted",
         },
       });
@@ -134,7 +134,7 @@ export async function updateCorrectiveActivity(id: number, data: any) {
       photos,
       location,
       unit_tag,
-      reviewer_signature,
+      engineer_signature,
       engineer_signer_name,
     } = data;
 
@@ -148,7 +148,7 @@ export async function updateCorrectiveActivity(id: number, data: any) {
         location: location || "",
         unit_tag: unit_tag || "",
         pdf_report_url,
-        reviewer_signature,
+        engineer_signature,
         engineer_signer_name,
       }
     });

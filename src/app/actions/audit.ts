@@ -49,7 +49,7 @@ export async function createAuditActivity(data: any) {
       // Related Data
       velocity_points, // Array of { point_number, velocity_value }
       photos, // Array of { photo_url, description } 
-      reviewer_signature,
+      engineer_signature,
       engineer_signer_name
     } = data;
 
@@ -94,7 +94,7 @@ export async function createAuditActivity(data: any) {
         volt_ln: parseInt(volt_ln) || 0,
 
         pdf_report_url,
-        reviewer_signature,
+        engineer_signature,
         engineer_signer_name
       }
     });
@@ -191,7 +191,7 @@ export async function updateAuditActivity(id: number | string, data: any) {
       pdf_report_url,
       velocity_points,
       photos,
-      reviewer_signature,
+      engineer_signature,
       engineer_signer_name
     } = data;
 
@@ -229,7 +229,7 @@ export async function updateAuditActivity(id: number | string, data: any) {
         volt_rt: parseInt(volt_rt) || 0,
         volt_ln: parseInt(volt_ln) || 0,
         pdf_report_url,
-        reviewer_signature,
+        engineer_signature,
         engineer_signer_name
       }
     });

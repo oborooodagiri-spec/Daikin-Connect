@@ -122,7 +122,7 @@ export async function submitDailyLog(unitId: number, data: any) {
         drainage_status: data.drainage_status || null,
         notes: data.notes || null,
 
-        reviewer_signature: data.reviewer_signature || null
+        engineer_signature: data.engineer_signature || null
       }
     });
 

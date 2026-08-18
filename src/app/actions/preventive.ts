@@ -20,7 +20,7 @@ export async function createPreventiveActivity(data: any) {
       // project, date, model, so_number, serial_number, visit,
       // unit_number, nominal_capacity, location, team_opt
       // scope_of_work rows, parts info, etc.
-      reviewer_signature,
+      engineer_signature,
       engineer_signer_name
     } = data;
 
@@ -36,7 +36,7 @@ export async function createPreventiveActivity(data: any) {
         location: data.location || "",
         unit_tag: data.unit_tag || "",
         pdf_report_url,
-        reviewer_signature,
+        engineer_signature,
         engineer_signer_name
       }
     });
@@ -95,7 +95,7 @@ export async function updatePreventiveActivity(id: number, data: any) {
       technical_json,
       pdf_report_url,
       photos,
-      reviewer_signature,
+      engineer_signature,
       engineer_signer_name
     } = data;
 
@@ -107,7 +107,7 @@ export async function updatePreventiveActivity(id: number, data: any) {
         technical_json,
         technical_advice: engineer_note,
         pdf_report_url,
-        reviewer_signature,
+        engineer_signature,
         engineer_signer_name
       }
     });

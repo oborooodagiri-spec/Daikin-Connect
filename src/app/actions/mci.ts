@@ -18,7 +18,7 @@ export async function createMciActivity(data: any) {
       pdf_report_url,
       berita_acara_pdf_url,
       photos,
-      reviewer_signature,
+      engineer_signature,
       engineer_signer_name
     } = data;
 
@@ -34,7 +34,7 @@ export async function createMciActivity(data: any) {
         location: data.location || "",
         unit_tag: data.unit_tag || "",
         pdf_report_url,
-        reviewer_signature,
+        engineer_signature,
         engineer_signer_name
       }
     });
@@ -94,7 +94,7 @@ export async function updateMciActivity(id: number, data: any) {
       pdf_report_url,
       berita_acara_pdf_url,
       photos,
-      reviewer_signature,
+      engineer_signature,
       engineer_signer_name
     } = data;
 
@@ -106,7 +106,7 @@ export async function updateMciActivity(id: number, data: any) {
         technical_json,
         technical_advice: engineer_note,
         pdf_report_url,
-        reviewer_signature,
+        engineer_signature,
         engineer_signer_name
       }
     });
