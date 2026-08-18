@@ -163,7 +163,7 @@ export default function MciFormClient({ unit, initialData, onSuccess }: { unit: 
           location: unit.building_floor,
           inspector_name: signerName,
           engineer_signer_name: signerName,
-          reviewer_signature: signatureBase64,
+          engineer_signature: signatureBase64,
           technical_json: JSON.stringify({ formData, mediaItems: navigator.onLine ? uploadedPhotos : [] }),
           engineer_note: formData.q11_mechanic_remarks,
           photos: uploadedPhotos

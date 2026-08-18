@@ -126,7 +126,7 @@ export default function DailyLogFormClient({
       const payloadWithSignature = {
         ...formData,
         inspectorName: signerName,
-        reviewer_signature: signatureBase64,
+        engineer_signature: signatureBase64,
       };
 
       // --- OFFLINE CHECK ---

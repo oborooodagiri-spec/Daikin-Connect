@@ -509,7 +509,7 @@ export default function CorrectiveFormClient({ unit, lastPreventiveDate, initial
         pdf_report_url: pdfUrl,
         berita_acara_pdf_url: baUrl,
         engineer_signer_name: signerName,
-        reviewer_signature: signatureBase64,
+        engineer_signature: signatureBase64,
         photos: uploadedMedia,
       };
 
