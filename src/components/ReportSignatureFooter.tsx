@@ -41,30 +41,15 @@ export const ReportSignatureFooter = ({
       {/* COLUMN 1: PREPARED BY (FIELD STAFF) */}
       <div style={{ textAlign: "center" }}>
         <p style={{ fontSize: "8pt", fontWeight: 800, color: "#003366", margin: "0 0 2mm 0", textTransform: "uppercase" }}>{t("PREPARED BY", lang)}:</p>
-        <div style={{ height: "35mm", display: "flex", alignItems: "flex-end", justifyContent: "center", position: "relative" }}>
-          {engineerSignatureUrl ? (
-             <img src={engineerSignatureUrl} alt="Engineer Signature" style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", marginBottom: "2mm" }} />
-          ) : isBulkSync ? (
-             <p style={{ fontSize: "9pt", fontWeight: 900, color: "#111", borderBottom: "1pt solid #003366", paddingBottom: "1mm", display: "inline-block" }}>
-                {t("Synchronized by System", lang)}
-            </p>
-          ) : (
-             <div style={{ position: 'absolute', bottom: "2mm", width: "100%", textAlign: "center" }}>
-                <p style={{ fontSize: "9pt", fontWeight: 900, color: "#111", borderBottom: "1pt solid #003366", paddingBottom: "1mm", display: "inline-block" }}>
-                    {preparedBy || "TEKNISI LAPANGAN"}
-                </p>
-             </div>
-          )}
-        </div>
-        <p style={{ fontSize: "6pt", fontWeight: 600, color: "#64748b", marginTop: "1mm" }}>{isBulkSync ? "BULK IMPORT" : t("Field Technician", lang)}</p>
-      </div>
-
-      {/* COLUMN 2: REVIEWED BY (INTERNAL ENGINEER) */}
-      <div style={{ textAlign: "center" }}>
-        <p style={{ fontSize: "8pt", fontWeight: 800, color: "#003366", margin: "0 0 2mm 0", textTransform: "uppercase" }}>{t("REVIEWED BY", lang)}:</p>
         <div style={{ height: "35mm", position: "relative" }}>
           {reviewerSignatureUrl ? (
-            <img src={reviewerSignatureUrl} alt="Reviewer Signature" style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", margin: "auto" }} />
+            <img src={reviewerSignatureUrl} alt="Prepared By Signature" style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", margin: "auto" }} />
+          ) : isBulkSync ? (
+            <div style={{ height: "100%", display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
+              <p style={{ fontSize: "9pt", fontWeight: 900, color: "#111", borderBottom: "1pt solid #003366", paddingBottom: "1mm", display: "inline-block" }}>
+                {t("Synchronized by System", lang)}
+              </p>
+            </div>
           ) : (
             <div 
               style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", cursor: onEngineerSignClick ? 'pointer' : 'default' }}
@@ -72,13 +57,31 @@ export const ReportSignatureFooter = ({
             >
               <div style={{ border: "1px dashed #cbd5e1", borderRadius: "8px", width: "80%", height: "80%", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: onEngineerSignClick ? '#f8fafc' : 'transparent', transition: 'background-color 0.2s' }}>
                 <p style={{ fontSize: "7pt", color: onEngineerSignClick ? "#3b82f6" : "#94a3b8", fontStyle: "italic", fontWeight: onEngineerSignClick ? 600 : 400 }}>
-                  {onEngineerSignClick ? "Klik untuk Tanda Tangan" : "KLIK UNTUK TANDA TANGAN (NEW)"}
+                  {onEngineerSignClick ? "Klik untuk Tanda Tangan" : "BELUM DITANDATANGANI"}
                 </p>
               </div>
             </div>
           )}
         </div>
-        <p style={{ fontSize: "9pt", fontWeight: 900, color: "#111", marginTop: "1mm" }}>{reviewedBy || "-"}</p>
+        <p style={{ fontSize: "9pt", fontWeight: 900, color: "#111", marginTop: "1mm" }}>{reviewerSignatureUrl ? reviewedBy : (preparedBy || "TEKNISI LAPANGAN")}</p>
+        <p style={{ fontSize: "6pt", fontWeight: 600, color: "#64748b", marginTop: "1mm" }}>{isBulkSync ? "BULK IMPORT" : t("Field Technician", lang)}</p>
+      </div>
+
+      {/* COLUMN 2: REVIEWED BY (INTERNAL ENGINEER) */}
+      <div style={{ textAlign: "center" }}>
+        <p style={{ fontSize: "8pt", fontWeight: 800, color: "#003366", margin: "0 0 2mm 0", textTransform: "uppercase" }}>{t("REVIEWED BY", lang)}:</p>
+        <div style={{ height: "35mm", display: "flex", alignItems: "flex-end", justifyContent: "center", position: "relative" }}>
+          {engineerSignatureUrl ? (
+             <img src={engineerSignatureUrl} alt="Reviewer Signature" style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", marginBottom: "2mm" }} />
+          ) : (
+             <div style={{ position: 'absolute', bottom: "2mm", width: "100%", textAlign: "center" }}>
+                <p style={{ fontSize: "9pt", fontWeight: 900, color: "#111", borderBottom: "1pt solid #003366", paddingBottom: "1mm", display: "inline-block", minWidth: "20mm", color: "transparent" }}>
+                    &nbsp;
+                </p>
+             </div>
+          )}
+        </div>
+        <p style={{ fontSize: "9pt", fontWeight: 900, color: "#111", marginTop: "1mm" }}>{engineerSignatureUrl ? "Supervisor" : "-"}</p>
         <p style={{ fontSize: "6pt", fontWeight: 600, color: "#64748b" }}>{t("Internal Engineer", lang)}</p>
       </div>
 
