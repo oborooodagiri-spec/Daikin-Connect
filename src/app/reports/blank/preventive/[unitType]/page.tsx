@@ -18,7 +18,6 @@ export default function BlankReportPage() {
   const reportRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
   const [reportScale, setReportScale] = useState(1);
-  const [sectionHeights, setSectionHeights] = useState<number[]>([]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -92,6 +91,29 @@ export default function BlankReportPage() {
     sections = getUWAPPreventiveSections(dummyData, dummyUnit, "", "");
   }
 
+  // Fallback pagination since we don't have probe measurements for the blank template easily
+  const techSections = sections.filter((s: any) => s && typeof s === 'object' && !s.key?.startsWith('photos-'));
+  const photoSections = sections.filter((s: any) => s && typeof s === 'object' && s.key?.startsWith('photos-'));
+
+  const pages: React.ReactNode[][] = [];
+  let currentPage: React.ReactNode[] = [];
+  techSections.forEach((section, idx) => {
+    currentPage.push(section);
+    // Simple static chunking for blank templates
+    if (idx === 1 || idx === 3 || idx === 5 || idx === 7) {
+      pages.push(currentPage);
+      currentPage = [];
+    }
+  });
+  if (currentPage.length > 0) pages.push(currentPage);
+  
+  // Add photos if any (should be empty for blank, but just in case)
+  if (photoSections.length > 0) {
+    photoSections.forEach(chunk => {
+      pages.push([chunk]);
+    });
+  }
+
   return (
     <div className="min-h-screen bg-[#f8f9fc] flex flex-col items-center py-6 px-4">
       <div className="w-full max-w-[800px] mb-6 flex justify-between items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100 relative z-50">
@@ -123,18 +145,33 @@ export default function BlankReportPage() {
           transform: `scale(${reportScale})`,
           transformOrigin: 'top center',
           width: '794px',
-          marginBottom: `${(1 - reportScale) * -1122}px`,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px'
         }}
+        ref={reportRef}
       >
-        <div ref={reportRef} className="bg-[#f8f9fc]">
-          <ReportBase
-            title={`PREVENTIVE MAINTENANCE - ${unitType}`}
-            headerData={{...dummyData.header, ...dummyUnit}}
-            sections={sections}
-            pageHeights={sectionHeights}
-            isLandscape={false}
-          />
-        </div>
+        {pages.map((pageSections, index) => (
+          <div key={index} className="report-page bg-white shadow-xl">
+            <ReportBase
+              reportTitle={`PREVENTIVE MAINTENANCE - ${unitType}`}
+              unit={dummyUnit}
+              pageNumber={index + 1}
+              totalPages={pages.length}
+              isFixedHeight={true}
+            >
+              <div 
+                className="flex-1 flex flex-col w-full"
+                style={{ 
+                  justifyContent: 'flex-start',
+                  paddingTop: '4mm'
+                }}
+              >
+                {pageSections}
+              </div>
+            </ReportBase>
+          </div>
+        ))}
       </div>
     </div>
   );
