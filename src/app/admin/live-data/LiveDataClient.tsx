@@ -1217,9 +1217,9 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
       const s = searchTerm.toLowerCase();
       const matchSearch = !s || d.client_name?.toLowerCase().includes(s) || d.project_name?.toLowerCase().includes(s) || d.pic?.toLowerCase().includes(s) || d.remarks?.toLowerCase().includes(s);
       const matchStatus = statusFilter === "All" || d.status === statusFilter;
-      const matchCategory = categoryFilter === "All" || d.category === categoryFilter;
-      const matchSector = sectorFilter === "All" || d.sector === sectorFilter;
-      const matchPic = picFilter === "All" || d.pic === picFilter;
+      const matchCategory = categoryFilter === "All" || d.category?.trim().toUpperCase() === categoryFilter;
+      const matchSector = sectorFilter === "All" || d.sector?.trim().toUpperCase() === sectorFilter;
+      const matchPic = picFilter === "All" || d.pic?.trim().toUpperCase() === picFilter;
       const matchSource = sourceFilter === "All" || d.source === sourceFilter;
       const matchProjectState = 
         projectStateFilter === "All" ||
@@ -1251,7 +1251,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
   const paginatedDeals = filteredDeals.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   const totalPages = Math.ceil(filteredDeals.length / itemsPerPage);
 
-  const uniquePics = useMemo(() => [...new Set(deals.map(d => d.pic?.trim()).filter(Boolean))].sort(), [deals]);
+  const uniquePics = useMemo(() => [...new Set(deals.map(d => d.pic?.trim().toUpperCase()).filter(Boolean))].sort(), [deals]);
   const uniqueCategories = useMemo(() => [...new Set(deals.map(d => d.category?.trim().toUpperCase()).filter(Boolean))].sort(), [deals]);
   const uniqueSectors = useMemo(() => [...new Set(deals.map(d => d.sector?.trim().toUpperCase()).filter(Boolean))].sort(), [deals]);
   const uniqueStatuses = useMemo(() => Object.keys(STATUS_CONFIG), []);
@@ -1946,16 +1946,16 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
           </div>
           
           {[
-            { label: "Project State", val: projectStateFilter, set: setProjectStateFilter, opts: ["Open / On Progress", "Closed", "Forecasted"] },
-            { label: "Status", val: statusFilter, set: setStatusFilter, opts: uniqueStatuses as string[] },
-            { label: "Category", val: categoryFilter, set: setCategoryFilter, opts: uniqueCategories as string[] },
-            { label: "Sector", val: sectorFilter, set: setSectorFilter, opts: uniqueSectors as string[] },
-            { label: "PIC", val: picFilter, set: setPicFilter, opts: uniquePics as string[] },
+            { label: "Project State", plural: "Project States", val: projectStateFilter, set: setProjectStateFilter, opts: ["Open / On Progress", "Closed", "Forecasted"] },
+            { label: "Status", plural: "Statuses", val: statusFilter, set: setStatusFilter, opts: uniqueStatuses as string[] },
+            { label: "Category", plural: "Categories", val: categoryFilter, set: setCategoryFilter, opts: uniqueCategories as string[] },
+            { label: "Sector", plural: "Sectors", val: sectorFilter, set: setSectorFilter, opts: uniqueSectors as string[] },
+            { label: "PIC", plural: "PICs", val: picFilter, set: setPicFilter, opts: uniquePics as string[] },
           ].map(f => (
             <select key={f.label} value={f.val} onChange={e => { f.set(e.target.value); setCurrentPage(1); }}
               style={{ padding: "10px 14px", background: "#f5f6f8", border: "1px solid #e8e8e8", borderRadius: 12, fontSize: 11, fontWeight: 800, color: "#323338", textTransform: "uppercase", cursor: canClickWidgets ? "pointer" : "default" }}
             >
-              <option value="All">All {f.label}s</option>
+              <option value="All">All {f.plural}</option>
               {f.opts.map(o => <option key={o} value={o}>{o}</option>)}
             </select>
           ))}
