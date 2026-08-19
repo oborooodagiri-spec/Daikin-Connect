@@ -1,8 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Copy, Server, Settings2, Trash2, Pencil } from "lucide-react";
+import { Plus, Copy, Server, Settings2, Trash2, Pencil, Download } from "lucide-react";
 import Link from "next/link";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+
+declare module "jspdf" {
+  interface jsPDF {
+    autoTable: (options: any) => jsPDF;
+  }
+}
 
 interface Gateway {
   id: string;
@@ -135,6 +143,74 @@ export default function ModbusClient() {
     }
   };
 
+  const handleDownloadReport = async (gw: Gateway) => {
+    try {
+      // 1. Fetch Logs
+      const res = await fetch(`/api/v1/modbus/logs?gateway_id=${gw.id}`);
+      if (!res.ok) throw new Error("Failed to fetch logs");
+      const data = await res.json();
+      const logs = data.logs || [];
+
+      if (logs.length === 0) {
+        alert("Tidak ada data untuk gateway ini.");
+        return;
+      }
+
+      // Group logs by hour
+      // Log shape: { recorded_at, raw_value, scaled_value, register: { name, unit } }
+      const hourlyData: Record<string, any[]> = {};
+      logs.forEach((log: any) => {
+        const date = new Date(log.recorded_at);
+        // Format to YYYY-MM-DD HH:00
+        const hourKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:00`;
+        if (!hourlyData[hourKey]) hourlyData[hourKey] = [];
+        hourlyData[hourKey].push(log);
+      });
+
+      const tableRows: any[][] = [];
+      Object.keys(hourlyData).sort().forEach(hour => {
+        // Just take the first reading of the hour for simplicity in this testing phase
+        const logsInHour = hourlyData[hour];
+        // We might have multiple registers, so let's list them
+        logsInHour.forEach(log => {
+           tableRows.push([
+             hour,
+             log.register?.name || "Unknown",
+             log.scaled_value.toString(),
+             log.register?.unit || "",
+             "Normal"
+           ]);
+        });
+      });
+
+      // 2. Generate PDF
+      const pdf = new jsPDF("p", "mm", "a4");
+      
+      pdf.setFontSize(18);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("MODBUS DATA LOGGING REPORT", 14, 20);
+      
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(`Site: ${gw.name} (${gw.description})`, 14, 30);
+      pdf.text(`IP Address: ${gw.ip_address}:${gw.port}`, 14, 35);
+      pdf.text(`Generated at: ${new Date().toLocaleString('id-ID')}`, 14, 40);
+
+      pdf.autoTable({
+        startY: 50,
+        head: [["Waktu (Hourly)", "Parameter", "Nilai", "Satuan", "Remarks"]],
+        body: tableRows,
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [0, 115, 234] },
+      });
+
+      pdf.save(`Modbus_Report_${gw.name}_${new Date().getTime()}.pdf`);
+    } catch (err) {
+      console.error(err);
+      alert("Gagal men-download laporan.");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -241,6 +317,13 @@ export default function ModbusClient() {
                 >
                   <Pencil className="h-4 w-4 mr-1" />
                   Edit
+                </button>
+                <button
+                  onClick={() => handleDownloadReport(gw)}
+                  className="text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300 text-sm font-medium flex items-center"
+                >
+                  <Download className="h-4 w-4 mr-1" />
+                  Download
                 </button>
                 <Link
                   href={`/admin/modbus/${gw.id}`}
