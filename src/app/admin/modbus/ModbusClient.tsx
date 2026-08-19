@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Copy, Server, Settings2, Trash2, Pencil, Download } from "lucide-react";
 import Link from "next/link";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 
 declare module "jspdf" {
@@ -205,9 +205,9 @@ export default function ModbusClient() {
       });
 
       pdf.save(`Modbus_Report_${gw.name}_${new Date().getTime()}.pdf`);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Gagal men-download laporan.");
+      alert(`Gagal men-download laporan: ${err.message}`);
     }
   };
 
