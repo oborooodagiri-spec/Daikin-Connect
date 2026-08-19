@@ -14,7 +14,14 @@ export async function GET() {
       orderBy: { created_at: "desc" },
     });
 
-    return NextResponse.json({ gateways });
+    // Calculate dynamic status based on last_seen_at
+    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
+    const enriched = gateways.map((gw) => ({
+      ...gw,
+      status: gw.last_seen_at && gw.last_seen_at > fiveMinAgo ? "active" : "inactive",
+    }));
+
+    return NextResponse.json({ gateways: enriched });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
