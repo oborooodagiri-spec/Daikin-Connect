@@ -60,7 +60,7 @@ const getScopeRows = (unitType: string, modelStr: string = '') => {
   }
 
   // 3. UWAP (Air Cooled Screw Compressor Chiller)
-  if (type.includes("UWAP")) {
+  if (type.includes('UWAP') && !isModelUAL && !type.includes('UAL')) {
     return [
       { key: "error", label: "Error", type: "measure", category: "1. PARAMETER", format: "single" },
       { key: "temp_set_point_lwt", label: "Temp Set Point (LWT) (°C)", type: "measure", category: "1. PARAMETER", format: "single" },
