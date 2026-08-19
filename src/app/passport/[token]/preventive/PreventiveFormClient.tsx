@@ -17,9 +17,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { t, Language } from "@/lib/i18n";
 
 // Optimized Row Definitions by Unit Type
-const getScopeRows = (unitType: string) => {
+const getScopeRows = (unitType: string, modelStr: string = '') => {
   const type = (unitType || '').toUpperCase();
-  const model = (unit.model || '').toUpperCase();
+  const model = modelStr.toUpperCase();
   const isModelUAL = model.includes('UAL');
 
   // 1. AHU (Air Handling Unit)
@@ -279,7 +279,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
     team_opt: ""
   });
 
-  const SCOPE_ROWS = getScopeRows(unit.unit_type);
+  const SCOPE_ROWS = getScopeRows(unit.unit_type, unit.model || '');
   const hasActionItems = SCOPE_ROWS.some(r => r.type === "action");
   const hasPartsItems = !(unit.unit_type?.toUpperCase().includes('UAL') || unit.model?.toUpperCase().includes('UAL')) && !unit.unit_type?.toUpperCase().includes('CHILL') && !unit.unit_type?.toUpperCase().includes('WCP');
   const hasStep3 = hasActionItems || hasPartsItems;
