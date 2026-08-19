@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Copy, Server, Settings2, Trash2 } from "lucide-react";
+import { Plus, Copy, Server, Settings2, Trash2, Pencil } from "lucide-react";
 import Link from "next/link";
 
 interface Gateway {
@@ -21,6 +21,16 @@ export default function ModbusClient() {
   const [gateways, setGateways] = useState<Gateway[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingGateway, setEditingGateway] = useState<Gateway | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    name: "",
+    description: "",
+    ip_address: "",
+    port: 502,
+    slave_id: 1,
+    poll_interval: 60,
+  });
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -90,6 +100,38 @@ export default function ModbusClient() {
       }
     } catch (error) {
       console.error("Failed to delete gateway:", error);
+    }
+  };
+
+  const handleEdit = (gw: Gateway) => {
+    setEditingGateway(gw);
+    setEditFormData({
+      name: gw.name,
+      description: gw.description || "",
+      ip_address: gw.ip_address,
+      port: gw.port,
+      slave_id: gw.slave_id,
+      poll_interval: gw.poll_interval,
+    });
+    setShowEditModal(true);
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingGateway) return;
+    try {
+      const res = await fetch("/api/v1/modbus/gateways", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editingGateway.id, ...editFormData }),
+      });
+      if (res.ok) {
+        setShowEditModal(false);
+        setEditingGateway(null);
+        fetchGateways();
+      }
+    } catch (error) {
+      console.error("Failed to update gateway:", error);
     }
   };
 
@@ -192,6 +234,13 @@ export default function ModbusClient() {
                 >
                   <Trash2 className="h-4 w-4 mr-1" />
                   Hapus
+                </button>
+                <button
+                  onClick={() => handleEdit(gw)}
+                  className="text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300 text-sm font-medium flex items-center"
+                >
+                  <Pencil className="h-4 w-4 mr-1" />
+                  Edit
                 </button>
                 <Link
                   href={`/admin/modbus/${gw.id}`}
@@ -317,6 +366,121 @@ export default function ModbusClient() {
                   className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
                 >
                   Simpan Gateway
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* Modal Edit Gateway */}
+      {showEditModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Edit Gateway
+              </h3>
+              <button
+                onClick={() => { setShowEditModal(false); setEditingGateway(null); }}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                ×
+              </button>
+            </div>
+            
+            <form onSubmit={handleEditSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Nama Gateway
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editFormData.name}
+                  onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                  className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Deskripsi
+                </label>
+                <input
+                  type="text"
+                  value={editFormData.description}
+                  onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
+                  className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    IP Address
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.ip_address}
+                    onChange={(e) => setEditFormData({ ...editFormData, ip_address: e.target.value })}
+                    className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Port
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    value={editFormData.port}
+                    onChange={(e) => setEditFormData({ ...editFormData, port: parseInt(e.target.value) })}
+                    className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Slave ID
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    value={editFormData.slave_id}
+                    onChange={(e) => setEditFormData({ ...editFormData, slave_id: parseInt(e.target.value) })}
+                    className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Interval (detik)
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    value={editFormData.poll_interval}
+                    onChange={(e) => setEditFormData({ ...editFormData, poll_interval: parseInt(e.target.value) })}
+                    className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => { setShowEditModal(false); setEditingGateway(null); }}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-md transition-colors"
+                >
+                  Simpan Perubahan
                 </button>
               </div>
             </form>
