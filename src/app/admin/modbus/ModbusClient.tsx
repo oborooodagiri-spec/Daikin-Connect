@@ -4,13 +4,7 @@ import { useState, useEffect } from "react";
 import { Plus, Copy, Server, Settings2, Trash2, Pencil, Download } from "lucide-react";
 import Link from "next/link";
 import { jsPDF } from "jspdf";
-import "jspdf-autotable";
-
-declare module "jspdf" {
-  interface jsPDF {
-    autoTable: (options: any) => jsPDF;
-  }
-}
+import autoTable from "jspdf-autotable";
 
 interface Gateway {
   id: string;
@@ -196,7 +190,7 @@ export default function ModbusClient() {
       pdf.text(`IP Address: ${gw.ip_address}:${gw.port}`, 14, 35);
       pdf.text(`Generated at: ${new Date().toLocaleString('id-ID')}`, 14, 40);
 
-      pdf.autoTable({
+      autoTable(pdf, {
         startY: 50,
         head: [["Waktu (Hourly)", "Parameter", "Nilai", "Satuan", "Remarks"]],
         body: tableRows,
