@@ -385,6 +385,16 @@ export default function KnowledgeCenterPage({
                        visibility: "Internal",
                        created_at: new Date().toISOString(),
                      });
+                    pathFiltered.push({
+                      id: 'auto-blank-ual',
+                      title: 'Blank Template - UAL',
+                      category: 'Reports',
+                      type: 'PDF (Auto)',
+                      href: '/reports/blank/preventive/UAL',
+                      tags: 'Preventive Maintenance, UAL',
+                      visibility: 'Internal',
+                      created_at: new Date().toISOString(),
+                    });
                      pathFiltered.push({
                        id: "auto-blank-fcu",
                        title: "Blank Template - Fan Coil Unit (FCU)",

@@ -11,6 +11,7 @@ import { getDailyLogSections } from "@/components/DailyLogPDFTemplate";
 import { getFCUPreventiveSections } from "@/components/FCUPreventivePDFTemplate";
 import { getAHUPreventiveSections } from "@/components/AHUPreventivePDFTemplate";
 import { getChillerPreventiveSections } from "@/components/ChillerPreventivePDFTemplate";
+import { getUALPreventiveSections } from "@/components/UALPreventivePDFTemplate";
 import { getUWAPPreventiveSections } from "@/components/UWAPPreventivePDFTemplate";
 import { getLogsheetRoesminSections } from "@/components/LogsheetRoesminPDFTemplate";
 import { getMciSections } from "@/components/MciPDFTemplate";
@@ -526,9 +527,13 @@ export default function ReportHubPage() {
     const isFCU = uType === 'FCU';
     const isAHU = uType === 'AHU' || uType.includes('AHU');
     const isUWAP = uType.includes('UWAP');
+    const isUAL = uType.includes('UAL');
     const isChiller = uType.includes('CHILL') || uType.includes('WCP');
     
-    if (isAHU) {
+    if (isUAL) {
+      reportTitle = activityData.reportTitle || 'PREVENTIVE MAINTENANCE UAL';
+      sections = getUALPreventiveSections({...activityData, ...commonApproval}, data.unit, data.activity.inspector_name, data.customer?.name, activeLang);
+    } else if (isAHU) {
       reportTitle = activityData.reportTitle || "PREVENTIVE MAINTENANCE AHU";
       sections = getAHUPreventiveSections({...activityData, ...commonApproval}, data.unit, data.activity.inspector_name, data.customer?.name, activeLang);
     } else if (isFCU) {

@@ -7,6 +7,7 @@ import { getUWAPPreventiveSections } from "@/components/UWAPPreventivePDFTemplat
 import { getFCUPreventiveSections } from "@/components/FCUPreventivePDFTemplate";
 import { getAHUPreventiveSections } from "@/components/AHUPreventivePDFTemplate";
 import { getChillerPreventiveSections } from "@/components/ChillerPreventivePDFTemplate";
+import { getUALPreventiveSections } from "@/components/UALPreventivePDFTemplate";
 import { Download, ChevronLeft } from "lucide-react";
 import html2canvas from "html2canvas-pro";
 import { jsPDF } from "jspdf";
