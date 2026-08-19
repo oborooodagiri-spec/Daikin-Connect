@@ -532,7 +532,7 @@ export default function ReportHubPage() {
     const isChiller = uType.includes('CHILL') || uType.includes('WCP');
     
     if (isUAL) {
-      reportTitle = activityData.reportTitle || 'PREVENTIVE MAINTENANCE CHILLER';
+      reportTitle = activityData.reportTitle || 'PREVENTIVE MAINTENANCE UAL';
       sections = getUALPreventiveSections({...activityData, ...commonApproval}, data.unit, data.activity.inspector_name, data.customer?.name, activeLang);
     } else if (isAHU) {
       reportTitle = activityData.reportTitle || "PREVENTIVE MAINTENANCE AHU";

@@ -83,6 +83,8 @@ export default function BlankReportPage() {
     sections = getUWAPPreventiveSections(dummyData, dummyUnit, "", "");
   } else if (unitType === "FCU" || unitType.includes("FAN COIL UNIT")) {
     sections = getFCUPreventiveSections(dummyData, dummyUnit, "", "");
+  } else if (unitType === 'UAL' || unitType.includes('UAL')) {
+    sections = getUALPreventiveSections(dummyData, dummyUnit, '', '');
   } else if (unitType === "AHU" || unitType.includes("AIR HANDLING UNIT")) {
     sections = getAHUPreventiveSections(dummyData, dummyUnit, "", "");
   } else if (unitType === "WCC" || unitType.includes("WATER COOLED")) {
