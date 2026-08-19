@@ -36,11 +36,17 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
       getPartnershipPICs()
     ]);
     setTotalTarget(targetRes?.total || 0);
-    setPicTargets(targetRes?.byPic || {});
-    if (seRes?.success) {
-      setSalesEngineers((seRes.data || []).map((u: any) => u.name));
+    const rawTargets = targetRes?.byPic || {};
+    const normalizedTargets: Record<string, number> = {};
+    for (const k in rawTargets) {
+      normalizedTargets[k.trim().toUpperCase()] = rawTargets[k];
     }
-    if (picRes) setPartnershipPICs(picRes);
+    setPicTargets(normalizedTargets);
+
+    if (seRes?.success) {
+      setSalesEngineers((seRes.data || []).map((u: any) => u.name.trim().toUpperCase()));
+    }
+    if (picRes) setPartnershipPICs(picRes.map((p: string) => p.trim().toUpperCase()));
     setLoading(false);
   };
 
@@ -77,8 +83,8 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
     const fyEnd = new Date(fyStartYear + 1, 2, 31, 23, 59, 59, 999).getTime(); // March 31
 
     deals.forEach(d => {
-      const pic = (d.pic || "Unassigned").trim();
-      const salesPlanner = d.sales_planner ? d.sales_planner.trim() : "";
+      const pic = (d.pic || "Unassigned").trim().toUpperCase();
+      const salesPlanner = d.sales_planner ? d.sales_planner.trim().toUpperCase() : "";
       const val = Number(d.quotation) || 0;
 
       if (d.is_closed) {
