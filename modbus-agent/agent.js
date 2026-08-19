@@ -204,7 +204,14 @@ function scheduleReconnect() {
 
 // ─── Read Registers ────────────────────────────────────────
 async function readRegister(register) {
-  if (!isConnected || !client || !client.isOpen) {
+  if (!isConnected || !client) {
+    return null;
+  }
+  
+  if (!client.isOpen) {
+    log("WARN", "Socket closed by remote host. Triggering reconnect...");
+    isConnected = false;
+    scheduleReconnect();
     return null;
   }
 
@@ -314,6 +321,12 @@ async function pollCycle(registers) {
     log("WARN", "Modbus not connected, skipping poll cycle");
     scheduleReconnect();
     return;
+  }
+
+  if (client && !client.isOpen) {
+    log("WARN", "Socket was closed by remote host. Reconnecting...");
+    await connectModbus();
+    if (!isConnected) return;
   }
 
   isPolling = true;
