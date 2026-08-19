@@ -66,7 +66,7 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
 
     deals.forEach(d => {
       if (['L', 'H'].includes(d.status)) return;
-      const rawDate = d.target_po_date || d.created_at;
+      const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
       const dt = rawDate ? new Date(rawDate) : null;
       if (!dt || isNaN(dt.getTime())) return;
       
@@ -99,7 +99,7 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
     }
 
     deals.forEach(d => {
-      const rawDate = d.target_po_date || d.created_at;
+      const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
       if (!rawDate) return;
       if (['L', 'H'].includes(d.status)) return;
       
