@@ -527,7 +527,8 @@ export default function ReportHubPage() {
     const isFCU = uType === 'FCU';
     const isAHU = uType === 'AHU' || uType.includes('AHU');
     const isUWAP = uType.includes('UWAP');
-    const isUAL = uType.includes('UAL');
+    const uModel = (data.unit?.model || '').toUpperCase().trim();
+    const isUAL = uType.includes('UAL') || uModel.includes('UAL');
     const isChiller = uType.includes('CHILL') || uType.includes('WCP');
     
     if (isUAL) {

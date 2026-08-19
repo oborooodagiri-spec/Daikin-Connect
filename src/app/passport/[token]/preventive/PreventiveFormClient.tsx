@@ -18,7 +18,9 @@ import { t, Language } from "@/lib/i18n";
 
 // Optimized Row Definitions by Unit Type
 const getScopeRows = (unitType: string) => {
-  const type = (unitType || "").toUpperCase();
+  const type = (unitType || '').toUpperCase();
+  const model = (unit.model || '').toUpperCase();
+  const isModelUAL = model.includes('UAL');
 
   // 1. AHU (Air Handling Unit)
   if (type.includes("AHU")) {
@@ -111,7 +113,7 @@ const getScopeRows = (unitType: string) => {
   }
 
   // 4. CHILLER / WCP
-  if (type.includes('UAL') || type.includes('CHILL') || type.includes('WCP')) {
+  if (isModelUAL || type.includes('UAL') || type.includes('CHILL') || type.includes('WCP')) {
     const rows = [
       { key: "voltage_rs", label: "Voltage RS", type: "measure", category: "A. Voltage" },
       { key: "voltage_rt", label: "Voltage RT", type: "measure", category: "A. Voltage" },
@@ -279,7 +281,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
 
   const SCOPE_ROWS = getScopeRows(unit.unit_type);
   const hasActionItems = SCOPE_ROWS.some(r => r.type === "action");
-  const hasPartsItems = !unit.unit_type?.toUpperCase().includes('UAL') && !unit.unit_type?.toUpperCase().includes('CHILL') && !unit.unit_type?.toUpperCase().includes('WCP');
+  const hasPartsItems = !(unit.unit_type?.toUpperCase().includes('UAL') || unit.model?.toUpperCase().includes('UAL')) && !unit.unit_type?.toUpperCase().includes('CHILL') && !unit.unit_type?.toUpperCase().includes('WCP');
   const hasStep3 = hasActionItems || hasPartsItems;
   const totalSteps = hasStep3 ? 4 : 3;
   const displayStep = step === 4 && !hasStep3 ? 3 : step;
@@ -349,7 +351,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
 
   // Handle Auto-Calculations for Chiller (Delta T, Delta P)
   React.useEffect(() => {
-    const isUAL = unit.unit_type?.toUpperCase().includes('UAL');
+    const isUAL = unit.unit_type?.toUpperCase().includes('UAL') || unit.model?.toUpperCase().includes('UAL');
     const isChiller = unit.unit_type?.toUpperCase().includes('CHILL') || unit.unit_type?.toUpperCase().includes('WCP');
     if (!isChiller) return;
 
@@ -1052,7 +1054,7 @@ export default function PreventiveFormClient({ unit, initialData, onSuccess }: {
                 ))}
               </div>
 
-              {!unit.unit_type?.toUpperCase().includes('UAL') && !unit.unit_type?.toUpperCase().includes('CHILL') && !unit.unit_type?.toUpperCase().includes('WCP') && (
+              {!(unit.unit_type?.toUpperCase().includes('UAL') || unit.model?.toUpperCase().includes('UAL')) && !unit.unit_type?.toUpperCase().includes('CHILL') && !unit.unit_type?.toUpperCase().includes('WCP') && (
                 <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
                   <h2 className="text-lg font-black text-[#003366] mb-4 border-b pb-2">{t("Parts & Components", lang)}</h2>
                   {PARTS_ROWS.map((row) => (
