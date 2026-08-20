@@ -1,0 +1,73 @@
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { sendWhatsAppMessage } from '@/lib/whatsapp';
+
+export async function GET() {
+  try {
+    const now = new Date();
+    const currentHour = now.getHours().toString().padStart(2, '0');
+    const currentMin = now.getMinutes().toString().padStart(2, '0');
+    const currentTime = `${currentHour}:${currentMin}`;
+    
+    console.log(`[Cron] Checking scheduler at ${currentTime}`);
+    
+    const projects = await prisma.projects.findMany({
+      where: { wa_settings: { not: null } }
+    });
+    
+    for (const project of projects) {
+      if (!project.wa_settings) continue;
+      let settings;
+      try {
+        if (typeof project.wa_settings === 'string') {
+          settings = JSON.parse(project.wa_settings);
+        } else {
+          settings = project.wa_settings;
+        }
+      } catch(e) { continue; }
+      
+      if (settings.schedules && settings.schedules.includes(currentTime)) {
+        console.log(`[Cron] Triggering Outstanding cases for Project: ${project.name}`);
+        
+        const pendingCases = await prisma.outstanding_cases.findMany({
+          where: { project_id: project.id, status: "Pending" }
+        });
+        
+        const completedCases = await prisma.outstanding_cases.findMany({
+          where: { 
+            project_id: project.id, 
+            status: "Completed",
+            updated_at: {
+              gte: new Date(new Date(now).setHours(0,0,0,0))
+            }
+          }
+        });
+
+        if (pendingCases.length === 0) continue;
+
+        let pendingStr = pendingCases.map((c: any, i: number) => `${i+1}. ${c.title} ${c.unit_name ? '('+c.unit_name+')' : ''}`).join('\n');
+        let completedStr = completedCases.length > 0 ? completedCases.map((c: any, i: number) => `- ${c.title}`).join('\n') : "Belum ada case diselesaikan hari ini.";
+        
+        const dateStr = now.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+        
+        let template = settings.template || "";
+        let message = template
+          .replace('{{ProjectName}}', project.name || "Proyek")
+          .replace('{{Date}}', dateStr)
+          .replace('{{PendingList}}', pendingStr)
+          .replace('{{CompletedList}}', completedStr);
+          
+        const numbers = settings.numbers || [];
+        for (const num of numbers) {
+          console.log(`[Cron] Sending to ${num}...`);
+          await sendWhatsAppMessage(num, message);
+        }
+      }
+    }
+    
+    return new NextResponse(JSON.stringify({ success: true }), { status: 200 });
+  } catch (error: any) {
+    console.error("[Cron] Error:", error);
+    return new NextResponse(JSON.stringify({ success: false, error: error.message }), { status: 500 });
+  }
+}
