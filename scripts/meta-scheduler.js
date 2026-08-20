@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require('../src/generated/client_v3');
 const cron = require('node-cron');
 const https = require('https');
 const prisma = new PrismaClient();
@@ -80,7 +80,7 @@ async function runScheduler() {
               project_id: project.id, 
               status: "Completed",
               updated_at: {
-                gte: new Date(now.setHours(0,0,0,0))
+                gte: new Date(new Date(now).setHours(0,0,0,0))
               }
             }
           });
