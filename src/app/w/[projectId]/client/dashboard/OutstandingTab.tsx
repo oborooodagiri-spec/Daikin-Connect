@@ -186,58 +186,10 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
             <Settings size={14} /> Advanced WA Notification Settings
           </h3>
 
-          {/* BOT CONNECTION STATUS */}
-          <div className="mb-8 p-4 bg-slate-50 rounded-2xl border border-slate-200">
-            <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-4 flex items-center gap-2">
-              <QrCode size={14} /> Bot Connection Status
-            </h4>
-            
-            <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl border border-slate-100 shadow-sm">
-              {botStatus === "READY" && (
-                <div className="text-center space-y-4 w-full">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full text-xs font-bold">
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                    Bot Terhubung & Siap Mengirim Pesan
-                  </div>
-                  <div className="block">
-                    <button 
-                      onClick={handleLogoutBot}
-                      disabled={isLoggingOut}
-                      className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-xs font-bold transition-all disabled:opacity-50"
-                    >
-                      {isLoggingOut ? "Memutuskan Koneksi..." : "Ganti Nomor Pengirim (Logout)"}
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {botStatus === "QR" && botQr && (
-                <div className="text-center space-y-4">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-100 text-orange-700 rounded-full text-xs font-bold mb-2">
-                    <AlertCircle size={14} />
-                    Menunggu Scan Barcode
-                  </div>
-                  <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm inline-block">
-                    <QRCode value={botQr} size={200} />
-                  </div>
-                  <p className="text-xs text-slate-500 font-bold max-w-xs mx-auto">
-                    Silakan buka WhatsApp di HP Bot, pilih **Linked Devices**, lalu scan barcode di atas.
-                  </p>
-                </div>
-              )}
-
-              {botStatus === "DISCONNECTED" && (
-                <div className="text-center space-y-3 py-6">
-                  <RefreshCw size={24} className="mx-auto text-slate-400 animate-spin" />
-                  <p className="text-xs font-bold text-slate-500">Memulai ulang server robot...</p>
-                </div>
-              )}
-            </div>
-          </div>
 
           <div className="space-y-6">
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6 max-w-xl">
               {/* Numbers */}
               <div>
                 <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Personal Numbers</label>
@@ -250,23 +202,6 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
                     <div key={i} className="flex justify-between items-center bg-slate-50 px-3 py-2 rounded-lg text-sm font-bold text-slate-700">
                       {num}
                       <button onClick={() => removeArrayItem("numbers", i)} className="text-red-500 hover:text-red-700">&times;</button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Groups */}
-              <div>
-                <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Group IDs</label>
-                <div className="flex gap-2 mb-2">
-                  <input type="text" value={newGroup} onChange={e => setNewGroup(e.target.value)} placeholder="Ex: 120363123@g.us" className="flex-1 px-3 py-2 rounded-xl border border-[#e6e9ef] text-sm focus:border-[#0073ea] focus:outline-none"/>
-                  <button type="button" onClick={() => addArrayItem("groups", newGroup, setNewGroup)} className="px-3 py-2 bg-slate-100 rounded-xl text-xs font-bold hover:bg-slate-200">Add</button>
-                </div>
-                <div className="space-y-1">
-                  {(waSettings?.groups || []).map((grp, i) => (
-                    <div key={i} className="flex justify-between items-center bg-slate-50 px-3 py-2 rounded-lg text-sm font-bold text-slate-700">
-                      {grp}
-                      <button onClick={() => removeArrayItem("groups", i)} className="text-red-500 hover:text-red-700">&times;</button>
                     </div>
                   ))}
                 </div>
