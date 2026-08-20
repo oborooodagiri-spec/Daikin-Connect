@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
         
         if (msg.type === 'text') {
           const text = msg.text.body;
-          console.log([WA Cloud] Message from  + from + :  + text);
+          console.log("[WA Cloud] Message from " + from + ": " + text);
           
           let replyText = "Halo! Ini adalah sistem Daikin Connect yang baru berbasis Meta Cloud API.\n\nPesan Anda: *" + text + "*\n\nSistem AI sedang dalam pembaruan.";
           
