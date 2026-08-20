@@ -13,10 +13,10 @@ export async function sendWhatsAppMessage(to: string, text: string) {
   }
 
   try {
-    const res = await fetch(https://graph.facebook.com/v19.0/${phoneId}/messages, {
+    const res = await fetch(`https://graph.facebook.com/v19.0/${phoneId}/messages`, {
       method: "POST",
       headers: {
-        "Authorization": "Bearer ${token}",
+        "Authorization": "Bearer " + token,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
