@@ -5,9 +5,17 @@ import { sendWhatsAppMessage } from '@/lib/whatsapp';
 export async function GET() {
   try {
     const now = new Date();
-    const currentHour = now.getHours().toString().padStart(2, '0');
-    const currentMin = now.getMinutes().toString().padStart(2, '0');
-    const currentTime = `${currentHour}:${currentMin}`;
+    
+    // Force timezone to WIB (Asia/Jakarta) regardless of VPS server timezone
+    const formatter = new Intl.DateTimeFormat('id-ID', {
+      timeZone: 'Asia/Jakarta',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+    
+    // Some Node environments return "12.48", we ensure it's "12:48"
+    const currentTime = formatter.format(now).replace('.', ':');
     
     console.log(`[Cron] Checking scheduler at ${currentTime}`);
     
@@ -48,7 +56,12 @@ export async function GET() {
         let pendingStr = pendingCases.map((c: any, i: number) => `${i+1}. ${c.title} ${c.unit_name ? '('+c.unit_name+')' : ''}`).join('\n');
         let completedStr = completedCases.length > 0 ? completedCases.map((c: any, i: number) => `- ${c.title}`).join('\n') : "Belum ada case diselesaikan hari ini.";
         
-        const dateStr = now.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+        const dateStr = now.toLocaleDateString('id-ID', { 
+          timeZone: 'Asia/Jakarta',
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
         
         let template = settings.template || "";
         let message = template
