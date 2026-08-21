@@ -22,12 +22,9 @@ export async function POST(req: NextRequest) {
       if (messages && messages.length > 0) {
         const msg = messages[0];
         if (msg.type === 'text') {
-          await handleIncomingMessage(from, msg.text.body.trim());
-        } else if (msg.type === 'interactive' && msg.interactive.type === 'list_reply') {
-          // The user clicked a list item
-          await handleIncomingMessage(from, msg.interactive.list_reply.id);
-        }
           await handleIncomingMessage(msg.from, msg.text.body.trim());
+        } else if (msg.type === 'interactive' && msg.interactive.type === 'list_reply') {
+          await handleIncomingMessage(msg.from, msg.interactive.list_reply.id);
         }
       }
     }
