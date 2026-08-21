@@ -19,6 +19,7 @@ export async function GET() {
       results.push({
           projectName: project.name,
           settingsSchedules: settings.schedules,
+          settingsNumbers: settings.numbers,
           pendingCount: pendingCases.length,
           allCount: allCases.length
       });
