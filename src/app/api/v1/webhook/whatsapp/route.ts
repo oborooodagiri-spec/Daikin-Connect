@@ -227,8 +227,8 @@ async function sendMenu(from: string) {
   await sendWhatsAppInteractiveList(
     from, 
     "Main Menu", 
-    "Selamat datang di *DSSI Connect*.
-Silakan pilih layanan yang ingin Anda gunakan dari menu di bawah ini:", 
+    `Selamat datang di *DSSI Connect*.
+Silakan pilih layanan yang ingin Anda gunakan dari menu di bawah ini:`, 
     "? Pilih Layanan", 
     sections
   );
