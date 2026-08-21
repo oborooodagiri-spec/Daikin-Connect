@@ -47,11 +47,9 @@ export async function GET() {
           new Date(c.updated_at) >= new Date(new Date(now).setHours(0,0,0,0))
         );
 
-        // if (pendingCases.length === 0) continue;
+        if (pendingCases.length === 0) continue;
 
-        let pendingStr = pendingCases.length > 0 
-          ? pendingCases.map((c: any, i: number) => `${i+1}. ${c.title} ${c.unit_name ? '('+c.unit_name+')' : ''}`).join('\n')
-          : "🎉 Semua pekerjaan telah selesai! Tidak ada Outstanding Case yang tertunda.";
+        let pendingStr = pendingCases.map((c: any, i: number) => `${i+1}. ${c.title} ${c.unit_name ? '('+c.unit_name+')' : ''}`).join('\n');
           
         let completedStr = completedCases.length > 0 ? completedCases.map((c: any, i: number) => `- ${c.title}`).join('\n') : "Belum ada case diselesaikan hari ini.";
         

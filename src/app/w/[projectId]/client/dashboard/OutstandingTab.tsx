@@ -151,7 +151,11 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
   }
 
   const pendingCases = cases.filter(c => c.status === "Pending");
-  const completedCases = cases.filter(c => c.status === "Completed");
+  const completedCases = cases.filter(c => {
+    if (c.status !== "Completed") return false;
+    const diffHours = (new Date().getTime() - new Date(c.updated_at).getTime()) / (1000 * 60 * 60);
+    return diffHours <= 24;
+  });
 
   return (
     <div className="space-y-6">
