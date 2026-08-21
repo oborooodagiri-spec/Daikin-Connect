@@ -155,10 +155,9 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h2 className="text-lg font-black uppercase text-[#323338]">Outstanding Cases</h2>
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Manage manual checklists & issues</p>
+          <h2 className="text-xl font-black text-gray-900 uppercase tracking-widest">Outstanding Cases</h2>
         </div>
         
         {isAdmin && !showForm && (

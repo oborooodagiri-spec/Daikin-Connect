@@ -37,19 +37,15 @@ export async function GET() {
       if (settings.schedules && settings.schedules.includes(currentTime)) {
         console.log(`[Cron] Triggering Outstanding cases for Project: ${project.name}`);
         
-        const pendingCases = await prisma.outstanding_cases.findMany({
-          where: { project_id: project.id, status: "Pending" }
+        const allCases = await prisma.outstanding_cases.findMany({
+          where: { project_id: project.id }
         });
         
-        const completedCases = await prisma.outstanding_cases.findMany({
-          where: { 
-            project_id: project.id, 
-            status: "Completed",
-            updated_at: {
-              gte: new Date(new Date(now).setHours(0,0,0,0))
-            }
-          }
-        });
+        const pendingCases = allCases.filter((c: any) => c.status === "Pending");
+        const completedCases = allCases.filter((c: any) => 
+          c.status === "Completed" && 
+          new Date(c.updated_at) >= new Date(new Date(now).setHours(0,0,0,0))
+        );
 
         // if (pendingCases.length === 0) continue;
 
