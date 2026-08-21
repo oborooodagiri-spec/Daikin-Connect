@@ -1,10 +1,11 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("./src/generated/client_v3");
 const prisma = new PrismaClient();
-
-async function run() {
-  const units = await prisma.units.findMany({ where: { project_id: 1n } });
-  console.log(`Total units in Plaza Indonesia: ${units.length}`);
-  console.log(units.slice(0, 3));
+async function main() {
+  const gws = await prisma.modbus_gateways.findMany();
+  for (const gw of gws) {
+    console.log(gw.name, "last_seen_at:", gw.last_seen_at);
+  }
+  console.log("Current Date.now():", new Date(Date.now()));
+  console.log("Current new Date():", new Date());
 }
-
-run().finally(() => prisma.$disconnect());
+main().finally(() => prisma.$disconnect());

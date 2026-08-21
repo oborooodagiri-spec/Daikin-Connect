@@ -1,0 +1,31 @@
+<service>
+	<id>daikinmodbusagent.exe</id>
+	<name>DaikinModbusAgent</name>
+	<description>Daikin Connect - Local Modbus TCP Data Collector</description>
+	<executable>C:\Program Files\nodejs\node.exe</executable>
+	<argument>C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\modbus-agent\node_modules\node-windows\lib\wrapper.js</argument>
+	<argument>--file</argument>
+	<argument>C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\modbus-agent\agent.js</argument>
+	<argument>--scriptoptions=</argument>
+	<argument>--log</argument>
+	<argument>DaikinModbusAgent wrapper</argument>
+	<argument>--grow</argument>
+	<argument>0.5</argument>
+	<argument>--wait</argument>
+	<argument>2</argument>
+	<argument>--maxrestarts</argument>
+	<argument>999</argument>
+	<argument>--abortonerror</argument>
+	<argument>n</argument>
+	<argument>--stopparentfirst</argument>
+	<argument>undefined</argument>
+	<logmode>rotate</logmode>
+	<stoptimeout>30sec</stoptimeout>
+	<env name="NODE_ENV" value="production"/>
+	<serviceaccount>
+		<domain>G22AGRI-EPL</domain>
+		<user>LocalSystem</user>
+		<password></password>
+	</serviceaccount>
+	<workingdirectory>C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\modbus-agent</workingdirectory>
+</service>

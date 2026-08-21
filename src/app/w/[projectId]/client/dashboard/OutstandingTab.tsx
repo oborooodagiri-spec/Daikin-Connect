@@ -1,13 +1,12 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, Suspense } from "react";
-import { Plus, CheckCircle2, AlertCircle, Clock, Settings, RefreshCw, QrCode } from "lucide-react";
-import { getOutstandingCases, addOutstandingCase, resolveOutstandingCase, getProjectWaTargets, updateProjectWaTargets, getWaBotStatus, logoutWaBot } from "@/app/actions/outstanding";
-import dynamic from "next/dynamic";
+import { Plus, CheckCircle2, AlertCircle, Clock, Settings, RefreshCw, Key, Users, Copy, Check, Trash2, ShieldCheck, ShieldAlert } from "lucide-react";
+import { getOutstandingCases, addOutstandingCase, resolveOutstandingCase, getProjectWaTargets, updateProjectWaTargets } from "@/app/actions/outstanding";
+import { getProjectWaSubscribers, generateProjectInviteCode, approveSubscriber, rejectSubscriber, revokeSubscriber } from "@/app/actions/wa-subscribers";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 
-const QRCode = dynamic(() => import("react-qr-code"), { ssr: false, loading: () => <div className="w-[200px] h-[200px] bg-slate-100 animate-pulse rounded-xl" /> });
 
 export default function OutstandingTab({ projectId, isAdmin }: { projectId: any, isAdmin: boolean }) {
   const [cases, setCases] = useState<any[]>([]);
@@ -28,9 +27,12 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
     template: ""
   });
   const [savingSettings, setSavingSettings] = useState(false);
+  const [subscribers, setSubscribers] = useState<any[]>([]);
+  const [inviteCode, setInviteCode] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [loadingSubs, setLoadingSubs] = useState(false);
   
-  // Bot Connection State
-  const [botStatus, setBotStatus] = useState("DISCONNECTED");
+    const [botStatus, setBotStatus] = useState("DISCONNECTED");
   const [botQr, setBotQr] = useState("");
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -43,33 +45,21 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
     loadCases();
     if (isAdmin) {
       loadSettings();
+      loadSubscribers();
     }
   }, [projectId, isAdmin]);
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (showSettings && isAdmin) {
-      checkBotStatus();
-      interval = setInterval(checkBotStatus, 3000);
-    }
-    return () => clearInterval(interval);
-  }, [showSettings, isAdmin]);
-
-  const checkBotStatus = async () => {
-    const res = await getWaBotStatus();
+  
+  
+  
+  const loadSubscribers = async () => {
+    setLoadingSubs(true);
+    const res = await getProjectWaSubscribers(projectId);
     if (res.success && res.data) {
-      setBotStatus(res.data.status);
-      setBotQr(res.data.qr_string || "");
-      if (res.data.status !== "DISCONNECTED") {
-        setIsLoggingOut(false);
-      }
+      setSubscribers(res.data);
+      setInviteCode(res.inviteCode);
     }
-  };
-
-  const handleLogoutBot = async () => {
-    if (!confirm("Yakin ingin memutuskan koneksi Bot WhatsApp ini? Bapak harus melakukan scan QR Code ulang setelahnya.")) return;
-    setIsLoggingOut(true);
-    await logoutWaBot();
+    setLoadingSubs(false);
   };
 
   const loadSettings = async () => {
@@ -83,7 +73,7 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
         numbers: data?.numbers || [],
         groups: data?.groups || [],
         schedules: data?.schedules || ["06:00", "18:00"],
-        template: data?.template || "*OUTSTANDING CASE REPORT*\nProyek: {{ProjectName}}\nTanggal: {{Date}}\n\n*DAFTAR OUTSTANDING PENDING*:\n{{PendingList}}\n\n*DISELESAIKAN HARI INI*:\n{{CompletedList}}\nMohon kerja samanya untuk segera menyelesaikan case yang masih pending.\nPesan ini dikirim secara otomatis oleh Robot Daikin Connect."
+        template: ""
       });
     }
   };
@@ -147,6 +137,35 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
     } catch (err: any) { handleError(err); }
   };
 
+  
+  const handleGenerateCode = async () => {
+    if (!confirm("Are you sure? Old invitation code will become invalid.")) return;
+    const res = await generateProjectInviteCode(projectId);
+    if (res.success) setInviteCode(res.code);
+  };
+
+  const handleCopyCode = () => {
+    if (inviteCode) {
+      navigator.clipboard.writeText(inviteCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const handleSubAction = async (id: string, action: "approve"|"reject"|"revoke") => {
+    if (!confirm(`Are you sure you want to ${action} this subscriber?`)) return;
+    let res;
+    if (action === "approve") res = await approveSubscriber(id, projectId);
+    else if (action === "reject") res = await rejectSubscriber(id, projectId);
+    else res = await revokeSubscriber(id, projectId);
+    
+    if (res.success) {
+      await loadSubscribers();
+    } else {
+      alert("Error: " + res.error);
+    }
+  };
+
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     setSavingSettings(true);
@@ -175,6 +194,79 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
 
   return (
     <div className="space-y-6">
+
+            {/* INVITATION CODE */}
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 mt-6">
+              <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 flex items-center gap-2 mb-4">
+                <Key size={14} /> WhatsApp Registration Code
+              </h4>
+              <div className="flex items-center gap-4">
+                <div className="flex-1 bg-white border border-slate-200 rounded-lg px-4 py-3 font-mono text-lg font-bold text-center tracking-widest">
+                  {inviteCode || "Not Generated"}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <button onClick={handleCopyCode} disabled={!inviteCode} className="px-4 py-2 bg-slate-800 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-2 hover:bg-slate-700 disabled:opacity-50">
+                    {copied ? <Check size={14} /> : <Copy size={14} />} {copied ? "Copied" : "Copy"}
+                  </button>
+                  <button onClick={handleGenerateCode} className="px-4 py-2 bg-white border border-slate-300 text-slate-600 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-50">
+                    <RefreshCw size={12} /> Regenerate
+                  </button>
+                </div>
+              </div>
+              <p className="text-[10px] font-bold text-slate-400 mt-3 text-center">Share this code with technicians or clients so they can register via WhatsApp Bot.</p>
+            </div>
+
+            {/* SUBSCRIBERS LIST */}
+            <div className="mt-8 border-t border-slate-200 pt-6">
+              <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 flex items-center gap-2 mb-4">
+                <Users size={14} /> Registered Subscribers
+              </h4>
+              
+              {loadingSubs ? (
+                <div className="animate-pulse bg-slate-100 h-24 rounded-xl"></div>
+              ) : subscribers.length === 0 ? (
+                <p className="text-xs text-slate-400 font-bold text-center py-6 bg-slate-50 rounded-xl">No subscribers registered yet.</p>
+              ) : (
+                <div className="space-y-3">
+                  {subscribers.map((sub: any) => (
+                    <div key={sub.id} className="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h5 className="text-sm font-bold text-slate-800 truncate">{sub.name}</h5>
+                          {sub.status === "Approved" && sub.registered ? (
+                            <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded text-[9px] font-black uppercase tracking-widest flex items-center gap-1"><ShieldCheck size={10} /> Active</span>
+                          ) : sub.status === "Pending" ? (
+                            <span className="px-2 py-0.5 bg-amber-100 text-amber-700 rounded text-[9px] font-black uppercase tracking-widest flex items-center gap-1"><Clock size={10} /> Pending</span>
+                          ) : !sub.registered ? (
+                            <span className="px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[9px] font-black uppercase tracking-widest flex items-center gap-1"><ShieldAlert size={10} /> Inactive</span>
+                          ) : null}
+                        </div>
+                        <p className="text-xs text-slate-500 font-bold mt-1 truncate">{sub.company} � {sub.phone}</p>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 shrink-0">
+                        {sub.status === "Pending" && (
+                          <>
+                            <button onClick={() => handleSubAction(sub.id, "approve")} className="p-2 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-100" title="Approve">
+                              <Check size={16} />
+                            </button>
+                            <button onClick={() => handleSubAction(sub.id, "reject")} className="p-2 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100" title="Reject">
+                              <Trash2 size={16} />
+                            </button>
+                          </>
+                        )}
+                        {sub.status === "Approved" && sub.registered && (
+                          <button onClick={() => handleSubAction(sub.id, "revoke")} className="px-3 py-2 bg-rose-50 text-rose-600 rounded-lg text-[10px] font-black uppercase hover:bg-rose-100">
+                            Revoke
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <h2 className="text-xl font-black text-gray-900 uppercase tracking-widest">Outstanding Cases</h2>

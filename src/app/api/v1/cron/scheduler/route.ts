@@ -1,12 +1,12 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { sendWhatsAppMessage } from '@/lib/whatsapp';
+import { sendWhatsAppMessage, sendWhatsAppTemplate } from '@/lib/whatsapp';
 
 export async function GET() {
   try {
     const now = new Date();
     
-    // Force timezone to WIB (Asia/Jakarta) regardless of VPS server timezone
+    // Force timezone to WIB (Asia/Jakarta)
     const formatter = new Intl.DateTimeFormat('id-ID', {
       timeZone: 'Asia/Jakarta',
       hour: '2-digit',
@@ -14,10 +14,8 @@ export async function GET() {
       hour12: false
     });
     
-    // Some Node environments return "12.48", we ensure it's "12:48"
     const currentTime = formatter.format(now).replace('.', ':');
-    
-    console.log(`[Cron] Checking scheduler at ${currentTime}`);
+    console.log("[Cron] Checking scheduler at " + currentTime);
     
     const projects = await prisma.projects.findMany({
       where: { wa_settings: { not: null } }
@@ -35,7 +33,7 @@ export async function GET() {
       } catch(e) { continue; }
       
       if (settings.schedules && settings.schedules.includes(currentTime)) {
-        console.log(`[Cron] Triggering Outstanding cases for Project: ${project.name}`);
+        console.log("[Cron] Triggering Outstanding cases for Project: " + project.name);
         
         const allCases = await prisma.outstanding_cases.findMany({
           where: { project_id: project.id }
@@ -49,28 +47,39 @@ export async function GET() {
 
         if (pendingCases.length === 0) continue;
 
-        let pendingStr = pendingCases.map((c: any, i: number) => `${i+1}. ${c.title} ${c.unit_name ? '('+c.unit_name+')' : ''}`).join('\n');
+        let pendingStr = pendingCases.map((c: any, i: number) => (i+1) + ". " + c.title + (c.unit_name ? ' ('+c.unit_name+')' : '')).join('\n');
           
-        let completedStr = completedCases.length > 0 ? completedCases.map((c: any, i: number) => `- ${c.title}`).join('\n') : "Belum ada case diselesaikan hari ini.";
+        let completedStr = completedCases.length > 0 ? completedCases.map((c: any, i: number) => "- " + c.title).join('\n') : "Belum ada case diselesaikan hari ini.";
         
         const dateStr = now.toLocaleDateString('id-ID', { 
-          timeZone: 'Asia/Jakarta',
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric' 
+          timeZone: 'Asia/Jakarta', year: 'numeric', month: 'long', day: 'numeric' 
         });
         
-        let template = settings.template || "";
-        let message = template
-          .replace('{{ProjectName}}', project.name || "Proyek")
-          .replace('{{Date}}', dateStr)
-          .replace('{{PendingList}}', pendingStr)
-          .replace('{{CompletedList}}', completedStr);
+        
+        // TEMPLATE PARAMETERS: {{1}} Project, {{2}} Date, {{3}} Pending, {{4}} Completed
+        const param1 = project.name || "Proyek";
+        const param2 = dateStr;
+        const param3 = pendingStr;
+        const param4 = completedStr;
+
           
-        const numbers = settings.numbers || [];
-        for (const num of numbers) {
-          console.log(`[Cron] Sending to ${num}...`);
-          await sendWhatsAppMessage(num, message);
+        // Merge manual numbers with subscribers
+        const manualNumbers = settings.numbers || [];
+        
+        const subscribers = await prisma.wa_subscribers.findMany({
+          where: { project_id: project.id, status: "Approved", registered: true }
+        });
+        const subscriberNumbers = subscribers.map(s => s.phone);
+        
+        const allNumbers = [...new Set([...manualNumbers, ...subscriberNumbers])];
+
+        for (const num of allNumbers) {
+          console.log("[Cron] Sending to " + num + "...");
+          const templateSuccess = await sendWhatsAppTemplate(num, "outstanding_report", [param1, param2, param3, param4], "en");
+          if (!templateSuccess) {
+            console.log("[Cron] Template failed (likely pending approval). Falling back to standard text message for " + num);
+            await sendWhatsAppMessage(num, message);
+          }
         }
       }
     }
