@@ -110,39 +110,55 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
     setLoading(false);
   };
 
+  const handleError = (err: any) => {
+    const msg = err?.message || err?.toString() || "";
+    if (msg.includes("older or newer deployment") || msg.includes("Failed to find Server Action")) {
+      alert("Sistem telah diperbarui di latar belakang. Halaman akan dimuat ulang otomatis untuk sinkronisasi.");
+      window.location.reload();
+    } else {
+      alert("Terjadi kesalahan: " + msg);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title) return;
     
     setSubmitting(true);
-    const res = await addOutstandingCase({ project_id: projectId, title, unit_name: unitName });
-    if (res.success) {
-      setTitle("");
-      setUnitName("");
-      setShowForm(false);
-      await loadCases();
-    } else {
-      alert("Error: " + res.error);
-    }
+    try {
+      const res = await addOutstandingCase({ project_id: projectId, title, unit_name: unitName });
+      if (res.success) {
+        setTitle("");
+        setUnitName("");
+        setShowForm(false);
+        await loadCases();
+      } else {
+        alert("Error: " + res.error);
+      }
+    } catch (err: any) { handleError(err); }
     setSubmitting(false);
   };
 
   const handleResolve = async (id: string) => {
     if (!confirm("Tandai kasus ini sudah selesai?")) return;
-    await resolveOutstandingCase(id, projectId);
-    await loadCases();
+    try {
+      await resolveOutstandingCase(id, projectId);
+      await loadCases();
+    } catch (err: any) { handleError(err); }
   };
 
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     setSavingSettings(true);
-    const res = await updateProjectWaTargets(projectId, waSettings);
-    if (res.success) {
-      alert("Pengaturan WA berhasil disimpan.");
-      setShowSettings(false);
-    } else {
-      alert("Error: " + res.error);
-    }
+    try {
+      const res = await updateProjectWaTargets(projectId, waSettings);
+      if (res.success) {
+        alert("Pengaturan WA berhasil disimpan.");
+        setShowSettings(false);
+      } else {
+        alert("Error: " + res.error);
+      }
+    } catch (err: any) { handleError(err); }
     setSavingSettings(false);
   };
 
