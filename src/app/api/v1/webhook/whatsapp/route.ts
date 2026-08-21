@@ -34,8 +34,19 @@ export async function POST(req: NextRequest) {
 }
 
 async function handleIncomingMessage(from: string, text: string) {
-  const command = text.toUpperCase();
+  
+  let command = text.toUpperCase().trim();
+  
+  // Number mapping
+  if (command === "1") command = "DAFTAR";
+  if (command === "2") command = "STATUS";
+  if (command === "3") command = "TAMBAH";
+  if (command === "4") command = "SELESAI";
+  if (command === "5") command = "BERHENTI";
+  if (command === "6") command = "BANTUAN";
+  
   const session = sessions.get(from);
+
 
   if (command === "BANTUAN" || command === "MENU") {
     sessions.delete(from);
@@ -199,7 +210,7 @@ async function handleIncomingMessage(from: string, text: string) {
 }
 
 async function sendMenu(from: string) {
-  const menu = "Selamat datang di *DSSI Connect*.\n\nKetik salah satu perintah berikut:\n1?? *DAFTAR* � Registrasi penerima laporan\n2?? *STATUS* � Cek outstanding cases\n3?? *TAMBAH* � Lapor case baru\n4?? *SELESAI* � Tandai case selesai\n5?? *BERHENTI* � Cabut langganan\n6?? *BANTUAN* � Tampilkan menu ini";
+  const menu = "Selamat datang di *DSSI Connect*.\n\nKetik salah satu perintah berikut:\n[1] *DAFTAR* - Registrasi penerima laporan\n[2] *STATUS* - Cek outstanding cases\n[3] *TAMBAH* - Lapor case baru\n[4] *SELESAI* - Tandai case selesai\n[5] *BERHENTI* - Cabut langganan\n[6] *BANTUAN* - Tampilkan menu ini";
   await sendWhatsAppMessage(from, menu);
 }
 
