@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendWhatsAppMessage } from '@/lib/whatsapp';
+import { sendWhatsAppMessage, sendWhatsAppInteractiveList } from '@/lib/whatsapp';
 import { prisma } from '@/lib/prisma';
 
 const VERIFY_TOKEN = process.env.WA_VERIFY_TOKEN || "daikin_connect_secure_token_2026";
@@ -22,6 +22,11 @@ export async function POST(req: NextRequest) {
       if (messages && messages.length > 0) {
         const msg = messages[0];
         if (msg.type === 'text') {
+          await handleIncomingMessage(from, msg.text.body.trim());
+        } else if (msg.type === 'interactive' && msg.interactive.type === 'list_reply') {
+          // The user clicked a list item
+          await handleIncomingMessage(from, msg.interactive.list_reply.id);
+        }
           await handleIncomingMessage(msg.from, msg.text.body.trim());
         }
       }
@@ -37,13 +42,7 @@ async function handleIncomingMessage(from: string, text: string) {
   
   let command = text.toUpperCase().trim();
   
-  // Number mapping
-  if (command === "1") command = "DAFTAR";
-  if (command === "2") command = "STATUS";
-  if (command === "3") command = "TAMBAH";
-  if (command === "4") command = "SELESAI";
-  if (command === "5") command = "BERHENTI";
-  if (command === "6") command = "BANTUAN";
+  // Replaced with interactive list ID processing
   
   const session = sessions.get(from);
 
@@ -210,8 +209,32 @@ async function handleIncomingMessage(from: string, text: string) {
 }
 
 async function sendMenu(from: string) {
-  const menu = "Selamat datang di *DSSI Connect*.\n\nKetik salah satu perintah berikut:\n[1] *DAFTAR* - Registrasi penerima laporan\n[2] *STATUS* - Cek outstanding cases\n[3] *TAMBAH* - Lapor case baru\n[4] *SELESAI* - Tandai case selesai\n[5] *BERHENTI* - Cabut langganan\n[6] *BANTUAN* - Tampilkan menu ini";
-  await sendWhatsAppMessage(from, menu);
+  const sections = [
+    {
+      title: "Layanan Laporan",
+      rows: [
+        { id: "DAFTAR", title: "Registrasi", description: "Daftar untuk menerima laporan otomatis" },
+        { id: "STATUS", title: "Cek Outstanding", description: "Lihat status kasus saat ini" },
+        { id: "BERHENTI", title: "Berhenti Langganan", description: "Cabut akses notifikasi proyek" }
+      ]
+    },
+    {
+      title: "Manajemen Kasus",
+      rows: [
+        { id: "TAMBAH", title: "Lapor Kasus Baru", description: "Tambahkan kasus baru ke sistem" },
+        { id: "SELESAI", title: "Tandai Selesai", description: "Tandai kasus yang sudah beres" }
+      ]
+    }
+  ];
+  
+  await sendWhatsAppInteractiveList(
+    from, 
+    "Main Menu", 
+    "Selamat datang di *DSSI Connect*.
+Silakan pilih layanan yang ingin Anda gunakan dari menu di bawah ini:", 
+    "? Pilih Layanan", 
+    sections
+  );
 }
 
 async function handleUnsubscribe(from: string) {
