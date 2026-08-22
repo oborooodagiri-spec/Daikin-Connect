@@ -4,7 +4,41 @@ import { prisma } from '@/lib/prisma';
 
 const VERIFY_TOKEN = process.env.WA_VERIFY_TOKEN || "daikin_connect_secure_token_2026";
 
-const sessions = new Map<string, any>();
+
+interface SessionData {
+  step: string;
+  timeoutId?: NodeJS.Timeout;
+  [key: string]: any;
+}
+
+const sessions = new Map<string, SessionData>();
+
+function setSessionTimeout(from: string, data: any) {
+  const existing = sessions.get(from);
+  if (existing && existing.timeoutId) {
+    clearTimeout(existing.timeoutId);
+  }
+  
+  const timeoutId = setTimeout(async () => {
+    clearSession(from);
+    try {
+      await sendWhatsAppMessage(from, "?? Sesi percakapan Anda telah *berakhir otomatis* karena tidak ada aktivitas selama 5 menit.
+
+Silakan klik tombol *Pilih Layanan* pada menu utama untuk memulai kembali.");
+    } catch (e) { console.error(e); }
+  }, 5 * 60 * 1000);
+
+  setSessionTimeout(from, { ...data, timeoutId });
+}
+
+function clearSession(from: string) {
+  const existing = sessions.get(from);
+  if (existing && existing.timeoutId) {
+    clearTimeout(existing.timeoutId);
+  }
+  clearSession(from);
+}
+
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
@@ -45,25 +79,25 @@ async function handleIncomingMessage(from: string, text: string) {
 
 
   if (command === "BANTUAN" || command === "MENU") {
-    sessions.delete(from);
+    clearSession(from);
     await sendMenu(from);
     return;
   }
 
   if (command === "BERHENTI") {
-    sessions.delete(from);
+    clearSession(from);
     await handleUnsubscribe(from);
     return;
   }
 
   if (command === "STATUS") {
-    sessions.delete(from);
+    clearSession(from);
     await handleStatus(from);
     return;
   }
 
   if (command === "DAFTAR") {
-    sessions.set(from, { step: "AWAITING_CODE" });
+    setSessionTimeout(from, { step: "AWAITING_CODE" });
     await sendWhatsAppMessage(from, "Silakan masukkan *Kode Undangan Proyek* Anda.\nHubungi admin proyek jika Anda belum memilikinya.");
     return;
   }
@@ -78,7 +112,7 @@ async function handleIncomingMessage(from: string, text: string) {
       await sendWhatsAppMessage(from, "Anda terdaftar di >1 proyek. Fitur tambah via WA saat ini difokuskan untuk 1 proyek utama. Silakan gunakan website.");
       return;
     }
-    sessions.set(from, { step: "ADD_CASE_TITLE", projectId: subs[0].project_id, projectName: subs[0].projects?.name || "Proyek" });
+    setSessionTimeout(from, { step: "ADD_CASE_TITLE", projectId: subs[0].project_id, projectName: subs[0].projects?.name || "Proyek" });
     await sendWhatsAppMessage(from, "Silakan masukkan *Judul/Deskripsi Masalah* (contoh: AC Mati di Lantai 2):");
     return;
   }
@@ -97,7 +131,7 @@ async function handleIncomingMessage(from: string, text: string) {
     }
     
     let listStr = pendingCases.map((c: any) => `ID: *${c.id}* - ${c.title}`).join('\n');
-    sessions.set(from, { step: "RESOLVE_CASE_ID", projectId });
+    setSessionTimeout(from, { step: "RESOLVE_CASE_ID", projectId });
     await sendWhatsAppMessage(from, `Silakan balas dengan *ID Kasus* yang sudah diselesaikan:\n\n${listStr}`);
     return;
   }
@@ -113,7 +147,7 @@ async function handleIncomingMessage(from: string, text: string) {
       
       const existing = await prisma.wa_subscribers.findFirst({ where: { phone: from, project_id: project.id } });
       if (existing) {
-        sessions.delete(from);
+        clearSession(from);
         await sendWhatsAppMessage(from, "Anda sudah terdaftar. Status: *" + existing.status + "*.");
         return;
       }
@@ -121,7 +155,7 @@ async function handleIncomingMessage(from: string, text: string) {
       session.step = "AWAITING_NAME";
       session.projectId = project.id;
       session.projectName = project.name;
-      sessions.set(from, session);
+      setSessionTimeout(from, session);
       await sendWhatsAppMessage(from, "? Proyek ditemukan: *" + project.name + "*\n\nSilakan masukkan *Nama Lengkap* Anda:");
       return;
     }
@@ -129,14 +163,14 @@ async function handleIncomingMessage(from: string, text: string) {
     if (session.step === "AWAITING_NAME") {
       session.step = "AWAITING_COMPANY";
       session.name = text;
-      sessions.set(from, session);
+      setSessionTimeout(from, session);
       await sendWhatsAppMessage(from, "Silakan masukkan *Nama Perusahaan* Anda:");
       return;
     }
 
     if (session.step === "AWAITING_COMPANY") {
       session.company = text;
-      sessions.delete(from);
+      clearSession(from);
 
       await prisma.wa_subscribers.create({
         data: {
@@ -156,14 +190,14 @@ async function handleIncomingMessage(from: string, text: string) {
     if (session.step === "ADD_CASE_TITLE") {
       session.title = text;
       session.step = "ADD_CASE_UNIT";
-      sessions.set(from, session);
+      setSessionTimeout(from, session);
       await sendWhatsAppMessage(from, "Judul dicatat.\nSilakan masukkan *Nama Unit / Lokasi* (atau ketik '-' jika tidak ada):");
       return;
     }
 
     if (session.step === "ADD_CASE_UNIT") {
       const unit = text === "-" ? "" : text;
-      sessions.delete(from);
+      clearSession(from);
       
       await prisma.outstanding_cases.create({
         data: {
@@ -180,7 +214,7 @@ async function handleIncomingMessage(from: string, text: string) {
     }
 
     if (session.step === "RESOLVE_CASE_ID") {
-      sessions.delete(from);
+      clearSession(from);
       const caseId = parseInt(text);
       if (isNaN(caseId)) {
         await sendWhatsAppMessage(from, "? Format ID salah. Harus berupa angka. Ketik SELESAI untuk mencoba lagi.");
