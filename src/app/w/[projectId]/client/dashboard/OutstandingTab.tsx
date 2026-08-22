@@ -206,7 +206,7 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
                   {copied ? <Check size={18} /> : <Copy size={18} />}
                 </button>
               </div>
-              <p className="text-[10px] font-bold text-slate-400 mt-3">Share this code with technicians so they can register via WhatsApp Bot.</p>
+              <p className="text-[10px] font-bold text-slate-400 mt-3">Share this code for invitations.</p>
             </div>
             
             <div className="mt-6 pt-6 border-t border-blue-50">
@@ -402,3 +402,4 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
     </div>
   );
 }
+

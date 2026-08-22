@@ -1,4 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+const fs = require('fs');
+
+const newCode = `import { NextRequest, NextResponse } from 'next/server';
 import { sendWhatsAppMessage, sendWhatsAppInteractiveList } from '@/lib/whatsapp';
 import { prisma } from '@/lib/prisma';
 
@@ -21,7 +23,7 @@ function setSessionTimeout(from: string, data: any) {
   const timeoutId = setTimeout(async () => {
     clearSession(from);
     try {
-      await sendWhatsAppMessage(from, "Your conversation session has automatically expired due to 5 minutes of inactivity.\n\nPlease type 'Menu' to start again.");
+      await sendWhatsAppMessage(from, "Your conversation session has automatically expired due to 5 minutes of inactivity.\\n\\nPlease type 'Menu' to start again.");
     } catch (e) { console.error(e); }
   }, 5 * 60 * 1000);
 
@@ -91,7 +93,7 @@ async function handleIncomingMessage(from: string, text: string) {
 
   if (command === "PROJ_ADD") {
     setSessionTimeout(from, { step: "AWAITING_CODE" });
-    await sendWhatsAppMessage(from, "Please enter your Project Code:\n(Contact your project administrator if you do not have one)");
+    await sendWhatsAppMessage(from, "Please enter your Project Code:\\n(Contact your project administrator if you do not have one)");
     return;
   }
 
@@ -127,7 +129,7 @@ async function handleIncomingMessage(from: string, text: string) {
     const projectId = command.replace("OUT_ADD_", "");
     const project = await prisma.projects.findUnique({ where: { id: BigInt(projectId) } });
     setSessionTimeout(from, { step: "ADD_CASE_TITLE", projectId: BigInt(projectId), projectName: project?.name || "Project" });
-    await sendWhatsAppMessage(from, "Please enter the Case Title or Description:\n(Example: AC leaking on Level 2)");
+    await sendWhatsAppMessage(from, "Please enter the Case Title or Description:\\n(Example: AC leaking on Level 2)");
     return;
   }
 
@@ -140,9 +142,9 @@ async function handleIncomingMessage(from: string, text: string) {
       return;
     }
     
-    let listStr = pendingCases.map((c: any) => `ID: *${c.id}* - ${c.title}`).join('\n');
+    let listStr = pendingCases.map((c: any) => \`ID: *\${c.id}* - \${c.title}\`).join('\\n');
     setSessionTimeout(from, { step: "RESOLVE_CASE_ID", projectId: BigInt(projectId) });
-    await sendWhatsAppMessage(from, `Please reply with the *Case ID* that has been resolved:\n\n${listStr}`);
+    await sendWhatsAppMessage(from, \`Please reply with the *Case ID* that has been resolved:\\n\\n\${listStr}\`);
     return;
   }
 
@@ -158,7 +160,7 @@ async function handleIncomingMessage(from: string, text: string) {
       const existing = await prisma.wa_subscribers.findFirst({ where: { phone: from, project_id: project.id } });
       if (existing) {
         clearSession(from);
-        await sendWhatsAppMessage(from, `You are already registered for ${project.name}. Your status is: *${existing.status}*.`);
+        await sendWhatsAppMessage(from, \`You are already registered for \${project.name}. Your status is: *\${existing.status}*.\`);
         return;
       }
 
@@ -166,7 +168,7 @@ async function handleIncomingMessage(from: string, text: string) {
       session.projectId = project.id;
       session.projectName = project.name;
       setSessionTimeout(from, session);
-      await sendWhatsAppMessage(from, `Project found: *${project.name}*\n\nPlease enter your *Full Name*:`);
+      await sendWhatsAppMessage(from, \`Project found: *\${project.name}*\\n\\nPlease enter your *Full Name*:\`);
       return;
     }
 
@@ -193,7 +195,7 @@ async function handleIncomingMessage(from: string, text: string) {
         }
       });
 
-      await sendWhatsAppMessage(from, "Your registration has been submitted.\nStatus: *Waiting for Admin Approval*\n\nYou will receive a notification once approved.");
+      await sendWhatsAppMessage(from, "Your registration has been submitted.\\nStatus: *Waiting for Admin Approval*\\n\\nYou will receive a notification once approved.");
       return;
     }
 
@@ -201,7 +203,7 @@ async function handleIncomingMessage(from: string, text: string) {
       session.title = text;
       session.step = "ADD_CASE_UNIT";
       setSessionTimeout(from, session);
-      await sendWhatsAppMessage(from, "Title recorded.\nPlease enter the *Unit Name / Location*:\n(Or type '-' if none)");
+      await sendWhatsAppMessage(from, "Title recorded.\\nPlease enter the *Unit Name / Location*:\\n(Or type '-' if none)");
       return;
     }
 
@@ -219,7 +221,7 @@ async function handleIncomingMessage(from: string, text: string) {
           updated_at: new Date()
         }
       });
-      await sendWhatsAppMessage(from, `New case successfully added for project *${session.projectName}*.`);
+      await sendWhatsAppMessage(from, \`New case successfully added for project *\${session.projectName}*.\`);
       return;
     }
 
@@ -241,7 +243,7 @@ async function handleIncomingMessage(from: string, text: string) {
         where: { id: targetCase.id },
         data: { status: "Completed", updated_at: new Date() }
       });
-      await sendWhatsAppMessage(from, `Case *${targetCase.title}* marked as resolved successfully.`);
+      await sendWhatsAppMessage(from, \`Case *\${targetCase.title}* marked as resolved successfully.\`);
       return;
     }
   }
@@ -266,7 +268,7 @@ async function sendMainMenu(from: string) {
   await sendWhatsAppInteractiveList(
     from, 
     "Main Menu", 
-    "Welcome to *DSSI Connect by Value Engineering Services of EPL*.\nPlease select a service from the menu below:", 
+    "Welcome to *DSSI Connect by Value Engineering Services of EPL*.\\nPlease select a service from the menu below:", 
     "? Select Service", 
     sections
   );
@@ -279,7 +281,7 @@ async function sendProjectListMenu(from: string) {
   });
 
   const rows = subscriptions.map(sub => ({
-    id: `PROJ_SEL_${sub.project_id}`,
+    id: \`PROJ_SEL_\${sub.project_id}\`,
     title: sub.projects.name.substring(0, 24),
     description: "Access this project"
   }));
@@ -305,7 +307,7 @@ async function sendProjectFeaturesMenu(from: string, projectId: string) {
     {
       title: "Features",
       rows: [
-        { id: `FEAT_OUTSTANDING_${projectId}`, title: "Outstanding Cases", description: "Manage outstanding cases" },
+        { id: \`FEAT_OUTSTANDING_\${projectId}\`, title: "Outstanding Cases", description: "Manage outstanding cases" },
         { id: "MAIN_PROJECTS", title: "Back to Projects", description: "Return to project list" }
       ]
     }
@@ -313,7 +315,7 @@ async function sendProjectFeaturesMenu(from: string, projectId: string) {
   
   await sendWhatsAppInteractiveList(
     from, 
-    `Project: ${project?.name?.substring(0, 40) || "Unknown"}`, 
+    \`Project: \${project?.name?.substring(0, 40) || "Unknown"}\`, 
     "Please select a feature to access:", 
     "? Select Feature", 
     sections
@@ -325,11 +327,11 @@ async function sendOutstandingCasesMenu(from: string, projectId: string) {
     {
       title: "Outstanding Cases",
       rows: [
-        { id: `OUT_STATUS_${projectId}`, title: "Check Status", description: "View pending and completed cases" },
-        { id: `OUT_ADD_${projectId}`, title: "Report New Case", description: "Add a new outstanding case" },
-        { id: `OUT_RESOLVE_${projectId}`, title: "Resolve Case", description: "Mark a case as completed" },
-        { id: `OUT_UNSUB_${projectId}`, title: "Unsubscribe", description: "Stop receiving reports" },
-        { id: `PROJ_SEL_${projectId}`, title: "Back to Features", description: "Return to project features" }
+        { id: \`OUT_STATUS_\${projectId}\`, title: "Check Status", description: "View pending and completed cases" },
+        { id: \`OUT_ADD_\${projectId}\`, title: "Report New Case", description: "Add a new outstanding case" },
+        { id: \`OUT_RESOLVE_\${projectId}\`, title: "Resolve Case", description: "Mark a case as completed" },
+        { id: \`OUT_UNSUB_\${projectId}\`, title: "Unsubscribe", description: "Stop receiving reports" },
+        { id: \`PROJ_SEL_\${projectId}\`, title: "Back to Features", description: "Return to project features" }
       ]
     }
   ];
@@ -374,9 +376,11 @@ async function handleOutstandingStatus(from: string, projectId: string) {
   const pendingCases = allCases.filter((c: any) => c.status === "Pending");
   const completedCases = allCases.filter((c: any) => c.status === "Completed" && new Date(c.updated_at) >= new Date(new Date(now).setHours(0,0,0,0)));
   
-  let pendingStr = pendingCases.length > 0 ? pendingCases.map((c: any, i: number) => (i+1) + ". " + c.title).join('\n') : "No pending cases.";
-  let completedStr = completedCases.length > 0 ? completedCases.map((c: any, i: number) => "- " + c.title).join('\n') : "No cases completed today.";
+  let pendingStr = pendingCases.length > 0 ? pendingCases.map((c: any, i: number) => (i+1) + ". " + c.title).join('\\n') : "No pending cases.";
+  let completedStr = completedCases.length > 0 ? completedCases.map((c: any, i: number) => "- " + c.title).join('\\n') : "No cases completed today.";
   
-  const msg = `*Outstanding Cases - ${sub.projects.name}*\n\n*Pending (${pendingCases.length}):*\n${pendingStr}\n\n*Completed Today (${completedCases.length}):*\n${completedStr}`;
+  const msg = \`*Outstanding Cases - \${sub.projects.name}*\\n\\n*Pending (\${pendingCases.length}):*\\n\${pendingStr}\\n\\n*Completed Today (\${completedCases.length}):*\\n\${completedStr}\`;
   await sendWhatsAppMessage(from, msg);
 }
+`
+fs.writeFileSync('src/app/api/v1/webhook/whatsapp/route.ts', newCode, 'utf8');
