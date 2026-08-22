@@ -267,7 +267,7 @@ async function sendMainMenu(from: string) {
     from, 
     "Main Menu", 
     "Welcome to *DSSI Connect by Value Engineering Services of EPL*.\nPlease select a service from the menu below:", 
-    "? Select Service", 
+    "Select Service", 
     sections
   );
 }
@@ -293,7 +293,7 @@ async function sendProjectListMenu(from: string) {
     from, 
     "Project Access", 
     "Please select a project to access or register a new one:", 
-    "? Select Project", 
+    "Select Project", 
     sections
   );
 }
@@ -315,7 +315,7 @@ async function sendProjectFeaturesMenu(from: string, projectId: string) {
     from, 
     `Project: ${project?.name?.substring(0, 40) || "Unknown"}`, 
     "Please select a feature to access:", 
-    "? Select Feature", 
+    "Select Feature", 
     sections
   );
 }
@@ -338,7 +338,7 @@ async function sendOutstandingCasesMenu(from: string, projectId: string) {
     from, 
     "Outstanding Cases", 
     "Please select an action from the menu below:", 
-    "? Select Action", 
+    "Select Action", 
     sections
   );
 }

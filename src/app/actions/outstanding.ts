@@ -55,7 +55,7 @@ export async function addOutstandingCase(data: { project_id: string | number | b
       if (project) {
         const subs = await prisma.wa_subscribers.findMany({ where: { project_id: project.id, status: "Approved", registered: true } });
         for (const sub of subs) {
-          const msg = `?? *NEW OUTSTANDING CASE*\n\n*Project:* ${project.name}\n*Title:* ${data.title}\n*Unit:* ${data.unit_name || "-"}\n\n_(Reported via Web Admin)_`;
+          const msg = `[NEW OUTSTANDING CASE]\n\n*Project:* ${project.name}\n*Title:* ${data.title}\n*Unit:* ${data.unit_name || "-"}\n\n_(Reported via Web Admin)_`;
           await sendWhatsAppMessage(sub.phone, msg).catch(e => console.error("WA Send Error:", e));
         }
       }
@@ -91,7 +91,7 @@ export async function resolveOutstandingCase(id: string | number | bigint, proje
       if (project) {
         const subs = await prisma.wa_subscribers.findMany({ where: { project_id: project.id, status: "Approved", registered: true } });
         for (const sub of subs) {
-          const msg = `? *CASE RESOLVED*\n\n*Project:* ${project.name}\n*Title:* ${targetCase.title}\n\n_(Resolved via Web Admin)_`;
+          const msg = `[CASE RESOLVED]\n\n*Project:* ${project.name}\n*Title:* ${targetCase.title}\n\n_(Resolved via Web Admin)_`;
           await sendWhatsAppMessage(sub.phone, msg).catch(e => console.error("WA Send Error:", e));
         }
       }
