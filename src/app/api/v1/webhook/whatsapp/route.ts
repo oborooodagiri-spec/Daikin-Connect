@@ -22,11 +22,11 @@ function setSessionTimeout(from: string, data: any) {
   const timeoutId = setTimeout(async () => {
     clearSession(from);
     try {
-      await sendWhatsAppMessage(from, "??`?? Sesi percakapan Anda telah *berakhir otomatis* karena tidak ada aktivitas selama 5 menit.\n\nSilakan klik tombol *Pilih Layanan* pada menu utama untuk memulai kembali.`);
+      await sendWhatsAppMessage(from, "Sesi percakapan Anda telah *berakhir otomatis* karena tidak ada aktivitas selama 5 menit.\\n\\nSilakan klik tombol *Pilih Layanan* pada menu utama untuk memulai kembali.");
     } catch (e) { console.error(e); }
   }, 5 * 60 * 1000);
 
-  setSessionTimeout(from, { ...data, timeoutId });
+  sessions.set(from, { ...data, timeoutId });
 }
 
 function clearSession(from: string) {
