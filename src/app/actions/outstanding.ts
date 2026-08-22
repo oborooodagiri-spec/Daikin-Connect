@@ -30,6 +30,8 @@ export async function getOutstandingCases(projectId: string | number | bigint) {
   }
 }
 
+import { sendWhatsAppMessage } from '@/lib/whatsapp';
+
 export async function addOutstandingCase(data: { project_id: string | number | bigint, title: string, unit_name?: string }) {
   try {
     const session = await getSession();
@@ -46,7 +48,21 @@ export async function addOutstandingCase(data: { project_id: string | number | b
       }
     });
 
+
+    // Broadcast to WA
+    try {
+      const project = await prisma.projects.findUnique({ where: { id: BigInt(data.project_id) } });
+      if (project) {
+        const subs = await prisma.wa_subscribers.findMany({ where: { project_id: project.id, status: "Approved", registered: true } });
+        for (const sub of subs) {
+          const msg = `?? *NEW OUTSTANDING CASE*\n\n*Project:* ${project.name}\n*Title:* ${data.title}\n*Unit:* ${data.unit_name || "-"}\n\n_(Reported via Web Admin)_`;
+          await sendWhatsAppMessage(sub.phone, msg).catch(e => console.error("WA Send Error:", e));
+        }
+      }
+    } catch(e) { console.error("Broadcast error:", e); }
+
     revalidatePath(`/w/${data.project_id}/client/dashboard`);
+
     revalidatePath(`/w/${data.project_id}/dashboard`);
 
     return { success: true, data: { ...newCase, id: newCase.id.toString(), project_id: newCase.project_id.toString() } };
@@ -63,12 +79,26 @@ export async function resolveOutstandingCase(id: string | number | bigint, proje
       return { success: false, error: "Unauthorized. Only internal staff can resolve cases." };
     }
 
-    await prisma.outstanding_cases.update({
+    const targetCase = await prisma.outstanding_cases.update({
       where: { id: BigInt(id) },
       data: { status: "Completed" }
     });
 
+
+    // Broadcast to WA
+    try {
+      const project = await prisma.projects.findUnique({ where: { id: BigInt(projectId) } });
+      if (project) {
+        const subs = await prisma.wa_subscribers.findMany({ where: { project_id: project.id, status: "Approved", registered: true } });
+        for (const sub of subs) {
+          const msg = `? *CASE RESOLVED*\n\n*Project:* ${project.name}\n*Title:* ${targetCase.title}\n\n_(Resolved via Web Admin)_`;
+          await sendWhatsAppMessage(sub.phone, msg).catch(e => console.error("WA Send Error:", e));
+        }
+      }
+    } catch(e) { console.error("Broadcast error:", e); }
+
     revalidatePath(`/w/${projectId}/client/dashboard`);
+
     revalidatePath(`/w/${projectId}/dashboard`);
 
     return { success: true };

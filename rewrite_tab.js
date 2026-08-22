@@ -1,4 +1,8 @@
-import React, { useState, useEffect } from "react";
+const fs = require('fs');
+let code = fs.readFileSync('src/app/w/[projectId]/client/dashboard/OutstandingTab.tsx', 'utf8');
+
+// We will overwrite it directly.
+const newCode = `import React, { useState, useEffect } from "react";
 import { Plus, CheckCircle2, AlertCircle, Clock } from "lucide-react";
 import { getOutstandingCases, addOutstandingCase, resolveOutstandingCase, getProjectWaTargets, updateProjectWaTargets } from "@/app/actions/outstanding";
 import { format } from "date-fns";
@@ -279,3 +283,6 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
     </div>
   );
 }
+`
+
+fs.writeFileSync('src/app/w/[projectId]/client/dashboard/OutstandingTab.tsx', newCode, 'utf8');
