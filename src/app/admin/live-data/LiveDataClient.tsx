@@ -354,6 +354,13 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
   const [drillDownSearch, setDrillDownSearch] = useState("");
   const [drillDownSort, setDrillDownSort] = useState<"value" | "status" | "name">("value");
   const [showPICLines, setShowPICLines] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const regionView = useMemo(() => {
     if (drillDownCluster) {
@@ -678,18 +685,20 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
         </motion.div>
       )}
           <div style={{ position: "absolute", inset: 0, zIndex: 1 }}>
-            <LeafletMap 
-              clusters={clusters}
-              drillDownCluster={drillDownCluster}
-              setDrillDownCluster={setDrillDownCluster}
-              setDrillDownSearch={setDrillDownSearch}
-              statusLayerFilter={statusLayerFilter}
-              STATUS_CONFIG={STATUS_CONFIG}
-              canClickWidgets={canClickWidgets}
-              selectedRegion={selectedRegion}
-              setSelectedRegion={setSelectedRegion}
-              currentZoomLevel={currentZoomLevel}
-            />
+            {!isMobile && (
+              <LeafletMap 
+                clusters={clusters}
+                drillDownCluster={drillDownCluster}
+                setDrillDownCluster={setDrillDownCluster}
+                setDrillDownSearch={setDrillDownSearch}
+                statusLayerFilter={statusLayerFilter}
+                STATUS_CONFIG={STATUS_CONFIG}
+                canClickWidgets={canClickWidgets}
+                selectedRegion={selectedRegion}
+                setSelectedRegion={setSelectedRegion}
+                currentZoomLevel={currentZoomLevel}
+              />
+            )}
           </div>
 
       </div>
