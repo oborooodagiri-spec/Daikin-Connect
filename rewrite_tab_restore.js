@@ -1,4 +1,8 @@
-import React, { useState, useEffect } from "react";
+const fs = require('fs');
+let code = fs.readFileSync('src/app/w/[projectId]/client/dashboard/OutstandingTab.tsx', 'utf8');
+
+// We will overwrite the file again, bringing back the subscriber logic
+const newCode = `import React, { useState, useEffect } from "react";
 import { Plus, CheckCircle2, AlertCircle, Clock, Copy, RefreshCw, Users, ShieldCheck, ShieldAlert, Check, Trash2, Key } from "lucide-react";
 import { getOutstandingCases, addOutstandingCase, resolveOutstandingCase, getProjectWaTargets, updateProjectWaTargets } from "@/app/actions/outstanding";
 import { getProjectWaSubscribers, generateProjectInviteCode, approveSubscriber, rejectSubscriber, revokeSubscriber } from "@/app/actions/wa-subscribers";
@@ -110,7 +114,7 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
   };
 
   const handleSubAction = async (id: string, action: 'approve' | 'reject' | 'revoke') => {
-    if (!confirm(`Are you sure you want to ${action} this user?`)) return;
+    if (!confirm(\`Are you sure you want to \${action} this user?\`)) return;
     
     let res;
     if (action === 'approve') res = await approveSubscriber(id, projectId);
@@ -402,3 +406,6 @@ export default function OutstandingTab({ projectId, isAdmin }: { projectId: any,
     </div>
   );
 }
+`
+
+fs.writeFileSync('src/app/w/[projectId]/client/dashboard/OutstandingTab.tsx', newCode, 'utf8');
