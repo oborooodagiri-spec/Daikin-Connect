@@ -490,7 +490,7 @@ function IndonesiaMap({ deals, canClickWidgets = true, usersList = [], selectedP
   }, [clusters]);
 
   return (
-    <div style={{ position: "relative", width: "100%", height: 600, borderRadius: 24, overflow: "hidden", background: "#c8e6f5" }}>
+    <div className="hidden md:block" style={{ position: "relative", width: "100%", height: 600, borderRadius: 24, overflow: "hidden", background: "#c8e6f5" }}>
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
