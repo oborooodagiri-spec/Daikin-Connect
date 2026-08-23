@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendWhatsAppMessage, sendWhatsAppTemplate } from '@/lib/whatsapp';
 
@@ -78,7 +78,8 @@ export async function GET() {
           const templateSuccess = await sendWhatsAppTemplate(num, "outstanding_report", [param1, param2, param3, param4], "en");
           if (!templateSuccess) {
             console.log("[Cron] Template failed (likely pending approval). Falling back to standard text message for " + num);
-            await sendWhatsAppMessage(num, message);
+            const fallbackMessage = `*Outstanding Cases - ${param1}*\nDate: ${param2}\n\n*Pending Cases:*\n${param3}\n\n*Completed Today:*\n${param4}`;
+            await sendWhatsAppMessage(num, fallbackMessage);
           }
         }
       }
