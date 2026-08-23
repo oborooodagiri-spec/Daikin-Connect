@@ -48,37 +48,43 @@ export async function GET() {
         if (pendingCases.length === 0) continue;
 
         let pendingStr = pendingCases.map((c: any, i: number) => (i+1) + ". " + c.title + (c.unit_name ? ' ('+c.unit_name+')' : '')).join('\n');
-          
         let completedStr = completedCases.length > 0 ? completedCases.map((c: any, i: number) => "- " + c.title).join('\n') : "Belum ada case diselesaikan hari ini.";
         
+        // WhatsApp templates reject newlines in variables. Create a flattened version for the template.
+        let templatePendingStr = pendingCases.map((c: any, i: number) => (i+1) + ". " + c.title).join(', ');
+        if (templatePendingStr.length > 1000) templatePendingStr = templatePendingStr.substring(0, 995) + "...";
+        let templateCompletedStr = completedCases.length > 0 ? completedCases.map((c: any) => c.title).join(', ') : "Belum ada";
+        if (templateCompletedStr.length > 1000) templateCompletedStr = templateCompletedStr.substring(0, 995) + "...";
+
         const dateStr = now.toLocaleDateString('id-ID', { 
           timeZone: 'Asia/Jakarta', year: 'numeric', month: 'long', day: 'numeric' 
         });
         
-        
-        // TEMPLATE PARAMETERS: {{1}} Project, {{2}} Date, {{3}} Pending, {{4}} Completed
         const param1 = project.name || "Proyek";
         const param2 = dateStr;
-        const param3 = pendingStr;
-        const param4 = completedStr;
-
           
-        // Merge manual numbers with subscribers
+        // Merge manual numbers with subscribers and normalize to 62...
         const manualNumbers = settings.numbers || [];
-        
         const subscribers = await prisma.wa_subscribers.findMany({
           where: { project_id: project.id, status: "Approved", registered: true }
         });
-        const subscriberNumbers = subscribers.map(s => s.phone);
         
-        const allNumbers = [...new Set([...manualNumbers, ...subscriberNumbers])];
+        const normalizePhone = (p: string) => {
+          let num = p.replace(/\D/g, '');
+          if (num.startsWith('0')) return '62' + num.substring(1);
+          return num;
+        };
+        
+        const allNumbers = [...new Set([...manualNumbers.map(normalizePhone), ...subscribers.map(s => normalizePhone(s.phone))])];
 
         for (const num of allNumbers) {
           console.log("[Cron] Sending to " + num + "...");
-          const templateSuccess = await sendWhatsAppTemplate(num, "outstanding_report", [param1, param2, param3, param4], "en");
+          // Try template first using the flattened strings
+          const templateSuccess = await sendWhatsAppTemplate(num, "outstanding_report", [param1, param2, templatePendingStr, templateCompletedStr], "en");
           if (!templateSuccess) {
-            console.log("[Cron] Template failed (likely pending approval). Falling back to standard text message for " + num);
-            const fallbackMessage = `*Outstanding Cases - ${param1}*\nDate: ${param2}\n\n*Pending Cases:*\n${param3}\n\n*Completed Today:*\n${param4}`;
+            console.log("[Cron] Template failed. Falling back to standard text message for " + num);
+            // Fallback uses the nicely formatted strings with newlines
+            const fallbackMessage = `*Outstanding Cases - ${param1}*\nDate: ${param2}\n\n*Pending Cases:*\n${pendingStr}\n\n*Completed Today:*\n${completedStr}`;
             await sendWhatsAppMessage(num, fallbackMessage);
           }
         }
