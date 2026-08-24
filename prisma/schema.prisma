@@ -1326,3 +1326,39 @@ model wa_subscribers {
   @@unique([project_id, phone])
   @@index([project_id])
 }
+
+
+model filter_products {
+  id              String   @id @default(uuid())
+  filter_type     String   @db.VarChar(50)
+  efficiency      String   @db.VarChar(20)
+  dimensions      String   @db.VarChar(100)
+  frame_material  String?  @db.VarChar(50)
+  vendor_name     String?  @db.VarChar(150)
+  vendor_phone    String?  @db.VarChar(30)
+  buy_price       Decimal  @default(0) @db.Decimal(15, 2)
+  notes           String?  @db.Text
+  created_at      DateTime @default(now()) @db.Timestamp(0)
+  updated_at      DateTime @updatedAt
+}
+
+model filter_quotations {
+  id              String   @id @default(uuid())
+  quo_number      String   @unique @db.VarChar(50)
+  customer_name   String   @db.VarChar(150)
+  project_name    String?  @db.VarChar(200)
+  items           String   @db.LongText
+  margin_pct      Decimal  @default(25) @db.Decimal(5, 2)
+  subtotal        Decimal  @default(0) @db.Decimal(15, 2)
+  ppn             Decimal  @default(0) @db.Decimal(15, 2)
+  shipping_cost   Decimal  @default(0) @db.Decimal(15, 2)
+  grand_total     Decimal  @default(0) @db.Decimal(15, 2)
+  delivery_terms  String   @default("Ex-Works") @db.VarChar(30)
+  lead_time_days  Int      @default(14)
+  valid_days      Int      @default(30)
+  notes           String?  @db.Text
+  status          String   @default("Draft") @db.VarChar(30)
+  created_by      Int?
+  created_at      DateTime @default(now()) @db.Timestamp(0)
+  updated_at      DateTime @updatedAt
+}

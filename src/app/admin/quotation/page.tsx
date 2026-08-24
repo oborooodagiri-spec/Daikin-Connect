@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Briefcase, ArrowRight, ArrowLeft } from "lucide-react";
+import { BookOpen, Briefcase, ArrowRight, ArrowLeft, Wind } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -42,7 +42,7 @@ export default function QuotationDashboard() {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6"
         >
           
           {/* BoQ Builder */}
@@ -91,6 +91,31 @@ export default function QuotationDashboard() {
             </div>
             
             <div className="text-slate-300 group-hover:text-[#0073ea] transition-colors relative z-10">
+              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+            </div>
+          </motion.div>
+
+          {/* Filter Quotation */}
+          <motion.div 
+            variants={itemVariants}
+            whileHover={{ y: -4, scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            className="group relative bg-white rounded-3xl border border-[#e6e9ef] p-6 lg:p-8 cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(13,148,136,0.08)] hover:border-teal-200 transition-all duration-300 overflow-hidden flex items-center"
+            onClick={() => router.push("/admin/quotation/filter-quotation")}
+          >
+            <div className="absolute right-0 top-0 w-32 h-32 bg-gradient-to-br from-teal-50 to-teal-100/50 rounded-bl-full -z-0 opacity-50 group-hover:scale-110 transition-transform duration-500" />
+            
+            <div className="w-14 h-14 bg-teal-50 text-[#0d9488] rounded-2xl flex items-center justify-center group-hover:bg-[#0d9488] group-hover:text-white transition-colors duration-300 flex-shrink-0 relative z-10">
+              <Wind size={24} strokeWidth={2.5} />
+            </div>
+            
+            <div className="ml-5 flex-1 relative z-10">
+              <h2 className="text-xl lg:text-2xl font-black text-[#1c1d22] tracking-tight group-hover:text-[#0d9488] transition-colors">
+                Filter Quotation
+              </h2>
+            </div>
+            
+            <div className="text-slate-300 group-hover:text-[#0d9488] transition-colors relative z-10">
               <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
             </div>
           </motion.div>
