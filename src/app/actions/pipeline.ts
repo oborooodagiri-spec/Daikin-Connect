@@ -323,7 +323,7 @@ export async function updateDeal(id: number, data: Partial<DealData>) {
     );
 
     // Enforce ownership based on pic_id for non-admins
-    if (!isAdminOrMgmt && existing.pic_id !== parseInt(session.userId) && existing.sales_planner !== session.name) {
+    if (!isAdminOrMgmt && existing.pic_id !== parseInt(session.userId) && existing.sales_planner !== session.name && existing.pic?.toLowerCase() !== session.name.toLowerCase()) {
       return { error: "You can only update your own deals." };
     }
 
