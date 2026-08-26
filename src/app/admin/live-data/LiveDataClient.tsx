@@ -2115,7 +2115,14 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                     <td style={{ padding: "12px 16px", fontSize: 13, fontWeight: 800, color: "#323338", fontVariantNumeric: "tabular-nums" }}>
                       {formatRpFull(Number(deal.quotation))}
                     </td>
-                    <td style={{ padding: "12px 16px" }}><StatusBadge status={deal.status} /></td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <StatusBadge status={deal.status} />
+                      {deal.closed_period && (
+                        <div style={{ marginTop: 6, fontSize: 10, fontWeight: 800, color: "#9ca3af", letterSpacing: "0.05em" }}>
+                          {deal.closed_period.toUpperCase()}
+                        </div>
+                      )}
+                    </td>
                     <td style={{ padding: "12px 16px", fontSize: 11, fontWeight: 600, color: "#676879", maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {deal.remarks || "-"}
                     </td>
