@@ -2117,11 +2117,20 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                     </td>
                     <td style={{ padding: "12px 16px" }}>
                       <StatusBadge status={deal.status} />
-                      {deal.closed_period && (
-                        <div style={{ marginTop: 6, fontSize: 10, fontWeight: 800, color: "#9ca3af", letterSpacing: "0.05em" }}>
-                          {deal.closed_period.toUpperCase()}
-                        </div>
-                      )}
+                      {(() => {
+                        const rawDate = deal.target_po_date || deal.est_booking_month;
+                        if (!rawDate) return null;
+                        const dt = new Date(rawDate);
+                        if (isNaN(dt.getTime())) return null;
+                        const m = dt.getMonth() + 1;
+                        const y = dt.getFullYear();
+                        const fy = m >= 4 ? y - 2000 : y - 1 - 2000;
+                        return (
+                          <div style={{ marginTop: 6, fontSize: 10, fontWeight: 800, color: "#9ca3af", letterSpacing: "0.05em" }}>
+                            FY{fy}
+                          </div>
+                        );
+                      })()}
                     </td>
                     <td style={{ padding: "12px 16px", fontSize: 11, fontWeight: 600, color: "#676879", maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {deal.remarks || "-"}
