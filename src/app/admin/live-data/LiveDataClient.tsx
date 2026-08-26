@@ -919,6 +919,18 @@ function StatusBadge({ status }: { status: string }) {
 // ============================================
 // MAIN COMPONENT
 // ============================================
+function getDealFYStr(deal) {
+  if (deal.closed_period) return deal.closed_period;
+  const rawDate = deal.target_po_date || deal.est_booking_month;
+  if (!rawDate) return "N/A";
+  const dt = new Date(rawDate);
+  if (isNaN(dt.getTime())) return "N/A";
+  const m = dt.getMonth() + 1;
+  const y = dt.getFullYear();
+  const fy = m >= 4 ? y - 2000 : y - 1 - 2000;
+  return `FY${fy}`;
+}
+
 export default function LiveDataClient({ isAdmin = false, canClickWidgets = true, sessionName = "User", sessionId = 0, avatarUrl = null }: { isAdmin?: boolean, canClickWidgets?: boolean, sessionName?: string, sessionId?: number, avatarUrl?: string | null }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -933,6 +945,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
   const [picFilter, setPicFilter] = useState("All");
   const [sourceFilter, setSourceFilter] = useState("All");
   const [projectStateFilter, setProjectStateFilter] = useState("All");
+  const [pipelineFYFilter, setPipelineFYFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showPipelineTender, setShowPipelineTender] = useState(false);
@@ -1230,13 +1243,14 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
       const matchSector = sectorFilter === "All" || d.sector?.trim().toUpperCase() === sectorFilter;
       const matchPic = picFilter === "All" || d.pic?.trim().toUpperCase() === picFilter;
       const matchSource = sourceFilter === "All" || d.source === sourceFilter;
+      const matchFY = pipelineFYFilter === "All" || getDealFYStr(d) === pipelineFYFilter;
       const matchProjectState = 
         projectStateFilter === "All" ||
         (projectStateFilter === "Closed" && d.is_closed) ||
         (projectStateFilter === "Open / On Progress" && !d.is_closed) ||
         (projectStateFilter === "Forecasted" && d.status === 'B');
 
-      return matchSearch && matchStatus && matchCategory && matchSector && matchPic && matchSource && matchProjectState;
+      return matchSearch && matchStatus && matchCategory && matchSector && matchPic && matchSource && matchProjectState && matchFY;
     }).sort((a, b) => {
       const aOverdue = isOverdue(a);
       const bOverdue = isOverdue(b);
@@ -1959,6 +1973,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
             { label: "Status", plural: "Statuses", val: statusFilter, set: setStatusFilter, opts: uniqueStatuses as string[] },
             { label: "Category", plural: "Categories", val: categoryFilter, set: setCategoryFilter, opts: uniqueCategories as string[] },
             { label: "Sector", plural: "Sectors", val: sectorFilter, set: setSectorFilter, opts: uniqueSectors as string[] },
+              { label: "FY", plural: "FYs", val: pipelineFYFilter, set: setPipelineFYFilter, opts: uniqueFYs as string[] },
             { label: "PIC", plural: "PICs", val: picFilter, set: setPicFilter, opts: uniquePics as string[] },
           ].map(f => (
             <select key={f.label} value={f.val} onChange={e => { f.set(e.target.value); setCurrentPage(1); }}
@@ -2118,17 +2133,8 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                     <td style={{ padding: "12px 16px" }}>
                       <StatusBadge status={deal.status} />
                       {(() => {
-                        let fyDisplay = deal.closed_period;
-                        if (!fyDisplay) {
-                          const rawDate = deal.target_po_date || deal.est_booking_month;
-                          if (!rawDate) return null;
-                          const dt = new Date(rawDate);
-                          if (isNaN(dt.getTime())) return null;
-                          const m = dt.getMonth() + 1;
-                          const y = dt.getFullYear();
-                          const fy = m >= 4 ? y - 2000 : y - 1 - 2000;
-                          fyDisplay = `FY${fy}`;
-                        }
+                        const fyDisplay = getDealFYStr(deal);
+                        if (fyDisplay === "N/A") return null;
                         return (
                           <div style={{ marginTop: 6, fontSize: 10, fontWeight: 800, color: "#9ca3af", letterSpacing: "0.05em" }}>
                             {fyDisplay}
