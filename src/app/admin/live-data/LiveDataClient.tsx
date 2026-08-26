@@ -1278,6 +1278,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
   const uniqueCategories = useMemo(() => [...new Set(deals.map(d => d.category?.trim().toUpperCase()).filter(Boolean))].sort(), [deals]);
   const uniqueSectors = useMemo(() => [...new Set(deals.map(d => d.sector?.trim().toUpperCase()).filter(Boolean))].sort(), [deals]);
   const uniqueStatuses = useMemo(() => Object.keys(STATUS_CONFIG), []);
+  const uniqueFYs = useMemo(() => [...new Set(deals.map(d => getDealFYStr(d)).filter(f => f !== "N/A"))].sort().reverse(), [deals]);
 
   // ============================================
   // STYLES
@@ -2857,6 +2858,7 @@ function AnimatedCommercialCard({
     </motion.div>
   );
 }
+
 
 
 
