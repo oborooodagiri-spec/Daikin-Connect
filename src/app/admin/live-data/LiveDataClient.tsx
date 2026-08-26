@@ -1116,7 +1116,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
     const fyEnd = new Date(2000 + selectedFY + 1, 2, 31, 23, 59, 59, 999).getTime();
 
     deals.forEach(d => {
-      if (d.is_closed) return;
+      if (d.is_closed && getDealFYStr(d) !== "FY" + selectedFY) return;
       
       const cTime = new Date(d.created_at).getTime();
       const isBacklog = cTime < fyStart;
@@ -1170,23 +1170,13 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
     let overdueCount = 0;
 
     leaderboardDeals.forEach(d => {
-      if (d.is_closed) return;
+      if (d.is_closed && getDealFYStr(d) !== "FY" + selectedFY) return;
 
       const val = Number(d.quotation) || 0;
       const pic = d.pic || "Unassigned";
       if (!byPic[pic]) byPic[pic] = { totalValue: 0, totalCount: 0, wonValue: 0, wonCount: 0, lostValue: 0, lostCount: 0, overdueCount: 0 };
       
-      let isCurrentFY = false;
-      const rawDate = d.target_po_date || d.est_booking_month;
-      if (rawDate) {
-        const dt = new Date(rawDate);
-        if (!isNaN(dt.getTime())) {
-          const m = dt.getMonth() + 1;
-          const y = dt.getFullYear();
-          const fy = m >= 4 ? y - 2000 : y - 1 - 2000;
-          if (fy === selectedFY) isCurrentFY = true;
-        }
-      }
+      let isCurrentFY = getDealFYStr(d) === "FY" + selectedFY;
       
       if (d.status !== "L") {
         byPic[pic].totalValue += val;
@@ -2436,17 +2426,17 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
         onClose={() => setPartialCloseModal({ isOpen: false, deal: null })}
         deal={partialCloseModal.deal}
         formatRp={formatRp}
-        onFullClose={async (dealToClose) => {
+        onFullClose={async (dealToClose, overrideFY) => {
           // Optimistic UI update
-          setDeals(prev => prev.map(d => d.id === dealToClose.id ? { ...d, is_closed: true } : d));
-          const res = await updateDeal(dealToClose.id, { is_closed: true });
+          setDeals(prev => prev.map(d => d.id === dealToClose.id ? { ...d, is_closed: true, closed_period: overrideFY || null } : d));
+          const res = await updateDeal(dealToClose.id, { is_closed: true, closed_period: overrideFY || null });
           if ((res as any).error) {
             setDeals(prev => prev.map(d => d.id === dealToClose.id ? { ...d, is_closed: false } : d));
             alert("Failed to close project: " + (res as any).error);
           }
         }}
-        onPartialClose={async (dealToClose, amount) => {
-          const res = await partialCloseDeal(dealToClose.id!, amount);
+        onPartialClose={async (dealToClose, amount, overrideFY) => {
+          const res = await partialCloseDeal(dealToClose.id!, amount, overrideFY);
           if (res.error) {
             alert("Failed to partial close project: " + res.error);
           } else {

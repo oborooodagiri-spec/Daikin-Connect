@@ -7,13 +7,14 @@ interface Props {
   onClose: () => void;
   deal: DealData | null;
   formatRp: (val: number) => string;
-  onFullClose: (deal: DealData) => Promise<void>;
-  onPartialClose: (deal: DealData, amount: number) => Promise<void>;
+  onFullClose: (deal: DealData, overrideFY?: string) => Promise<void>;
+  onPartialClose: (deal: DealData, amount: number, overrideFY?: string) => Promise<void>;
 }
 
 export default function PartialCloseModal({ isOpen, onClose, deal, formatRp, onFullClose, onPartialClose }: Props) {
   const [partialAmount, setPartialAmount] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [closedPeriod, setClosedPeriod] = useState<string>("");
 
   if (!isOpen || !deal) return null;
 
@@ -26,7 +27,7 @@ export default function PartialCloseModal({ isOpen, onClose, deal, formatRp, onF
 
   const handleFullClose = async () => {
     setIsSubmitting(true);
-    await onFullClose(deal);
+    await onFullClose(deal, closedPeriod);
     setIsSubmitting(false);
     onClose();
   };
@@ -34,7 +35,7 @@ export default function PartialCloseModal({ isOpen, onClose, deal, formatRp, onF
   const handlePartialClose = async () => {
     if (!isValidPartial) return;
     setIsSubmitting(true);
-    await onPartialClose(deal, numAmount);
+    await onPartialClose(deal, numAmount, closedPeriod);
     setIsSubmitting(false);
     setPartialAmount("");
     onClose();
@@ -63,6 +64,24 @@ export default function PartialCloseModal({ isOpen, onClose, deal, formatRp, onF
 
         {/* Body */}
         <div className="p-6 space-y-6">
+
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+              Closed Period (Override FY)
+            </label>
+            <select name="closed_period" value={closedPeriod} onChange={(e) => setClosedPeriod(e.target.value)}
+              className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all appearance-none cursor-pointer">
+              <option value="">Auto (Ikuti Target PO)</option>
+              <option value="FY24">FY24</option>
+              <option value="FY25">FY25</option>
+              <option value="FY26">FY26</option>
+              <option value="FY27">FY27</option>
+              <option value="FY28">FY28</option>
+              <option value="FY29">FY29</option>
+              <option value="FY30">FY30</option>
+            </select>
+          </div>
+
           <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
             <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Quotation</p>
             <p className="text-xl font-black text-slate-800">{formatRp(totalQuotation)}</p>

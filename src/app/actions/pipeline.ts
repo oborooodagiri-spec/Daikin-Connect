@@ -1036,7 +1036,7 @@ export async function updateTargetSettings(data: any) {
   }
 }
 
-export async function partialCloseDeal(id: number, closedAmount: number) {
+export async function partialCloseDeal(id: number, closedAmount: number, overrideFY?: string) {
   try {
     const session = await getSession();
     if (!session) return { error: "Unauthorized" };
