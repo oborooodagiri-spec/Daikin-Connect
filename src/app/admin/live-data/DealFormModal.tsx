@@ -94,7 +94,8 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           remarks: deal.remarks || "",
           target_po_date: deal.target_po_date ? new Date(deal.target_po_date).toISOString().slice(0, 7) : "",
           booking_fc: deal.booking_fc || "",
-          target_po_reason: "",`n      closed_period: deal?.closed_period || "",
+          target_po_reason: "",
+            closed_period: deal?.closed_period || "",
           latitude: deal.latitude ? deal.latitude.toString() : "",
           longitude: deal.longitude ? deal.longitude.toString() : "",
           area: deal.area || "",
@@ -116,7 +117,8 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           booking_fc: "",
           latitude: "",
           longitude: "",
-          target_po_reason: "",`n      closed_period: deal?.closed_period || "",
+          target_po_reason: "",
+            closed_period: deal?.closed_period || "",
           area: ""
         });
         setSearchArea("");
@@ -192,7 +194,8 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
         sales_planner: formData.source === "Partnership" ? (formData.sales_planner || null) : null,
         latitude: formData.latitude ? parseFloat(formData.latitude) : null,
         longitude: formData.longitude ? parseFloat(formData.longitude) : null,
-        area: formData.area || null,`n          closed_period: formData.closed_period || null
+        area: formData.area || null,
+          closed_period: formData.closed_period || null
       };
 
       let res;
@@ -556,5 +559,6 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
     </AnimatePresence>
   );
 }
+
 
 
