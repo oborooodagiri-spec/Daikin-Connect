@@ -94,7 +94,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           remarks: deal.remarks || "",
           target_po_date: deal.target_po_date ? new Date(deal.target_po_date).toISOString().slice(0, 7) : "",
           booking_fc: deal.booking_fc || "",
-          target_po_reason: "",
+          target_po_reason: "",`n      closed_period: deal?.closed_period || "",
           latitude: deal.latitude ? deal.latitude.toString() : "",
           longitude: deal.longitude ? deal.longitude.toString() : "",
           area: deal.area || "",
@@ -116,7 +116,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
           booking_fc: "",
           latitude: "",
           longitude: "",
-          target_po_reason: "",
+          target_po_reason: "",`n      closed_period: deal?.closed_period || "",
           area: ""
         });
         setSearchArea("");
@@ -192,7 +192,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
         sales_planner: formData.source === "Partnership" ? (formData.sales_planner || null) : null,
         latitude: formData.latitude ? parseFloat(formData.latitude) : null,
         longitude: formData.longitude ? parseFloat(formData.longitude) : null,
-        area: formData.area || null
+        area: formData.area || null,`n          closed_period: formData.closed_period || null
       };
 
       let res;
@@ -385,6 +385,23 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
                     className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
                 </div>
 
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                      <Calendar size={12}/> Closed Period (Override FY)
+                    </label>
+                    <select name="closed_period" value={formData.closed_period} onChange={handleChange}
+                      className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all appearance-none cursor-pointer">
+                      <option value="">Auto (Ikuti Target PO)</option>
+                      <option value="FY24">FY24</option>
+                      <option value="FY25">FY25</option>
+                      <option value="FY26">FY26</option>
+                      <option value="FY27">FY27</option>
+                      <option value="FY28">FY28</option>
+                      <option value="FY29">FY29</option>
+                      <option value="FY30">FY30</option>
+                    </select>
+                  </div>
+
                 {deal && deal.target_po_date && new Date(deal.target_po_date).toISOString().slice(0, 7) !== formData.target_po_date && (
                   <div className="space-y-1.5 animate-in fade-in zoom-in duration-200 bg-orange-50/50 p-4 rounded-xl border border-orange-100 md:col-span-2">
                     <label className="text-[10px] font-black text-orange-600 uppercase tracking-widest flex items-center gap-1.5">
@@ -539,3 +556,5 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
     </AnimatePresence>
   );
 }
+
+

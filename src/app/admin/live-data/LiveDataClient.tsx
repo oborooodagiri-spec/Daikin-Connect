@@ -2118,16 +2118,20 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                     <td style={{ padding: "12px 16px" }}>
                       <StatusBadge status={deal.status} />
                       {(() => {
-                        const rawDate = deal.target_po_date || deal.est_booking_month;
-                        if (!rawDate) return null;
-                        const dt = new Date(rawDate);
-                        if (isNaN(dt.getTime())) return null;
-                        const m = dt.getMonth() + 1;
-                        const y = dt.getFullYear();
-                        const fy = m >= 4 ? y - 2000 : y - 1 - 2000;
+                        let fyDisplay = deal.closed_period;
+                        if (!fyDisplay) {
+                          const rawDate = deal.target_po_date || deal.est_booking_month;
+                          if (!rawDate) return null;
+                          const dt = new Date(rawDate);
+                          if (isNaN(dt.getTime())) return null;
+                          const m = dt.getMonth() + 1;
+                          const y = dt.getFullYear();
+                          const fy = m >= 4 ? y - 2000 : y - 1 - 2000;
+                          fyDisplay = `FY${fy}`;
+                        }
                         return (
                           <div style={{ marginTop: 6, fontSize: 10, fontWeight: 800, color: "#9ca3af", letterSpacing: "0.05em" }}>
-                            FY{fy}
+                            {fyDisplay}
                           </div>
                         );
                       })()}
@@ -2847,5 +2851,8 @@ function AnimatedCommercialCard({
     </motion.div>
   );
 }
+
+
+
 
 

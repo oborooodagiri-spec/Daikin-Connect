@@ -53,6 +53,7 @@ export interface DealData {
   is_partial_close?: boolean;
   partial_percentage?: number | null;
   parent_deal_id?: number | null;
+  closed_period?: string | null;
 }
 
 interface OpsData {
@@ -260,6 +261,7 @@ export async function createDeal(data: Partial<DealData>) {
         latitude: data.latitude ?? null,
         longitude: data.longitude ?? null,
         is_closed: data.is_closed ?? false,
+        closed_period: data.closed_period || null,
       },
     });
 
@@ -369,6 +371,7 @@ export async function updateDeal(id: number, data: Partial<DealData>) {
     if (data.latitude !== undefined) updateData.latitude = data.latitude;
     if (data.longitude !== undefined) updateData.longitude = data.longitude;
     if (data.is_closed !== undefined) updateData.is_closed = data.is_closed;
+    if (data.closed_period !== undefined) updateData.closed_period = data.closed_period;
 
     const deal = await prisma.pipeline_deals.update({
       where: { id },

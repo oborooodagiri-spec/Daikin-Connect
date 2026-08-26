@@ -1082,6 +1082,7 @@ model pipeline_deals {
   is_partial_close   Boolean            @default(false)
   partial_percentage Float?
   parent_deal_id     Int?
+  closed_period      String?            @db.VarChar(10)
   users              users?             @relation(fields: [pic_id], references: [id])
   history            pipeline_history[]
 
