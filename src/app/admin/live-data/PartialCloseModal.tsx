@@ -69,7 +69,7 @@ export default function PartialCloseModal({ isOpen, onClose, deal, formatRp, onF
           </div>
 
           <div className="space-y-4">
-            <p className="text-sm font-semibold text-gray-700">Pilih metode penutupan proyek:</p>
+            <p className="text-sm font-semibold text-gray-700">Metode closing</p>
             
             <button 
               onClick={handleFullClose}
@@ -77,8 +77,7 @@ export default function PartialCloseModal({ isOpen, onClose, deal, formatRp, onF
               className="w-full flex items-center justify-between p-4 rounded-xl border-2 border-emerald-100 bg-emerald-50 hover:bg-emerald-100 hover:border-emerald-200 transition-all text-left group disabled:opacity-50"
             >
               <div>
-                <p className="font-bold text-emerald-800">Full Close (Selesai Sepenuhnya)</p>
-                <p className="text-xs text-emerald-600 mt-1 font-medium">Menutup seluruh nilai {formatRp(totalQuotation)}</p>
+                <p className="font-bold text-emerald-800">Full Close</p>
               </div>
               <div className="w-6 h-6 rounded-full bg-emerald-200 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <span className="text-emerald-700 font-black text-xs">✓</span>
@@ -96,10 +95,7 @@ export default function PartialCloseModal({ isOpen, onClose, deal, formatRp, onF
 
             <div className="space-y-3 p-4 rounded-xl border-2 border-amber-100 bg-amber-50/50">
               <div>
-                <p className="font-bold text-amber-800">Partial Close (Tutup Sebagian)</p>
-                <p className="text-xs text-amber-600/80 mt-1 font-medium leading-relaxed">
-                  Proyek akan dipecah. Bagian yang di-close akan masuk pencapaian, sisanya tetap open.
-                </p>
+                <p className="font-bold text-amber-800">Partial Close</p>
               </div>
               
               <div className="pt-2 relative">

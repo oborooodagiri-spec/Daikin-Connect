@@ -1258,7 +1258,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
       if (!aOverdue && bOverdue) return 1;
       return 0;
     });
-  }, [deals, searchTerm, statusFilter, categoryFilter, sectorFilter, picFilter, sourceFilter, projectStateFilter, canClickWidgets, sessionName, sessionId]);
+  }, [deals, searchTerm, statusFilter, categoryFilter, sectorFilter, picFilter, sourceFilter, projectStateFilter, canClickWidgets, sessionName, sessionId, pipelineFYFilter]);
 
   const filteredOps = useMemo(() => {
     return opsRecords.filter((o: any) => {
@@ -2858,6 +2858,7 @@ function AnimatedCommercialCard({
     </motion.div>
   );
 }
+
 
 
 
