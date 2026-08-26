@@ -388,6 +388,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
                     className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
                 </div>
 
+                  {(deal?.is_closed || formData.status === 'A') && (
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                       <Calendar size={12}/> Closed Period (Override FY)
@@ -404,6 +405,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
                       <option value="FY30">FY30</option>
                     </select>
                   </div>
+                )}
 
                 {deal && deal.target_po_date && new Date(deal.target_po_date).toISOString().slice(0, 7) !== formData.target_po_date && (
                   <div className="space-y-1.5 animate-in fade-in zoom-in duration-200 bg-orange-50/50 p-4 rounded-xl border border-orange-100 md:col-span-2">
