@@ -204,7 +204,7 @@ export default function CategoryPipelineModal({
         return (
           <React.Fragment key={node.id}>
             <tr style={{ background: node.level % 2 === 1 ? "#ffffff" : "#fafafa", borderBottom: "1px solid #f0f0f0", transition: "background 0.2s" }} onMouseOver={(e) => e.currentTarget.style.background = "#f1f5f9"} onMouseOut={(e) => e.currentTarget.style.background = node.level % 2 === 1 ? "#ffffff" : "#fafafa"}>
-              <td style={{ padding: "10px 16px", fontSize: 13, fontWeight: node.level < 3 ? 800 : 500, color: node.level < 3 ? "#323338" : "#475569", borderRight: "1px solid #f1f5f9" }}>
+              <td style={{ position: "sticky", left: 0, zIndex: 10, background: node.level % 2 === 1 ? "#ffffff" : "#fafafa", padding: "10px 16px", fontSize: 13, fontWeight: node.level < 3 ? 800 : 500, color: node.level < 3 ? "#323338" : "#475569", borderRight: "1px solid #e2e8f0" }}>
                 <div style={{ display: "flex", alignItems: "center", paddingLeft }}>
                   {hasChildren ? (
                     <button onClick={() => toggleNode(node.id)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, marginRight: 8, color: "#676879", borderRadius: 4 }}>
@@ -231,7 +231,7 @@ export default function CategoryPipelineModal({
                   {node.values[col.key] > 0 ? formatRp(node.values[col.key]) : "-"}
                 </td>
               ))}
-              <td style={{ padding: "10px 24px", fontSize: 13, fontWeight: 900, color: "#0f172a", textAlign: "right", background: "#f8fafc" }}>
+              <td style={{ position: "sticky", right: 0, zIndex: 10, padding: "10px 24px", fontSize: 13, fontWeight: 900, color: "#0f172a", textAlign: "right", background: "#f8fafc", borderLeft: "1px solid #e2e8f0" }}>
                 {formatRp(node.total)}
               </td>
             </tr>
@@ -390,19 +390,19 @@ export default function CategoryPipelineModal({
 
             {/* Pivot Table */}
             <div style={{ background: "white", borderRadius: 20, border: "1px solid #e2e8f0", overflow: "hidden", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}>
-              <div style={{ overflowX: "auto" }}>
+              <div style={{ overflow: "auto", maxHeight: "65vh" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1000 }}>
                   <thead>
                     <tr>
-                      <th style={{ padding: "16px 24px", background: "#f8fafc", borderBottom: "2px solid #e2e8f0", textAlign: "left", fontSize: 13, fontWeight: 800, color: "#475569", textTransform: "uppercase", letterSpacing: "0.05em", position: "sticky", left: 0, zIndex: 10 }}>
+                      <th style={{ padding: "16px 24px", background: "#f8fafc", borderBottom: "2px solid #e2e8f0", textAlign: "left", fontSize: 13, fontWeight: 800, color: "#475569", textTransform: "uppercase", letterSpacing: "0.05em", position: "sticky", top: 0, left: 0, zIndex: 30, borderRight: "1px solid #e2e8f0" }}>
                         Category
                       </th>
                       {columns.map(col => (
-                        <th key={col.key} style={{ padding: "16px 12px", background: "#f8fafc", borderBottom: "2px solid #e2e8f0", textAlign: "right", fontSize: 13, fontWeight: 800, color: "#475569", textTransform: "uppercase", letterSpacing: "0.05em", minWidth: 120 }}>
+                        <th key={col.key} style={{ position: "sticky", top: 0, zIndex: 20, padding: "16px 12px", background: "#f8fafc", borderBottom: "2px solid #e2e8f0", textAlign: "right", fontSize: 13, fontWeight: 800, color: "#475569", textTransform: "uppercase", letterSpacing: "0.05em", minWidth: 120 }}>
                           {col.label}
                         </th>
                       ))}
-                      <th style={{ padding: "16px 24px", background: "#f1f5f9", borderBottom: "2px solid #e2e8f0", textAlign: "right", fontSize: 13, fontWeight: 800, color: "#0f172a", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      <th style={{ padding: "16px 24px", background: "#f1f5f9", borderBottom: "2px solid #e2e8f0", textAlign: "right", fontSize: 13, fontWeight: 800, color: "#0f172a", textTransform: "uppercase", letterSpacing: "0.05em", position: "sticky", top: 0, right: 0, zIndex: 30, borderLeft: "1px solid #e2e8f0" }}>
                         Grand Total
                       </th>
                     </tr>
@@ -419,15 +419,15 @@ export default function CategoryPipelineModal({
                   {rows.length > 0 && (
                     <tfoot>
                       <tr>
-                        <td style={{ padding: "20px 24px", background: "#0f172a", color: "white", fontWeight: 800, position: "sticky", left: 0, zIndex: 10, borderRadius: "0 0 0 20px" }}>
+                        <td style={{ padding: "20px 24px", background: "#0f172a", color: "white", fontWeight: 800, position: "sticky", bottom: 0, left: 0, zIndex: 30, borderRadius: "0 0 0 20px", borderTop: "2px solid #334155", borderRight: "1px solid #334155" }}>
                           Total Quotation
                         </td>
                         {columns.map(col => (
-                          <td key={col.key} style={{ padding: "20px 12px", background: "#0f172a", color: "white", textAlign: "right", fontWeight: 700, fontSize: 13 }}>
+                          <td key={col.key} style={{ position: "sticky", bottom: 0, zIndex: 25, padding: "20px 12px", background: "#0f172a", color: "white", textAlign: "right", fontWeight: 700, fontSize: 13, borderTop: "2px solid #334155" }}>
                             {formatRp(totals[col.key] || 0)}
                           </td>
                         ))}
-                        <td style={{ padding: "20px 24px", background: color, color: "white", textAlign: "right", fontWeight: 800, fontSize: 15, borderRadius: "0 0 20px 0" }}>
+                        <td style={{ position: "sticky", bottom: 0, right: 0, zIndex: 30, padding: "20px 24px", background: color, color: "white", textAlign: "right", fontWeight: 800, fontSize: 15, borderRadius: "0 0 20px 0", borderTop: "2px solid rgba(0,0,0,0.1)", borderLeft: "1px solid rgba(0,0,0,0.1)" }}>
                           {formatRp(grandTotal)}
                         </td>
                       </tr>
