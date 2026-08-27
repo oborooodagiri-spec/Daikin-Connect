@@ -1306,7 +1306,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
       const rawDate = d.target_po_date || d.est_booking_month;
       if (!rawDate) return false;
       const dt = new Date(rawDate).getTime();
-      return dt >= fyStartTime && dt <= fyEndTime;
+      return dt >= fyStart && dt <= fyEnd;
     });
 
     const pipelineModalDeals = activeDeals.filter(d => ['C', 'D', 'E', 'T', 'H'].includes(d.status));
@@ -1331,7 +1331,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
       const rawDate = d.target_po_date || d.est_booking_month;
       if (!rawDate) return false;
       const dt = new Date(rawDate).getTime();
-      return dt >= fyStartTime && dt <= fyEndTime;
+      return dt >= fyStart && dt <= fyEnd;
     });
 
     const industryTotal = industryFYDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
@@ -1350,7 +1350,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
       const rawDate = d.target_po_date || d.est_booking_month;
       if (!rawDate) return false;
       const dt = new Date(rawDate).getTime();
-      return dt >= fyStartTime && dt <= fyEndTime;
+      return dt >= fyStart && dt <= fyEnd;
     });
 
     const commercialTotal = commercialFYDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
