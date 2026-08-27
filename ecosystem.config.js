@@ -7,7 +7,7 @@ module.exports = {
       cwd: "/root/Daikin-Connect",
       env: {
         NODE_ENV: "production",
-        PORT: 3001,
+        PORT: 3000,
         DATABASE_URL: "mysql://u534185630_EPLConnect:Yw3%219t%23Qp7z2Lk8%40Dq@153.92.15.71:3306/u534185630_DASIConnect",
         JWT_SECRET: "daikin_connect_mobile_secret_key_2026_1555672274",
         NEXT_PUBLIC_APP_URL: "https://dconnect.id",
