@@ -291,7 +291,7 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
             
             {/* Infographic Chart */}
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+              <div style={{ display: "flex", flex: "none", alignItems: "center", gap: 8, marginBottom: 16 }}>
                 <div style={{ width: 8, height: 24, background: "#0ea5e9", borderRadius: 4 }} />
                 <h3 style={{ fontSize: 16, fontWeight: 800, color: "#323338" }}>Booking Forecast Trend</h3>
               </div>
@@ -326,7 +326,7 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
                 <h3 style={{ fontSize: 16, fontWeight: 800, color: "#323338" }}>Forecast Matrix</h3>
               </div>
               
-              <div style={{ overflow: "auto", maxHeight: "65vh", borderRadius: 12, border: "1px solid #e5e7eb", boxShadow: "0 4px 15px rgba(0,0,0,0.03)" }}>
+              <div style={{ flex: 1, overflow: "auto", borderRadius: 12, border: "1px solid #e5e7eb", boxShadow: "0 4px 15px rgba(0,0,0,0.03)" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1000 }}>
                   <thead>
                     <tr>

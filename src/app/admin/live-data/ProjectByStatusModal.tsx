@@ -335,11 +335,11 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
             </button>
           </div>
 
-          <div style={{ padding: "32px", overflowY: "auto", display: "flex", flexDirection: "column", gap: 40 }}>
+          <div style={{ padding: "32px", flex: 1, overflow: "hidden", display: "flex", flexDirection: "column", gap: 40 }}>
             
             {/* Chart Section */}
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+              <div style={{ display: "flex", flex: "none", alignItems: "center", gap: 8, marginBottom: 16 }}>
                 <div style={{ width: 8, height: 24, background: "#0073ea", borderRadius: 4 }} />
                 <h3 style={{ fontSize: 16, fontWeight: 800, color: "#323338" }}>Booking Forecast Overview</h3>
               </div>
@@ -383,7 +383,7 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
                 <h3 style={{ fontSize: 16, fontWeight: 800, color: "#323338" }}>Table Matrix</h3>
               </div>
               
-              <div style={{ overflow: "auto", maxHeight: "65vh", borderRadius: 12, border: "1px solid #e5e7eb", boxShadow: "0 4px 15px rgba(0,0,0,0.03)" }}>
+              <div style={{ flex: 1, overflow: "auto", borderRadius: 12, border: "1px solid #e5e7eb", boxShadow: "0 4px 15px rgba(0,0,0,0.03)" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 800 }}>
                   <thead>
                     <tr>
