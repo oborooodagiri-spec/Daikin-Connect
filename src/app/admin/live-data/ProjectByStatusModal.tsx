@@ -60,10 +60,26 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
   const { columns, rows, totals, grandTotal, chartData, tree } = useMemo(() => {
     const monthMap: Record<string, Record<string, number>> = {};
     
+    // Sesuai persepsi: Kolom selalu menggunakan Target PO.
     const getDealDate = (d: any) => {
-      if (d.is_closed && d.closing_date) return new Date(d.closing_date);
-      const raw = d.target_po_date || d.est_booking_month || d.created_at;
-      return raw ? new Date(raw) : null;
+      if (d.target_po_date) {
+        const dt = new Date(d.target_po_date);
+        if (!isNaN(dt.getTime())) return dt;
+      }
+      if (d.est_booking_month) {
+        const dt = new Date(d.est_booking_month);
+        if (!isNaN(dt.getTime())) return dt;
+      }
+      // Fallback jika kosong/invalid agar tidak hilang dari Total
+      if (d.is_closed && d.closing_date) {
+        const dt = new Date(d.closing_date);
+        if (!isNaN(dt.getTime())) return dt;
+      }
+      if (d.created_at) {
+        const dt = new Date(d.created_at);
+        if (!isNaN(dt.getTime())) return dt;
+      }
+      return new Date(); // Ultimate fallback
     };
 
     // Find min and max dates
@@ -73,7 +89,6 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
     deals.forEach(d => {
       if (['L', 'H'].includes(d.status)) return;
       const dt = getDealDate(d);
-      if (!dt || isNaN(dt.getTime())) return;
       
       const t = dt.getTime();
       if (t < minTime) minTime = t;
@@ -92,22 +107,19 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
     let current = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
     const end = new Date(maxDate.getFullYear(), maxDate.getMonth(), 1);
 
-    // Limit to max 240 months to prevent infinite loop or huge charts if data is weird
-    let safetyCounter = 0;
-    while (current <= end && safetyCounter < 240) {
+    // Menghilangkan safety limit agar semua open project tetap muncul berapapun usianya
+    while (current <= end) {
       const mYear = current.getFullYear();
       const mStr = current.toLocaleString('default', { month: 'short' });
       const key = `${mYear}-${String(current.getMonth() + 1).padStart(2, '0')} ${mStr} ${mYear}`;
       columns.push({ key, label: `${mStr} ${mYear}` });
       current.setMonth(current.getMonth() + 1);
-      safetyCounter++;
     }
 
     deals.forEach(d => {
       if (['L', 'H'].includes(d.status)) return;
       
       const dt = getDealDate(d);
-      if (!dt || isNaN(dt.getTime())) return;
 
       const mYear = dt.getFullYear();
       const mStr = dt.toLocaleString('default', { month: 'short' });
@@ -149,7 +161,6 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
       if (!relevantStatuses.includes(d.status)) return;
       
       const dt = getDealDate(d);
-      if (!dt || isNaN(dt.getTime())) return;
 
       const mYear = dt.getFullYear();
       const mStr = dt.toLocaleString('default', { month: 'short' });
