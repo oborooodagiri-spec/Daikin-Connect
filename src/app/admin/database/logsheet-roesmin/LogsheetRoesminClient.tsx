@@ -264,7 +264,12 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
     let currentIndex = 0;
     
     const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
+    iframe.style.position = "fixed";
+    iframe.style.width = "1200px";
+    iframe.style.height = "100vh";
+    iframe.style.opacity = "0";
+    iframe.style.pointerEvents = "none";
+    iframe.style.zIndex = "-9999";
     document.body.appendChild(iframe);
     
     const listener = (event: MessageEvent) => {
