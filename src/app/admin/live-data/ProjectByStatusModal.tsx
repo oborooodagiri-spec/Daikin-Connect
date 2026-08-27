@@ -60,14 +60,19 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
   const { columns, rows, totals, grandTotal, chartData, tree } = useMemo(() => {
     const monthMap: Record<string, Record<string, number>> = {};
     
+    const getDealDate = (d: any) => {
+      if (d.is_closed && d.closing_date) return new Date(d.closing_date);
+      const raw = d.target_po_date || d.est_booking_month || d.created_at;
+      return raw ? new Date(raw) : null;
+    };
+
     // Find min and max dates
     let minTime = Infinity;
     let maxTime = -Infinity;
 
     deals.forEach(d => {
       if (['L', 'H'].includes(d.status)) return;
-      const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
-      const dt = rawDate ? new Date(rawDate) : null;
+      const dt = getDealDate(d);
       if (!dt || isNaN(dt.getTime())) return;
       
       const t = dt.getTime();
@@ -87,9 +92,9 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
     let current = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
     const end = new Date(maxDate.getFullYear(), maxDate.getMonth(), 1);
 
-    // Limit to max 36 months to prevent infinite loop or huge charts if data is weird
+    // Limit to max 240 months to prevent infinite loop or huge charts if data is weird
     let safetyCounter = 0;
-    while (current <= end && safetyCounter < 36) {
+    while (current <= end && safetyCounter < 240) {
       const mYear = current.getFullYear();
       const mStr = current.toLocaleString('default', { month: 'short' });
       const key = `${mYear}-${String(current.getMonth() + 1).padStart(2, '0')} ${mStr} ${mYear}`;
@@ -99,12 +104,10 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
     }
 
     deals.forEach(d => {
-      const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
-      if (!rawDate) return;
       if (['L', 'H'].includes(d.status)) return;
       
-      const dt = new Date(rawDate);
-      if (isNaN(dt.getTime())) return;
+      const dt = getDealDate(d);
+      if (!dt || isNaN(dt.getTime())) return;
 
       const mYear = dt.getFullYear();
       const mStr = dt.toLocaleString('default', { month: 'short' });
@@ -145,10 +148,8 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
       if (['L', 'H', 'T'].includes(d.status)) return;
       if (!relevantStatuses.includes(d.status)) return;
       
-      const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
-      if (!rawDate) return;
-      const dt = new Date(rawDate);
-      if (isNaN(dt.getTime())) return;
+      const dt = getDealDate(d);
+      if (!dt || isNaN(dt.getTime())) return;
 
       const mYear = dt.getFullYear();
       const mStr = dt.toLocaleString('default', { month: 'short' });
