@@ -335,7 +335,7 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
             </button>
           </div>
 
-          <div style={{ padding: "32px", flex: 1, overflow: "hidden", display: "flex", flexDirection: "column", gap: 40 }}>
+          <div style={{ padding: "32px", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 40 }}>
             
             {/* Chart Section */}
             <div>
