@@ -249,6 +249,44 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("Semua");
   const [selectedHistoryMonth, setSelectedHistoryMonth] = useState<string>("");
+  const [isBatchDownloading, setIsBatchDownloading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [totalDownloads, setTotalDownloads] = useState(0);
+
+  const downloadAllPDFs = (items: any[]) => {
+    if (!items || items.length === 0) return;
+    if (!confirm("Download " + items.length + " report PDF secara berurutan? (Mungkin browser akan meminta izin untuk download multiple file, mohon klik Allow/Izinkan)")) return;
+    
+    setIsBatchDownloading(true);
+    setDownloadProgress(0);
+    setTotalDownloads(items.length);
+    
+    let currentIndex = 0;
+    
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
+    
+    const listener = (event: MessageEvent) => {
+      if (event.data && event.data.type === "DOWNLOAD_COMPLETE") {
+        currentIndex++;
+        setDownloadProgress(currentIndex);
+        
+        if (currentIndex < items.length) {
+           iframe.src = `/reports/preventive/${items[currentIndex].id}?autoDownload=true`;
+        } else {
+           window.removeEventListener("message", listener);
+           if (document.body.contains(iframe)) document.body.removeChild(iframe);
+           setIsBatchDownloading(false);
+        }
+      }
+    };
+    
+    window.addEventListener("message", listener);
+    
+    // Start first
+    iframe.src = `/reports/preventive/${items[0].id}?autoDownload=true`;
+  };
 
   useEffect(() => {
     if (activeTab === "history") {
@@ -373,7 +411,27 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
           return (
             <div className="px-4 md:px-0 space-y-10">
               {/* Pagination Controls */}
-              <div className="flex items-center justify-between bg-white border border-slate-100 p-2 rounded-2xl shadow-sm">
+              {isBatchDownloading && (
+                <div className="bg-blue-50 border border-blue-200 text-blue-700 p-4 rounded-xl mb-4 flex items-center justify-between animate-pulse">
+                  <div className="flex items-center gap-3">
+                    <Loader2 className="animate-spin" size={20} />
+                    <span className="font-bold">Mendownload file {downloadProgress + 1} dari {totalDownloads}...</span>
+                  </div>
+                  <span className="text-sm font-semibold">Mohon jangan tutup halaman ini.</span>
+                </div>
+              )}
+
+              <div className="flex justify-end mb-2 mt-4">
+                <button
+                  disabled={isBatchDownloading || !grouped[displayMonth] || grouped[displayMonth].length === 0}
+                  onClick={() => downloadAllPDFs(grouped[displayMonth])}
+                  className="px-4 py-2.5 bg-[#00a1e4] text-white font-bold rounded-xl flex items-center gap-2 hover:bg-[#008cc7] transition-all disabled:opacity-50"
+                >
+                  <Download size={18} /> Download All ({grouped[displayMonth]?.length || 0})
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between bg-white border border-slate-100 p-2 rounded-2xl shadow-sm mt-4">
                 <button 
                   disabled={!hasPrev}
                   onClick={() => setSelectedHistoryMonth(availableMonths[currentIndex + 1])}
@@ -745,7 +803,6 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
           <div>
             <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#00a1e4]">Daily Logsheet</p>
             <h1 className="text-xl md:text-2xl font-black text-[#003366] uppercase tracking-tight">Lanud Roesmin Nurjadin</h1>
-            <p className="text-xs font-bold text-slate-400 mt-0.5">Rafale Simulator — Monitoring HVAC Harian</p>
           </div>
         </div>
 

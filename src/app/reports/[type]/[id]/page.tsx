@@ -225,6 +225,20 @@ export default function ReportHubPage() {
   };
 
 
+  // Auto Download Logic for Batching
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const autoDownload = searchParams.get("autoDownload") === "true";
+    if (autoDownload && data && !downloading && !loading) {
+      // Small delay to ensure images/fonts are fully loaded
+      const timer = setTimeout(async () => {
+        await handleDownloadPDF();
+        window.parent.postMessage({ type: "DOWNLOAD_COMPLETE", id: params.id }, "*");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [data, loading, downloading]);
+
   // 5. Smart Pagination: Measuring Pass
   React.useLayoutEffect(() => {
     if (data && probeRef.current) {
