@@ -187,7 +187,7 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
         return (
           <React.Fragment key={node.id}>
             <tr style={{ background: node.level % 2 === 1 ? "#ffffff" : "#fafafa", borderBottom: "1px solid #f0f0f0", transition: "background 0.2s" }} onMouseOver={(e) => e.currentTarget.style.background = "#f1f5f9"} onMouseOut={(e) => e.currentTarget.style.background = node.level % 2 === 1 ? "#ffffff" : "#fafafa"}>
-              <td style={{ padding: "10px 16px", fontSize: 13, fontWeight: node.level < 3 ? 800 : 700, color: node.level < 3 ? "#323338" : "#475569" }}>
+              <td style={{ position: "sticky", left: 0, zIndex: 10, background: node.level % 2 === 1 ? "#ffffff" : "#fafafa", padding: "10px 16px", fontSize: 13, fontWeight: node.level < 3 ? 800 : 700, color: node.level < 3 ? "#323338" : "#475569", borderRight: "1px solid #cbd5e1" }}>
                 <div style={{ display: "flex", alignItems: "center", paddingLeft }}>
                   {hasChildren ? (
                     <button onClick={() => toggleNode(node.id)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, marginRight: 4, color: "#676879" }}>
@@ -213,7 +213,7 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
                   {formatRp(node.values[col.key] || 0)}
                 </td>
               ))}
-              <td style={{ padding: "10px 16px", fontSize: 13, fontWeight: 900, color: "#0f172a", textAlign: "right", background: "#f8fafc", fontVariantNumeric: "tabular-nums" }}>
+              <td style={{ position: "sticky", right: 0, zIndex: 10, padding: "10px 16px", fontSize: 13, fontWeight: 900, color: "#0f172a", textAlign: "right", background: "#f8fafc", fontVariantNumeric: "tabular-nums", borderLeft: "1px solid #cbd5e1" }}>
                 {formatRp(node.total)}
               </td>
             </tr>
@@ -323,22 +323,22 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
                 <div style={{ width: 8, height: 24, background: "#6366f1", borderRadius: 4 }} />
-                <h3 style={{ fontSize: 16, fontWeight: 800, color: "#323338" }}>Hierarchical Booking Forecast Matrix</h3>
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: "#323338" }}>Forecast Matrix</h3>
               </div>
               
-              <div style={{ overflowX: "auto", borderRadius: 12, border: "1px solid #e5e7eb", boxShadow: "0 4px 15px rgba(0,0,0,0.03)" }}>
+              <div style={{ overflow: "auto", maxHeight: "65vh", borderRadius: 12, border: "1px solid #e5e7eb", boxShadow: "0 4px 15px rgba(0,0,0,0.03)" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1000 }}>
                   <thead>
                     <tr>
-                      <th style={{ padding: "16px", background: "#f8fafc", color: "#475569", fontSize: 12, fontWeight: 800, textTransform: "uppercase", textAlign: "left", borderBottom: "2px solid #cbd5e1" }}>
+                      <th style={{ position: "sticky", top: 0, left: 0, zIndex: 30, padding: "16px", background: "#f8fafc", color: "#475569", fontSize: 12, fontWeight: 800, textTransform: "uppercase", textAlign: "left", borderBottom: "2px solid #cbd5e1", borderRight: "1px solid #cbd5e1" }}>
                         Row Labels
                       </th>
                       {columns.map(col => (
-                        <th key={col.key} style={{ padding: "16px", background: "#f8fafc", color: "#475569", fontSize: 12, fontWeight: 800, textTransform: "uppercase", textAlign: "right", borderBottom: "2px solid #cbd5e1", minWidth: 120 }}>
+                        <th key={col.key} style={{ position: "sticky", top: 0, zIndex: 20, padding: "16px", background: "#f8fafc", color: "#475569", fontSize: 12, fontWeight: 800, textTransform: "uppercase", textAlign: "right", borderBottom: "2px solid #cbd5e1", minWidth: 120 }}>
                           {col.label}
                         </th>
                       ))}
-                      <th style={{ padding: "16px", background: "#f1f5f9", color: "#0f172a", fontSize: 12, fontWeight: 900, textTransform: "uppercase", textAlign: "right", borderBottom: "2px solid #94a3b8" }}>
+                      <th style={{ position: "sticky", top: 0, right: 0, zIndex: 30, padding: "16px", background: "#f1f5f9", color: "#0f172a", fontSize: 12, fontWeight: 900, textTransform: "uppercase", textAlign: "right", borderBottom: "2px solid #94a3b8", borderLeft: "1px solid #94a3b8" }}>
                         Grand Total
                       </th>
                     </tr>
@@ -348,8 +348,8 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
                     {renderTree(tree.children)}
                     
                     {/* Grand Total Row */}
-                    <tr style={{ background: "#e2e8f0" }}>
-                      <td style={{ padding: "16px", fontSize: 13, fontWeight: 900, color: "#0f172a", borderTop: "2px solid #cbd5e1" }}>
+                    <tr style={{ position: "sticky", bottom: 0, zIndex: 25, background: "#e2e8f0" }}>
+                      <td style={{ position: "sticky", left: 0, zIndex: 30, background: "#e2e8f0", padding: "16px", fontSize: 13, fontWeight: 900, color: "#0f172a", borderTop: "2px solid #cbd5e1", borderRight: "1px solid #cbd5e1" }}>
                         Grand Total
                       </td>
                       {columns.map(col => (
@@ -357,7 +357,7 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
                           {formatRp(totals[col.key] || 0)}
                         </td>
                       ))}
-                      <td style={{ padding: "16px", fontSize: 14, fontWeight: 900, color: "#0f172a", textAlign: "right", borderTop: "2px solid #94a3b8", background: "#cbd5e1", fontVariantNumeric: "tabular-nums" }}>
+                      <td style={{ position: "sticky", right: 0, zIndex: 30, padding: "16px", fontSize: 14, fontWeight: 900, color: "#0f172a", textAlign: "right", borderTop: "2px solid #94a3b8", background: "#cbd5e1", fontVariantNumeric: "tabular-nums", borderLeft: "1px solid #94a3b8" }}>
                         {formatRp(grandTotal)}
                       </td>
                     </tr>
