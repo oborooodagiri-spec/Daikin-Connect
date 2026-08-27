@@ -370,7 +370,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
                     <div className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl max-h-[140px] overflow-y-auto">
                       <div className="flex flex-wrap gap-2">
                         {partnershipPICs.map(name => {
-                          const selectedPartners = formData.sales_planner ? formData.sales_planner.split(",").map(s => s.trim()).filter(s => s) : [];
+                          const selectedPartners = formData.sales_planner ? String(formData.sales_planner).split(",").map(s => s.trim()).filter(s => s) : [];
                           const isSelected = selectedPartners.includes(name);
                           return (
                             <div 

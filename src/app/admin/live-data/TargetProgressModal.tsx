@@ -84,7 +84,7 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
 
     deals.forEach(d => {
       const pic = (d.pic || "Unassigned").trim().toUpperCase();
-      const salesPlanners = d.sales_planner ? d.sales_planner.split(",").map(s => s.trim().toUpperCase()).filter(s => s) : [];
+      const salesPlanners = d.sales_planner ? String(d.sales_planner).split(",").map(s => s.trim().toUpperCase()).filter(s => s) : [];
       const val = Number(d.quotation) || 0;
 
       if (d.is_closed) {
