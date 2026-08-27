@@ -2099,6 +2099,9 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
                             PARTIAL CLOSE {deal.partial_percentage ? `${deal.partial_percentage}%` : ""}
                           </span>
                         )}
+                        {(!deal.target_po_date && !deal.est_booking_month) && (
+                          <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-red-100 text-red-600 leading-none border border-red-200 uppercase whitespace-nowrap">NO TARGET PO</span>
+                        )}
                       </div>
                     </td>
                     <td style={{ padding: "12px 16px" }}>

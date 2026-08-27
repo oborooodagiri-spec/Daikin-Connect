@@ -171,11 +171,12 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
       const val = Number(d.quotation || 0);
 
       // Hierarchy: Status > PIC > Customer Name > Project Name
+      const noTargetPO = !d.target_po_date && !d.est_booking_month;
       const path = [
         { key: d.status || "Unknown Status", name: d.status || "Unknown Status" },
         { key: d.pic || "Unassigned", name: d.pic || "Unassigned" },
         { key: d.category || "Uncategorized", name: d.category || "Uncategorized" },
-        { key: d.id.toString(), name: d.client_name || "Unknown Customer", subtitle: (d.is_closed && !d.is_partial_close ? "🔴 [CLOSED] " : "") + (d.is_partial_close ? `🟡 [PARTIAL CLOSE ${d.partial_percentage || ""}%] ` : "") + (d.project_name || "Unknown Project") }
+        { key: d.id.toString(), name: d.client_name || "Unknown Customer", subtitle: (noTargetPO ? "⚠️ [NO TARGET PO] " : "") + (d.is_closed && !d.is_partial_close ? "🔴 [CLOSED] " : "") + (d.is_partial_close ? `🟡 [PARTIAL CLOSE ${d.partial_percentage || ""}%] ` : "") + (d.project_name || "Unknown Project") }
       ];
 
       addValueToNode(root, sortKey, val);
