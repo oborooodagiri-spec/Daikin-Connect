@@ -142,11 +142,11 @@ const REGION_VIEWS: Record<string, { center: [number, number]; scale: number; la
 };
 
 function guessCoords(deal: Deal): { coords: [number, number]; regionName: string; provinceName?: string; name?: string } | null {
-  const area = (deal.area || "").toLowerCase();
+  const area = (deal.area || deal.region || "").toLowerCase();
   
   let match = { ...PROVINCE_COORDS.jakarta, regionName: "Jawa" };
   
-  const check = (keywords: string[]) => keywords.some(k => area.includes(k));
+  const check = (keywords: string[]) => keywords.some(k => area.includes(k.toLowerCase()));
 
   if (check(["medan", "sumatera utara", "sumut", "binjai", "deli serdang", "pematangsiantar", "siantar"])) match = { ...PROVINCE_COORDS.north_sumatra, regionName: PROVINCE_COORDS.north_sumatra.region };
   else if (check(["batam", "hang nadim", "kepulauan riau", "kepri", "tanjung pinang", "bintan", "karimun"])) match = { ...PROVINCE_COORDS.kepri, regionName: PROVINCE_COORDS.kepri.region };
