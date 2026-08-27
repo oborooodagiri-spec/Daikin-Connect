@@ -1276,7 +1276,8 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
   // RENDER: DASHBOARD TAB
   // ============================================
   const renderDashboard = () => {
-    
+    const fyStart = new Date(2000 + currentFY, 3, 1).getTime();
+    const fyEnd = new Date(2000 + currentFY + 1, 2, 31, 23, 59, 59, 999).getTime();
 
     // Booking Forecast: deals where status = 'B', in current FY
     const bookingFcDeals = activeDeals.filter(d => {
