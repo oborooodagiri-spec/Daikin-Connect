@@ -30,7 +30,7 @@ export async function recordAuditLog({
         target_type: targetType,
         target_id: targetId,
         details,
-        ip_address: ipAddress,
+        ip_address: ipAddress.substring(0, 45),
         user_agent: userAgent
       }
     });
