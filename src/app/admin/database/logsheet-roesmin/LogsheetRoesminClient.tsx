@@ -6,7 +6,7 @@ import {
   ArrowLeft, Snowflake, Wind, Server, Fan,
   ChevronDown, ChevronRight, Save, Calendar,
   User, ClipboardList, Zap, Folder, FileText, History, FileDown,
-  Search, Filter, CheckCircle, Clock
+  Search, Filter, CheckCircle, Clock, Download, Loader2
 } from "lucide-react";
 import Link from "next/link";
 
