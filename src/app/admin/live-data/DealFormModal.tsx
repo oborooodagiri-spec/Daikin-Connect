@@ -367,16 +367,30 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                       <User size={12}/> Partnership PIC
                     </label>
-                    <select name="sales_planner" value={formData.sales_planner} onChange={handleChange}
-                      className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all cursor-pointer">
-                      <option value="">Select Partner</option>
-                      {partnershipPICs.includes(sessionName) && (
-                        <option value={sessionName}>{sessionName} (You)</option>
-                      )}
-                      {partnershipPICs.map(name => (
-                        name !== sessionName && <option key={name} value={name}>{name}</option>
-                      ))}
-                    </select>
+                    <div className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl max-h-[140px] overflow-y-auto">
+                      <div className="flex flex-wrap gap-2">
+                        {partnershipPICs.map(name => {
+                          const selectedPartners = formData.sales_planner ? formData.sales_planner.split(",").map(s => s.trim()).filter(s => s) : [];
+                          const isSelected = selectedPartners.includes(name);
+                          return (
+                            <div 
+                              key={name}
+                              onClick={() => {
+                                let newPartners = [...selectedPartners];
+                                if (isSelected) newPartners = newPartners.filter(n => n !== name);
+                                else newPartners.push(name);
+                                handleChange({ target: { name: "sales_planner", value: newPartners.join(", ") } } as any);
+                              }}
+                              className={`px-3 py-1.5 text-xs font-semibold rounded-lg cursor-pointer transition-all flex items-center gap-1.5 ${isSelected ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "bg-white border border-slate-200 text-slate-500 hover:bg-slate-100"}`}
+                            >
+                              {name === sessionName ? `${name} (You)` : name}
+                              {isSelected && <span>&#10003;</span>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {partnershipPICs.length === 0 && <div className="text-xs text-slate-400 text-center py-2">No Partnership PICs found</div>}
+                    </div>
                   </div>
                 )}
 

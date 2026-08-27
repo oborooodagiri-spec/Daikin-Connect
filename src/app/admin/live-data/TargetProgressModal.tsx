@@ -84,7 +84,7 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
 
     deals.forEach(d => {
       const pic = (d.pic || "Unassigned").trim().toUpperCase();
-      const salesPlanner = d.sales_planner ? d.sales_planner.trim().toUpperCase() : "";
+      const salesPlanners = d.sales_planner ? d.sales_planner.split(",").map(s => s.trim().toUpperCase()).filter(s => s) : [];
       const val = Number(d.quotation) || 0;
 
       if (d.is_closed) {
@@ -104,12 +104,14 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
             byPartner[pic].count++;
           }
 
-          // Credit the sales_planner (assisting partner) regardless of 'source'
-          if (salesPlanner !== "" && salesPlanner !== pic) {
-            if (!byPartner[salesPlanner]) byPartner[salesPlanner] = { value: 0, count: 0 };
-            byPartner[salesPlanner].value += val;
-            byPartner[salesPlanner].count++;
-          }
+          // Credit ALL sales_planners (assisting partners) regardless of 'source'
+          salesPlanners.forEach(sp => {
+            if (sp !== pic) {
+              if (!byPartner[sp]) byPartner[sp] = { value: 0, count: 0 };
+              byPartner[sp].value += val;
+              byPartner[sp].count++;
+            }
+          });
         }
       } else if (d.status === "A") {
         // BACKLOG: Status A and not closed
