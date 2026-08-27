@@ -1020,27 +1020,21 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
 
   // Specific deals scope for Project By Status and Pipeline Status Funnel widgets
   const projectByStatusDeals = useMemo(() => {
-    const fyStart = new Date(2000 + selectedFY, 3, 1).getTime(); // April 1st
-    const fyEnd = new Date(2000 + selectedFY + 1, 2, 31, 23, 59, 59, 999).getTime(); // March 31st
-    
     return deals.filter(d => {
-      // Must be a valid pipeline status (A-E)
       if (!['A', 'B', 'C', 'D', 'E', 'T', 'H'].includes(d.status)) return false;
-        if (d.status === 'T' && !showPipelineTender) return false;
-        if (d.status === 'H' && !showPipelineHold) return false;
+      if (d.status === 'T' && !showPipelineTender) return false;
+      if (d.status === 'H' && !showPipelineHold) return false;
       
-      // If it's active (not closed), always carry over and include it
-      if (!d.is_closed) return true;
+      const dealFY = getDealFYStr(d);
+      const targetFY = "FY" + selectedFY;
       
-      // If it IS closed, ONLY include it if its date falls within the selected FY
-      const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
-      const dt = rawDate ? new Date(rawDate) : null;
-      if (!dt || isNaN(dt.getTime())) return false; // Safety fallback
-      
-      const t = dt.getTime();
-      return t >= fyStart && t <= fyEnd;
+      if (!d.is_closed) {
+        return dealFY <= targetFY; // Open projects carry over to current and future FYs
+      } else {
+        return dealFY === targetFY; // Closed projects belong STRICTLY to their override/actual FY
+      }
     });
-  }, [deals, selectedFY]);
+  }, [deals, selectedFY, showPipelineTender, showPipelineHold]);
 
 
   // Sector groupings matching Excel definitions
@@ -1233,7 +1227,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
       const matchSector = sectorFilter === "All" || d.sector?.trim().toUpperCase() === sectorFilter;
       const matchPic = picFilter === "All" || d.pic?.trim().toUpperCase() === picFilter;
       const matchSource = sourceFilter === "All" || d.source === sourceFilter;
-      const matchFY = pipelineFYFilter === "All" || getDealFYStr(d) === pipelineFYFilter;
+      const matchFY = pipelineFYFilter === "All" || (d.is_closed ? getDealFYStr(d) === pipelineFYFilter : getDealFYStr(d) <= pipelineFYFilter);
       const matchProjectState = 
         projectStateFilter === "All" ||
         (projectStateFilter === "Closed" && d.is_closed) ||
@@ -1282,18 +1276,13 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
   // RENDER: DASHBOARD TAB
   // ============================================
   const renderDashboard = () => {
-    const fyStartYear = 2000 + currentFY;
-    const fyStartTime = new Date(fyStartYear, 3, 1).getTime();
-    const fyEndTime = new Date(fyStartYear + 1, 2, 31, 23, 59, 59, 999).getTime();
+    
 
     // Booking Forecast: deals where status = 'B', in current FY
     const bookingFcDeals = activeDeals.filter(d => {
-      if (d.status !== 'B') return false;
-
       const rawDate = d.target_po_date || d.est_booking_month;
-      if (!rawDate) return false; // Exclude if no target date set
-      const dt = new Date(rawDate).getTime();
-      return dt >= fyStartTime && dt <= fyEndTime;
+      if (!rawDate) return false;
+      return getDealFYStr(d) <= "FY" + currentFY;
     });
 
     const bookingFcTotal = bookingFcDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
@@ -1303,8 +1292,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
     // Achievement: closed deals in current FY
     const closedFYDeals = deals.filter(d => {
       if (!d.is_closed) return false;
-      const ut = new Date(d.updated_at).getTime();
-      return ut >= fyStartTime && ut <= fyEndTime;
+      return getDealFYStr(d) === "FY" + currentFY;
     });
     const closedFYValue = closedFYDeals.reduce((sum, d) => sum + Number(d.quotation || 0), 0);
 
