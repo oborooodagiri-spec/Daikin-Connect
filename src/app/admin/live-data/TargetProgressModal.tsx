@@ -139,11 +139,13 @@ export default function TargetProgressModal({ isOpen, onClose, formatRp, deals, 
           backlogByPartner[pic].value += val;
           backlogByPartner[pic].count++;
         }
-        if (salesPlanner !== "" && salesPlanner !== pic) {
-          if (!backlogByPartner[salesPlanner]) backlogByPartner[salesPlanner] = { value: 0, count: 0 };
-          backlogByPartner[salesPlanner].value += val;
-          backlogByPartner[salesPlanner].count++;
-        }
+        salesPlanners.forEach(sp => {
+          if (sp !== pic) {
+            if (!backlogByPartner[sp]) backlogByPartner[sp] = { value: 0, count: 0 };
+            backlogByPartner[sp].value += val;
+            backlogByPartner[sp].count++;
+          }
+        });
       }
     });
 
