@@ -1280,6 +1280,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
 
     // Booking Forecast: deals where status = 'B', in current FY
     const bookingFcDeals = activeDeals.filter(d => {
+      if (d.status !== 'B') return false;
       const rawDate = d.target_po_date || d.est_booking_month;
       if (!rawDate) return false;
       return getDealFYStr(d) <= "FY" + currentFY;
