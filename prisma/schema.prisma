@@ -300,6 +300,7 @@ model users {
   two_factor_enabled        Boolean                @default(true)
   two_factor_secret         String?                @db.VarChar(255)
   attendance_enabled        Boolean                @default(false)
+  pives_scanner_enabled     Boolean                @default(false)
   face_reference_url        String?                @db.VarChar(255)
   face_verification_enabled Boolean                @default(true)
   avatar_url                String?                @db.VarChar(255)

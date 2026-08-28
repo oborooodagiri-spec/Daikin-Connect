@@ -317,7 +317,8 @@ export async function getSession() {
       name: user.name,
       roles: roles,
       isInternal: isInternal,
-      attendance_enabled: user.attendance_enabled
+      attendance_enabled: user.attendance_enabled,
+      pives_scanner_enabled: user.pives_scanner_enabled
     });
   } catch {
     return null;

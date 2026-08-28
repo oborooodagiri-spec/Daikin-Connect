@@ -326,6 +326,12 @@ export default function UsersPage() {
                                       <span className="text-[9px] font-black uppercase tracking-tight">Live Attendance</span>
                                   </div>
                               )}
+                              {user.pives_scanner_enabled && (
+                                  <div className="mt-2 flex items-center gap-2 px-2.5 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg w-fit">
+                                      <QrCode size={12} />
+                                      <span className="text-[9px] font-black uppercase tracking-tight">PIVES Scanner</span>
+                                  </div>
+                              )}
                           </td>
 
                           <td className="px-10 py-6 text-right">

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import { QrCode } from "lucide-react";
 import { motion } from "framer-motion";
 import {
   ArrowLeftRight,
@@ -30,6 +31,15 @@ interface Tool {
 }
 
 const TOOLS: Tool[] = [
+  {
+    id: "pives-scanner",
+    name: "PIVES Scanner",
+    description: "Scan barcode unit tanpa kamera bawaan (Plaza Indonesia VES)",
+    icon: <QrCode size={24} />,
+    gradient: "linear-gradient(135deg, #a25ddc 0%, #c48eff 100%)",
+    href: "/tools/pives-scanner",
+    active: true,
+  },
   {
     id: "unit-converter",
     name: "Unit Converter",
@@ -113,7 +123,7 @@ const TOOLS: Tool[] = [
   },
 ];
 
-export default function ToolsClient() {
+export default function ToolsClient({ pivesScannerEnabled = false }: { pivesScannerEnabled?: boolean }) {
   const router = useRouter();
 
   const handleToolClick = (tool: Tool) => {
@@ -178,7 +188,7 @@ export default function ToolsClient() {
 
         {/* Tools Grid - All Active */}
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
-          {TOOLS.map((tool, i) => (
+          {TOOLS.filter(t => t.id !== "pives-scanner" || pivesScannerEnabled).map((tool, i) => (
             <motion.div
               key={tool.id}
               initial={{ opacity: 0, y: 15 }}

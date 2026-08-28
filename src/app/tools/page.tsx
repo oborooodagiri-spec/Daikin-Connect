@@ -14,5 +14,5 @@ export default async function ToolsPage() {
     redirect("/");
   }
 
-  return <ToolsClient />;
+  return <ToolsClient pivesScannerEnabled={session.pives_scanner_enabled} />;
 }
