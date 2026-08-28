@@ -4,18 +4,74 @@ import React, { useState, useRef, useEffect } from "react";
 import { ChevronLeft, QrCode, ScanLine, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import jsQR from "jsqr";
 
 export default function PIVESScannerClient() {
   const router = useRouter();
   const [isScanning, setIsScanning] = useState(false);
+  const [scannedResult, setScannedResult] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const requestRef = useRef<number>();
 
   useEffect(() => {
-    return () => stopCamera();
+    return () => {
+      stopCamera();
+    };
   }, []);
+
+  const tick = () => {
+    if (videoRef.current && videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      
+      if (canvas) {
+        canvas.height = video.videoHeight;
+        canvas.width = video.videoWidth;
+        const ctx = canvas.getContext("2d");
+        
+        if (ctx) {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: "dontInvert",
+          });
+
+          if (code) {
+            handleScanSuccess(code.data);
+            return; // Stop ticking if found
+          }
+        }
+      }
+    }
+    requestRef.current = requestAnimationFrame(tick);
+  };
+
+  const handleScanSuccess = (data: string) => {
+    stopCamera();
+    setScannedResult(data);
+    
+    // Parse the Daikin Connect URL
+    try {
+      const url = new URL(data);
+      // If it contains passport, redirect to internal passport route
+      if (url.pathname.includes("/passport/")) {
+        // e.g. /passport/12345
+        router.push(url.pathname);
+      } else {
+        // fallback to internal redirect keeping path
+        router.push(url.pathname + url.search);
+      }
+    } catch (e) {
+      // Not a valid URL, maybe just text
+      alert("Format Barcode tidak dikenali: " + data);
+      setIsScanning(false);
+    }
+  };
 
   const startScanner = async () => {
     setIsScanning(true);
+    setScannedResult(null);
     try {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -23,6 +79,10 @@ export default function PIVESScannerClient() {
         });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
+          // Play video explicitly (required for some mobile browsers)
+          videoRef.current.setAttribute("playsinline", "true");
+          videoRef.current.play();
+          requestRef.current = requestAnimationFrame(tick);
         }
       } else {
         alert("Camera not supported on this device.");
@@ -36,6 +96,9 @@ export default function PIVESScannerClient() {
   };
 
   const stopCamera = () => {
+    if (requestRef.current) {
+      cancelAnimationFrame(requestRef.current);
+    }
     if (videoRef.current && videoRef.current.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream;
       stream.getTracks().forEach(track => track.stop());
@@ -61,7 +124,7 @@ export default function PIVESScannerClient() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center p-6 relative z-10">
-        {!isScanning ? (
+        {!isScanning && !scannedResult ? (
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             className="flex flex-col items-center max-w-sm text-center"
@@ -81,7 +144,7 @@ export default function PIVESScannerClient() {
               Start Scanner
             </button>
           </motion.div>
-        ) : (
+        ) : isScanning ? (
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
             className="w-full max-w-md relative bg-black rounded-[2rem] overflow-hidden shadow-2xl border border-slate-800"
@@ -124,10 +187,22 @@ export default function PIVESScannerClient() {
               autoPlay playsInline muted
               className="w-full h-[600px] object-cover"
             />
+            {/* Hidden canvas for processing */}
+            <canvas ref={canvasRef} className="hidden" />
+          </motion.div>
+        ) : (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col items-center text-center p-8 bg-slate-900 border border-slate-800 rounded-3xl"
+          >
+            <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center mb-6">
+              <ScanLine size={32} />
+            </div>
+            <h3 className="text-xl font-black text-white uppercase tracking-widest mb-2">Memproses Data...</h3>
+            <p className="text-xs font-medium text-slate-400 break-all">{scannedResult}</p>
           </motion.div>
         )}
       </main>
     </div>
   );
 }
-
