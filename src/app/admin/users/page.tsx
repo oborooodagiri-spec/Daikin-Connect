@@ -4,13 +4,13 @@ import { useEffect, useState, useTransition } from "react";
 import { 
   Users, Search, ShieldCheck, Mail, ShieldAlert, 
   Trash2, ChevronRight, CheckCircle2, XCircle, X,
-  UserCog, Filter, MoreVertical, Shield, Building2, Calendar
+  UserCog, Filter, MoreVertical, Shield, Building2, Calendar, QrCode
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   getAllUsers, toggleUserStatus, updateUserRole, 
   deleteUser, getAllRoles, getAllAvailableProjects,
-  getUserProjectAccess, updateUserProjectAccess, toggleUserAttendance
+  getUserProjectAccess, updateUserProjectAccess, toggleUserAttendance, togglePivesScannerStatus
 } from "@/app/actions/users";
 import { useRouter } from "next/navigation";
 import { getSession } from "@/app/actions/auth";
@@ -109,6 +109,21 @@ export default function UsersPage() {
     startTransition(async () => {
       const res = await deleteUser(user.id);
       if ("success" in res && res.success) fetchData();
+    });
+  };
+
+
+  const handleTogglePives = (user: any) => {
+    const verb = user.pives_scanner_enabled ? "Disable" : "Enable";
+    if (!confirm(`Are you sure you want to ${verb} PIVES Scanner for ${user.name}?`)) return;
+
+    startTransition(async () => {
+      const res = await togglePivesScannerStatus(user.id, user.pives_scanner_enabled);
+      if (res.success) {
+        fetchData();
+      } else {
+        alert(res.error || "Failed to update scanner access");
+      }
     });
   };
 
