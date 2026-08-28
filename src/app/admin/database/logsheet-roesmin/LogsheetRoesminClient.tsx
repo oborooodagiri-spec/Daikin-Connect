@@ -272,18 +272,35 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
     iframe.style.zIndex = "-9999";
     document.body.appendChild(iframe);
     
+        let timeoutId: any;
+
+    const nextDownload = () => {
+      currentIndex++;
+      setDownloadProgress(currentIndex);
+      
+      if (currentIndex < items.length) {
+         iframe.src = `/reports/preventive/${items[currentIndex].id}?autoDownload=true`;
+         resetTimeout();
+      } else {
+         window.removeEventListener("message", listener);
+         clearTimeout(timeoutId);
+         if (document.body.contains(iframe)) document.body.removeChild(iframe);
+         setIsBatchDownloading(false);
+      }
+    };
+
+    const resetTimeout = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      // Give each PDF up to 25 seconds to generate and download
+      timeoutId = setTimeout(() => {
+        console.warn("Download timed out for item", currentIndex);
+        nextDownload();
+      }, 25000);
+    };
+
     const listener = (event: MessageEvent) => {
       if (event.data && event.data.type === "DOWNLOAD_COMPLETE") {
-        currentIndex++;
-        setDownloadProgress(currentIndex);
-        
-        if (currentIndex < items.length) {
-           iframe.src = `/reports/preventive/${items[currentIndex].id}?autoDownload=true`;
-        } else {
-           window.removeEventListener("message", listener);
-           if (document.body.contains(iframe)) document.body.removeChild(iframe);
-           setIsBatchDownloading(false);
-        }
+        nextDownload();
       }
     };
     
@@ -291,6 +308,7 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
     
     // Start first
     iframe.src = `/reports/preventive/${items[0].id}?autoDownload=true`;
+    resetTimeout();
   };
 
   useEffect(() => {

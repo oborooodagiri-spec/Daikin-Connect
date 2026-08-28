@@ -218,7 +218,9 @@ export default function ReportHubPage() {
       await logUserActivity("REPORT_DOWNLOAD", `Downloaded ${type} report for ${data.unit?.tag_number || 'Unknown'}`);
     } catch (err) {
       console.error("Download error:", err);
-      alert("Failed to generate PDF. Please try again.");
+      if (typeof window !== "undefined" && !window.location.search.includes("autoDownload=true")) {
+        alert("Failed to generate PDF. Please try again.");
+      }
     } finally {
       setDownloading(false);
     }

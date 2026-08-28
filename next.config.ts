@@ -17,10 +17,10 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: [
-          // Prevent clickjacking by denying all iframe embedding
+          // Prevent clickjacking from external domains while allowing internal iframes
           {
             key: 'X-Frame-Options',
-            value: 'DENY',
+            value: 'SAMEORIGIN',
           },
           // Prevent MIME-type sniffing attacks
           {
