@@ -312,7 +312,15 @@ export default function LogsheetRoesminClient({ projectId }: { projectId?: strin
 
     const listener = (event: MessageEvent) => {
       if (event.data && event.data.type === "DOWNLOAD_COMPLETE") {
-        nextDownload();
+        // Hentikan timer 90 detik agar tidak keburu ter-trigger saat jeda
+        if (timeoutId) clearTimeout(timeoutId);
+        
+        // Jeda 2.5 detik sebelum menghapus iframe dan lanjut ke file berikutnya.
+        // Sangat krusial agar Chrome Download Manager punya waktu untuk menangkap
+        // instruksi download dari dalam iframe sebelum iframe tersebut dihapus.
+        setTimeout(() => {
+          nextDownload();
+        }, 2500);
       }
     };
     
