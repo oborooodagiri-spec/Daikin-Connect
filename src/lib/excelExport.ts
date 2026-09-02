@@ -254,10 +254,13 @@ export const exportCategoryMatrix = async (deals: any[], fy: number, filename: s
     
     const val = Number(d.quotation || 0);
 
+    const allowedStatuses = ["C", "D", "E"];
+    if (!allowedStatuses.includes(d.status)) return;
+
     const path = [
-      d.category || "Others",
-      d.pic || "Unassigned",
       d.status || "Unknown Status",
+      d.pic || "Unassigned",
+      d.category || "Others",
       `   - ${d.client_name || "Unknown Customer"} \n(${d.project_name || "Unknown Project"})`
     ];
 
@@ -375,10 +378,13 @@ export const exportSectorMatrix = async (deals: any[], fy: number, sectorName: s
     
     const val = Number(d.quotation || 0);
 
+    const allowedStatuses = ["A", "B", "C", "D", "E"];
+    if (!allowedStatuses.includes(d.status)) return;
+
     const path = [
-      d.sector || "Others",
-      d.pic || "Unassigned",
       d.status || "Unknown Status",
+      d.pic || "Unassigned",
+      d.category || "Others",
       `   - ${d.client_name || "Unknown Customer"} \n(${d.project_name || "Unknown Project"})`
     ];
 
