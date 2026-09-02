@@ -313,17 +313,25 @@ export const exportCategoryMatrix = async (deals: any[], fy: number, filename: s
       cell.border = { bottom: { style: level === 3 ? 'dotted' : 'thin', color: { argb: 'FFF1F5F9' } } };
     });
 
-    Object.values(node.children).sort((a, b) => b.total - a.total).forEach(child => writeNode(child, level + 1));
+    Object.values(node.children).sort((a, b) => {
+      if (level === 0) {
+        return a.name.localeCompare(b.name);
+      } else if (level === 1) {
+        const order = ["EPL", "RC", "IAQ", "Control", "VES", "Others"];
+        const idxA = order.indexOf(a.name);
+        const idxB = order.indexOf(b.name);
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+        if (idxA !== -1) return -1;
+        if (idxB !== -1) return 1;
+        return a.name.localeCompare(b.name);
+      }
+      return b.total - a.total;
+    }).forEach(child => writeNode(child, level + 1));
   };
 
-  const categories = ["EPL", "RC", "IAQ", "Control", "VES", "Others"].filter(c => root.children[c]);
-  categories.forEach(cat => {
-    writeNode(root.children[cat], 0);
-  });
-  Object.keys(root.children).forEach(cat => {
-    if (!categories.includes(cat)) {
-      writeNode(root.children[cat], 0);
-    }
+  const statuses = Object.keys(root.children).sort();
+  statuses.forEach(st => {
+    writeNode(root.children[st], 0);
   });
 
   const totalValues = ['GRAND TOTAL'];
@@ -437,18 +445,31 @@ export const exportSectorMatrix = async (deals: any[], fy: number, sectorName: s
       cell.border = { bottom: { style: level === 3 ? "dotted" : "thin", color: { argb: "FFF1F5F9" } } };
     });
 
-    Object.values(node.children).sort((a, b) => b.total - a.total).forEach(child => writeNode(child, level + 1));
+    Object.values(node.children).sort((a, b) => {
+      if (level === 0) {
+        return a.name.localeCompare(b.name);
+      } else if (level === 1) {
+        const order = ["EPL", "RC", "IAQ", "Control", "VES", "Others"];
+        const idxA = order.indexOf(a.name);
+        const idxB = order.indexOf(b.name);
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+        if (idxA !== -1) return -1;
+        if (idxB !== -1) return 1;
+        return a.name.localeCompare(b.name);
+      }
+      return b.total - a.total;
+    }).forEach(child => writeNode(child, level + 1));
   };
 
-  const sectors = Object.keys(root.children).sort();
-  sectors.forEach(sec => {
-    writeNode(root.children[sec], 0);
+  const statuses = Object.keys(root.children).sort();
+  statuses.forEach(st => {
+    writeNode(root.children[st], 0);
   });
 
   const totalValues = ["GRAND TOTAL"];
   let gTotal = 0;
   columns.forEach(col => {
-    const sum = sectors.reduce((acc, sec) => acc + (root.children[sec]?.values[col.key] || 0), 0);
+    const sum = statuses.reduce((acc, sec) => acc + (root.children[sec]?.values[col.key] || 0), 0);
     totalValues.push(sum as any);
     gTotal += sum;
   });
