@@ -356,9 +356,9 @@ export default function StatusPipelineModal({
             </div>
           </div>
 
-          <div style={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column", padding: "0 32px 0 32px", gap: 32, background: "#ffffff" }}>
+          <div style={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column", padding: 0, gap: 32, background: "#ffffff" }}>
             {/* Infographic Chart */}
-            <div style={{ marginTop: 32, flex: "none", padding: 24, background: "#f8fafc", borderRadius: 20, border: "1px solid #e2e8f0" }}>
+            <div style={{ margin: "32px 32px 0 32px", flex: "none", padding: 24, background: "#f8fafc", borderRadius: 20, border: "1px solid #e2e8f0" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
                 <BarChart3 size={20} color={color} />
                 <h3 style={{ fontSize: 16, fontWeight: 700, color: "#334155" }}>Monthly Trend Breakdown</h3>
@@ -421,7 +421,7 @@ export default function StatusPipelineModal({
                   {rows.length > 0 && (
                     <tfoot>
                       <tr>
-                        <td style={{ padding: "20px 24px", background: "#0f172a", color: "white", fontWeight: 800, position: "sticky", bottom: 0, left: 0, zIndex: 30, borderRadius: "0 0 0 20px", borderTop: "2px solid #334155", borderRight: "1px solid #334155" }}>
+                        <td style={{ padding: "20px 24px", background: "#0f172a", color: "white", fontWeight: 800, position: "sticky", bottom: 0, left: 0, zIndex: 30, borderTop: "2px solid #334155", borderRight: "1px solid #334155" }}>
                           Total Quotation
                         </td>
                         {columns.map(col => (
@@ -429,7 +429,7 @@ export default function StatusPipelineModal({
                             {formatRp(totals[col.key] || 0)}
                           </td>
                         ))}
-                        <td style={{ position: "sticky", bottom: 0, right: 0, zIndex: 30, padding: "20px 24px", background: color, color: "white", textAlign: "right", fontWeight: 800, fontSize: 15, borderRadius: "0 0 20px 0", borderTop: "2px solid rgba(0,0,0,0.1)", borderLeft: "1px solid rgba(0,0,0,0.1)" }}>
+                        <td style={{ position: "sticky", bottom: 0, right: 0, zIndex: 30, padding: "20px 24px", background: color, color: "white", textAlign: "right", fontWeight: 800, fontSize: 15, borderTop: "2px solid rgba(0,0,0,0.1)", borderLeft: "1px solid rgba(0,0,0,0.1)" }}>
                           {formatRp(grandTotal)}
                         </td>
                       </tr>

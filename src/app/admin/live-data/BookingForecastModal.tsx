@@ -287,10 +287,10 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
             </button>
           </div>
 
-          <div style={{ padding: "0 32px 0 32px", overflow: "auto", display: "flex", flexDirection: "column", gap: 32 }}>
+          <div style={{ padding: 0, overflow: "auto", display: "flex", flexDirection: "column", gap: 32 }}>
             
             {/* Infographic Chart */}
-            <div style={{ marginTop: 32 }}>
+            <div style={{ marginTop: 32, padding: "0 32px" }}>
               <div style={{ display: "flex", flex: "none", alignItems: "center", gap: 8, marginBottom: 16 }}>
                 <div style={{ width: 8, height: 24, background: "#0ea5e9", borderRadius: 4 }} />
                 <h3 style={{ fontSize: 16, fontWeight: 800, color: "#323338" }}>Booking Forecast Trend</h3>
@@ -321,12 +321,12 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
 
             {/* Pivot Table */}
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, padding: "0 32px" }}>
                 <div style={{ width: 8, height: 24, background: "#6366f1", borderRadius: 4 }} />
                 <h3 style={{ fontSize: 16, fontWeight: 800, color: "#323338" }}>Forecast Matrix</h3>
               </div>
               
-              <div style={{ flex: 1, minWidth: "max-content", overflow: "visible", borderRadius: 12, border: "1px solid #e5e7eb", boxShadow: "0 4px 15px rgba(0,0,0,0.03)" }}>
+              <div style={{ flex: 1, minWidth: "max-content", overflow: "visible", borderTop: "1px solid #e5e7eb", borderBottom: "1px solid #e5e7eb" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1000 }}>
                   <thead>
                     <tr>
