@@ -287,10 +287,10 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
             </button>
           </div>
 
-          <div style={{ padding: "32px", overflow: "auto", display: "flex", flexDirection: "column", gap: 32 }}>
+          <div style={{ padding: "0 32px 32px 32px", overflow: "auto", display: "flex", flexDirection: "column", gap: 32 }}>
             
             {/* Infographic Chart */}
-            <div>
+            <div style={{ marginTop: 32 }}>
               <div style={{ display: "flex", flex: "none", alignItems: "center", gap: 8, marginBottom: 16 }}>
                 <div style={{ width: 8, height: 24, background: "#0ea5e9", borderRadius: 4 }} />
                 <h3 style={{ fontSize: 16, fontWeight: 800, color: "#323338" }}>Booking Forecast Trend</h3>
