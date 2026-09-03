@@ -356,9 +356,9 @@ export default function StatusPipelineModal({
             </div>
           </div>
 
-          <div style={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column", padding: 32, gap: 32, background: "#ffffff" }}>
+          <div style={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column", padding: "0 32px 32px 32px", gap: 32, background: "#ffffff" }}>
             {/* Infographic Chart */}
-            <div style={{ flex: "none", padding: 24, background: "#f8fafc", borderRadius: 20, border: "1px solid #e2e8f0" }}>
+            <div style={{ marginTop: 32, flex: "none", padding: 24, background: "#f8fafc", borderRadius: 20, border: "1px solid #e2e8f0" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
                 <BarChart3 size={20} color={color} />
                 <h3 style={{ fontSize: 16, fontWeight: 700, color: "#334155" }}>Monthly Trend Breakdown</h3>

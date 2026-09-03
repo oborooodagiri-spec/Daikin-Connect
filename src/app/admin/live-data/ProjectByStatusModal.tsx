@@ -348,10 +348,10 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
             </button>
           </div>
 
-          <div style={{ padding: "32px", flex: 1, overflow: "auto", display: "flex", flexDirection: "column", gap: 40 }}>
+          <div style={{ padding: "0 32px 32px 32px", flex: 1, overflow: "auto", display: "flex", flexDirection: "column", gap: 40 }}>
             
             {/* Chart Section */}
-            <div>
+            <div style={{ marginTop: 32 }}>
               <div style={{ display: "flex", flex: "none", alignItems: "center", gap: 8, marginBottom: 16 }}>
                 <div style={{ width: 8, height: 24, background: "#0073ea", borderRadius: 4 }} />
                 <h3 style={{ fontSize: 16, fontWeight: 800, color: "#323338" }}>Booking Forecast Overview</h3>
