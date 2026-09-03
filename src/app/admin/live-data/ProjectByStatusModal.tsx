@@ -396,7 +396,7 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
                 <h3 style={{ fontSize: 16, fontWeight: 800, color: "#323338" }}>Table Matrix</h3>
               </div>
               
-              <div style={{ flex: 1, borderRadius: 12, border: "1px solid #e5e7eb", boxShadow: "0 4px 15px rgba(0,0,0,0.03)" }}>
+              <div style={{ flex: 1, overflowX: "auto", overflowY: "visible", borderRadius: 12, border: "1px solid #e5e7eb", boxShadow: "0 4px 15px rgba(0,0,0,0.03)" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 800 }}>
                   <thead>
                     <tr>
