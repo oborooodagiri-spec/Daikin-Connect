@@ -943,6 +943,7 @@ export default function LiveDataClient({ isAdmin = false, canClickWidgets = true
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [sectorFilter, setSectorFilter] = useState("All");
   const [picFilter, setPicFilter] = useState("All");
+  const [picRoleFilter, setPicRoleFilter] = useState("All");
   const [sourceFilter, setSourceFilter] = useState("All");
   const [projectStateFilter, setProjectStateFilter] = useState("All");
   const [pipelineFYFilter, setPipelineFYFilter] = useState("All");
@@ -1225,7 +1226,17 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
       const matchStatus = statusFilter === "All" || d.status === statusFilter;
       const matchCategory = categoryFilter === "All" || d.category?.trim().toUpperCase() === categoryFilter;
       const matchSector = sectorFilter === "All" || d.sector?.trim().toUpperCase() === sectorFilter;
-      const matchPic = picFilter === "All" || d.pic?.trim().toUpperCase() === picFilter;
+      let matchPic = true;
+      const isMain = d.pic?.trim().toUpperCase() === picFilter;
+      const isPartner = d.sales_planner ? d.sales_planner.toUpperCase().includes(picFilter) : false;
+
+      if (picFilter !== "All") {
+        if (picRoleFilter === "All" || picRoleFilter === "All Roles") matchPic = isMain || isPartner;
+        else if (picRoleFilter === "Sales") matchPic = isMain;
+        else if (picRoleFilter === "Partnership") matchPic = isPartner;
+      } else {
+        if (picRoleFilter === "Partnership") matchPic = !!d.sales_planner && d.sales_planner.trim() !== "";
+      }
       const matchSource = sourceFilter === "All" || d.source === sourceFilter;
       const matchFY = pipelineFYFilter === "All" || (d.is_closed ? getDealFYStr(d) === pipelineFYFilter : getDealFYStr(d) <= pipelineFYFilter);
       const matchProjectState = 
@@ -1258,7 +1269,18 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
   const paginatedDeals = filteredDeals.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   const totalPages = Math.ceil(filteredDeals.length / itemsPerPage);
 
-  const uniquePics = useMemo(() => [...new Set(deals.map(d => d.pic?.trim().toUpperCase()).filter(Boolean))].sort(), [deals]);
+  const uniquePics = useMemo(() => {
+    const pics = new Set<string>();
+    deals.forEach(d => {
+      if (d.pic) pics.add(d.pic.trim().toUpperCase());
+      if (d.sales_planner) {
+        d.sales_planner.split(",").forEach(sp => {
+          if (sp.trim()) pics.add(sp.trim().toUpperCase());
+        });
+      }
+    });
+    return Array.from(pics).sort();
+  }, [deals]);
   const uniqueCategories = useMemo(() => [...new Set(deals.map(d => d.category?.trim().toUpperCase()).filter(Boolean))].sort(), [deals]);
   const uniqueSectors = useMemo(() => [...new Set(deals.map(d => d.sector?.trim().toUpperCase()).filter(Boolean))].sort(), [deals]);
   const uniqueStatuses = useMemo(() => Object.keys(STATUS_CONFIG), []);
