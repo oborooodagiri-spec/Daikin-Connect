@@ -348,7 +348,7 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
             </button>
           </div>
 
-          <div style={{ padding: "0 32px 32px 32px", flex: 1, overflow: "auto", display: "flex", flexDirection: "column", gap: 40 }}>
+          <div style={{ padding: "0 32px 0 32px", flex: 1, overflow: "auto", display: "flex", flexDirection: "column", gap: 40 }}>
             
             {/* Chart Section */}
             <div style={{ marginTop: 32 }}>
@@ -390,7 +390,7 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
             </div>
 
             {/* Table Section */}
-            <div>
+            <div style={{ marginBottom: 32 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
                 <div style={{ width: 8, height: 24, background: "#7b2cbf", borderRadius: 4 }} />
                 <h3 style={{ fontSize: 16, fontWeight: 800, color: "#323338" }}>Table Matrix</h3>
