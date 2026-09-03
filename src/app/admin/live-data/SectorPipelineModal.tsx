@@ -458,7 +458,7 @@ export default function SectorPipelineModal({
 
             {/* Pivot Table */}
             <div style={{ flex: 1, minHeight: 400, display: "flex", flexDirection: "column", background: "white", borderRadius: 20, border: "1px solid #e2e8f0", overflow: "hidden", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}>
-              <div style={{ flex: 1, overflow: "auto" }}>
+              <div style={{ flex: 1, overflow: "auto", maxHeight: "60vh" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1000 }}>
                   <thead>
                     <tr>
