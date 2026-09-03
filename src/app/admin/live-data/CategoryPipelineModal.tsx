@@ -389,7 +389,7 @@ export default function CategoryPipelineModal({
             </div>
 
             {/* Pivot Table */}
-            <div style={{ flex: 1, minHeight: 400, display: "flex", flexDirection: "column", background: "white", borderRadius: 20, border: "1px solid #e2e8f0", overflowX: "auto", overflowY: "visible", marginBottom: 32, boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}>
+            <div style={{ flex: 1, minWidth: "max-content", minHeight: 400, display: "flex", flexDirection: "column", background: "white", borderRadius: 20, border: "1px solid #e2e8f0", overflow: "visible", marginBottom: 32, boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}>
               <div style={{ flex: 1 }}>
                 <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1000 }}>
                   <thead>
