@@ -48,3 +48,85 @@ Stacktrace:   at System.Runtime.InteropServices.Marshal.ThrowExceptionForHRInter
    at winsw.WrapperService.OnShutdown()
 2026-08-18 13:24:38 - Starting C:\Program Files\nodejs\node.exe  C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\modbus-agent\node_modules\node-windows\lib\wrapper.js --file C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\modbus-agent\agent.js --scriptoptions= --log "DaikinModbusAgent wrapper" --grow 0.5 --wait 2 --maxrestarts 999 --abortonerror n --stopparentfirst undefined
 2026-08-18 13:24:39 - Started 7948
+2026-09-01 00:02:36 - Stopping daikinmodbusagent.exe
+2026-09-01 00:02:36 - ProcessKill 7948
+2026-09-01 00:02:36 - Shutdown exception
+Message:A system shutdown is in progress.
+
+Stacktrace:   at System.Runtime.InteropServices.Marshal.ThrowExceptionForHRInternal(Int32 errorCode, IntPtr errorInfo)
+   at System.Management.ManagementScope.InitializeGuts(Object o)
+   at System.Management.ManagementScope.Initialize()
+   at System.Management.ManagementObjectSearcher.Initialize()
+   at System.Management.ManagementObjectSearcher.Get()
+   at winsw.WrapperService.GetChildPids(Int32 pid)
+   at winsw.WrapperService.StopProcessAndChildren(Int32 pid)
+   at winsw.WrapperService.StopIt()
+   at winsw.WrapperService.OnShutdown()
+2026-09-01 00:03:23 - Starting C:\Program Files\nodejs\node.exe  C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\modbus-agent\node_modules\node-windows\lib\wrapper.js --file C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\modbus-agent\agent.js --scriptoptions= --log "DaikinModbusAgent wrapper" --grow 0.5 --wait 2 --maxrestarts 999 --abortonerror n --stopparentfirst undefined
+2026-09-01 00:03:23 - Started 6656
+2026-09-04 08:37:24 - Stopping daikinmodbusagent.exe
+2026-09-04 08:37:24 - ProcessKill 6656
+2026-09-04 08:37:24 - Shutdown exception
+Message:A system shutdown is in progress.
+
+Stacktrace:   at System.Runtime.InteropServices.Marshal.ThrowExceptionForHRInternal(Int32 errorCode, IntPtr errorInfo)
+   at System.Management.ManagementScope.InitializeGuts(Object o)
+   at System.Management.ManagementScope.Initialize()
+   at System.Management.ManagementObjectSearcher.Initialize()
+   at System.Management.ManagementObjectSearcher.Get()
+   at winsw.WrapperService.GetChildPids(Int32 pid)
+   at winsw.WrapperService.StopProcessAndChildren(Int32 pid)
+   at winsw.WrapperService.StopIt()
+   at winsw.WrapperService.OnShutdown()
+2026-09-04 08:38:07 - Starting C:\Program Files\nodejs\node.exe  C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\modbus-agent\node_modules\node-windows\lib\wrapper.js --file C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\modbus-agent\agent.js --scriptoptions= --log "DaikinModbusAgent wrapper" --grow 0.5 --wait 2 --maxrestarts 999 --abortonerror n --stopparentfirst undefined
+2026-09-04 08:38:07 - Started 5876
+2026-09-07 14:04:30 - Starting C:\Program Files\nodejs\node.exe  C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\modbus-agent\node_modules\node-windows\lib\wrapper.js --file C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\modbus-agent\agent.js --scriptoptions= --log "DaikinModbusAgent wrapper" --grow 0.5 --wait 2 --maxrestarts 999 --abortonerror n --stopparentfirst undefined
+2026-09-07 14:04:30 - Started 6400
+2026-09-09 04:12:33 - Stopping daikinmodbusagent.exe
+2026-09-09 04:12:33 - ProcessKill 6400
+2026-09-09 04:12:34 - Shutdown exception
+Message:Class not registered
+
+Stacktrace:   at System.Runtime.InteropServices.Marshal.ThrowExceptionForHRInternal(Int32 errorCode, IntPtr errorInfo)
+   at System.Management.ManagementScope.InitializeGuts(Object o)
+   at System.Management.ManagementScope.Initialize()
+   at System.Management.ManagementObjectSearcher.Initialize()
+   at System.Management.ManagementObjectSearcher.Get()
+   at winsw.WrapperService.GetChildPids(Int32 pid)
+   at winsw.WrapperService.StopProcessAndChildren(Int32 pid)
+   at winsw.WrapperService.StopIt()
+   at winsw.WrapperService.OnShutdown()
+2026-09-09 04:13:29 - Starting C:\Program Files\nodejs\node.exe  C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\modbus-agent\node_modules\node-windows\lib\wrapper.js --file C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\modbus-agent\agent.js --scriptoptions= --log "DaikinModbusAgent wrapper" --grow 0.5 --wait 2 --maxrestarts 999 --abortonerror n --stopparentfirst undefined
+2026-09-09 04:13:29 - Started 8596
+2026-09-09 04:14:15 - Stopping daikinmodbusagent.exe
+2026-09-09 04:14:15 - ProcessKill 8596
+2026-09-09 04:14:15 - Shutdown exception
+Message:Class not registered
+
+Stacktrace:   at System.Runtime.InteropServices.Marshal.ThrowExceptionForHRInternal(Int32 errorCode, IntPtr errorInfo)
+   at System.Management.ManagementScope.InitializeGuts(Object o)
+   at System.Management.ManagementScope.Initialize()
+   at System.Management.ManagementObjectSearcher.Initialize()
+   at System.Management.ManagementObjectSearcher.Get()
+   at winsw.WrapperService.GetChildPids(Int32 pid)
+   at winsw.WrapperService.StopProcessAndChildren(Int32 pid)
+   at winsw.WrapperService.StopIt()
+   at winsw.WrapperService.OnShutdown()
+2026-09-09 04:14:57 - Starting C:\Program Files\nodejs\node.exe  C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\modbus-agent\node_modules\node-windows\lib\wrapper.js --file C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\modbus-agent\agent.js --scriptoptions= --log "DaikinModbusAgent wrapper" --grow 0.5 --wait 2 --maxrestarts 999 --abortonerror n --stopparentfirst undefined
+2026-09-09 04:14:57 - Started 6668
+2026-09-09 04:15:14 - Stopping daikinmodbusagent.exe
+2026-09-09 04:15:14 - ProcessKill 6668
+2026-09-09 04:15:14 - Shutdown exception
+Message:Class not registered
+
+Stacktrace:   at System.Runtime.InteropServices.Marshal.ThrowExceptionForHRInternal(Int32 errorCode, IntPtr errorInfo)
+   at System.Management.ManagementScope.InitializeGuts(Object o)
+   at System.Management.ManagementScope.Initialize()
+   at System.Management.ManagementObjectSearcher.Initialize()
+   at System.Management.ManagementObjectSearcher.Get()
+   at winsw.WrapperService.GetChildPids(Int32 pid)
+   at winsw.WrapperService.StopProcessAndChildren(Int32 pid)
+   at winsw.WrapperService.StopIt()
+   at winsw.WrapperService.OnShutdown()
+2026-09-09 04:15:51 - Starting C:\Program Files\nodejs\node.exe  C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\modbus-agent\node_modules\node-windows\lib\wrapper.js --file C:\Users\D22AGRI-EPL\Desktop\daikin-connect-clean\modbus-agent\agent.js --scriptoptions= --log "DaikinModbusAgent wrapper" --grow 0.5 --wait 2 --maxrestarts 999 --abortonerror n --stopparentfirst undefined
+2026-09-09 04:15:51 - Started 6628

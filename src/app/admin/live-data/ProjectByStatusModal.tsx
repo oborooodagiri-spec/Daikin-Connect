@@ -16,6 +16,7 @@ interface TreeNode {
   total: number;
   children: Record<string, TreeNode>;
   color?: string;
+  deal?: any;
 }
 
 interface Deal {
@@ -35,6 +36,7 @@ interface ProjectByStatusModalProps {
   onClose: () => void;
   deals: Deal[];
   initialFY?: number;
+  onEditProject?: (deal: any) => void;
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
@@ -50,7 +52,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   N: { label: "N", color: "#c4c4c4" },
 };
 
-export default function ProjectByStatusModal({ isOpen, onClose, deals }: ProjectByStatusModalProps) {
+export default function ProjectByStatusModal({ isOpen, onClose, deals, onEditProject }: ProjectByStatusModalProps) {
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({});
 
   const toggleNode = (id: string) => {
@@ -195,7 +197,8 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
             level: idx + 1,
             values: {},
             total: 0,
-            children: {}
+            children: {},
+            ...(idx === path.length - 1 ? { deal: d } : {})
           };
           if (idx === 0) { // Status level
             current.children[pKey].color = STATUS_CONFIG[pKey]?.color || "#ccc";
@@ -262,7 +265,7 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
 
         return (
           <React.Fragment key={node.id}>
-            <tr style={{ background: node.level % 2 === 1 ? "#ffffff" : "#fafafa", borderBottom: "1px solid #f0f0f0", transition: "background 0.2s" }} onMouseOver={(e) => e.currentTarget.style.background = "#f1f5f9"} onMouseOut={(e) => e.currentTarget.style.background = node.level % 2 === 1 ? "#ffffff" : "#fafafa"}>
+            <tr style={{ background: node.level % 2 === 1 ? "#ffffff" : "#fafafa", borderBottom: "1px solid #f0f0f0", transition: "background 0.2s", cursor: !hasChildren && node.deal && onEditProject ? "pointer" : "default" }} onMouseOver={(e) => e.currentTarget.style.background = "#f1f5f9"} onMouseOut={(e) => e.currentTarget.style.background = node.level % 2 === 1 ? "#ffffff" : "#fafafa"} onClick={() => { if (!hasChildren && node.deal && onEditProject) onEditProject(node.deal); }}>
               <td style={{ position: "sticky", left: 0, zIndex: 10, background: node.level % 2 === 1 ? "#ffffff" : "#fafafa", padding: "10px 16px", fontSize: 13, fontWeight: node.level < 3 ? 800 : 500, color: node.level < 3 ? "#323338" : "#475569", borderRight: "1px solid #e5e7eb" }}>
                 <div style={{ display: "flex", alignItems: "center", paddingLeft }}>
                   {hasChildren ? (
@@ -274,7 +277,7 @@ export default function ProjectByStatusModal({ isOpen, onClose, deals }: Project
                   )}
                   {node.level === 1 && <div style={{ width: 12, height: 12, borderRadius: "50%", background: node.color, marginRight: 8 }} />}
                   <div style={{ display: "flex", flexDirection: "column" }}>
-                    <span style={{ fontSize: node.level === 3 ? 14 : 13, fontWeight: node.level === 3 ? 800 : (node.level < 3 ? 800 : 500), color: node.level === 3 ? "#1e293b" : "inherit" }}>
+                    <span style={{ fontSize: node.level === 3 ? 14 : 13, fontWeight: node.level === 3 ? 800 : (node.level < 3 ? 800 : 500), color: !hasChildren && node.deal && onEditProject ? "#0073ea" : (node.level === 3 ? "#1e293b" : "inherit") }}>
                       {node.level === 1 ? (STATUS_CONFIG[node.name]?.label || node.name) : node.name}
                     </span>
                     {node.subtitle && (

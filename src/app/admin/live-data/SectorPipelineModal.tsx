@@ -16,6 +16,7 @@ interface TreeNode {
   total: number;
   children: Record<string, TreeNode>;
   color?: string;
+  deal?: any;
 }
 
 interface Deal {
@@ -35,6 +36,7 @@ interface SectorPipelineModalProps {
   initialFY?: number;
   sectorName: string;
   color?: string;
+  onEditProject?: (deal: any) => void;
 }
 
 export default function SectorPipelineModal({ 
@@ -43,7 +45,8 @@ export default function SectorPipelineModal({
   deals, 
   initialFY = 26, 
   sectorName,
-  color = "#0073ea"
+  color = "#0073ea",
+  onEditProject
 }: SectorPipelineModalProps) {
   
   const [selectedFY, setSelectedFY] = useState(initialFY);
@@ -213,7 +216,9 @@ export default function SectorPipelineModal({
         currentId += "|" + pKey;
         if (!current.children[pKey]) {
           current.children[pKey] = {
-            id: currentId, name: name, subtitle: subtitle, level: idx + 1, values: {}, total: 0, children: {}
+            id: currentId, name: name, subtitle: subtitle, level: idx + 1, values: {}, total: 0,
+            children: {},
+            ...(idx === path.length - 1 ? { deal: d } : {})
           };
           if (idx === 0) {
             current.children[pKey].color = topLevelColor ? topLevelColor(pKey) : "#ccc";
@@ -241,7 +246,17 @@ export default function SectorPipelineModal({
 
         return (
           <React.Fragment key={node.id}>
-            <tr style={{ background: node.level % 2 === 1 ? "#ffffff" : "#fafafa", borderBottom: "1px solid #f0f0f0", transition: "background 0.2s" }} onMouseOver={(e) => e.currentTarget.style.background = "#f1f5f9"} onMouseOut={(e) => e.currentTarget.style.background = node.level % 2 === 1 ? "#ffffff" : "#fafafa"}>
+            <tr 
+              onClick={() => { if (!hasChildren && node.deal && onEditProject) onEditProject(node.deal); }}
+              style={{ 
+                background: node.level % 2 === 1 ? "#ffffff" : "#fafafa", 
+                borderBottom: "1px solid #f0f0f0", 
+                transition: "background 0.2s",
+                cursor: !hasChildren && node.deal && onEditProject ? "pointer" : "default"
+              }} 
+              onMouseOver={(e) => e.currentTarget.style.background = "#f1f5f9"} 
+              onMouseOut={(e) => e.currentTarget.style.background = node.level % 2 === 1 ? "#ffffff" : "#fafafa"}
+            >
               <td style={{ position: "sticky", left: 0, zIndex: 10, background: node.level % 2 === 1 ? "#ffffff" : "#fafafa", padding: "10px 16px", fontSize: 13, fontWeight: node.level < 3 ? 800 : 500, color: node.level < 3 ? "#323338" : "#475569", borderRight: "1px solid #e2e8f0" }}>
                 <div style={{ display: "flex", alignItems: "center", paddingLeft }}>
                   {hasChildren ? (
@@ -253,7 +268,7 @@ export default function SectorPipelineModal({
                   )}
                   {node.level === 1 && <div style={{ width: 12, height: 12, borderRadius: "50%", background: node.color || "#ccc", marginRight: 8 }} />}
                   <div style={{ display: "flex", flexDirection: "column" }}>
-                    <span style={{ fontSize: node.level === 3 ? 14 : 13, fontWeight: node.level === 3 ? 800 : (node.level < 3 ? 800 : 500), color: node.level === 3 ? "#1e293b" : "inherit" }}>
+                    <span style={{ fontSize: node.level === 3 ? 14 : 13, fontWeight: node.level === 3 ? 800 : (node.level < 3 ? 800 : 500), color: !hasChildren && node.deal && onEditProject ? "#0073ea" : (node.level === 3 ? "#1e293b" : "inherit") }}>
                       {node.name}
                     </span>
                     {node.subtitle && (

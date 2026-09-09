@@ -28,6 +28,7 @@ interface BookingForecastModalProps {
   onClose: () => void;
   deals: Deal[];
   initialFY?: number;
+  onEditProject?: (deal: any) => void;
 }
 
 interface TreeNode {
@@ -38,9 +39,10 @@ interface TreeNode {
   values: Record<string, number>;
   total: number;
   children: Record<string, TreeNode>;
+  deal?: any;
 }
 
-export default function BookingForecastModal({ isOpen, onClose, deals, initialFY = 26 }: BookingForecastModalProps) {
+export default function BookingForecastModal({ isOpen, onClose, deals, initialFY = 26, onEditProject }: BookingForecastModalProps) {
   
   const [selectedFY, setSelectedFY] = useState(initialFY);
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({});
@@ -129,7 +131,8 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
             level: idx + 1,
             values: {},
             total: 0,
-            children: {}
+            children: {},
+            ...(idx === path.length - 1 ? { deal: d } : {})
           };
         }
         current = current.children[key];
@@ -186,7 +189,17 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
 
         return (
           <React.Fragment key={node.id}>
-            <tr style={{ background: node.level % 2 === 1 ? "#ffffff" : "#fafafa", borderBottom: "1px solid #f0f0f0", transition: "background 0.2s" }} onMouseOver={(e) => e.currentTarget.style.background = "#f1f5f9"} onMouseOut={(e) => e.currentTarget.style.background = node.level % 2 === 1 ? "#ffffff" : "#fafafa"}>
+            <tr
+              style={{
+                background: node.level % 2 === 1 ? "#ffffff" : "#fafafa",
+                borderBottom: "1px solid #f0f0f0",
+                transition: "background 0.2s",
+                cursor: !hasChildren && node.deal && onEditProject ? "pointer" : "default"
+              }}
+              onClick={() => { if (!hasChildren && node.deal && onEditProject) onEditProject(node.deal); }}
+              onMouseOver={(e) => e.currentTarget.style.background = "#f1f5f9"}
+              onMouseOut={(e) => e.currentTarget.style.background = node.level % 2 === 1 ? "#ffffff" : "#fafafa"}
+            >
               <td style={{ position: "sticky", left: 0, zIndex: 10, background: node.level % 2 === 1 ? "#ffffff" : "#fafafa", padding: "10px 16px", fontSize: 13, fontWeight: node.level < 3 ? 800 : 700, color: node.level < 3 ? "#323338" : "#475569", borderRight: "1px solid #cbd5e1" }}>
                 <div style={{ display: "flex", alignItems: "center", paddingLeft }}>
                   {hasChildren ? (
@@ -197,7 +210,7 @@ export default function BookingForecastModal({ isOpen, onClose, deals, initialFY
                     <div style={{ width: 28 }} />
                   )}
                   <div style={{ display: "flex", flexDirection: "column" }}>
-                    <span style={{ fontSize: node.level === 3 ? 14 : 13, fontWeight: node.level === 3 ? 800 : (node.level < 3 ? 800 : 500), color: node.level === 3 ? "#1e293b" : "inherit" }}>
+                    <span style={{ fontSize: node.level === 3 ? 14 : 13, fontWeight: node.level === 3 ? 800 : (node.level < 3 ? 800 : 500), color: !hasChildren && node.deal && onEditProject ? "#0073ea" : (node.level === 3 ? "#1e293b" : "inherit") }}>
                       {node.name}
                     </span>
                     {node.subtitle && (

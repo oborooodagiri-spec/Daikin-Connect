@@ -2422,8 +2422,8 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
 
       <DealFormModal sessionName={sessionName} isAdmin={isAdmin} isOpen={showAddModal} onClose={() => setShowAddModal(false)} onSuccess={loadData} deal={editingDeal} />
       <OpsFormModal isOpen={showOpsModal} onClose={() => setShowOpsModal(false)} onSuccess={loadData} opsRecord={editingOps} />
-      <ProjectByStatusModal isOpen={showProjectByStatusModal} onClose={() => setShowProjectByStatusModal(false)} deals={projectByStatusDeals} initialFY={selectedFY} />
-      <BookingForecastModal isOpen={showBookingForecastModal} onClose={() => setShowBookingForecastModal(false)} deals={activeDeals} initialFY={selectedFY} />
+      <ProjectByStatusModal isOpen={showProjectByStatusModal} onClose={() => setShowProjectByStatusModal(false)} deals={projectByStatusDeals} initialFY={selectedFY} onEditProject={(deal) => { setEditingDeal(deal); setShowAddModal(true); }} />
+      <BookingForecastModal isOpen={showBookingForecastModal} onClose={() => setShowBookingForecastModal(false)} deals={activeDeals} initialFY={selectedFY} onEditProject={(deal) => { setEditingDeal(deal); setShowAddModal(true); }} />
       <SectorPipelineModal 
         isOpen={sectorModalState?.isOpen || false} 
         onClose={() => setSectorModalState(null)} 
@@ -2431,6 +2431,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
         initialFY={selectedFY}
         sectorName={sectorModalState?.sectorName || ""} 
         color={sectorModalState?.color} 
+        onEditProject={(deal) => { setEditingDeal(deal); setShowAddModal(true); }}
       />
 
       <CategoryPipelineModal 
@@ -2440,6 +2441,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
         initialFY={selectedFY}
         categoryName={categoryModalState?.categoryName || ""} 
         color={categoryModalState?.color} 
+        onEditProject={(deal) => { setEditingDeal(deal); setShowAddModal(true); }}
       />
 
       <StatusPipelineModal 
@@ -2449,6 +2451,7 @@ const end = new Date(calendarYear, calendarMonth + 1, 0, 23, 59, 59, 999).getTim
         initialFY={selectedFY}
         statusName={statusModalState?.statusName || ""} 
         color={statusModalState?.color} 
+        onEditProject={(deal) => { setEditingDeal(deal); setShowAddModal(true); }}
       />
 
       <TopSalesModal isOpen={showTopSalesModal} onClose={() => setShowTopSalesModal(false)} deals={deals} initialFY={selectedFY} />

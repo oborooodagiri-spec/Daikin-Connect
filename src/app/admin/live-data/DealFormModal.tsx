@@ -242,7 +242,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
         <motion.div 
           initial={{ opacity: 0 }} 
           animate={{ opacity: 1 }} 
@@ -265,7 +265,7 @@ export default function DealFormModal({ isOpen, onClose, onSuccess, deal, sessio
               </div>
               <div>
                 <h2 className="text-lg font-bold tracking-tight text-white">{deal ? "Edit Project" : "Add New Project"}</h2>
-                <p className="text-xs text-blue-200/70 font-medium">Pipeline Management System</p>
+
               </div>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
