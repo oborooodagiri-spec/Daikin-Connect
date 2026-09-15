@@ -228,9 +228,7 @@ export const exportProjectByStatusMatrix = async (deals: any[], fy: number, file
 
 export const exportCategoryMatrix = async (deals: any[], fy: number, filename: string) => {
   const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet('Pipeline By Category');
   const columns = getFYMonths(fy);
-  setupMatrixSheet(worksheet, `Pipeline By Category - FY${fy}`, columns);
 
   type TreeNode = {
     name: string;
@@ -239,124 +237,133 @@ export const exportCategoryMatrix = async (deals: any[], fy: number, filename: s
     children: Record<string, TreeNode>;
   };
 
-  const root: TreeNode = { name: "Root", values: {}, total: 0, children: {} };
+  const createSheet = (sheetName: string, title: string, getPath: (d: any) => string[]) => {
+    const worksheet = workbook.addWorksheet(sheetName);
+    setupMatrixSheet(worksheet, title, columns);
 
-  deals.forEach(d => {
-    const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
-    if (!rawDate) return;
-    const dt = new Date(rawDate);
-    if (isNaN(dt.getTime())) return;
-    const mYear = dt.getFullYear();
-    const mStr = dt.toLocaleString('default', { month: 'short' }).toUpperCase();
-    const sortKey = `${mYear}-${String(dt.getMonth() + 1).padStart(2, '0')} ${mStr} ${mYear}`;
-    
-    if (!columns.find(c => c.key === sortKey)) return;
-    
-    const val = Number(d.quotation || 0);
+    const root: TreeNode = { name: "Root", values: {}, total: 0, children: {} };
 
-    const allowedStatuses = ["C", "D", "E"];
-    if (!allowedStatuses.includes(d.status)) return;
+    deals.forEach(d => {
+      const rawDate = d.target_po_date || d.est_booking_month || d.created_at;
+      if (!rawDate) return;
+      const dt = new Date(rawDate);
+      if (isNaN(dt.getTime())) return;
+      const mYear = dt.getFullYear();
+      const mStr = dt.toLocaleString('default', { month: 'short' }).toUpperCase();
+      const sortKey = `${mYear}-${String(dt.getMonth() + 1).padStart(2, '0')} ${mStr} ${mYear}`;
+      
+      if (!columns.find(c => c.key === sortKey)) return;
+      
+      const val = Number(d.quotation || 0);
 
-    const path = [
-      d.status || "Unknown Status",
-      d.pic || "Unassigned",
-      d.category || "Others",
-      `   - ${d.client_name || "Unknown Customer"} \n(${d.project_name || "Unknown Project"})`
-    ];
+      const allowedStatuses = ["C", "D", "E"];
+      if (!allowedStatuses.includes(d.status)) return;
 
-    let currentLevel = root.children;
-    path.forEach((p, idx) => {
-      if (!currentLevel[p]) {
-        currentLevel[p] = { name: p, values: {}, total: 0, children: {} };
-      }
-      currentLevel[p].values[sortKey] = (currentLevel[p].values[sortKey] || 0) + val;
-      currentLevel[p].total += val;
-      if (idx < path.length - 1) {
-        currentLevel = currentLevel[p].children;
-      }
+      const path = getPath(d);
+
+      let currentLevel = root.children;
+      path.forEach((p, idx) => {
+        if (!currentLevel[p]) {
+          currentLevel[p] = { name: p, values: {}, total: 0, children: {} };
+        }
+        currentLevel[p].values[sortKey] = (currentLevel[p].values[sortKey] || 0) + val;
+        currentLevel[p].total += val;
+        if (idx < path.length - 1) {
+          currentLevel = currentLevel[p].children;
+        }
+      });
     });
-  });
 
-  const writeNode = (node: TreeNode, level: number) => {
-    const rowValues = [node.name];
-    let rowTotal = 0;
-    columns.forEach(col => {
-      const val = node.values[col.key] || 0;
-      rowValues.push(val as any);
-      rowTotal += val;
-    });
-    rowValues.push(rowTotal as any);
+    const writeNode = (node: TreeNode, level: number) => {
+      const rowValues = [node.name];
+      let rowTotal = 0;
+      columns.forEach(col => {
+        const val = node.values[col.key] || 0;
+        rowValues.push(val as any);
+        rowTotal += val;
+      });
+      rowValues.push(rowTotal as any);
 
-    const row = worksheet.addRow(rowValues);
-    row.outlineLevel = level;
-    
-    row.getCell(1).font = { 
-      bold: level < 3, 
-      color: { argb: level === 0 ? 'FF0F172A' : level === 1 ? 'FF334155' : 'FF64748B' },
-      size: level === 3 ? 9 : 10
+      const row = worksheet.addRow(rowValues);
+      row.outlineLevel = level;
+      
+      row.getCell(1).font = { 
+        bold: level < 3, 
+        color: { argb: level === 0 ? 'FF0F172A' : level === 1 ? 'FF334155' : 'FF64748B' },
+        size: level === 3 ? 9 : 10
+      };
+
+      if (level === 3) {
+        row.getCell(1).alignment = { wrapText: true, vertical: 'middle' };
+        row.getCell(1).value = `      - ${node.name}`;
+      } else {
+        row.getCell(1).alignment = { vertical: 'middle' };
+        row.getCell(1).value = "   ".repeat(level) + (level > 0 ? (level === 1 ? "\u25BE " : "  ") : "") + node.name;
+      }
+
+      row.eachCell((cell, colNumber) => {
+        if (colNumber > 1) {
+          cell.numFmt = '_("Rp"* #,##0_);_("Rp"* \(#,##0\);_("Rp"* "-"_);_(@_)';
+          cell.alignment = { horizontal: 'right', vertical: 'middle' };
+          if (cell.value === 0) { cell.value = level === 3 ? '' : '-'; cell.alignment = { horizontal: 'center' }; }
+        }
+        cell.border = { bottom: { style: level === 3 ? 'dotted' : 'thin', color: { argb: 'FFF1F5F9' } } };
+      });
+
+      Object.values(node.children).sort((a, b) => b.total - a.total).forEach(child => writeNode(child, level + 1));
     };
 
-    if (level === 3) {
-      row.getCell(1).alignment = { wrapText: true, vertical: 'middle' };
-      row.getCell(1).value = node.name; // name already has the spacing
-    } else {
-      row.getCell(1).alignment = { vertical: 'middle' };
-      row.getCell(1).value = "   ".repeat(level) + (level > 0 ? (level === 1 ? "\u25BE " : "  ") : "") + node.name;
-    }
-
-    row.eachCell((cell, colNumber) => {
-      if (colNumber > 1) {
-        cell.numFmt = '_("Rp"* #,##0_);_("Rp"* \\(#,##0\\);_("Rp"* "-"_);_(@_)';
-        cell.alignment = { horizontal: 'right', vertical: 'middle' };
-        if (cell.value === 0) { cell.value = level === 3 ? '' : '-'; cell.alignment = { horizontal: 'center' }; }
-      }
-      cell.border = { bottom: { style: level === 3 ? 'dotted' : 'thin', color: { argb: 'FFF1F5F9' } } };
+    const keys = Object.keys(root.children).sort();
+    keys.forEach(s => {
+      writeNode(root.children[s], 0);
     });
 
-    Object.values(node.children).sort((a, b) => {
-      if (level === 0) {
-        return a.name.localeCompare(b.name);
-      } else if (level === 1) {
-        const order = ["EPL", "RC", "IAQ", "Control", "VES", "Others"];
-        const idxA = order.indexOf(a.name);
-        const idxB = order.indexOf(b.name);
-        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-        if (idxA !== -1) return -1;
-        if (idxB !== -1) return 1;
-        return a.name.localeCompare(b.name);
+    const totalValues = ['GRAND TOTAL'];
+    let gTotal = 0;
+    columns.forEach(col => {
+      const sum = keys.reduce((acc, s) => acc + (root.children[s]?.values[col.key] || 0), 0);
+      totalValues.push(sum as any);
+      gTotal += sum;
+    });
+    totalValues.push(gTotal as any);
+    const tRow = worksheet.addRow(totalValues);
+    tRow.eachCell((cell, colNumber) => {
+      cell.font = { bold: true };
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF1F5F9' } };
+      if (colNumber > 1) {
+        cell.numFmt = '_("Rp"* #,##0_);_("Rp"* \(#,##0\);_("Rp"* "-"_);_(@_)';
+        cell.alignment = { horizontal: 'right', vertical: 'middle' };
+        if (cell.value === 0) { cell.value = '-'; cell.alignment = { horizontal: 'center' }; }
       }
-      return b.total - a.total;
-    }).forEach(child => writeNode(child, level + 1));
+    });
   };
 
-  const statuses = Object.keys(root.children).sort();
-  statuses.forEach(st => {
-    writeNode(root.children[st], 0);
-  });
+  // 1. Pipeline By Status
+  createSheet('Pipeline By Status', `Pipeline By Status - FY${fy}`, (d) => [
+    d.status || "Unknown Status",
+    d.pic || "Unassigned",
+    d.category || "Others",
+    `${d.client_name || "Unknown Customer"} \n(${d.project_name || "Unknown Project"})`
+  ]);
 
-  const totalValues = ['GRAND TOTAL'];
-  let gTotal = 0;
-  columns.forEach(col => {
-    const sum = Object.keys(root.children).reduce((acc, cat) => acc + (root.children[cat]?.values[col.key] || 0), 0);
-    totalValues.push(sum as any);
-    gTotal += sum;
-  });
-  totalValues.push(gTotal as any);
-  
-  const tRow = worksheet.addRow(totalValues);
-  tRow.eachCell((cell, colNumber) => {
-    cell.font = { bold: true };
-    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF1F5F9' } };
-    if (colNumber > 1) {
-      cell.numFmt = '_("Rp"* #,##0_);_("Rp"* \\(#,##0\\);_("Rp"* "-"_);_(@_)';
-      cell.alignment = { horizontal: 'right', vertical: 'middle' };
-      if (cell.value === 0) { cell.value = '-'; cell.alignment = { horizontal: 'center' }; }
-    }
-  });
+  // 2. Pipeline By Category
+  createSheet('Pipeline By Category', `Pipeline By Category - FY${fy}`, (d) => [
+    d.category || "Others",
+    d.pic || "Unassigned",
+    d.status || "Unknown Status",
+    `${d.client_name || "Unknown Customer"} \n(${d.project_name || "Unknown Project"})`
+  ]);
+
+  // 3. Pipeline By Area
+  createSheet('Pipeline By Area', `Pipeline By Area - FY${fy}`, (d) => [
+    d.area || "Unknown Area",
+    d.pic || "Unassigned",
+    d.category || "Others",
+    `${d.client_name || "Unknown Customer"} \n(${d.project_name || "Unknown Project"})`
+  ]);
 
   await downloadBuffer(workbook, filename);
 };
-
 
 export const exportSectorMatrix = async (deals: any[], fy: number, sectorName: string, filename: string) => {
   const workbook = new ExcelJS.Workbook();
