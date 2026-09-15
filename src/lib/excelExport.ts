@@ -354,9 +354,17 @@ export const exportCategoryMatrix = async (deals: any[], fy: number, filename: s
     `${d.client_name || "Unknown Customer"} \n(${d.project_name || "Unknown Project"})`
   ]);
 
-  // 3. Pipeline By Area
+  // 3. Pipeline By Area (Detail)
   createSheet('Pipeline By Area', `Pipeline By Area - FY${fy}`, (d) => [
     d.area || "Unknown Area",
+    d.pic || "Unassigned",
+    d.category || "Others",
+    `${d.client_name || "Unknown Customer"} \n(${d.project_name || "Unknown Project"})`
+  ]);
+
+  // 4. Pipeline By Region (East / West)
+  createSheet('Pipeline By Region', `Pipeline By Region - FY${fy}`, (d) => [
+    d.region || "Unknown Region",
     d.pic || "Unassigned",
     d.category || "Others",
     `${d.client_name || "Unknown Customer"} \n(${d.project_name || "Unknown Project"})`
