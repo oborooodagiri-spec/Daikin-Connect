@@ -9,9 +9,10 @@ import { sendRegistrationReceivedEmail, sendOtpEmail } from "@/lib/mail";
 import { serializePrisma } from "@/lib/serialize";
 import { checkRateLimit, handleFailedLogin, resetLoginFails, recordAuditLog } from "@/lib/security";
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "daikin-connect-secret-key-change-in-production"
-);
+if (!process.env.JWT_SECRET) {
+  throw new Error("FATAL: JWT_SECRET environment variable is not set.");
+}
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 
 
@@ -219,7 +220,7 @@ export async function login(formData: FormData) {
 
   } catch (error: any) {
     console.error("Login error:", error?.message || error);
-    return { error: `System Error: ${error?.message || "Unknown error"}` };
+    return { error: "An unexpected error occurred. Please try again." };
   }
 
   // Set cookie
@@ -254,9 +255,10 @@ export async function login(formData: FormData) {
 }
 
 // Security: Trusted Device Logic (30 days)
-const TRUSTED_DEVICE_SECRET = new TextEncoder().encode(
-  process.env.TRUSTED_DEVICE_SECRET || "daikin-trusted-device-secret-key-change-me"
-);
+if (!process.env.TRUSTED_DEVICE_SECRET) {
+  throw new Error("FATAL: TRUSTED_DEVICE_SECRET environment variable is not set.");
+}
+const TRUSTED_DEVICE_SECRET = new TextEncoder().encode(process.env.TRUSTED_DEVICE_SECRET);
 
 export async function setTrustedDevice(email: string) {
   const cookieStore = await cookies();
