@@ -122,3 +122,52 @@ export async function sendWhatsAppInteractiveList(to: string, header: string, bo
     return false;
   }
 }
+
+
+export async function sendWhatsAppAuthTemplate(to: string, otpCode: string) {
+  const token = process.env.WA_ACCESS_TOKEN;
+  const phoneId = process.env.WA_PHONE_NUMBER_ID;
+
+  if (!token || !phoneId) return false;
+
+  let cleanTo = to.replace(/\D/g, "");
+  if (cleanTo.startsWith("0")) cleanTo = "62" + cleanTo.substring(1);
+
+  try {
+    const res = await fetch(`https://graph.facebook.com/v19.0/${phoneId}/messages`, {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer " + token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to: cleanTo,
+        type: "template",
+        template: {
+          name: "otp_auth",
+          language: { code: "id" },
+          components: [
+            {
+              type: "body",
+              parameters: [{ type: "text", text: otpCode }]
+            },
+            {
+              type: "button",
+              sub_type: "url",
+              index: "0",
+              parameters: [{ type: "text", text: otpCode }]
+            }
+          ]
+        }
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) console.error("WA Auth Template Error:", JSON.stringify(data, null, 2));
+    return res.ok;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+}

@@ -191,8 +191,8 @@ export async function login(formData: FormData) {
 
         if (otpMethod === "whatsapp" && user.phone) {
           // Send OTP via WhatsApp Template to bypass 24h Meta restriction
-          const { sendWhatsAppTemplate } = await import('@/lib/whatsapp');
-          sendWhatsAppTemplate(user.phone, "otp_auth", [generatedOtp.toString()], "id").catch(e => console.error("OTP WA Error:", e));
+          const { sendWhatsAppAuthTemplate } = await import('@/lib/whatsapp');
+          sendWhatsAppAuthTemplate(user.phone, generatedOtp.toString()).catch(e => console.error("OTP WA Error:", e));
         } else {
           // Default: Send OTP Email
           sendOtpEmail(user.email, generatedOtp).catch(e => console.error("OTP Mail Error:", e));
