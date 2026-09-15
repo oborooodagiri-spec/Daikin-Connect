@@ -190,10 +190,9 @@ export async function login(formData: FormData) {
         });
 
         if (otpMethod === "whatsapp" && user.phone) {
-          // Send OTP via WhatsApp
-          const waText = `*[ DSSI CONNECT ]*\n\nKode verifikasi login Anda adalah: *${generatedOtp}*\n\nBerlaku selama 10 menit. Jangan bagikan kode ini kepada siapapun.\n\n_Security System_`;
-          const { sendWhatsAppMessage } = await import('@/lib/whatsapp');
-          sendWhatsAppMessage(user.phone, waText).catch(e => console.error("OTP WA Error:", e));
+          // Send OTP via WhatsApp Template to bypass 24h Meta restriction
+          const { sendWhatsAppTemplate } = await import('@/lib/whatsapp');
+          sendWhatsAppTemplate(user.phone, "otp_auth", [generatedOtp.toString()], "id").catch(e => console.error("OTP WA Error:", e));
         } else {
           // Default: Send OTP Email
           sendOtpEmail(user.email, generatedOtp).catch(e => console.error("OTP Mail Error:", e));
