@@ -571,15 +571,42 @@ export default function LoginPage() {
       </footer>
 
       <TwoFactorModal 
-        isOpen={show2fModal}
-        onClose={() => {
-          setShow2fModal(false);
-          setError(null);
-        }}
-        email={tempEmail}
-        isLoading={isLoading}
-        error={error}
-        onVerify={async (otp, trustDevice) => {
+          isOpen={show2fModal}
+          onClose={() => {
+            setShow2fModal(false);
+            setError(null);
+          }}
+          email={tempEmail}
+          isLoading={isLoading}
+          error={error}
+          isMethodSelection={twoFactorState.isSelection}
+          hasPhone={twoFactorState.hasPhone}
+          phoneMasked={twoFactorState.phoneMasked}
+          methodSent={twoFactorState.methodSent as any}
+          onSelectMethod={async (method) => {
+            setIsLoading(true);
+            setError(null);
+            try {
+              const formData = new FormData();
+              formData.append("email", tempEmail);
+              formData.append("password", password);
+              formData.append("otpMethod", method);
+              
+              // Call the login action directly
+              const result = await login(formData);
+              
+              if (result && "requires2f" in result) {
+                setTwoFactorState({ ...twoFactorState, isSelection: false, methodSent: method });
+              } else if (result && "error" in result) {
+                setError(result.error);
+              }
+            } catch (err) {
+              setError("Request failed.");
+            } finally {
+              setIsLoading(false);
+            }
+          }}
+          onVerify={async (otp, trustDevice) => {
           setIsLoading(true);
           setError(null);
           try {
