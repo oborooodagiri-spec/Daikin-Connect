@@ -172,6 +172,15 @@ export async function login(formData: FormData) {
       // Check if 2FA is required AND if device is NOT trusted
       const trusted = await isTrustedDevice(email);
       if (user.two_factor_enabled && !trusted) {
+        
+        // Handle OTP Method Selection
+        const otpMethod = formData.get("otpMethod") as string;
+        
+        if (!otpMethod) {
+          // Tell the UI to ask for method selection (Email or WA)
+          return { requires2fMethodSelection: true, hasPhone: !!user.phone, phoneMasked: user.phone ? user.phone.replace(/(\d{4})\d{4,}(\d{2})/, "$1****$2") : "" };
+        }
+
         const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
         const expiry = new Date(Date.now() + 10 * 60 * 1000);
 
@@ -180,11 +189,18 @@ export async function login(formData: FormData) {
           data: { otp_code: generatedOtp, otp_expiry: expiry }
         });
 
-        // Send OTP Email via centralized mailer (fire-and-forget to avoid blocking UI)
-        sendOtpEmail(user.email, generatedOtp).catch(e => console.error("OTP Mail Error:", e));
+        if (otpMethod === "whatsapp" && user.phone) {
+          // Send OTP via WhatsApp
+          const waText = `*[ DSSI CONNECT ]*\n\nKode verifikasi login Anda adalah: *${generatedOtp}*\n\nBerlaku selama 10 menit. Jangan bagikan kode ini kepada siapapun.\n\n_Security System_`;
+          const { sendWhatsAppMessage } = await import('@/lib/whatsapp');
+          sendWhatsAppMessage(user.phone, waText).catch(e => console.error("OTP WA Error:", e));
+        } else {
+          // Default: Send OTP Email
+          sendOtpEmail(user.email, generatedOtp).catch(e => console.error("OTP Mail Error:", e));
+        }
 
-        await recordAuditLog({ userId: user.id, action: "2FA_CHALLENGE_WEB" });
-        return { requires2f: true };
+        await recordAuditLog({ userId: user.id, action: "2FA_CHALLENGE_WEB", details: `Method: ${otpMethod}` });
+        return { requires2f: true, methodSent: otpMethod };
       }
     }
 

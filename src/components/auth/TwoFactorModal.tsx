@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ShieldCheck, ArrowRight, X, Mail, RefreshCcw } from "lucide-react";
 import Portal from "../Portal";
 
+import { MessageCircle } from "lucide-react";
+
 interface TwoFactorModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -12,9 +14,17 @@ interface TwoFactorModalProps {
   onVerify: (code: string, trustDevice: boolean) => void;
   isLoading: boolean;
   error?: string | null;
+  isMethodSelection?: boolean;
+  hasPhone?: boolean;
+  phoneMasked?: string;
+  onSelectMethod?: (method: "email" | "whatsapp") => void;
+  methodSent?: "email" | "whatsapp" | null;
 }
 
-export default function TwoFactorModal({ isOpen, onClose, email, onVerify, isLoading, error }: TwoFactorModalProps) {
+export default function TwoFactorModal({ 
+  isOpen, onClose, email, onVerify, isLoading, error, 
+  isMethodSelection, hasPhone, phoneMasked, onSelectMethod, methodSent 
+}: TwoFactorModalProps) {
   const [otpValue, setOtpValue] = useState("");
   const [trustDevice, setTrustDevice] = useState(false);
   const [isResending, setIsResending] = useState(false);

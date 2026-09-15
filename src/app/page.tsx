@@ -53,6 +53,7 @@ export default function LoginPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [show2fModal, setShow2fModal] = useState(false);
   const [tempEmail, setTempEmail] = useState("");
+  const [twoFactorState, setTwoFactorState] = useState({ isSelection: false, hasPhone: false, phoneMasked: "", methodSent: "" });
   useEffect(() => {
     setIsMounted(true);
 
@@ -114,8 +115,13 @@ export default function LoginPage() {
         }
       } else {
         const result = await login(formData);
-        if (result && "requires2f" in result) {
+        if (result && "requires2fMethodSelection" in result) {
           setTempEmail(email);
+          setTwoFactorState({ isSelection: true, hasPhone: result.hasPhone, phoneMasked: result.phoneMasked, methodSent: "" });
+          setShow2fModal(true);
+        } else if (result && "requires2f" in result) {
+          setTempEmail(email);
+          setTwoFactorState({ isSelection: false, hasPhone: false, phoneMasked: "", methodSent: result.methodSent || "email" });
           setShow2fModal(true);
         } else if (result && "error" in result) {
           setError(result.error || "Login failed");
