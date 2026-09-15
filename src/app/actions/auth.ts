@@ -48,9 +48,21 @@ export async function register(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const companyName = formData.get("company_name") as string;
+  const cfToken = formData.get("cf-turnstile-response") as string;
 
   if (!name || !email || !password || !companyName) {
     return { error: "All fields are required" };
+  }
+
+  // Enforce CAPTCHA security to prevent spam
+  if (cfToken) {
+    const isHuman = await verifyTurnstile(cfToken);
+    if (!isHuman) return { error: "Security check failed. Please refresh." };
+  } else {
+    // If no token is provided at all, reject immediately
+    if (process.env.NODE_ENV === "production") {
+      return { error: "Security validation missing. Please ensure CAPTCHA is loaded." };
+    }
   }
 
   try {

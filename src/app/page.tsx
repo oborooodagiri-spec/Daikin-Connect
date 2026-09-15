@@ -63,7 +63,7 @@ export default function LoginPage() {
 
   // Load Cloudflare Turnstile script dynamically (implicit mode)
   useEffect(() => {
-    if (!isMounted || isRequestMode) return;
+    if (!isMounted) return;
     
     // Remove any existing turnstile scripts to force re-scan
     document.querySelectorAll('script[src*="challenges.cloudflare.com/turnstile"]').forEach(s => s.remove());
@@ -287,15 +287,15 @@ export default function LoginPage() {
                 )}
               </div>
 
-              {!isRequestMode && (
-                <div className="flex justify-center py-2 min-h-[65px] mb-4">
-                  <div 
-                    className="cf-turnstile" 
-                    data-sitekey="0x4AAAAAAADGD9nT3x6TSaE8-"
-                    data-theme="light"
-                  ></div>
-                </div>
-              )}
+                {true && (
+                  <div className="flex justify-center py-2 min-h-[65px] mb-4">
+                    <div 
+                      className="cf-turnstile" 
+                      data-sitekey="0x4AAAAAAADGD9nT3x6TSaE8-"
+                      data-theme="light"
+                    ></div>
+                  </div>
+                )}
 
               {isRequestMode && (
                 <div className="flex items-start gap-2 pb-2 px-2">
