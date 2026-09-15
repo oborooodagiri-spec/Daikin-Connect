@@ -2,10 +2,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShieldCheck, ArrowRight, X, Mail, RefreshCcw } from "lucide-react";
+import { ShieldCheck, ArrowRight, X, Mail, RefreshCcw, MessageCircle } from "lucide-react";
 import Portal from "../Portal";
-
-import { MessageCircle } from "lucide-react";
 
 interface TwoFactorModalProps {
   isOpen: boolean;
@@ -39,24 +37,22 @@ export default function TwoFactorModal({
   }, [isOpen]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 6);
-    setOtpValue(val);
-    
-    // Auto-verify when 6 digits are reached
-    if (val.length === 6) {
-       // Optional: We could trigger onVerify here, but keeping button for explicit user intent
-    }
+    const value = e.target.value.replace(/[^0-9]/g, "").slice(0, 6);
+    setOtpValue(value);
   };
 
   const handleVerify = () => {
-    if (otpValue.length === 6) {
+    if (otpValue.length === 6 && !isLoading) {
       onVerify(otpValue, trustDevice);
     }
   };
 
   const handleResend = () => {
     setIsResending(true);
-    // In a real app, you'd trigger a server action here
+    // Trigger onSelectMethod again to resend based on current method
+    if (methodSent && onSelectMethod) {
+      onSelectMethod(methodSent as "email" | "whatsapp");
+    }
     setTimeout(() => setIsResending(false), 2000);
   };
 
@@ -101,12 +97,16 @@ export default function TwoFactorModal({
               {/* Title & Info */}
               <div className="space-y-3 text-left">
                 <h2 className="text-3xl font-black text-[#323338] tracking-tight leading-none">Security Verification</h2>
-                <div className="flex items-center gap-2.5 text-slate-400">
-                  <Mail size={16} className="shrink-0" />
-                  <p className="text-xs font-bold uppercase tracking-widest leading-relaxed">
-                    Sent to <span className="text-[#0073ea]">{email.replace(/(.{3})(.*)(?=@)/, '$1***')}</span>
-                  </p>
-                </div>
+                {!isMethodSelection && (
+                  <div className="flex items-center gap-2.5 text-slate-400">
+                    {methodSent === "whatsapp" ? <MessageCircle size={16} className="shrink-0" /> : <Mail size={16} className="shrink-0" />}
+                    <p className="text-xs font-bold uppercase tracking-widest leading-relaxed">
+                      Sent to <span className="text-[#0073ea]">
+                        {methodSent === "whatsapp" ? phoneMasked : email.replace(/(.{3})(.*)(?=@)/, '$1***')}
+                      </span>
+                    </p>
+                  </div>
+                )}
               </div>
 
               <AnimatePresence mode="popLayout">
@@ -123,105 +123,158 @@ export default function TwoFactorModal({
                 )}
               </AnimatePresence>
 
-              {/* OTP Input Section */}
-              <div className="relative group">
-                {/* Hidden Real Input for Mobile Optimization */}
-                <input
-                  ref={inputRef}
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={otpValue}
-                  onChange={handleInputChange}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && otpValue.length === 6) handleVerify();
-                  }}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-default"
-                  autoFocus
-                  maxLength={6}
-                />
-                
-                {/* Visual Boxes */}
-                <div 
-                  className="flex justify-between gap-2.5 sm:gap-3"
-                  onClick={() => inputRef.current?.focus()}
-                >
-                  {[0, 1, 2, 3, 4, 5].map((idx) => {
-                    const digit = otpValue[idx] || "";
-                    const isFocused = otpValue.length === idx;
-                    const isFilled = otpValue.length > idx;
+              {isMethodSelection ? (
+                <div className="space-y-4">
+                  <p className="text-sm font-semibold text-slate-500 mb-6">Pilih metode pengiriman kode verifikasi (OTP):</p>
+                  <button
+                    onClick={() => onSelectMethod?.("email")}
+                    disabled={isLoading}
+                    className="w-full p-4 border-2 border-slate-200 rounded-2xl hover:border-[#0073ea] hover:bg-blue-50 transition-all flex items-center justify-between group text-left disabled:opacity-50"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-slate-100 group-hover:bg-[#0073ea] flex items-center justify-center transition-colors">
+                        <Mail size={18} className="text-slate-500 group-hover:text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-[#323338] text-sm uppercase tracking-wider">Email</h3>
+                        <p className="text-xs font-medium text-slate-500 mt-0.5">{email.replace(/(.{3})(.*)(?=@)/, '$1***')}</p>
+                      </div>
+                    </div>
+                    {isLoading ? <RefreshCcw size={18} className="animate-spin text-slate-400" /> : <ArrowRight size={18} className="text-slate-300 group-hover:text-[#0073ea]" />}
+                  </button>
 
-                    return (
-                      <motion.div
-                        key={idx}
-                        animate={isFocused ? { scale: 1.05, borderColor: "#0073ea" } : { scale: 1, borderColor: "#f1f5f9" }}
-                        className={`relative flex-1 aspect-[3/4] sm:aspect-square flex items-center justify-center text-3xl font-black rounded-2xl border-2 transition-all duration-200
-                          ${isFocused ? 'border-[#0073ea] bg-white ring-4 ring-blue-50 shadow-lg' : 'bg-slate-50 border-slate-100'}
-                          ${isFilled ? 'text-[#0073ea] border-[#0073ea]/20' : 'text-slate-300'}
-                        `}
-                      >
-                        {digit}
-                        {isFocused && (
-                          <motion.div 
-                            animate={{ opacity: [1, 0] }}
-                            transition={{ repeat: Infinity, duration: 0.8 }}
-                            className="w-0.5 h-8 bg-[#0073ea] absolute"
-                          />
-                        )}
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Trust Device Option */}
-              <div className="flex items-center justify-center">
-                <label className="flex items-center gap-3 cursor-pointer group select-none">
-                  <div className="relative flex items-center justify-center w-6 h-6">
-                    <input 
-                      type="checkbox" 
-                      checked={trustDevice}
-                      onChange={(e) => setTrustDevice(e.target.checked)}
-                      className="peer absolute opacity-0 w-full h-full cursor-pointer"
-                    />
-                    <div className="w-full h-full border-2 border-slate-200 rounded-lg group-hover:border-[#0073ea] peer-checked:bg-[#0073ea] peer-checked:border-[#0073ea] transition-all duration-300"></div>
-                    <ShieldCheck className="absolute w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
-                  </div>
-                  <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.1em] group-hover:text-[#323338] transition-colors">Trust this device for 30 days</span>
-                </label>
-              </div>
-
-              {/* Actions */}
-              <div className="space-y-6 pt-2">
-                <button
-                  onClick={handleVerify}
-                  disabled={isLoading || otpValue.length < 6}
-                  className="w-full py-6 bg-[#0073ea] hover:bg-[#005bb5] text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-[0_10px_30px_rgba(0,115,234,0.3)] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
-                >
-                  {isLoading ? (
-                    <RefreshCcw size={20} className="animate-spin" />
+                  {hasPhone ? (
+                    <button
+                      onClick={() => onSelectMethod?.("whatsapp")}
+                      disabled={isLoading}
+                      className="w-full p-4 border-2 border-slate-200 rounded-2xl hover:border-[#25D366] hover:bg-green-50 transition-all flex items-center justify-between group text-left disabled:opacity-50"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-slate-100 group-hover:bg-[#25D366] flex items-center justify-center transition-colors">
+                          <MessageCircle size={18} className="text-slate-500 group-hover:text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-[#323338] text-sm uppercase tracking-wider">WhatsApp</h3>
+                          <p className="text-xs font-medium text-slate-500 mt-0.5">{phoneMasked}</p>
+                        </div>
+                      </div>
+                      {isLoading ? <RefreshCcw size={18} className="animate-spin text-slate-400" /> : <ArrowRight size={18} className="text-slate-300 group-hover:text-[#25D366]" />}
+                    </button>
                   ) : (
-                    <>
-                      Verify Login <ArrowRight size={18} />
-                    </>
+                    <div className="w-full p-4 border-2 border-dashed border-slate-200 rounded-2xl flex items-center gap-4 text-left opacity-60">
+                      <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+                        <MessageCircle size={18} className="text-slate-400" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-slate-400 text-sm uppercase tracking-wider">WhatsApp</h3>
+                        <p className="text-xs font-medium text-slate-400 mt-0.5">Not registered</p>
+                      </div>
+                    </div>
                   )}
-                </button>
-                
-                <div className="flex flex-col items-center gap-1">
-                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                     Didn't receive the email?
-                   </p>
-                   <button 
-                     onClick={handleResend}
-                     disabled={isResending}
-                     className="text-[#0073ea] text-[10px] font-black uppercase tracking-widest hover:underline flex items-center gap-2"
-                   >
-                     {isResending ? (
-                       <span className="flex items-center gap-2">Sending... <RefreshCcw size={10} className="animate-spin" /></span>
-                     ) : "Resend Code"}
-                   </button>
                 </div>
-              </div>
+              ) : (
+                <>
+                  {/* OTP Input Section */}
+                  <div className="relative group">
+                    {/* Hidden Real Input for Mobile Optimization */}
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={otpValue}
+                      onChange={handleInputChange}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && otpValue.length === 6) handleVerify();
+                      }}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-default"
+                      autoFocus
+                      maxLength={6}
+                    />
+                    
+                    {/* Visual Boxes */}
+                    <div 
+                      className="flex justify-between gap-2.5 sm:gap-3"
+                      onClick={() => inputRef.current?.focus()}
+                    >
+                      {[0, 1, 2, 3, 4, 5].map((idx) => {
+                        const digit = otpValue[idx] || "";
+                        const isFocused = otpValue.length === idx;
+                        const isFilled = otpValue.length > idx;
+
+                        return (
+                          <motion.div
+                            key={idx}
+                            animate={isFocused ? { scale: 1.05, borderColor: "#0073ea" } : { scale: 1, borderColor: "#f1f5f9" }}
+                            className={`relative flex-1 aspect-[3/4] sm:aspect-square flex items-center justify-center text-3xl font-black rounded-2xl border-2 transition-all duration-200
+                              ${isFocused ? 'border-[#0073ea] bg-white ring-4 ring-blue-50 shadow-lg' : 'bg-slate-50 border-slate-100'}
+                              ${isFilled ? 'text-[#0073ea] border-[#0073ea]/20' : 'text-slate-300'}
+                            `}
+                          >
+                            {digit}
+                            {isFocused && (
+                              <motion.div 
+                                animate={{ opacity: [1, 0] }}
+                                transition={{ repeat: Infinity, duration: 0.8 }}
+                                className="w-0.5 h-8 bg-[#0073ea] absolute"
+                              />
+                            )}
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Trust Device Option */}
+                  <div className="flex items-center justify-center">
+                    <label className="flex items-center gap-3 cursor-pointer group select-none">
+                      <div className="relative flex items-center justify-center w-6 h-6">
+                        <input 
+                          type="checkbox" 
+                          checked={trustDevice}
+                          onChange={(e) => setTrustDevice(e.target.checked)}
+                          className="peer absolute opacity-0 w-full h-full cursor-pointer"
+                        />
+                        <div className="w-full h-full border-2 border-slate-200 rounded-lg group-hover:border-[#0073ea] peer-checked:bg-[#0073ea] peer-checked:border-[#0073ea] transition-all duration-300"></div>
+                        <ShieldCheck className="absolute w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
+                      </div>
+                      <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.1em] group-hover:text-[#323338] transition-colors">Trust this device for 30 days</span>
+                    </label>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="space-y-6 pt-2">
+                    <button
+                      onClick={handleVerify}
+                      disabled={isLoading || otpValue.length < 6}
+                      className="w-full py-6 bg-[#0073ea] hover:bg-[#005bb5] text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-[0_10px_30px_rgba(0,115,234,0.3)] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
+                    >
+                      {isLoading ? (
+                        <RefreshCcw size={20} className="animate-spin" />
+                      ) : (
+                        <>
+                          Verify Login <ArrowRight size={18} />
+                        </>
+                      )}
+                    </button>
+                    
+                    <div className="flex flex-col items-center gap-1">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        Didn't receive the code?
+                      </p>
+                      <button 
+                        onClick={handleResend}
+                        disabled={isResending}
+                        className="text-[#0073ea] text-[10px] font-black uppercase tracking-widest hover:underline flex items-center gap-2"
+                      >
+                        {isResending ? (
+                          <span className="flex items-center gap-2">Sending... <RefreshCcw size={10} className="animate-spin" /></span>
+                        ) : "Resend Code"}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Decoration */}
