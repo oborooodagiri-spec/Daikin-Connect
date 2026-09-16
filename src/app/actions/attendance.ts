@@ -454,7 +454,8 @@ export async function verifyFaceMatch(photoUrl: string) {
     }
 
     if (!aiResult) {
-      throw new Error(`Seluruh model AI gagal dipanggil. Detail kesalahan:\n${errors.join("\n")}`);
+      console.error(`[verifyFaceMatch] All AI models failed. Errors:\n${errors.join("\n")}`);
+      throw new Error("Sistem verifikasi wajah sedang tidak tersedia. Silakan coba beberapa saat lagi atau hubungi admin.");
     }
 
     if (aiResult.match && aiResult.confidence >= 75) {
@@ -470,7 +471,7 @@ export async function verifyFaceMatch(photoUrl: string) {
 
   } catch (err: any) {
     console.error("AI Verification Error:", err);
-    return { error: `Keamanan Gagal: ${err.message || err}` };
+    return { error: "Verifikasi wajah gagal. Silakan coba lagi atau hubungi admin." };
   }
 }
 
