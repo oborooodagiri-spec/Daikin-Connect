@@ -497,8 +497,8 @@ export async function importUnitsExcel(projectId: string, base64Data: string) {
 
       try {
         const tag = getVal(row, "Tag Number", "TAG NUMBER", "Unit Tag", "Tag");
-        const brand = getVal(row, "Brand", "Merk");
-        const model = getVal(row, "Model", "Type");
+        const brand = getVal(row, "Brand", "Merk", "Make");
+        const model = getVal(row, "Model", "Type", "Tipe");
         const capacity = getVal(row, "Capacity", "Kapasitas", "PK", "BTU");
         const unitType = getVal(row, "Unit Type", "Kategori");
         const yoiStr = getVal(row, "Year of Install", "Instalasi", "Tahun", "YOI");
@@ -621,7 +621,7 @@ export async function importMaintenanceHistoryExcel(formData: FormData) {
       const isFCU = sheetName.toUpperCase().includes('FCU');
       const isAHU = sheetName.toUpperCase().includes('AHU') || sheetName.toUpperCase().includes('DUCT');
       
-      if (!isFCU && !isAHU) continue;
+      if (!isFCU && !isAHU && workbook.SheetNames.length > 1) continue;
 
       const sheet = workbook.Sheets[sheetName];
       const rawData = xlsx.utils.sheet_to_json(sheet, { defval: "" });
@@ -631,15 +631,18 @@ export async function importMaintenanceHistoryExcel(formData: FormData) {
         
         try {
           // Identify Unit
-          const tag = getVal(row, "Tag Number", "Unit Tag", "Asset Identity", "No."); // "No." is sometimes used as serial or index in their sheet
-          const tenant = getVal(row, "Tenant / Area", "Tenant", "Area", "Room");
+          const tag = getVal(row, "Tag Number", "Unit Tag", "Asset Identity", "No.", "ID Unit", "Tag"); // "No." is sometimes used as serial or index in their sheet
+          const tenant = getVal(row, "Tenant / Area", "Tenant", "Area", "Room", "Lokasi", "Location");
           const model = getVal(row, "Model", "Type");
           const brand = getVal(row, "Brand", "Merk");
-          const dateStr = getVal(row, "Tanggal", "Date", "Service Date");
-          const finding = getVal(row, "Finding", "Catatan", "Masalah", "Category Finding");
-          const recommendation = getVal(row, "Rekomendasi", "Recommendation", "Advice");
+          const dateStr = getVal(row, "Tanggal", "Date", "Service Date", "Tgl");
+          const finding = getVal(row, "Finding", "Catatan", "Masalah", "Category Finding", "Temuan", "Keterangan", "Status", "Kondisi");
+          const recommendation = getVal(row, "Rekomendasi", "Recommendation", "Advice", "Tindakan", "Action", "Saran");
 
-          if (!finding && !recommendation) continue; // Skip truly empty rows
+                    if (!finding && !recommendation) {
+             if (!tag && !tenant) continue;
+          }
+          const finalFinding = finding || "Pemeriksaan Rutin (Disinkronkan dari Excel)";
 
           // Try to find the unit in our database
           let unit = await (prisma.units as any).findFirst({
@@ -687,7 +690,7 @@ export async function importMaintenanceHistoryExcel(formData: FormData) {
               service_date: serviceDate,
               status: "Final_Approved",
               inspector_name: "Imported from Spreadsheet",
-              engineer_note: finding || "Routine maintenance.",
+              engineer_note: finalFinding || "Routine maintenance.",
               technical_advice: recommendation || "-",
               unit_tag: unit.tag_number,
               location: unit.location || tenant,
