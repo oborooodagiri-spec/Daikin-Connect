@@ -432,10 +432,6 @@ export async function verifyFaceMatch(photoUrl: string) {
     let aiResult = null;
     let errors: string[] = [];
 
-    // TEMPORARY BYPASS: Karena Gemini API tersuspend (Billing), kita izinkan semua absen masuk
-    console.log("[verifyFaceMatch] BYPASS MODE: Menerima semua foto karena API Google tersuspend.");
-    return { success: true, match: true, confidence: 99.9 };
-
     for (const modelName of candidateModels) {
       try {
         console.log(`[verifyFaceMatch] Attempting facial comparison with model: ${modelName}`);
