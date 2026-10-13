@@ -5,6 +5,7 @@ import { getSession } from "./auth";
 import { revalidatePath, unstable_noStore } from "next/cache";
 import { serializePrisma } from "@/lib/serialize";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { RekognitionClient, CompareFacesCommand } from "@aws-sdk/client-rekognition";
 import fs from "fs";
 import path from "path";
 
@@ -368,10 +369,6 @@ export async function submitCheckOut(data: {
  */
 export async function verifyFaceMatch(photoUrl: string) {
   try {
-    if (!process.env.GEMINI_API_KEY) {
-      return { error: "Keamanan Gagal: API Key Gemini belum dikonfigurasi di server (.env)." };
-    }
-
     const session = await getSession();
     if (!session) return { error: "Unauthorized" };
 
@@ -394,6 +391,80 @@ export async function verifyFaceMatch(photoUrl: string) {
     }
 
     if (!user.face_verification_enabled) return { success: true, match: true, confidence: 100 };
+
+    // =========================================================================
+    // 1. AWS REKOGNITION (ENTERPRISE BIOMETRIC ENGINE - PRIMARY)
+    // =========================================================================
+    const hasAwsKeys = !!(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY);
+
+    if (hasAwsKeys) {
+      try {
+        console.log("[verifyFaceMatch] Comparing faces using AWS Rekognition...");
+        const rekognition = new RekognitionClient({
+          region: process.env.AWS_REGION || "ap-southeast-1",
+          credentials: {
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+          },
+        });
+
+        const [refBuffer, currentBuffer] = await Promise.all([
+          imageUrlToBuffer(user.face_reference_url),
+          imageUrlToBuffer(photoUrl)
+        ]);
+
+        if (!refBuffer) {
+          return { error: `Gagal memproses foto referensi wajah terdaftar. (URL: ${user.face_reference_url}). Silakan hubungi admin untuk mendaftarkan ulang wajah.` };
+        }
+        if (!currentBuffer) {
+          return { error: `Gagal memproses foto absensi saat ini. Silakan coba memotret ulang.` };
+        }
+
+        const command = new CompareFacesCommand({
+          SourceImage: { Bytes: refBuffer },
+          TargetImage: { Bytes: currentBuffer },
+          SimilarityThreshold: 75,
+        });
+
+        const response = await rekognition.send(command);
+
+        if (response.FaceMatches && response.FaceMatches.length > 0) {
+          const bestMatch = response.FaceMatches[0];
+          const similarity = Math.round(bestMatch.Similarity || 0);
+          console.log(`[verifyFaceMatch] AWS Rekognition Match! Similarity: ${similarity}%`);
+          return { success: true, match: true, confidence: similarity };
+        } else {
+          console.warn("[verifyFaceMatch] AWS Rekognition: Face does not match registered reference.");
+          return { 
+            success: true, 
+            match: false, 
+            confidence: 0, 
+            reason: "Wajah tidak cocok dengan referensi profil terdaftar." 
+          };
+        }
+      } catch (awsErr: any) {
+        console.error("[verifyFaceMatch] AWS Rekognition Error:", awsErr.name, awsErr.message);
+        if (awsErr.name === "InvalidParameterException" || awsErr.message?.includes("no faces")) {
+          if (awsErr.message?.toLowerCase().includes("source")) {
+            return { error: "Wajah pada foto referensi terdaftar tidak terdeteksi oleh sistem biometrik AWS. Silakan daftarkan ulang foto wajah referensi Anda." };
+          }
+          return { error: "Wajah tidak terdeteksi pada foto absensi. Pastikan wajah terlihat jelas menghadap kamera dan pencahayaan cukup." };
+        }
+        
+        // If AWS has credential/service error and Gemini is available, fallback to Gemini
+        if (!process.env.GEMINI_API_KEY) {
+          return { error: `Layanan verifikasi wajah AWS mengalami kendala: ${awsErr.message || "Silakan hubungi administrator."}` };
+        }
+        console.warn("[verifyFaceMatch] Falling back to Google Gemini AI due to AWS error...");
+      }
+    }
+
+    // =========================================================================
+    // 2. GOOGLE GEMINI AI (SECONDARY / FALLBACK ENGINE)
+    // =========================================================================
+    if (!process.env.GEMINI_API_KEY) {
+      return { error: "Keamanan Gagal: Kredensial verifikasi wajah (AWS Rekognition atau Gemini) belum dikonfigurasi di server (.env)." };
+    }
 
     // Fetch images and convert to base64 for Gemini
     const [refImageBase64, currentImageBase64] = await Promise.all([
@@ -494,8 +565,8 @@ export async function updateFaceProfile(photoUrl: string) {
   }
 }
 
-// HELPER: Convert URL to Base64 for Gemini (Optimized for Server-side)
-async function imageUrlToBase64(url: string) {
+// HELPER: Convert URL to Buffer for AWS Rekognition & Gemini
+async function imageUrlToBuffer(url: string): Promise<Buffer | null> {
   try {
     const isLocal = url.startsWith('/') || url.includes('localhost') || url.includes('127.0.0.1');
     
@@ -508,15 +579,13 @@ async function imageUrlToBase64(url: string) {
       const filePath = path.join(process.cwd(), 'public', 'uploads', folder, filename);
       
       if (fs.existsSync(filePath)) {
-        const buffer = fs.readFileSync(filePath);
-        return buffer.toString('base64');
+        return fs.readFileSync(filePath);
       }
 
       // Alt path resolution fallback
       const altPath = path.join(__dirname, '..', '..', '..', '..', 'public', 'uploads', folder, filename);
       if (fs.existsSync(altPath)) {
-        const buffer = fs.readFileSync(altPath);
-        return buffer.toString('base64');
+        return fs.readFileSync(altPath);
       }
     }
 
@@ -539,11 +608,17 @@ async function imageUrlToBase64(url: string) {
       throw new Error(`Fetch failed with status ${response.status}`);
     }
     const arrayBuffer = await response.arrayBuffer();
-    return Buffer.from(arrayBuffer).toString('base64');
+    return Buffer.from(arrayBuffer);
   } catch (e: any) {
-    console.error("Base64 conversion failed for URL:", url, e.message);
+    console.error("Buffer conversion failed for URL:", url, e.message);
     return null;
   }
+}
+
+// HELPER: Convert URL to Base64 for Gemini (Optimized for Server-side)
+async function imageUrlToBase64(url: string): Promise<string | null> {
+  const buffer = await imageUrlToBuffer(url);
+  return buffer ? buffer.toString('base64') : null;
 }
 
 /**
