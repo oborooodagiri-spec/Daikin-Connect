@@ -41,22 +41,22 @@ export interface SenayanRowDef {
 
 export const SENAYAN_LOGSHEET_ROWS: SenayanRowDef[] = [
   // 1. VAPORATOR (7 rows)
-  { no: 1, category: "VAPORATOR", name: "Flow Status", standard: "", defaultKet: "Yes", matchPatterns: [/evap.*flow/i, /fs.*evap/i] },
-  { no: 1, category: "VAPORATOR", name: "Leaving Temp", standard: "5.8-8", matchPatterns: [/evap.*leaving/i, /lewt/i] },
-  { no: 1, category: "VAPORATOR", name: "Entering Temp", standard: "8-12", matchPatterns: [/evap.*entering/i, /eewt/i] },
-  { no: 1, category: "VAPORATOR", name: "Delta Temp", standard: "3-6", matchPatterns: [/delta.*evap/i] },
-  { no: 1, category: "VAPORATOR", name: "Approach Temp", standard: "0-3", matchPatterns: [/app.*evap/i] },
-  { no: 1, category: "VAPORATOR", name: "Saturated Refrigerant Temp", standard: "5.5-7", matchPatterns: [/sat.*evap/i] },
-  { no: 1, category: "VAPORATOR", name: "Refrigerant Press", standard: "241-276", matchPatterns: [/evap.*ref.*press/i, /ref.*press/i] },
+  { no: 1, category: "VAPORATOR", name: "Flow Status", standard: "", defaultKet: "Yes", matchPatterns: [/(?=.*evap)(?=.*flow)/i, /fs.*evap/i] },
+  { no: 1, category: "VAPORATOR", name: "Leaving Temp", standard: "5.8-8", matchPatterns: [/(?=.*evap)(?=.*leaving)/i, /lewt/i] },
+  { no: 1, category: "VAPORATOR", name: "Entering Temp", standard: "8-12", matchPatterns: [/(?=.*evap)(?=.*entering)/i, /eewt/i] },
+  { no: 1, category: "VAPORATOR", name: "Delta Temp", standard: "3-6", matchPatterns: [/(?=.*evap)(?=.*delta)/i] },
+  { no: 1, category: "VAPORATOR", name: "Approach Temp", standard: "0-3", matchPatterns: [/(?=.*evap)(?=.*app)/i] },
+  { no: 1, category: "VAPORATOR", name: "Saturated Refrigerant Temp", standard: "5.5-7", matchPatterns: [/(?=.*evap)(?=.*sat)/i] },
+  { no: 1, category: "VAPORATOR", name: "Refrigerant Press", standard: "241-276", matchPatterns: [/(?=.*evap)(?=.*ref.*press)/i, /ref.*press$/i] },
 
   // 2. CONDENSER (7 rows)
-  { no: 2, category: "CONDENSER", name: "Flow Status", standard: "", defaultKet: "Yes", matchPatterns: [/cond.*flow/i, /fs.*cond/i] },
-  { no: 2, category: "CONDENSER", name: "Leaving Temp", standard: "34-37", matchPatterns: [/cond.*leaving/i, /lcwt/i] },
-  { no: 2, category: "CONDENSER", name: "Entering Temp", standard: "29-32", matchPatterns: [/cond.*entering/i, /ecwt/i] },
-  { no: 2, category: "CONDENSER", name: "Delta Temp", standard: "4-6", matchPatterns: [/delta.*cond/i] },
-  { no: 2, category: "CONDENSER", name: "Approach Temp", standard: "0-3", matchPatterns: [/app.*cond/i] },
-  { no: 2, category: "CONDENSER", name: "Saturated Refrigerant Temp", standard: "35-39", matchPatterns: [/sat.*cond/i] },
-  { no: 2, category: "CONDENSER", name: "Refrigerant Press", standard: "759-862", matchPatterns: [/cond.*refrig.*press/i, /disch.*press/i] },
+  { no: 2, category: "CONDENSER", name: "Flow Status", standard: "", defaultKet: "Yes", matchPatterns: [/(?=.*cond)(?=.*flow)/i, /fs.*cond/i] },
+  { no: 2, category: "CONDENSER", name: "Leaving Temp", standard: "34-37", matchPatterns: [/(?=.*cond)(?=.*leaving)/i, /lcwt/i] },
+  { no: 2, category: "CONDENSER", name: "Entering Temp", standard: "29-32", matchPatterns: [/(?=.*cond)(?=.*entering)/i, /ecwt/i] },
+  { no: 2, category: "CONDENSER", name: "Delta Temp", standard: "4-6", matchPatterns: [/(?=.*cond)(?=.*delta)/i] },
+  { no: 2, category: "CONDENSER", name: "Approach Temp", standard: "0-3", matchPatterns: [/(?=.*cond)(?=.*app)/i] },
+  { no: 2, category: "CONDENSER", name: "Saturated Refrigerant Temp", standard: "35-39", matchPatterns: [/(?=.*cond)(?=.*sat)/i] },
+  { no: 2, category: "CONDENSER", name: "Refrigerant Press", standard: "759-862", matchPatterns: [/(?=.*cond)(?=.*ref.*press)/i, /ref.*press.*c/i, /disch.*press/i] },
 
   // 3. COMPRESSOR (7 rows)
   { no: 3, category: "COMPRESSOR", name: "Suction Line Temp", standard: "5.5-7", matchPatterns: [/suction.*temp/i] },
@@ -83,9 +83,9 @@ export const SENAYAN_LOGSHEET_ROWS: SenayanRowDef[] = [
   { no: 5, category: "UNIT STATUS", name: "FP Switch Position", standard: "", defaultKet: "Rem", matchPatterns: [/fp.*switch/i] },
   { no: 5, category: "UNIT STATUS", name: "CMV Status", standard: "", defaultKet: "Open", matchPatterns: [/cmv.*status/i] },
   { no: 5, category: "UNIT STATUS", name: "CMV Fail To Open", standard: "", defaultKet: "No", matchPatterns: [/cmv.*fail/i] },
-  { no: 5, category: "UNIT STATUS", name: "Status", standard: "", defaultKet: "Run", matchPatterns: [/status$/i] },
+  { no: 5, category: "UNIT STATUS", name: "Status", standard: "", defaultKet: "Run", matchPatterns: [/status$/i, /run.*status/i] },
   { no: 5, category: "UNIT STATUS", name: "Failt To Start", standard: "", defaultKet: "No", matchPatterns: [/fail.*to.*start/i] },
-  { no: 5, category: "UNIT STATUS", name: "Alarm Exist", standard: "", defaultKet: "No", matchPatterns: [/alarm.*exist/i] },
+  { no: 5, category: "UNIT STATUS", name: "Alarm Exist", standard: "", defaultKet: "No", matchPatterns: [/alarm.*exist/i, /trip/i] },
   { no: 5, category: "UNIT STATUS", name: "Fault", standard: "", defaultKet: "No", matchPatterns: [/trip/i, /fault/i] },
   { no: 5, category: "UNIT STATUS", name: "Active set point", standard: "", matchPatterns: [/active.*set.*point/i] },
   { no: 5, category: "UNIT STATUS", name: "Actual Running Capacity %", standard: "RLA", matchPatterns: [/capacity.*rla/i, /%rla/i, /actual.*running.*capacity/i] },
@@ -95,7 +95,7 @@ export const SENAYAN_LOGSHEET_ROWS: SenayanRowDef[] = [
   // 6. SYSTEM STATUS (19 rows)
   { no: 6, category: "SYSTEM STATUS", name: "Mode", standard: "", defaultKet: "Man", matchPatterns: [/system.*mode/i, /sys.*mode/i] },
   { no: 6, category: "SYSTEM STATUS", name: "Manual Value", standard: "", defaultKet: "On", matchPatterns: [/system.*manual/i] },
-  { no: 6, category: "SYSTEM STATUS", name: "Sistem Stage", standard: "", matchPatterns: [/sistem.*stage/i, /system.*stage/i] },
+  { no: 6, category: "SYSTEM STATUS", name: "Sistem Stage", standard: "", matchPatterns: [/sistem.*stage/i, /system.*stage/i, /plant.*stage/i] },
   { no: 6, category: "SYSTEM STATUS", name: "Average CH RLA", standard: "", matchPatterns: [/avg.*ch.*rla/i, /average.*rla/i] },
   { no: 6, category: "SYSTEM STATUS", name: "Actual Leaving Temp.", standard: "", matchPatterns: [/actual.*leaving/i] },
   { no: 6, category: "SYSTEM STATUS", name: "Actual Return Temp.", standard: "", matchPatterns: [/actual.*return/i] },
