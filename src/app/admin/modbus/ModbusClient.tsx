@@ -75,6 +75,7 @@ export default function ModbusClient() {
   const [singleDate, setSingleDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [startDate, setStartDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [endDate, setEndDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [selectedChiller, setSelectedChiller] = useState<"all" | "1" | "2" | "3" | "4">("all");
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
 
@@ -345,6 +346,7 @@ export default function ModbusClient() {
         logs,
         startDate: sDate,
         endDate: eDate,
+        selectedChiller,
       });
 
       // Close modal on success
@@ -776,6 +778,35 @@ export default function ModbusClient() {
             </div>
 
             <div className="p-6 space-y-5">
+              {/* Chiller Unit Selector (Matching Sentral Senayan 2) */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">
+                  Pilih Unit Chiller (Sentral Senayan 2)
+                </label>
+                <div className="grid grid-cols-5 gap-1.5 p-1 bg-slate-100 dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-700">
+                  {[
+                    { id: "all", label: "Semua (1-4)" },
+                    { id: "1", label: "Chiller 1" },
+                    { id: "2", label: "Chiller 2" },
+                    { id: "3", label: "Chiller 3" },
+                    { id: "4", label: "Chiller 4" },
+                  ].map((ch) => (
+                    <button
+                      key={ch.id}
+                      type="button"
+                      onClick={() => setSelectedChiller(ch.id as any)}
+                      className={`py-1.5 px-1.5 rounded-xl text-xs font-semibold transition-all text-center ${
+                        selectedChiller === ch.id
+                          ? "bg-white dark:bg-gray-800 text-[#003366] dark:text-sky-300 shadow-xs"
+                          : "text-gray-500 hover:text-gray-800 dark:hover:text-gray-200"
+                      }`}
+                    >
+                      {ch.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Mode Selector: Single Day vs Date Range */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">
