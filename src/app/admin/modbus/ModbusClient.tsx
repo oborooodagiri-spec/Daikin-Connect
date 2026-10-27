@@ -22,9 +22,10 @@ import {
   Activity,
   Clock,
   Layers,
-  FileSpreadsheet,
   X,
   Loader2,
+  ArrowRight,
+  Gauge,
 } from "lucide-react";
 import Link from "next/link";
 import { generateSenayanModbusPDF, ModbusLogItem } from "@/lib/modbus-pdf-senayan";
@@ -491,56 +492,61 @@ export default function ModbusClient() {
                   </div>
                 </div>
 
-                {/* 2. Specs Grid & Details */}
-                <div className="p-5 flex-1 flex flex-col justify-between">
-                  <div className="grid grid-cols-2 gap-3 text-xs">
-                    <div className="bg-slate-50 dark:bg-gray-900/60 p-2.5 rounded-xl border border-slate-100 dark:border-gray-800">
-                      <p className="text-gray-400 font-medium">IP Address & Port</p>
-                      <p className="font-semibold text-gray-900 dark:text-white mt-0.5 truncate font-mono">
-                        {gw.ip_address}:{gw.port}
-                      </p>
+                {/* 2. Executive Quick SCADA & Live Monitoring Teaser */}
+                <Link
+                  href={`/admin/modbus/${gw.id}`}
+                  className="p-5 flex-1 flex flex-col justify-between hover:bg-sky-50/30 dark:hover:bg-sky-950/20 transition-all cursor-pointer group/link"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold tracking-wider text-sky-700 dark:text-sky-300 uppercase bg-sky-50 dark:bg-sky-950/80 px-2.5 py-1 rounded-lg border border-sky-200/80 dark:border-sky-800/80 flex items-center gap-1.5">
+                        <Activity className="w-3.5 h-3.5 text-sky-500 animate-pulse" />
+                        Live Plant Monitoring
+                      </span>
+                      <span className="text-xs font-semibold text-[#003366] dark:text-sky-400 flex items-center gap-1 group-hover/link:translate-x-1 transition-transform">
+                        Buka SCADA <ArrowRight className="w-3.5 h-3.5" />
+                      </span>
                     </div>
 
-                    <div className="bg-slate-50 dark:bg-gray-900/60 p-2.5 rounded-xl border border-slate-100 dark:border-gray-800">
-                      <p className="text-gray-400 font-medium">Interval Polling</p>
-                      <p className="font-semibold text-gray-900 dark:text-white mt-0.5">
-                        {gw.poll_interval} detik
-                      </p>
-                    </div>
+                    <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
+                      Monitoring status operasional, kurva telemetri suhu & tekanan 4 unit Chiller, kompresor, dan tahapan pompa secara realtime.
+                    </p>
 
-                    <div className="bg-slate-50 dark:bg-gray-900/60 p-2.5 rounded-xl border border-slate-100 dark:border-gray-800">
-                      <p className="text-gray-400 font-medium">Register Dipetakan</p>
-                      <p className="font-semibold text-[#003366] dark:text-[#00a1e4] mt-0.5">
-                        {gw.registers?.length || 0} Register
-                      </p>
-                    </div>
-
-                    <div className="bg-slate-50 dark:bg-gray-900/60 p-2.5 rounded-xl border border-slate-100 dark:border-gray-800">
-                      <p className="text-gray-400 font-medium">Histori Data Log</p>
-                      <p className="font-semibold text-gray-900 dark:text-white mt-0.5">
-                        {gw._count?.logs || 0} Data
-                      </p>
+                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                      <span className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-slate-100 dark:bg-gray-700/80 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-gray-600">
+                        Chiller 1–4
+                      </span>
+                      <span className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-slate-100 dark:bg-gray-700/80 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-gray-600">
+                        Evaporator & Condenser
+                      </span>
+                      <span className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-slate-100 dark:bg-gray-700/80 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-gray-600">
+                        Compressor Health
+                      </span>
+                      <span className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-slate-100 dark:bg-gray-700/80 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-gray-600">
+                        CHWP & CT Staging
+                      </span>
                     </div>
                   </div>
 
-                  {/* Heartbeat Status */}
-                  <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700/60 flex items-center justify-between text-xs text-gray-500">
-                    <div className="flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5 text-gray-400" />
-                      <span>
-                        {isOnline ? "Aktif terhubung sekarang" : "Terputus (> 5 menit tidak ada data)"}
-                      </span>
-                    </div>
-                    {gw.last_seen_at && (
-                      <span className="text-[11px] text-gray-400 font-mono">
-                        {new Date(gw.last_seen_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
-                      </span>
-                    )}
+                  <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700/60 flex items-center justify-between text-[11px] text-gray-400">
+                    <span>Sentral Senayan 2 Telemetry</span>
+                    <span className="font-semibold text-sky-600 dark:text-sky-400 group-hover/link:underline">
+                      Masuk Dashboard & Kurva &rarr;
+                    </span>
                   </div>
-                </div>
+                </Link>
 
-                {/* 3. Card Actions: PDF Download, Registers, Settings, Edit, Delete */}
-                <div className="bg-slate-50/80 dark:bg-gray-900/80 p-3.5 border-t border-gray-100 dark:border-gray-700/60 flex items-center justify-between gap-2">
+                {/* 3. Card Actions: Live Monitoring, PDF Download, Settings, Edit, Delete */}
+                <div className="bg-slate-50/90 dark:bg-gray-900/90 p-3.5 border-t border-gray-100 dark:border-gray-700/60 flex items-center justify-between gap-2">
+                  {/* Primary: Live Monitoring */}
+                  <Link
+                    href={`/admin/modbus/${gw.id}`}
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-semibold bg-[#003366] hover:bg-[#002244] text-white shadow-xs transition-colors text-center"
+                  >
+                    <Activity className="w-3.5 h-3.5 text-sky-400" />
+                    <span>Live Monitoring</span>
+                  </Link>
+
                   {/* Download Report Button */}
                   <button
                     onClick={() => openDownloadModal(gw)}
@@ -549,15 +555,6 @@ export default function ModbusClient() {
                     <Download className="w-3.5 h-3.5" />
                     <span>Download PDF</span>
                   </button>
-
-                  {/* Kelola Register */}
-                  <Link
-                    href={`/admin/modbus/${gw.id}`}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-semibold bg-[#003366] hover:bg-[#002244] text-white shadow-xs transition-colors text-center"
-                  >
-                    <Layers className="w-3.5 h-3.5" />
-                    <span>Registers</span>
-                  </Link>
 
                   {/* Pengaturan & API Key Modal Trigger */}
                   <button
@@ -711,23 +708,70 @@ export default function ModbusClient() {
                 </pre>
               </div>
 
-              {/* Technical Specifications */}
-              <div className="border-t border-gray-100 dark:border-gray-700 pt-4 grid grid-cols-2 gap-4 text-xs">
-                <div>
-                  <span className="text-gray-400">Target IP Host</span>
-                  <p className="font-semibold text-gray-800 dark:text-gray-200 mt-0.5">{settingsGateway.ip_address}</p>
-                </div>
-                <div>
-                  <span className="text-gray-400">Modbus Port</span>
-                  <p className="font-semibold text-gray-800 dark:text-gray-200 mt-0.5">{settingsGateway.port}</p>
-                </div>
-                <div>
-                  <span className="text-gray-400">Slave Address</span>
-                  <p className="font-semibold text-gray-800 dark:text-gray-200 mt-0.5">{settingsGateway.slave_id}</p>
-                </div>
-                <div>
-                  <span className="text-gray-400">Interval Akuisisi</span>
-                  <p className="font-semibold text-gray-800 dark:text-gray-200 mt-0.5">{settingsGateway.poll_interval} detik</p>
+              {/* Technical Specifications moved from card */}
+              <div className="border-t border-gray-100 dark:border-gray-700/80 pt-4 space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                  <Server className="w-3.5 h-3.5 text-[#003366] dark:text-sky-400" />
+                  Parameter Jaringan & Infrastruktur Gateway
+                </h4>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-gray-900 border border-slate-200/60 dark:border-gray-700">
+                    <span className="text-gray-400 font-medium">IP Address & Port</span>
+                    <p className="font-semibold text-gray-900 dark:text-white mt-0.5 font-mono">
+                      {settingsGateway.ip_address}:{settingsGateway.port}
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-gray-900 border border-slate-200/60 dark:border-gray-700">
+                    <span className="text-gray-400 font-medium">Interval Polling</span>
+                    <p className="font-semibold text-gray-900 dark:text-white mt-0.5">
+                      {settingsGateway.poll_interval} detik
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-gray-900 border border-slate-200/60 dark:border-gray-700">
+                    <span className="text-gray-400 font-medium">Slave Address</span>
+                    <p className="font-semibold text-gray-900 dark:text-white mt-0.5">
+                      Slave #{settingsGateway.slave_id}
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-gray-900 border border-slate-200/60 dark:border-gray-700 flex flex-col justify-between">
+                    <div>
+                      <span className="text-gray-400 font-medium">Register Dipetakan</span>
+                      <p className="font-semibold text-[#003366] dark:text-sky-400 mt-0.5">
+                        {settingsGateway.registers?.length || 0} Register
+                      </p>
+                    </div>
+                    <Link
+                      href={`/admin/modbus/${settingsGateway.id}?tab=registers`}
+                      className="text-[11px] font-semibold text-sky-600 dark:text-sky-400 hover:underline mt-1.5 inline-flex items-center gap-1"
+                    >
+                      Kelola Register &rarr;
+                    </Link>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-gray-900 border border-slate-200/60 dark:border-gray-700">
+                    <span className="text-gray-400 font-medium">Histori Data Log</span>
+                    <p className="font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">
+                      {settingsGateway._count?.logs || 0} Data
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-gray-900 border border-slate-200/60 dark:border-gray-700">
+                    <span className="text-gray-400 font-medium">Status Terakhir</span>
+                    <div className="font-semibold text-gray-900 dark:text-white mt-0.5 flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                      <span>
+                        {settingsGateway.last_seen_at
+                          ? new Date(settingsGateway.last_seen_at).toLocaleTimeString("id-ID", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : "Belum aktif"}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
