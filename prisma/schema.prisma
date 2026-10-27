@@ -1255,6 +1255,7 @@ model modbus_gateways {
   id            Int                @id @default(autoincrement())
   name          String             @db.VarChar(150)
   description   String?            @db.Text
+  site_photo_url String?           @db.VarChar(500)
   ip_address    String             @db.VarChar(45)
   port          Int                @default(502)
   slave_id      Int                @default(1)

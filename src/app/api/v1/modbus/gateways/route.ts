@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import crypto from "crypto";
+import { randomBytes } from "crypto";
 
 // GET /api/v1/modbus/gateways — List all gateways
 export async function GET() {
@@ -14,12 +14,16 @@ export async function GET() {
       orderBy: { created_at: "desc" },
     });
 
-    // Calculate dynamic status based on last_seen_at
+    // Calculate dynamic status based on last_seen_at (within last 5 minutes)
     const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
-    const enriched = gateways.map((gw) => ({
-      ...gw,
-      status: gw.last_seen_at && gw.last_seen_at > fiveMinAgo ? "active" : "inactive",
-    }));
+    const enriched = gateways.map((gw) => {
+      const isOnline = gw.last_seen_at ? new Date(gw.last_seen_at).getTime() > fiveMinAgo.getTime() : false;
+      return {
+        ...gw,
+        status: isOnline ? "active" : "inactive",
+        is_online: isOnline,
+      };
+    });
 
     return NextResponse.json({ gateways: enriched });
   } catch (error: any) {
@@ -31,24 +35,25 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, description, ip_address, port, slave_id, poll_interval, project_id } = body;
+    const { name, description, ip_address, port, slave_id, poll_interval, project_id, site_photo_url } = body;
 
     if (!name || !ip_address) {
       return NextResponse.json({ error: "name and ip_address required" }, { status: 400 });
     }
 
     // Generate a secure API key
-    const apiKey = crypto.randomBytes(32).toString("hex");
+    const apiKey = randomBytes(32).toString("hex");
 
     const gateway = await prisma.modbus_gateways.create({
       data: {
         name,
         description: description || null,
         ip_address,
-        port: port || 502,
-        slave_id: slave_id || 1,
-        poll_interval: poll_interval || 60,
+        port: port ? parseInt(port) : 502,
+        slave_id: slave_id ? parseInt(slave_id) : 1,
+        poll_interval: poll_interval ? parseInt(poll_interval) : 60,
         api_key: apiKey,
+        site_photo_url: site_photo_url || null,
         project_id: project_id ? BigInt(project_id) : null,
       },
     });
@@ -61,6 +66,7 @@ export async function POST(req: NextRequest) {
         api_key: apiKey,
         ip_address: gateway.ip_address,
         port: gateway.port,
+        site_photo_url: gateway.site_photo_url,
       },
       message: "Gateway created. Use the api_key in the local agent config.",
     });
@@ -83,16 +89,41 @@ export async function PUT(req: NextRequest) {
     delete updateData.api_key;
     delete updateData.created_at;
 
-    if (updateData.project_id) {
-      updateData.project_id = BigInt(updateData.project_id);
+    if (updateData.project_id !== undefined) {
+      updateData.project_id = updateData.project_id ? BigInt(updateData.project_id) : null;
     }
+    if (updateData.port !== undefined) updateData.port = parseInt(updateData.port);
+    if (updateData.slave_id !== undefined) updateData.slave_id = parseInt(updateData.slave_id);
+    if (updateData.poll_interval !== undefined) updateData.poll_interval = parseInt(updateData.poll_interval);
 
     const gateway = await prisma.modbus_gateways.update({
-      where: { id },
+      where: { id: parseInt(id.toString()) },
       data: updateData,
     });
 
     return NextResponse.json({ success: true, gateway });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+// DELETE /api/v1/modbus/gateways
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    let id = searchParams.get("id");
+    if (!id) {
+      try {
+        const body = await req.json();
+        id = body?.id;
+      } catch {}
+    }
+    if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+
+    await prisma.modbus_gateways.delete({
+      where: { id: parseInt(id.toString()) },
+    });
+    return NextResponse.json({ success: true });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
