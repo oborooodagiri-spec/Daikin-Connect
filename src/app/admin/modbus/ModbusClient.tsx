@@ -335,12 +335,7 @@ export default function ModbusClient() {
       const data = await res.json();
       const logs: ModbusLogItem[] = data.logs || [];
 
-      if (logs.length === 0) {
-        setDownloadError("Tidak ada data rekaman log Modbus pada periode tanggal ini.");
-        return;
-      }
-
-      // Generate the official Senayan template PDF
+      // Generate the official Senayan template PDF (fills with live data if available, or official standard template)
       generateSenayanModbusPDF({
         gateway: downloadGateway,
         logs,
