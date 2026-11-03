@@ -10,7 +10,7 @@ import {
 
 import { login, register } from "./actions/auth";
 
-const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "1x00000000000000000000AA";
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAFyDPm--avOw-UNj";
 import { APP_VERSION } from "@/lib/version";
 import TwoFactorModal from "@/components/auth/TwoFactorModal";
 import StaticLogo from "@/components/ui/StaticLogo";

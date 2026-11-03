@@ -17,7 +17,7 @@ const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 
 async function verifyTurnstile(token: string) {
-  const secretKey = process.env.TURNSTILE_SECRET_KEY || "1x0000000000000000000000000000000AA";
+  const secretKey = process.env.TURNSTILE_SECRET_KEY || "0x4AAAAAAFyDPvLEIhMWFkyaYqukaPVUxkY";
   
   // Auto-pass in development if using testing secret or if we want to facilitate local testing
   if (process.env.NODE_ENV === 'development') {
