@@ -116,7 +116,7 @@ export default function LoginPage() {
       turnstileWidgetId.current = w.turnstile.render(turnstileRef.current, {
         sitekey: TURNSTILE_SITE_KEY,
         theme: "light",
-        size: "flexible",
+        size: "normal",
         callback: (token: string) => { setTurnstileToken(token); setTurnstileStatus("ok"); },
         "expired-callback": () => { setTurnstileToken(""); setTurnstileStatus("loading"); },
         "error-callback": () => { setTurnstileToken(""); setTurnstileStatus("error"); return true; },
@@ -227,20 +227,20 @@ export default function LoginPage() {
         </div>
 
         {/* Right Side: Login Form */}
-        <div className="flex-1 flex items-center justify-center lg:justify-end pt-12 pb-32 lg:py-0">
+        <div className="flex-1 flex items-center justify-center lg:justify-end py-8 lg:py-0">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="w-full max-w-md"
+            className={`w-full ${isRequestMode ? "max-w-xl" : "max-w-md"} transition-all duration-300`}
           >
-            <div className="mb-12 text-center flex flex-col items-center">
+            <div className={`${isRequestMode ? "mb-4" : "mb-8"} text-center flex flex-col items-center`}>
               {isRequestMode ? (
                 <>
-                  <h2 className="text-4xl font-black tracking-tight text-[#323338] mb-2">
+                  <h2 className="text-2xl md:text-3xl font-black tracking-tight text-[#323338] mb-1">
                     Access Request
                   </h2>
-                  <p className="text-sm font-bold text-slate-400">
-                    Silakan isi data untuk permintaan akses
+                  <p className="text-xs font-semibold text-slate-400">
+                    Silakan isi data untuk permintaan akses akun baru
                   </p>
                 </>
               ) : (
@@ -253,27 +253,27 @@ export default function LoginPage() {
                     The Digital <span className="text-[#00a1e4]">Revolution</span>
                   </h2>
                   
-                  <p className="text-sm font-medium text-slate-500 mb-12">
+                  <p className="text-sm font-medium text-slate-500 mb-8">
                     A Breakthrough from DASI - Service Division - EPL
                   </p>
                   
-                  <h3 className="text-xs md:text-sm font-black text-[#323338] tracking-[0.3em] uppercase mb-4">
+                  <h3 className="text-xs md:text-sm font-black text-[#323338] tracking-[0.3em] uppercase mb-2">
                     Login
                   </h3>
                 </>
               )}
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3">
               <AnimatePresence mode="popLayout">
                 {error && (
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="bg-red-50 border border-red-100 text-red-600 px-5 py-4 rounded-2xl text-xs font-bold flex items-center gap-3 shadow-sm"
+                    className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-xs font-bold flex items-center gap-2.5 shadow-xs"
                   >
-                    <AlertCircle className="w-5 h-5 shrink-0" />
+                    <AlertCircle className="w-4 h-4 shrink-0" />
                     <p>{error}</p>
                   </motion.div>
                 )}
@@ -283,43 +283,49 @@ export default function LoginPage() {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="bg-emerald-50 border border-emerald-100 text-emerald-600 px-5 py-4 rounded-2xl text-xs font-bold flex items-center gap-3 shadow-sm"
+                    className="bg-emerald-50 border border-emerald-100 text-emerald-600 px-4 py-3 rounded-xl text-xs font-bold flex items-center gap-2.5 shadow-xs"
                   >
-                    <CheckCircle2 className="w-5 h-5 shrink-0" />
+                    <CheckCircle2 className="w-4 h-4 shrink-0" />
                     <p>{message}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              {isRequestMode && (
-                <div className="space-y-4">
-                   <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Nama Lengkap</label>
+              {isRequestMode ? (
+                <div className="space-y-3">
+                  {/* Row 1: Nama Lengkap & Perusahaan */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider px-1">Nama Lengkap</label>
                       <input 
                         type="text" 
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
-                        className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-4 focus:ring-blue-100 outline-none transition-all duration-300 placeholder:text-slate-300"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-2 focus:ring-blue-100 outline-none transition-all duration-200 placeholder:text-slate-300"
                         placeholder="John Doe"
                       />
-                   </div>
-                   <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Perusahaan</label>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider px-1">Perusahaan</label>
                       <input 
                         type="text" 
                         value={companyName}
                         onChange={(e) => setCompanyName(e.target.value)}
                         required
-                        className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-4 focus:ring-blue-100 outline-none transition-all duration-300 placeholder:text-slate-300"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-2 focus:ring-blue-100 outline-none transition-all duration-200 placeholder:text-slate-300"
                         placeholder="PT. Example Indonesia"
                       />
-                   </div>
-                   <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">No. HP (WhatsApp)</label>
+                    </div>
+                  </div>
+
+                  {/* Row 2: No. HP & Email */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider px-1">No. HP (WhatsApp)</label>
                       <div className="relative">
-                        <span className="absolute left-5 top-1/2 -translate-y-1/2 flex items-center gap-2 text-sm font-bold text-slate-400 pointer-events-none">
-                          <Phone className="w-4 h-4" />
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center gap-1 text-xs font-bold text-slate-400 pointer-events-none">
+                          <Phone className="w-3.5 h-3.5" />
                           +62
                         </span>
                         <input 
@@ -331,103 +337,128 @@ export default function LoginPage() {
                           required
                           pattern="^(0|62)?8[0-9]{7,12}$"
                           title="Masukkan nomor HP aktif, contoh: 81234567890"
-                          className="w-full pl-[5.5rem] pr-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-4 focus:ring-blue-100 outline-none transition-all duration-300 placeholder:text-slate-300"
+                          className="w-full pl-16 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-2 focus:ring-blue-100 outline-none transition-all duration-200 placeholder:text-slate-300"
                           placeholder="81234567890"
                         />
                       </div>
-                      <p className="text-[10px] font-semibold text-slate-400 px-2">
-                        Digunakan untuk notifikasi & verifikasi (OTP) via WhatsApp.
-                      </p>
-                   </div>
-                </div>
-              )}
+                    </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Alamat Email</label>
-                <input 
-                  type="email" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-4 focus:ring-blue-100 outline-none transition-all duration-300 placeholder:text-slate-300"
-                  placeholder="email@domain.com"
-                />
-              </div>
-
-              <div className="space-y-1.5 relative">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Kata Sandi</label>
-                <div className="relative">
-                  <input 
-                    type={showPassword ? "text" : "password"} 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required={!isRequestMode}
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-4 focus:ring-blue-100 outline-none transition-all duration-300 placeholder:text-slate-300"
-                    placeholder="••••••••"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#323338] transition-colors"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-                {!isRequestMode && (
-                  <div className="flex justify-end pt-1 px-2">
-                    <Link href="/forgot-password" className="text-[10px] font-bold text-[#0073ea] hover:underline transition-all uppercase tracking-widest">
-                      Lupa Sandi?
-                    </Link>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider px-1">Alamat Email</label>
+                      <input 
+                        type="email" 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-2 focus:ring-blue-100 outline-none transition-all duration-200 placeholder:text-slate-300"
+                        placeholder="email@domain.com"
+                      />
+                    </div>
                   </div>
-                )}
-              </div>
 
-                <div className="flex flex-col items-center py-2 mb-4">
-                  <div ref={turnstileRef} className="w-full flex justify-center min-h-[65px]" />
-                  {turnstileStatus === "loading" && (
-                    <p className="text-[10px] font-semibold text-slate-400 mt-1">Memuat verifikasi keamanan...</p>
-                  )}
-                  {turnstileStatus === "error" && (
-                    <p className="text-[10px] font-semibold text-amber-600 mt-1 text-center">
-                      Verifikasi keamanan tidak dapat dimuat di jaringan ini. Anda tetap dapat melanjutkan.
-                    </p>
-                  )}
+                  {/* Row 3: Kata Sandi */}
+                  <div className="space-y-1 relative">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider px-1">Kata Sandi</label>
+                    <div className="relative">
+                      <input 
+                        type={showPassword ? "text" : "password"} 
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required={!isRequestMode}
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-2 focus:ring-blue-100 outline-none transition-all duration-200 placeholder:text-slate-300"
+                        placeholder="••••••••"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#323338] transition-colors"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Checkbox Privacy Policy */}
+                  <div className="flex items-center gap-2 pt-0.5 px-1">
+                    <input 
+                      type="checkbox" 
+                      id="privacy-policy-agree"
+                      required 
+                      className="w-3.5 h-3.5 text-[#0073ea] border-slate-300 rounded focus:ring-[#0073ea] shrink-0"
+                    />
+                    <label htmlFor="privacy-policy-agree" className="text-[11px] text-slate-500 leading-tight">
+                      Saya telah membaca dan menyetujui <Link href="/privacy-policy" target="_blank" className="text-[#0073ea] font-bold hover:underline">Kebijakan Privasi</Link> DSSI Connect.
+                    </label>
+                  </div>
                 </div>
+              ) : (
+                /* Login Mode */
+                <div className="space-y-3">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Alamat Email</label>
+                    <input 
+                      type="email" 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-2 focus:ring-blue-100 outline-none transition-all duration-200 placeholder:text-slate-300"
+                      placeholder="email@domain.com"
+                    />
+                  </div>
 
-                {/* Honeypot anti-bot field (hidden from humans) */}
-                <input
-                  type="text"
-                  name="website"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  aria-hidden="true"
-                  className="absolute -left-[9999px] w-px h-px opacity-0"
-                />
-
-              {isRequestMode && (
-                <div className="flex items-start gap-2 pb-2 px-2">
-                  <input 
-                    type="checkbox" 
-                    id="privacy-policy-agree"
-                    required 
-                    className="mt-1 w-4 h-4 text-[#0073ea] border-slate-300 rounded focus:ring-[#0073ea]"
-                  />
-                  <label htmlFor="privacy-policy-agree" className="text-xs text-slate-500 leading-snug">
-                    Saya telah membaca dan menyetujui <Link href="/privacy-policy" target="_blank" className="text-[#0073ea] font-bold hover:underline">Kebijakan Privasi</Link> DSSI Connect.
-                  </label>
+                  <div className="space-y-1 relative">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Kata Sandi</label>
+                    <div className="relative">
+                      <input 
+                        type={showPassword ? "text" : "password"} 
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-2 focus:ring-blue-100 outline-none transition-all duration-200 placeholder:text-slate-300"
+                        placeholder="••••••••"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#323338] transition-colors"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                    <div className="flex justify-end pt-1 px-1">
+                      <Link href="/forgot-password" className="text-[10px] font-bold text-[#0073ea] hover:underline transition-all uppercase tracking-widest">
+                        Lupa Sandi?
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               )}
 
-              <div className="pt-6">
+              {/* Turnstile Security Widget (Clean & Minimal) */}
+              <div className="flex flex-col items-center py-1">
+                <div ref={turnstileRef} className="w-full flex justify-center min-h-[65px]" />
+              </div>
+
+              {/* Honeypot anti-bot field (hidden from humans) */}
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="absolute -left-[9999px] w-px h-px opacity-0"
+              />
+
+              <div className="pt-1">
                 <button 
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-[#0073ea] text-white rounded-2xl font-black uppercase text-[11px] tracking-[0.2em] py-5 transition-all duration-300 transform hover:shadow-[0_8px_30px_rgb(0,115,234,0.3)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[#0073ea] text-white rounded-xl font-black uppercase text-[11px] tracking-[0.2em] py-3.5 transition-all duration-300 transform hover:shadow-[0_8px_30px_rgb(0,115,234,0.3)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading ? (
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto" />
                   ) : (
-                    <span className="flex items-center justify-center gap-3">
+                    <span className="flex items-center justify-center gap-2">
                       {isRequestMode ? "Kirim Permintaan" : "Masuk Sekarang"}
                       <ArrowRight className="w-4 h-4" />
                     </span>
@@ -436,7 +467,7 @@ export default function LoginPage() {
               </div>
             </form>
 
-            <div className="mt-8 text-center text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+            <div className="mt-4 text-center text-[11px] font-bold text-slate-400 uppercase tracking-widest">
               {isRequestMode ? "Sudah punya akses?" : "Belum punya akun?"}{" "}
               <button 
                 onClick={() => {
