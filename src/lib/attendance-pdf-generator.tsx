@@ -200,7 +200,7 @@ export async function generateAttendancePDF(
                                const diff = checkInMins - shiftMins;
                                const hrs = Math.floor(diff / 60);
                                const mins = diff % 60;
-                               const diffStr = hrs > 0 ? `${hrs}j ${mins}m` : `${mins}m`;
+                               const diffStr = hrs > 0 ? (mins > 0 ? `${hrs} Jam ${mins} Menit` : `${hrs} Jam`) : `${mins} Menit`;
                                return (
                                   <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1 py-0.5 rounded border border-rose-100 w-max">
                                      Terlambat {diffStr}

@@ -141,6 +141,7 @@ export default function AttendanceRecordsPage() {
     const mins = minutes % 60;
     if (hrs === 0 && mins === 0) return "-";
     if (hrs === 0) return `${mins} Menit`;
+    if (mins === 0) return `${hrs} Jam`;
     return `${hrs} Jam ${mins} Menit`;
   };
 

@@ -30,7 +30,8 @@ import {
   Plus,
   X as CloseIcon,
   Briefcase,
-  Edit2
+  Edit2,
+  ClipboardList
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -40,7 +41,7 @@ import { getAllUsers } from "@/app/actions/users";
 import { getSession } from "@/app/actions/auth";
 import { getAllProjects } from "@/app/actions/projects";
 
-const CATEGORIES = ["All", "Strategy", "Juklak", "Juknis", "Rate Card", "Logsheet", "Interactive App", "Presentation", "Catalog", "Technical", "Marketing"];
+const CATEGORIES = ["All", "Meeting Tools", "Strategy", "Juklak", "Juknis", "Rate Card", "Logsheet", "Interactive App", "Presentation", "Catalog", "Technical", "Marketing"];
 
 export default function KnowledgeCenterPage({
   initialResources = [],
@@ -218,6 +219,7 @@ export default function KnowledgeCenterPage({
           <img src={res.thumbnail} alt={res.title || "Thumbnail"} className="w-full h-full object-cover" />
         ) : (
            res.id === "internal-rate-card" ? <Briefcase className="w-12 h-12 text-[#0073ea]" strokeWidth={1} /> :
+           (res.type === "MOM" || res.category === "Meeting Tools") ? <ClipboardList className="w-12 h-12 text-[#003366]" strokeWidth={1} /> :
            res.category === "Interactive App" ? <Sparkles className="w-12 h-12 text-emerald-500" strokeWidth={1} /> :
            (res.type === "PPTX" || res.category === "Presentation") ? <Presentation className="w-12 h-12 text-orange-500" strokeWidth={1} /> : 
            res.category === "Catalog" ? <BookOpen className="w-12 h-12 text-indigo-500" strokeWidth={1} /> : 
@@ -349,6 +351,40 @@ export default function KnowledgeCenterPage({
                   {renderFolderCard("Schedule", () => setCurrentPath(["Schedule"]))}
                   {renderFolderCard("Presentasi", () => setCurrentPath(["Presentasi"]))}
                   {renderFolderCard("Product Lineup", () => router.push("/admin/product-lineup"))}
+                  {renderFolderCard("Meeting Tools", () => setCurrentPath(["Meeting Tools"]))}
+                </>
+              )}
+              {currentPath.length === 1 && currentPath[0] === "Meeting Tools" && (
+                <>
+                  <div
+                    onClick={() => router.push("/admin/database/meeting-tools/notulen")}
+                    className="col-span-full mb-2 bg-linear-to-r from-[#003366] via-[#004080] to-[#005599] text-white p-6 rounded-[2rem] shadow-md flex flex-col sm:flex-row items-center justify-between gap-4 cursor-pointer hover:shadow-xl transition-all"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-white/10 rounded-2xl shrink-0">
+                        <ClipboardList className="w-8 h-8 text-sky-300" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-white/20 text-sky-200">
+                            Fitur Resmi &bull; Meeting Tools
+                          </span>
+                        </div>
+                        <h3 className="text-base sm:text-lg font-bold">Notulen Meeting (Minutes of Meeting - MoM)</h3>
+                        <p className="text-xs text-sky-100 max-w-xl">
+                          Buat dan kelola notulen rapat resmi berstandar korporat Daikin &amp; DSSI. Lengkap dengan agenda, daftar hadir, pembahasan, keputusan, matriks tindak lanjut, serta ekspor PDF dan Cetak.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="px-4 py-2.5 rounded-xl bg-white text-[#003366] text-xs font-bold shadow-xs hover:bg-sky-50 transition-colors flex items-center gap-1.5">
+                        <span>Buka Modul Notulen</span>
+                        <ChevronRight className="w-4 h-4" />
+                      </span>
+                    </div>
+                  </div>
+
+                  {renderFolderCard("Notulen Meeting", () => router.push("/admin/database/meeting-tools/notulen"))}
                 </>
               )}
               {currentPath.length === 1 && currentPath[0] === "Reports" && (
@@ -363,7 +399,9 @@ export default function KnowledgeCenterPage({
               {/* Files based on path */}
               {(() => {
                  let pathFiltered: any[] = [];
-                 if (currentPath.length === 1 && currentPath[0] === "Schedule") {
+                 if (currentPath.length === 1 && currentPath[0] === "Meeting Tools") {
+                   pathFiltered = resources.filter((res: any) => res.category === "Meeting Tools" || res.type === "MOM" || (res.tags && res.tags.includes("Notulen")));
+                 } else if (currentPath.length === 1 && currentPath[0] === "Schedule") {
                    pathFiltered = resources.filter((res: any) => res.title.toLowerCase().includes("schedule"));
                  } else if (currentPath.length === 1 && currentPath[0] === "Presentasi") {
                    pathFiltered = resources.filter((res: any) => res.category === "Presentation" || res.type === "PPTX");

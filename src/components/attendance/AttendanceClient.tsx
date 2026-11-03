@@ -243,6 +243,9 @@ export default function AttendanceClient({
       if (!photoUrl) throw new Error("Gagal mengunggah foto.");
 
       if (!activeRecord) {
+        if (distance !== null && projectLocation?.lat && distance > (projectLocation.radius || 100)) {
+          throw new Error(`Clock-in ditolak: Anda terdeteksi berada di luar area proyek (${Math.round(distance)}m dari lokasi, batas radius: ${projectLocation.radius || 100}m). Silakan merapat ke lokasi.`);
+        }
         const res = await submitCheckIn({ projectId, lat: location.lat, long: location.long, photoUrl, notes });
         if (res.error) throw new Error(res.error);
         setLastAction("in");
@@ -273,12 +276,19 @@ export default function AttendanceClient({
   };
 
   const triggerCamera = () => {
-    if (!location) { setErrorMsg("Lokasi belum terdeteksi. Pastikan GPS aktif."); startLocationTracking(); return; }
+    if (!location) { setErrorMsg("Lokasi belum terdeteksi. Pastikan GPS aktif di perangkat Anda."); startLocationTracking(); return; }
     setErrorMsg(null);
     setCapturedFile(null);
     
-    const isOutside = distance !== null && projectLocation?.lat && distance > (projectLocation.radius || 100);
-    const outsideNote = isOutside ? `[DI LUAR AREA: ${Math.round(distance!)}m] ` : "";
+    const isOutsideLocation = Boolean(distance !== null && projectLocation?.lat && distance > (projectLocation.radius || 100));
+    
+    // Strict Geofence Enforcement: Clock In must be inside project radius
+    if (!isWorking && isOutsideLocation) {
+      setErrorMsg(`Clock-In Ditolak: Anda berada di luar area proyek (${Math.round(distance!)}m dari lokasi proyek, radius batas: ${projectLocation?.radius || 100}m). Anda harus berada di lokasi proyek untuk Clock In.`);
+      return;
+    }
+
+    const outsideNote = isOutsideLocation ? `[DI LUAR AREA: ${Math.round(distance!)}m] ` : "";
     setNotes(outsideNote);
     
     startScanner();
@@ -320,29 +330,39 @@ export default function AttendanceClient({
 
   const isWorking = activeRecord && (!activeRecord.check_out_photo || activeRecord.check_out_photo === "");
   const currentTime = new Date();
+  const isOutside = Boolean(
+    distance !== null &&
+    projectLocation &&
+    projectLocation.lat != null &&
+    projectLocation.long != null &&
+    distance > (projectLocation.radius || 100)
+  );
 
   if (!isMounted) return <div className="min-h-[400px]" />;
 
   return (
     <div className="max-w-md mx-auto w-full px-4 py-6">
-       <div className={`mb-6 p-4 rounded-3xl border flex items-center justify-between
-          ${!location ? 'bg-rose-50 border-rose-100' : (distance !== null && projectLocation && distance <= (projectLocation.radius || 100) ? 'bg-emerald-50 border-emerald-100' : 'bg-amber-50 border-amber-100')}`}>
+       <div className={`mb-6 p-4 rounded-3xl border flex items-center justify-between transition-all
+          ${!location ? 'bg-rose-50 border-rose-100' : (!isOutside ? 'bg-emerald-50 border-emerald-100' : 'bg-rose-50 border-rose-100')}`}>
           <div className="flex items-center gap-3">
              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center
-                ${!location ? 'bg-rose-100 text-rose-600' : (distance !== null && projectLocation && distance <= (projectLocation.radius || 100) ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600')}`}>
+                ${!location ? 'bg-rose-100 text-rose-600' : (!isOutside ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600')}`}>
                 {!location ? <Loader2 className="animate-spin" /> : <MapPin size={24} />}
              </div>
              <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Status Lokasi</p>
-                <p className="text-sm font-black text-slate-700">
-                   {!location ? (locError ? locError : 'Mendeteksi GPS...') : (distance !== null && projectLocation && distance <= (projectLocation.radius || 100) ? 'Di Dalam Area Proyek' : 'Di Luar Area Proyek')}
+                <p className={`text-sm font-black ${!location ? 'text-rose-600' : (!isOutside ? 'text-emerald-700' : 'text-rose-600')}`}>
+                   {!location ? (locError ? locError : 'Mendeteksi GPS...') : (!isOutside ? 'Di Dalam Area Proyek' : 'Di Luar Area Proyek')}
                 </p>
              </div>
           </div>
           {location && distance !== null && (
              <div className="text-right">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Jarak</p>
-                <p className="text-sm font-black text-slate-700">{Math.round(distance)}m</p>
+                <p className={`text-sm font-black ${!isOutside ? 'text-emerald-700' : 'text-rose-600'}`}>{Math.round(distance)}m</p>
+                {projectLocation?.radius && (
+                  <p className="text-[9px] font-bold text-slate-400">Maks: {projectLocation.radius}m</p>
+                )}
              </div>
           )}
        </div>
@@ -363,19 +383,37 @@ export default function AttendanceClient({
              <h3 className="text-4xl font-black text-slate-800 tracking-tight mb-2">{format(currentTime, "HH:mm")}</h3>
              <p className="text-slate-400 text-sm font-bold mb-8">{format(currentTime, "EEEE, dd MMMM yyyy", { locale: id })}</p>
              {isWorking && activeRecord?.check_in_time && (
-                <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 mb-8 text-left">
-                   <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Mulai Bekerja Pada</p>
-                   <p className="text-lg font-black text-blue-600">{format(new Date(activeRecord.check_in_time), "HH:mm")}</p>
-                </div>
-             )}
+                 <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 mb-8 text-left">
+                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Mulai Bekerja Pada</p>
+                    <p className="text-lg font-black text-blue-600">{format(new Date(activeRecord.check_in_time), "HH:mm")}</p>
+                 </div>
+              )}
              <button
-               disabled={submitting}
+               disabled={submitting || (!isWorking && isOutside)}
                onClick={triggerCamera}
-               className={`w-full py-5 rounded-2xl font-black text-lg shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3 ${isWorking ? 'bg-rose-500 text-white shadow-rose-200' : 'bg-blue-600 text-white shadow-blue-200'}`}
+               className={`w-full py-5 rounded-2xl font-black text-lg shadow-xl transition-all flex items-center justify-center gap-3 ${
+                 !isWorking && isOutside
+                   ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
+                   : isWorking
+                   ? 'bg-rose-500 text-white shadow-rose-200 active:scale-95'
+                   : 'bg-blue-600 text-white shadow-blue-200 active:scale-95'
+               }`}
              >
                 {submitting ? <Loader2 className="animate-spin" /> : <Camera size={24} />}
-                {isWorking ? 'Clock Out Sekarang' : 'Clock In Sekarang'}
+                {!isWorking && isOutside 
+                   ? 'Di Luar Area Proyek' 
+                   : isWorking 
+                   ? 'Clock Out Sekarang' 
+                   : 'Clock In Sekarang'}
              </button>
+             {!isWorking && isOutside && (
+               <div className="mt-4 p-3 bg-rose-50 rounded-2xl border border-rose-100 flex items-center justify-center gap-2 text-rose-600">
+                 <AlertCircle size={15} className="shrink-0" />
+                 <p className="text-xs font-bold leading-tight">
+                   Jarak Anda {Math.round(distance!)}m (Maks: {projectLocation?.radius || 100}m). Dekati lokasi proyek untuk Clock In.
+                 </p>
+               </div>
+             )}
           </div>
        </div>
 
@@ -465,8 +503,16 @@ export default function AttendanceClient({
                        <input value={notes} onChange={e => setNotes(e.target.value)} placeholder="Catatan (opsional)" className="flex-1 bg-transparent border-none outline-none font-bold text-slate-700 placeholder:text-slate-400" />
                     </div>
                  </div>
-                 <button disabled={submitting || verifying} onClick={handleFinalSubmit} className="w-full py-5 bg-blue-600 text-white rounded-2xl font-black text-lg shadow-xl shadow-blue-200 active:scale-95 transition-all flex items-center justify-center gap-3">
-                    {submitting || verifying ? <Loader2 className="animate-spin" /> : 'Ambil Foto'}
+                 <button 
+                   disabled={submitting || verifying || (!isWorking && isOutside)} 
+                   onClick={handleFinalSubmit} 
+                   className={`w-full py-5 rounded-2xl font-black text-lg shadow-xl transition-all flex items-center justify-center gap-3 ${
+                     !isWorking && isOutside 
+                       ? 'bg-slate-300 text-slate-500 cursor-not-allowed shadow-none' 
+                       : 'bg-blue-600 text-white shadow-blue-200 active:scale-95'
+                   }`}
+                 >
+                    {submitting || verifying ? <Loader2 className="animate-spin" /> : (!isWorking && isOutside ? 'Di Luar Area (Dilarang Clock-in)' : 'Ambil Foto')}
                  </button>
               </div>
           </div>

@@ -25,6 +25,15 @@ export default function AttendanceDetail({ record, onClose }: AttendanceDetailPr
     });
   };
 
+  const formatLateDuration = (minutes: number) => {
+    if (minutes >= 60) {
+      const hrs = Math.floor(minutes / 60);
+      const mins = minutes % 60;
+      return mins > 0 ? `${hrs} Jam ${mins} Menit` : `${hrs} Jam`;
+    }
+    return `${minutes} Menit`;
+  };
+
   return (
     <motion.div
       initial={{ x: "100%" }}
@@ -149,9 +158,28 @@ export default function AttendanceDetail({ record, onClose }: AttendanceDetailPr
               <div className="flex gap-4">
                  <div className="w-1 bg-emerald-100 rounded-full" />
                  <div className="space-y-1">
-                    <p className="text-xs font-black text-slate-800 flex items-center gap-2">
-                       <Clock size={14} className="text-emerald-500" /> {formatDate(record.check_in_time)}
-                    </p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                       <p className="text-xs font-black text-slate-800 flex items-center gap-2">
+                          <Clock size={14} className="text-emerald-500" /> {formatDate(record.check_in_time)}
+                       </p>
+                       {(() => {
+                          if (!record.check_in_time) return null;
+                          const shiftStart = record.projects?.shift_start_time || "08:00";
+                          const [sh, sm] = shiftStart.split(":").map(Number);
+                          const checkIn = new Date(record.check_in_time);
+                          const checkInMins = checkIn.getHours() * 60 + checkIn.getMinutes();
+                          const shiftMins = sh * 60 + sm;
+                          if (checkInMins > shiftMins) {
+                             const diff = checkInMins - shiftMins;
+                             return (
+                                <span className="text-[9px] font-black text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-100 uppercase tracking-wide">
+                                   Terlambat {formatLateDuration(diff)}
+                                </span>
+                             );
+                          }
+                          return null;
+                       })()}
+                    </div>
                     <p className="text-[11px] font-bold text-slate-400 flex items-center gap-2">
                        <MapPin size={12} className="text-slate-300" /> {record.check_in_lat}, {record.check_in_long}
                     </p>

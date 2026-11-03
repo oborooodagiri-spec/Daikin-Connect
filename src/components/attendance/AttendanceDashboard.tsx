@@ -197,6 +197,22 @@ export default function AttendanceDashboard({
                             <p className="text-sm font-bold text-slate-800">
                                {item.check_in_time ? format(new Date(item.check_in_time), "HH:mm") : "-"}
                             </p>
+                            {(() => {
+                               if (!item.check_in_time) return null;
+                               const sStart = item.projects?.shift_start_time || "08:00";
+                               const [sh, sm] = sStart.split(":").map(Number);
+                               const cDate = new Date(item.check_in_time);
+                               const cMins = cDate.getHours() * 60 + cDate.getMinutes();
+                               const sMins = sh * 60 + sm;
+                               if (cMins > sMins) {
+                                 return (
+                                   <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 bg-rose-50 px-1 py-0.5 rounded border border-rose-100 uppercase tracking-tight">
+                                     +{formatLateDuration(cMins - sMins)}
+                                   </span>
+                                 );
+                               }
+                               return null;
+                            })()}
                          </div>
                          <div className="text-center">
                             <p className="text-sm font-bold text-slate-800">
@@ -392,6 +408,15 @@ function StatItem({ label, value, icon: Icon, colorClass, bgClass }: { label: st
   );
 }
 
+function formatLateDuration(minutes: number): string {
+  if (minutes >= 60) {
+    const hrs = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return mins > 0 ? `${hrs} jam ${mins} menit` : `${hrs} jam`;
+  }
+  return `${minutes} menit`;
+}
+
 function HistoryDetailModal({ item, onClose }: { item: any; onClose: () => void }) {
   const shiftStart = item.projects?.shift_start_time || "08:00";
   const shiftEnd = item.projects?.shift_end_time || "17:00";
@@ -464,12 +489,12 @@ function HistoryDetailModal({ item, onClose }: { item: any; onClose: () => void 
                    <div className="space-y-1">
                       {isLate && (
                          <p className="text-xs font-bold text-amber-800">
-                            Terlambat Check-in: <span className="text-rose-600">+{lateMinutes} menit</span> (Jadwal: {shiftStart})
+                            Terlambat Check-in: <span className="text-rose-600 font-extrabold">+{formatLateDuration(lateMinutes)}</span> (Jadwal: {shiftStart})
                          </p>
                       )}
                       {isEarlyOut && (
                          <p className="text-xs font-bold text-amber-800">
-                            Pulang Lebih Awal: <span className="text-rose-600">-{earlyMinutes} menit</span> (Jadwal: {shiftEnd})
+                            Pulang Lebih Awal: <span className="text-rose-600 font-extrabold">-{formatLateDuration(earlyMinutes)}</span> (Jadwal: {shiftEnd})
                          </p>
                       )}
                    </div>

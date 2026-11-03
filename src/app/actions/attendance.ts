@@ -52,11 +52,11 @@ export async function getActiveAttendance(projectId: string) {
       data: activeRecord,
       hasFace: !!user?.face_reference_url,
       faceUrl: user?.face_reference_url,
-      projectLocation: targetProject ? { 
+      projectLocation: (targetProject && targetProject.latitude != null && targetProject.longitude != null) ? { 
         name: targetProject.name || 'Proyek Tanpa Nama',
         lat: Number(targetProject.latitude), 
         long: Number(targetProject.longitude), 
-        radius: targetProject.radius_meters 
+        radius: targetProject.radius_meters || 100
       } : null
     });
   } catch (error: any) {
@@ -221,7 +221,7 @@ export async function submitCheckIn(data: {
 
     let finalNotes = data.notes || "";
 
-    if (project?.latitude && project?.longitude) {
+    if (project?.latitude != null && project?.longitude != null) {
       const distance = calculateDistance(
         data.lat, data.long, 
         Number(project.latitude), Number(project.longitude)
@@ -229,11 +229,10 @@ export async function submitCheckIn(data: {
       const radius = project.radius_meters || 100;
 
       if (distance > radius) {
-        // PER USER REQUEST: Allow check-ins outside the area, but the frontend will add a note.
-        console.warn(`[GEOFENCE] User clocked in out of range: ${Math.round(distance)}m`);
-        if (!finalNotes.includes("DI LUAR AREA") && !finalNotes.includes("OUTSIDE_AREA")) {
-          finalNotes = `[DI LUAR AREA: ${Math.round(distance)}m] ${finalNotes}`.trim();
-        }
+        console.warn(`[GEOFENCE BLOCKED] User ${session.userId} clocked in out of range: ${Math.round(distance)}m (Max Radius: ${radius}m)`);
+        return { 
+          error: `Clock-in ditolak: Anda terdeteksi berada di luar area proyek (${Math.round(distance)}m dari lokasi proyek, radius batas: ${radius}m). Absensi masuk hanya dapat dilakukan di dalam area proyek.` 
+        };
       }
     }
 
