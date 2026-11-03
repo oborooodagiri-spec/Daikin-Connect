@@ -130,9 +130,9 @@ export default function ProjectsPage() {
       name: project.name, 
       code: project.code || "",
       enabled_forms: project.enabled_forms || "Audit,Preventive,Corrective",
-      latitude: project.latitude,
-      longitude: project.longitude,
-      radius_meters: project.radius_meters || 100,
+      latitude: project.latitude != null ? Number(project.latitude) : null,
+      longitude: project.longitude != null ? Number(project.longitude) : null,
+      radius_meters: project.radius_meters ? Number(project.radius_meters) : 100,
       shift_start_time: project.shift_start_time || "08:00",
       shift_end_time: project.shift_end_time || "17:00"
     });
@@ -158,17 +158,35 @@ export default function ProjectsPage() {
 
     startTransition(async () => {
       let res;
+      const cleanLat = formData.latitude !== null && (formData.latitude as any) !== "" 
+        ? parseFloat(String(formData.latitude).replace(',', '.')) 
+        : null;
+      const cleanLng = formData.longitude !== null && (formData.longitude as any) !== "" 
+        ? parseFloat(String(formData.longitude).replace(',', '.')) 
+        : null;
+      const cleanRadius = formData.radius_meters 
+        ? parseInt(String(formData.radius_meters), 10) 
+        : 100;
+
+      const payload = {
+        ...formData,
+        code: formData.code ? String(formData.code).trim().substring(0, 50) : "",
+        latitude: isNaN(cleanLat as any) ? null : cleanLat,
+        longitude: isNaN(cleanLng as any) ? null : cleanLng,
+        radius_meters: isNaN(cleanRadius) ? 100 : cleanRadius
+      };
+
       if (modalMode === "create") {
-        res = await createProject(customerId, formData);
+        res = await createProject(customerId, payload);
       } else if (modalMode === "edit" && editId) {
-        res = await updateProject(customerId, editId, formData);
+        res = await updateProject(customerId, editId, payload);
       }
       
       if (res && "success" in res && res.success) {
         closeModal();
         fetchData();
       } else {
-        alert((res as any)?.error || "An error occurred");
+        alert((res as any)?.error || "Gagal menyimpan data proyek.");
       }
     });
   };
@@ -546,13 +564,15 @@ export default function ProjectsPage() {
                           lat={formData.latitude} 
                           lng={formData.longitude} 
                           onChange={(lat, lng, name) => {
-                             const updates: any = { latitude: lat, longitude: lng };
-                             if (name) {
-                                // Take the first 3 parts of the address for the code
-                                const shortName = name.split(',').slice(0, 3).join(',').trim();
+                             const cleanLat = lat ? Number(lat.toFixed(8)) : null;
+                             const cleanLng = lng ? Number(lng.toFixed(8)) : null;
+                             const updates: any = { latitude: cleanLat, longitude: cleanLng };
+                             // Only auto-suggest code if project code is currently empty, and truncate to max 40 chars
+                             if (name && !formData.code) {
+                                const shortName = name.split(',')[0].trim().substring(0, 40);
                                 updates.code = shortName;
                              }
-                             setFormData({...formData, ...updates});
+                             setFormData(prev => ({ ...prev, ...updates }));
                           }} 
                        />
 
@@ -560,7 +580,18 @@ export default function ProjectsPage() {
                           <div className="space-y-1.5">
                              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Latitude</label>
                              <input 
-                               type="number" step="any" value={formData.latitude || ""} onChange={e => setFormData({...formData, latitude: e.target.value ? parseFloat(e.target.value) : null})}
+                               type="text"
+                               inputMode="decimal"
+                               value={formData.latitude ?? ""} 
+                               onChange={e => {
+                                 const val = e.target.value.replace(',', '.');
+                                 if (val === "" || val === "-") {
+                                   setFormData({...formData, latitude: val as any});
+                                 } else {
+                                   const num = parseFloat(val);
+                                   setFormData({...formData, latitude: isNaN(num) ? null : num});
+                                 }
+                               }}
                                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl font-bold text-xs outline-none"
                                placeholder="-6.2088"
                              />
@@ -568,7 +599,18 @@ export default function ProjectsPage() {
                           <div className="space-y-1.5">
                              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Longitude</label>
                              <input 
-                               type="number" step="any" value={formData.longitude || ""} onChange={e => setFormData({...formData, longitude: e.target.value ? parseFloat(e.target.value) : null})}
+                               type="text"
+                               inputMode="decimal"
+                               value={formData.longitude ?? ""} 
+                               onChange={e => {
+                                 const val = e.target.value.replace(',', '.');
+                                 if (val === "" || val === "-") {
+                                   setFormData({...formData, longitude: val as any});
+                                 } else {
+                                   const num = parseFloat(val);
+                                   setFormData({...formData, longitude: isNaN(num) ? null : num});
+                                 }
+                               }}
                                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl font-bold text-xs outline-none"
                                placeholder="106.8456"
                              />

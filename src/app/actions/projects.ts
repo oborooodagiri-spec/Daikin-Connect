@@ -33,9 +33,9 @@ export async function getProjectsByCustomer(customerId: string) {
         code: p.code || "N/A",
         status: p.status,
         enabled_forms: p.enabled_forms || "Audit,Preventive,Corrective",
-        latitude: p.latitude,
-        longitude: p.longitude,
-        radius_meters: p.radius_meters,
+        latitude: p.latitude != null ? Number(p.latitude) : null,
+        longitude: p.longitude != null ? Number(p.longitude) : null,
+        radius_meters: p.radius_meters != null ? Number(p.radius_meters) : 100,
         shift_start_time: p.shift_start_time || "08:00",
         shift_end_time: p.shift_end_time || "17:00",
         units_count: p._count.units,
@@ -94,25 +94,50 @@ export async function createProject(customerId: string, data: {
   shift_end_time?: string | null;
 }) {
   try {
+    const cleanName = data.name ? String(data.name).trim() : "";
+    if (!cleanName) return { error: "Nama proyek wajib diisi." };
+
+    let lat: number | null = null;
+    if (data.latitude !== undefined && data.latitude !== null && (data.latitude as any) !== "") {
+      const parsed = parseFloat(String(data.latitude).replace(",", "."));
+      lat = isNaN(parsed) ? null : Number(parsed.toFixed(8));
+    }
+
+    let lng: number | null = null;
+    if (data.longitude !== undefined && data.longitude !== null && (data.longitude as any) !== "") {
+      const parsed = parseFloat(String(data.longitude).replace(",", "."));
+      lng = isNaN(parsed) ? null : Number(parsed.toFixed(8));
+    }
+
+    let radius = 100;
+    if (data.radius_meters !== undefined && data.radius_meters !== null && (data.radius_meters as any) !== "") {
+      const parsed = parseInt(String(data.radius_meters), 10);
+      radius = isNaN(parsed) ? 100 : parsed;
+    }
+
+    const cleanCode = data.code ? String(data.code).trim().substring(0, 50) : null;
+
     await prisma.projects.create({
       data: {
         customer_id: parseInt(customerId),
-        name: data.name,
-        code: data.code,
+        name: cleanName,
+        code: cleanCode,
         status: "active",
         enabled_forms: data.enabled_forms || "Audit,Preventive,Corrective",
-        latitude: data.latitude ?? undefined,
-        longitude: data.longitude ?? undefined,
-        radius_meters: data.radius_meters ?? undefined,
+        latitude: lat,
+        longitude: lng,
+        radius_meters: radius,
         shift_start_time: data.shift_start_time || "08:00",
         shift_end_time: data.shift_end_time || "17:00"
       }
     });
+
     revalidatePath(`/dashboard/customers/${customerId}/projects`);
+    revalidatePath(`/w/${customerId}/dashboard/customers/${customerId}/projects`);
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Create project error:", error);
-    return { error: "Failed to create project." };
+    return { error: error?.message || "Failed to create project." };
   }
 }
 
@@ -128,24 +153,55 @@ export async function updateProject(customerId: string, projectId: string, data:
   shift_end_time?: string | null;
 }) {
   try {
+    if (!projectId || isNaN(Number(projectId))) {
+      return { error: "ID proyek tidak valid." };
+    }
+
+    const cleanName = data.name ? String(data.name).trim() : "";
+    if (!cleanName) return { error: "Nama proyek wajib diisi." };
+
+    let lat: number | null = null;
+    if (data.latitude !== undefined && data.latitude !== null && (data.latitude as any) !== "") {
+      const parsed = parseFloat(String(data.latitude).replace(",", "."));
+      lat = isNaN(parsed) ? null : Number(parsed.toFixed(8));
+    }
+
+    let lng: number | null = null;
+    if (data.longitude !== undefined && data.longitude !== null && (data.longitude as any) !== "") {
+      const parsed = parseFloat(String(data.longitude).replace(",", "."));
+      lng = isNaN(parsed) ? null : Number(parsed.toFixed(8));
+    }
+
+    let radius = 100;
+    if (data.radius_meters !== undefined && data.radius_meters !== null && (data.radius_meters as any) !== "") {
+      const parsed = parseInt(String(data.radius_meters), 10);
+      radius = isNaN(parsed) ? 100 : parsed;
+    }
+
+    const cleanCode = data.code ? String(data.code).trim().substring(0, 50) : null;
+
     await prisma.projects.update({
       where: { id: BigInt(projectId) },
       data: {
-        name: data.name,
-        code: data.code,
+        name: cleanName,
+        code: cleanCode,
         enabled_forms: data.enabled_forms,
-        latitude: data.latitude ?? undefined,
-        longitude: data.longitude ?? undefined,
-        radius_meters: data.radius_meters ?? undefined,
-        shift_start_time: data.shift_start_time,
-        shift_end_time: data.shift_end_time
+        latitude: lat,
+        longitude: lng,
+        radius_meters: radius,
+        shift_start_time: data.shift_start_time || "08:00",
+        shift_end_time: data.shift_end_time || "17:00"
       }
     });
+
     revalidatePath(`/dashboard/customers/${customerId}/projects`);
+    revalidatePath(`/w/${customerId}/dashboard/customers/${customerId}/projects`);
+    revalidatePath("/admin/attendance");
+    revalidatePath("/home/attendance");
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Update project error:", error);
-    return { error: "Failed to update project." };
+    return { error: error?.message || "Failed to update project." };
   }
 }
 
