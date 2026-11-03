@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { sendRegistrationReceivedEmail, sendOtpEmail } from "@/lib/mail";
 import { serializePrisma } from "@/lib/serialize";
@@ -44,26 +44,61 @@ async function verifyTurnstile(token: string) {
   }
 }
 
-export async function register(formData: FormData) {
-  const name = formData.get("name") as string;
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-  const companyName = formData.get("company_name") as string;
-  const cfToken = formData.get("cf-turnstile-response") as string;
+// Normalize Indonesian phone numbers to WhatsApp format (62xxxxxxxxxx)
+function normalizePhone(raw: string): string | null {
+  let digits = (raw || "").replace(/\D/g, "");
+  if (digits.startsWith("0")) digits = "62" + digits.substring(1);
+  else if (digits.startsWith("8")) digits = "62" + digits;
+  if (!/^628\d{7,12}$/.test(digits)) return null;
+  return digits;
+}
 
-  if (!name || !email || !password || !companyName) {
-    return { error: "All fields are required" };
+// Simple in-memory per-IP throttle for registration (fallback when CAPTCHA can't load)
+const registerAttempts = new Map<string, number[]>();
+function isRegisterThrottled(ip: string, max = 5, windowMs = 60 * 60 * 1000) {
+  const now = Date.now();
+  const hits = (registerAttempts.get(ip) || []).filter((t) => now - t < windowMs);
+  hits.push(now);
+  registerAttempts.set(ip, hits);
+  return hits.length > max;
+}
+
+export async function register(formData: FormData) {
+  const name = (formData.get("name") as string)?.trim();
+  const email = (formData.get("email") as string)?.trim();
+  const password = formData.get("password") as string;
+  const companyName = (formData.get("company_name") as string)?.trim();
+  const rawPhone = formData.get("phone") as string;
+  const cfToken = formData.get("cf-turnstile-response") as string;
+  const honeypot = formData.get("website") as string;
+
+  // Bots usually fill every field – pretend success and drop silently
+  if (honeypot) {
+    return { success: "Request sent! Please wait for admin approval." };
   }
 
-  // Enforce CAPTCHA security to prevent spam
+  if (!name || !email || !password || !companyName || !rawPhone) {
+    return { error: "Semua kolom wajib diisi (termasuk No. HP)." };
+  }
+
+  const phone = normalizePhone(rawPhone);
+  if (!phone) {
+    return { error: "Format No. HP tidak valid. Contoh: 081234567890" };
+  }
+
+  // CAPTCHA: verify when a token is present. If the widget failed to load on the
+  // client (e.g. blocked network / mobile browser), fall back to IP throttling +
+  // honeypot. New accounts remain inactive until an admin approves them.
   if (cfToken) {
     const isHuman = await verifyTurnstile(cfToken);
-    if (!isHuman) return { error: "Security check failed. Please refresh." };
+    if (!isHuman) return { error: "Verifikasi keamanan gagal. Silakan muat ulang halaman." };
   } else {
-    // If no token is provided at all, reject immediately
-    if (process.env.NODE_ENV === "production") {
-      return { error: "Security validation missing. Please ensure CAPTCHA is loaded." };
+    const hdrs = await headers();
+    const ip = (hdrs.get("x-forwarded-for") || "").split(",")[0].trim() || hdrs.get("x-real-ip") || "unknown";
+    if (isRegisterThrottled(ip)) {
+      return { error: "Terlalu banyak permintaan. Silakan coba lagi nanti." };
     }
+    console.warn(`[register] No Turnstile token (status=${formData.get("cf-turnstile-status")}) from IP ${ip}, email ${email}`);
   }
 
   try {
@@ -83,6 +118,7 @@ export async function register(formData: FormData) {
           email,
           password: hashedPassword,
           company_name: companyName,
+          phone,
           is_active: false
         } as any,
       });

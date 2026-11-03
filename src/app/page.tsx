@@ -5,10 +5,12 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Mail, Lock, AlertCircle, ArrowRight, CheckCircle2, Eye, EyeOff, 
-  Wind, Zap, Fan, ShieldCheck, ArrowUp
+  Wind, Zap, Fan, ShieldCheck, ArrowUp, Phone
 } from "lucide-react";
 
 import { login, register } from "./actions/auth";
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAADGD9nT3x6TSaE8-";
 import { APP_VERSION } from "@/lib/version";
 import TwoFactorModal from "@/components/auth/TwoFactorModal";
 import StaticLogo from "@/components/ui/StaticLogo";
@@ -54,6 +56,12 @@ export default function LoginPage() {
   const [show2fModal, setShow2fModal] = useState(false);
   const [tempEmail, setTempEmail] = useState("");
   const [twoFactorState, setTwoFactorState] = useState({ isSelection: false, hasPhone: false, phoneMasked: "", methodSent: "" });
+  const [phone, setPhone] = useState("");
+  const [turnstileReady, setTurnstileReady] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileStatus, setTurnstileStatus] = useState<"loading" | "ok" | "error">("loading");
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const turnstileWidgetId = useRef<string | null>(null);
   useEffect(() => {
     setIsMounted(true);
 
@@ -62,27 +70,77 @@ export default function LoginPage() {
     }
   }, []);
 
-  // Load Cloudflare Turnstile script dynamically (implicit mode)
+  // Load Cloudflare Turnstile script ONCE (explicit render mode).
+  // Previously the script was removed & re-injected on every mode toggle (implicit mode),
+  // which frequently left the widget unrendered (esp. on mobile) -> no token was submitted.
   useEffect(() => {
     if (!isMounted) return;
-    
-    // Remove any existing turnstile scripts to force re-scan
-    document.querySelectorAll('script[src*="challenges.cloudflare.com/turnstile"]').forEach(s => s.remove());
-    // Reset turnstile global
-    delete (window as any).turnstile;
+    const w = window as any;
+    if (w.turnstile) {
+      setTurnstileReady(true);
+      return;
+    }
+    let script = document.querySelector<HTMLScriptElement>('script[data-turnstile-loader]');
+    if (!script) {
+      script = document.createElement("script");
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+      script.async = true;
+      script.defer = true;
+      script.setAttribute("data-turnstile-loader", "true");
+      document.head.appendChild(script);
+    }
+    const onLoad = () => setTurnstileReady(true);
+    const onError = () => setTurnstileStatus("error");
+    script.addEventListener("load", onLoad);
+    script.addEventListener("error", onError);
+    return () => {
+      script?.removeEventListener("load", onLoad);
+      script?.removeEventListener("error", onError);
+    };
+  }, [isMounted]);
 
-    const script = document.createElement('script');
-    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
+  // Render (or re-render) the widget whenever the form mode changes
+  useEffect(() => {
+    const w = window as any;
+    if (!turnstileReady || !w.turnstile || !turnstileRef.current) return;
+
+    // Remove previous widget instance (if any)
+    if (turnstileWidgetId.current) {
+      try { w.turnstile.remove(turnstileWidgetId.current); } catch { /* noop */ }
+      turnstileWidgetId.current = null;
+    }
+    setTurnstileToken("");
+    setTurnstileStatus("loading");
+
+    try {
+      turnstileWidgetId.current = w.turnstile.render(turnstileRef.current, {
+        sitekey: TURNSTILE_SITE_KEY,
+        theme: "light",
+        size: "flexible",
+        callback: (token: string) => { setTurnstileToken(token); setTurnstileStatus("ok"); },
+        "expired-callback": () => { setTurnstileToken(""); setTurnstileStatus("loading"); },
+        "error-callback": () => { setTurnstileToken(""); setTurnstileStatus("error"); return true; },
+      });
+    } catch (e) {
+      console.error("Turnstile render error:", e);
+      setTurnstileStatus("error");
+    }
 
     return () => {
-      // Cleanup widget on unmount
-      const container = document.querySelector('.cf-turnstile');
-      if (container) container.innerHTML = '';
+      if (turnstileWidgetId.current && w.turnstile) {
+        try { w.turnstile.remove(turnstileWidgetId.current); } catch { /* noop */ }
+        turnstileWidgetId.current = null;
+      }
     };
-  }, [isMounted, isRequestMode]);
+  }, [turnstileReady, isRequestMode]);
+
+  const resetTurnstile = () => {
+    const w = window as any;
+    if (w.turnstile && turnstileWidgetId.current) {
+      try { w.turnstile.reset(turnstileWidgetId.current); } catch { /* noop */ }
+    }
+    setTurnstileToken("");
+  };
 
   if (!isMounted) return <div className="min-h-screen bg-white" />;
 
@@ -99,25 +157,31 @@ export default function LoginPage() {
       // Ensure email and password from state are used (or just rely on form data if fields have names)
       formData.set("email", email);
       formData.set("password", password);
+      // Attach Turnstile token explicitly (explicit render mode does not inject hidden input reliably)
+      if (turnstileToken) formData.set("cf-turnstile-response", turnstileToken);
+      formData.set("cf-turnstile-status", turnstileStatus);
       
       if (isRequestMode) {
         formData.append("name", name);
         formData.append("company_name", companyName);
+        formData.set("phone", phone);
         const result = await register(formData);
         if (result?.error) {
           setError(result.error || "Registration failed");
+          resetTurnstile();
         } else if (result && "success" in result && result.success) {
           setMessage(result.success as string);
           setIsRequestMode(false);
           setName("");
           setCompanyName("");
+          setPhone("");
           setPassword("");
         }
       } else {
         const result = await login(formData);
         if (result && "requires2fMethodSelection" in result) {
           setTempEmail(email);
-          setTwoFactorState({ isSelection: true, hasPhone: result.hasPhone, phoneMasked: result.phoneMasked, methodSent: "" });
+          setTwoFactorState({ isSelection: true, hasPhone: !!result.hasPhone, phoneMasked: result.phoneMasked || "", methodSent: "" });
           setShow2fModal(true);
         } else if (result && "requires2f" in result) {
           setTempEmail(email);
@@ -125,6 +189,7 @@ export default function LoginPage() {
           setShow2fModal(true);
         } else if (result && "error" in result) {
           setError(result.error || "Login failed");
+          resetTurnstile();
         }
       }
     } catch (err: any) {
@@ -250,6 +315,30 @@ export default function LoginPage() {
                         placeholder="PT. Example Indonesia"
                       />
                    </div>
+                   <div className="space-y-1.5">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">No. HP (WhatsApp)</label>
+                      <div className="relative">
+                        <span className="absolute left-5 top-1/2 -translate-y-1/2 flex items-center gap-2 text-sm font-bold text-slate-400 pointer-events-none">
+                          <Phone className="w-4 h-4" />
+                          +62
+                        </span>
+                        <input 
+                          type="tel" 
+                          inputMode="numeric"
+                          autoComplete="tel-national"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value.replace(/[^\d]/g, "").slice(0, 15))}
+                          required
+                          pattern="^(0|62)?8[0-9]{7,12}$"
+                          title="Masukkan nomor HP aktif, contoh: 81234567890"
+                          className="w-full pl-[5.5rem] pr-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-[#323338] focus:bg-white focus:border-[#0073ea] focus:ring-4 focus:ring-blue-100 outline-none transition-all duration-300 placeholder:text-slate-300"
+                          placeholder="81234567890"
+                        />
+                      </div>
+                      <p className="text-[10px] font-semibold text-slate-400 px-2">
+                        Digunakan untuk notifikasi & verifikasi (OTP) via WhatsApp.
+                      </p>
+                   </div>
                 </div>
               )}
 
@@ -293,15 +382,27 @@ export default function LoginPage() {
                 )}
               </div>
 
-                {true && (
-                  <div className="flex justify-center py-2 min-h-[65px] mb-4">
-                    <div 
-                      className="cf-turnstile" 
-                      data-sitekey="0x4AAAAAAADGD9nT3x6TSaE8-"
-                      data-theme="light"
-                    ></div>
-                  </div>
-                )}
+                <div className="flex flex-col items-center py-2 mb-4">
+                  <div ref={turnstileRef} className="w-full flex justify-center min-h-[65px]" />
+                  {turnstileStatus === "loading" && (
+                    <p className="text-[10px] font-semibold text-slate-400 mt-1">Memuat verifikasi keamanan...</p>
+                  )}
+                  {turnstileStatus === "error" && (
+                    <p className="text-[10px] font-semibold text-amber-600 mt-1 text-center">
+                      Verifikasi keamanan tidak dapat dimuat di jaringan ini. Anda tetap dapat melanjutkan.
+                    </p>
+                  )}
+                </div>
+
+                {/* Honeypot anti-bot field (hidden from humans) */}
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="absolute -left-[9999px] w-px h-px opacity-0"
+                />
 
               {isRequestMode && (
                 <div className="flex items-start gap-2 pb-2 px-2">
@@ -598,7 +699,7 @@ export default function LoginPage() {
               if (result && "requires2f" in result) {
                 setTwoFactorState({ ...twoFactorState, isSelection: false, methodSent: method });
               } else if (result && "error" in result) {
-                setError(result.error);
+                setError(result.error || "Request failed.");
               }
             } catch (err) {
               setError("Request failed.");
