@@ -17,7 +17,7 @@ const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 
 async function verifyTurnstile(token: string) {
-  const secretKey = process.env.TURNSTILE_SECRET_KEY;
+  const secretKey = process.env.TURNSTILE_SECRET_KEY || "1x0000000000000000000000000000000AA";
   
   // Auto-pass in development if using testing secret or if we want to facilitate local testing
   if (process.env.NODE_ENV === 'development') {
@@ -25,8 +25,8 @@ async function verifyTurnstile(token: string) {
     return true;
   }
 
-  if (!secretKey) {
-    console.warn("TURNSTILE_SECRET_KEY not set, skipping verification");
+  // If using Cloudflare's official testing keys, treat as passed
+  if (secretKey === "1x0000000000000000000000000000000AA") {
     return true;
   }
 
@@ -37,7 +37,7 @@ async function verifyTurnstile(token: string) {
       body: JSON.stringify({ secret: secretKey, response: token }),
     });
     const outcome = await res.json();
-    return outcome.success;
+    return outcome.success === true;
   } catch (err) {
     console.error("Turnstile verification error:", err);
     return false;

@@ -10,7 +10,7 @@ import {
 
 import { login, register } from "./actions/auth";
 
-const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAADGD9nT3x6TSaE8-";
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "1x00000000000000000000AA";
 import { APP_VERSION } from "@/lib/version";
 import TwoFactorModal from "@/components/auth/TwoFactorModal";
 import StaticLogo from "@/components/ui/StaticLogo";
@@ -109,6 +109,9 @@ export default function LoginPage() {
       try { w.turnstile.remove(turnstileWidgetId.current); } catch { /* noop */ }
       turnstileWidgetId.current = null;
     }
+    if (turnstileRef.current) {
+      turnstileRef.current.style.display = "";
+    }
     setTurnstileToken("");
     setTurnstileStatus("loading");
 
@@ -119,7 +122,14 @@ export default function LoginPage() {
         size: "normal",
         callback: (token: string) => { setTurnstileToken(token); setTurnstileStatus("ok"); },
         "expired-callback": () => { setTurnstileToken(""); setTurnstileStatus("loading"); },
-        "error-callback": () => { setTurnstileToken(""); setTurnstileStatus("error"); return true; },
+        "error-callback": () => {
+          setTurnstileToken("");
+          setTurnstileStatus("error");
+          if (turnstileRef.current) {
+            turnstileRef.current.style.display = "none";
+          }
+          return true;
+        },
       });
     } catch (e) {
       console.error("Turnstile render error:", e);
@@ -435,7 +445,7 @@ export default function LoginPage() {
               )}
 
               {/* Turnstile Security Widget (Clean & Minimal) */}
-              <div className="flex flex-col items-center py-1">
+              <div className={`flex flex-col items-center py-1 ${turnstileStatus === "error" ? "hidden" : ""}`}>
                 <div ref={turnstileRef} className="w-full flex justify-center min-h-[65px]" />
               </div>
 
