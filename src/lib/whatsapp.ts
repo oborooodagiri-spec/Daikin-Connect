@@ -47,7 +47,7 @@ export async function sendWhatsAppTemplate(to: string, templateName: string, par
   const phoneId = process.env.WA_PHONE_NUMBER_ID;
 
   if (!token || !phoneId) {
-    console.error("Missing WhatsApp credentials");
+    console.error("[WA] Missing WhatsApp credentials (WA_ACCESS_TOKEN or WA_PHONE_NUMBER_ID)");
     return false;
   }
 
@@ -55,6 +55,8 @@ export async function sendWhatsAppTemplate(to: string, templateName: string, par
   if (cleanTo.startsWith("0")) {
     cleanTo = "62" + cleanTo.substring(1);
   }
+
+  console.log(`[WA] Attempting to send Template '${templateName}' (${languageCode}) to ${cleanTo}...`);
 
   try {
     const res = await fetch(`https://graph.facebook.com/v19.0/${phoneId}/messages`, {
@@ -81,10 +83,14 @@ export async function sendWhatsAppTemplate(to: string, templateName: string, par
       }),
     });
     const data = await res.json();
-    if (!res.ok) console.error("WA Template Error:", JSON.stringify(data, null, 2));
-    return res.ok;
+    if (!res.ok) {
+      console.error(`[WA Template Error - ${templateName}]:`, JSON.stringify(data));
+      return false;
+    }
+    console.log(`[WA] Template '${templateName}' sent successfully to ${cleanTo} (id: ${data.messages?.[0]?.id || "ok"})`);
+    return true;
   } catch (err) {
-    console.error("WA Error:", err);
+    console.error(`[WA Template Network Error - ${templateName}]:`, err);
     return false;
   }
 }
@@ -183,6 +189,11 @@ export async function sendWhatsAppAuthTemplate(to: string, otpCode: string) {
  */
 export async function sendWhatsAppRegistrationReceived(to: string, name: string) {
   if (!to) return false;
+  // Try approved Meta Template first
+  const templateSent = await sendWhatsAppTemplate(to, "dssi_registration_received", [name], "id");
+  if (templateSent) return true;
+
+  // Fallback to text message
   const text = `*DSSI CONNECT - PEMBERITAHUAN PERMINTAAN AKSES*
 
 Yth. *${name}*,
@@ -204,19 +215,20 @@ PT Daikin Applied Solutions Indonesia`;
  */
 export async function sendWhatsAppAccountApproved(to: string, name: string, role: string) {
   if (!to) return false;
+  // Try approved Meta Template first (dssi_account_approve)
+  const templateSent = await sendWhatsAppTemplate(to, "dssi_account_approve", [name, role], "id");
+  if (templateSent) return true;
+
+  // Fallback to text message
   const baseUrl = process.env.APP_URL || 'https://dconnect.id';
   const text = `*DSSI CONNECT - PEMBERITAHUAN AKTIVASI AKUN*
 
 Yth. *${name}*,
 
-Kami menginformasikan bahwa akun Anda pada portal DSSI Connect telah disetujui dan saat ini berstatus AKTIF.
+Akun Anda pada portal DSSI Connect telah disetujui dan saat ini berstatus AKTIF dengan peran sebagai ${role}.
 
-Rincian Akun:
-- Nama Pengguna: ${name}
-- Peran (Role): ${role}
-- Tautan Masuk: ${baseUrl}
-
-Anda dapat mengakses sistem dengan menggunakan alamat email dan kata sandi yang telah Anda daftarkan.
+Anda dapat mengakses sistem dengan menggunakan alamat email dan kata sandi yang telah Anda daftarkan melalui portal:
+${baseUrl}
 
 Terima kasih.
 PT Daikin Applied Solutions Indonesia`;
@@ -229,6 +241,11 @@ PT Daikin Applied Solutions Indonesia`;
  */
 export async function sendWhatsAppAccountSuspended(to: string, name: string) {
   if (!to) return false;
+  // Try approved Meta Template first
+  const templateSent = await sendWhatsAppTemplate(to, "dssi_account_suspended", [name], "id");
+  if (templateSent) return true;
+
+  // Fallback to text message
   const text = `*DSSI CONNECT - PEMBERITAHUAN PENANGGUHAN AKUN*
 
 Yth. *${name}*,
@@ -248,6 +265,11 @@ PT Daikin Applied Solutions Indonesia`;
  */
 export async function sendWhatsAppPasswordReset(to: string, name: string, resetLink: string) {
   if (!to) return false;
+  // Try approved Meta Template first
+  const templateSent = await sendWhatsAppTemplate(to, "dssi_password_reset", [name, resetLink], "id");
+  if (templateSent) return true;
+
+  // Fallback to text message
   const text = `*DSSI CONNECT - PERMINTAAN ATUR ULANG KATA SANDI*
 
 Yth. *${name}*,
