@@ -265,8 +265,10 @@ PT Daikin Applied Solutions Indonesia`;
  */
 export async function sendWhatsAppPasswordReset(to: string, name: string, resetLink: string) {
   if (!to) return false;
+  // Extract token from resetLink for template variable {{2}}
+  const tokenOnly = resetLink.split("/").filter(Boolean).pop() || resetLink;
   // Try approved Meta Template first
-  const templateSent = await sendWhatsAppTemplate(to, "dssi_password_reset", [name, resetLink], "id");
+  const templateSent = await sendWhatsAppTemplate(to, "dssi_password_reset", [name, tokenOnly], "id");
   if (templateSent) return true;
 
   // Fallback to text message
