@@ -46,15 +46,6 @@ export async function requestPasswordReset(email: string) {
     });
 
     const emailResult = await sendPasswordResetEmail(email, user.name, resetToken);
-    
-    // Also send WhatsApp reset notification if user has phone registered
-    if (user.phone) {
-      const baseUrl = process.env.APP_URL || 'https://dconnect.id';
-      const resetLink = `${baseUrl}/reset-password/${resetToken}`;
-      sendWhatsAppPasswordReset(user.phone, user.name, resetLink).catch(err => {
-        console.error("[WA Password Reset Notification Error]:", err);
-      });
-    }
 
     if (emailResult.error) {
       console.error("SMTP Error during password reset:", emailResult.error);

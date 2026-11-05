@@ -189,8 +189,11 @@ export async function sendWhatsAppAuthTemplate(to: string, otpCode: string) {
  */
 export async function sendWhatsAppRegistrationReceived(to: string, name: string) {
   if (!to) return false;
-  // Try approved Meta Template first
-  const templateSent = await sendWhatsAppTemplate(to, "dssi_registration_received", [name], "id");
+  // Try approved Meta Template (supports both dssi_registration_received and dssi_registration_receive)
+  let templateSent = await sendWhatsAppTemplate(to, "dssi_registration_received", [name], "id");
+  if (!templateSent) {
+    templateSent = await sendWhatsAppTemplate(to, "dssi_registration_receive", [name], "id");
+  }
   if (templateSent) return true;
 
   // Fallback to text message
@@ -215,8 +218,11 @@ PT Daikin Applied Solutions Indonesia`;
  */
 export async function sendWhatsAppAccountApproved(to: string, name: string, role: string) {
   if (!to) return false;
-  // Try approved Meta Template first (dssi_account_approve)
-  const templateSent = await sendWhatsAppTemplate(to, "dssi_account_approve", [name, role], "id");
+  // Try approved Meta Template (supports both dssi_account_approve and dssi_account_approved)
+  let templateSent = await sendWhatsAppTemplate(to, "dssi_account_approve", [name, role], "id");
+  if (!templateSent) {
+    templateSent = await sendWhatsAppTemplate(to, "dssi_account_approved", [name, role], "id");
+  }
   if (templateSent) return true;
 
   // Fallback to text message
@@ -241,8 +247,11 @@ PT Daikin Applied Solutions Indonesia`;
  */
 export async function sendWhatsAppAccountSuspended(to: string, name: string) {
   if (!to) return false;
-  // Try approved Meta Template first
-  const templateSent = await sendWhatsAppTemplate(to, "dssi_account_suspended", [name], "id");
+  // Try approved Meta Template (supports both dssi_account_suspended and dssi_account_suspend)
+  let templateSent = await sendWhatsAppTemplate(to, "dssi_account_suspended", [name], "id");
+  if (!templateSent) {
+    templateSent = await sendWhatsAppTemplate(to, "dssi_account_suspend", [name], "id");
+  }
   if (templateSent) return true;
 
   // Fallback to text message
