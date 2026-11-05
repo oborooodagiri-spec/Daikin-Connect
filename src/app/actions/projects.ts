@@ -94,7 +94,7 @@ export async function createProject(customerId: string, data: {
   shift_end_time?: string | null;
 }) {
   try {
-    const cleanName = data.name ? String(data.name).trim() : "";
+    const cleanName = data.name ? String(data.name).trim().substring(0, 150) : "";
     if (!cleanName) return { error: "Nama proyek wajib diisi." };
 
     let lat: number | null = null;
@@ -116,6 +116,8 @@ export async function createProject(customerId: string, data: {
     }
 
     const cleanCode = data.code ? String(data.code).trim().substring(0, 50) : null;
+    const cleanShiftStart = data.shift_start_time ? String(data.shift_start_time).trim().substring(0, 5) : "08:00";
+    const cleanShiftEnd = data.shift_end_time ? String(data.shift_end_time).trim().substring(0, 5) : "17:00";
 
     await prisma.projects.create({
       data: {
@@ -127,8 +129,8 @@ export async function createProject(customerId: string, data: {
         latitude: lat,
         longitude: lng,
         radius_meters: radius,
-        shift_start_time: data.shift_start_time || "08:00",
-        shift_end_time: data.shift_end_time || "17:00"
+        shift_start_time: cleanShiftStart,
+        shift_end_time: cleanShiftEnd
       }
     });
 
@@ -157,7 +159,7 @@ export async function updateProject(customerId: string, projectId: string, data:
       return { error: "ID proyek tidak valid." };
     }
 
-    const cleanName = data.name ? String(data.name).trim() : "";
+    const cleanName = data.name ? String(data.name).trim().substring(0, 150) : "";
     if (!cleanName) return { error: "Nama proyek wajib diisi." };
 
     let lat: number | null = null;
@@ -179,6 +181,8 @@ export async function updateProject(customerId: string, projectId: string, data:
     }
 
     const cleanCode = data.code ? String(data.code).trim().substring(0, 50) : null;
+    const cleanShiftStart = data.shift_start_time ? String(data.shift_start_time).trim().substring(0, 5) : "08:00";
+    const cleanShiftEnd = data.shift_end_time ? String(data.shift_end_time).trim().substring(0, 5) : "17:00";
 
     await prisma.projects.update({
       where: { id: BigInt(projectId) },
@@ -189,8 +193,8 @@ export async function updateProject(customerId: string, projectId: string, data:
         latitude: lat,
         longitude: lng,
         radius_meters: radius,
-        shift_start_time: data.shift_start_time || "08:00",
-        shift_end_time: data.shift_end_time || "17:00"
+        shift_start_time: cleanShiftStart,
+        shift_end_time: cleanShiftEnd
       }
     });
 

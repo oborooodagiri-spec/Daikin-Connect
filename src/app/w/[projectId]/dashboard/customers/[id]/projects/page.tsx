@@ -563,16 +563,14 @@ export default function ProjectsPage() {
                        <MapPicker 
                           lat={formData.latitude} 
                           lng={formData.longitude} 
-                          onChange={(lat, lng, name) => {
+                          onChange={(lat, lng) => {
                              const cleanLat = lat ? Number(lat.toFixed(8)) : null;
                              const cleanLng = lng ? Number(lng.toFixed(8)) : null;
-                             const updates: any = { latitude: cleanLat, longitude: cleanLng };
-                             // Only auto-suggest code if project code is currently empty, and truncate to max 40 chars
-                             if (name && !formData.code) {
-                                const shortName = name.split(',')[0].trim().substring(0, 40);
-                                updates.code = shortName;
-                             }
-                             setFormData(prev => ({ ...prev, ...updates }));
+                             setFormData(prev => ({ 
+                               ...prev, 
+                               latitude: cleanLat, 
+                               longitude: cleanLng 
+                             }));
                           }} 
                        />
 
