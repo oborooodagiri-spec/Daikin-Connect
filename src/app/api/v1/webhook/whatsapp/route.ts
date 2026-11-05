@@ -47,16 +47,24 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    if (body.object && body.entry && body.entry[0].changes && body.entry[0].changes[0].value.messages) {
-      const messages = body.entry[0].changes[0].value.messages;
-      if (messages && messages.length > 0) {
-        const msg = messages[0];
-        
-        if (msg.type === 'text') {
-          await handleIncomingMessage(msg.from, msg.text.body.trim());
-        } else if (msg.type === 'interactive' && msg.interactive.type === 'list_reply') {
-          await handleIncomingMessage(msg.from, msg.interactive.list_reply.id);
-        }
+    const value = body?.entry?.[0]?.changes?.[0]?.value;
+
+    if (value?.statuses && value.statuses.length > 0) {
+      const st = value.statuses[0];
+      if (st.status === "failed") {
+        console.error(`[WA Delivery Status] Message ${st.id} FAILED to ${st.recipient_id}:`, JSON.stringify(st.errors || st));
+      } else {
+        console.log(`[WA Delivery Status] Message ${st.id}: ${st.status} (recipient: ${st.recipient_id})`);
+      }
+    }
+
+    if (value?.messages && value.messages.length > 0) {
+      const msg = value.messages[0];
+      
+      if (msg.type === 'text') {
+        await handleIncomingMessage(msg.from, msg.text.body.trim());
+      } else if (msg.type === 'interactive' && msg.interactive.type === 'list_reply') {
+        await handleIncomingMessage(msg.from, msg.interactive.list_reply.id);
       }
     }
     return new NextResponse("EVENT_RECEIVED", { status: 200 });
