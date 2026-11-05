@@ -177,18 +177,18 @@ export async function sendWhatsAppAuthTemplate(to: string, otpCode: string) {
  */
 export async function sendWhatsAppRegistrationReceived(to: string, name: string) {
   if (!to) return false;
-  const text = `*DSSI CONNECT - PERMINTAAN AKSES DITERIMA*
+  const text = `*DSSI CONNECT - PEMBERITAHUAN PERMINTAAN AKSES*
 
-Halo *${name}*,
+Yth. *${name}*,
 
-Permintaan akses akun Anda untuk platform *DSSI Connect* telah berhasil kami terima.
+Permintaan akses akun Anda untuk portal DSSI Connect telah berhasil kami terima.
 
-📋 *Status:* Menunggu Peninjauan Administrator
+Status: Menunggu Peninjauan Administrator
 
-Tim Administrator akan segera meninjau permohonan akses Anda. Anda akan menerima pemberitahuan otomatis segera setelah akun Anda disetujui.
+Permohonan Anda saat ini sedang dalam proses verifikasi oleh tim Administrator. Pemberitahuan resmi akan dikirimkan kepada Anda setelah proses verifikasi selesai.
 
-Terima kasih,
-*PT. Daikin Airconditioning Indonesia / DSSI*`;
+Terima kasih.
+PT Daikin Applied Solutions Indonesia`;
 
   return sendWhatsAppMessage(to, text);
 }
@@ -199,21 +199,21 @@ Terima kasih,
 export async function sendWhatsAppAccountApproved(to: string, name: string, role: string) {
   if (!to) return false;
   const baseUrl = process.env.APP_URL || 'https://dconnect.id';
-  const text = `*DSSI CONNECT - AKUN TELAH AKTIF*
+  const text = `*DSSI CONNECT - PEMBERITAHUAN AKTIVASI AKUN*
 
-Selamat, *${name}*! 🎉
+Yth. *${name}*,
 
-Akun Anda di platform *DSSI Connect* telah *DISETUJUI* dan kini berstatus *AKTIF*.
+Kami menginformasikan bahwa akun Anda pada portal DSSI Connect telah disetujui dan saat ini berstatus AKTIF.
 
-👤 *Detail Akun:*
-• Nama: ${name}
-• Peran (Role): ${role}
-• Portal Login: ${baseUrl}
+Rincian Akun:
+- Nama Pengguna: ${name}
+- Peran (Role): ${role}
+- Tautan Masuk: ${baseUrl}
 
-Anda sekarang dapat login ke portal DSSI Connect menggunakan alamat email dan kata sandi yang telah Anda daftarkan.
+Anda dapat mengakses sistem dengan menggunakan alamat email dan kata sandi yang telah Anda daftarkan.
 
-Salam hangat,
-*Tim DSSI Connect*`;
+Terima kasih.
+PT Daikin Applied Solutions Indonesia`;
 
   return sendWhatsAppMessage(to, text);
 }
@@ -223,16 +223,16 @@ Salam hangat,
  */
 export async function sendWhatsAppAccountSuspended(to: string, name: string) {
   if (!to) return false;
-  const text = `*DSSI CONNECT - PEMBERITAHUAN AKUN*
+  const text = `*DSSI CONNECT - PEMBERITAHUAN PENANGGUHAN AKUN*
 
-Halo *${name}*,
+Yth. *${name}*,
 
-Kami menginformasikan bahwa akses akun Anda di platform *DSSI Connect* saat ini telah *DINONAKTIFKAN (SUSPENDED)* oleh Administrator.
+Kami menginformasikan bahwa status akses akun Anda pada portal DSSI Connect saat ini telah dinonaktifkan oleh Administrator.
 
-Apabila Anda memerlukan klarifikasi atau menganggap hal ini sebagai kekeliruan, silakan hubungi tim Administrator DSSI Connect.
+Apabila Anda memerlukan informasi lebih lanjut mengenai status akun Anda, silakan menghubungi pihak Administrator terkait.
 
-Terima kasih,
-*Tim DSSI Connect*`;
+Terima kasih.
+PT Daikin Applied Solutions Indonesia`;
 
   return sendWhatsAppMessage(to, text);
 }
@@ -242,19 +242,19 @@ Terima kasih,
  */
 export async function sendWhatsAppPasswordReset(to: string, name: string, resetLink: string) {
   if (!to) return false;
-  const text = `*DSSI CONNECT - ATUR ULANG KATA SANDI*
+  const text = `*DSSI CONNECT - PERMINTAAN ATUR ULANG KATA SANDI*
 
-Halo *${name}*,
+Yth. *${name}*,
 
-Kami menerima permintaan untuk mengatur ulang kata sandi akun *DSSI Connect* Anda.
+Kami menerima permohonan untuk mengatur ulang kata sandi akun DSSI Connect Anda.
 
-Silakan klik tautan berikut untuk membuat kata sandi baru (tautan berlaku selama 1 jam):
+Silakan gunakan tautan berikut untuk memperbarui kata sandi Anda (tautan berlaku selama 1 jam):
 ${resetLink}
 
-Jika Anda tidak merasa melakukan permintaan ini, silakan abaikan pesan ini demi keamanan akun Anda.
+Apabila Anda tidak merasa melakukan permohonan ini, silakan abaikan pesan ini demi keamanan akun Anda.
 
-Terima kasih,
-*Tim DSSI Connect*`;
+Terima kasih.
+PT Daikin Applied Solutions Indonesia`;
 
   return sendWhatsAppMessage(to, text);
 }
