@@ -6,6 +6,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { sendRegistrationReceivedEmail, sendOtpEmail } from "@/lib/mail";
+import { sendWhatsAppRegistrationReceived } from "@/lib/whatsapp";
 import { serializePrisma } from "@/lib/serialize";
 import { checkRateLimit, handleFailedLogin, resetLoginFails, recordAuditLog } from "@/lib/security";
 
@@ -125,6 +126,13 @@ export async function register(formData: FormData) {
 
       // Send initial registration email (Bilingual)
       await sendRegistrationReceivedEmail(email, name);
+
+      // Send initial registration WhatsApp notification if phone is available
+      if (phone) {
+        sendWhatsAppRegistrationReceived(phone, name).catch(err => {
+          console.error("[WA Registration Error]:", err);
+        });
+      }
 
     return { success: "Request sent! Please wait for admin approval." };
   } catch (error) {

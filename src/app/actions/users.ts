@@ -5,6 +5,7 @@ import { getSession } from "./auth";
 import { revalidatePath } from "next/cache";
 import { serializePrisma } from "@/lib/serialize";
 import { sendAccountApprovedEmail, sendAccountSuspendedEmail } from "@/lib/mail";
+import { sendWhatsAppAccountApproved, sendWhatsAppAccountSuspended } from "@/lib/whatsapp";
 
 async function checkAdmin() {
   const session = await getSession();
@@ -81,14 +82,24 @@ export async function toggleUserStatus(userId: number, currentStatus: boolean) {
       data: { is_active: !currentStatus }
     });
 
-    // Send email notification based on the new status
+    // Send email & WhatsApp notification based on the new status
     const primaryRole = user.user_roles[0]?.roles?.role_name || "User";
     if (!currentStatus) {
-      // Activating (was inactive)
+      // Activating (was inactive) -> Send Approval Notifications
       await sendAccountApprovedEmail(user.email, user.name, primaryRole);
+      if (user.phone) {
+        sendWhatsAppAccountApproved(user.phone, user.name, primaryRole).catch(err => {
+          console.error("[WA Approval Notification Error]:", err);
+        });
+      }
     } else {
-      // Deactivating (was active)
+      // Deactivating (was active) -> Send Suspension Notifications
       await sendAccountSuspendedEmail(user.email, user.name);
+      if (user.phone) {
+        sendWhatsAppAccountSuspended(user.phone, user.name).catch(err => {
+          console.error("[WA Suspension Notification Error]:", err);
+        });
+      }
     }
 
     revalidatePath("/admin/users");
