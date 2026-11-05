@@ -2,47 +2,59 @@ require('dotenv').config();
 
 const token = process.env.WA_ACCESS_TOKEN;
 const phoneId = process.env.WA_PHONE_NUMBER_ID;
+const businessId = "909955945483144";
 
 async function check() {
   try {
-    // Check App's WABAs
-    const appId = "1038910105500364";
-    console.log(`\nFetching WABAs associated with App ${appId}...`);
-    
-    // Check app/whatsapp_business_accounts
-    const appRes = await fetch(`https://graph.facebook.com/v19.0/${appId}/whatsapp_business_accounts`, {
+    console.log("==========================================");
+    console.log("Checking Business ID:", businessId);
+    console.log("==========================================");
+
+    // 1. Get WABAs from Business Portfolio
+    const wabaRes = await fetch(`https://graph.facebook.com/v19.0/${businessId}/owned_whatsapp_business_accounts`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    const appData = await appRes.json();
-    console.log("App WABAs:", JSON.stringify(appData, null, 2));
+    const wabaData = await wabaRes.json();
+    console.log("Owned WABAs:", JSON.stringify(wabaData, null, 2));
 
-    let wabaId = appData.data?.[0]?.id;
-
-    if (!wabaId) {
-      // Try business clients
-      const busRes = await fetch(`https://graph.facebook.com/v19.0/122125848153441286/assigned_whatsapp_business_accounts`, {
+    let wabas = wabaData.data || [];
+    if (wabas.length === 0) {
+      const clientRes = await fetch(`https://graph.facebook.com/v19.0/${businessId}/client_whatsapp_business_accounts`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      const busData = await busRes.json();
-      console.log("Assigned WABAs:", JSON.stringify(busData, null, 2));
-      wabaId = busData.data?.[0]?.id;
+      const clientData = await clientRes.json();
+      console.log("Client WABAs:", JSON.stringify(clientData, null, 2));
+      wabas = clientData.data || [];
     }
 
-    if (wabaId) {
-      console.log(`\nFetching Templates for WABA ${wabaId}...`);
-      const tplRes = await fetch(`https://graph.facebook.com/v19.0/${wabaId}/message_templates?limit=100`, {
+    // 2. For each WABA, fetch phone numbers and templates
+    for (const waba of wabas) {
+      console.log(`\n------------------------------------------`);
+      console.log(`WABA: ${waba.name || "N/A"} (ID: ${waba.id})`);
+      console.log(`------------------------------------------`);
+
+      // Phone numbers in this WABA
+      const pRes = await fetch(`https://graph.facebook.com/v19.0/${waba.id}/phone_numbers`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      const tplData = await tplRes.json();
-      console.log("\nTemplates in WABA " + wabaId + ":");
-      if (tplData.data) {
-        tplData.data.forEach((t, i) => {
-          console.log(`  ${i + 1}. "${t.name}" | Status: ${t.status} | Lang: "${t.language}" | Category: ${t.category}`);
+      const pData = await pRes.json();
+      console.log("Phone Numbers in this WABA:", JSON.stringify(pData.data?.map(p => ({ id: p.id, display_phone_number: p.display_phone_number, verified_name: p.verified_name })), null, 2));
+
+      // Templates in this WABA
+      const tRes = await fetch(`https://graph.facebook.com/v19.0/${waba.id}/message_templates?limit=50`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const tData = await tRes.json();
+      console.log(`Templates in WABA ${waba.id}:`);
+      if (tData.data && tData.data.length > 0) {
+        tData.data.forEach((t, i) => {
+          console.log(`  ${i + 1}. Name: "${t.name}" | Status: ${t.status} | Lang: "${t.language}" | Category: ${t.category}`);
         });
       } else {
-        console.log(JSON.stringify(tplData, null, 2));
+        console.log("  No templates found or error:", JSON.stringify(tData));
       }
     }
+
   } catch (e) {
     console.error(e);
   }
