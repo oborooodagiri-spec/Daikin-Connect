@@ -88,17 +88,23 @@ export async function toggleUserStatus(userId: number, currentStatus: boolean) {
       // Activating (was inactive) -> Send Approval Notifications
       await sendAccountApprovedEmail(user.email, user.name, primaryRole);
       if (user.phone) {
+        console.log(`[WA] Sending Account Approved WhatsApp to ${user.name} (${user.phone})...`);
         sendWhatsAppAccountApproved(user.phone, user.name, primaryRole).catch(err => {
           console.error("[WA Approval Notification Error]:", err);
         });
+      } else {
+        console.log(`[WA] User ${user.name} (${user.email}) does not have a phone number. Skipping WhatsApp.`);
       }
     } else {
       // Deactivating (was active) -> Send Suspension Notifications
       await sendAccountSuspendedEmail(user.email, user.name);
       if (user.phone) {
+        console.log(`[WA] Sending Account Suspended WhatsApp to ${user.name} (${user.phone})...`);
         sendWhatsAppAccountSuspended(user.phone, user.name).catch(err => {
           console.error("[WA Suspension Notification Error]:", err);
         });
+      } else {
+        console.log(`[WA] User ${user.name} (${user.email}) does not have a phone number. Skipping WhatsApp.`);
       }
     }
 

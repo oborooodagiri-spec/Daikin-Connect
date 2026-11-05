@@ -3,7 +3,7 @@ export async function sendWhatsAppMessage(to: string, text: string) {
   const phoneId = process.env.WA_PHONE_NUMBER_ID;
 
   if (!token || !phoneId) {
-    console.error("Missing WhatsApp credentials");
+    console.error("[WA] Missing WhatsApp credentials (WA_ACCESS_TOKEN or WA_PHONE_NUMBER_ID)");
     return false;
   }
 
@@ -11,6 +11,8 @@ export async function sendWhatsAppMessage(to: string, text: string) {
   if (cleanTo.startsWith("0")) {
     cleanTo = "62" + cleanTo.substring(1);
   }
+
+  console.log(`[WA] Attempting to send WhatsApp message to ${cleanTo}...`);
 
   try {
     const res = await fetch(`https://graph.facebook.com/v19.0/${phoneId}/messages`, {
@@ -28,10 +30,14 @@ export async function sendWhatsAppMessage(to: string, text: string) {
       }),
     });
     const data = await res.json();
-    if (!res.ok) console.error("WA API Error:", data);
-    return res.ok;
+    if (!res.ok) {
+      console.error("[WA API Error]:", JSON.stringify(data));
+      return false;
+    }
+    console.log(`[WA] Message sent successfully to ${cleanTo} (id: ${data.messages?.[0]?.id || "ok"})`);
+    return true;
   } catch (err) {
-    console.error("WA Error:", err);
+    console.error("[WA Network Error]:", err);
     return false;
   }
 }
