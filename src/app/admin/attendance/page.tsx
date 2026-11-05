@@ -15,8 +15,12 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale/id";
+import OvertimeCalculator from "./OvertimeCalculator";
 
 export default function AttendanceRecordsPage() {
+  // Active tab: attendance records or overtime calculation
+  const [activeTab, setActiveTab] = useState<"records" | "overtime">("records");
+
   // Base states
   const [records, setRecords] = useState<any[]>([]);
   const [usersList, setUsersList] = useState<any[]>([]);
@@ -245,7 +249,7 @@ export default function AttendanceRecordsPage() {
                </div>
           </div>
 
-          {selectedUserId !== null && (
+          {activeTab === "records" && selectedUserId !== null && (
             <button 
               onClick={handleExportPDF}
               disabled={exportingPDF || timesheetRecords.length === 0}
@@ -261,8 +265,28 @@ export default function AttendanceRecordsPage() {
           )}
         </div>
 
+        {/* Tab switcher: Attendance Records / Overtime Calculation */}
+        <div className="flex gap-2 bg-white p-1.5 rounded-2xl border border-slate-100 shadow-sm w-full sm:w-fit">
+          <button
+            onClick={() => setActiveTab("records")}
+            className={`flex-1 sm:flex-none px-5 sm:px-7 py-3 rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
+              activeTab === "records" ? "bg-[#003366] text-white shadow-md" : "text-slate-400 hover:text-slate-700 hover:bg-slate-50"
+            }`}
+          >
+            <List size={14} /> Rekap Absensi
+          </button>
+          <button
+            onClick={() => setActiveTab("overtime")}
+            className={`flex-1 sm:flex-none px-5 sm:px-7 py-3 rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
+              activeTab === "overtime" ? "bg-[#003366] text-white shadow-md" : "text-slate-400 hover:text-slate-700 hover:bg-slate-50"
+            }`}
+          >
+            <Clock size={14} /> Perhitungan Lembur
+          </button>
+        </div>
+
         {/* 2. Summary Stats Panel (Shown only when list is displayed) */}
-        {selectedUserId === null && (
+        {activeTab === "records" && selectedUserId === null && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
              <SummaryCard 
                 label="Today's Attendance" 
@@ -287,7 +311,12 @@ export default function AttendanceRecordsPage() {
         )}
 
         {/* 3. CORE INTERACTIVE WORKFLOW DISPLAY */}
-        {selectedUserId === null ? (
+        {activeTab === "overtime" ? (
+
+          /* OVERTIME CALCULATION TAB */
+          <OvertimeCalculator />
+
+        ) : selectedUserId === null ? (
           
           /* A. UNIQUE PERSONNEL LIST SCREEN */
           <div className="space-y-6">

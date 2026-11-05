@@ -171,6 +171,60 @@ export async function getAttendanceUsers(projectId?: string) {
     }
 }
 
+// Fetch all personnel attendance for one month (WIB), used by the admin overtime calculator
+export async function getMonthlyOvertimeData(month: number, year: number, projectId?: string) {
+    unstable_noStore();
+    const session = await getSession();
+    const isAdmin = session?.roles?.some((r: any) => /admin|super/i.test(typeof r === "string" ? r : r.role_name));
+    if (!session || !isAdmin) {
+        return { error: "Unauthorized access. Admins only." };
+    }
+
+    if (!Number.isInteger(month) || month < 0 || month > 11 || !Number.isInteger(year) || year < 2000 || year > 2100) {
+        return { error: "Periode tidak valid." };
+    }
+
+    try {
+        const mm = String(month + 1).padStart(2, "0");
+        const lastDay = new Date(year, month + 1, 0).getDate();
+        const start = new Date(`${year}-${mm}-01T00:00:00.000+07:00`);
+        const end = new Date(`${year}-${mm}-${String(lastDay).padStart(2, "0")}T23:59:59.999+07:00`);
+
+        const whereClause: any = {
+            check_in_time: { gte: start, lte: end }
+        };
+        if (projectId && projectId !== "all" && projectId !== "empty") {
+            whereClause.project_id = BigInt(projectId);
+        }
+
+        const records = await prisma.vendor_attendance.findMany({
+            where: whereClause,
+            select: {
+                id: true,
+                user_id: true,
+                project_id: true,
+                check_in_time: true,
+                check_out_time: true,
+                users: {
+                    select: { id: true, name: true, email: true, company_name: true }
+                },
+                projects: {
+                    select: { name: true, shift_start_time: true, shift_end_time: true }
+                }
+            },
+            orderBy: { check_in_time: "asc" }
+        });
+
+        return serializePrisma({
+            success: true,
+            data: records
+        });
+    } catch (error) {
+        console.error("fetch monthly overtime data err", error);
+        return { error: "Failed to fetch monthly attendance for overtime." };
+    }
+}
+
 // Fetch comprehensive monthly attendance logs for a specific user
 export async function getUserMonthlyAttendance(userId: number, month: number, year: number, projectId?: string) {
     unstable_noStore();

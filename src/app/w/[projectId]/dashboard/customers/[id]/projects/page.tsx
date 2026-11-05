@@ -566,7 +566,7 @@ export default function ProjectsPage() {
                           onChange={(lat, lng) => {
                              const cleanLat = lat ? Number(lat.toFixed(8)) : null;
                              const cleanLng = lng ? Number(lng.toFixed(8)) : null;
-                             setFormData(prev => ({ 
+                             setFormData((prev: any) => ({ 
                                ...prev, 
                                latitude: cleanLat, 
                                longitude: cleanLng 
