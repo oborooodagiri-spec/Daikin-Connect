@@ -218,10 +218,10 @@ PT Daikin Applied Solutions Indonesia`;
  */
 export async function sendWhatsAppAccountApproved(to: string, name: string, role: string) {
   if (!to) return false;
-  // Try approved Meta Template (supports both dssi_account_approve and dssi_account_approved)
-  let templateSent = await sendWhatsAppTemplate(to, "dssi_account_approve", [name, role], "id");
+  // Official Meta Template in Meta Business Suite is dssi_account_approved
+  let templateSent = await sendWhatsAppTemplate(to, "dssi_account_approved", [name, role], "id");
   if (!templateSent) {
-    templateSent = await sendWhatsAppTemplate(to, "dssi_account_approved", [name, role], "id");
+    templateSent = await sendWhatsAppTemplate(to, "dssi_account_approve", [name, role], "id");
   }
   if (templateSent) return true;
 
