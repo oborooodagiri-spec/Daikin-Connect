@@ -512,10 +512,11 @@ export async function verifyFaceMatch(photoUrl: string) {
     `;
 
     const candidateModels = [
+      "gemini-3.8-flash",
+      "gemini-3.0-flash",
+      "gemini-2.5-flash",
       "gemini-2.0-flash",
       "gemini-1.5-flash",
-      "gemini-1.5-pro",
-      "gemini-2.5-flash"
     ];
 
     let aiResult = null;
@@ -650,7 +651,13 @@ export async function validateFacePhoto(photoUrl: string): Promise<{ valid: bool
         {"valid": boolean, "reason": "concise explanation in Indonesian"}
       `;
 
-      const candidateModels = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.5-flash"];
+      const candidateModels = [
+        "gemini-3.8-flash",
+        "gemini-3.0-flash",
+        "gemini-2.5-flash",
+        "gemini-2.0-flash",
+        "gemini-1.5-flash",
+      ];
       for (const modelName of candidateModels) {
         try {
           const model = genAI.getGenerativeModel({ model: modelName }, { apiVersion: "v1" });
