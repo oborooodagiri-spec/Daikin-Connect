@@ -244,6 +244,12 @@ export async function submitCheckIn(data: {
     if (!faceCheck.match) {
       return { error: `Verifikasi Wajah Gagal: Wajah Anda tidak sesuai dengan referensi terdaftar. (${faceCheck.reason || "Silakan hubungi administrator."})` };
     }
+    if (faceCheck.serviceUnavailable) {
+      console.warn(`[ATTENDANCE_WARN] User ${session.userId} clocked in with AI service unavailable fallback.`);
+      if (!finalNotes.includes("AI OFFLINE")) {
+        finalNotes = `[AUDIT: AI OFFLINE] ${finalNotes}`.trim();
+      }
+    }
 
     const record = await (prisma as any).vendor_attendance.create({
       data: {
@@ -325,6 +331,12 @@ export async function submitCheckOut(data: {
     }
     if (!faceCheck.match) {
       return { error: `Verifikasi Wajah Gagal: Wajah Anda tidak sesuai dengan referensi terdaftar. (${faceCheck.reason || "Silakan hubungi administrator."})` };
+    }
+    if (faceCheck.serviceUnavailable) {
+      console.warn(`[ATTENDANCE_WARN] User ${session.userId} clocked out with AI service unavailable fallback.`);
+      if (!finalNotes.includes("AI OFFLINE")) {
+        finalNotes = `[AUDIT: AI OFFLINE] ${finalNotes}`.trim();
+      }
     }
 
     const record = await (prisma as any).vendor_attendance.update({
@@ -500,11 +512,10 @@ export async function verifyFaceMatch(photoUrl: string) {
     `;
 
     const candidateModels = [
-      "gemini-3.6-flash",
-      "gemini-3.1-pro-preview",
-      "gemini-2.5-flash",
       "gemini-2.0-flash",
-      "gemini-2.5-pro"
+      "gemini-1.5-flash",
+      "gemini-1.5-pro",
+      "gemini-2.5-flash"
     ];
 
     let aiResult = null;
@@ -533,7 +544,15 @@ export async function verifyFaceMatch(photoUrl: string) {
 
     if (!aiResult) {
       console.error(`[verifyFaceMatch] All AI models failed. Errors:\n${errors.join("\n")}`);
-      throw new Error("Sistem verifikasi wajah sedang tidak tersedia. Silakan coba beberapa saat lagi atau hubungi admin.");
+      // Enterprise Fail-Safe: If external AI provider is unavailable, down, or suspended,
+      // allow attendance to proceed with audit flag so employees aren't trapped on site.
+      return { 
+        success: true, 
+        match: true, 
+        confidence: 0, 
+        serviceUnavailable: true, 
+        warning: "Layanan biometrik AI sedang offline. Absensi dicatat untuk verifikasi manual oleh Admin." 
+      };
     }
 
     if (aiResult.match && aiResult.confidence >= 75) {
@@ -558,7 +577,13 @@ export async function verifyFaceMatch(photoUrl: string) {
 
   } catch (err: any) {
     console.error("AI Verification Error:", err);
-    return { error: "Verifikasi wajah gagal. Silakan coba lagi atau hubungi admin." };
+    return { 
+      success: true, 
+      match: true, 
+      confidence: 0, 
+      serviceUnavailable: true, 
+      warning: "Kendala server biometrik. Absensi dicatat untuk verifikasi admin." 
+    };
   }
 }
 
@@ -625,7 +650,7 @@ export async function validateFacePhoto(photoUrl: string): Promise<{ valid: bool
         {"valid": boolean, "reason": "concise explanation in Indonesian"}
       `;
 
-      const candidateModels = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-3.6-flash"];
+      const candidateModels = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.5-flash"];
       for (const modelName of candidateModels) {
         try {
           const model = genAI.getGenerativeModel({ model: modelName }, { apiVersion: "v1" });
