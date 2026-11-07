@@ -59,7 +59,7 @@ export async function getAttendanceRecords(params: {
                     }
                 },
                 projects: {
-                    select: { name: true, customer_id: true, shift_start_time: true, shift_end_time: true }
+                    select: { id: true, name: true, customer_id: true, shift_start_time: true, shift_end_time: true }
                 }
             },
             orderBy: { check_in_time: "desc" }
@@ -75,7 +75,7 @@ export async function getAttendanceRecords(params: {
     }
 }
 
-export async function getAttendanceSummary() {
+export async function getAttendanceSummary(projectId?: string) {
     unstable_noStore();
     const session = await getSession();
     const isAdmin = session?.roles?.some((r: any) => /admin|super/i.test(typeof r === "string" ? r : r.role_name));
@@ -88,15 +88,22 @@ export async function getAttendanceSummary() {
         wibTime.setUTCHours(0, 0, 0, 0);
         const today = new Date(wibTime.getTime() - 7 * 60 * 60 * 1000);
 
-        const [totalToday, activeNow] = await Promise.all([
+        const whereToday: any = { check_in_time: { gte: today } };
+        const whereActive: any = { check_out_time: null };
+
+        if (projectId && projectId !== "all" && projectId !== "empty") {
+            whereToday.project_id = BigInt(projectId);
+            whereActive.project_id = BigInt(projectId);
+        }
+
+        const [totalToday, activeNow, projectsTracked] = await Promise.all([
             prisma.vendor_attendance.count({
-                where: { check_in_time: { gte: today } }
+                where: whereToday
             }),
             prisma.vendor_attendance.count({
-                where: {
-                    check_out_time: null
-                }
-            })
+                where: whereActive
+            }),
+            prisma.projects.count({ where: { status: 'active' } })
         ]);
 
         return {
@@ -104,11 +111,52 @@ export async function getAttendanceSummary() {
             data: {
                 totalToday,
                 activeNow,
-                projectsTracked: await prisma.projects.count({ where: { status: 'active' } })
+                projectsTracked
             }
         };
     } catch (error) {
         return { error: "Failed to fetch summary" };
+    }
+}
+
+export async function getAttendanceProjects() {
+    unstable_noStore();
+    const session = await getSession();
+    const isAdmin = session?.roles?.some((r: any) => /admin|super/i.test(typeof r === "string" ? r : r.role_name));
+    if (!session || !isAdmin) return { error: "Unauthorized" };
+
+    try {
+        const projects = await prisma.projects.findMany({
+            where: { status: "active" },
+            select: {
+                id: true,
+                name: true,
+                shift_start_time: true,
+                shift_end_time: true,
+                customers: {
+                    select: { name: true }
+                },
+                _count: {
+                    select: { vendor_attendance: true }
+                }
+            },
+            orderBy: { name: "asc" }
+        });
+
+        return serializePrisma({
+            success: true,
+            data: projects.map(p => ({
+                id: p.id.toString(),
+                name: p.name,
+                customerName: p.customers?.name || "",
+                shift_start_time: p.shift_start_time || "08:00",
+                shift_end_time: p.shift_end_time || "17:00",
+                attendanceCount: p._count.vendor_attendance
+            }))
+        });
+    } catch (error) {
+        console.error("fetch attendance projects err", error);
+        return { error: "Failed to fetch attendance projects" };
     }
 }
 

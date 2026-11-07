@@ -6,6 +6,7 @@ import {
   getAttendanceUsers, 
   getUserMonthlyAttendance,
   getAttendanceSummary,
+  getAttendanceProjects,
   adminResetUserFace,
   adminToggleFaceVerification,
   adminUpdateUserFace,
@@ -16,7 +17,8 @@ import {
   MapPin, Clock, FileImage, ShieldCheck, Download, Loader2,
   Calendar, User, ChevronLeft, ChevronRight, List, FileText, CheckCircle2,
   Search, ArrowLeft, Building2, Fingerprint, UserCheck, Briefcase, ChevronRight as ChevronIcon,
-  Camera, Eye, RotateCcw, UploadCloud, LogOut, X, AlertTriangle, ShieldAlert, Check
+  Camera, Eye, RotateCcw, UploadCloud, LogOut, X, AlertTriangle, ShieldAlert, Check,
+  ChevronDown, ChevronUp, Layers, Filter
 } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale/id";
@@ -31,6 +33,10 @@ export default function AttendanceRecordsPage() {
   // Base states
   const [records, setRecords] = useState<any[]>([]);
   const [usersList, setUsersList] = useState<any[]>([]);
+  const [projectsList, setProjectsList] = useState<any[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>("all");
+  const [viewGrouping, setViewGrouping] = useState<"by_project" | "all_personnel">("by_project");
+  const [collapsedProjects, setCollapsedProjects] = useState<Record<string, boolean>>({});
   const [summary, setSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -53,13 +59,15 @@ export default function AttendanceRecordsPage() {
   const [uploadingFace, setUploadingFace] = useState(false);
   const faceUploadInputRef = useRef<HTMLInputElement>(null);
 
-  // 1. Fetch Summary Stats and All Records on Mount
+  // 1. Fetch Summary Stats, All Records, Projects, and Users on Mount
   useEffect(() => {
     async function load() {
       setLoading(true);
-      const [recRes, sumRes] = await Promise.all([
+      const [recRes, sumRes, projRes, usersRes] = await Promise.all([
         getAttendanceRecords(),
-        getAttendanceSummary()
+        getAttendanceSummary(),
+        getAttendanceProjects(),
+        getAttendanceUsers()
       ]);
 
       if (recRes && "success" in recRes && recRes.success) {
@@ -68,21 +76,37 @@ export default function AttendanceRecordsPage() {
       if (sumRes && "success" in sumRes && sumRes.success) {
         setSummary(sumRes.data);
       }
+      if (projRes && "success" in projRes && projRes.success) {
+        setProjectsList(projRes.data);
+      }
+      if (usersRes && "success" in usersRes && usersRes.success) {
+        setUsersList(usersRes.data);
+      }
       setLoading(false);
     }
     load();
   }, []);
 
-  // 2. Fetch Unique Users Directory
+  // 2. Dynamic filter when selectedProjectId changes
   useEffect(() => {
-    async function loadUsers() {
-      const res = await getAttendanceUsers();
-      if (res && "success" in res && res.success) {
-        setUsersList(res.data);
+    let cancelled = false;
+    async function filterByProject() {
+      const [recRes, sumRes] = await Promise.all([
+        getAttendanceRecords({ projectId: selectedProjectId !== "all" ? selectedProjectId : undefined }),
+        getAttendanceSummary(selectedProjectId !== "all" ? selectedProjectId : undefined)
+      ]);
+
+      if (cancelled) return;
+      if (recRes && "success" in recRes && recRes.success) {
+        setRecords(recRes.data);
+      }
+      if (sumRes && "success" in sumRes && sumRes.success) {
+        setSummary(sumRes.data);
       }
     }
-    loadUsers();
-  }, []);
+    filterByProject();
+    return () => { cancelled = true; };
+  }, [selectedProjectId]);
 
   // 3. Fetch Monthly Timesheet Records for Selected User
   useEffect(() => {
@@ -92,7 +116,8 @@ export default function AttendanceRecordsPage() {
       const res = await getUserMonthlyAttendance(
         selectedUserId,
         selectedMonth.getMonth(),
-        selectedMonth.getFullYear()
+        selectedMonth.getFullYear(),
+        selectedProjectId !== "all" ? selectedProjectId : undefined
       );
       if (res && "success" in res && res.success) {
         setTimesheetRecords(res.data);
@@ -102,7 +127,7 @@ export default function AttendanceRecordsPage() {
       setLoadingTimesheet(false);
     }
     loadTimesheet();
-  }, [selectedUserId, selectedMonth]);
+  }, [selectedUserId, selectedMonth, selectedProjectId]);
 
   const handlePrevMonth = () => {
     setSelectedMonth(prev => {
@@ -126,7 +151,8 @@ export default function AttendanceRecordsPage() {
     const res = await getUserMonthlyAttendance(
       selectedUserId,
       selectedMonth.getMonth(),
-      selectedMonth.getFullYear()
+      selectedMonth.getFullYear(),
+      selectedProjectId !== "all" ? selectedProjectId : undefined
     );
     if (res && "success" in res && res.success) {
       setTimesheetRecords(res.data);
@@ -290,7 +316,11 @@ export default function AttendanceRecordsPage() {
   };
 
   const getProjectName = () => {
-    if (timesheetRecords.length === 0) return "Global Project";
+    if (selectedProjectId !== "all") {
+      const p = projectsList.find(proj => String(proj.id) === String(selectedProjectId));
+      if (p) return p.name;
+    }
+    if (timesheetRecords.length === 0) return "Semua Proyek (Global)";
     const withProj = timesheetRecords.find(r => r.projects?.name);
     return withProj ? withProj.projects.name : "Daikin Project";
   };
@@ -317,26 +347,63 @@ export default function AttendanceRecordsPage() {
     }
   };
 
-  // Filter Unique Users based on Search Input
-  const filteredUsers = usersList.filter(u => 
-    u.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    u.company_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    u.email?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter Unique Users based on Search Input & Project Filter
+  const filteredUsers = usersList.filter(u => {
+    const matchesSearch = 
+      u.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      u.company_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      u.email?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    if (!matchesSearch) return false;
+
+    if (selectedProjectId !== "all") {
+      return records.some(r => r.user_id === u.id && String(r.project_id) === String(selectedProjectId));
+    }
+
+    return true;
+  });
+
+  // Toggle collapse state for a project card
+  const toggleProjectCollapse = (projectId: string) => {
+    setCollapsedProjects(prev => ({ ...prev, [projectId]: !prev[projectId] }));
+  };
+
+  // Projects to display (sorted so projects with active records or logs appear first)
+  const displayProjects = React.useMemo(() => {
+    let list = [...projectsList];
+    if (selectedProjectId !== "all") {
+      list = list.filter(p => String(p.id) === String(selectedProjectId));
+    }
+    return list.sort((a, b) => {
+      const aRecs = records.filter(r => String(r.project_id) === String(a.id)).length;
+      const bRecs = records.filter(r => String(r.project_id) === String(b.id)).length;
+      return bRecs - aRecs;
+    });
+  }, [projectsList, selectedProjectId, records]);
 
   // Helper stats for main listing row
-  const getUserLogCount = (userId: number) => {
+  const getUserLogCount = (userId: number, projId?: string) => {
+    if (projId && projId !== "all") {
+      return records.filter(r => r.user_id === userId && String(r.project_id) === String(projId)).length;
+    }
     return records.filter(r => r.user_id === userId).length;
   };
 
-  const getUserWorkplace = (userId: number) => {
+  const getUserWorkplace = (userId: number, projId?: string) => {
+    if (projId && projId !== "all") {
+      const p = projectsList.find(proj => String(proj.id) === String(projId));
+      if (p) return p.name;
+    }
     const userRecs = records.filter(r => r.user_id === userId);
     if (userRecs.length === 0) return "Global Sites";
     return userRecs[0].projects?.name || "Daikin Site";
   };
 
-  const getUserLastActiveDate = (userId: number) => {
-    const userRecs = records.filter(r => r.user_id === userId);
+  const getUserLastActiveDate = (userId: number, projId?: string) => {
+    let userRecs = records.filter(r => r.user_id === userId);
+    if (projId && projId !== "all") {
+      userRecs = userRecs.filter(r => String(r.project_id) === String(projId));
+    }
     if (userRecs.length === 0) return "-";
     const sorted = [...userRecs].sort((a, b) => new Date(b.check_in_time).getTime() - new Date(a.check_in_time).getTime());
     return format(new Date(sorted[0].check_in_time), "dd MMM yyyy", { locale: id });
@@ -458,127 +525,431 @@ export default function AttendanceRecordsPage() {
 
         ) : selectedUserId === null ? (
           
-          /* A. UNIQUE PERSONNEL LIST SCREEN */
+          /* A. PROJECT-SEPARATED ATTENDANCE DIRECTORY */
           <div className="space-y-6">
             
-            {/* Search Input Box */}
-            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-sm">
-              <div className="space-y-2">
-                <label className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Search Personnel</label>
-                <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                  <input 
-                    type="text" 
-                    placeholder="Search by name or company..."
-                    className="w-full pl-11 sm:pl-12 pr-4 py-3 sm:py-4 bg-slate-50 border-none rounded-xl sm:rounded-2xl font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all text-[11px] sm:text-xs"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
+            {/* Project Separation & Filter Control Bar */}
+            <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-blue-50 text-[#003366] flex items-center justify-center font-black shrink-0 border border-blue-100">
+                    <Building2 size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wider">
+                      Pemisahan Proyek Absensi
+                    </h3>
+                    <p className="text-[10px] text-slate-400 font-bold">
+                      {selectedProjectId === "all" 
+                        ? `Menampilkan seluruh ${projectsList.length} proyek aktif`
+                        : `Difilter ke proyek: ${projectsList.find(p => String(p.id) === String(selectedProjectId))?.name || "Proyek Terpilih"}`
+                      }
+                    </p>
+                  </div>
+                </div>
+
+                {/* View Mode Toggle: Per Proyek (Grouped) vs Daftar Lengkap */}
+                <div className="flex items-center bg-slate-100 p-1 rounded-xl text-[10px] font-black uppercase tracking-wider self-start md:self-auto border border-slate-200/60">
+                  <button
+                    onClick={() => setViewGrouping("by_project")}
+                    className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all ${
+                      viewGrouping === "by_project" ? "bg-[#003366] text-white shadow-sm font-black" : "text-slate-500 hover:text-slate-800"
+                    }`}
+                  >
+                    <Layers size={13} /> Tampilan Per Proyek
+                  </button>
+                  <button
+                    onClick={() => setViewGrouping("all_personnel")}
+                    className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all ${
+                      viewGrouping === "all_personnel" ? "bg-[#003366] text-white shadow-sm font-black" : "text-slate-500 hover:text-slate-800"
+                    }`}
+                  >
+                    <User size={13} /> Semua Personel
+                  </button>
                 </div>
               </div>
+
+              {/* Project Quick-Filter Pills */}
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                    <Filter size={11} /> Pilih Filter Proyek
+                  </span>
+                  {selectedProjectId !== "all" && (
+                    <button
+                      onClick={() => setSelectedProjectId("all")}
+                      className="text-[9px] font-black text-[#0073ea] hover:underline uppercase tracking-wider"
+                    >
+                      Reset ke Semua Proyek
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
+                  <button
+                    onClick={() => setSelectedProjectId("all")}
+                    className={`px-3.5 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider whitespace-nowrap transition-all border flex items-center gap-2 shrink-0 ${
+                      selectedProjectId === "all"
+                        ? "bg-[#003366] text-white border-[#003366] shadow-sm"
+                        : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
+                    }`}
+                  >
+                    <Building2 size={12} />
+                    <span>Semua Proyek</span>
+                    <span className={`px-1.5 py-0.5 rounded-md text-[8px] font-black ${
+                      selectedProjectId === "all" ? "bg-white/20 text-white" : "bg-slate-200 text-slate-600"
+                    }`}>
+                      {records.length} Logs
+                    </span>
+                  </button>
+
+                  {projectsList.map(proj => {
+                    const projRecordsCount = records.filter(r => String(r.project_id) === String(proj.id)).length;
+                    const projActiveOnSite = records.filter(r => String(r.project_id) === String(proj.id) && !r.check_out_time).length;
+                    const isSelected = selectedProjectId === String(proj.id);
+
+                    return (
+                      <button
+                        key={proj.id}
+                        onClick={() => setSelectedProjectId(String(proj.id))}
+                        className={`px-3.5 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider whitespace-nowrap transition-all border flex items-center gap-2 shrink-0 ${
+                          isSelected
+                            ? "bg-[#003366] text-white border-[#003366] shadow-sm"
+                            : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
+                        }`}
+                      >
+                        <span>{proj.name}</span>
+                        {projActiveOnSite > 0 && (
+                          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="Personel sedang aktif di lokasi" />
+                        )}
+                        <span className={`px-1.5 py-0.5 rounded-md text-[8px] font-black ${
+                          isSelected ? "bg-white/20 text-white" : "bg-slate-200 text-slate-600"
+                        }`}>
+                          {projRecordsCount}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Search Personnel Input */}
+              <div className="relative pt-1">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                <input 
+                  type="text" 
+                  placeholder="Cari personel berdasarkan nama, perusahaan, atau email..."
+                  className="w-full pl-11 sm:pl-12 pr-4 py-3 sm:py-3.5 bg-slate-50 border border-slate-200/80 rounded-xl font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all text-[11px] sm:text-xs"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
             </div>
 
-            {/* Personnel Listing Table */}
-            <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
-              <div className="overflow-x-auto w-full max-w-full">
-                <table className="w-full text-left whitespace-nowrap sm:whitespace-normal">
-                  <thead>
-                    <tr className="bg-slate-50/80 border-b border-slate-100 uppercase text-[9px] sm:text-[10px] font-black text-slate-400 tracking-widest">
-                      <th className="px-4 sm:px-10 py-4 sm:py-8">Personnel</th>
-                      <th className="px-4 sm:px-10 py-4 sm:py-8">Main Workplace</th>
-                      <th className="px-4 sm:px-10 py-4 sm:py-8 text-center">Total Logs</th>
-                      <th className="px-4 sm:px-10 py-4 sm:py-8">Last Active</th>
-                      <th className="px-4 sm:px-10 py-4 sm:py-8 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-50">
-                    {filteredUsers.length === 0 ? (
-                      <tr>
-                        <td colSpan={5} className="p-32 text-center">
-                          <div className="flex flex-col items-center gap-4 opacity-20">
-                            <User size={64} />
-                            <p className="font-black uppercase tracking-[0.3em] text-sm">No unique personnel found</p>
-                          </div>
-                        </td>
-                      </tr>
-                    ) : (
-                      filteredUsers.map(u => (
-                        <tr 
-                          key={u.id}
-                          onClick={() => setSelectedUserId(u.id)}
-                          className="group hover:bg-slate-50/80 cursor-pointer transition-all border-l-4 border-l-transparent hover:border-l-[#003366]"
-                        >
-                          {/* Profile row */}
-                          <td className="px-4 sm:px-10 py-4 sm:py-7">
-                            <div className="flex items-center gap-3 sm:gap-4">
-                              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center font-black group-hover:bg-blue-50 group-hover:text-[#003366] transition-colors uppercase shrink-0 overflow-hidden border border-slate-200">
-                                {u.face_reference_url ? (
-                                  <img src={u.face_reference_url} alt={u.name} className="w-full h-full object-cover" />
-                                ) : (
-                                  u.name?.charAt(0)
-                                )}
+            {/* Content: Grouped by Project vs All Personnel Table */}
+            {viewGrouping === "by_project" ? (
+              
+              /* 1. GROUPED BY PROJECT CARDS */
+              <div className="space-y-6">
+                {displayProjects.length === 0 ? (
+                  <div className="bg-white p-24 text-center rounded-2xl border border-slate-100 shadow-sm text-slate-400">
+                    <Building2 size={48} className="mx-auto mb-3 opacity-20" />
+                    <p className="text-xs font-black uppercase tracking-widest">Tidak ada proyek yang sesuai</p>
+                  </div>
+                ) : (
+                  displayProjects.map(proj => {
+                    const projRecords = records.filter(r => String(r.project_id) === String(proj.id));
+                    const projActiveOnSite = projRecords.filter(r => !r.check_out_time);
+                    const projUserIds = new Set(projRecords.map(r => r.user_id));
+                    const projUsers = usersList.filter(u => projUserIds.has(u.id));
+                    
+                    const matchedUsers = projUsers.filter(u => 
+                      u.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      u.company_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      u.email?.toLowerCase().includes(searchQuery.toLowerCase())
+                    );
+
+                    const isCollapsed = collapsedProjects[proj.id] || false;
+
+                    return (
+                      <div 
+                        key={proj.id} 
+                        className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden transition-all hover:shadow-md"
+                      >
+                        {/* Project Header Bar */}
+                        <div className="p-4 sm:p-6 bg-slate-50/70 border-b border-slate-200/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <div className="flex items-start sm:items-center gap-3.5">
+                            <div className="w-11 h-11 rounded-2xl bg-[#003366] text-white flex items-center justify-center font-black shrink-0 shadow-sm">
+                              <Building2 size={20} />
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <h2 className="text-sm sm:text-base font-black text-[#003366] uppercase tracking-wide">
+                                  {proj.name}
+                                </h2>
+                                <span className="px-2 py-0.5 rounded-md bg-blue-50 text-[#0073ea] border border-blue-200 text-[8px] font-black uppercase tracking-wider">
+                                  Shift {proj.shift_start_time || "08:00"} - {proj.shift_end_time || "17:00"}
+                                </span>
                               </div>
-                              <div>
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <p className="font-black text-slate-800 text-xs sm:text-sm group-hover:text-[#003366] transition-colors">{u.name}</p>
+                              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">
+                                Klien: {proj.customerName || "PT Daikin Applied Solutions Indonesia"}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 flex-wrap justify-between sm:justify-end">
+                            {projActiveOnSite.length > 0 && (
+                              <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-black uppercase tracking-wider flex items-center gap-1.5 shadow-xs">
+                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                                {projActiveOnSite.length} On Site
+                              </span>
+                            )}
+                            <span className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 text-[9px] font-black uppercase tracking-wider">
+                              {projUsers.length} Personel
+                            </span>
+                            <span className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 text-[9px] font-black uppercase tracking-wider">
+                              {projRecords.length} Logs
+                            </span>
+                            <button
+                              onClick={() => toggleProjectCollapse(proj.id)}
+                              className="p-2 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-slate-700 transition-colors ml-1"
+                              title={isCollapsed ? "Buka rincian proyek" : "Tutup rincian proyek"}
+                            >
+                              {isCollapsed ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Project Personnel Body */}
+                        {!isCollapsed && (
+                          <div className="overflow-x-auto w-full">
+                            {matchedUsers.length === 0 ? (
+                              <div className="p-12 text-center text-slate-400">
+                                <p className="text-xs font-bold">
+                                  {projRecords.length === 0 
+                                    ? "Belum ada log absensi tercatat pada proyek ini."
+                                    : "Tidak ada personel di proyek ini yang cocok dengan pencarian."}
+                                </p>
+                              </div>
+                            ) : (
+                              <table className="w-full text-left whitespace-nowrap sm:whitespace-normal">
+                                <thead>
+                                  <tr className="bg-slate-50/40 border-b border-slate-100 uppercase text-[9px] font-black text-slate-400 tracking-wider">
+                                    <th className="px-6 py-4">Personel</th>
+                                    <th className="px-6 py-4">Perusahaan / Vendor</th>
+                                    <th className="px-6 py-4 text-center">Logs di Proyek Ini</th>
+                                    <th className="px-6 py-4">Terakhir Aktif</th>
+                                    <th className="px-6 py-4">Status Sesi</th>
+                                    <th className="px-6 py-4 text-right">Aksi</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                  {matchedUsers.map(u => {
+                                    const userProjLogsCount = projRecords.filter(r => r.user_id === u.id).length;
+                                    const userProjActive = projRecords.find(r => r.user_id === u.id && !r.check_out_time);
+                                    const userProjLastActive = getUserLastActiveDate(u.id, proj.id);
+
+                                    return (
+                                      <tr 
+                                        key={u.id}
+                                        onClick={() => {
+                                          setSelectedProjectId(String(proj.id));
+                                          setSelectedUserId(u.id);
+                                        }}
+                                        className="group hover:bg-slate-50/80 cursor-pointer transition-all"
+                                      >
+                                        {/* Profile */}
+                                        <td className="px-6 py-4">
+                                          <div className="flex items-center gap-3">
+                                            <div className="w-9 h-9 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center font-black uppercase shrink-0 overflow-hidden border border-slate-200">
+                                              {u.face_reference_url ? (
+                                                <img src={u.face_reference_url} alt={u.name} className="w-full h-full object-cover" />
+                                              ) : (
+                                                u.name?.charAt(0)
+                                              )}
+                                            </div>
+                                            <div>
+                                              <div className="flex items-center gap-1.5 flex-wrap">
+                                                <p className="font-black text-slate-800 text-xs group-hover:text-[#003366] transition-colors">{u.name}</p>
+                                                {u.face_reference_url ? (
+                                                  u.face_verification_enabled !== false ? (
+                                                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-100 text-[7px] font-black uppercase">
+                                                      <Check size={8} /> Face OK
+                                                    </span>
+                                                  ) : (
+                                                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-100 text-[7px] font-black uppercase">
+                                                      Bypass
+                                                    </span>
+                                                  )
+                                                ) : (
+                                                  <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-400 text-[7px] font-black uppercase">
+                                                    No Face
+                                                  </span>
+                                                )}
+                                              </div>
+                                              <p className="text-[9px] text-slate-400 font-bold">{u.email}</p>
+                                            </div>
+                                          </div>
+                                        </td>
+
+                                        {/* Company */}
+                                        <td className="px-6 py-4 font-bold text-slate-600 text-xs">
+                                          {u.company_name || "Internal / Vendor"}
+                                        </td>
+
+                                        {/* Project Log Count */}
+                                        <td className="px-6 py-4 text-center font-black text-[#003366] text-xs">
+                                          {userProjLogsCount} Logs
+                                        </td>
+
+                                        {/* Last Active */}
+                                        <td className="px-6 py-4 font-bold text-slate-500 text-xs">
+                                          {userProjLastActive}
+                                        </td>
+
+                                        {/* Live Session Status */}
+                                        <td className="px-6 py-4">
+                                          {userProjActive ? (
+                                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[8px] font-black uppercase tracking-wider">
+                                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                                              On Site ({format(new Date(userProjActive.check_in_time), "HH:mm")})
+                                            </span>
+                                          ) : (
+                                            <span className="text-[10px] font-bold text-slate-400">Selesai</span>
+                                          )}
+                                        </td>
+
+                                        {/* Action Button */}
+                                        <td className="px-6 py-4 text-right">
+                                          <button 
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              setSelectedProjectId(String(proj.id));
+                                              setSelectedUserId(u.id);
+                                            }}
+                                            className="px-3 py-1.5 bg-slate-50 hover:bg-[#003366] hover:text-white text-slate-600 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all inline-flex items-center gap-1 border border-slate-200"
+                                          >
+                                            Timesheet <ChevronIcon size={12} />
+                                          </button>
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+            ) : (
+
+              /* 2. ALL PERSONNEL FLAT TABLE (FILTERED BY SELECTED PROJECT) */
+              <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
+                <div className="overflow-x-auto w-full max-w-full">
+                  <table className="w-full text-left whitespace-nowrap sm:whitespace-normal">
+                    <thead>
+                      <tr className="bg-slate-50/80 border-b border-slate-100 uppercase text-[9px] sm:text-[10px] font-black text-slate-400 tracking-widest">
+                        <th className="px-4 sm:px-10 py-4 sm:py-6">Personnel</th>
+                        <th className="px-4 sm:px-10 py-4 sm:py-6">Main Workplace</th>
+                        <th className="px-4 sm:px-10 py-4 sm:py-6 text-center">Total Logs</th>
+                        <th className="px-4 sm:px-10 py-4 sm:py-6">Last Active</th>
+                        <th className="px-4 sm:px-10 py-4 sm:py-6 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-50">
+                      {filteredUsers.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="p-32 text-center">
+                            <div className="flex flex-col items-center gap-4 opacity-20">
+                              <User size={64} />
+                              <p className="font-black uppercase tracking-[0.3em] text-sm">No unique personnel found</p>
+                            </div>
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredUsers.map(u => (
+                          <tr 
+                            key={u.id}
+                            onClick={() => setSelectedUserId(u.id)}
+                            className="group hover:bg-slate-50/80 cursor-pointer transition-all border-l-4 border-l-transparent hover:border-l-[#003366]"
+                          >
+                            {/* Profile row */}
+                            <td className="px-4 sm:px-10 py-4 sm:py-6">
+                              <div className="flex items-center gap-3 sm:gap-4">
+                                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center font-black group-hover:bg-blue-50 group-hover:text-[#003366] transition-colors uppercase shrink-0 overflow-hidden border border-slate-200">
                                   {u.face_reference_url ? (
-                                    u.face_verification_enabled !== false ? (
-                                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100 text-[8px] font-black uppercase tracking-tight">
-                                        <Check size={9} /> Face OK
-                                      </span>
-                                    ) : (
-                                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-100 text-[8px] font-black uppercase tracking-tight">
-                                        Bypass
-                                      </span>
-                                    )
+                                    <img src={u.face_reference_url} alt={u.name} className="w-full h-full object-cover" />
                                   ) : (
-                                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-400 text-[8px] font-black uppercase tracking-tight">
-                                      No Face
-                                    </span>
+                                    u.name?.charAt(0)
                                   )}
                                 </div>
-                                <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-0.5 sm:mt-1">{u.company_name || 'Independent Vendor'}</p>
+                                <div>
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <p className="font-black text-slate-800 text-xs sm:text-sm group-hover:text-[#003366] transition-colors">{u.name}</p>
+                                    {u.face_reference_url ? (
+                                      u.face_verification_enabled !== false ? (
+                                        <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100 text-[8px] font-black uppercase tracking-tight">
+                                          <Check size={9} /> Face OK
+                                        </span>
+                                      ) : (
+                                        <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-100 text-[8px] font-black uppercase tracking-tight">
+                                          Bypass
+                                        </span>
+                                      )
+                                    ) : (
+                                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-400 text-[8px] font-black uppercase tracking-tight">
+                                        No Face
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-0.5 sm:mt-1">{u.company_name || 'Independent Vendor'}</p>
+                                </div>
                               </div>
-                            </div>
-                          </td>
+                            </td>
 
-                          {/* Workplace */}
-                          <td className="px-4 sm:px-10 py-4 sm:py-7">
-                            <div className="inline-flex items-center gap-2 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-blue-50 text-[#0073ea] rounded-lg sm:rounded-xl border border-blue-100 text-[9px] sm:text-[10px] font-black uppercase tracking-tight">
-                              {getUserWorkplace(u.id)}
-                            </div>
-                          </td>
+                            {/* Workplace */}
+                            <td className="px-4 sm:px-10 py-4 sm:py-6">
+                              <div className="inline-flex items-center gap-2 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-blue-50 text-[#0073ea] rounded-lg sm:rounded-xl border border-blue-100 text-[9px] sm:text-[10px] font-black uppercase tracking-tight">
+                                {getUserWorkplace(u.id, selectedProjectId)}
+                              </div>
+                            </td>
 
-                          {/* Total logs */}
-                          <td className="px-4 sm:px-10 py-4 sm:py-7 text-center font-bold text-slate-600 text-xs sm:text-sm">
-                            {getUserLogCount(u.id)} Logs
-                          </td>
+                            {/* Total logs */}
+                            <td className="px-4 sm:px-10 py-4 sm:py-6 text-center font-bold text-slate-600 text-xs sm:text-sm">
+                              {getUserLogCount(u.id, selectedProjectId)} Logs
+                            </td>
 
-                          {/* Last active date */}
-                          <td className="px-4 sm:px-10 py-4 sm:py-7 font-bold text-slate-500 text-xs sm:text-sm">
-                            {getUserLastActiveDate(u.id)}
-                          </td>
+                            {/* Last active date */}
+                            <td className="px-4 sm:px-10 py-4 sm:py-6 font-bold text-slate-500 text-xs sm:text-sm">
+                              {getUserLastActiveDate(u.id, selectedProjectId)}
+                            </td>
 
-                          {/* Arrow link */}
-                          <td className="px-4 sm:px-10 py-4 sm:py-7 text-right">
-                            <button className="p-2 sm:p-3 bg-slate-50 text-slate-400 rounded-lg sm:rounded-xl group-hover:bg-[#003366] group-hover:text-white transition-all">
-                              <ChevronIcon size={16} className="sm:w-[18px] sm:h-[18px]" />
-                            </button>
-                          </td>
+                            {/* Arrow link */}
+                            <td className="px-4 sm:px-10 py-4 sm:py-6 text-right">
+                              <button className="p-2 sm:p-3 bg-slate-50 text-slate-400 rounded-lg sm:rounded-xl group-hover:bg-[#003366] group-hover:text-white transition-all">
+                                <ChevronIcon size={16} className="sm:w-[18px] sm:h-[18px]" />
+                              </button>
+                            </td>
 
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="p-4 sm:p-8 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+                  <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] sm:tracking-[0.4em] flex items-center justify-center sm:justify-start gap-2">
+                    <CheckCircle2 size={14} className="text-emerald-500 shrink-0" /> DSSI Connect Management Portal
+                  </p>
+                  <p className="text-[9px] sm:text-[10px] font-bold text-slate-400">Displaying {filteredUsers.length} active personnel</p>
+                </div>
               </div>
-              <div className="p-4 sm:p-10 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-                <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] sm:tracking-[0.4em] flex items-center justify-center sm:justify-start gap-2">
-                  <CheckCircle2 size={14} className="text-emerald-500 shrink-0" /> DSSI Connect Management Portal
-                </p>
-                <p className="text-[9px] sm:text-[10px] font-bold text-slate-300">Displaying {filteredUsers.length} active personnel</p>
-              </div>
-            </div>
+            )}
 
           </div>
         ) : (
@@ -586,7 +957,6 @@ export default function AttendanceRecordsPage() {
           /* B. DETAIL TIMESHEET SCREEN & A4 PRINT PREVIEW */
           <div className="space-y-6">
             
-            {/* Action Toolbar */}
             {/* Action Toolbar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <button
@@ -596,26 +966,44 @@ export default function AttendanceRecordsPage() {
                 }}
                 className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-800 text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm"
               >
-                <ArrowLeft size={14} /> Back to Personnel Directory
+                <ArrowLeft size={14} /> Kembali ke Direktori Personel
               </button>
 
-              {/* Month navigation slider */}
-              <div className="flex items-center justify-between bg-white border border-slate-200 p-2 rounded-xl shadow-sm w-full sm:w-auto sm:min-w-[220px]">
-                <button
-                  onClick={handlePrevMonth}
-                  className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"
-                >
-                  <ChevronLeft size={16} />
-                </button>
-                <span className="text-xs font-black text-slate-700 uppercase tracking-wider">
-                  {format(selectedMonth, "MMMM yyyy", { locale: id })}
-                </span>
-                <button
-                  onClick={handleNextMonth}
-                  className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"
-                >
-                  <ChevronRight size={16} />
-                </button>
+              <div className="flex flex-wrap items-center gap-3">
+                {/* Project Selector inside Timesheet */}
+                <div className="flex items-center gap-2 bg-white border border-slate-200 px-3 py-2 rounded-xl text-xs font-bold shadow-sm">
+                  <Building2 size={14} className="text-[#0073ea]" />
+                  <span className="text-slate-400 font-bold uppercase text-[9px]">Proyek:</span>
+                  <select
+                    value={selectedProjectId}
+                    onChange={(e) => setSelectedProjectId(e.target.value)}
+                    className="bg-transparent font-black text-slate-800 text-xs border-none focus:ring-0 cursor-pointer"
+                  >
+                    <option value="all">Semua Proyek (Gabungan)</option>
+                    {projectsList.map(p => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Month navigation slider */}
+                <div className="flex items-center justify-between bg-white border border-slate-200 p-2 rounded-xl shadow-sm min-w-[200px]">
+                  <button
+                    onClick={handlePrevMonth}
+                    className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <span className="text-xs font-black text-slate-700 uppercase tracking-wider">
+                    {format(selectedMonth, "MMMM yyyy", { locale: id })}
+                  </span>
+                  <button
+                    onClick={handleNextMonth}
+                    className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -810,14 +1198,15 @@ export default function AttendanceRecordsPage() {
                       <table className="w-full text-left text-xs border-collapse bg-white">
                         <thead>
                           <tr className="bg-slate-50 border-b border-slate-200 text-[8px] font-black text-slate-400 uppercase tracking-wider">
-                            <th className="p-3 w-[16%]">Tanggal</th>
-                            <th className="p-3 w-[11%]">Masuk</th>
-                            <th className="p-3 w-[15%]">Lokasi Masuk</th>
-                            <th className="p-3 w-[13%]">Keluar</th>
-                            <th className="p-3 w-[15%]">Lokasi Keluar</th>
-                            <th className="p-3 w-[9%] text-center">Durasi</th>
-                            <th className="p-3 w-[9%] text-center">Lembur</th>
-                            <th className="p-3 w-[12%] text-center">Foto & Audit</th>
+                            <th className="p-3 w-[15%]">Tanggal</th>
+                            <th className="p-3 w-[14%]">Proyek</th>
+                            <th className="p-3 w-[10%]">Masuk</th>
+                            <th className="p-3 w-[13%]">Lokasi Masuk</th>
+                            <th className="p-3 w-[11%]">Keluar</th>
+                            <th className="p-3 w-[13%]">Lokasi Keluar</th>
+                            <th className="p-3 w-[8%] text-center">Durasi</th>
+                            <th className="p-3 w-[7%] text-center">Lembur</th>
+                            <th className="p-3 w-[9%] text-center">Foto & Audit</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -825,6 +1214,11 @@ export default function AttendanceRecordsPage() {
                             <tr key={r.id || idx} className="border-b border-slate-100 hover:bg-slate-50/30">
                               <td className="p-3 font-bold text-slate-700">
                                 {format(new Date(r.check_in_time), "EEEE, dd MMM yyyy", { locale: id })}
+                              </td>
+                              <td className="p-3">
+                                <span className="inline-block px-2 py-0.5 rounded bg-blue-50 text-[#0073ea] border border-blue-100 font-black text-[8px] uppercase tracking-tight max-w-[130px] truncate" title={r.projects?.name || "-"}>
+                                  {r.projects?.name || "-"}
+                                </span>
                               </td>
                               <td className="p-3 text-emerald-600 font-bold">
                                 <div className="flex flex-col">
