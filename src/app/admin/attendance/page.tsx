@@ -47,6 +47,7 @@ export default function AttendanceRecordsPage() {
   // Biometric Inspection & Manual Clock-Out States
   const [inspectPhotoRecord, setInspectPhotoRecord] = useState<any | null>(null);
   const [manualClockOutRecord, setManualClockOutRecord] = useState<any | null>(null);
+  const [previewFaceUrl, setPreviewFaceUrl] = useState<string | null>(null);
   const [resettingFace, setResettingFace] = useState(false);
   const [togglingFace, setTogglingFace] = useState(false);
   const [uploadingFace, setUploadingFace] = useState(false);
@@ -624,16 +625,7 @@ export default function AttendanceRecordsPage() {
                 <div 
                   onClick={() => {
                     if (selectedUserObject?.face_reference_url) {
-                      setInspectPhotoRecord({
-                        id: -1,
-                        users: selectedUserObject,
-                        check_in_time: new Date(),
-                        check_in_photo: selectedUserObject.face_reference_url,
-                        check_out_time: null,
-                        check_out_photo: null,
-                        check_in_lat: null,
-                        check_in_long: null
-                      });
+                      setPreviewFaceUrl(selectedUserObject.face_reference_url);
                     }
                   }}
                   className={`relative group rounded-2xl overflow-hidden border-2 transition-all ${
@@ -999,6 +991,68 @@ export default function AttendanceRecordsPage() {
           onClose={() => setManualClockOutRecord(null)}
           onSubmit={handleSubmitManualClockOut}
         />
+      )}
+
+      {/* Face Lightbox Preview Modal */}
+      {previewFaceUrl && (
+        <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-[2rem] shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95">
+            <div className="px-6 py-4 bg-[#003366] text-white flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <ShieldCheck size={18} />
+                <h3 className="text-sm font-black uppercase tracking-wider">Foto Profil Wajah Master</h3>
+              </div>
+              <button 
+                onClick={() => setPreviewFaceUrl(null)}
+                className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-5">
+              <div className="aspect-square w-full rounded-2xl bg-slate-50 border border-slate-200 overflow-hidden relative shadow-inner flex items-center justify-center">
+                <img 
+                  src={previewFaceUrl} 
+                  alt="Face Reference" 
+                  className="w-full h-full object-cover" 
+                />
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-1 text-xs">
+                <p className="font-black text-slate-800 text-sm truncate">{selectedUserObject?.name}</p>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                  {selectedUserObject?.email} • {selectedUserObject?.company_name || "Internal / Vendor"}
+                </p>
+                <p className="text-[9px] text-slate-500 pt-1 leading-relaxed">
+                  Foto ini merupakan referensi resmi yang digunakan oleh AI biometrik. Jika foto ini bukan foto wajah yang jelas, silakan tekan <strong>Reset Foto Wajah</strong> di bawah ini.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  onClick={async () => {
+                    await handleResetFace();
+                    setPreviewFaceUrl(null);
+                  }}
+                  disabled={resettingFace}
+                  className="flex-1 py-2.5 px-3 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
+                >
+                  <RotateCcw size={12} /> Reset Foto Wajah
+                </button>
+                <button
+                  onClick={() => {
+                    setPreviewFaceUrl(null);
+                    faceUploadInputRef.current?.click();
+                  }}
+                  className="flex-1 py-2.5 px-3 bg-[#003366] hover:bg-blue-900 text-white rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                >
+                  <UploadCloud size={12} /> Upload Baru
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

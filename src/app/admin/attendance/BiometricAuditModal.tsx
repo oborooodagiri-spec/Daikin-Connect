@@ -25,9 +25,39 @@ export default function BiometricAuditModal({
 }: BiometricAuditModalProps) {
   const [resetting, setResetting] = useState(false);
 
-  const getMapsLink = (lat: number | null, lng: number | null) => {
-    if (lat === null || lng === null) return "#";
+  const getMapsLink = (lat: any, lng: any) => {
+    if (lat == null || lng == null) return "#";
     return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+  };
+
+  const formatCoords = (lat: any, lng: any) => {
+    if (lat == null || lng == null) return "-";
+    const nLat = Number(lat);
+    const nLng = Number(lng);
+    if (isNaN(nLat) || isNaN(nLng)) return "-";
+    return `${nLat.toFixed(4)}, ${nLng.toFixed(4)}`;
+  };
+
+  const formatTimeSafe = (dateVal: any) => {
+    if (!dateVal) return "-";
+    try {
+      const d = new Date(dateVal);
+      if (isNaN(d.getTime())) return "-";
+      return `${format(d, "HH:mm")} WIB`;
+    } catch {
+      return "-";
+    }
+  };
+
+  const formatDateSafe = (dateVal: any) => {
+    if (!dateVal) return "-";
+    try {
+      const d = new Date(dateVal);
+      if (isNaN(d.getTime())) return "-";
+      return format(d, "dd MMM yyyy, HH:mm", { locale: id });
+    } catch {
+      return "-";
+    }
   };
 
   const handleReset = async () => {
@@ -134,7 +164,7 @@ export default function BiometricAuditModal({
                 <div className="flex items-center justify-between">
                   <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Clock-In (Masuk)</span>
                   <span className="px-2 py-0.5 rounded-full bg-blue-50 text-[#0073ea] border border-blue-200 text-[8px] font-black uppercase tracking-wider">
-                    {record?.check_in_time ? format(new Date(record.check_in_time), "HH:mm WIB") : "-"}
+                    {formatTimeSafe(record?.check_in_time)}
                   </span>
                 </div>
 
@@ -160,7 +190,7 @@ export default function BiometricAuditModal({
                       <Clock size={10} /> Tanggal
                     </span>
                     <span className="font-bold text-[10px]">
-                      {record?.check_in_time ? format(new Date(record.check_in_time), "dd MMM yyyy, HH:mm", { locale: id }) : "-"}
+                      {formatDateSafe(record?.check_in_time)}
                     </span>
                   </div>
 
@@ -168,14 +198,14 @@ export default function BiometricAuditModal({
                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider flex items-center gap-1">
                       <MapPin size={10} /> Lokasi
                     </span>
-                    {record?.check_in_lat !== null ? (
+                    {record?.check_in_lat != null && record?.check_in_long != null ? (
                       <a
                         href={getMapsLink(record.check_in_lat, record.check_in_long)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-[#00a1e4] hover:underline font-bold text-[10px] flex items-center gap-0.5"
                       >
-                        {record.check_in_lat.toFixed(4)}, {record.check_in_long.toFixed(4)} <ExternalLink size={8} />
+                        {formatCoords(record.check_in_lat, record.check_in_long)} <ExternalLink size={8} />
                       </a>
                     ) : (
                       <span className="text-slate-400 text-[10px]">-</span>
@@ -199,7 +229,7 @@ export default function BiometricAuditModal({
                   <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Clock-Out (Keluar)</span>
                   {record?.check_out_time ? (
                     <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[8px] font-black uppercase tracking-wider">
-                      {format(new Date(record.check_out_time), "HH:mm WIB")}
+                      {formatTimeSafe(record.check_out_time)}
                     </span>
                   ) : (
                     <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[8px] font-black uppercase tracking-wider animate-pulse">
@@ -233,7 +263,7 @@ export default function BiometricAuditModal({
                           <Clock size={10} /> Tanggal
                         </span>
                         <span className="font-bold text-[10px]">
-                          {format(new Date(record.check_out_time), "dd MMM yyyy, HH:mm", { locale: id })}
+                          {formatDateSafe(record.check_out_time)}
                         </span>
                       </div>
 
@@ -241,14 +271,14 @@ export default function BiometricAuditModal({
                         <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider flex items-center gap-1">
                           <MapPin size={10} /> Lokasi
                         </span>
-                        {record?.check_out_lat !== null ? (
+                        {record?.check_out_lat != null && record?.check_out_long != null ? (
                           <a
                             href={getMapsLink(record.check_out_lat, record.check_out_long)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-[#00a1e4] hover:underline font-bold text-[10px] flex items-center gap-0.5"
                           >
-                            {record.check_out_lat.toFixed(4)}, {record.check_out_long.toFixed(4)} <ExternalLink size={8} />
+                            {formatCoords(record.check_out_lat, record.check_out_long)} <ExternalLink size={8} />
                           </a>
                         ) : (
                           <span className="text-slate-400 text-[10px]">-</span>

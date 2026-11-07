@@ -25,7 +25,7 @@ export default function ManualClockOutModal({
   const userName = user?.name || record?.users?.name || "Personel";
   const projectName = record?.projects?.name || "Daikin Project";
   const checkInTime = record?.check_in_time 
-    ? format(new Date(record.check_in_time), "dd MMMM yyyy, HH:mm WIB", { locale: id })
+    ? `${format(new Date(record.check_in_time), "dd MMMM yyyy, HH:mm", { locale: id })} WIB`
     : "-";
 
   const handleSubmit = async (e: React.FormEvent) => {
