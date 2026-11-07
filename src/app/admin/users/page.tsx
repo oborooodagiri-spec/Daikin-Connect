@@ -4,13 +4,15 @@ import { useEffect, useState, useTransition } from "react";
 import { 
   Users, Search, ShieldCheck, Mail, ShieldAlert, 
   Trash2, ChevronRight, CheckCircle2, XCircle, X,
-  UserCog, Filter, MoreVertical, Shield, Building2, Calendar, QrCode
+  UserCog, Filter, MoreVertical, Shield, Building2, Calendar, QrCode,
+  Camera, RotateCcw
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   getAllUsers, toggleUserStatus, updateUserRole, 
   deleteUser, getAllRoles, getAllAvailableProjects,
-  getUserProjectAccess, updateUserProjectAccess, toggleUserAttendance, togglePivesScannerStatus
+  getUserProjectAccess, updateUserProjectAccess, toggleUserAttendance, togglePivesScannerStatus,
+  toggleUserFaceVerification, resetUserFace
 } from "@/app/actions/users";
 import { useRouter } from "next/navigation";
 import { getSession } from "@/app/actions/auth";
@@ -137,6 +139,35 @@ export default function UsersPage() {
         fetchData();
       } else {
         alert((res as any).error);
+      }
+    });
+  };
+
+  const handleToggleFaceVerification = (user: any) => {
+    const isEnabled = user.face_verification_enabled !== false;
+    const verb = isEnabled ? "Nonaktifkan (Bypass)" : "Aktifkan";
+    if (!confirm(`${verb} kewajiban verifikasi biometrik wajah untuk ${user.name}?`)) return;
+
+    startTransition(async () => {
+      const res = await toggleUserFaceVerification(user.id, isEnabled);
+      if (res && "success" in res && res.success) {
+        fetchData();
+      } else {
+        alert((res as any)?.error || "Gagal mengubah status verifikasi wajah.");
+      }
+    });
+  };
+
+  const handleResetFace = (user: any) => {
+    if (!confirm(`Reset foto profil referensi wajah untuk ${user.name}?\n\nKaryawan akan diminta mengambil foto wajah baru saat absensi berikutnya.`)) return;
+
+    startTransition(async () => {
+      const res = await resetUserFace(user.id);
+      if (res && "success" in res && res.success) {
+        alert("Foto referensi wajah berhasil di-reset.");
+        fetchData();
+      } else {
+        alert((res as any)?.error || "Gagal me-reset foto wajah.");
       }
     });
   };
@@ -336,10 +367,29 @@ export default function UsersPage() {
                               </span>
                               </span>
                               {user.attendance_enabled && (
-                                  <div className="mt-3 flex items-center gap-2 px-2.5 py-1 bg-blue-50 text-blue-500 border border-blue-100 rounded-lg w-fit">
-                                      <Calendar size={12} />
-                                      <span className="text-[9px] font-black uppercase tracking-tight">Live Attendance</span>
-                                  </div>
+                                  <>
+                                    <div className="mt-3 flex items-center gap-2 px-2.5 py-1 bg-blue-50 text-blue-500 border border-blue-100 rounded-lg w-fit">
+                                        <Calendar size={12} />
+                                        <span className="text-[9px] font-black uppercase tracking-tight">Live Attendance</span>
+                                    </div>
+                                    <div className="mt-1 flex items-center gap-1.5">
+                                      {user.face_reference_url ? (
+                                        user.face_verification_enabled !== false ? (
+                                          <div className="flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-md text-[8px] font-black uppercase tracking-tight">
+                                            <CheckCircle2 size={10} /> Face OK
+                                          </div>
+                                        ) : (
+                                          <div className="flex items-center gap-1 px-2 py-0.5 bg-amber-50 text-amber-700 border border-amber-100 rounded-md text-[8px] font-black uppercase tracking-tight">
+                                            <ShieldAlert size={10} /> Face Bypassed
+                                          </div>
+                                        )
+                                      ) : (
+                                        <div className="flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-400 rounded-md text-[8px] font-black uppercase tracking-tight">
+                                          No Face
+                                        </div>
+                                      )}
+                                    </div>
+                                  </>
                               )}
                               {user.pives_scanner_enabled && (
                                   <div className="mt-2 flex items-center gap-2 px-2.5 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg w-fit">
@@ -385,6 +435,32 @@ export default function UsersPage() {
                               >
                                   <Calendar size={18} />
                               </button>
+
+                              {user.attendance_enabled && (
+                                <>
+                                  <button 
+                                      onClick={() => handleToggleFaceVerification(user)}
+                                      className={`p-3 bg-white border rounded-2xl transition-all shadow-sm ${
+                                        user.face_verification_enabled !== false
+                                          ? "border-emerald-100 text-emerald-600 hover:bg-emerald-50" 
+                                          : "border-amber-200 text-amber-600 hover:bg-amber-50"
+                                      }`}
+                                      title={user.face_verification_enabled !== false ? "Bypass Face Verification (Nonaktifkan)" : "Enforce Face Verification (Wajibkan)"}
+                                  >
+                                      <Camera size={18} />
+                                  </button>
+
+                                  {user.face_reference_url && (
+                                    <button 
+                                        onClick={() => handleResetFace(user)}
+                                        className="p-3 bg-white border border-rose-100 text-rose-500 hover:bg-rose-50 rounded-2xl transition-all shadow-sm"
+                                        title="Reset Registered Face Profile"
+                                    >
+                                        <RotateCcw size={18} />
+                                    </button>
+                                  )}
+                                </>
+                              )}
 
                               
                               <button 

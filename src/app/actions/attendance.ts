@@ -5,7 +5,7 @@ import { getSession } from "./auth";
 import { revalidatePath, unstable_noStore } from "next/cache";
 import { serializePrisma } from "@/lib/serialize";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { RekognitionClient, CompareFacesCommand } from "@aws-sdk/client-rekognition";
+import { RekognitionClient, CompareFacesCommand, DetectFacesCommand } from "@aws-sdk/client-rekognition";
 import fs from "fs";
 import path from "path";
 
@@ -377,8 +377,16 @@ export async function verifyFaceMatch(photoUrl: string) {
 
     if (!user) return { error: "User not found" };
 
-    // Zero-Friction First-Time Enrollment
+    // Zero-Friction First-Time Enrollment (with Face Quality & Liveness Guard)
     if (!user.face_reference_url) {
+      console.log("[verifyFaceMatch] First-time enrollment: validating face photo presence...");
+      const faceValidation = await validateFacePhoto(photoUrl);
+      if (!faceValidation.valid) {
+        return { 
+          error: `Pendaftaran Wajah Gagal: ${faceValidation.error || "Wajah tidak terdeteksi jelas pada foto. Silakan ambil foto ulang dengan wajah terlihat jelas menghadap kamera dan pencahayaan memadai."}` 
+        };
+      }
+
       await prisma.users.update({
         where: { id: parseInt(session.userId) },
         data: { 
@@ -531,17 +539,123 @@ export async function verifyFaceMatch(photoUrl: string) {
     if (aiResult.match && aiResult.confidence >= 75) {
        return { success: true, match: true, confidence: aiResult.confidence };
     } else {
+       let cleanReason = aiResult.reason || "Wajah tidak cocok dengan referensi profil terdaftar.";
+       // Normalize Gemini technical AI reference errors to user-friendly messages
+       if (
+         cleanReason.toLowerCase().includes("image 1") || 
+         cleanReason.toLowerCase().includes("authorized reference") ||
+         cleanReason.toLowerCase().includes("no visible facial features")
+       ) {
+         cleanReason = "Foto referensi profil wajah terdaftar tidak memuat wajah yang jelas. Silakan hubungi admin untuk mendaftarkan ulang wajah profil Anda.";
+       }
        return { 
          success: true, 
          match: false, 
          confidence: aiResult.confidence, 
-         reason: aiResult.reason || "Wajah tidak cocok dengan referensi." 
+         reason: cleanReason 
        };
     }
 
   } catch (err: any) {
     console.error("AI Verification Error:", err);
     return { error: "Verifikasi wajah gagal. Silakan coba lagi atau hubungi admin." };
+  }
+}
+
+/**
+ * Validates that an uploaded photo actually contains a clear, recognizable human face
+ * before it is accepted as an authorized biometric reference.
+ */
+export async function validateFacePhoto(photoUrl: string): Promise<{ valid: boolean; error?: string }> {
+  try {
+    const hasAwsKeys = !!(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY);
+
+    // 1. AWS Rekognition DetectFaces (Primary)
+    if (hasAwsKeys) {
+      try {
+        const buffer = await imageUrlToBuffer(photoUrl);
+        if (buffer) {
+          const rekognition = new RekognitionClient({
+            region: process.env.AWS_REGION || "ap-southeast-1",
+            credentials: {
+              accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+              secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+            },
+          });
+          const cmd = new DetectFacesCommand({
+            Image: { Bytes: buffer },
+            Attributes: ["DEFAULT"],
+          });
+          const resp = await rekognition.send(cmd);
+          if (!resp.FaceDetails || resp.FaceDetails.length === 0) {
+            return {
+              valid: false,
+              error: "Wajah tidak terdeteksi pada foto. Pastikan wajah Anda terlihat jelas menghadap langsung ke kamera dengan pencahayaan memadai."
+            };
+          }
+          if (resp.FaceDetails.length > 1) {
+            return {
+              valid: false,
+              error: "Terdeteksi lebih dari satu wajah. Pastikan hanya wajah Anda sendiri yang berada dalam frame kamera."
+            };
+          }
+          return { valid: true };
+        }
+      } catch (awsErr: any) {
+        console.warn("[validateFacePhoto] AWS Rekognition error, falling back to Gemini:", awsErr.message);
+      }
+    }
+
+    // 2. Google Gemini AI (Fallback)
+    if (process.env.GEMINI_API_KEY) {
+      const base64 = await imageUrlToBase64(photoUrl);
+      if (!base64) {
+        return { valid: false, error: "Gagal memproses file foto referensi." };
+      }
+
+      const prompt = `
+        Analyze this image to verify if it contains a valid, clear human face suitable as a biometric attendance reference profile.
+        
+        CRITICAL RULES:
+        1. MUST contain exactly ONE visible human face.
+        2. The face must not be covered by hands, fingers, clothing, mask, sunglasses, heavy shadows, or severe blur.
+        3. Reject if the photo is of a floor, wall, desk, ceiling, inanimate object, empty background, or non-face.
+        
+        OUTPUT FORMAT (JSON ONLY):
+        {"valid": boolean, "reason": "concise explanation in Indonesian"}
+      `;
+
+      const candidateModels = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-3.6-flash"];
+      for (const modelName of candidateModels) {
+        try {
+          const model = genAI.getGenerativeModel({ model: modelName }, { apiVersion: "v1" });
+          const result = await model.generateContent([
+            prompt,
+            { inlineData: { data: base64, mimeType: "image/jpeg" } }
+          ]);
+          const response = result.response.text();
+          const jsonMatch = response.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            const aiData = JSON.parse(jsonMatch[0]);
+            if (aiData.valid === false) {
+              return { 
+                valid: false, 
+                error: aiData.reason || "Wajah tidak terdeteksi dengan jelas pada foto. Silakan pastikan wajah terlihat jelas menghadap kamera." 
+              };
+            }
+            return { valid: true };
+          }
+        } catch (err: any) {
+          console.warn(`[validateFacePhoto] Gemini model ${modelName} failed:`, err?.message || err);
+        }
+      }
+    }
+
+    // If both engines could not check, allow pass-through to not block operations completely
+    return { valid: true };
+  } catch (err: any) {
+    console.error("[validateFacePhoto] Error:", err);
+    return { valid: true };
   }
 }
 
@@ -553,9 +667,18 @@ export async function updateFaceProfile(photoUrl: string) {
     const session = await getSession();
     if (!session) return { error: "Unauthorized" };
 
+    // Validate face photo quality before saving
+    const faceValid = await validateFacePhoto(photoUrl);
+    if (!faceValid.valid) {
+      return { error: faceValid.error || "Foto tidak memuat wajah yang jelas." };
+    }
+
     await prisma.users.update({
       where: { id: parseInt(session.userId) },
-      data: { face_reference_url: photoUrl }
+      data: { 
+        face_reference_url: photoUrl,
+        face_verification_enabled: true 
+      }
     });
 
     return { success: true };

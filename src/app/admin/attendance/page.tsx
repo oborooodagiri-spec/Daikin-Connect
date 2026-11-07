@@ -1,21 +1,28 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { 
   getAttendanceRecords, 
   getAttendanceUsers, 
   getUserMonthlyAttendance,
-  getAttendanceSummary
+  getAttendanceSummary,
+  adminResetUserFace,
+  adminToggleFaceVerification,
+  adminUpdateUserFace,
+  adminManualClockOut
 } from "@/app/actions/attendanceAdmin";
 import { generateAttendancePDF } from "@/lib/attendance-pdf-generator";
 import { 
   MapPin, Clock, FileImage, ShieldCheck, Download, Loader2,
   Calendar, User, ChevronLeft, ChevronRight, List, FileText, CheckCircle2,
-  Search, ArrowLeft, Building2, Fingerprint, UserCheck, Briefcase, ChevronRight as ChevronIcon
+  Search, ArrowLeft, Building2, Fingerprint, UserCheck, Briefcase, ChevronRight as ChevronIcon,
+  Camera, Eye, RotateCcw, UploadCloud, LogOut, X, AlertTriangle, ShieldAlert, Check
 } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale/id";
 import OvertimeCalculator from "./OvertimeCalculator";
+import BiometricAuditModal from "./BiometricAuditModal";
+import ManualClockOutModal from "./ManualClockOutModal";
 
 export default function AttendanceRecordsPage() {
   // Active tab: attendance records or overtime calculation
@@ -36,6 +43,14 @@ export default function AttendanceRecordsPage() {
   const [selectedMonth, setSelectedMonth] = useState(new Date());
   const [loadingTimesheet, setLoadingTimesheet] = useState(false);
   const [exportingPDF, setExportingPDF] = useState(false);
+
+  // Biometric Inspection & Manual Clock-Out States
+  const [inspectPhotoRecord, setInspectPhotoRecord] = useState<any | null>(null);
+  const [manualClockOutRecord, setManualClockOutRecord] = useState<any | null>(null);
+  const [resettingFace, setResettingFace] = useState(false);
+  const [togglingFace, setTogglingFace] = useState(false);
+  const [uploadingFace, setUploadingFace] = useState(false);
+  const faceUploadInputRef = useRef<HTMLInputElement>(null);
 
   // 1. Fetch Summary Stats and All Records on Mount
   useEffect(() => {
@@ -102,6 +117,130 @@ export default function AttendanceRecordsPage() {
       d.setMonth(d.getMonth() + 1);
       return d;
     });
+  };
+
+  const refreshTimesheet = async () => {
+    if (selectedUserId === null) return;
+    setLoadingTimesheet(true);
+    const res = await getUserMonthlyAttendance(
+      selectedUserId,
+      selectedMonth.getMonth(),
+      selectedMonth.getFullYear()
+    );
+    if (res && "success" in res && res.success) {
+      setTimesheetRecords(res.data);
+    }
+    setLoadingTimesheet(false);
+  };
+
+  const handleResetFace = async (targetUserId?: number) => {
+    const uid = targetUserId || selectedUserId;
+    if (!uid) return;
+    const targetUser = usersList.find(u => u.id === uid);
+    if (!confirm(`Reset foto profil wajah untuk ${targetUser?.name || "karyawan ini"}?\n\nKaryawan akan diminta mendaftarkan foto wajah baru yang jelas saat absensi berikutnya.`)) {
+      return;
+    }
+
+    setResettingFace(true);
+    try {
+      const res = await adminResetUserFace(uid);
+      if (res && "success" in res && res.success) {
+        alert(res.message);
+        setUsersList(prev => prev.map(u => u.id === uid ? { ...u, face_reference_url: null } : u));
+        if (inspectPhotoRecord) {
+          setInspectPhotoRecord((prev: any) => prev ? {
+            ...prev,
+            users: { ...prev.users, face_reference_url: null }
+          } : null);
+        }
+        await refreshTimesheet();
+      } else {
+        alert((res as any)?.error || "Gagal me-reset foto wajah.");
+      }
+    } catch (err: any) {
+      alert(err.message || "Terjadi kesalahan.");
+    } finally {
+      setResettingFace(false);
+    }
+  };
+
+  const handleToggleFaceVerification = async (targetUserId?: number) => {
+    const uid = targetUserId || selectedUserId;
+    if (!uid) return;
+    const targetUser = usersList.find(u => u.id === uid);
+    const currentStatus = targetUser?.face_verification_enabled !== false;
+    const newStatus = !currentStatus;
+
+    setTogglingFace(true);
+    try {
+      const res = await adminToggleFaceVerification(uid, newStatus);
+      if (res && "success" in res && res.success) {
+        setUsersList(prev => prev.map(u => u.id === uid ? { ...u, face_verification_enabled: newStatus } : u));
+        await refreshTimesheet();
+      } else {
+        alert((res as any)?.error || "Gagal mengubah status verifikasi wajah.");
+      }
+    } catch (err: any) {
+      alert(err.message || "Terjadi kesalahan.");
+    } finally {
+      setTogglingFace(false);
+    }
+  };
+
+  const handleFaceUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedUserId) return;
+
+    setUploadingFace(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "identity");
+
+      const uploadRes = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const uploadData = await uploadRes.json();
+      if (!uploadData.url) throw new Error("Upload foto gagal.");
+
+      const res = await adminUpdateUserFace(selectedUserId, uploadData.url);
+      if (res && "success" in res && res.success) {
+        alert("Foto referensi wajah berhasil diperbarui dan divalidasi.");
+        setUsersList(prev => prev.map(u => u.id === selectedUserId ? { 
+          ...u, 
+          face_reference_url: uploadData.url, 
+          face_verification_enabled: true 
+        } : u));
+        await refreshTimesheet();
+      } else {
+        alert((res as any)?.error || "Foto ditolak oleh validator biometrik.");
+      }
+    } catch (err: any) {
+      alert(err.message || "Terjadi kesalahan saat upload foto.");
+    } finally {
+      setUploadingFace(false);
+      if (faceUploadInputRef.current) faceUploadInputRef.current.value = "";
+    }
+  };
+
+  const handleSubmitManualClockOut = async (params: { attendanceId: number; notes: string; checkOutTime?: string }) => {
+    const res = await adminManualClockOut(params);
+
+    if (res && "success" in res && res.success) {
+      alert("Clock-out manual berhasil diproses.");
+      setManualClockOutRecord(null);
+      setInspectPhotoRecord(null);
+      await refreshTimesheet();
+      const [recRes, sumRes] = await Promise.all([
+        getAttendanceRecords(),
+        getAttendanceSummary()
+      ]);
+      if (recRes && "success" in recRes && recRes.success) setRecords(recRes.data);
+      if (sumRes && "success" in sumRes && sumRes.success) setSummary(sumRes.data);
+    } else {
+      alert((res as any)?.error || "Gagal melakukan clock-out manual.");
+    }
   };
 
   const getMapsLink = (lat: number | null, lng: number | null) => {
@@ -371,11 +510,32 @@ export default function AttendanceRecordsPage() {
                           {/* Profile row */}
                           <td className="px-4 sm:px-10 py-4 sm:py-7">
                             <div className="flex items-center gap-3 sm:gap-4">
-                              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center font-black group-hover:bg-blue-50 group-hover:text-[#003366] transition-colors uppercase shrink-0">
-                                {u.name?.charAt(0)}
+                              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center font-black group-hover:bg-blue-50 group-hover:text-[#003366] transition-colors uppercase shrink-0 overflow-hidden border border-slate-200">
+                                {u.face_reference_url ? (
+                                  <img src={u.face_reference_url} alt={u.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  u.name?.charAt(0)
+                                )}
                               </div>
                               <div>
-                                <p className="font-black text-slate-800 text-xs sm:text-sm group-hover:text-[#003366] transition-colors">{u.name}</p>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <p className="font-black text-slate-800 text-xs sm:text-sm group-hover:text-[#003366] transition-colors">{u.name}</p>
+                                  {u.face_reference_url ? (
+                                    u.face_verification_enabled !== false ? (
+                                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100 text-[8px] font-black uppercase tracking-tight">
+                                        <Check size={9} /> Face OK
+                                      </span>
+                                    ) : (
+                                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-100 text-[8px] font-black uppercase tracking-tight">
+                                        Bypass
+                                      </span>
+                                    )
+                                  ) : (
+                                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-400 text-[8px] font-black uppercase tracking-tight">
+                                      No Face
+                                    </span>
+                                  )}
+                                </div>
                                 <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-0.5 sm:mt-1">{u.company_name || 'Independent Vendor'}</p>
                               </div>
                             </div>
@@ -455,6 +615,120 @@ export default function AttendanceRecordsPage() {
                 >
                   <ChevronRight size={16} />
                 </button>
+              </div>
+            </div>
+
+            {/* Personnel Biometric Profile & Administrative Controls Card */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+              <div className="flex items-center gap-4">
+                <div 
+                  onClick={() => {
+                    if (selectedUserObject?.face_reference_url) {
+                      setInspectPhotoRecord({
+                        id: -1,
+                        users: selectedUserObject,
+                        check_in_time: new Date(),
+                        check_in_photo: selectedUserObject.face_reference_url,
+                        check_out_time: null,
+                        check_out_photo: null,
+                        check_in_lat: null,
+                        check_in_long: null
+                      });
+                    }
+                  }}
+                  className={`relative group rounded-2xl overflow-hidden border-2 transition-all ${
+                    selectedUserObject?.face_reference_url 
+                      ? "cursor-pointer border-[#003366] hover:scale-105 shadow-md" 
+                      : "border-dashed border-slate-300 bg-slate-50"
+                  } w-14 h-14 shrink-0 flex items-center justify-center`}
+                  title={selectedUserObject?.face_reference_url ? "Klik untuk melihat foto referensi master" : "Belum ada foto referensi"}
+                >
+                  {selectedUserObject?.face_reference_url ? (
+                    <img 
+                      src={selectedUserObject.face_reference_url} 
+                      alt={selectedUserObject.name} 
+                      className="w-full h-full object-cover" 
+                    />
+                  ) : (
+                    <Camera size={22} className="text-slate-400" />
+                  )}
+                  {selectedUserObject?.face_reference_url && (
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-[8px] font-black uppercase">
+                      Lihat
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="font-black text-slate-800 text-sm sm:text-base">{selectedUserObject?.name}</h3>
+                    {selectedUserObject?.face_reference_url ? (
+                      selectedUserObject?.face_verification_enabled !== false ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[8px] font-black uppercase tracking-wider">
+                          <Check size={9} /> Verifikasi Wajah Aktif
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[8px] font-black uppercase tracking-wider">
+                          <AlertTriangle size={9} /> Verifikasi Dibypass
+                        </span>
+                      )
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-[8px] font-black uppercase tracking-wider">
+                        Belum Terdaftar
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">
+                    {selectedUserObject?.email} • {selectedUserObject?.company_name || "Internal / Vendor"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                {/* Toggle Face Verification */}
+                <button
+                  onClick={() => handleToggleFaceVerification()}
+                  disabled={togglingFace}
+                  className={`px-3.5 py-2 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-wider border transition-all flex items-center gap-1.5 shadow-sm ${
+                    selectedUserObject?.face_verification_enabled !== false
+                      ? "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
+                      : "bg-emerald-500 border-emerald-600 text-white hover:bg-emerald-600"
+                  }`}
+                  title="Aktifkan/nonaktifkan kewajiban verifikasi wajah saat absensi"
+                >
+                  <ShieldCheck size={13} />
+                  {selectedUserObject?.face_verification_enabled !== false ? "Bypass Wajah" : "Wajibkan Wajah"}
+                </button>
+
+                {/* Reset Face Reference */}
+                <button
+                  onClick={() => handleResetFace()}
+                  disabled={resettingFace}
+                  className="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm"
+                  title="Hapus foto referensi agar karyawan diminta foto wajah baru"
+                >
+                  {resettingFace ? <Loader2 size={13} className="animate-spin" /> : <RotateCcw size={13} />}
+                  Reset Foto Wajah
+                </button>
+
+                {/* Upload Face Photo */}
+                <button
+                  onClick={() => faceUploadInputRef.current?.click()}
+                  disabled={uploadingFace}
+                  className="px-3.5 py-2 bg-[#003366] hover:bg-blue-900 text-white rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm"
+                  title="Upload foto resmi karyawan dari komputer"
+                >
+                  {uploadingFace ? <Loader2 size={13} className="animate-spin" /> : <UploadCloud size={13} />}
+                  Upload Foto Baru
+                </button>
+                <input 
+                  type="file" 
+                  ref={faceUploadInputRef} 
+                  onChange={handleFaceUpload} 
+                  accept="image/*" 
+                  className="hidden" 
+                />
               </div>
             </div>
 
@@ -544,13 +818,14 @@ export default function AttendanceRecordsPage() {
                       <table className="w-full text-left text-xs border-collapse bg-white">
                         <thead>
                           <tr className="bg-slate-50 border-b border-slate-200 text-[8px] font-black text-slate-400 uppercase tracking-wider">
-                            <th className="p-3 w-[20%]">Tanggal</th>
-                            <th className="p-3 w-[12%]">Masuk</th>
-                            <th className="p-3 w-[18%]">Lokasi Masuk</th>
-                            <th className="p-3 w-[12%]">Keluar</th>
-                            <th className="p-3 w-[18%]">Lokasi Keluar</th>
-                            <th className="p-3 w-[10%] text-center">Durasi</th>
-                            <th className="p-3 w-[10%] text-center">Lembur</th>
+                            <th className="p-3 w-[16%]">Tanggal</th>
+                            <th className="p-3 w-[11%]">Masuk</th>
+                            <th className="p-3 w-[15%]">Lokasi Masuk</th>
+                            <th className="p-3 w-[13%]">Keluar</th>
+                            <th className="p-3 w-[15%]">Lokasi Keluar</th>
+                            <th className="p-3 w-[9%] text-center">Durasi</th>
+                            <th className="p-3 w-[9%] text-center">Lembur</th>
+                            <th className="p-3 w-[12%] text-center">Foto & Audit</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -595,26 +870,41 @@ export default function AttendanceRecordsPage() {
                                 )}
                               </td>
                               <td className="p-3 text-rose-600 font-bold">
-                                <div className="flex flex-col">
-                                  <span>{r.check_out_time ? format(new Date(r.check_out_time), "HH:mm") : "-"}</span>
-                                  {(() => {
-                                    if (!r.check_out_time) return null;
-                                    const checkOut = new Date(r.check_out_time);
-                                    const shiftEnd = r.projects?.shift_end_time || "17:00";
-                                    const [eh, em] = shiftEnd.split(":").map(Number);
-                                    const checkOutMins = checkOut.getHours() * 60 + checkOut.getMinutes();
-                                    const shiftMins = eh * 60 + em;
-                                    if (checkOutMins < shiftMins) {
-                                      const diff = shiftMins - checkOutMins;
-                                      return (
-                                        <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1 py-0.5 rounded border border-rose-100 w-max">
-                                          Cepat {formatMinutesToHoursMins(diff)}
-                                        </span>
-                                      );
-                                    }
-                                    return null;
-                                  })()}
-                                </div>
+                                {r.check_out_time ? (
+                                  <div className="flex flex-col">
+                                    <span>{format(new Date(r.check_out_time), "HH:mm")}</span>
+                                    {(() => {
+                                      const checkOut = new Date(r.check_out_time);
+                                      const shiftEnd = r.projects?.shift_end_time || "17:00";
+                                      const [eh, em] = shiftEnd.split(":").map(Number);
+                                      const checkOutMins = checkOut.getHours() * 60 + checkOut.getMinutes();
+                                      const shiftMins = eh * 60 + em;
+                                      if (checkOutMins < shiftMins) {
+                                        const diff = shiftMins - checkOutMins;
+                                        return (
+                                          <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1 py-0.5 rounded border border-rose-100 w-max">
+                                            Cepat {formatMinutesToHoursMins(diff)}
+                                          </span>
+                                        );
+                                      }
+                                      return null;
+                                    })()}
+                                  </div>
+                                ) : (
+                                  <div className="flex flex-col items-start gap-1">
+                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[7px] font-black uppercase tracking-wider animate-pulse">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                                      Sesi Aktif
+                                    </span>
+                                    <button
+                                      onClick={() => setManualClockOutRecord(r)}
+                                      className="px-2 py-0.5 bg-amber-500 hover:bg-amber-600 text-white text-[7px] font-black uppercase tracking-wider rounded shadow-sm flex items-center gap-1 transition-all"
+                                      title="Clock-Out Manual oleh Admin"
+                                    >
+                                      <LogOut size={8} /> Clock-Out
+                                    </button>
+                                  </div>
+                                )}
                               </td>
                               <td className="p-3">
                                 {r.check_out_lat !== null ? (
@@ -635,6 +925,20 @@ export default function AttendanceRecordsPage() {
                               </td>
                               <td className="p-3 font-black text-amber-700 text-center">
                                 {formatMinutesToHoursMins(getOvertimeMinutes(r.check_in_time, r.check_out_time, r.projects?.shift_start_time, r.projects?.shift_end_time))}
+                              </td>
+                              <td className="p-3 text-center">
+                                <button
+                                  onClick={() => setInspectPhotoRecord(r)}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-[#003366] rounded-lg border border-blue-200 text-[8px] font-black uppercase tracking-wider transition-all shadow-sm"
+                                  title="Inspeksi foto referensi, clock in, dan clock out"
+                                >
+                                  {r.check_in_photo ? (
+                                    <img src={r.check_in_photo} alt="Thumb" className="w-3.5 h-3.5 rounded-full object-cover shrink-0" />
+                                  ) : (
+                                    <Eye size={10} className="text-[#00a1e4]" />
+                                  )}
+                                  <span>Inspeksi</span>
+                                </button>
                               </td>
                             </tr>
                           ))}
@@ -673,6 +977,29 @@ export default function AttendanceRecordsPage() {
         )}
 
       </div>
+
+      {/* 4. MODALS */}
+      {inspectPhotoRecord && (
+        <BiometricAuditModal
+          record={inspectPhotoRecord}
+          user={selectedUserObject || inspectPhotoRecord.users}
+          onClose={() => setInspectPhotoRecord(null)}
+          onResetFace={handleResetFace}
+          onManualClockOut={(rec) => {
+            setManualClockOutRecord(rec);
+            setInspectPhotoRecord(null);
+          }}
+        />
+      )}
+
+      {manualClockOutRecord && (
+        <ManualClockOutModal
+          record={manualClockOutRecord}
+          user={selectedUserObject || manualClockOutRecord.users}
+          onClose={() => setManualClockOutRecord(null)}
+          onSubmit={handleSubmitManualClockOut}
+        />
+      )}
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
 import { serializePrisma } from "@/lib/serialize";
-import { unstable_noStore } from "next/cache";
+import { unstable_noStore, revalidatePath } from "next/cache";
 
 // Fetch Attendance logs for an admin, filtered by projectId, search query, and date range
 export async function getAttendanceRecords(params: {
@@ -49,7 +49,14 @@ export async function getAttendanceRecords(params: {
             where: whereClause,
             include: {
                 users: {
-                    select: { name: true, email: true, company_name: true }
+                    select: { 
+                        id: true, 
+                        name: true, 
+                        email: true, 
+                        company_name: true,
+                        face_reference_url: true,
+                        face_verification_enabled: true 
+                    }
                 },
                 projects: {
                     select: { name: true, customer_id: true, shift_start_time: true, shift_end_time: true }
@@ -158,7 +165,14 @@ export async function getAttendanceUsers(projectId?: string) {
             where: whereClause,
             select: {
                 users: {
-                    select: { id: true, name: true, email: true, company_name: true }
+                    select: { 
+                        id: true, 
+                        name: true, 
+                        email: true, 
+                        company_name: true,
+                        face_reference_url: true,
+                        face_verification_enabled: true 
+                    }
                 }
             },
             distinct: ['user_id']
@@ -262,7 +276,14 @@ export async function getUserMonthlyAttendance(userId: number, month: number, ye
             where: whereClause,
             include: {
                 users: {
-                    select: { id: true, name: true, email: true, company_name: true }
+                    select: { 
+                        id: true, 
+                        name: true, 
+                        email: true, 
+                        company_name: true,
+                        face_reference_url: true,
+                        face_verification_enabled: true 
+                    }
                 },
                 projects: {
                     select: { name: true, shift_start_time: true, shift_end_time: true }
@@ -278,5 +299,140 @@ export async function getUserMonthlyAttendance(userId: number, month: number, ye
     } catch (error) {
         console.error("fetch user monthly attendance err", error);
         return { error: "Failed to fetch monthly attendance." };
+    }
+}
+
+/**
+ * Admin Action: Reset registered face profile for a user
+ * When reset, user will be prompted to re-enroll their face cleanly on next attendance.
+ */
+export async function adminResetUserFace(userId: number) {
+    unstable_noStore();
+    const session = await getSession();
+    const isAdmin = session?.roles?.some((r: any) => /admin|super/i.test(typeof r === "string" ? r : r.role_name));
+    if (!session || !isAdmin) return { error: "Unauthorized access. Admins only." };
+
+    try {
+        await prisma.users.update({
+            where: { id: userId },
+            data: { 
+                face_reference_url: null,
+                face_verification_enabled: true 
+            }
+        });
+        revalidatePath("/admin/attendance");
+        revalidatePath("/admin/users");
+        revalidatePath("/home/attendance");
+        return { 
+            success: true, 
+            message: "Foto referensi wajah berhasil di-reset. Karyawan akan diminta mendaftarkan foto wajah baru saat absensi berikutnya." 
+        };
+    } catch (err: any) {
+        console.error("adminResetUserFace error:", err);
+        return { error: "Gagal me-reset foto referensi wajah." };
+    }
+}
+
+/**
+ * Admin Action: Toggle face verification requirement per user
+ */
+export async function adminToggleFaceVerification(userId: number, enabled: boolean) {
+    unstable_noStore();
+    const session = await getSession();
+    const isAdmin = session?.roles?.some((r: any) => /admin|super/i.test(typeof r === "string" ? r : r.role_name));
+    if (!session || !isAdmin) return { error: "Unauthorized access. Admins only." };
+
+    try {
+        await prisma.users.update({
+            where: { id: userId },
+            data: { face_verification_enabled: enabled }
+        });
+        revalidatePath("/admin/attendance");
+        revalidatePath("/admin/users");
+        revalidatePath("/home/attendance");
+        return { success: true, enabled };
+    } catch (err: any) {
+        console.error("adminToggleFaceVerification error:", err);
+        return { error: "Gagal memperbarui status verifikasi wajah." };
+    }
+}
+
+/**
+ * Admin Action: Upload/set a validated face photo directly for a user
+ */
+export async function adminUpdateUserFace(userId: number, photoUrl: string) {
+    unstable_noStore();
+    const session = await getSession();
+    const isAdmin = session?.roles?.some((r: any) => /admin|super/i.test(typeof r === "string" ? r : r.role_name));
+    if (!session || !isAdmin) return { error: "Unauthorized access. Admins only." };
+
+    try {
+        const { validateFacePhoto } = await import("./attendance");
+        const validation = await validateFacePhoto(photoUrl);
+        if (!validation.valid) {
+            return { error: validation.error || "Wajah tidak terdeteksi jelas pada foto yang diunggah." };
+        }
+
+        await prisma.users.update({
+            where: { id: userId },
+            data: { 
+                face_reference_url: photoUrl,
+                face_verification_enabled: true
+            }
+        });
+        revalidatePath("/admin/attendance");
+        revalidatePath("/admin/users");
+        revalidatePath("/home/attendance");
+        return { success: true, message: "Foto referensi wajah berhasil diperbarui." };
+    } catch (err: any) {
+        console.error("adminUpdateUserFace error:", err);
+        return { error: "Gagal memperbarui foto wajah karyawan." };
+    }
+}
+
+/**
+ * Admin Action: Emergency manual clock-out when employee is stuck on-site
+ */
+export async function adminManualClockOut(params: {
+    attendanceId: number;
+    notes: string;
+    checkOutTime?: string;
+}) {
+    unstable_noStore();
+    const session = await getSession();
+    const isAdmin = session?.roles?.some((r: any) => /admin|super/i.test(typeof r === "string" ? r : r.role_name));
+    if (!session || !isAdmin) return { error: "Unauthorized access. Admins only." };
+
+    if (!params.notes || params.notes.trim().length === 0) {
+        return { error: "Catatan alasan clock-out manual wajib diisi oleh Admin." };
+    }
+
+    try {
+        const attendance = await prisma.vendor_attendance.findUnique({
+            where: { id: params.attendanceId }
+        });
+
+        if (!attendance) return { error: "Data absensi tidak ditemukan." };
+        if (attendance.check_out_time) return { error: "Sesi absensi ini sudah di-clock out sebelumnya." };
+
+        const outTime = params.checkOutTime ? new Date(params.checkOutTime) : new Date();
+        const adminNote = `[MANUAL CLOCK-OUT OLEH ADMIN (${session.name || "Admin"}): ${params.notes.trim()}]`;
+
+        await prisma.vendor_attendance.update({
+            where: { id: params.attendanceId },
+            data: {
+                check_out_time: outTime,
+                check_out_notes: attendance.check_out_notes 
+                    ? `${attendance.check_out_notes} | ${adminNote}` 
+                    : adminNote
+            }
+        });
+
+        revalidatePath("/admin/attendance");
+        revalidatePath("/home/attendance");
+        return { success: true, message: "Clock-out manual berhasil diproses." };
+    } catch (err: any) {
+        console.error("adminManualClockOut error:", err);
+        return { error: "Gagal melakukan clock-out manual." };
     }
 }

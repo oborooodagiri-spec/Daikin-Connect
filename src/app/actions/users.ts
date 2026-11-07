@@ -291,3 +291,33 @@ export async function togglePivesScannerStatus(userId: number, currentStatus: bo
     return { success: false, error: "Failed to update scanner status" };
   }
 }
+
+export async function toggleUserFaceVerification(userId: number, currentStatus: boolean) {
+  if (!await checkAdmin()) return { error: "Unauthorized" };
+  try {
+    await prisma.users.update({
+      where: { id: userId },
+      data: { face_verification_enabled: !currentStatus }
+    });
+    revalidatePath("/admin/users");
+    revalidatePath("/admin/attendance");
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+export async function resetUserFace(userId: number) {
+  if (!await checkAdmin()) return { error: "Unauthorized" };
+  try {
+    await prisma.users.update({
+      where: { id: userId },
+      data: { face_reference_url: null, face_verification_enabled: true }
+    });
+    revalidatePath("/admin/users");
+    revalidatePath("/admin/attendance");
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
