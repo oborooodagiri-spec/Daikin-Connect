@@ -160,7 +160,7 @@ export async function generateAttendancePDF(
                     <p className="text-xl font-black text-blue-800">{totalHoursStr}</p>
                   </div>
                   <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100 text-center">
-                    <p className="text-[9px] font-black text-amber-700 uppercase tracking-widest mb-1">Total Kelebihan Kerja (OT)</p>
+                    <p className="text-[9px] font-black text-amber-700 uppercase tracking-widest mb-1">Overtime</p>
                     <p className="text-xl font-black text-amber-800">{totalOvertimeStr}</p>
                   </div>
                 </div>

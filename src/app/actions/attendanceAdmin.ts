@@ -484,3 +484,38 @@ export async function adminManualClockOut(params: {
         return { error: "Gagal melakukan clock-out manual." };
     }
 }
+
+/**
+ * Admin Action: Add or update administrative notes/keterangan for attendance record
+ * (e.g. forgot clock out, system error, schedule adjustment, overtime justification)
+ */
+export async function adminUpdateAttendanceNotes(params: {
+    attendanceId: number;
+    notes: string;
+}) {
+    unstable_noStore();
+    const session = await getSession();
+    const isAdmin = session?.roles?.some((r: any) => /admin|super/i.test(typeof r === "string" ? r : r.role_name));
+    if (!session || !isAdmin) return { error: "Unauthorized access. Admins only." };
+
+    try {
+        const attendance = await prisma.vendor_attendance.findUnique({
+            where: { id: params.attendanceId }
+        });
+        if (!attendance) return { error: "Data absensi tidak ditemukan." };
+
+        await prisma.vendor_attendance.update({
+            where: { id: params.attendanceId },
+            data: {
+                check_out_notes: params.notes.trim()
+            }
+        });
+
+        revalidatePath("/admin/attendance");
+        revalidatePath("/home/attendance");
+        return { success: true, message: "Keterangan absensi berhasil diperbarui." };
+    } catch (err: any) {
+        console.error("adminUpdateAttendanceNotes error:", err);
+        return { error: "Gagal memperbarui keterangan absensi." };
+    }
+}

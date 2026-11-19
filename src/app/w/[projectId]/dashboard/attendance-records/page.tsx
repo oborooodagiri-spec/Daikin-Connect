@@ -469,7 +469,7 @@ export default function AttendanceRecordsPage() {
                       <p className="text-base font-black text-blue-800 text-ellipsis overflow-hidden whitespace-nowrap">{totalHoursStr}</p>
                     </div>
                     <div className="bg-amber-50/50 p-3 rounded-lg border border-amber-100 text-center">
-                      <p className="text-[8px] font-black text-amber-700 uppercase tracking-widest mb-0.5">Kelebihan Kerja (OT)</p>
+                      <p className="text-[8px] font-black text-amber-700 uppercase tracking-widest mb-0.5">Overtime</p>
                       <p className="text-base font-black text-amber-800 text-ellipsis overflow-hidden whitespace-nowrap">{totalOvertimeStr}</p>
                     </div>
                   </div>
@@ -497,7 +497,7 @@ export default function AttendanceRecordsPage() {
                           <th className="p-2.5 w-[12%]">Keluar</th>
                           <th className="p-2.5 w-[18%]">Lokasi Keluar</th>
                           <th className="p-2.5 w-[10%] text-center">Durasi</th>
-                          <th className="p-2.5 w-[10%] text-center">Lembur</th>
+                          <th className="p-2.5 w-[10%] text-center">Overtime</th>
                         </tr>
                       </thead>
                       <tbody>

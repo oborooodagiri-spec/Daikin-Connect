@@ -10,7 +10,8 @@ import {
   adminResetUserFace,
   adminToggleFaceVerification,
   adminUpdateUserFace,
-  adminManualClockOut
+  adminManualClockOut,
+  adminUpdateAttendanceNotes
 } from "@/app/actions/attendanceAdmin";
 import { generateAttendancePDF } from "@/lib/attendance-pdf-generator";
 import { 
@@ -18,13 +19,14 @@ import {
   Calendar, User, ChevronLeft, ChevronRight, List, FileText, CheckCircle2,
   Search, ArrowLeft, Building2, Fingerprint, UserCheck, Briefcase, ChevronRight as ChevronIcon,
   Camera, Eye, RotateCcw, UploadCloud, LogOut, X, AlertTriangle, ShieldAlert, Check,
-  ChevronDown, ChevronUp, Layers, Filter
+  ChevronDown, ChevronUp, Layers, Filter, MessageSquare, FileEdit
 } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale/id";
 import OvertimeCalculator from "./OvertimeCalculator";
 import BiometricAuditModal from "./BiometricAuditModal";
 import ManualClockOutModal from "./ManualClockOutModal";
+import AttendanceNoteModal from "./AttendanceNoteModal";
 
 export default function AttendanceRecordsPage() {
   // Active tab: attendance records or overtime calculation
@@ -50,9 +52,10 @@ export default function AttendanceRecordsPage() {
   const [loadingTimesheet, setLoadingTimesheet] = useState(false);
   const [exportingPDF, setExportingPDF] = useState(false);
 
-  // Biometric Inspection & Manual Clock-Out States
+  // Biometric Inspection, Manual Clock-Out & Note States
   const [inspectPhotoRecord, setInspectPhotoRecord] = useState<any | null>(null);
   const [manualClockOutRecord, setManualClockOutRecord] = useState<any | null>(null);
+  const [editingNoteRecord, setEditingNoteRecord] = useState<any | null>(null);
   const [previewFaceUrl, setPreviewFaceUrl] = useState<string | null>(null);
   const [resettingFace, setResettingFace] = useState(false);
   const [togglingFace, setTogglingFace] = useState(false);
@@ -270,6 +273,20 @@ export default function AttendanceRecordsPage() {
     }
   };
 
+  const handleSaveAttendanceNotes = async (params: { attendanceId: number; notes: string }) => {
+    const res = await adminUpdateAttendanceNotes(params);
+
+    if (res && "success" in res && res.success) {
+      alert("Keterangan absensi berhasil diperbarui.");
+      setEditingNoteRecord(null);
+      await refreshTimesheet();
+      const recRes = await getAttendanceRecords({ projectId: selectedProjectId !== "all" ? selectedProjectId : undefined });
+      if (recRes && "success" in recRes && recRes.success) setRecords(recRes.data);
+    } else {
+      alert((res as any)?.error || "Gagal memperbarui keterangan absensi.");
+    }
+  };
+
   const getMapsLink = (lat: number | null, lng: number | null) => {
     if (lat === null || lng === null) return "#";
     return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
@@ -293,7 +310,11 @@ export default function AttendanceRecordsPage() {
     if (shiftStart && shiftEnd) {
       const [sh, sm] = shiftStart.split(":").map(Number);
       const [eh, em] = shiftEnd.split(":").map(Number);
-      const shiftDiffMinutes = (eh * 60 + em) - (sh * 60 + sm);
+      let shiftDiffMinutes = (eh * 60 + em) - (sh * 60 + sm);
+      // Handle overnight shift: e.g. 17:00 to 02:00 -> add 24 hours (1440 mins)
+      if (shiftDiffMinutes < 0) {
+        shiftDiffMinutes += 24 * 60;
+      }
       // Deduct 1 hour break (60 minutes) if shift duration exceeds 6 hours (360 minutes)
       if (shiftDiffMinutes > 360) {
         standardWorkMinutes = shiftDiffMinutes - 60;
@@ -302,8 +323,12 @@ export default function AttendanceRecordsPage() {
       }
     }
     
+    if (standardWorkMinutes <= 0) standardWorkMinutes = 480;
+    
+    // Overtime is actual excess hours beyond standard shift (not arbitrarily capped, recording actual hours)
     const overtime = diffMinutes - standardWorkMinutes;
-    return overtime > 0 ? overtime : 0;
+    const actualOvertime = Math.min(diffMinutes, overtime);
+    return actualOvertime > 0 ? actualOvertime : 0;
   };
 
   const formatMinutesToHoursMins = (minutes: number) => {
@@ -1278,7 +1303,7 @@ export default function AttendanceRecordsPage() {
                         <p className="text-lg font-black text-blue-800 text-ellipsis overflow-hidden whitespace-nowrap">{totalHoursStr}</p>
                       </div>
                       <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100 text-center">
-                        <p className="text-[8px] font-black text-amber-700 uppercase tracking-widest mb-0.5">Kelebihan Kerja (OT)</p>
+                        <p className="text-[8px] font-black text-amber-700 uppercase tracking-widest mb-0.5">Overtime</p>
                         <p className="text-lg font-black text-amber-800 text-ellipsis overflow-hidden whitespace-nowrap">{totalOvertimeStr}</p>
                       </div>
                     </div>
@@ -1307,15 +1332,25 @@ export default function AttendanceRecordsPage() {
                             <th className="p-3 w-[11%]">Keluar</th>
                             <th className="p-3 w-[13%]">Lokasi Keluar</th>
                             <th className="p-3 w-[8%] text-center">Durasi</th>
-                            <th className="p-3 w-[7%] text-center">Lembur</th>
-                            <th className="p-3 w-[9%] text-center">Foto & Audit</th>
+                            <th className="p-3 w-[7%] text-center">Overtime</th>
+                            <th className="p-3 w-[12%] text-center">Foto & Keterangan</th>
                           </tr>
                         </thead>
                         <tbody>
                           {timesheetRecords.map((r, idx) => (
                             <tr key={r.id || idx} className="border-b border-slate-100 hover:bg-slate-50/30">
                               <td className="p-3 font-bold text-slate-700">
-                                {safeFormatDate(r.check_in_time, "EEEE, dd MMM yyyy")}
+                                <div>{safeFormatDate(r.check_in_time, "EEEE, dd MMM yyyy")}</div>
+                                {(r.check_out_notes || r.check_in_notes) && (
+                                  <div 
+                                    onClick={() => setEditingNoteRecord(r)}
+                                    className="mt-1 flex items-start gap-1 text-[7px] font-bold text-amber-900 bg-amber-50/90 hover:bg-amber-100 p-1 rounded-md border border-amber-200 cursor-pointer transition-colors max-w-[180px]"
+                                    title={`Keterangan Admin: ${r.check_out_notes || r.check_in_notes}`}
+                                  >
+                                    <MessageSquare size={8} className="shrink-0 text-amber-600 mt-0.5" />
+                                    <span className="truncate">{r.check_out_notes || r.check_in_notes}</span>
+                                  </div>
+                                )}
                               </td>
                               <td className="p-3">
                                 <span className="inline-block px-2 py-0.5 rounded bg-blue-50 text-[#0073ea] border border-blue-100 font-black text-[8px] uppercase tracking-tight max-w-[130px] truncate" title={r.projects?.name || "-"}>
@@ -1415,18 +1450,28 @@ export default function AttendanceRecordsPage() {
                                 {formatMinutesToHoursMins(getOvertimeMinutes(r.check_in_time, r.check_out_time, r.projects?.shift_start_time, r.projects?.shift_end_time))}
                               </td>
                               <td className="p-3 text-center">
-                                <button
-                                  onClick={() => setInspectPhotoRecord(r)}
-                                  className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-[#003366] rounded-lg border border-blue-200 text-[8px] font-black uppercase tracking-wider transition-all shadow-sm"
-                                  title="Inspeksi foto referensi, clock in, dan clock out"
-                                >
-                                  {r.check_in_photo ? (
-                                    <img src={r.check_in_photo} alt="Thumb" className="w-3.5 h-3.5 rounded-full object-cover shrink-0" />
-                                  ) : (
-                                    <Eye size={10} className="text-[#00a1e4]" />
-                                  )}
-                                  <span>Inspeksi</span>
-                                </button>
+                                <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                                  <button
+                                    onClick={() => setInspectPhotoRecord(r)}
+                                    className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 hover:bg-blue-100 text-[#003366] rounded-lg border border-blue-200 text-[8px] font-black uppercase tracking-wider transition-all shadow-xs"
+                                    title="Inspeksi foto referensi, clock in, dan clock out"
+                                  >
+                                    {r.check_in_photo ? (
+                                      <img src={r.check_in_photo} alt="Thumb" className="w-3.5 h-3.5 rounded-full object-cover shrink-0" />
+                                    ) : (
+                                      <Eye size={10} className="text-[#00a1e4]" />
+                                    )}
+                                    <span>Foto</span>
+                                  </button>
+                                  <button
+                                    onClick={() => setEditingNoteRecord(r)}
+                                    className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 rounded-lg border border-amber-200 text-[8px] font-black uppercase tracking-wider transition-all shadow-xs"
+                                    title="Catatan/Keterangan Admin (Lupa clock out, error sistem, dll)"
+                                  >
+                                    <FileEdit size={10} className="text-amber-700" />
+                                    <span>Note</span>
+                                  </button>
+                                </div>
                               </td>
                             </tr>
                           ))}
@@ -1486,6 +1531,16 @@ export default function AttendanceRecordsPage() {
           user={selectedUserObject || manualClockOutRecord.users}
           onClose={() => setManualClockOutRecord(null)}
           onSubmit={handleSubmitManualClockOut}
+        />
+      )}
+
+      {/* Attendance Note / Keterangan Modal for Admin */}
+      {editingNoteRecord && (
+        <AttendanceNoteModal
+          record={editingNoteRecord}
+          user={selectedUserObject || editingNoteRecord.users}
+          onClose={() => setEditingNoteRecord(null)}
+          onSubmit={handleSaveAttendanceNotes}
         />
       )}
 
