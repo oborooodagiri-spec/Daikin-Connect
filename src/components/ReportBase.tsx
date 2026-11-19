@@ -169,7 +169,6 @@ export const ReportBase = ({
           </div>
         )}
       </div>
-      </div>
 
       {/* MAIN CONTENT AREA - WITH SIDE PADDING */}
       <div id="report-content" style={{ flex: 1, position: "relative", padding: "0 15mm", overflow: "hidden" }}>
