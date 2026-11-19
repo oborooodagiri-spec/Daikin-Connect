@@ -11,7 +11,8 @@ import {
   adminToggleFaceVerification,
   adminUpdateUserFace,
   adminManualClockOut,
-  adminUpdateAttendanceNotes
+  adminUpdateAttendanceNotes,
+  adminAdjustAttendanceRecord
 } from "@/app/actions/attendanceAdmin";
 import { generateAttendancePDF } from "@/lib/attendance-pdf-generator";
 import { 
@@ -19,7 +20,7 @@ import {
   Calendar, User, ChevronLeft, ChevronRight, List, FileText, CheckCircle2,
   Search, ArrowLeft, Building2, Fingerprint, UserCheck, Briefcase, ChevronRight as ChevronIcon,
   Camera, Eye, RotateCcw, UploadCloud, LogOut, X, AlertTriangle, ShieldAlert, Check,
-  ChevronDown, ChevronUp, Layers, Filter, MessageSquare, FileEdit
+  ChevronDown, ChevronUp, Layers, Filter, MessageSquare, FileEdit, Printer, Edit3
 } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale/id";
@@ -27,6 +28,7 @@ import OvertimeCalculator from "./OvertimeCalculator";
 import BiometricAuditModal from "./BiometricAuditModal";
 import ManualClockOutModal from "./ManualClockOutModal";
 import AttendanceNoteModal from "./AttendanceNoteModal";
+import AttendanceAdjustmentModal from "./AttendanceAdjustmentModal";
 
 export default function AttendanceRecordsPage() {
   // Active tab: attendance records or overtime calculation
@@ -56,6 +58,7 @@ export default function AttendanceRecordsPage() {
   const [inspectPhotoRecord, setInspectPhotoRecord] = useState<any | null>(null);
   const [manualClockOutRecord, setManualClockOutRecord] = useState<any | null>(null);
   const [editingNoteRecord, setEditingNoteRecord] = useState<any | null>(null);
+  const [adjustmentRecord, setAdjustmentRecord] = useState<any | null>(null);
   const [previewFaceUrl, setPreviewFaceUrl] = useState<string | null>(null);
   const [resettingFace, setResettingFace] = useState(false);
   const [togglingFace, setTogglingFace] = useState(false);
@@ -284,6 +287,25 @@ export default function AttendanceRecordsPage() {
       if (recRes && "success" in recRes && recRes.success) setRecords(recRes.data);
     } else {
       alert((res as any)?.error || "Gagal memperbarui keterangan absensi.");
+    }
+  };
+
+  const handleSaveAttendanceAdjustment = async (params: {
+    attendanceId: number;
+    checkInTime: string;
+    checkOutTime?: string | null;
+    projectId?: string | number;
+    notes?: string;
+  }) => {
+    const res = await adminAdjustAttendanceRecord(params);
+    if (res && "success" in res && res.success) {
+      alert("Data absensi berhasil disesuaikan.");
+      setAdjustmentRecord(null);
+      await refreshTimesheet();
+      const recRes = await getAttendanceRecords({ projectId: selectedProjectId !== "all" ? selectedProjectId : undefined });
+      if (recRes && "success" in recRes && recRes.success) setRecords(recRes.data);
+    } else {
+      alert((res as any)?.error || "Gagal menyesuaikan absensi.");
     }
   };
 
@@ -538,18 +560,30 @@ export default function AttendanceRecordsPage() {
           </div>
 
           {activeTab === "records" && selectedUserId !== null && (
-            <button 
-              onClick={handleExportPDF}
-              disabled={exportingPDF || timesheetRecords.length === 0}
-              className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-rose-600 hover:bg-rose-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[10px] sm:text-[11px] font-black uppercase tracking-widest rounded-2xl transition-all shadow-lg flex items-center justify-center gap-3"
-            >
-              {exportingPDF ? (
-                <Loader2 size={14} className="animate-spin" />
-              ) : (
-                <Download size={14} />
-              )}
-              Download PDF Report
-            </button>
+            <div className="flex items-center gap-2.5 w-full sm:w-auto">
+              <button 
+                onClick={() => window.print()}
+                disabled={timesheetRecords.length === 0}
+                className="flex-1 sm:flex-none px-4 sm:px-6 py-3.5 sm:py-4 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-[10px] sm:text-[11px] font-black uppercase tracking-widest rounded-2xl transition-all shadow-sm flex items-center justify-center gap-2"
+                title="Buka Print Preview dan Cetak Langsung Dokumen A4"
+              >
+                <Printer size={15} className="text-[#003366]" />
+                Cetak / Print
+              </button>
+              <button 
+                onClick={handleExportPDF}
+                disabled={exportingPDF || timesheetRecords.length === 0}
+                className="flex-1 sm:flex-none px-5 sm:px-7 py-3.5 sm:py-4 bg-rose-600 hover:bg-rose-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[10px] sm:text-[11px] font-black uppercase tracking-widest rounded-2xl transition-all shadow-lg flex items-center justify-center gap-2.5"
+                title="Download Dokumen Format PDF Resmi"
+              >
+                {exportingPDF ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <Download size={14} />
+                )}
+                Download PDF
+              </button>
+            </div>
           )}
         </div>
 
@@ -1243,7 +1277,7 @@ export default function AttendanceRecordsPage() {
             <div className="bg-slate-200 border border-slate-300 rounded-2xl p-2 sm:p-6 md:p-10 flex justify-start md:justify-center overflow-x-auto shadow-inner w-full max-w-full">
               
               {/* Authentic A4 Document Visual Sheet */}
-              <div className="w-[210mm] min-h-[297mm] bg-white border border-slate-300 rounded-2xl shadow-2xl p-12 font-sans text-slate-800 relative flex flex-col justify-between shrink-0">
+              <div id="printable-a4-sheet" className="w-[210mm] min-h-[297mm] bg-white border border-slate-300 rounded-2xl shadow-2xl p-12 font-sans text-slate-800 relative flex flex-col justify-between shrink-0">
                 
                 <div className="space-y-8">
                   
@@ -1325,15 +1359,13 @@ export default function AttendanceRecordsPage() {
                       <table className="w-full text-left text-xs border-collapse bg-white">
                         <thead>
                           <tr className="bg-slate-50 border-b border-slate-200 text-[8px] font-black text-slate-400 uppercase tracking-wider">
-                            <th className="p-3 w-[15%]">Tanggal</th>
-                            <th className="p-3 w-[14%]">Proyek</th>
-                            <th className="p-3 w-[10%]">Masuk</th>
-                            <th className="p-3 w-[13%]">Lokasi Masuk</th>
-                            <th className="p-3 w-[11%]">Keluar</th>
-                            <th className="p-3 w-[13%]">Lokasi Keluar</th>
-                            <th className="p-3 w-[8%] text-center">Durasi</th>
-                            <th className="p-3 w-[7%] text-center">Overtime</th>
-                            <th className="p-3 w-[12%] text-center">Foto & Keterangan</th>
+                            <th className="p-3 w-[16%]">Tanggal</th>
+                            <th className="p-3 w-[15%]">Proyek</th>
+                            <th className="p-3 w-[13%]">Masuk</th>
+                            <th className="p-3 w-[14%]">Keluar</th>
+                            <th className="p-3 w-[10%] text-center">Durasi</th>
+                            <th className="p-3 w-[10%] text-center">Overtime</th>
+                            <th className="p-3 w-[22%] text-center">Aksi & Koreksi</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -1376,21 +1408,18 @@ export default function AttendanceRecordsPage() {
                                     }
                                     return null;
                                   })()}
+                                  {r.check_in_lat !== null && (
+                                    <a
+                                      href={getMapsLink(r.check_in_lat, r.check_in_long)}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-[#00a1e4] hover:underline font-bold flex items-center gap-0.5 text-[7px] mt-0.5"
+                                      title={`GPS Masuk: ${r.check_in_lat}, ${r.check_in_long}`}
+                                    >
+                                      <MapPin size={8} /> GPS ({r.check_in_lat.toFixed(2)}, {r.check_in_long?.toFixed(2)})
+                                    </a>
+                                  )}
                                 </div>
-                              </td>
-                              <td className="p-3">
-                                {r.check_in_lat !== null ? (
-                                  <a
-                                    href={getMapsLink(r.check_in_lat, r.check_in_long)}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-[#00a1e4] hover:underline font-bold flex items-center gap-0.5"
-                                  >
-                                    <MapPin size={10} /> {r.check_in_lat.toFixed(4)}, {r.check_in_long.toFixed(4)}
-                                  </a>
-                                ) : (
-                                  "-"
-                                )}
                               </td>
                               <td className="p-3 text-rose-600 font-bold">
                                 {r.check_out_time ? (
@@ -1412,6 +1441,17 @@ export default function AttendanceRecordsPage() {
                                       }
                                       return null;
                                     })()}
+                                    {r.check_out_lat !== null && (
+                                      <a
+                                        href={getMapsLink(r.check_out_lat, r.check_out_long)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-[#00a1e4] hover:underline font-bold flex items-center gap-0.5 text-[7px] mt-0.5"
+                                        title={`GPS Keluar: ${r.check_out_lat}, ${r.check_out_long}`}
+                                      >
+                                        <MapPin size={8} /> GPS ({r.check_out_lat.toFixed(2)}, {r.check_out_long?.toFixed(2)})
+                                      </a>
+                                    )}
                                   </div>
                                 ) : (
                                   <div className="flex flex-col items-start gap-1">
@@ -1427,20 +1467,6 @@ export default function AttendanceRecordsPage() {
                                       <LogOut size={8} /> Clock-Out
                                     </button>
                                   </div>
-                                )}
-                              </td>
-                              <td className="p-3">
-                                {r.check_out_lat !== null ? (
-                                  <a
-                                    href={getMapsLink(r.check_out_lat, r.check_out_long)}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-[#00a1e4] hover:underline font-bold flex items-center gap-0.5"
-                                  >
-                                    <MapPin size={10} /> {r.check_out_lat.toFixed(4)}, {r.check_out_long.toFixed(4)}
-                                  </a>
-                                ) : (
-                                  "-"
                                 )}
                               </td>
                               <td className="p-3 font-black text-slate-800 text-center">
@@ -1462,6 +1488,14 @@ export default function AttendanceRecordsPage() {
                                       <Eye size={10} className="text-[#00a1e4]" />
                                     )}
                                     <span>Foto</span>
+                                  </button>
+                                  <button
+                                    onClick={() => setAdjustmentRecord(r)}
+                                    className="inline-flex items-center gap-1 px-2 py-1 bg-sky-50 hover:bg-sky-100 text-[#003366] rounded-lg border border-sky-200 text-[8px] font-black uppercase tracking-wider transition-all shadow-xs"
+                                    title="Koreksi dan sesuaikan jam masuk, jam keluar, dan proyek"
+                                  >
+                                    <Clock size={10} className="text-[#0073ea]" />
+                                    <span>Sesuaikan</span>
                                   </button>
                                   <button
                                     onClick={() => setEditingNoteRecord(r)}
@@ -1544,6 +1578,17 @@ export default function AttendanceRecordsPage() {
         />
       )}
 
+      {/* Attendance Adjustment / Jam & Penyesuaian Modal for Admin */}
+      {adjustmentRecord && (
+        <AttendanceAdjustmentModal
+          record={adjustmentRecord}
+          user={selectedUserObject || adjustmentRecord.users}
+          projectsList={projectsList}
+          onClose={() => setAdjustmentRecord(null)}
+          onSubmit={handleSaveAttendanceAdjustment}
+        />
+      )}
+
       {/* Face Lightbox Preview Modal */}
       {previewFaceUrl && (
         <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -1605,6 +1650,31 @@ export default function AttendanceRecordsPage() {
           </div>
         </div>
       )}
+      {/* Print-specific CSS */}
+      <style jsx global>{`
+        @media print {
+          body * {
+            visibility: hidden !important;
+          }
+          #printable-a4-sheet, #printable-a4-sheet * {
+            visibility: visible !important;
+          }
+          #printable-a4-sheet {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 15mm 20mm !important;
+            border: none !important;
+            box-shadow: none !important;
+            background: white !important;
+          }
+          nav, aside, header, button, .no-print {
+            display: none !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

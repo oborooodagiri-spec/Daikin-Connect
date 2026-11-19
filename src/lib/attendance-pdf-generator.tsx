@@ -27,9 +27,11 @@ interface AttendanceRecord {
   check_in_photo?: string | null;
   check_out_photo?: string | null;
   check_in_notes?: string | null;
+  check_out_notes?: string | null;
   projects?: {
     name: string;
     shift_start_time?: string;
+    shift_end_time?: string;
   } | null;
 }
 
@@ -83,6 +85,33 @@ export async function generateAttendancePDF(
     const hrs = Math.floor(diffMs / 3600000);
     const mins = Math.round((diffMs % 3600000) / 60000);
     return `${hrs}j ${mins}m`;
+  };
+
+  const getOvertimeStr = (r: AttendanceRecord) => {
+    if (!r.check_in_time || !r.check_out_time) return "-";
+    const inDate = new Date(r.check_in_time);
+    const outDate = new Date(r.check_out_time);
+    const diffMs = outDate.getTime() - inDate.getTime();
+    if (diffMs <= 0) return "-";
+    const diffMins = Math.floor(diffMs / 60000);
+
+    let standardWorkMinutes = 480;
+    const shiftStart = r.projects?.shift_start_time || "08:00";
+    const shiftEnd = r.projects?.shift_end_time || "17:00";
+    const [sh, sm] = shiftStart.split(":").map(Number);
+    const [eh, em] = shiftEnd.split(":").map(Number);
+    let shiftDiff = (eh * 60 + em) - (sh * 60 + sm);
+    if (shiftDiff < 0) shiftDiff += 1440;
+    if (shiftDiff > 0) standardWorkMinutes = shiftDiff;
+
+    const overtime = diffMins - standardWorkMinutes;
+    const actualOvertime = Math.min(diffMins, overtime);
+    if (actualOvertime > 0) {
+      const hrs = Math.floor(actualOvertime / 60);
+      const mins = actualOvertime % 60;
+      return `${hrs}j ${mins}m`;
+    }
+    return "0j 0m";
   };
 
   const getMapsLink = (lat: number | null, lng: number | null) => {
@@ -172,12 +201,13 @@ export async function generateAttendancePDF(
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200 text-[9px] font-black text-slate-400 uppercase tracking-wider">
-                    <th className="p-3 w-[20%]">Tanggal</th>
-                    <th className="p-3 w-[15%]">Masuk</th>
-                    <th className="p-3 w-[20%]">Lokasi Masuk</th>
-                    <th className="p-3 w-[15%]">Keluar</th>
-                    <th className="p-3 w-[20%]">Lokasi Keluar</th>
+                    <th className="p-3 w-[18%]">Tanggal</th>
+                    <th className="p-3 w-[18%]">Proyek</th>
+                    <th className="p-3 w-[12%]">Masuk</th>
+                    <th className="p-3 w-[12%]">Keluar</th>
                     <th className="p-3 w-[10%] text-center">Durasi</th>
+                    <th className="p-3 w-[10%] text-center">Overtime</th>
+                    <th className="p-3 w-[20%]">Keterangan</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -185,6 +215,9 @@ export async function generateAttendancePDF(
                     <tr key={r.id || index} className="border-b border-slate-100 hover:bg-slate-50/50">
                       <td className="p-3 font-bold text-slate-700">
                         {formatDateFull(r.check_in_time)}
+                      </td>
+                      <td className="p-3 font-bold text-[#003366] uppercase text-[10px]">
+                        {r.projects?.name || "-"}
                       </td>
                       <td className="p-3 font-bold">
                         <div className="flex flex-col text-emerald-600">
@@ -200,10 +233,10 @@ export async function generateAttendancePDF(
                                const diff = checkInMins - shiftMins;
                                const hrs = Math.floor(diff / 60);
                                const mins = diff % 60;
-                               const diffStr = hrs > 0 ? (mins > 0 ? `${hrs} Jam ${mins} Menit` : `${hrs} Jam`) : `${mins} Menit`;
+                               const diffStr = hrs > 0 ? (mins > 0 ? `${hrs}j ${mins}m` : `${hrs}j`) : `${mins}m`;
                                return (
                                   <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1 py-0.5 rounded border border-rose-100 w-max">
-                                     Terlambat {diffStr}
+                                     +{diffStr}
                                   </span>
                                );
                             }
@@ -211,39 +244,17 @@ export async function generateAttendancePDF(
                           })()}
                         </div>
                       </td>
-                      <td className="p-3">
-                        {r.check_in_lat !== null ? (
-                          <a
-                            href={getMapsLink(r.check_in_lat, r.check_in_long)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[#00a1e4] hover:underline font-bold"
-                          >
-                            {r.check_in_lat.toFixed(4)}, {r.check_in_long?.toFixed(4)}
-                          </a>
-                        ) : (
-                          "-"
-                        )}
-                      </td>
                       <td className="p-3 text-rose-600 font-bold">
                         {formatTime(r.check_out_time)}
                       </td>
-                      <td className="p-3">
-                        {r.check_out_lat !== null ? (
-                          <a
-                            href={getMapsLink(r.check_out_lat, r.check_out_long)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[#00a1e4] hover:underline font-bold"
-                          >
-                            {r.check_out_lat.toFixed(4)}, {r.check_out_long?.toFixed(4)}
-                          </a>
-                        ) : (
-                          "-"
-                        )}
-                      </td>
                       <td className="p-3 font-black text-slate-800 text-center">
                         {getDuration(r)}
+                      </td>
+                      <td className="p-3 font-black text-amber-700 text-center">
+                        {getOvertimeStr(r)}
+                      </td>
+                      <td className="p-3 text-[9px] font-medium text-slate-600 max-w-[140px] break-words">
+                        {r.check_out_notes || r.check_in_notes || "-"}
                       </td>
                     </tr>
                   ))}

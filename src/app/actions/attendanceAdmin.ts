@@ -519,3 +519,57 @@ export async function adminUpdateAttendanceNotes(params: {
         return { error: "Gagal memperbarui keterangan absensi." };
     }
 }
+
+/**
+ * Admin Action: Full adjustment of an attendance record
+ * Allows admin to edit check-in time, check-out time, project, and attach administrative adjustment notes.
+ */
+export async function adminAdjustAttendanceRecord(params: {
+    attendanceId: number;
+    checkInTime: string;
+    checkOutTime?: string | null;
+    projectId?: string | number;
+    notes?: string;
+}) {
+    unstable_noStore();
+    const session = await getSession();
+    const isAdmin = session?.roles?.some((r: any) => /admin|super/i.test(typeof r === "string" ? r : r.role_name));
+    if (!session || !isAdmin) return { error: "Unauthorized access. Admins only." };
+
+    try {
+        const attendance = await prisma.vendor_attendance.findUnique({
+            where: { id: params.attendanceId }
+        });
+        if (!attendance) return { error: "Data absensi tidak ditemukan." };
+
+        const updateData: any = {};
+
+        if (params.checkInTime) {
+            updateData.check_in_time = new Date(params.checkInTime);
+        }
+
+        if (params.checkOutTime !== undefined) {
+            updateData.check_out_time = params.checkOutTime ? new Date(params.checkOutTime) : null;
+        }
+
+        if (params.projectId) {
+            updateData.project_id = BigInt(params.projectId);
+        }
+
+        if (params.notes !== undefined) {
+            updateData.check_out_notes = params.notes.trim();
+        }
+
+        await prisma.vendor_attendance.update({
+            where: { id: params.attendanceId },
+            data: updateData
+        });
+
+        revalidatePath("/admin/attendance");
+        revalidatePath("/home/attendance");
+        return { success: true, message: "Data absensi berhasil disesuaikan." };
+    } catch (err: any) {
+        console.error("adminAdjustAttendanceRecord error:", err);
+        return { error: "Gagal menyesuaikan data absensi." };
+    }
+}
