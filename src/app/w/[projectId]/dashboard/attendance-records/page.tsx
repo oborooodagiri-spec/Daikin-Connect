@@ -151,7 +151,8 @@ export default function AttendanceRecordsPage() {
         company_name: targetUser.company_name || null
       };
 
-      await generateAttendancePDF(userForPDF, timesheetRecords, selectedMonth, "ADMINISTRATIVE TIMESHEET");
+      const projName = getProjectName();
+      await generateAttendancePDF(userForPDF, timesheetRecords, selectedMonth, projName);
     } catch (err) {
       console.error("Failed to export PDF:", err);
     } finally {

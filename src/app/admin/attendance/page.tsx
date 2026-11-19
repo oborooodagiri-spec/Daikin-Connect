@@ -388,7 +388,8 @@ export default function AttendanceRecordsPage() {
         company_name: targetUser.company_name || null
       };
 
-      await generateAttendancePDF(userForPDF, timesheetRecords, selectedMonth, "ADMINISTRATIVE TIMESHEET");
+      const projName = getProjectName();
+      await generateAttendancePDF(userForPDF, timesheetRecords, selectedMonth, projName);
     } catch (err) {
       console.error("Failed to export PDF:", err);
     } finally {
@@ -1352,7 +1353,7 @@ export default function AttendanceRecordsPage() {
                             <th className="p-3 w-[14%]">Keluar</th>
                             <th className="p-3 w-[10%] text-center">Durasi</th>
                             <th className="p-3 w-[10%] text-center">Overtime</th>
-                            <th className="p-3 w-[22%] text-center">Aksi & Koreksi</th>
+                            <th className="p-3 w-[22%] text-center print:hidden">Aksi & Koreksi</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -1400,7 +1401,7 @@ export default function AttendanceRecordsPage() {
                                       href={getMapsLink(r.check_in_lat, r.check_in_long)}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="text-[#00a1e4] hover:underline font-bold flex items-center gap-0.5 text-[7px] mt-0.5"
+                                      className="print:hidden text-[#00a1e4] hover:underline font-bold flex items-center gap-0.5 text-[7px] mt-0.5"
                                       title={`GPS Masuk: ${r.check_in_lat}, ${r.check_in_long}`}
                                     >
                                       <MapPin size={8} /> GPS ({r.check_in_lat.toFixed(2)}, {r.check_in_long?.toFixed(2)})
@@ -1433,7 +1434,7 @@ export default function AttendanceRecordsPage() {
                                         href={getMapsLink(r.check_out_lat, r.check_out_long)}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-[#00a1e4] hover:underline font-bold flex items-center gap-0.5 text-[7px] mt-0.5"
+                                        className="print:hidden text-[#00a1e4] hover:underline font-bold flex items-center gap-0.5 text-[7px] mt-0.5"
                                         title={`GPS Keluar: ${r.check_out_lat}, ${r.check_out_long}`}
                                       >
                                         <MapPin size={8} /> GPS ({r.check_out_lat.toFixed(2)}, {r.check_out_long?.toFixed(2)})
@@ -1448,7 +1449,7 @@ export default function AttendanceRecordsPage() {
                                     </span>
                                     <button
                                       onClick={() => setManualClockOutRecord(r)}
-                                      className="px-2 py-0.5 bg-amber-500 hover:bg-amber-600 text-white text-[7px] font-black uppercase tracking-wider rounded shadow-sm flex items-center gap-1 transition-all"
+                                      className="print:hidden px-2 py-0.5 bg-amber-500 hover:bg-amber-600 text-white text-[7px] font-black uppercase tracking-wider rounded shadow-sm flex items-center gap-1 transition-all"
                                       title="Clock-Out Manual oleh Admin"
                                     >
                                       <LogOut size={8} /> Clock-Out
@@ -1462,7 +1463,7 @@ export default function AttendanceRecordsPage() {
                               <td className="p-3 font-black text-amber-700 text-center">
                                 {formatMinutesToHoursMins(getOvertimeMinutes(r.check_in_time, r.check_out_time, r.projects?.shift_start_time, r.projects?.shift_end_time))}
                               </td>
-                              <td className="p-3 text-center">
+                              <td className="p-3 text-center print:hidden">
                                 <div className="flex items-center justify-center gap-1.5 flex-wrap">
                                   <button
                                     onClick={() => setInspectPhotoRecord(r)}

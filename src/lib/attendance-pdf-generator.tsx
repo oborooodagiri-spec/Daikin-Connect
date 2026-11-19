@@ -93,9 +93,10 @@ export async function generateAttendancePDF(
   const getDuration = (r: AttendanceRecord) => {
     if (!r.check_out_time) return "Sesi Aktif";
     const diffMs = new Date(r.check_out_time).getTime() - new Date(r.check_in_time).getTime();
+    if (diffMs <= 0) return "-";
     const hrs = Math.floor(diffMs / 3600000);
     const mins = Math.round((diffMs % 3600000) / 60000);
-    return `${hrs}j ${mins}m`;
+    return `${hrs} Jam ${mins} Menit`;
   };
 
   const getOvertimeStr = (r: AttendanceRecord) => {
@@ -113,16 +114,18 @@ export async function generateAttendancePDF(
     const [eh, em] = shiftEnd.split(":").map(Number);
     let shiftDiff = (eh * 60 + em) - (sh * 60 + sm);
     if (shiftDiff < 0) shiftDiff += 1440;
-    if (shiftDiff > 0) standardWorkMinutes = shiftDiff;
+    if (shiftDiff > 360) standardWorkMinutes = shiftDiff - 60;
+    else if (shiftDiff > 0) standardWorkMinutes = shiftDiff;
+    if (standardWorkMinutes <= 0) standardWorkMinutes = 480;
 
     const overtime = diffMins - standardWorkMinutes;
     const actualOvertime = Math.min(diffMins, overtime);
     if (actualOvertime > 0) {
       const hrs = Math.floor(actualOvertime / 60);
       const mins = actualOvertime % 60;
-      return `${hrs}j ${mins}m`;
+      return `${hrs} Jam ${mins} Menit`;
     }
-    return "0j 0m";
+    return "0 Jam 0 Menit";
   };
 
   const getMapsLink = (lat: number | null, lng: number | null) => {
@@ -165,8 +168,8 @@ export async function generateAttendancePDF(
     await new Promise<void>((resolve) => {
       root.render(
         <ReportBase
-          reportTitle="LAPORAN RIWAYAT KEHADIRAN BULANAN"
-          projectName={projectName || "GLOBAL ATTENDANCE"}
+          reportTitle="LAPORAN TIMESHEET RIWAYAT ABSENSI"
+          projectName={monthName.toUpperCase()}
           pageNumber={i + 1}
           totalPages={totalPages}
           isFixedHeight={true}
@@ -185,8 +188,8 @@ export async function generateAttendancePDF(
                   <div className="space-y-2">
                     <p className="font-bold text-slate-400 uppercase tracking-widest text-[9px]">Perusahaan / Subkontraktor</p>
                     <p className="text-sm font-black text-slate-800 uppercase">{user.company_name || "Independent / Internal"}</p>
-                    <p className="font-bold text-slate-400 uppercase tracking-widest text-[9px] mt-2">Periode Laporan</p>
-                    <p className="text-xs font-bold text-[#00a1e4] uppercase tracking-wider">{monthName}</p>
+                    <p className="font-bold text-slate-400 uppercase tracking-widest text-[9px] mt-2">Nama Project</p>
+                    <p className="text-xs font-bold text-[#00a1e4] uppercase tracking-wider">{projectName || "Semua Proyek"}</p>
                   </div>
                 </div>
 
@@ -244,10 +247,10 @@ export async function generateAttendancePDF(
                                const diff = checkInMins - shiftMins;
                                const hrs = Math.floor(diff / 60);
                                const mins = diff % 60;
-                               const diffStr = hrs > 0 ? (mins > 0 ? `${hrs}j ${mins}m` : `${hrs}j`) : `${mins}m`;
+                               const diffStr = hrs > 0 ? (mins > 0 ? `${hrs} Jam ${mins} Menit` : `${hrs} Jam`) : `${mins} Menit`;
                                return (
                                   <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1 py-0.5 rounded border border-rose-100 w-max">
-                                     +{diffStr}
+                                     Terlambat {diffStr}
                                   </span>
                                );
                             }
@@ -272,6 +275,30 @@ export async function generateAttendancePDF(
                 </tbody>
               </table>
             </div>
+
+            {/* Signatures at bottom - ONLY ON LAST PAGE */}
+            {isLastPage && (
+              <div className="pt-6 mt-8 border-t border-slate-100">
+                <div className="grid grid-cols-2 gap-10">
+                  <div className="text-center space-y-12">
+                    <p className="text-[8px] font-black text-[#003366] uppercase tracking-widest">
+                      Tanda Tangan Personel
+                    </p>
+                    <div className="border-b border-dashed border-slate-300 w-44 mx-auto pb-1">
+                      <p className="text-[10px] font-black uppercase text-slate-800">{user.name}</p>
+                    </div>
+                  </div>
+                  <div className="text-center space-y-12">
+                    <p className="text-[8px] font-black text-[#003366] uppercase tracking-widest">
+                      Penyetuju / Koordinator Lapangan
+                    </p>
+                    <div className="border-b border-dashed border-slate-300 w-44 mx-auto pb-1">
+                      <p className="text-[10px] font-black uppercase text-slate-800">Site Supervisor / HR</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
           </div>
         </ReportBase>

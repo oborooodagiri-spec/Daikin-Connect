@@ -72,7 +72,7 @@ export default function AttendanceReportPreviewModal({
     if (diffMs <= 0) return "-";
     const hrs = Math.floor(diffMs / 3600000);
     const mins = Math.round((diffMs % 3600000) / 60000);
-    return `${hrs}j ${mins}m`;
+    return `${hrs} Jam ${mins} Menit`;
   };
 
   const getOvertimeStr = (r: AttendanceRecord) => {
@@ -99,9 +99,9 @@ export default function AttendanceReportPreviewModal({
     if (actualOvertime > 0) {
       const hrs = Math.floor(actualOvertime / 60);
       const mins = actualOvertime % 60;
-      return `${hrs}j ${mins}m`;
+      return `${hrs} Jam ${mins} Menit`;
     }
-    return "0j 0m";
+    return "0 Jam 0 Menit";
   };
 
   return (
@@ -253,11 +253,55 @@ export default function AttendanceReportPreviewModal({
                         <td className="p-2.5 font-bold text-[#003366] uppercase text-[10px]">
                           {r.projects?.name || "-"}
                         </td>
-                        <td className="p-2.5 text-emerald-600 font-bold text-[10px]">
-                          {safeFormatTime(r.check_in_time)}
+                        <td className="p-2.5 font-bold text-[10px]">
+                          <div className="flex flex-col text-emerald-600">
+                            <span>{safeFormatTime(r.check_in_time)}</span>
+                            {(() => {
+                              if (!r.check_in_time) return null;
+                              const checkIn = new Date(r.check_in_time);
+                              const shiftStart = r.projects?.shift_start_time || "08:00";
+                              const [sh, sm] = shiftStart.split(":").map(Number);
+                              const checkInMins = checkIn.getHours() * 60 + checkIn.getMinutes();
+                              const shiftMins = sh * 60 + sm;
+                              if (checkInMins > shiftMins) {
+                                const diff = checkInMins - shiftMins;
+                                const hrs = Math.floor(diff / 60);
+                                const mins = diff % 60;
+                                const diffStr = hrs > 0 ? (mins > 0 ? `${hrs} Jam ${mins} Menit` : `${hrs} Jam`) : `${mins} Menit`;
+                                return (
+                                  <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1 py-0.5 rounded border border-rose-100 w-max">
+                                    Terlambat {diffStr}
+                                  </span>
+                                );
+                              }
+                              return null;
+                            })()}
+                          </div>
                         </td>
                         <td className="p-2.5 text-rose-600 font-bold text-[10px]">
-                          {safeFormatTime(r.check_out_time)}
+                          <div className="flex flex-col">
+                            <span>{safeFormatTime(r.check_out_time)}</span>
+                            {(() => {
+                              if (!r.check_out_time) return null;
+                              const checkOut = new Date(r.check_out_time);
+                              const shiftEnd = r.projects?.shift_end_time || "17:00";
+                              const [eh, em] = shiftEnd.split(":").map(Number);
+                              const checkOutMins = checkOut.getHours() * 60 + checkOut.getMinutes();
+                              const shiftMins = eh * 60 + em;
+                              if (checkOutMins < shiftMins) {
+                                const diff = shiftMins - checkOutMins;
+                                const hrs = Math.floor(diff / 60);
+                                const mins = diff % 60;
+                                const diffStr = hrs > 0 ? (mins > 0 ? `${hrs} Jam ${mins} Menit` : `${hrs} Jam`) : `${mins} Menit`;
+                                return (
+                                  <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1 py-0.5 rounded border border-rose-100 w-max">
+                                    Cepat {diffStr}
+                                  </span>
+                                );
+                              }
+                              return null;
+                            })()}
+                          </div>
                         </td>
                         <td className="p-2.5 font-black text-slate-800 text-center text-[10px]">
                           {getDuration(r)}
