@@ -1153,6 +1153,17 @@ export default function AttendanceRecordsPage() {
                     <ChevronRight size={16} />
                   </button>
                 </div>
+
+                {/* Cetak & Download Report Button */}
+                <button
+                  onClick={() => setShowReportPreviewModal(true)}
+                  disabled={timesheetRecords.length === 0}
+                  className="px-4 py-2.5 bg-[#003366] hover:bg-blue-900 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-all shadow-sm flex items-center gap-2 shrink-0"
+                  title="Preview dan cetak / download laporan"
+                >
+                  <FileText size={14} />
+                  <span>Cetak & Download Report</span>
+                </button>
               </div>
             </div>
 
@@ -1261,271 +1272,280 @@ export default function AttendanceRecordsPage() {
               </div>
             </div>
 
-            {/* Interactive print preview wrapper */}
-            <div className="bg-slate-200 border border-slate-300 rounded-2xl p-2 sm:p-6 md:p-10 flex justify-start md:justify-center overflow-x-auto shadow-inner w-full max-w-full">
+            {/* Main Interactive Timesheet Workspace Card */}
+            <div id="printable-a4-sheet" className="w-full bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-sm font-sans text-slate-800 relative flex flex-col justify-between space-y-8">
               
-              {/* Authentic A4 Document Visual Sheet */}
-              <div id="printable-a4-sheet" className="w-[210mm] min-h-[297mm] bg-white border border-slate-300 rounded-2xl shadow-2xl p-12 font-sans text-slate-800 relative flex flex-col justify-between shrink-0">
+              <div className="space-y-8">
                 
-                <div className="space-y-8">
-                  
-                  {/* Branding headers */}
-                  <div className="flex justify-between items-center pb-4 border-b-2 border-[#003366]">
-                    <div className="flex items-center gap-3">
-                      <img src="/daikin_logo.png" alt="Daikin" className="h-8 object-contain" />
-                      <div className="h-6 w-[1px] bg-slate-300"></div>
-                      <div className="text-[7px] font-black text-[#003366] uppercase leading-tight tracking-wider">
-                        PT DAIKIN APPLIED SOLUTIONS INDONESIA
-                      </div>
-                    </div>
-                    <img src="/logo/Logo DSSI.png" alt="DSSI Connect" className="h-10 sm:h-12 w-auto object-contain" />
-                  </div>
-
-                  {/* Document Title */}
-                  <div className="text-center space-y-1">
-                    <h2 className="text-xl font-black text-[#003366] uppercase tracking-widest">LAPORAN TIMESHEET RIWAYAT ABSENSI</h2>
-                    <span className="inline-block bg-sky-50 text-[#003366] text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded border border-sky-100">
-                      {format(selectedMonth, "MMMM yyyy", { locale: id })}
-                    </span>
-                  </div>
-
-                  {/* Metadata display table */}
-                  <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 grid grid-cols-2 gap-4 text-xs">
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Nama Lengkap</p>
-                        <p className="font-black text-slate-800 uppercase text-xs">{selectedUserObject?.name}</p>
-                      </div>
-                      <div>
-                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Email Akun</p>
-                        <p className="font-bold text-slate-600 text-xs">{selectedUserObject?.email}</p>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Perusahaan / Subkontraktor</p>
-                        <p className="font-black text-slate-800 uppercase text-xs">{selectedUserObject?.company_name || 'Independent / Internal'}</p>
-                      </div>
-                      <div>
-                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Nama Project</p>
-                        <p className="font-bold text-[#00a1e4] uppercase text-xs tracking-wider">{getProjectName()}</p>
-                      </div>
+                {/* Branding headers */}
+                <div className="flex justify-between items-center pb-4 border-b-2 border-[#003366]">
+                  <div className="flex items-center gap-3">
+                    <img src="/daikin_logo.png" alt="Daikin" className="h-8 object-contain" />
+                    <div className="h-6 w-[1px] bg-slate-300"></div>
+                    <div className="text-[8px] sm:text-[9px] font-black text-[#003366] uppercase leading-tight tracking-wider">
+                      PT DAIKIN APPLIED SOLUTIONS INDONESIA
                     </div>
                   </div>
+                  <img src="/logo/Logo DSSI.png" alt="DSSI Connect" className="h-10 sm:h-12 w-auto object-contain" />
+                </div>
 
-                  {/* Stats summary boxes */}
-                  {timesheetRecords.length > 0 && (
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 text-center">
-                        <p className="text-[8px] font-black text-emerald-700 uppercase tracking-widest mb-0.5">Total Hari Hadir</p>
-                        <p className="text-lg font-black text-emerald-800">{timesheetRecords.length} Hari</p>
-                      </div>
-                      <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 text-center">
-                        <p className="text-[8px] font-black text-blue-700 uppercase tracking-widest mb-0.5">Total Durasi Kerja</p>
-                        <p className="text-lg font-black text-blue-800 text-ellipsis overflow-hidden whitespace-nowrap">{totalHoursStr}</p>
-                      </div>
-                      <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100 text-center">
-                        <p className="text-[8px] font-black text-amber-700 uppercase tracking-widest mb-0.5">Overtime</p>
-                        <p className="text-lg font-black text-amber-800 text-ellipsis overflow-hidden whitespace-nowrap">{totalOvertimeStr}</p>
-                      </div>
+                {/* Document Title */}
+                <div className="text-center space-y-1">
+                  <h2 className="text-xl sm:text-2xl font-black text-[#003366] uppercase tracking-widest">LAPORAN TIMESHEET RIWAYAT ABSENSI</h2>
+                  <span className="inline-block bg-sky-50 text-[#003366] text-[10px] sm:text-[11px] font-black uppercase tracking-widest px-4 py-1.5 rounded-lg border border-sky-100">
+                    {format(selectedMonth, "MMMM yyyy", { locale: id })}
+                  </span>
+                </div>
+
+                {/* Metadata display table */}
+                <div className="bg-slate-50/80 p-5 sm:p-6 rounded-2xl border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Nama Lengkap</p>
+                      <p className="font-black text-slate-800 uppercase text-xs sm:text-sm">{selectedUserObject?.name}</p>
                     </div>
-                  )}
+                    <div>
+                      <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Email Akun</p>
+                      <p className="font-bold text-slate-600 text-xs">{selectedUserObject?.email}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Perusahaan / Subkontraktor</p>
+                      <p className="font-black text-slate-800 uppercase text-xs sm:text-sm">{selectedUserObject?.company_name || 'Independent / Internal'}</p>
+                    </div>
+                    <div>
+                      <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Nama Project</p>
+                      <p className="font-bold text-[#00a1e4] uppercase text-xs tracking-wider">{getProjectName()}</p>
+                    </div>
+                  </div>
+                </div>
 
-                  {/* Timesheet daily data table */}
-                  <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-                    {loadingTimesheet ? (
-                      <div className="p-24 flex flex-col items-center justify-center gap-3 text-slate-400">
-                        <Loader2 className="animate-spin text-[#003366] w-8 h-8" />
-                        <p className="text-[10px] font-black uppercase tracking-widest animate-pulse">Loading Records...</p>
-                      </div>
-                    ) : timesheetRecords.length === 0 ? (
-                      <div className="p-24 text-center text-slate-400 bg-white">
-                        <Calendar size={40} className="mx-auto mb-2 opacity-20" />
-                        <p className="text-[10px] font-black uppercase tracking-widest">No Attendance Data Found</p>
-                      </div>
-                    ) : (
-                      <table className="w-full text-left text-xs border-collapse bg-white">
-                        <thead>
-                          <tr className="bg-slate-50 border-b border-slate-200 text-[8px] font-black text-slate-400 uppercase tracking-wider">
-                            <th className="p-3 w-[16%]">Tanggal</th>
-                            <th className="p-3 w-[15%]">Proyek</th>
-                            <th className="p-3 w-[13%]">Masuk</th>
-                            <th className="p-3 w-[14%]">Keluar</th>
-                            <th className="p-3 w-[10%] text-center">Durasi</th>
-                            <th className="p-3 w-[10%] text-center">Overtime</th>
-                            <th className="p-3 w-[22%] text-center print:hidden">Aksi & Koreksi</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {timesheetRecords.map((r, idx) => (
-                            <tr key={r.id || idx} className="border-b border-slate-100 hover:bg-slate-50/30">
-                              <td className="p-3 font-bold text-slate-700">
-                                <div>{safeFormatDate(r.check_in_time, "EEEE, dd MMM yyyy")}</div>
-                                {(r.check_out_notes || r.check_in_notes) && (
-                                  <div 
-                                    onClick={() => setEditingNoteRecord(r)}
-                                    className="mt-1 flex items-start gap-1 text-[7px] font-bold text-amber-900 bg-amber-50/90 hover:bg-amber-100 p-1 rounded-md border border-amber-200 cursor-pointer transition-colors max-w-[180px]"
-                                    title={`Keterangan Admin: ${r.check_out_notes || r.check_in_notes}`}
+                {/* Stats summary boxes */}
+                {timesheetRecords.length > 0 && (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="bg-emerald-50/60 p-4 sm:p-5 rounded-2xl border border-emerald-100 text-center">
+                      <p className="text-[9px] font-black text-emerald-700 uppercase tracking-widest mb-1">Total Hari Hadir</p>
+                      <p className="text-xl sm:text-2xl font-black text-emerald-800">{timesheetRecords.length} Hari</p>
+                    </div>
+                    <div className="bg-blue-50/60 p-4 sm:p-5 rounded-2xl border border-blue-100 text-center">
+                      <p className="text-[9px] font-black text-blue-700 uppercase tracking-widest mb-1">Total Durasi Kerja</p>
+                      <p className="text-xl sm:text-2xl font-black text-blue-800 truncate">{totalHoursStr}</p>
+                    </div>
+                    <div className="bg-amber-50/60 p-4 sm:p-5 rounded-2xl border border-amber-100 text-center">
+                      <p className="text-[9px] font-black text-amber-700 uppercase tracking-widest mb-1">Overtime</p>
+                      <p className="text-xl sm:text-2xl font-black text-amber-800 truncate">{totalOvertimeStr}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Timesheet daily data table */}
+                <div className="border border-slate-200 rounded-2xl overflow-x-auto shadow-xs bg-white w-full">
+                  {loadingTimesheet ? (
+                    <div className="p-24 flex flex-col items-center justify-center gap-3 text-slate-400">
+                      <Loader2 className="animate-spin text-[#003366] w-8 h-8" />
+                      <p className="text-[10px] font-black uppercase tracking-widest animate-pulse">Loading Records...</p>
+                    </div>
+                  ) : timesheetRecords.length === 0 ? (
+                    <div className="p-24 text-center text-slate-400 bg-white">
+                      <Calendar size={40} className="mx-auto mb-2 opacity-20" />
+                      <p className="text-[10px] font-black uppercase tracking-widest">No Attendance Data Found</p>
+                    </div>
+                  ) : (
+                    <table className="w-full min-w-[960px] text-left text-xs border-collapse bg-white">
+                      <thead>
+                        <tr className="bg-slate-50/80 border-b border-slate-200 text-[9px] font-black text-slate-400 uppercase tracking-wider">
+                          <th className="px-4 py-3.5 min-w-[160px]">Tanggal</th>
+                          <th className="px-4 py-3.5 min-w-[130px]">Proyek</th>
+                          <th className="px-4 py-3.5 min-w-[120px]">Masuk</th>
+                          <th className="px-4 py-3.5 min-w-[120px]">Keluar</th>
+                          <th className="px-4 py-3.5 min-w-[100px] text-center">Durasi</th>
+                          <th className="px-4 py-3.5 min-w-[100px] text-center">Overtime</th>
+                          <th className="px-4 py-3.5 min-w-[250px] text-center print:hidden">Aksi & Koreksi</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {timesheetRecords.map((r, idx) => (
+                          <tr key={r.id || idx} className="hover:bg-slate-50/60 transition-colors">
+                            {/* Tanggal */}
+                            <td className="px-4 py-3.5 font-bold text-slate-700">
+                              <div className="whitespace-nowrap font-black text-slate-800">{safeFormatDate(r.check_in_time, "EEEE, dd MMM yyyy")}</div>
+                              {(r.check_out_notes || r.check_in_notes) && (
+                                <div 
+                                  onClick={() => setEditingNoteRecord(r)}
+                                  className="mt-1.5 inline-flex items-center gap-1.5 text-[8px] font-black text-amber-900 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded-lg border border-amber-200 cursor-pointer transition-colors max-w-[220px]"
+                                  title={`Keterangan Admin: ${r.check_out_notes || r.check_in_notes}`}
+                                >
+                                  <MessageSquare size={10} className="shrink-0 text-amber-600" />
+                                  <span className="truncate">{r.check_out_notes || r.check_in_notes}</span>
+                                </div>
+                              )}
+                            </td>
+
+                            {/* Proyek */}
+                            <td className="px-4 py-3.5">
+                              <span className="inline-block px-2.5 py-1 rounded-lg bg-blue-50 text-[#0073ea] border border-blue-100 font-black text-[9px] uppercase tracking-wide max-w-[150px] truncate" title={r.projects?.name || "-"}>
+                                {r.projects?.name || "-"}
+                              </span>
+                            </td>
+
+                            {/* Masuk */}
+                            <td className="px-4 py-3.5 text-emerald-600 font-bold">
+                              <div className="flex flex-col">
+                                <span className="text-xs font-black">{safeFormatTime(r.check_in_time)}</span>
+                                {(() => {
+                                  const checkIn = new Date(r.check_in_time);
+                                  const shiftStart = r.projects?.shift_start_time || "08:00";
+                                  const [sh, sm] = shiftStart.split(":").map(Number);
+                                  const checkInMins = checkIn.getHours() * 60 + checkIn.getMinutes();
+                                  const shiftMins = sh * 60 + sm;
+                                  if (checkInMins > shiftMins) {
+                                    const diff = checkInMins - shiftMins;
+                                    return (
+                                      <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1.5 py-0.5 rounded border border-rose-100 w-max">
+                                        Terlambat {formatMinutesToHoursMins(diff)}
+                                      </span>
+                                    );
+                                  }
+                                  return null;
+                                })()}
+                                {r.check_in_lat !== null && (
+                                  <a
+                                    href={getMapsLink(r.check_in_lat, r.check_in_long)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="print:hidden text-[#00a1e4] hover:underline font-bold flex items-center gap-1 text-[8px] mt-1"
+                                    title={`GPS Masuk: ${r.check_in_lat}, ${r.check_in_long}`}
                                   >
-                                    <MessageSquare size={8} className="shrink-0 text-amber-600 mt-0.5" />
-                                    <span className="truncate">{r.check_out_notes || r.check_in_notes}</span>
-                                  </div>
+                                    <MapPin size={9} /> GPS ({r.check_in_lat.toFixed(2)}, {r.check_in_long?.toFixed(2)})
+                                  </a>
                                 )}
-                              </td>
-                              <td className="p-3">
-                                <span className="inline-block px-2 py-0.5 rounded bg-blue-50 text-[#0073ea] border border-blue-100 font-black text-[8px] uppercase tracking-tight max-w-[130px] truncate" title={r.projects?.name || "-"}>
-                                  {r.projects?.name || "-"}
-                                </span>
-                              </td>
-                              <td className="p-3 text-emerald-600 font-bold">
+                              </div>
+                            </td>
+
+                            {/* Keluar */}
+                            <td className="px-4 py-3.5 text-rose-600 font-bold">
+                              {r.check_out_time ? (
                                 <div className="flex flex-col">
-                                  <span>{safeFormatTime(r.check_in_time)}</span>
+                                  <span className="text-xs font-black">{safeFormatTime(r.check_out_time)}</span>
                                   {(() => {
-                                    const checkIn = new Date(r.check_in_time);
-                                    const shiftStart = r.projects?.shift_start_time || "08:00";
-                                    const [sh, sm] = shiftStart.split(":").map(Number);
-                                    const checkInMins = checkIn.getHours() * 60 + checkIn.getMinutes();
-                                    const shiftMins = sh * 60 + sm;
-                                    if (checkInMins > shiftMins) {
-                                      const diff = checkInMins - shiftMins;
+                                    const checkOut = new Date(r.check_out_time);
+                                    const shiftEnd = r.projects?.shift_end_time || "17:00";
+                                    const [eh, em] = shiftEnd.split(":").map(Number);
+                                    const checkOutMins = checkOut.getHours() * 60 + checkOut.getMinutes();
+                                    const shiftMins = eh * 60 + em;
+                                    if (checkOutMins < shiftMins) {
+                                      const diff = shiftMins - checkOutMins;
                                       return (
-                                        <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1 py-0.5 rounded border border-rose-100 w-max">
-                                          Terlambat {formatMinutesToHoursMins(diff)}
+                                        <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1.5 py-0.5 rounded border border-rose-100 w-max">
+                                          Cepat {formatMinutesToHoursMins(diff)}
                                         </span>
                                       );
                                     }
                                     return null;
                                   })()}
-                                  {r.check_in_lat !== null && (
+                                  {r.check_out_lat !== null && (
                                     <a
-                                      href={getMapsLink(r.check_in_lat, r.check_in_long)}
+                                      href={getMapsLink(r.check_out_lat, r.check_out_long)}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="print:hidden text-[#00a1e4] hover:underline font-bold flex items-center gap-0.5 text-[7px] mt-0.5"
-                                      title={`GPS Masuk: ${r.check_in_lat}, ${r.check_in_long}`}
+                                      className="print:hidden text-[#00a1e4] hover:underline font-bold flex items-center gap-1 text-[8px] mt-1"
+                                      title={`GPS Keluar: ${r.check_out_lat}, ${r.check_out_long}`}
                                     >
-                                      <MapPin size={8} /> GPS ({r.check_in_lat.toFixed(2)}, {r.check_in_long?.toFixed(2)})
+                                      <MapPin size={9} /> GPS ({r.check_out_lat.toFixed(2)}, {r.check_out_long?.toFixed(2)})
                                     </a>
                                   )}
                                 </div>
-                              </td>
-                              <td className="p-3 text-rose-600 font-bold">
-                                {r.check_out_time ? (
-                                  <div className="flex flex-col">
-                                    <span>{safeFormatTime(r.check_out_time)}</span>
-                                    {(() => {
-                                      const checkOut = new Date(r.check_out_time);
-                                      const shiftEnd = r.projects?.shift_end_time || "17:00";
-                                      const [eh, em] = shiftEnd.split(":").map(Number);
-                                      const checkOutMins = checkOut.getHours() * 60 + checkOut.getMinutes();
-                                      const shiftMins = eh * 60 + em;
-                                      if (checkOutMins < shiftMins) {
-                                        const diff = shiftMins - checkOutMins;
-                                        return (
-                                          <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1 py-0.5 rounded border border-rose-100 w-max">
-                                            Cepat {formatMinutesToHoursMins(diff)}
-                                          </span>
-                                        );
-                                      }
-                                      return null;
-                                    })()}
-                                    {r.check_out_lat !== null && (
-                                      <a
-                                        href={getMapsLink(r.check_out_lat, r.check_out_long)}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="print:hidden text-[#00a1e4] hover:underline font-bold flex items-center gap-0.5 text-[7px] mt-0.5"
-                                        title={`GPS Keluar: ${r.check_out_lat}, ${r.check_out_long}`}
-                                      >
-                                        <MapPin size={8} /> GPS ({r.check_out_lat.toFixed(2)}, {r.check_out_long?.toFixed(2)})
-                                      </a>
-                                    )}
-                                  </div>
-                                ) : (
-                                  <div className="flex flex-col items-start gap-1">
-                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[7px] font-black uppercase tracking-wider animate-pulse">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-                                      Sesi Aktif
-                                    </span>
-                                    <button
-                                      onClick={() => setManualClockOutRecord(r)}
-                                      className="print:hidden px-2 py-0.5 bg-amber-500 hover:bg-amber-600 text-white text-[7px] font-black uppercase tracking-wider rounded shadow-sm flex items-center gap-1 transition-all"
-                                      title="Clock-Out Manual oleh Admin"
-                                    >
-                                      <LogOut size={8} /> Clock-Out
-                                    </button>
-                                  </div>
-                                )}
-                              </td>
-                              <td className="p-3 font-black text-slate-800 text-center">
-                                {getDurationStr(r.check_in_time, r.check_out_time)}
-                              </td>
-                              <td className="p-3 font-black text-amber-700 text-center">
-                                {formatMinutesToHoursMins(getOvertimeMinutes(r.check_in_time, r.check_out_time, r.projects?.shift_start_time, r.projects?.shift_end_time))}
-                              </td>
-                              <td className="p-3 text-center print:hidden">
-                                <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                              ) : (
+                                <div className="flex flex-col items-start gap-1.5">
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[8px] font-black uppercase tracking-wider animate-pulse">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                                    Sesi Aktif
+                                  </span>
                                   <button
-                                    onClick={() => setInspectPhotoRecord(r)}
-                                    className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 hover:bg-blue-100 text-[#003366] rounded-lg border border-blue-200 text-[8px] font-black uppercase tracking-wider transition-all shadow-xs"
-                                    title="Inspeksi foto referensi, clock in, dan clock out"
+                                    onClick={() => setManualClockOutRecord(r)}
+                                    className="print:hidden px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white text-[8px] font-black uppercase tracking-wider rounded-lg shadow-sm flex items-center gap-1 transition-all"
+                                    title="Clock-Out Manual oleh Admin"
                                   >
-                                    {r.check_in_photo ? (
-                                      <img src={r.check_in_photo} alt="Thumb" className="w-3.5 h-3.5 rounded-full object-cover shrink-0" />
-                                    ) : (
-                                      <Eye size={10} className="text-[#00a1e4]" />
-                                    )}
-                                    <span>Foto</span>
-                                  </button>
-                                  <button
-                                    onClick={() => setAdjustmentRecord(r)}
-                                    className="inline-flex items-center gap-1 px-2 py-1 bg-sky-50 hover:bg-sky-100 text-[#003366] rounded-lg border border-sky-200 text-[8px] font-black uppercase tracking-wider transition-all shadow-xs"
-                                    title="Koreksi dan sesuaikan jam masuk, jam keluar, dan proyek"
-                                  >
-                                    <Clock size={10} className="text-[#0073ea]" />
-                                    <span>Sesuaikan</span>
-                                  </button>
-                                  <button
-                                    onClick={() => setEditingNoteRecord(r)}
-                                    className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 rounded-lg border border-amber-200 text-[8px] font-black uppercase tracking-wider transition-all shadow-xs"
-                                    title="Catatan/Keterangan Admin (Lupa clock out, error sistem, dll)"
-                                  >
-                                    <FileEdit size={10} className="text-amber-700" />
-                                    <span>Note</span>
+                                    <LogOut size={9} /> Clock-Out
                                   </button>
                                 </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    )}
-                  </div>
+                              )}
+                            </td>
 
+                            {/* Durasi */}
+                            <td className="px-4 py-3.5 font-black text-slate-800 text-center whitespace-nowrap">
+                              {getDurationStr(r.check_in_time, r.check_out_time)}
+                            </td>
+
+                            {/* Overtime */}
+                            <td className="px-4 py-3.5 font-black text-amber-700 text-center whitespace-nowrap">
+                              {formatMinutesToHoursMins(getOvertimeMinutes(r.check_in_time, r.check_out_time, r.projects?.shift_start_time, r.projects?.shift_end_time))}
+                            </td>
+
+                            {/* Aksi & Koreksi */}
+                            <td className="px-4 py-3.5 text-center print:hidden">
+                              <div className="flex items-center justify-center gap-1.5 whitespace-nowrap">
+                                <button
+                                  onClick={() => setInspectPhotoRecord(r)}
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl border border-slate-200 text-[9px] font-black uppercase tracking-wider transition-all shadow-xs"
+                                  title="Inspeksi foto referensi, clock in, dan clock out"
+                                >
+                                  {r.check_in_photo ? (
+                                    <img src={r.check_in_photo} alt="Thumb" className="w-4 h-4 rounded-full object-cover shrink-0" />
+                                  ) : (
+                                    <Eye size={12} className="text-[#00a1e4]" />
+                                  )}
+                                  <span>Foto</span>
+                                </button>
+                                <button
+                                  onClick={() => setAdjustmentRecord(r)}
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-sky-50 hover:bg-sky-100 text-[#003366] rounded-xl border border-sky-200 text-[9px] font-black uppercase tracking-wider transition-all shadow-xs"
+                                  title="Koreksi dan sesuaikan jam masuk, jam keluar, dan proyek"
+                                >
+                                  <Clock size={12} className="text-[#0073ea]" />
+                                  <span>Sesuaikan</span>
+                                </button>
+                                <button
+                                  onClick={() => setEditingNoteRecord(r)}
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 rounded-xl border border-amber-200 text-[9px] font-black uppercase tracking-wider transition-all shadow-xs"
+                                  title="Catatan/Keterangan Admin (Lupa clock out, error sistem, dll)"
+                                >
+                                  <FileEdit size={12} className="text-amber-700" />
+                                  <span>Note</span>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
 
-                {/* Signatures at bottom */}
-                {timesheetRecords.length > 0 && (
-                  <div className="pt-8 mt-16 border-t border-slate-100">
-                    <div className="grid grid-cols-2 gap-10">
-                      <div className="text-center space-y-16">
-                        <p className="text-[8px] font-black text-[#003366] uppercase tracking-widest">Tanda Tangan Personel</p>
-                        <div className="w-40 h-16 border-b border-slate-200 mx-auto relative flex items-end justify-center">
-                          <span className="absolute -bottom-4 text-[7px] font-bold text-slate-400 uppercase">( {selectedUserObject?.name} )</span>
-                        </div>
-                      </div>
+              </div>
 
-                      <div className="text-center space-y-16">
-                        <p className="text-[8px] font-black text-[#003366] uppercase tracking-widest">Verifikasi HRD / Supervisor</p>
-                        <div className="w-40 h-16 border-b border-slate-200 mx-auto relative flex items-end justify-center">
-                          <span className="absolute -bottom-4 text-[7px] font-bold text-slate-400 uppercase">( PT Daikin Applied Solutions )</span>
-                        </div>
+              {/* Signatures at bottom */}
+              {timesheetRecords.length > 0 && (
+                <div className="pt-8 mt-12 border-t border-slate-100">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-12 max-w-2xl mx-auto">
+                    <div className="text-center space-y-12">
+                      <p className="text-[9px] font-black text-[#003366] uppercase tracking-widest">Tanda Tangan Personel</p>
+                      <div className="w-48 h-12 border-b border-slate-200 mx-auto relative flex items-end justify-center">
+                        <span className="absolute -bottom-5 text-[8px] font-bold text-slate-400 uppercase">( {selectedUserObject?.name} )</span>
+                      </div>
+                    </div>
+
+                    <div className="text-center space-y-12">
+                      <p className="text-[9px] font-black text-[#003366] uppercase tracking-widest">Verifikasi HRD / Supervisor</p>
+                      <div className="w-48 h-12 border-b border-slate-200 mx-auto relative flex items-end justify-center">
+                        <span className="absolute -bottom-5 text-[8px] font-bold text-slate-400 uppercase">( PT Daikin Applied Solutions )</span>
                       </div>
                     </div>
                   </div>
-                )}
+                </div>
+              )}
 
-              </div>
             </div>
 
           </div>
