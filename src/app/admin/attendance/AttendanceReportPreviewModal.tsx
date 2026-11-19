@@ -104,6 +104,33 @@ export default function AttendanceReportPreviewModal({
     return "0 Jam 0 Menit";
   };
 
+  const getShortNote = (note: string | null | undefined): string | null => {
+    if (!note) return null;
+    const trimmed = note.trim();
+    if (!trimmed || trimmed === "-") return null;
+
+    const tagMatch = trimmed.match(/^\[(.*?)\]/);
+    if (tagMatch) {
+      return `[${tagMatch[1].trim()}]`;
+    }
+
+    const lower = trimmed.toLowerCase();
+    if (lower.includes("lupa clock out") || lower.includes("lupa checkout") || lower.includes("lupa absen pulang")) {
+      return "[Lupa Clock Out]";
+    }
+    if (lower.includes("lupa clock in") || lower.includes("lupa absen masuk")) {
+      return "[Lupa Clock In]";
+    }
+    if (lower.includes("error sistem") || lower.includes("system error")) {
+      return "[Error Sistem]";
+    }
+
+    if (trimmed.length > 30) {
+      return trimmed.substring(0, 27) + "...";
+    }
+    return trimmed;
+  };
+
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-start p-2 sm:p-6 overflow-y-auto">
       {/* Top Modal Control Bar */}
@@ -227,93 +254,98 @@ export default function AttendanceReportPreviewModal({
             <div className="border border-slate-200 rounded-xl overflow-hidden shadow-xs">
               <table className="w-full text-left text-xs border-collapse bg-white">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-[8px] font-black text-slate-400 uppercase tracking-wider">
-                    <th className="p-2.5 w-[18%]">Tanggal</th>
-                    <th className="p-2.5 w-[18%]">Proyek</th>
-                    <th className="p-2.5 w-[12%]">Masuk</th>
-                    <th className="p-2.5 w-[12%]">Keluar</th>
-                    <th className="p-2.5 w-[10%] text-center">Durasi</th>
-                    <th className="p-2.5 w-[10%] text-center">Overtime</th>
-                    <th className="p-2.5 w-[20%]">Keterangan</th>
+                  <tr className="bg-slate-50 border-b border-slate-200 text-[8.5px] font-black text-slate-400 uppercase tracking-wider">
+                    <th className="py-2.5 px-3.5 w-[32%]">Tanggal</th>
+                    <th className="py-2.5 px-3.5 w-[17%]">Masuk</th>
+                    <th className="py-2.5 px-3.5 w-[17%]">Keluar</th>
+                    <th className="py-2.5 px-3.5 w-[17%] text-center">Durasi</th>
+                    <th className="py-2.5 px-3.5 w-[17%] text-center">Overtime</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {records.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="p-12 text-center text-slate-400 text-xs font-bold uppercase">
+                      <td colSpan={5} className="p-12 text-center text-slate-400 text-xs font-bold uppercase">
                         Tidak Ada Data Kehadiran
                       </td>
                     </tr>
                   ) : (
-                    records.map((r, idx) => (
-                      <tr key={r.id || idx} className="hover:bg-slate-50/40">
-                        <td className="p-2.5 font-bold text-slate-700 text-[10px]">
-                          {safeFormatDate(r.check_in_time)}
-                        </td>
-                        <td className="p-2.5 font-bold text-[#003366] uppercase text-[10px]">
-                          {r.projects?.name || "-"}
-                        </td>
-                        <td className="p-2.5 font-bold text-[10px]">
-                          <div className="flex flex-col text-emerald-600">
-                            <span>{safeFormatTime(r.check_in_time)}</span>
-                            {(() => {
-                              if (!r.check_in_time) return null;
-                              const checkIn = new Date(r.check_in_time);
-                              const shiftStart = r.projects?.shift_start_time || "08:00";
-                              const [sh, sm] = shiftStart.split(":").map(Number);
-                              const checkInMins = checkIn.getHours() * 60 + checkIn.getMinutes();
-                              const shiftMins = sh * 60 + sm;
-                              if (checkInMins > shiftMins) {
-                                const diff = checkInMins - shiftMins;
-                                const hrs = Math.floor(diff / 60);
-                                const mins = diff % 60;
-                                const diffStr = hrs > 0 ? (mins > 0 ? `${hrs} Jam ${mins} Menit` : `${hrs} Jam`) : `${mins} Menit`;
-                                return (
-                                  <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1 py-0.5 rounded border border-rose-100 w-max">
-                                    Terlambat {diffStr}
-                                  </span>
-                                );
-                              }
-                              return null;
-                            })()}
-                          </div>
-                        </td>
-                        <td className="p-2.5 text-rose-600 font-bold text-[10px]">
-                          <div className="flex flex-col">
-                            <span>{safeFormatTime(r.check_out_time)}</span>
-                            {(() => {
-                              if (!r.check_out_time) return null;
-                              const checkOut = new Date(r.check_out_time);
-                              const shiftEnd = r.projects?.shift_end_time || "17:00";
-                              const [eh, em] = shiftEnd.split(":").map(Number);
-                              const checkOutMins = checkOut.getHours() * 60 + checkOut.getMinutes();
-                              const shiftMins = eh * 60 + em;
-                              if (checkOutMins < shiftMins) {
-                                const diff = shiftMins - checkOutMins;
-                                const hrs = Math.floor(diff / 60);
-                                const mins = diff % 60;
-                                const diffStr = hrs > 0 ? (mins > 0 ? `${hrs} Jam ${mins} Menit` : `${hrs} Jam`) : `${mins} Menit`;
-                                return (
-                                  <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1 py-0.5 rounded border border-rose-100 w-max">
-                                    Cepat {diffStr}
-                                  </span>
-                                );
-                              }
-                              return null;
-                            })()}
-                          </div>
-                        </td>
-                        <td className="p-2.5 font-black text-slate-800 text-center text-[10px]">
-                          {getDuration(r)}
-                        </td>
-                        <td className="p-2.5 font-black text-amber-700 text-center text-[10px]">
-                          {getOvertimeStr(r)}
-                        </td>
-                        <td className="p-2.5 text-[9px] font-medium text-slate-600 max-w-[150px] break-words">
-                          {r.check_out_notes || r.check_in_notes || "-"}
-                        </td>
-                      </tr>
-                    ))
+                    records.map((r, idx) => {
+                      const note = r.check_out_notes || r.check_in_notes;
+                      const shortNote = getShortNote(note);
+                      return (
+                        <tr key={r.id || idx} className="hover:bg-slate-50/40">
+                          <td className="py-2.5 px-3.5">
+                            <div className="flex flex-col items-start leading-tight">
+                              <span className="font-bold text-slate-700 text-[10px]">
+                                {safeFormatDate(r.check_in_time)}
+                              </span>
+                              {shortNote && (
+                                <span className="inline-block mt-0.5 text-[7px] font-bold text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 w-max">
+                                  {shortNote}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="py-2.5 px-3.5 font-bold text-[10px]">
+                            <div className="flex flex-col text-emerald-600 leading-tight">
+                              <span className="text-[10px] font-black">{safeFormatTime(r.check_in_time)}</span>
+                              {(() => {
+                                if (!r.check_in_time) return null;
+                                const checkIn = new Date(r.check_in_time);
+                                const shiftStart = r.projects?.shift_start_time || "08:00";
+                                const [sh, sm] = shiftStart.split(":").map(Number);
+                                const checkInMins = checkIn.getHours() * 60 + checkIn.getMinutes();
+                                const shiftMins = sh * 60 + sm;
+                                if (checkInMins > shiftMins) {
+                                  const diff = checkInMins - shiftMins;
+                                  const hrs = Math.floor(diff / 60);
+                                  const mins = diff % 60;
+                                  const diffStr = hrs > 0 ? (mins > 0 ? `${hrs} Jam ${mins} Menit` : `${hrs} Jam`) : `${mins} Menit`;
+                                  return (
+                                    <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1 py-0.5 rounded border border-rose-100 w-max">
+                                      Terlambat {diffStr}
+                                    </span>
+                                  );
+                                }
+                                return null;
+                              })()}
+                            </div>
+                          </td>
+                          <td className="py-2.5 px-3.5 text-rose-600 font-bold text-[10px]">
+                            <div className="flex flex-col leading-tight">
+                              <span className="text-[10px] font-black">{safeFormatTime(r.check_out_time)}</span>
+                              {(() => {
+                                if (!r.check_out_time) return null;
+                                const checkOut = new Date(r.check_out_time);
+                                const shiftEnd = r.projects?.shift_end_time || "17:00";
+                                const [eh, em] = shiftEnd.split(":").map(Number);
+                                const checkOutMins = checkOut.getHours() * 60 + checkOut.getMinutes();
+                                const shiftMins = eh * 60 + em;
+                                if (checkOutMins < shiftMins) {
+                                  const diff = shiftMins - checkOutMins;
+                                  const hrs = Math.floor(diff / 60);
+                                  const mins = diff % 60;
+                                  const diffStr = hrs > 0 ? (mins > 0 ? `${hrs} Jam ${mins} Menit` : `${hrs} Jam`) : `${mins} Menit`;
+                                  return (
+                                    <span className="inline-block mt-0.5 text-[7px] font-black text-rose-600 uppercase tracking-wide bg-rose-50 px-1 py-0.5 rounded border border-rose-100 w-max">
+                                      Cepat {diffStr}
+                                    </span>
+                                  );
+                                }
+                                return null;
+                              })()}
+                            </div>
+                          </td>
+                          <td className="py-2.5 px-3.5 font-black text-slate-800 text-center text-[10px] whitespace-nowrap">
+                            {getDuration(r)}
+                          </td>
+                          <td className="py-2.5 px-3.5 font-black text-amber-700 text-center text-[10px] whitespace-nowrap">
+                            {getOvertimeStr(r)}
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
