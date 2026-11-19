@@ -13,6 +13,7 @@ interface ReportBaseProps {
   totalPages?: number;
   isFixedHeight?: boolean;
   lang?: Language;
+  minimalHeader?: boolean;
 }
 
 export const ReportBase = ({ 
@@ -26,7 +27,8 @@ export const ReportBase = ({
   pageNumber = 1,
   totalPages = 1,
   isFixedHeight = true,
-  lang = 'id'
+  lang = 'id',
+  minimalHeader = false
 }: ReportBaseProps) => {
   return (
     <div
@@ -48,95 +50,125 @@ export const ReportBase = ({
     >
       {/* HEADER SECTION - FULL BLEED */}
       <div id="report-header" style={{ width: "100%", backgroundColor: "white" }}>
-        <div style={{ padding: "10mm 15mm 0 15mm" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4mm" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "5mm" }}>
-              <img src="/daikin_logo.png" alt="Daikin" style={{ height: "12mm", objectFit: "contain" }} />
-              <div style={{ height: "10mm", width: "1px", backgroundColor: "#003366" }}></div>
-              <div style={{ fontSize: "8pt", fontWeight: 900, color: "#003366", textTransform: "uppercase", lineHeight: "1.2", maxWidth: "60mm" }}>
-                PT DAIKIN APPLIED SOLUTIONS INDONESIA
+        {minimalHeader ? (
+          <div style={{ padding: "6mm 15mm 0 15mm" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2.5mm" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "4mm" }}>
+                <img src="/daikin_logo.png" alt="Daikin" style={{ height: "9mm", objectFit: "contain" }} />
+                <div style={{ height: "8mm", width: "1px", backgroundColor: "#003366" }}></div>
+                <div style={{ fontSize: "7pt", fontWeight: 900, color: "#003366", textTransform: "uppercase", lineHeight: "1.2", maxWidth: "60mm" }}>
+                  PT DAIKIN APPLIED SOLUTIONS INDONESIA
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "3mm" }}>
+                {reportTitle && (
+                  <span style={{ fontSize: "8pt", fontWeight: 900, color: "#003366", textTransform: "uppercase", letterSpacing: "1px" }}>
+                    {reportTitle}
+                  </span>
+                )}
+                <img src="/logo/Logo DSSI.png" alt="DSSI Connect" style={{ height: "10mm", objectFit: "contain" }} />
               </div>
             </div>
-            <div style={{ textAlign: "right" }}>
-              <img src="/logo/Logo DSSI.png" alt="DSSI Connect" style={{ height: "14mm", objectFit: "contain" }} />
-            </div>
+            <div style={{ 
+              width: "100%", 
+              height: "1.5mm", 
+              backgroundColor: "#003366", 
+              marginBottom: "2.5mm",
+              borderRadius: "0.5mm"
+            }}></div>
           </div>
-          
-          {/* THICK BLUE BAR - MOVED UP */}
-          <div style={{ 
-            width: "100%", 
-            height: "2.5mm", 
-            backgroundColor: "#003366", 
-            marginBottom: "4mm",
-            borderRadius: "1mm"
-          }}></div>
+        ) : (
+          <div style={{ padding: "10mm 15mm 0 15mm" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4mm" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "5mm" }}>
+                <img src="/daikin_logo.png" alt="Daikin" style={{ height: "12mm", objectFit: "contain" }} />
+                <div style={{ height: "10mm", width: "1px", backgroundColor: "#003366" }}></div>
+                <div style={{ fontSize: "8pt", fontWeight: 900, color: "#003366", textTransform: "uppercase", lineHeight: "1.2", maxWidth: "60mm" }}>
+                  PT DAIKIN APPLIED SOLUTIONS INDONESIA
+                </div>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <img src="/logo/Logo DSSI.png" alt="DSSI Connect" style={{ height: "14mm", objectFit: "contain" }} />
+              </div>
+            </div>
+            
+            {/* THICK BLUE BAR - MOVED UP */}
+            <div style={{ 
+              width: "100%", 
+              height: "2.5mm", 
+              backgroundColor: "#003366", 
+              marginBottom: "4mm",
+              borderRadius: "1mm"
+            }}></div>
 
-          <div style={{ textAlign: "center", position: "relative", marginBottom: "3mm" }}>
-            <h1 style={{ 
-              fontSize: "16pt", 
-              fontWeight: 900, 
-              color: "#003366", 
-              margin: 0, 
-              textTransform: "uppercase", 
-              letterSpacing: "2px",
-              lineHeight: "1.3"
-            }}>
-              {reportTitle.split('\n').map((line, i) => (
-                <React.Fragment key={i}>
-                  {line}
-                  {i < reportTitle.split('\n').length - 1 && <br />}
-                </React.Fragment>
-              ))}
-            </h1>
-            {projectName && (
-              <div style={{ 
-                fontSize: "10pt", 
-                fontWeight: 800, 
+            <div style={{ textAlign: "center", position: "relative", marginBottom: "3mm" }}>
+              <h1 style={{ 
+                fontSize: "16pt", 
+                fontWeight: 900, 
                 color: "#003366", 
-                backgroundColor: "#e0f2fe",
-                border: "1px solid #7dd3fc", 
-                padding: "3px 20px", 
-                marginTop: "6px", 
-                display: "inline-block",
-                borderRadius: "6px",
-                textTransform: "uppercase",
-                letterSpacing: "1px"
+                margin: 0, 
+                textTransform: "uppercase", 
+                letterSpacing: "2px",
+                lineHeight: "1.3"
               }}>
-                {projectName}
-              </div>
-            )}
-            {!projectName && reportCode && (
-              <div style={{ 
-                fontSize: "10pt", 
-                fontWeight: 800, 
-                color: "#444", 
-                backgroundColor: "#f1f5f9",
-                border: "1px solid #e2e8f0", 
-                padding: "3px 20px", 
-                marginTop: "6px", 
-                display: "inline-block",
-                borderRadius: "6px",
-                textTransform: "uppercase",
-                letterSpacing: "1px"
-              }}>
-                {reportCode}
-              </div>
-            )}
+                {reportTitle.split('\n').map((line, i) => (
+                  <React.Fragment key={i}>
+                    {line}
+                    {i < reportTitle.split('\n').length - 1 && <br />}
+                  </React.Fragment>
+                ))}
+              </h1>
+              {projectName && (
+                <div style={{ 
+                  fontSize: "10pt", 
+                  fontWeight: 800, 
+                  color: "#003366", 
+                  backgroundColor: "#e0f2fe",
+                  border: "1px solid #7dd3fc", 
+                  padding: "3px 20px", 
+                  marginTop: "6px", 
+                  display: "inline-block",
+                  borderRadius: "6px",
+                  textTransform: "uppercase",
+                  letterSpacing: "1px"
+                }}>
+                  {projectName}
+                </div>
+              )}
+              {!projectName && reportCode && (
+                <div style={{ 
+                  fontSize: "10pt", 
+                  fontWeight: 800, 
+                  color: "#444", 
+                  backgroundColor: "#f1f5f9",
+                  border: "1px solid #e2e8f0", 
+                  padding: "3px 20px", 
+                  marginTop: "6px", 
+                  display: "inline-block",
+                  borderRadius: "6px",
+                  textTransform: "uppercase",
+                  letterSpacing: "1px"
+                }}>
+                  {reportCode}
+                </div>
+              )}
 
-            {/* NEW: Input Report Timestamp (Hari, Tanggal & Jam) */}
-            {inputDate && (
-              <div style={{ marginTop: "3mm" }}>
-                <p style={{ fontSize: "7pt", fontWeight: 800, color: "#64748b", textTransform: "uppercase", margin: 0 }}>
-                  {t("REPORTED AT", lang)}:
-                </p>
-                <p style={{ fontSize: "9pt", fontWeight: 900, color: "#003366", margin: 0 }}>
-                  {new Date(inputDate).toLocaleDateString(lang === 'ja' ? 'ja-JP' : lang === 'en' ? 'en-US' : 'id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} | {" "}
-                  {new Date(inputDate).toLocaleTimeString(lang === 'ja' ? 'ja-JP' : lang === 'en' ? 'en-US' : 'id-ID', { hour: '2-digit', minute: '2-digit', hour12: false })} {lang === 'id' ? 'WIB' : ''}
-                </p>
-              </div>
-            )}
+              {/* NEW: Input Report Timestamp (Hari, Tanggal & Jam) */}
+              {inputDate && (
+                <div style={{ marginTop: "3mm" }}>
+                  <p style={{ fontSize: "7pt", fontWeight: 800, color: "#64748b", textTransform: "uppercase", margin: 0 }}>
+                    {t("REPORTED AT", lang)}:
+                  </p>
+                  <p style={{ fontSize: "9pt", fontWeight: 900, color: "#003366", margin: 0 }}>
+                    {new Date(inputDate).toLocaleDateString(lang === 'ja' ? 'ja-JP' : lang === 'en' ? 'en-US' : 'id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} | {" "}
+                    {new Date(inputDate).toLocaleTimeString(lang === 'ja' ? 'ja-JP' : lang === 'en' ? 'en-US' : 'id-ID', { hour: '2-digit', minute: '2-digit', hour12: false })} {lang === 'id' ? 'WIB' : ''}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
+      </div>
       </div>
 
       {/* MAIN CONTENT AREA - WITH SIDE PADDING */}

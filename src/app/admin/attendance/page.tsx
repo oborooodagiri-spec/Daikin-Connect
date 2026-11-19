@@ -1291,7 +1291,7 @@ export default function AttendanceRecordsPage() {
 
                 {/* Document Title */}
                 <div className="text-center space-y-1">
-                  <h2 className="text-xl sm:text-2xl font-black text-[#003366] uppercase tracking-widest">LAPORAN TIMESHEET RIWAYAT ABSENSI</h2>
+                  <h2 className="text-xl sm:text-2xl font-black text-[#003366] uppercase tracking-widest">TIMESHEET</h2>
                   <span className="inline-block bg-sky-50 text-[#003366] text-[10px] sm:text-[11px] font-black uppercase tracking-widest px-4 py-1.5 rounded-lg border border-sky-100">
                     {format(selectedMonth, "MMMM yyyy", { locale: id })}
                   </span>
