@@ -51,18 +51,29 @@ export async function generateAttendancePDF(
   
   // Calculate total hours and overtime
   let totalMinutes = 0;
+  let totalOvertimeMinutes = 0;
   
   records.forEach((r) => {
     if (r.check_in_time && r.check_out_time) {
       const diff = new Date(r.check_out_time).getTime() - new Date(r.check_in_time).getTime();
       const diffMins = Math.floor(diff / 60000);
       totalMinutes += diffMins;
+
+      let standardWorkMinutes = 480;
+      const shiftStart = r.projects?.shift_start_time || "08:00";
+      const shiftEnd = r.projects?.shift_end_time || "17:00";
+      const [sh, sm] = shiftStart.split(":").map(Number);
+      const [eh, em] = shiftEnd.split(":").map(Number);
+      let shiftDiff = (eh * 60 + em) - (sh * 60 + sm);
+      if (shiftDiff < 0) shiftDiff += 1440;
+      if (shiftDiff > 360) standardWorkMinutes = shiftDiff - 60;
+      else if (shiftDiff > 0) standardWorkMinutes = shiftDiff;
+      if (standardWorkMinutes <= 0) standardWorkMinutes = 480;
+
+      const ot = diffMins - standardWorkMinutes;
+      if (ot > 0) totalOvertimeMinutes += Math.min(diffMins, ot);
     }
   });
-
-  // Monthly threshold: 184 hours
-  const maxMonthlyMinutes = 184 * 60;
-  const totalOvertimeMinutes = Math.max(0, totalMinutes - maxMonthlyMinutes);
 
   const totalHoursStr = `${Math.floor(totalMinutes / 60)} Jam ${totalMinutes % 60} Menit`;
   const totalOvertimeStr = totalOvertimeMinutes > 0 

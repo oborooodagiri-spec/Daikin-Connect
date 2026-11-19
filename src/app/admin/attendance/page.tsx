@@ -29,6 +29,7 @@ import BiometricAuditModal from "./BiometricAuditModal";
 import ManualClockOutModal from "./ManualClockOutModal";
 import AttendanceNoteModal from "./AttendanceNoteModal";
 import AttendanceAdjustmentModal from "./AttendanceAdjustmentModal";
+import AttendanceReportPreviewModal from "./AttendanceReportPreviewModal";
 
 export default function AttendanceRecordsPage() {
   // Active tab: attendance records or overtime calculation
@@ -53,6 +54,7 @@ export default function AttendanceRecordsPage() {
   const [selectedMonth, setSelectedMonth] = useState(new Date());
   const [loadingTimesheet, setLoadingTimesheet] = useState(false);
   const [exportingPDF, setExportingPDF] = useState(false);
+  const [showReportPreviewModal, setShowReportPreviewModal] = useState(false);
 
   // Biometric Inspection, Manual Clock-Out & Note States
   const [inspectPhotoRecord, setInspectPhotoRecord] = useState<any | null>(null);
@@ -560,30 +562,15 @@ export default function AttendanceRecordsPage() {
           </div>
 
           {activeTab === "records" && selectedUserId !== null && (
-            <div className="flex items-center gap-2.5 w-full sm:w-auto">
-              <button 
-                onClick={() => window.print()}
-                disabled={timesheetRecords.length === 0}
-                className="flex-1 sm:flex-none px-4 sm:px-6 py-3.5 sm:py-4 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-[10px] sm:text-[11px] font-black uppercase tracking-widest rounded-2xl transition-all shadow-sm flex items-center justify-center gap-2"
-                title="Buka Print Preview dan Cetak Langsung Dokumen A4"
-              >
-                <Printer size={15} className="text-[#003366]" />
-                Cetak / Print
-              </button>
-              <button 
-                onClick={handleExportPDF}
-                disabled={exportingPDF || timesheetRecords.length === 0}
-                className="flex-1 sm:flex-none px-5 sm:px-7 py-3.5 sm:py-4 bg-rose-600 hover:bg-rose-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[10px] sm:text-[11px] font-black uppercase tracking-widest rounded-2xl transition-all shadow-lg flex items-center justify-center gap-2.5"
-                title="Download Dokumen Format PDF Resmi"
-              >
-                {exportingPDF ? (
-                  <Loader2 size={14} className="animate-spin" />
-                ) : (
-                  <Download size={14} />
-                )}
-                Download PDF
-              </button>
-            </div>
+            <button 
+              onClick={() => setShowReportPreviewModal(true)}
+              disabled={timesheetRecords.length === 0}
+              className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-[#003366] hover:bg-blue-900 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[10px] sm:text-[11px] font-black uppercase tracking-widest rounded-2xl transition-all shadow-md flex items-center justify-center gap-2.5"
+              title="Preview laporan timesheet sebelum dicetak atau didownload"
+            >
+              <FileText size={15} />
+              Cetak & Download Report
+            </button>
           )}
         </div>
 
@@ -1589,6 +1576,21 @@ export default function AttendanceRecordsPage() {
         />
       )}
 
+      {/* Attendance Report Preview Modal (Print & PDF) */}
+      {showReportPreviewModal && (
+        <AttendanceReportPreviewModal
+          user={selectedUserObject || { name: "Personel", email: "-" }}
+          records={timesheetRecords}
+          selectedMonth={selectedMonth}
+          projectName={getProjectName()}
+          totalHoursStr={totalHoursStr}
+          totalOvertimeStr={totalOvertimeStr}
+          onClose={() => setShowReportPreviewModal(false)}
+          onDownloadPDF={handleExportPDF}
+          exportingPDF={exportingPDF}
+        />
+      )}
+
       {/* Face Lightbox Preview Modal */}
       {previewFaceUrl && (
         <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -1656,10 +1658,11 @@ export default function AttendanceRecordsPage() {
           body * {
             visibility: hidden !important;
           }
+          #modal-printable-sheet, #modal-printable-sheet *,
           #printable-a4-sheet, #printable-a4-sheet * {
             visibility: visible !important;
           }
-          #printable-a4-sheet {
+          #modal-printable-sheet, #printable-a4-sheet {
             position: absolute !important;
             left: 0 !important;
             top: 0 !important;
